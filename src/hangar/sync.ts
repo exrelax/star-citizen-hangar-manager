@@ -9,6 +9,7 @@ import {
   type PledgeCategory,
 } from './pledge';
 import { fetchShipMatrixImages, resolveUpgradeImages, type ShipImages } from './ship-images';
+import { resolveShipLinks, type ShipLinks } from './ship-links';
 
 export interface SyncProgress {
   done: number;
@@ -21,6 +22,7 @@ export type FetchPledgePage = (page: number, category?: PledgeCategory) => Promi
 export interface SyncOptions {
   fetchPage?: FetchPledgePage;
   fetchShipImages?: () => Promise<ShipImages>;
+  fetchShipLinks?: (pledges: Pledge[], previous: ShipLinks | undefined) => Promise<ShipLinks>;
   onProgress?: (progress: SyncProgress) => void;
   concurrency?: number;
 }
@@ -39,6 +41,7 @@ export async function syncHangar(options: SyncOptions = {}): Promise<HangarSnaps
   const {
     fetchPage = fetchPledgePage,
     fetchShipImages = fetchShipMatrixImages,
+    fetchShipLinks = resolveShipLinks,
     onProgress,
     concurrency = DEFAULT_CONCURRENCY,
   } = options;
@@ -92,10 +95,18 @@ export async function syncHangar(options: SyncOptions = {}): Promise<HangarSnaps
   const allPledges = [...pledges.values()];
   resolveUpgradeImages(allPledges, await shipImages);
 
+  // Links are optional as well: without Fleetyards the hangar is still stored, just without them.
+  const previousLinks = (await hangarSnapshot.getValue())?.shipLinks;
+  const shipLinks = await fetchShipLinks(allPledges, previousLinks).catch((error: unknown) => {
+    console.warn('[sc-hangar-manager] Fleetyards unavailable, ship links may be missing', error);
+    return previousLinks ?? {};
+  });
+
   const snapshot: HangarSnapshot = {
     version: HANGAR_SNAPSHOT_VERSION,
     syncedAt: new Date().toISOString(),
     pledges: allPledges,
+    shipLinks,
   };
   await hangarSnapshot.setValue(snapshot);
   return snapshot;

@@ -17,7 +17,7 @@ manager:
 pledge:
   toggleDetails: Show or hide the contained items
   originalName: 'Originally: $1'
-  ships: 'Ships: $1'
+  shipsLabel: 'Ships:'
   upgraded: Upgraded
   giftable: Giftable
   notGiftable: Not giftable
@@ -33,3 +33,21 @@ filter:
   gamePackages: Game packages
   giftable: Giftable
   meltable: Meltable
+
+tabs:
+  hangar: 🚀 My Hangar
+  settings: ⚙️ Settings
+
+settings:
+  hideMeltValue: Hide melt value
+  hideMeltValueHint: Hides the $$ values in the hangar list.
+  rewards: Hide rewards
+  rewardsHint: Rewards are pledges with a value of $$0. Concierge and event rewards are recognized by their names.
+  rewardOptions:
+    showAll: Don't hide any rewards
+    hideAll: Hide all rewards
+    hideConcierge: Hide Concierge rewards
+    hideEvent: Hide event rewards
+  shipLinks: Show links for ships
+  shipLinkErkul: Link to erkul.games
+  shipLinkFleetyards: Link to fleetyards.net

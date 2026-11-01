@@ -1,5 +1,13 @@
 import type { Pledge, PledgeItem, PledgeUpgrade } from './pledge';
+import { rewardKind, type RewardKind } from './rewards';
 import { normalizeSearchText } from './search';
+import type { ShipLink, ShipLinks } from './ship-links';
+
+/** A ship with its links to other platforms (if known). */
+export interface ShipRef {
+  name: string;
+  link?: ShipLink;
+}
 
 /** What the manager list shows for a pledge. */
 export interface PledgeView {
@@ -7,14 +15,18 @@ export interface PledgeView {
   title: string;
   /** Original pledge name, set when a CCU replaced the ship of the pledge. */
   originalName?: string;
+  /** The ship shown as title (upgraded pledges), for its links. */
+  titleShip?: ShipRef;
   /**
    * Ships contained in the pledge, except the one already shown as title. Makes packages like
    * "VIP Wing Commander" (F8C Lightning) recognizable and searchable.
    */
-  ships: string[];
+  ships: ShipRef[];
   image?: string;
   value: string;
   createdAt?: string;
+  /** Set for reward pledges (value $0). */
+  reward?: RewardKind;
   hasLti: boolean;
   /** Pure paint pledge: contains nothing but paints (no ship, poster, gear, …). */
   isPaint: boolean;
@@ -33,28 +45,29 @@ export interface PledgeView {
 
 const PLACEHOLDER_IMAGE = '/static/images/Temp/default-image';
 
-export function toPledgeView(pledge: Pledge): PledgeView {
+export function toPledgeView(pledge: Pledge, shipLinks: ShipLinks = {}): PledgeView {
   // After a CCU the pledge keeps its original name and image, but the contained ship is current.
   const currentShip = pledge.isUpgraded
     ? pledge.items.find((item) => item.kind === 'Ship')
     : undefined;
 
   const title = currentShip?.title ?? pledge.title;
-  const ships = [
-    ...new Set(
-      pledge.items
-        .filter((item) => item.kind === 'Ship' && item.title !== title)
-        .map((item) => item.title),
-    ),
-  ];
+  const shipNames = new Set(
+    pledge.items
+      .filter((item) => item.kind === 'Ship' && item.title !== title)
+      .map((item) => item.title),
+  );
+  const ships = [...shipNames].map((name) => ({ name, link: shipLinks[name] }));
   return {
     id: pledge.id,
     title,
     originalName: currentShip ? pledge.name : undefined,
+    titleShip: currentShip ? { name: title, link: shipLinks[title] } : undefined,
     ships,
     image: pledgeImage(pledge, currentShip),
     value: pledge.value,
     createdAt: pledge.createdAt,
+    reward: rewardKind(pledge),
     hasLti: pledge.items.some((item) => item.kind === 'Insurance' && /lifetime/i.test(item.title)),
     isPaint: !pledge.upgrade && pledge.items.length > 0 && pledge.items.every(isPaintItem),
     isCcu: pledge.upgrade !== undefined,
@@ -65,7 +78,7 @@ export function toPledgeView(pledge: Pledge): PledgeView {
     isUpgraded: currentShip !== undefined,
     items: pledge.items,
     upgrade: pledge.upgrade,
-    searchText: normalizeSearchText([title, ...ships].join(' ')),
+    searchText: normalizeSearchText([title, ...shipNames].join(' ')),
   };
 }
 

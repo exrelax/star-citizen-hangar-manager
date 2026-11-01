@@ -1,0 +1,121 @@
+<script setup lang="ts">
+import { i18n } from '#i18n';
+import { REWARD_VISIBILITIES, type RewardVisibility, type Settings } from './settings';
+
+const props = defineProps<{ settings: Settings }>();
+const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
+
+function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
+  emit('update', { shipLinks: { ...props.settings.shipLinks, [platform]: enabled } });
+}
+</script>
+
+<template>
+  <div class="shm-settings">
+    <section class="shm-setting">
+      <label class="shm-check">
+        <input
+          type="checkbox"
+          :checked="settings.hideMeltValue"
+          @change="emit('update', { hideMeltValue: ($event.target as HTMLInputElement).checked })"
+        />
+        {{ i18n.t('settings.hideMeltValue') }}
+      </label>
+      <p class="shm-hint">{{ i18n.t('settings.hideMeltValueHint') }}</p>
+    </section>
+
+    <section class="shm-setting">
+      <label class="shm-label" for="shm-reward-visibility">{{ i18n.t('settings.rewards') }}</label>
+      <select
+        id="shm-reward-visibility"
+        class="shm-select"
+        :value="settings.rewardVisibility"
+        @change="
+          emit('update', {
+            rewardVisibility: ($event.target as HTMLSelectElement).value as RewardVisibility,
+          })
+        "
+      >
+        <option v-for="option in REWARD_VISIBILITIES" :key="option" :value="option">
+          {{ i18n.t(`settings.rewardOptions.${option}`) }}
+        </option>
+      </select>
+      <p class="shm-hint">{{ i18n.t('settings.rewardsHint') }}</p>
+    </section>
+
+    <fieldset class="shm-setting">
+      <legend class="shm-label">{{ i18n.t('settings.shipLinks') }}</legend>
+      <label class="shm-check">
+        <input
+          type="checkbox"
+          :checked="settings.shipLinks.erkul"
+          @change="setShipLink('erkul', ($event.target as HTMLInputElement).checked)"
+        />
+        {{ i18n.t('settings.shipLinkErkul') }}
+      </label>
+      <label class="shm-check">
+        <input
+          type="checkbox"
+          :checked="settings.shipLinks.fleetyards"
+          @change="setShipLink('fleetyards', ($event.target as HTMLInputElement).checked)"
+        />
+        {{ i18n.t('settings.shipLinkFleetyards') }}
+      </label>
+    </fieldset>
+  </div>
+</template>
+
+<style scoped>
+.shm-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 20px;
+  color: #dbe7ee;
+  font-size: 13px;
+}
+
+.shm-setting {
+  margin: 0;
+  padding: 14px 16px;
+  background: rgba(10, 20, 30, 0.6);
+  border: 1px solid rgba(98, 196, 235, 0.15);
+}
+
+.shm-label {
+  display: block;
+  margin-bottom: 8px;
+  padding: 0;
+  color: #62c4eb;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.shm-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+  cursor: pointer;
+}
+
+.shm-check input {
+  accent-color: #62c4eb;
+}
+
+.shm-select {
+  min-width: 280px;
+  height: 32px;
+  padding: 0 8px;
+  color: #dbe7ee;
+  font: inherit;
+  background: rgba(10, 20, 30, 0.9);
+  border: 1px solid rgba(98, 196, 235, 0.35);
+}
+
+.shm-hint {
+  margin: 6px 0 0;
+  color: #8a9ba8;
+  font-size: 12px;
+}
+</style>

@@ -14,7 +14,9 @@ export function useHangarPledges() {
 
   const apply = (snapshot: HangarSnapshot | null) => {
     const current = snapshot?.version === HANGAR_SNAPSHOT_VERSION ? snapshot : null;
-    pledges.value = current ? current.pledges.map(toPledgeView) : [];
+    pledges.value = current
+      ? current.pledges.map((pledge) => toPledgeView(pledge, current.shipLinks))
+      : [];
     loaded.value = true;
   };
 

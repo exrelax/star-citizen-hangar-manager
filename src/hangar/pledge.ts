@@ -1,3 +1,5 @@
+import type { ShipLinks } from './ship-links';
+
 /** An item contained in a pledge (ship, paint, upgrade, …). */
 export interface PledgeItem {
   title: string;
@@ -74,6 +76,8 @@ export interface HangarSnapshot {
   /** ISO timestamp. */
   syncedAt: string;
   pledges: Pledge[];
+  /** Links of the contained ships to other platforms, by ship name. */
+  shipLinks?: ShipLinks;
 }
 
 export const HANGAR_SNAPSHOT_VERSION = 3;

@@ -35,6 +35,7 @@ describe('syncHangar', () => {
     await syncHangar({
       fetchPage,
       fetchShipImages: async () => new Map(),
+      fetchShipLinks: async () => ({}),
       onProgress: ({ done, total }) => progress.push(`${done}/${total}`),
     });
 
@@ -47,7 +48,11 @@ describe('syncHangar', () => {
   });
 
   it('tags pledges with the RSI category they were listed in', async () => {
-    await syncHangar({ fetchPage, fetchShipImages: async () => new Map() });
+    await syncHangar({
+      fetchPage,
+      fetchShipImages: async () => new Map(),
+      fetchShipLinks: async () => ({}),
+    });
 
     const categories = (await hangarSnapshot.getValue())?.pledges.map((p) => p.category);
     expect(categories).toEqual([
@@ -59,10 +64,23 @@ describe('syncHangar', () => {
     ]);
   });
 
+  it('stores the resolved ship links', async () => {
+    const links = { Polaris: { fleetyards: 'rsi-polaris', erkul: 'rsi_polaris' } };
+    await syncHangar({
+      fetchPage,
+      fetchShipImages: async () => new Map(),
+      fetchShipLinks: async () => links,
+    });
+    expect((await hangarSnapshot.getValue())?.shipLinks).toEqual(links);
+  });
+
   it('still stores the pledges when the ship matrix is unavailable', async () => {
     await syncHangar({
       fetchPage,
       fetchShipImages: async () => {
+        throw new Error('offline');
+      },
+      fetchShipLinks: async () => {
         throw new Error('offline');
       },
     });
@@ -79,6 +97,7 @@ describe('syncHangar', () => {
 
     const sync = syncHangar({
       fetchShipImages: async () => new Map(),
+      fetchShipLinks: async () => ({}),
       fetchPage: async (page, category) => {
         if (page === 3 && !category) throw new Error('HTTP 429');
         return fetchPage(page, category);

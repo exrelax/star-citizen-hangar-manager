@@ -4,6 +4,10 @@ import { createNavItem, findAccountNav, findHangarLink, setActiveItem } from '@/
 import { isHangarPath, isManagerRoute, MANAGER_HASH, managerHref } from '@/hangar/route';
 import { isPlainLeftClick } from '@/shared/dom';
 import App from './App.vue';
+import './page.css';
+
+/** Class on <html> while the manager view is shown, for page-level styles (see page.css). */
+const ACTIVE_CLASS = 'shm-manager-active';
 
 export default defineContentScript({
   matches: ['https://robertsspaceindustries.com/*'],
@@ -49,6 +53,7 @@ export default defineContentScript({
       managerVisible = showManager;
 
       originalContent.style.display = showManager ? 'none' : '';
+      document.documentElement.classList.toggle(ACTIVE_CLASS, showManager);
       setActiveItem(nav, showManager ? navItem : originalActiveItem);
       if (showManager) ui.mount();
       else ui.remove();
@@ -69,6 +74,8 @@ export default defineContentScript({
     // `ctx.signal` detaches the listeners when the extension is reloaded or updated.
     navItem.querySelector('a')!.addEventListener('click', switchView(true), { signal: ctx.signal });
     hangarLink.addEventListener('click', switchView(false), { signal: ctx.signal });
+
+    ctx.onInvalidated(() => document.documentElement.classList.remove(ACTIVE_CLASS));
 
     // Back/forward and manual hash edits.
     ctx.addEventListener(window, 'popstate', render);

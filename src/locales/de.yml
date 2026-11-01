@@ -17,7 +17,7 @@ manager:
 pledge:
   toggleDetails: Enthaltene Items ein- oder ausblenden
   originalName: 'Ursprünglich: $1'
-  ships: 'Schiffe: $1'
+  shipsLabel: 'Schiffe:'
   upgraded: Geupgradet
   giftable: Verschenkbar
   notGiftable: Nicht verschenkbar
@@ -33,3 +33,21 @@ filter:
   gamePackages: Game Packages
   giftable: Verschenkbar
   meltable: Schmelzbar
+
+tabs:
+  hangar: 🚀 My Hangar
+  settings: ⚙️ Einstellungen
+
+settings:
+  hideMeltValue: Schmelzwert ausblenden
+  hideMeltValueHint: Blendet die $$-Werte in der Hangar-Liste aus.
+  rewards: Rewards ausblenden
+  rewardsHint: Rewards sind Pledges mit einem Wert von $$0. Concierge- und Event-Rewards werden am Namen erkannt.
+  rewardOptions:
+    showAll: Keine Rewards ausblenden
+    hideAll: Alle Rewards ausblenden
+    hideConcierge: Concierge-Rewards ausblenden
+    hideEvent: Event-Rewards ausblenden
+  shipLinks: Links bei Schiffen anzeigen
+  shipLinkErkul: Link zu erkul.games
+  shipLinkFleetyards: Link zu fleetyards.net

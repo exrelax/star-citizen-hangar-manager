@@ -1,0 +1,10 @@
+/*
+ * Page-level tweaks while the manager view is shown (class set on <html> by the content script).
+ *
+ * The page background of #contentbody has three layers; the middle one is a large image with
+ * `background-size: cover`, which re-scales whenever the content height changes (filtering,
+ * switching tabs) and makes the image jump. Fixing that layer to the viewport keeps it still.
+ */
+.shm-manager-active #contentbody {
+  background-attachment: scroll, fixed, scroll !important;
+}

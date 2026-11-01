@@ -10,6 +10,7 @@ const pledge = (overrides: Partial<Pledge>): Pledge =>
     name: 'Standalone Ships - Aurora Mk I ES',
     title: 'Standalone Ships - Aurora Mk I ES',
     value: '$30.00 USD',
+    valueUsd: 30,
     createdAt: '2020-01-01',
     image: 'pledge.jpg',
     isGiftable: true,
@@ -89,7 +90,7 @@ describe('toPledgeView', () => {
         ],
       }),
     );
-    expect(view.ships).toEqual(['F8C Lightning']);
+    expect(view.ships).toEqual([{ name: 'F8C Lightning', link: undefined }]);
     expect(view.searchText).toBe(' vip wing commander f8c lightning');
   });
 
@@ -105,7 +106,7 @@ describe('toPledgeView', () => {
       }),
     );
     expect(view.title).toBe('Polaris');
-    expect(view.ships).toEqual(['Pisces']);
+    expect(view.ships.map((ship) => ship.name)).toEqual(['Pisces']);
   });
 
   it('recognizes pure paint pledges only', () => {
@@ -152,6 +153,32 @@ describe('toPledgeView', () => {
     expect(ccu).toMatchObject({ isCcu: true, isPaint: false });
     expect(toPledgeView(pledge({ category: 'standalone_ship' })).isStandaloneShip).toBe(true);
     expect(toPledgeView(pledge({ category: 'game_package' })).isGamePackage).toBe(true);
+  });
+
+  it('attaches ship links to contained ships and the title ship', () => {
+    const links = {
+      Polaris: { fleetyards: 'rsi-polaris', erkul: 'rsi_polaris' },
+      Pisces: { fleetyards: 'anvl-c8-pisces' },
+    };
+    const view = toPledgeView(
+      pledge({
+        isUpgraded: true,
+        items: [
+          { title: 'Polaris', kind: 'Ship' },
+          { title: 'Pisces', kind: 'Ship' },
+        ],
+      }),
+      links,
+    );
+    expect(view.titleShip).toEqual({ name: 'Polaris', link: links.Polaris });
+    expect(view.ships).toEqual([{ name: 'Pisces', link: links.Pisces }]);
+  });
+
+  it('classifies rewards by value and name', () => {
+    expect(
+      toPledgeView(pledge({ value: '$0.00 USD', valueUsd: 0, title: 'VIP Space Marshal' })).reward,
+    ).toBe('concierge');
+    expect(toPledgeView(pledge({ value: '$30.00 USD', valueUsd: 30 })).reward).toBeUndefined();
   });
 
   it('maps gift and melt state', () => {

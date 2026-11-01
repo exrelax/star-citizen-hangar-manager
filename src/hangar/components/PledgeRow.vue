@@ -2,21 +2,18 @@
 import { i18n } from '#i18n';
 import { ref } from 'vue';
 import type { PledgeView } from '../pledge-view';
+import ShipLinks from './ShipLinks.vue';
 
 defineProps<{ pledge: PledgeView }>();
 
 const expanded = ref(false);
+const toggle = () => (expanded.value = !expanded.value);
 </script>
 
 <template>
   <div class="shm-row" :class="{ 'is-expanded': expanded }">
-    <button
-      type="button"
-      class="shm-row-summary"
-      :aria-expanded="expanded"
-      :title="i18n.t('pledge.toggleDetails')"
-      @click="expanded = !expanded"
-    >
+    <!-- Clicking anywhere toggles the details; the chevron button makes it keyboard accessible. -->
+    <div class="shm-row-summary" @click="toggle">
       <span class="shm-thumb">
         <img
           v-if="pledge.image"
@@ -30,16 +27,23 @@ const expanded = ref(false);
       </span>
 
       <span class="shm-main">
-        <span class="shm-title">{{ pledge.title }}</span>
+        <span class="shm-title">
+          {{ pledge.title }}
+          <ShipLinks v-if="pledge.titleShip" :link="pledge.titleShip.link" />
+        </span>
         <span v-if="pledge.originalName" class="shm-original">
           {{ i18n.t('pledge.originalName', [pledge.originalName]) }}
         </span>
-        <span v-if="pledge.ships.length" class="shm-ships" :title="pledge.ships.join(', ')">
-          {{ i18n.t('pledge.ships', [pledge.ships.join(', ')]) }}
+        <span v-if="pledge.ships.length" class="shm-ships">
+          {{ i18n.t('pledge.shipsLabel') }}
+          <template v-for="(ship, index) in pledge.ships" :key="ship.name">
+            <span class="shm-ship">{{ ship.name }}<ShipLinks :link="ship.link" /></span
+            ><template v-if="index < pledge.ships.length - 1">, </template>
+          </template>
         </span>
         <span class="shm-meta">
           <span>#{{ pledge.id }}</span>
-          <span>{{ pledge.value }}</span>
+          <span class="shm-value">{{ pledge.value }}</span>
           <span v-if="pledge.createdAt">{{ pledge.createdAt }}</span>
         </span>
       </span>
@@ -65,8 +69,17 @@ const expanded = ref(false);
         </span>
       </span>
 
-      <span class="shm-chevron" aria-hidden="true">▸</span>
-    </button>
+      <button
+        type="button"
+        class="shm-chevron"
+        :aria-expanded="expanded"
+        :aria-label="i18n.t('pledge.toggleDetails')"
+        :title="i18n.t('pledge.toggleDetails')"
+        @click.stop="toggle"
+      >
+        ▸
+      </button>
+    </div>
 
     <div v-if="expanded" class="shm-details">
       <p v-if="pledge.upgrade" class="shm-upgrade">
@@ -105,18 +118,11 @@ const expanded = ref(false);
   display: flex;
   align-items: center;
   gap: 14px;
-  width: 100%;
-  padding: 6px 12px 6px 6px;
-  font: inherit;
-  color: inherit;
-  text-align: left;
-  background: none;
-  border: 0;
+  padding: 6px 6px 6px 6px;
   cursor: pointer;
 }
 
-.shm-row-summary:hover,
-.shm-row-summary:focus-visible {
+.shm-row-summary:hover {
   background: rgba(98, 196, 235, 0.08);
 }
 
@@ -203,8 +209,19 @@ const expanded = ref(false);
 
 .shm-chevron {
   flex: none;
+  width: 28px;
+  height: 28px;
+  padding: 0;
   color: #62c4eb;
+  font: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
   transition: transform 0.15s;
+}
+
+.shm-chevron:focus-visible {
+  outline: 1px solid #62c4eb;
 }
 
 .is-expanded .shm-chevron {
