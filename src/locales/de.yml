@@ -6,5 +6,16 @@ nav:
 
 manager:
   title: Hangar Manager
-  intro: Hier entsteht die Übersicht über deinen Hangar.
+  intro: Eine Übersicht über deinen Hangar. Mit 🔁 liest du den aktuellen Stand bei RSI ein.
   refresh: Hangar-Daten aktualisieren
+  empty: Noch keine Hangar-Daten. Klicke auf 🔁, um deinen Hangar einzulesen.
+  count: $1 Pledges
+
+pledge:
+  toggleDetails: Enthaltene Items ein- oder ausblenden
+  originalName: 'Ursprünglich: $1'
+  upgraded: Geupgradet
+  giftable: Verschenkbar
+  notGiftable: Nicht verschenkbar
+  meltable: Schmelzbar
+  notMeltable: Nicht schmelzbar

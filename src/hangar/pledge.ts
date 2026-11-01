@@ -9,6 +9,24 @@ export interface PledgeItem {
   image?: string;
 }
 
+/** A ship or item referenced by an upgrade (CCU). */
+export interface UpgradeTarget {
+  id: number;
+  name: string;
+}
+
+/** Upgrade data of a CCU pledge ("Upgrade - A to B"). */
+export interface PledgeUpgrade {
+  /** Items the upgrade can be applied to (the "from" ship). */
+  matchItems: UpgradeTarget[];
+  /** Items the upgrade turns them into (the "to" ship, sometimes plus paints etc.). */
+  targetItems: UpgradeTarget[];
+  /** RSI upgrade type code, e.g. "R". */
+  type: string;
+  /** Image of the target ship, resolved during the sync. */
+  targetImage?: string;
+}
+
 /** A pledge from the RSI hangar ("My Gear"), as listed on `/account/pledges`. */
 export interface Pledge {
   id: number;
@@ -34,6 +52,10 @@ export interface Pledge {
   isGiftable: boolean;
   isExchangeable: boolean;
   isUpgradeable: boolean;
+  /** Whether a CCU has been applied, i.e. the contained ship is no longer the original one. */
+  isUpgraded: boolean;
+  /** Set for CCU pledges. */
+  upgrade?: PledgeUpgrade;
   nameReservations: unknown;
   nameableShips: unknown;
   items: PledgeItem[];
@@ -41,7 +63,11 @@ export interface Pledge {
 
 /** Locally stored result of the last complete hangar sync. */
 export interface HangarSnapshot {
+  /** Format version; snapshots of other versions are ignored and need a new sync. */
+  version: number;
   /** ISO timestamp. */
   syncedAt: string;
   pledges: Pledge[];
 }
+
+export const HANGAR_SNAPSHOT_VERSION = 2;

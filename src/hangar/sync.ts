@@ -1,7 +1,8 @@
 import { mapWithConcurrency } from '@/shared/lib/pool';
 import { hangarSnapshot } from './hangar-storage';
 import { parsePledgePage, type PledgePage } from './parse-pledges';
-import type { HangarSnapshot, Pledge } from './pledge';
+import { HANGAR_SNAPSHOT_VERSION, type HangarSnapshot, type Pledge } from './pledge';
+import { fetchShipMatrixImages, resolveUpgradeImages, type ShipImages } from './ship-images';
 
 export interface SyncProgress {
   done: number;
@@ -10,6 +11,7 @@ export interface SyncProgress {
 
 export interface SyncOptions {
   fetchPage?: (page: number) => Promise<PledgePage>;
+  fetchShipImages?: () => Promise<ShipImages>;
   onProgress?: (progress: SyncProgress) => void;
   concurrency?: number;
 }
@@ -22,7 +24,18 @@ const DEFAULT_CONCURRENCY = 3;
  * page was read successfully, so a failed sync keeps the previous snapshot.
  */
 export async function syncHangar(options: SyncOptions = {}): Promise<HangarSnapshot> {
-  const { fetchPage = fetchPledgePage, onProgress, concurrency = DEFAULT_CONCURRENCY } = options;
+  const {
+    fetchPage = fetchPledgePage,
+    fetchShipImages = fetchShipMatrixImages,
+    onProgress,
+    concurrency = DEFAULT_CONCURRENCY,
+  } = options;
+
+  // Only needed for CCU images – loads alongside the pages, and a failure just means fewer images.
+  const shipImages = fetchShipImages().catch((error: unknown) => {
+    console.warn('[sc-hangar-manager] Ship matrix unavailable, CCU images may be missing', error);
+    return new Map() as ShipImages;
+  });
 
   // The first page tells how many pages there are.
   const first = await fetchPage(1);
@@ -45,9 +58,13 @@ export async function syncHangar(options: SyncOptions = {}): Promise<HangarSnaps
     }
   }
 
+  const allPledges = [...pledges.values()];
+  resolveUpgradeImages(allPledges, await shipImages);
+
   const snapshot: HangarSnapshot = {
+    version: HANGAR_SNAPSHOT_VERSION,
     syncedAt: new Date().toISOString(),
-    pledges: [...pledges.values()],
+    pledges: allPledges,
   };
   await hangarSnapshot.setValue(snapshot);
   return snapshot;

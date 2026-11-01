@@ -1,4 +1,4 @@
-import type { Pledge, PledgeItem } from './pledge';
+import type { Pledge, PledgeItem, PledgeUpgrade, UpgradeTarget } from './pledge';
 
 const MONTHS = [
   'january',
@@ -34,10 +34,12 @@ function parsePledge(li: HTMLElement): Pledge | undefined {
   if (!Number.isInteger(id) || id <= 0) return undefined;
 
   const value = inputValue(li, 'js-pledge-value');
+  const name = inputValue(li, 'js-pledge-name');
+  const title = text(li.querySelector('.pledge-title-row h3'));
   return {
     id,
-    name: inputValue(li, 'js-pledge-name'),
-    title: text(li.querySelector('.pledge-title-row h3')),
+    name,
+    title,
     value,
     valueUsd: parseAmount(value),
     configurationValue: inputValue(li, 'js-pledge-configuration-value'),
@@ -51,6 +53,9 @@ function parsePledge(li: HTMLElement): Pledge | undefined {
     isGiftable: li.querySelector('.js-gift-v2, .js-gift') !== null,
     isExchangeable: li.querySelector('.js-reclaim') !== null,
     isUpgradeable: li.querySelector('.js-apply-upgrade') !== null,
+    // RSI keeps the original pledge name and appends " Upgrades" to the title once a CCU is applied.
+    isUpgraded: / Upgrades$/.test(title) && !/ Upgrades$/.test(name),
+    upgrade: parseUpgrade(li),
     nameReservations: jsonScript(li, 'js-pledge-name-reservations'),
     nameableShips: jsonScript(li, 'js-pledge-nameable-ships'),
     items: [...li.querySelectorAll<HTMLElement>('.items .item')].map(parseItem),
@@ -69,6 +74,35 @@ function parseItem(item: HTMLElement): PledgeItem {
     manufacturerCode,
     image: backgroundImage(item.querySelector('.image')),
   };
+}
+
+function parseUpgrade(li: HTMLElement): PledgeUpgrade | undefined {
+  const data = li.querySelector<HTMLInputElement>('input.js-upgrade-data')?.value;
+  if (!data) return undefined;
+  try {
+    const raw = JSON.parse(data) as {
+      match_items?: unknown;
+      target_items?: unknown;
+      upgrade_type?: unknown;
+    };
+    return {
+      matchItems: upgradeTargets(raw.match_items),
+      targetItems: upgradeTargets(raw.target_items),
+      type: typeof raw.upgrade_type === 'string' ? raw.upgrade_type : '',
+    };
+  } catch {
+    return undefined;
+  }
+}
+
+function upgradeTargets(value: unknown): UpgradeTarget[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item: { id?: unknown; name?: unknown }) => ({
+      id: Number(item?.id),
+      name: String(item?.name ?? ''),
+    }))
+    .filter((item) => Number.isInteger(item.id) && item.name !== '');
 }
 
 function parseLastPage(doc: Document): number {

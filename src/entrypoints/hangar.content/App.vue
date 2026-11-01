@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { i18n } from '#i18n';
+import PledgeList from '@/hangar/components/PledgeList.vue';
 import { startSync, syncState } from '@/hangar/sync-state';
+import { useHangarPledges } from '@/hangar/use-hangar-pledges';
+
+const { pledges, loaded } = useHangarPledges();
 </script>
 
 <!-- Reuses the markup classes of the original hangar page so the view inherits the site's look. -->
@@ -29,6 +33,10 @@ import { startSync, syncState } from '@/hangar/sync-state';
     <div class="separator"></div>
     <div class="cboth"></div>
   </div>
+  <template v-if="loaded">
+    <PledgeList v-if="pledges.length" :pledges="pledges" />
+    <p v-else class="shm-empty">{{ i18n.t('manager.empty') }}</p>
+  </template>
 </template>
 
 <style scoped>
@@ -64,6 +72,11 @@ import { startSync, syncState } from '@/hangar/sync-state';
 .shm-refresh-progress {
   margin-left: 6px;
   font-variant-numeric: tabular-nums;
+}
+
+.shm-empty {
+  margin-top: 20px;
+  color: #8a9ba8;
 }
 
 @keyframes shm-spin {

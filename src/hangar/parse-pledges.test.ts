@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { parseAmount, parseDate, parsePledgePage } from './parse-pledges';
 
 // Trimmed-down copy of the markup of `/en/account/pledges` with made-up values.
-const pledgeHtml = (id: number, extra = '') => `
+const pledgeHtml = (id: number, extra = '', title = `Package - Test Ship ${id}`) => `
   <li>
     <div class="row">
       <div class="basic-infos clearfix">
@@ -12,7 +12,7 @@ const pledgeHtml = (id: number, extra = '') => `
         </div>
         <div class="wrapper-col">
           <div class="title-col">
-            <div class="pledge-title-row"><h3>Package - Test Ship ${id}</h3></div>
+            <div class="pledge-title-row"><h3>${title}</h3></div>
             <script class="js-pledge-name-reservations" type="application/json">[]</script>
             <script class="js-pledge-nameable-ships" type="application/json">null</script>
             <input type="hidden" class="js-pledge-id" value="${id}" />
@@ -92,6 +92,8 @@ describe('parsePledgePage', () => {
         isGiftable: true,
         isExchangeable: true,
         isUpgradeable: false,
+        isUpgraded: false,
+        upgrade: undefined,
         nameReservations: [],
         nameableShips: null,
         items: [
@@ -112,6 +114,38 @@ describe('parsePledgePage', () => {
         ],
       },
     ]);
+  });
+
+  it('detects an applied CCU by the " Upgrades" title suffix', () => {
+    const [upgraded] = parse(
+      pageHtml(pledgeHtml(1, '', 'Package - Test Ship 1 Upgrades'), [1]),
+    ).pledges;
+    const [plain] = parse(pageHtml(pledgeHtml(2), [1])).pledges;
+    expect(upgraded?.isUpgraded).toBe(true);
+    expect(plain?.isUpgraded).toBe(false);
+  });
+
+  it('reads the upgrade data of CCU pledges', () => {
+    const data = JSON.stringify({
+      id: 1,
+      name: 'Upgrade - Aurora MR to Avenger Titan',
+      match_items: [{ id: 10, name: 'Aurora MR' }],
+      target_items: [{ id: 20, name: 'Avenger Titan' }],
+      upgrade_type: 'R',
+      upgrade_value: null,
+    }).replaceAll('"', '&quot;');
+    const [pledge] = parse(
+      pageHtml(
+        pledgeHtml(3, `<input type="hidden" class="js-upgrade-data" value="${data}" />`),
+        [1],
+      ),
+    ).pledges;
+
+    expect(pledge?.upgrade).toEqual({
+      matchItems: [{ id: 10, name: 'Aurora MR' }],
+      targetItems: [{ id: 20, name: 'Avenger Titan' }],
+      type: 'R',
+    });
   });
 
   it('takes the highest linked page as last page', () => {
