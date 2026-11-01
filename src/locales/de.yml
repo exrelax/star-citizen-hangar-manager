@@ -7,3 +7,4 @@ nav:
 manager:
   title: Hangar Manager
   intro: Hier entsteht die Übersicht über deinen Hangar.
+  refresh: Hangar-Daten aktualisieren

@@ -20,7 +20,8 @@ export default defineConfig({
     name: '__MSG_extName__',
     description: '__MSG_extDescription__',
     default_locale: 'en',
-    permissions: ['storage'],
+    // unlimitedStorage: large hangars can exceed the default quota of storage.local.
+    permissions: ['storage', 'unlimitedStorage'],
     host_permissions: ['https://robertsspaceindustries.com/*'],
     // No popup: clicking the icon opens the manager page (see background.ts).
     action: {
