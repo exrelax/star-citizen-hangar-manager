@@ -5,6 +5,15 @@
 /** Pledges per page in the RSI hangar ("My Gear"). Fixed by RSI. */
 export const HANGAR_PAGE_SIZE = 10;
 
+/**
+ * URL parameter that pre-fills the search of the manager view, e.g.
+ * `/account/pledges?search=f8c+lightning#hangar-manager`.
+ */
+export const SEARCH_URL_PARAM = 'search';
+
+/** Delay after the last keystroke before the search term is written to the URL. */
+export const SEARCH_URL_SYNC_DELAY_MS = 300;
+
 /** Full sync: hangar pages requested at the same time – fast, but gentle on the RSI servers. */
 export const SYNC_CONCURRENCY = 3;
 

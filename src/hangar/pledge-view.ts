@@ -40,7 +40,7 @@ export interface PledgeView {
   isUpgraded: boolean;
   items: PledgeItem[];
   upgrade?: PledgeUpgrade;
-  /** Normalized title and ship names, prepared once so the live search stays cheap. */
+  /** Normalized title, ship names and pledge id, prepared once so the live search stays cheap. */
   searchText: string;
 }
 
@@ -84,7 +84,7 @@ export function toPledgeView(pledge: Pledge, shipLinks: ShipLinks = {}): PledgeV
     isUpgraded: currentShip !== undefined,
     items: pledge.items,
     upgrade: pledge.upgrade,
-    searchText: normalizeSearchText([title, ...shipNames].join(' ')),
+    searchText: normalizeSearchText([title, ...shipNames, pledge.id].join(' ')),
   };
 }
 

@@ -35,6 +35,13 @@ describe('matchesSearch', () => {
     expect(matches('Standalone Ships - HoverQuad', 'quad')).toBe(false);
   });
 
+  it('finds pledge ids from their start, with or without #', () => {
+    const text = normalizeSearchText('Polaris 114816820');
+    expect(matchesSearch(text, parseSearchQuery('114816820'))).toBe(true);
+    expect(matchesSearch(text, parseSearchQuery('#1148'))).toBe(true);
+    expect(matchesSearch(text, parseSearchQuery('816820'))).toBe(false);
+  });
+
   it('ignores punctuation in titles and queries', () => {
     expect(matches('L-22 Alpha Wolf', 'l-22')).toBe(true);
     expect(matches('L-22 Alpha Wolf', 'l22')).toBe(false);

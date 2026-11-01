@@ -11,7 +11,7 @@
     "empty": "No hangar data yet. Click 🔁 to read your hangar.",
     "count": "$1 pledges",
     "countFiltered": "$1 of $2 pledges",
-    "searchPlaceholder": "Search titles and ships …",
+    "searchPlaceholder": "Search titles, ships and pledge IDs …",
     "noResults": "No pledges match your search."
   },
   "pledge": {

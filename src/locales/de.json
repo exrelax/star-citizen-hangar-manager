@@ -11,7 +11,7 @@
     "empty": "Noch keine Hangar-Daten. Klicke auf 🔁, um deinen Hangar einzulesen.",
     "count": "$1 Pledges",
     "countFiltered": "$1 von $2 Pledges",
-    "searchPlaceholder": "Titel und Schiffe durchsuchen …",
+    "searchPlaceholder": "Titel, Schiffe und Pledge-IDs durchsuchen …",
     "noResults": "Keine Pledges passen zu deiner Suche."
   },
   "pledge": {

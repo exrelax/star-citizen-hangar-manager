@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { i18n, locale } from '@/i18n';
-import { computed, ref, shallowRef } from 'vue';
+import { SEARCH_URL_SYNC_DELAY_MS } from '@/config';
+import { computed, onUnmounted, ref, shallowRef, watch } from 'vue';
 import { matchesFilters, PLEDGE_FILTERS, type PledgeFilter } from '../filters';
 import type { Settings } from '@/settings/settings';
 import type { PledgeView } from '../pledge-view';
 import { isHiddenReward } from '../rewards';
+import { searchFromUrl, urlWithSearch } from '../route';
 import { matchesSearch, parseSearchQuery } from '../search';
 import PledgeRow from './PledgeRow.vue';
 
@@ -26,7 +28,23 @@ const listClasses = computed(() => ({
   'shm-hide-fleetyards': !props.settings.shipLinks.fleetyards,
 }));
 
-const query = ref('');
+// Pre-filled from the page URL, e.g. `…/account/pledges?search=polaris#hangar-manager`, and kept
+// in it, so a reload or bookmark keeps the search. `replaceState` adds no history entries.
+const query = ref(searchFromUrl(location.search));
+
+let urlTimer: ReturnType<typeof setTimeout> | undefined;
+const writeSearchToUrl = () => {
+  clearTimeout(urlTimer);
+  urlTimer = undefined;
+  const next = urlWithSearch(location.href, query.value);
+  if (next !== location.href) history.replaceState(history.state, '', next);
+};
+watch(query, () => {
+  clearTimeout(urlTimer);
+  urlTimer = setTimeout(writeSearchToUrl, SEARCH_URL_SYNC_DELAY_MS);
+});
+// Switching to "My Gear" right after typing still keeps the latest term.
+onUnmounted(writeSearchToUrl);
 // Replaced on every change, so a shallowRef is enough to trigger updates.
 const activeFilters = shallowRef<ReadonlySet<PledgeFilter>>(new Set());
 

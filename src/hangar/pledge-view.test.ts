@@ -76,7 +76,7 @@ describe('toPledgeView', () => {
     const view = toPledgeView(
       pledge({ isUpgraded: true, items: [{ title: 'Polaris', kind: 'Ship', image: 'p.jpg' }] }),
     );
-    expect(view.searchText).toBe(' polaris');
+    expect(view.searchText).toBe(' polaris 1');
   });
 
   it('lists contained ships and makes them searchable', () => {
@@ -91,7 +91,7 @@ describe('toPledgeView', () => {
       }),
     );
     expect(view.ships).toEqual([{ name: 'F8C Lightning', link: undefined }]);
-    expect(view.searchText).toBe(' vip wing commander f8c lightning');
+    expect(view.searchText).toBe(' vip wing commander f8c lightning 1');
   });
 
   it('lists each ship once and skips the one shown as title', () => {
