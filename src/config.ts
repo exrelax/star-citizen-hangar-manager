@@ -2,6 +2,17 @@
  * Tunable values of the extension in one place.
  */
 
+/**
+ * Which browser language the "Automatic" language setting follows (English if the extension isn't
+ * translated into it):
+ * - `'ui'`: the language of the browser's own interface (menus, dialogs), via
+ *   `browser.i18n.getUILanguage()`. Usually follows the operating system.
+ * - `'preferred'`: the first language the browser asks websites for, via `navigator.language`.
+ *   Set in Chrome under Settings → Languages → Preferred languages; can differ from the interface
+ *   language (e.g. an English browser that prefers German websites).
+ */
+export const AUTO_LANGUAGE_SOURCE: 'ui' | 'preferred' = 'preferred';
+
 /** Pledges per page in the RSI hangar ("My Gear"). Fixed by RSI. */
 export const HANGAR_PAGE_SIZE = 10;
 

@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { matchLocale, translate } from './index';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { browserLocale, matchLocale, translate } from './index';
 
 describe('matchLocale', () => {
   it('matches by base language', () => {
@@ -25,5 +25,17 @@ describe('translate', () => {
     expect(translate('en', 'settings.hideMeltValueHint')).toBe(
       'Hides the $ values in the hangar list.',
     );
+  });
+});
+
+describe('browserLocale', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it('follows the interface or the preferred website language', () => {
+    vi.spyOn(browser.i18n, 'getUILanguage').mockReturnValue('en-US');
+    vi.spyOn(navigator, 'language', 'get').mockReturnValue('de');
+
+    expect(browserLocale('ui')).toBe('en');
+    expect(browserLocale('preferred')).toBe('de');
   });
 });

@@ -1,3 +1,4 @@
+import { AUTO_LANGUAGE_SOURCE } from '@/config';
 import de from '@/locales/de.json';
 import en from '@/locales/en.json';
 import { readonly, ref } from 'vue';
@@ -32,13 +33,9 @@ export function matchLocale(language: string | undefined): Locale {
   return isLocale(base) ? base : FALLBACK_LOCALE;
 }
 
-/**
- * Locale for the user's preferred browser language (the one websites see), among the supported
- * ones. Not `browser.i18n.getUILanguage()`: that is the language of the browser's own interface,
- * which often stays English even when German is the preferred language.
- */
-export function browserLocale(): Locale {
-  return matchLocale(navigator.language);
+/** Locale for the browser language set by `AUTO_LANGUAGE_SOURCE`, among the supported ones. */
+export function browserLocale(source: typeof AUTO_LANGUAGE_SOURCE = AUTO_LANGUAGE_SOURCE): Locale {
+  return matchLocale(source === 'ui' ? browser.i18n.getUILanguage() : navigator.language);
 }
 
 /**
