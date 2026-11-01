@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { i18n } from '#i18n';
-import { computed, ref } from 'vue';
+import { computed, ref, shallowRef } from 'vue';
+import { matchesFilters, PLEDGE_FILTERS, type PledgeFilter } from '../filters';
 import type { PledgeView } from '../pledge-view';
 import { matchesSearch, parseSearchQuery } from '../search';
 import PledgeRow from './PledgeRow.vue';
@@ -8,14 +9,36 @@ import PledgeRow from './PledgeRow.vue';
 const props = defineProps<{ pledges: PledgeView[] }>();
 
 const query = ref('');
+// Replaced on every change, so a shallowRef is enough to trigger updates.
+const activeFilters = shallowRef<ReadonlySet<PledgeFilter>>(new Set());
 
-/** Ids of the pledges matching the search; `null` while there is no search. */
+function toggleFilter(filter: PledgeFilter) {
+  const next = new Set(activeFilters.value);
+  if (!next.delete(filter)) next.add(filter);
+  activeFilters.value = next;
+}
+
+/** Number of pledges each filter matches on its own. */
+const filterCounts = computed(
+  () =>
+    Object.fromEntries(
+      PLEDGE_FILTERS.map((filter) => [
+        filter,
+        props.pledges.filter((pledge) => matchesFilters(pledge, new Set([filter]))).length,
+      ]),
+    ) as Record<PledgeFilter, number>,
+);
+
+/** Ids of the pledges matching search and filters; `null` while neither is active. */
 const visibleIds = computed(() => {
   const terms = parseSearchQuery(query.value);
-  if (terms.length === 0) return null;
+  const filters = activeFilters.value;
+  if (terms.length === 0 && filters.size === 0) return null;
   const ids = new Set<number>();
   for (const pledge of props.pledges) {
-    if (matchesSearch(pledge.searchText, terms)) ids.add(pledge.id);
+    if (matchesFilters(pledge, filters) && matchesSearch(pledge.searchText, terms)) {
+      ids.add(pledge.id);
+    }
   }
   return ids;
 });
@@ -31,6 +54,21 @@ const countLabel = computed(() =>
 
 <template>
   <div class="shm-list">
+    <div class="shm-filters" role="group" :aria-label="i18n.t('filter.label')">
+      <button
+        v-for="filter in PLEDGE_FILTERS"
+        :key="filter"
+        type="button"
+        class="shm-filter"
+        :class="{ 'is-active': activeFilters.has(filter) }"
+        :aria-pressed="activeFilters.has(filter)"
+        @click="toggleFilter(filter)"
+      >
+        {{ i18n.t(`filter.${filter}`) }}
+        <span class="shm-filter-count">{{ filterCounts[filter] }}</span>
+      </button>
+    </div>
+
     <div class="shm-toolbar">
       <input
         v-model="query"
@@ -66,6 +104,45 @@ const countLabel = computed(() =>
 <style scoped>
 .shm-list {
   margin-top: 20px;
+}
+
+.shm-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.shm-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  color: #62c4eb;
+  font: inherit;
+  font-size: 12px;
+  background: rgba(10, 20, 30, 0.8);
+  border: 1px solid rgba(98, 196, 235, 0.35);
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.shm-filter:hover,
+.shm-filter:focus-visible {
+  border-color: #62c4eb;
+  outline: none;
+}
+
+.shm-filter.is-active {
+  color: #0b141c;
+  background: #62c4eb;
+  border-color: #62c4eb;
+}
+
+.shm-filter-count {
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
 }
 
 .shm-toolbar {

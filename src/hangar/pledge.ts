@@ -27,6 +27,10 @@ export interface PledgeUpgrade {
   targetImage?: string;
 }
 
+/** RSI product categories (`product-type` filter of the hangar) that the sync records. */
+export const PLEDGE_CATEGORIES = ['game_package', 'standalone_ship'] as const;
+export type PledgeCategory = (typeof PLEDGE_CATEGORIES)[number];
+
 /** A pledge from the RSI hangar ("My Gear"), as listed on `/account/pledges`. */
 export interface Pledge {
   id: number;
@@ -56,6 +60,8 @@ export interface Pledge {
   isUpgraded: boolean;
   /** Set for CCU pledges. */
   upgrade?: PledgeUpgrade;
+  /** RSI product category, if it is one of `PLEDGE_CATEGORIES`. */
+  category?: PledgeCategory;
   nameReservations: unknown;
   nameableShips: unknown;
   items: PledgeItem[];
@@ -70,4 +76,4 @@ export interface HangarSnapshot {
   pledges: Pledge[];
 }
 
-export const HANGAR_SNAPSHOT_VERSION = 2;
+export const HANGAR_SNAPSHOT_VERSION = 3;

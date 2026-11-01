@@ -75,9 +75,9 @@ The dev build reloads itself on code changes; reload open RSI tabs afterwards. T
 to the dev server's port (3000, or a free port if 3000 is taken). If the port changes, reload the
 extension in `chrome://extensions`.
 
-Changing a locale file (`src/locales/*.yml`) restarts the whole extension, after which the RSI tab
-may still get an older content script. Saving any content script file again (e.g.
-`touch src/entrypoints/hangar.content/App.vue`) re-registers the current one.
+Changing a locale file (`src/locales/*.yml`) restarts the whole extension, after which RSI tabs
+may keep getting an older content script. Reload the extension in `chrome://extensions` in that
+case.
 
 ### Option 2: Load a build manually
 

@@ -78,6 +78,52 @@ describe('toPledgeView', () => {
     expect(view.searchText).toBe(' polaris');
   });
 
+  it('recognizes pure paint pledges only', () => {
+    const paint = toPledgeView(
+      pledge({ items: [{ title: 'Ursa - Respite Paint', kind: 'Skin' }] }),
+    );
+    const paintPack = toPledgeView(
+      pledge({
+        items: [
+          { title: 'Apollo Red Livery', kind: 'Skin' },
+          { title: 'Apollo Gold Livery', kind: 'Skin' },
+        ],
+      }),
+    );
+    const rewardWithPaint = toPledgeView(
+      pledge({
+        items: [
+          { title: 'Reclaimer - Best In Show Paint', kind: 'Skin' },
+          { title: 'Reclaimer Ship Showdown Poster', kind: 'Hangar decoration' },
+        ],
+      }),
+    );
+    const paintWithUntypedItem = toPledgeView(
+      pledge({ items: [{ title: 'Paint', kind: 'Skin' }, { title: 'Bonus' }] }),
+    );
+
+    expect(paint.isPaint).toBe(true);
+    expect(paintPack.isPaint).toBe(true);
+    expect(rewardWithPaint.isPaint).toBe(false);
+    expect(paintWithUntypedItem.isPaint).toBe(false);
+    expect(toPledgeView(pledge({ items: [{ title: '400i - Meridian Paint' }] })).isPaint).toBe(
+      true,
+    );
+    expect(toPledgeView(pledge({ items: [] })).isPaint).toBe(false);
+  });
+
+  it('maps CCUs and RSI categories', () => {
+    const ccu = toPledgeView(
+      pledge({
+        items: [{ title: 'Paint', kind: 'Skin' }],
+        upgrade: { matchItems: [], targetItems: [], type: 'R' },
+      }),
+    );
+    expect(ccu).toMatchObject({ isCcu: true, isPaint: false });
+    expect(toPledgeView(pledge({ category: 'standalone_ship' })).isStandaloneShip).toBe(true);
+    expect(toPledgeView(pledge({ category: 'game_package' })).isGamePackage).toBe(true);
+  });
+
   it('maps gift and melt state', () => {
     expect(toPledgeView(pledge({ isGiftable: false, isExchangeable: true }))).toMatchObject({
       isGiftable: false,

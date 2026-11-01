@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { hangarSnapshot } from './hangar-storage';
 import type { PledgePage } from './parse-pledges';
-import { HANGAR_SNAPSHOT_VERSION, type Pledge } from './pledge';
-import { syncHangar } from './sync';
+import { HANGAR_SNAPSHOT_VERSION, type Pledge, type PledgeCategory } from './pledge';
+import { syncHangar, type FetchPledgePage } from './sync';
 
 const pledge = (id: number) => ({ id, name: `Pledge ${id}`, items: [] }) as unknown as Pledge;
 
@@ -14,6 +14,17 @@ const pages: Record<number, PledgePage> = {
   3: { pledges: [pledge(4), pledge(5)], lastPage: 3 },
 };
 
+const categoryPages: Record<PledgeCategory, PledgePage[]> = {
+  game_package: [{ pledges: [pledge(2)], lastPage: 1 }],
+  standalone_ship: [
+    { pledges: [pledge(3)], lastPage: 2 },
+    { pledges: [pledge(5)], lastPage: 2 },
+  ],
+};
+
+const fetchPage: FetchPledgePage = async (page, category) =>
+  category ? categoryPages[category][page - 1]! : pages[page]!;
+
 beforeEach(() => {
   fakeBrowser.reset();
 });
@@ -22,7 +33,7 @@ describe('syncHangar', () => {
   it('stores all pledges of all pages once, in hangar order', async () => {
     const progress: string[] = [];
     await syncHangar({
-      fetchPage: async (page) => pages[page]!,
+      fetchPage,
       fetchShipImages: async () => new Map(),
       onProgress: ({ done, total }) => progress.push(`${done}/${total}`),
     });
@@ -31,12 +42,26 @@ describe('syncHangar', () => {
     expect(snapshot?.pledges.map((p) => p.id)).toEqual([1, 2, 3, 4, 5]);
     expect(snapshot?.version).toBe(HANGAR_SNAPSHOT_VERSION);
     expect(snapshot?.syncedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
-    expect(progress).toEqual(['1/3', '2/3', '3/3']);
+    // 3 hangar pages + 1 game package page + 2 standalone ship pages.
+    expect(progress).toEqual(['3/6', '4/6', '5/6', '6/6']);
+  });
+
+  it('tags pledges with the RSI category they were listed in', async () => {
+    await syncHangar({ fetchPage, fetchShipImages: async () => new Map() });
+
+    const categories = (await hangarSnapshot.getValue())?.pledges.map((p) => p.category);
+    expect(categories).toEqual([
+      undefined,
+      'game_package',
+      'standalone_ship',
+      undefined,
+      'standalone_ship',
+    ]);
   });
 
   it('still stores the pledges when the ship matrix is unavailable', async () => {
     await syncHangar({
-      fetchPage: async (page) => pages[page]!,
+      fetchPage,
       fetchShipImages: async () => {
         throw new Error('offline');
       },
@@ -54,9 +79,9 @@ describe('syncHangar', () => {
 
     const sync = syncHangar({
       fetchShipImages: async () => new Map(),
-      fetchPage: async (page) => {
-        if (page === 3) throw new Error('HTTP 429');
-        return pages[page]!;
+      fetchPage: async (page, category) => {
+        if (page === 3 && !category) throw new Error('HTTP 429');
+        return fetchPage(page, category);
       },
     });
 

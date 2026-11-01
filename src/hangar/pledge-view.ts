@@ -11,6 +11,12 @@ export interface PledgeView {
   value: string;
   createdAt?: string;
   hasLti: boolean;
+  /** Pure paint pledge: contains nothing but paints (no ship, poster, gear, …). */
+  isPaint: boolean;
+  /** CCU that has not been applied yet (applied ones disappear from the hangar). */
+  isCcu: boolean;
+  isStandaloneShip: boolean;
+  isGamePackage: boolean;
   isGiftable: boolean;
   isMeltable: boolean;
   isUpgraded: boolean;
@@ -37,6 +43,10 @@ export function toPledgeView(pledge: Pledge): PledgeView {
     value: pledge.value,
     createdAt: pledge.createdAt,
     hasLti: pledge.items.some((item) => item.kind === 'Insurance' && /lifetime/i.test(item.title)),
+    isPaint: !pledge.upgrade && pledge.items.length > 0 && pledge.items.every(isPaintItem),
+    isCcu: pledge.upgrade !== undefined,
+    isStandaloneShip: pledge.category === 'standalone_ship',
+    isGamePackage: pledge.category === 'game_package',
     isGiftable: pledge.isGiftable,
     isMeltable: pledge.isExchangeable,
     isUpgraded: currentShip !== undefined,
@@ -51,6 +61,11 @@ function pledgeImage(pledge: Pledge, currentShip: PledgeItem | undefined): strin
   if (pledge.upgrade?.targetImage) return pledge.upgrade.targetImage;
   if (isRealImage(pledge.image)) return pledge.image;
   return pledge.items.find((item) => isRealImage(item.image))?.image;
+}
+
+function isPaintItem(item: PledgeItem): boolean {
+  // RSI occasionally lists a paint without a kind, e.g. "400i - Meridian Paint".
+  return item.kind === 'Skin' || (!item.kind && /\b(paint|livery)\b/i.test(item.title));
 }
 
 function isRealImage(url: string | undefined): url is string {

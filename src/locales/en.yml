@@ -22,3 +22,13 @@ pledge:
   notGiftable: Not giftable
   meltable: Meltable
   notMeltable: Not meltable
+
+filter:
+  label: Filter pledges
+  lti: LTI
+  paints: Paints
+  ccus: CCUs
+  standaloneShips: Standalone ships
+  gamePackages: Game packages
+  giftable: Giftable
+  meltable: Meltable
