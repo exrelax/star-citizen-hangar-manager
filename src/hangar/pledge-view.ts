@@ -1,4 +1,5 @@
 import type { Pledge, PledgeItem, PledgeUpgrade } from './pledge';
+import { normalizeSearchText } from './search';
 
 /** What the manager list shows for a pledge. */
 export interface PledgeView {
@@ -15,6 +16,8 @@ export interface PledgeView {
   isUpgraded: boolean;
   items: PledgeItem[];
   upgrade?: PledgeUpgrade;
+  /** Normalized title, prepared once so the live search stays cheap. */
+  searchText: string;
 }
 
 const PLACEHOLDER_IMAGE = '/static/images/Temp/default-image';
@@ -25,9 +28,10 @@ export function toPledgeView(pledge: Pledge): PledgeView {
     ? pledge.items.find((item) => item.kind === 'Ship')
     : undefined;
 
+  const title = currentShip?.title ?? pledge.title;
   return {
     id: pledge.id,
-    title: currentShip?.title ?? pledge.title,
+    title,
     originalName: currentShip ? pledge.name : undefined,
     image: pledgeImage(pledge, currentShip),
     value: pledge.value,
@@ -38,6 +42,7 @@ export function toPledgeView(pledge: Pledge): PledgeView {
     isUpgraded: currentShip !== undefined,
     items: pledge.items,
     upgrade: pledge.upgrade,
+    searchText: normalizeSearchText(title),
   };
 }
 

@@ -71,6 +71,13 @@ describe('toPledgeView', () => {
     expect(view.image).toBe('paint.jpg');
   });
 
+  it('prepares the displayed title for the search', () => {
+    const view = toPledgeView(
+      pledge({ isUpgraded: true, items: [{ title: 'Polaris', kind: 'Ship', image: 'p.jpg' }] }),
+    );
+    expect(view.searchText).toBe(' polaris');
+  });
+
   it('maps gift and melt state', () => {
     expect(toPledgeView(pledge({ isGiftable: false, isExchangeable: true }))).toMatchObject({
       isGiftable: false,

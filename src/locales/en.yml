@@ -10,6 +10,9 @@ manager:
   refresh: Refresh hangar data
   empty: No hangar data yet. Click 🔁 to read your hangar.
   count: $1 pledges
+  countFiltered: $1 of $2 pledges
+  searchPlaceholder: Search titles …
+  noResults: No pledges match your search.
 
 pledge:
   toggleDetails: Show or hide the contained items

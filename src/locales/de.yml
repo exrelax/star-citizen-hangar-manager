@@ -10,6 +10,9 @@ manager:
   refresh: Hangar-Daten aktualisieren
   empty: Noch keine Hangar-Daten. Klicke auf 🔁, um deinen Hangar einzulesen.
   count: $1 Pledges
+  countFiltered: $1 von $2 Pledges
+  searchPlaceholder: Titel durchsuchen …
+  noResults: Keine Pledges passen zu deiner Suche.
 
 pledge:
   toggleDetails: Enthaltene Items ein- oder ausblenden
