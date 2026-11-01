@@ -30,7 +30,7 @@ filter:
   paints: Paints
   ccus: CCUs
   standaloneShips: Standalone ships
-  gamePackages: Game packages
+  gameAccess: Game access
   giftable: Giftable
   meltable: Meltable
 

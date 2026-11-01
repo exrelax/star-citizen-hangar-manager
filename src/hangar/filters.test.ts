@@ -8,7 +8,7 @@ const pledge = (overrides: Partial<PledgeView>) =>
     isPaint: false,
     isCcu: false,
     isStandaloneShip: false,
-    isGamePackage: false,
+    hasGameAccess: false,
     isGiftable: false,
     isMeltable: false,
     ...overrides,
@@ -38,7 +38,7 @@ describe('matchesFilters', () => {
   it('requires properties within the selected categories', () => {
     const ltiShip = pledge({ isStandaloneShip: true, hasLti: true });
     const plainShip = pledge({ isStandaloneShip: true });
-    const ltiPackage = pledge({ isGamePackage: true, hasLti: true });
+    const ltiPackage = pledge({ hasGameAccess: true, hasLti: true });
 
     expect(passes(ltiShip, 'standaloneShips', 'lti')).toBe(true);
     expect(passes(plainShip, 'standaloneShips', 'lti')).toBe(false);

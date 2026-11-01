@@ -6,7 +6,7 @@ export const PLEDGE_FILTERS = [
   'paints',
   'ccus',
   'standaloneShips',
-  'gamePackages',
+  'gameAccess',
   'giftable',
   'meltable',
 ] as const;
@@ -17,7 +17,7 @@ const CATEGORY_FILTERS: Partial<Record<PledgeFilter, (pledge: PledgeView) => boo
   paints: (pledge) => pledge.isPaint,
   ccus: (pledge) => pledge.isCcu,
   standaloneShips: (pledge) => pledge.isStandaloneShip,
-  gamePackages: (pledge) => pledge.isGamePackage,
+  gameAccess: (pledge) => pledge.hasGameAccess,
 };
 
 // Properties narrow the result, so they combine with AND (also with the categories).

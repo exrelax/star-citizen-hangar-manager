@@ -152,7 +152,28 @@ describe('toPledgeView', () => {
     );
     expect(ccu).toMatchObject({ isCcu: true, isPaint: false });
     expect(toPledgeView(pledge({ category: 'standalone_ship' })).isStandaloneShip).toBe(true);
-    expect(toPledgeView(pledge({ category: 'game_package' })).isGamePackage).toBe(true);
+    expect(toPledgeView(pledge({ category: 'game_package' })).hasGameAccess).toBe(true);
+  });
+
+  it('grants game access for pledges containing the game download', () => {
+    const vip = toPledgeView(
+      pledge({
+        title: 'VIP High Admiral',
+        items: [
+          { title: 'Top Hat' },
+          { title: 'Star Citizen Digital Download' },
+          { title: 'Squadron 42 Digital Download' },
+        ],
+      }),
+    );
+    const s42Only = toPledgeView(pledge({ items: [{ title: 'Squadron 42 Digital Download' }] }));
+    const smg = toPledgeView(
+      pledge({ items: [{ title: "Behring P8-SC 'Echo' SMG", kind: 'FPS Equipment' }] }),
+    );
+
+    expect(vip.hasGameAccess).toBe(true);
+    expect(s42Only.hasGameAccess).toBe(true);
+    expect(smg.hasGameAccess).toBe(false);
   });
 
   it('attaches ship links to contained ships and the title ship', () => {

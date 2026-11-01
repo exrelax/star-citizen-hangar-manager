@@ -33,7 +33,8 @@ export interface PledgeView {
   /** CCU that has not been applied yet (applied ones disappear from the hangar). */
   isCcu: boolean;
   isStandaloneShip: boolean;
-  isGamePackage: boolean;
+  /** Game package or another pledge that contains the game (e.g. "VIP High Admiral"). */
+  hasGameAccess: boolean;
   isGiftable: boolean;
   isMeltable: boolean;
   isUpgraded: boolean;
@@ -42,6 +43,9 @@ export interface PledgeView {
   /** Normalized title and ship names, prepared once so the live search stays cheap. */
   searchText: string;
 }
+
+/** Items that grant access to the game, e.g. in VIP packages. */
+const GAME_DOWNLOAD = /^(star citizen|squadron 42) digital download$/i;
 
 const PLACEHOLDER_IMAGE = '/static/images/Temp/default-image';
 
@@ -72,7 +76,9 @@ export function toPledgeView(pledge: Pledge, shipLinks: ShipLinks = {}): PledgeV
     isPaint: !pledge.upgrade && pledge.items.length > 0 && pledge.items.every(isPaintItem),
     isCcu: pledge.upgrade !== undefined,
     isStandaloneShip: pledge.category === 'standalone_ship',
-    isGamePackage: pledge.category === 'game_package',
+    hasGameAccess:
+      pledge.category === 'game_package' ||
+      pledge.items.some((item) => GAME_DOWNLOAD.test(item.title)),
     isGiftable: pledge.isGiftable,
     isMeltable: pledge.isExchangeable,
     isUpgraded: currentShip !== undefined,

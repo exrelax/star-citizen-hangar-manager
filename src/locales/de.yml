@@ -30,7 +30,7 @@ filter:
   paints: Paints
   ccus: CCUs
   standaloneShips: Standalone-Schiffe
-  gamePackages: Game Packages
+  gameAccess: Spielzugang
   giftable: Verschenkbar
   meltable: Schmelzbar
 
