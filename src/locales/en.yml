@@ -1,6 +1,9 @@
 extName: SC Hangar Manager
 extDescription: Manages your Star Citizen hangar on robertsspaceindustries.com.
 
+nav:
+  manager: Hangar Manager
+
 manager:
   title: Hangar Manager
   intro: This is where the overview of your hangar will live.

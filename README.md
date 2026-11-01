@@ -52,6 +52,29 @@ If WXT cannot find the browser (e.g. because of an unusual install path), set th
 [WXT documentation](https://wxt.dev/guide/essentials/config/browser-startup.html). The file is listed
 in `.gitignore`.
 
+#### Using your own Chrome profile
+
+The fresh profile has no RSI login. To develop against your logged-in account, run the dev server
+without launching a browser and load the dev build into your own Chrome:
+
+1. Create a local `web-ext.config.ts` (gitignored):
+
+   ```ts
+   import { defineWebExtConfig } from 'wxt';
+
+   export default defineWebExtConfig({
+     disabled: true,
+   });
+   ```
+
+2. `pnpm dev:chrome`
+3. Open `chrome://extensions`, switch on **Developer mode**, click **Load unpacked** and select the
+   `.output/chrome-mv3-dev` folder (only needed once)
+
+The dev build reloads itself on code changes; reload open RSI tabs afterwards. The dev build is tied
+to the dev server's port (3000, or a free port if 3000 is taken). If the port changes, reload the
+extension in `chrome://extensions`.
+
 ### Option 2: Load a build manually
 
 **Chrome**
@@ -73,14 +96,14 @@ Firefox removes temporary add-ons when it quits.
 - **Icon:** The extension shows up in the toolbar or the extensions menu (puzzle icon) as
   “SC Hangar Manager”. There are no custom icons yet, so the browser shows a default icon.
 - **Manager page:** Clicking the icon opens the “Hangar Manager” page in a new tab.
-- **Content script:** Open DevTools (F12) on any page of `robertsspaceindustries.com` and look for
-  `[sc-hangar-manager] content script loaded` in the console. The message is logged with
-  `console.debug`, so in Chrome the **Verbose** level must be enabled in the console filter.
+- **Content script:** On the RSI account pages (e.g.
+  [My Hangar](https://robertsspaceindustries.com/account/pledges)) the left navigation gets a new
+  first entry “Hangar Manager”. It opens the manager view at `/account/pledges#hangar-manager`.
 - **Background:** In Chrome, click **service worker** on the extension's entry in
   `chrome://extensions`; in Firefox, click **Inspect** in `about:debugging`. Errors and logs of the
   background script show up there.
 
-If the content script message does not appear in Firefox, check under `about:addons` → SC Hangar
+If the navigation entry does not appear in Firefox, check under `about:addons` → SC Hangar
 Manager → **Permissions** that access to `robertsspaceindustries.com` is allowed.
 
 ## Project structure
@@ -89,8 +112,9 @@ Manager → **Permissions** that access to `robertsspaceindustries.com` is allow
 src/
   entrypoints/
     background.ts        Background (service worker in Chrome, background script in Firefox)
-    hangar.content/      Content script for robertsspaceindustries.com
+    hangar.content/      Content script: nav entry and manager view on the RSI hangar page
     options/             Manager page (Vue), opens in its own tab
+  hangar/                RSI page integration (routing, account navigation)
   locales/               Translations (de, en), default locale is English
   shared/                Shared code and styles
 wxt.config.ts            Shared configuration and browser-specific manifest
