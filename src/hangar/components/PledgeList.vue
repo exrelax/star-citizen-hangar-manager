@@ -81,6 +81,12 @@ const visibleIds = computed(() => {
 
 const isVisible = (id: number) => !visibleIds.value || visibleIds.value.has(id);
 
+/** Id of the only pledge shown, which then opens on its own; undefined for more or none. */
+const onlyVisibleId = computed(() => {
+  const ids = visibleIds.value ? [...visibleIds.value] : listed.value.map((pledge) => pledge.id);
+  return ids.length === 1 ? ids[0] : undefined;
+});
+
 const countLabel = computed(() =>
   visibleIds.value
     ? i18n.t('manager.countFiltered', [visibleIds.value.size, listed.value.length])
@@ -127,8 +133,9 @@ const countLabel = computed(() =>
       v-for="pledge in listed"
       v-show="isVisible(pledge.id)"
       :key="pledge.id"
-      v-memo="[pledge, isVisible(pledge.id), locale]"
+      v-memo="[pledge, isVisible(pledge.id), pledge.id === onlyVisibleId, locale]"
       :pledge="pledge"
+      :auto-expand="pledge.id === onlyVisibleId"
     />
 
     <p v-if="visibleIds && visibleIds.size === 0" class="shm-no-results">

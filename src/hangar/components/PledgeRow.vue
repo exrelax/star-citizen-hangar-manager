@@ -1,16 +1,38 @@
 <script setup lang="ts">
 import { i18n } from '@/i18n';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import type { PledgeView } from '../pledge-view';
 import { myGearHref } from '../route';
 import ShipLinks from './ShipLinks.vue';
 
-defineProps<{ pledge: PledgeView }>();
+const props = defineProps<{
+  pledge: PledgeView;
+  /** Set while this is the only pledge in the list: it then opens on its own. */
+  autoExpand?: boolean;
+}>();
 
-const expanded = ref(false);
+const expanded = ref(!!props.autoExpand);
+// Only rows opened automatically close again automatically; a manual toggle is kept.
+let openedAutomatically = expanded.value;
+watch(
+  () => props.autoExpand,
+  (autoExpand) => {
+    if (autoExpand && !expanded.value) {
+      expanded.value = true;
+      openedAutomatically = true;
+    } else if (!autoExpand && openedAutomatically) {
+      expanded.value = false;
+      openedAutomatically = false;
+    }
+  },
+);
+
 // The manager lives on the hangar page, so this is its path including the locale prefix.
 const pathname = location.pathname;
-const toggle = () => (expanded.value = !expanded.value);
+const toggle = () => {
+  expanded.value = !expanded.value;
+  openedAutomatically = false;
+};
 </script>
 
 <template>
