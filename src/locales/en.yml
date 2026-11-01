@@ -11,12 +11,13 @@ manager:
   empty: No hangar data yet. Click 🔁 to read your hangar.
   count: $1 pledges
   countFiltered: $1 of $2 pledges
-  searchPlaceholder: Search titles …
+  searchPlaceholder: Search titles and ships …
   noResults: No pledges match your search.
 
 pledge:
   toggleDetails: Show or hide the contained items
   originalName: 'Originally: $1'
+  ships: 'Ships: $1'
   upgraded: Upgraded
   giftable: Giftable
   notGiftable: Not giftable

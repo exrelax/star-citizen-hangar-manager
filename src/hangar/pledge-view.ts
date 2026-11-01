@@ -7,6 +7,11 @@ export interface PledgeView {
   title: string;
   /** Original pledge name, set when a CCU replaced the ship of the pledge. */
   originalName?: string;
+  /**
+   * Ships contained in the pledge, except the one already shown as title. Makes packages like
+   * "VIP Wing Commander" (F8C Lightning) recognizable and searchable.
+   */
+  ships: string[];
   image?: string;
   value: string;
   createdAt?: string;
@@ -22,7 +27,7 @@ export interface PledgeView {
   isUpgraded: boolean;
   items: PledgeItem[];
   upgrade?: PledgeUpgrade;
-  /** Normalized title, prepared once so the live search stays cheap. */
+  /** Normalized title and ship names, prepared once so the live search stays cheap. */
   searchText: string;
 }
 
@@ -35,10 +40,18 @@ export function toPledgeView(pledge: Pledge): PledgeView {
     : undefined;
 
   const title = currentShip?.title ?? pledge.title;
+  const ships = [
+    ...new Set(
+      pledge.items
+        .filter((item) => item.kind === 'Ship' && item.title !== title)
+        .map((item) => item.title),
+    ),
+  ];
   return {
     id: pledge.id,
     title,
     originalName: currentShip ? pledge.name : undefined,
+    ships,
     image: pledgeImage(pledge, currentShip),
     value: pledge.value,
     createdAt: pledge.createdAt,
@@ -52,7 +65,7 @@ export function toPledgeView(pledge: Pledge): PledgeView {
     isUpgraded: currentShip !== undefined,
     items: pledge.items,
     upgrade: pledge.upgrade,
-    searchText: normalizeSearchText(title),
+    searchText: normalizeSearchText([title, ...ships].join(' ')),
   };
 }
 

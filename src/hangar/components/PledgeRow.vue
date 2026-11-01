@@ -34,6 +34,9 @@ const expanded = ref(false);
         <span v-if="pledge.originalName" class="shm-original">
           {{ i18n.t('pledge.originalName', [pledge.originalName]) }}
         </span>
+        <span v-if="pledge.ships.length" class="shm-ships" :title="pledge.ships.join(', ')">
+          {{ i18n.t('pledge.ships', [pledge.ships.join(', ')]) }}
+        </span>
         <span class="shm-meta">
           <span>#{{ pledge.id }}</span>
           <span>{{ pledge.value }}</span>
@@ -148,12 +151,18 @@ const expanded = ref(false);
   white-space: nowrap;
 }
 
-.shm-original {
+.shm-original,
+.shm-ships {
   overflow: hidden;
   color: #8a9ba8;
   font-size: 11px;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.shm-ships {
+  color: #dbe7ee;
+  font-size: 12px;
 }
 
 .shm-meta {

@@ -78,6 +78,36 @@ describe('toPledgeView', () => {
     expect(view.searchText).toBe(' polaris');
   });
 
+  it('lists contained ships and makes them searchable', () => {
+    const view = toPledgeView(
+      pledge({
+        title: 'VIP Wing Commander',
+        items: [
+          { title: 'F8C Lightning', kind: 'Ship' },
+          { title: 'F8C - Shockwave Paint', kind: 'Skin' },
+          { title: 'Lifetime Insurance', kind: 'Insurance' },
+        ],
+      }),
+    );
+    expect(view.ships).toEqual(['F8C Lightning']);
+    expect(view.searchText).toBe(' vip wing commander f8c lightning');
+  });
+
+  it('lists each ship once and skips the one shown as title', () => {
+    const view = toPledgeView(
+      pledge({
+        isUpgraded: true,
+        items: [
+          { title: 'Polaris', kind: 'Ship' },
+          { title: 'Pisces', kind: 'Ship' },
+          { title: 'Pisces', kind: 'Ship' },
+        ],
+      }),
+    );
+    expect(view.title).toBe('Polaris');
+    expect(view.ships).toEqual(['Pisces']);
+  });
+
   it('recognizes pure paint pledges only', () => {
     const paint = toPledgeView(
       pledge({ items: [{ title: 'Ursa - Respite Paint', kind: 'Skin' }] }),
