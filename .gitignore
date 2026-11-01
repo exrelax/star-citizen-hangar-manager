@@ -1,0 +1,24 @@
+# Dependencies
+node_modules
+
+# WXT build output and generated files
+.output
+.wxt
+web-ext.config.ts
+
+# Tests
+coverage
+
+# Logs
+*.log
+
+# OS / editor
+.DS_Store
+.idea
+.vscode/*
+!.vscode/extensions.json
+
+# Local environment
+.env
+.env.*
+!.env.example
