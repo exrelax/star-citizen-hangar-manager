@@ -25,6 +25,18 @@ function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
     </section>
 
     <section class="shm-setting">
+      <label class="shm-check">
+        <input
+          type="checkbox"
+          :checked="settings.smartUpdates"
+          @change="emit('update', { smartUpdates: ($event.target as HTMLInputElement).checked })"
+        />
+        {{ i18n.t('settings.smartUpdates') }}
+      </label>
+      <p class="shm-hint">{{ i18n.t('settings.smartUpdatesHint') }}</p>
+    </section>
+
+    <section class="shm-setting">
       <label class="shm-label" for="shm-reward-visibility">{{ i18n.t('settings.rewards') }}</label>
       <select
         id="shm-reward-visibility"

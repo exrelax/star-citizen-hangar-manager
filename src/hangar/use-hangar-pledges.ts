@@ -11,12 +11,15 @@ import { toPledgeView, type PledgeView } from './pledge-view';
 export function useHangarPledges() {
   const pledges = shallowRef<PledgeView[]>([]);
   const loaded = ref(false);
+  /** ISO timestamp of the last full sync. */
+  const syncedAt = ref<string>();
 
   const apply = (snapshot: HangarSnapshot | null) => {
     const current = snapshot?.version === HANGAR_SNAPSHOT_VERSION ? snapshot : null;
     pledges.value = current
       ? current.pledges.map((pledge) => toPledgeView(pledge, current.shipLinks))
       : [];
+    syncedAt.value = current?.syncedAt;
     loaded.value = true;
   };
 
@@ -24,5 +27,5 @@ export function useHangarPledges() {
   onMounted(async () => apply(await hangarSnapshot.getValue()));
   onUnmounted(unwatch);
 
-  return { pledges, loaded };
+  return { pledges, loaded, syncedAt };
 }

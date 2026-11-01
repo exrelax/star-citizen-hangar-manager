@@ -73,8 +73,10 @@ export interface Pledge {
 export interface HangarSnapshot {
   /** Format version; snapshots of other versions are ignored and need a new sync. */
   version: number;
-  /** ISO timestamp. */
+  /** ISO timestamp of the last full sync. */
   syncedAt: string;
+  /** ISO timestamp of the last change by a full sync or a smart update. */
+  updatedAt?: string;
   pledges: Pledge[];
   /** Links of the contained ships to other platforms, by ship name. */
   shipLinks?: ShipLinks;

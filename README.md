@@ -110,6 +110,11 @@ Firefox removes temporary add-ons when it quits.
 If the navigation entry does not appear in Firefox, check under `about:addons` → SC Hangar
 Manager → **Permissions** that access to `robertsspaceindustries.com` is allowed.
 
+## Configuration
+
+Tunable values – e.g. how often smart updates check the hangar, how many pages they check and
+when a full refresh is suggested – live in [`src/config.ts`](src/config.ts).
+
 ## Project structure
 
 ```
@@ -118,9 +123,11 @@ src/
     background.ts        Background (service worker in Chrome, background script in Firefox)
     hangar.content/      Content script: nav entry and manager view on the RSI hangar page
     options/             Manager page (Vue), opens in its own tab
-  hangar/                RSI page integration (routing, account navigation)
+  hangar/                Hangar data and view: sync, smart updates, list, filters, search
+  settings/              Extension settings and their tab
   locales/               Translations (de, en), default locale is English
   shared/                Shared code and styles
+  config.ts              Tunable values (intervals, page counts, limits)
 wxt.config.ts            Shared configuration and browser-specific manifest
 ```
 

@@ -2,6 +2,7 @@ import { i18n } from '#i18n';
 import { createApp } from 'vue';
 import { createNavItem, findAccountNav, findHangarLink, setActiveItem } from '@/hangar/account-nav';
 import { isHangarPath, isManagerRoute, MANAGER_HASH, managerHref } from '@/hangar/route';
+import { maybeRunSmartUpdate } from '@/hangar/sync-state';
 import { isPlainLeftClick } from '@/shared/dom';
 import App from './App.vue';
 import './page.css';
@@ -47,8 +48,11 @@ export default defineContentScript({
     });
 
     let managerVisible = false;
+    let initialRender = true;
     const render = () => {
       const showManager = isManagerRoute(location.hash);
+      const firstRender = initialRender;
+      initialRender = false;
       if (showManager === managerVisible) return;
       managerVisible = showManager;
 
@@ -57,6 +61,9 @@ export default defineContentScript({
       setActiveItem(nav, showManager ? navItem : originalActiveItem);
       if (showManager) ui.mount();
       else ui.remove();
+
+      // Coming back from "My Gear", pledges may just have been melted or gifted: check right away.
+      if (showManager) void maybeRunSmartUpdate({ force: !firstRender });
     };
 
     // The nav links point to `/account/pledges` without the locale prefix, so following them
@@ -80,6 +87,9 @@ export default defineContentScript({
     // Back/forward and manual hash edits.
     ctx.addEventListener(window, 'popstate', render);
     ctx.addEventListener(window, 'hashchange', render);
+    ctx.addEventListener(document, 'visibilitychange', () => {
+      if (document.visibilityState === 'visible' && managerVisible) void maybeRunSmartUpdate();
+    });
     render();
   },
 });

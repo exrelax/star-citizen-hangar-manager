@@ -1,3 +1,4 @@
+import { SYNC_CONCURRENCY } from '@/config';
 import { mapWithConcurrency } from '@/shared/lib/pool';
 import { hangarSnapshot } from './hangar-storage';
 import { parsePledgePage, type PledgePage } from './parse-pledges';
@@ -27,9 +28,6 @@ export interface SyncOptions {
   concurrency?: number;
 }
 
-/** Number of pledge pages requested at the same time – fast, but gentle on the RSI servers. */
-const DEFAULT_CONCURRENCY = 3;
-
 /**
  * Reads all pages of the hangar and stores them as a new snapshot. Nothing is stored unless every
  * page was read successfully, so a failed sync keeps the previous snapshot.
@@ -43,7 +41,7 @@ export async function syncHangar(options: SyncOptions = {}): Promise<HangarSnaps
     fetchShipImages = fetchShipMatrixImages,
     fetchShipLinks = resolveShipLinks,
     onProgress,
-    concurrency = DEFAULT_CONCURRENCY,
+    concurrency = SYNC_CONCURRENCY,
   } = options;
 
   // Only needed for CCU images – loads alongside the pages, and a failure just means fewer images.
@@ -105,6 +103,7 @@ export async function syncHangar(options: SyncOptions = {}): Promise<HangarSnaps
   const snapshot: HangarSnapshot = {
     version: HANGAR_SNAPSHOT_VERSION,
     syncedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
     pledges: allPledges,
     shipLinks,
   };
@@ -113,7 +112,7 @@ export async function syncHangar(options: SyncOptions = {}): Promise<HangarSnaps
 }
 
 /** Fetches a hangar page with the user's session. The English variant keeps dates parseable. */
-const fetchPledgePage: FetchPledgePage = async (page, category) => {
+export const fetchPledgePage: FetchPledgePage = async (page, category) => {
   const filter = category ? `&product-type=${category}` : '';
   const response = await fetch(`/en/account/pledges?page=${page}${filter}`, {
     credentials: 'include',

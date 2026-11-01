@@ -6,6 +6,8 @@ export interface Settings {
   /** Hides the $ values in the hangar list. */
   hideMeltValue: boolean;
   rewardVisibility: RewardVisibility;
+  /** Keeps the stored hangar current by checking a few hangar pages now and then. */
+  smartUpdates: boolean;
   /** Links shown next to ships. */
   shipLinks: {
     erkul: boolean;
@@ -16,6 +18,7 @@ export interface Settings {
 export const DEFAULT_SETTINGS: Settings = {
   hideMeltValue: false,
   rewardVisibility: 'showAll',
+  smartUpdates: true,
   shipLinks: { erkul: true, fleetyards: true },
 };
 
@@ -37,6 +40,10 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
     rewardVisibility: REWARD_VISIBILITIES.includes(stored?.rewardVisibility as RewardVisibility)
       ? stored!.rewardVisibility!
       : DEFAULT_SETTINGS.rewardVisibility,
+    smartUpdates:
+      typeof stored?.smartUpdates === 'boolean'
+        ? stored.smartUpdates
+        : DEFAULT_SETTINGS.smartUpdates,
     shipLinks: {
       erkul: stored?.shipLinks?.erkul ?? DEFAULT_SETTINGS.shipLinks.erkul,
       fleetyards: stored?.shipLinks?.fleetyards ?? DEFAULT_SETTINGS.shipLinks.fleetyards,

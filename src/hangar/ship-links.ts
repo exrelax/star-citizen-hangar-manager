@@ -1,3 +1,4 @@
+import { FLEETYARDS_DETAILS_BATCH_SIZE } from '@/config';
 import type { Pledge } from './pledge';
 
 /** Links of a ship to other platforms. */
@@ -15,8 +16,6 @@ export const fleetyardsUrl = (slug: string) => `https://fleetyards.net/ships/${s
 export const erkulUrl = (id: string) => `https://www.erkul.games/ship/${id}`;
 
 const FLEETYARDS_API = 'https://api.fleetyards.net/v1';
-/** Models per request for the erkul ids (~60 KB each). */
-const DETAILS_BATCH_SIZE = 20;
 
 interface SlugEntry {
   slug: string;
@@ -117,9 +116,9 @@ const fleetyardsSource: ShipLinkSource = {
 
   async fetchErkulIds(slugs) {
     const ids: Record<string, string> = {};
-    for (let start = 0; start < slugs.length; start += DETAILS_BATCH_SIZE) {
+    for (let start = 0; start < slugs.length; start += FLEETYARDS_DETAILS_BATCH_SIZE) {
       const query = slugs
-        .slice(start, start + DETAILS_BATCH_SIZE)
+        .slice(start, start + FLEETYARDS_DETAILS_BATCH_SIZE)
         .map((slug) => `models[]=${encodeURIComponent(slug)}`)
         .join('&');
       const response = await fetch(`${FLEETYARDS_API}/models/embed?${query}`);

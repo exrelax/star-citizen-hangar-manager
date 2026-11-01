@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { i18n } from '#i18n';
+import HangarStatus from '@/hangar/components/HangarStatus.vue';
 import PledgeList from '@/hangar/components/PledgeList.vue';
 import { startSync, syncState } from '@/hangar/sync-state';
 import { useHangarPledges } from '@/hangar/use-hangar-pledges';
@@ -10,7 +11,7 @@ import { ref } from 'vue';
 const TABS = ['hangar', 'settings'] as const;
 type Tab = (typeof TABS)[number];
 
-const { pledges, loaded } = useHangarPledges();
+const { pledges, loaded, syncedAt } = useHangarPledges();
 const { settings, update: updateSettings } = useSettings();
 const activeTab = ref<Tab>('hangar');
 </script>
@@ -72,6 +73,11 @@ const activeTab = ref<Tab>('hangar');
     aria-labelledby="shm-tab-hangar"
   >
     <template v-if="loaded">
+      <HangarStatus
+        v-if="pledges.length"
+        :synced-at="syncedAt"
+        :smart-updates="settings.smartUpdates"
+      />
       <PledgeList v-if="pledges.length" :pledges="pledges" :settings="settings" />
       <p v-else class="shm-empty">{{ i18n.t('manager.empty') }}</p>
     </template>

@@ -48,6 +48,18 @@ settings:
     hideAll: Hide all rewards
     hideConcierge: Hide Concierge rewards
     hideEvent: Hide event rewards
+  smartUpdates: Smart updates
+  smartUpdatesHint: Checks the first, the last and a few more hangar pages for changes now and then, and updates the list without a full refresh.
   shipLinks: Show links for ships
   shipLinkErkul: Link to erkul.games
   shipLinkFleetyards: Link to fleetyards.net
+
+status:
+  checking: Checking for changes …
+  upToDate: 'Up to date · checked $1'
+  updated: 'Updated $1: $2 new, $3 removed, $4 changed'
+  failed: 'The last check failed ($1).'
+  needsFullSync: Too many changes for a quick update.
+  fullSyncOld: 'Last full refresh $1.'
+  lastFullSync: 'Last full refresh $1'
+  fullRefresh: Full refresh

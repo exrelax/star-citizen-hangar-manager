@@ -12,6 +12,7 @@ describe('withDefaults', () => {
     ).toEqual({
       hideMeltValue: true,
       rewardVisibility: 'showAll',
+      smartUpdates: true,
       shipLinks: { erkul: false, fleetyards: true },
     });
   });
