@@ -1,0 +1,71 @@
+{
+  "extName": "SC Hangar Manager",
+  "extDescription": "Verwaltet deinen Star-Citizen-Hangar auf robertsspaceindustries.com.",
+  "nav": {
+    "manager": "Hangar Manager"
+  },
+  "manager": {
+    "title": "Hangar Manager",
+    "intro": "Eine Übersicht über deinen Hangar. Mit 🔁 liest du den aktuellen Stand bei RSI ein.",
+    "refresh": "Hangar-Daten aktualisieren",
+    "empty": "Noch keine Hangar-Daten. Klicke auf 🔁, um deinen Hangar einzulesen.",
+    "count": "$1 Pledges",
+    "countFiltered": "$1 von $2 Pledges",
+    "searchPlaceholder": "Titel und Schiffe durchsuchen …",
+    "noResults": "Keine Pledges passen zu deiner Suche."
+  },
+  "pledge": {
+    "toggleDetails": "Enthaltene Items ein- oder ausblenden",
+    "originalName": "Ursprünglich: $1",
+    "shipsLabel": "Schiffe:",
+    "upgraded": "Geupgradet",
+    "giftable": "Verschenkbar",
+    "notGiftable": "Nicht verschenkbar",
+    "meltable": "Schmelzbar",
+    "notMeltable": "Nicht schmelzbar"
+  },
+  "filter": {
+    "label": "Pledges filtern",
+    "lti": "LTI",
+    "paints": "Paints",
+    "ccus": "CCUs",
+    "standaloneShips": "Standalone-Schiffe",
+    "gameAccess": "Spielzugang",
+    "giftable": "Verschenkbar",
+    "meltable": "Schmelzbar"
+  },
+  "tabs": {
+    "hangar": "🚀 My Hangar",
+    "settings": "⚙️ Einstellungen"
+  },
+  "settings": {
+    "language": "Sprache",
+    "languageAuto": "Automatisch ($1)",
+    "languageHint": "Automatisch nutzt die Browsersprache, sofern die Extension in diese übersetzt ist, sonst Englisch.",
+    "hideMeltValue": "Schmelzwert ausblenden",
+    "hideMeltValueHint": "Blendet die $$-Werte in der Hangar-Liste aus.",
+    "rewards": "Rewards ausblenden",
+    "rewardsHint": "Rewards sind Pledges mit einem Wert von $$0. Concierge- und Event-Rewards werden am Namen erkannt.",
+    "rewardOptions": {
+      "showAll": "Keine Rewards ausblenden",
+      "hideAll": "Alle Rewards ausblenden",
+      "hideConcierge": "Concierge-Rewards ausblenden",
+      "hideEvent": "Event-Rewards ausblenden"
+    },
+    "smartUpdates": "Intelligente Updates",
+    "smartUpdatesHint": "Prüft ab und zu die erste, die letzte und einige weitere Hangar-Seiten auf Änderungen und aktualisiert die Liste ohne vollständigen Abgleich.",
+    "shipLinks": "Links bei Schiffen anzeigen",
+    "shipLinkErkul": "Link zu erkul.games",
+    "shipLinkFleetyards": "Link zu fleetyards.net"
+  },
+  "status": {
+    "checking": "Suche nach Änderungen …",
+    "upToDate": "Aktuell · geprüft $1",
+    "updated": "Aktualisiert $1: $2 neu, $3 entfernt, $4 geändert",
+    "failed": "Die letzte Prüfung ist fehlgeschlagen ($1).",
+    "needsFullSync": "Zu viele Änderungen für ein schnelles Update.",
+    "fullSyncOld": "Letzter vollständiger Abgleich $1.",
+    "lastFullSync": "Letzter vollständiger Abgleich $1",
+    "fullRefresh": "Vollständig aktualisieren"
+  }
+}

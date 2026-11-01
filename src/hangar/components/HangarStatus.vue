@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { i18n } from '#i18n';
+import { i18n, locale } from '@/i18n';
 import { SMART_UPDATE } from '@/config';
 import { formatRelativeTime } from '@/shared/lib/relative-time';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
@@ -9,7 +9,6 @@ import { useCheckState } from '../use-check-state';
 const props = defineProps<{ syncedAt?: string; smartUpdates: boolean }>();
 
 const checkState = useCheckState();
-const locale = browser.i18n.getUILanguage();
 
 // Keeps "2 minutes ago" current.
 const now = ref(Date.now());
@@ -19,7 +18,7 @@ onMounted(
 );
 onUnmounted(() => clearInterval(timer));
 
-const ago = (at: number) => formatRelativeTime(at, now.value, locale);
+const ago = (at: number) => formatRelativeTime(at, now.value, locale.value);
 
 const fullSyncIsOld = computed(() => {
   if (!props.syncedAt) return false;

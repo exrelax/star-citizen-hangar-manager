@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { i18n } from '#i18n';
+import { i18n, locale } from '@/i18n';
 import { computed, ref, shallowRef } from 'vue';
 import { matchesFilters, PLEDGE_FILTERS, type PledgeFilter } from '../filters';
 import type { Settings } from '@/settings/settings';
@@ -103,13 +103,13 @@ const countLabel = computed(() =>
     <!--
       All rows stay mounted and the search only toggles their visibility: filtering and clearing
       the search then just flip `display` instead of re-creating hundreds of rows. `v-memo` lets
-      Vue skip every row whose visibility didn't change.
+      Vue skip every row whose visibility (and language) didn't change.
     -->
     <PledgeRow
       v-for="pledge in listed"
       v-show="isVisible(pledge.id)"
       :key="pledge.id"
-      v-memo="[pledge, isVisible(pledge.id)]"
+      v-memo="[pledge, isVisible(pledge.id), locale]"
       :pledge="pledge"
     />
 

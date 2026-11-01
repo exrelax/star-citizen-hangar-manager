@@ -1,8 +1,14 @@
+import { isLocale, type Locale } from '@/i18n';
+
+/** `auto`: the browser's language if there is a translation for it, English otherwise. */
+export type LanguageSetting = 'auto' | Locale;
+
 /** Which reward pledges the hangar list hides. */
 export const REWARD_VISIBILITIES = ['showAll', 'hideAll', 'hideConcierge', 'hideEvent'] as const;
 export type RewardVisibility = (typeof REWARD_VISIBILITIES)[number];
 
 export interface Settings {
+  language: LanguageSetting;
   /** Hides the $ values in the hangar list. */
   hideMeltValue: boolean;
   rewardVisibility: RewardVisibility;
@@ -16,6 +22,7 @@ export interface Settings {
 }
 
 export const DEFAULT_SETTINGS: Settings = {
+  language: 'auto',
   hideMeltValue: false,
   rewardVisibility: 'showAll',
   smartUpdates: true,
@@ -33,6 +40,7 @@ export const settingsItem = storage.defineItem<Partial<Settings> | null>('sync:s
 /** Complete settings from stored values, falling back to the defaults for missing or invalid ones. */
 export function withDefaults(stored: Partial<Settings> | null | undefined): Settings {
   return {
+    language: isLocale(stored?.language) ? stored.language : DEFAULT_SETTINGS.language,
     hideMeltValue:
       typeof stored?.hideMeltValue === 'boolean'
         ? stored.hideMeltValue

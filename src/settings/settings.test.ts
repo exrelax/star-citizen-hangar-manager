@@ -8,8 +8,13 @@ describe('withDefaults', () => {
 
   it('keeps stored values and fills in missing ones', () => {
     expect(
-      withDefaults({ hideMeltValue: true, shipLinks: { erkul: false, fleetyards: true } }),
+      withDefaults({
+        language: 'de',
+        hideMeltValue: true,
+        shipLinks: { erkul: false, fleetyards: true },
+      }),
     ).toEqual({
+      language: 'de',
       hideMeltValue: true,
       rewardVisibility: 'showAll',
       smartUpdates: true,
@@ -18,8 +23,12 @@ describe('withDefaults', () => {
   });
 
   it('ignores invalid values', () => {
-    expect(withDefaults({ hideMeltValue: 'yes', rewardVisibility: 'sometimes' } as never)).toEqual(
-      DEFAULT_SETTINGS,
-    );
+    expect(
+      withDefaults({
+        language: 'fr',
+        hideMeltValue: 'yes',
+        rewardVisibility: 'sometimes',
+      } as never),
+    ).toEqual(DEFAULT_SETTINGS);
   });
 });

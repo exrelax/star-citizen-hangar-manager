@@ -1,5 +1,6 @@
-import { i18n } from '#i18n';
-import { createApp } from 'vue';
+import { i18n, locale } from '@/i18n';
+import { followLanguageSetting } from '@/settings/language';
+import { createApp, watch } from 'vue';
 import { createNavItem, findAccountNav, findHangarLink, setActiveItem } from '@/hangar/account-nav';
 import { isHangarPath, isManagerRoute, MANAGER_HASH, managerHref } from '@/hangar/route';
 import { maybeRunSmartUpdate } from '@/hangar/sync-state';
@@ -13,10 +14,13 @@ const ACTIVE_CLASS = 'shm-manager-active';
 export default defineContentScript({
   matches: ['https://robertsspaceindustries.com/*'],
 
-  main(ctx) {
+  async main(ctx) {
     const nav = findAccountNav(document);
     const hangarLink = nav && findHangarLink(nav);
     if (!nav || !hangarLink) return;
+
+    // Applied before anything is rendered, so the nav entry and view start in the right language.
+    ctx.onInvalidated(await followLanguageSetting());
 
     // The manager view lives on the original hangar page (`…/account/pledges#hangar-manager`),
     // so the site keeps rendering its layout and navigation around it.
@@ -26,6 +30,11 @@ export default defineContentScript({
       i18n.t('nav.manager'),
     );
     nav.prepend(navItem);
+    ctx.onInvalidated(
+      watch(locale, () => {
+        navItem.querySelector('.bg')!.textContent = i18n.t('nav.manager');
+      }),
+    );
 
     const originalContent = document.querySelector<HTMLElement>('.inner-content');
     if (!isHangarPath(location.pathname) || !originalContent) return;

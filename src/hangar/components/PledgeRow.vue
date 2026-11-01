@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { i18n } from '#i18n';
+import { i18n } from '@/i18n';
 import { ref } from 'vue';
 import type { PledgeView } from '../pledge-view';
 import ShipLinks from './ShipLinks.vue';

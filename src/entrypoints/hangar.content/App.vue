@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { i18n } from '#i18n';
+import { i18n } from '@/i18n';
 import HangarStatus from '@/hangar/components/HangarStatus.vue';
 import PledgeList from '@/hangar/components/PledgeList.vue';
 import { startSync, syncState } from '@/hangar/sync-state';
