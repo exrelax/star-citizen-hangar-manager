@@ -4,6 +4,7 @@ import {
   isHangarPath,
   isManagerRoute,
   managerHref,
+  managerSearchUrl,
   myGearHref,
   pageFromUrl,
   urlWithoutHighlight,
@@ -89,5 +90,13 @@ describe('My Gear links', () => {
         'https://robertsspaceindustries.com/en/account/pledges?page=52&highlight=1',
       ),
     ).toBe('https://robertsspaceindustries.com/en/account/pledges?page=52');
+  });
+});
+
+describe('managerSearchUrl', () => {
+  it('opens the manager view with the pledge id as search', () => {
+    expect(managerSearchUrl(62492122)).toBe(
+      'https://robertsspaceindustries.com/account/pledges?search=62492122#hangar-manager',
+    );
   });
 });

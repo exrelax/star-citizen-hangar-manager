@@ -68,5 +68,8 @@
     "fullSyncOld": "Letzter vollständiger Abgleich $1.",
     "lastFullSync": "Letzter vollständiger Abgleich $1",
     "fullRefresh": "Vollständig aktualisieren"
+  },
+  "ccugame": {
+    "openInManager": "Im Hangar Manager öffnen (#$1)"
   }
 }

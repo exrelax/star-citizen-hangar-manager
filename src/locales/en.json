@@ -68,5 +68,8 @@
     "fullSyncOld": "Last full refresh $1.",
     "lastFullSync": "Last full refresh $1",
     "fullRefresh": "Full refresh"
+  },
+  "ccugame": {
+    "openInManager": "Open in Hangar Manager (#$1)"
   }
 }

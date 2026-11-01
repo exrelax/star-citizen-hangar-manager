@@ -11,6 +11,14 @@ export function isHangarPath(pathname: string): boolean {
   return HANGAR_PATH.test(pathname);
 }
 
+/** Opens the manager view searching for a pledge id (works from other sites, e.g. CCU Game). */
+export function managerSearchUrl(pledgeId: number): string {
+  return (
+    `https://robertsspaceindustries.com/account/pledges?${SEARCH_URL_PARAM}=${pledgeId}` +
+    MANAGER_HASH
+  );
+}
+
 /** Search term given in the page URL (see `SEARCH_URL_PARAM`), or an empty string. */
 export function searchFromUrl(search: string): string {
   return new URLSearchParams(search).get(SEARCH_URL_PARAM)?.trim() ?? '';
