@@ -2,7 +2,14 @@ import { i18n, locale } from '@/i18n';
 import { followLanguageSetting } from '@/settings/language';
 import { createApp, watch } from 'vue';
 import { createNavItem, findAccountNav, findHangarLink, setActiveItem } from '@/hangar/account-nav';
-import { isHangarPath, isManagerRoute, MANAGER_HASH, managerHref } from '@/hangar/route';
+import { revealPledge } from '@/hangar/highlight';
+import {
+  highlightFromUrl,
+  isHangarPath,
+  isManagerRoute,
+  MANAGER_HASH,
+  managerHref,
+} from '@/hangar/route';
 import { maybeRunSmartUpdate } from '@/hangar/sync-state';
 import { isPlainLeftClick } from '@/shared/dom';
 import App from './App.vue';
@@ -38,6 +45,10 @@ export default defineContentScript({
 
     const originalContent = document.querySelector<HTMLElement>('.inner-content');
     if (!isHangarPath(location.pathname) || !originalContent) return;
+
+    // Opened via "Show in My Gear" from the manager: scroll to the pledge and highlight it.
+    const highlightId = highlightFromUrl(location.search);
+    if (highlightId && !isManagerRoute(location.hash)) void revealPledge(highlightId);
 
     const originalActiveItem = nav.querySelector<HTMLLIElement>(':scope > li.active');
     const ui = createIntegratedUi(ctx, {

@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { isHangarPath, isManagerRoute, managerHref, searchFromUrl, urlWithSearch } from './route';
+import {
+  highlightFromUrl,
+  isHangarPath,
+  isManagerRoute,
+  managerHref,
+  myGearHref,
+  pageFromUrl,
+  urlWithoutHighlight,
+  searchFromUrl,
+  urlWithSearch,
+} from './route';
 
 describe('isHangarPath', () => {
   it.each(['/account/pledges', '/en/account/pledges', '/de-de/account/pledges/'])(
@@ -55,5 +65,29 @@ describe('urlWithSearch', () => {
       `${base}?search=polaris#hangar-manager`,
     );
     expect(urlWithSearch(`${base}?search=old#hangar-manager`, '  ')).toBe(`${base}#hangar-manager`);
+  });
+});
+
+describe('My Gear links', () => {
+  it('links to the page with the pledge to highlight', () => {
+    expect(myGearHref('/en/account/pledges', 52, 68429257)).toBe(
+      '/en/account/pledges?page=52&highlight=68429257',
+    );
+  });
+
+  it('reads the pledge to highlight and the page', () => {
+    expect(highlightFromUrl('?page=52&highlight=68429257')).toBe(68429257);
+    expect(highlightFromUrl('?page=52')).toBeUndefined();
+    expect(highlightFromUrl('?highlight=abc')).toBeUndefined();
+    expect(pageFromUrl('?page=52&highlight=1')).toBe(52);
+    expect(pageFromUrl('')).toBe(1);
+  });
+
+  it('removes only the highlight parameter', () => {
+    expect(
+      urlWithoutHighlight(
+        'https://robertsspaceindustries.com/en/account/pledges?page=52&highlight=1',
+      ),
+    ).toBe('https://robertsspaceindustries.com/en/account/pledges?page=52');
   });
 });

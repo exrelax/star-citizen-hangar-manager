@@ -2,11 +2,14 @@
 import { i18n } from '@/i18n';
 import { ref } from 'vue';
 import type { PledgeView } from '../pledge-view';
+import { myGearHref } from '../route';
 import ShipLinks from './ShipLinks.vue';
 
 defineProps<{ pledge: PledgeView }>();
 
 const expanded = ref(false);
+// The manager lives on the hangar page, so this is its path including the locale prefix.
+const pathname = location.pathname;
 const toggle = () => (expanded.value = !expanded.value);
 </script>
 
@@ -82,6 +85,9 @@ const toggle = () => (expanded.value = !expanded.value);
     </div>
 
     <div v-if="expanded" class="shm-details">
+      <a class="shm-my-gear-link" :href="myGearHref(pathname, pledge.page, pledge.id)">
+        {{ i18n.t('pledge.showInMyGear', [pledge.page]) }} →
+      </a>
       <p v-if="pledge.upgrade" class="shm-upgrade">
         {{ pledge.upgrade.matchItems.map((item) => item.name).join(', ') }}
         →
@@ -232,6 +238,19 @@ const toggle = () => (expanded.value = !expanded.value);
   padding: 4px 16px 12px 132px;
   color: #b4c3cc;
   font-size: 12px;
+}
+
+.shm-my-gear-link {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: #62c4eb;
+  text-decoration: none;
+}
+
+.shm-my-gear-link:hover,
+.shm-my-gear-link:focus-visible {
+  text-decoration: underline;
+  outline: none;
 }
 
 .shm-upgrade {

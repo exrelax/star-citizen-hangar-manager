@@ -1,3 +1,4 @@
+import { HANGAR_PAGE_SIZE } from '@/config';
 import type { Pledge, PledgeItem, PledgeUpgrade } from './pledge';
 import { rewardKind, type RewardKind } from './rewards';
 import { normalizeSearchText } from './search';
@@ -12,6 +13,8 @@ export interface ShipRef {
 /** What the manager list shows for a pledge. */
 export interface PledgeView {
   id: number;
+  /** Page of the pledge in RSI's "My Gear" list, as of the last sync. */
+  page: number;
   title: string;
   /** Original pledge name, set when a CCU replaced the ship of the pledge. */
   originalName?: string;
@@ -49,7 +52,10 @@ const GAME_DOWNLOAD = /^(star citizen|squadron 42) digital download$/i;
 
 const PLACEHOLDER_IMAGE = '/static/images/Temp/default-image';
 
-export function toPledgeView(pledge: Pledge, shipLinks: ShipLinks = {}): PledgeView {
+/**
+ * `position`: index of the pledge in the stored hangar, which has RSI's order (newest first).
+ */
+export function toPledgeView(pledge: Pledge, shipLinks: ShipLinks = {}, position = 0): PledgeView {
   // After a CCU the pledge keeps its original name and image, but the contained ship is current.
   const currentShip = pledge.isUpgraded
     ? pledge.items.find((item) => item.kind === 'Ship')
@@ -64,6 +70,7 @@ export function toPledgeView(pledge: Pledge, shipLinks: ShipLinks = {}): PledgeV
   const ships = [...shipNames].map((name) => ({ name, link: shipLinks[name] }));
   return {
     id: pledge.id,
+    page: Math.floor(position / HANGAR_PAGE_SIZE) + 1,
     title,
     originalName: currentShip ? pledge.name : undefined,
     titleShip: currentShip ? { name: title, link: shipLinks[title] } : undefined,

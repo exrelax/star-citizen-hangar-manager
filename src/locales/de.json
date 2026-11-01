@@ -22,7 +22,8 @@
     "giftable": "Verschenkbar",
     "notGiftable": "Nicht verschenkbar",
     "meltable": "Schmelzbar",
-    "notMeltable": "Nicht schmelzbar"
+    "notMeltable": "Nicht schmelzbar",
+    "showInMyGear": "In „My Gear“ anzeigen (Seite $1)"
   },
   "filter": {
     "label": "Pledges filtern",

@@ -202,6 +202,13 @@ describe('toPledgeView', () => {
     expect(toPledgeView(pledge({ value: '$30.00 USD', valueUsd: 30 })).reward).toBeUndefined();
   });
 
+  it('derives the My Gear page from the position', () => {
+    expect(toPledgeView(pledge({}), {}, 0).page).toBe(1);
+    expect(toPledgeView(pledge({}), {}, 9).page).toBe(1);
+    expect(toPledgeView(pledge({}), {}, 10).page).toBe(2);
+    expect(toPledgeView(pledge({}), {}, 985).page).toBe(99);
+  });
+
   it('maps gift and melt state', () => {
     expect(toPledgeView(pledge({ isGiftable: false, isExchangeable: true }))).toMatchObject({
       isGiftable: false,

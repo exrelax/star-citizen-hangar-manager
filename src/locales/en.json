@@ -22,7 +22,8 @@
     "giftable": "Giftable",
     "notGiftable": "Not giftable",
     "meltable": "Meltable",
-    "notMeltable": "Not meltable"
+    "notMeltable": "Not meltable",
+    "showInMyGear": "Show in My Gear (page $1)"
   },
   "filter": {
     "label": "Filter pledges",

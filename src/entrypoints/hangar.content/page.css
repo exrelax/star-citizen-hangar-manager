@@ -8,3 +8,10 @@
 .shm-manager-active #contentbody {
   background-attachment: scroll, fixed, scroll !important;
 }
+
+/* Pledge opened via "Show in My Gear" from the manager (see highlight.ts). */
+.list-items > li.shm-highlight {
+  outline: 2px solid #62c4eb;
+  outline-offset: 3px;
+  box-shadow: 0 0 22px rgba(98, 196, 235, 0.55);
+}

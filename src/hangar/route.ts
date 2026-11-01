@@ -1,4 +1,4 @@
-import { SEARCH_URL_PARAM } from '@/config';
+import { HIGHLIGHT_URL_PARAM, SEARCH_URL_PARAM } from '@/config';
 
 /** URL fragment that switches the original hangar page to the manager view. */
 export const MANAGER_HASH = '#hangar-manager';
@@ -22,6 +22,30 @@ export function urlWithSearch(href: string, term: string): string {
   if (term.trim()) url.searchParams.set(SEARCH_URL_PARAM, term.trim());
   else url.searchParams.delete(SEARCH_URL_PARAM);
   return url.href;
+}
+
+/** Link to a page of the original "My Gear" list that highlights the given pledge. */
+export function myGearHref(pathname: string, page: number, pledgeId: number): string {
+  return `${pathname}?page=${page}&${HIGHLIGHT_URL_PARAM}=${pledgeId}`;
+}
+
+/** Pledge id to highlight, from the page URL (see `HIGHLIGHT_URL_PARAM`). */
+export function highlightFromUrl(search: string): number | undefined {
+  const id = Number(new URLSearchParams(search).get(HIGHLIGHT_URL_PARAM));
+  return Number.isInteger(id) && id > 0 ? id : undefined;
+}
+
+/** The URL without the highlight parameter, so a reload doesn't highlight again. */
+export function urlWithoutHighlight(href: string): string {
+  const url = new URL(href);
+  url.searchParams.delete(HIGHLIGHT_URL_PARAM);
+  return url.href;
+}
+
+/** Current page of the "My Gear" list from the page URL (RSI's `page` parameter). */
+export function pageFromUrl(search: string): number {
+  const page = Number(new URLSearchParams(search).get('page'));
+  return Number.isInteger(page) && page > 0 ? page : 1;
 }
 
 export function isManagerRoute(hash: string): boolean {

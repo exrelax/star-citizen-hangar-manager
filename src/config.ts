@@ -11,6 +11,18 @@ export const HANGAR_PAGE_SIZE = 10;
  */
 export const SEARCH_URL_PARAM = 'search';
 
+/**
+ * URL parameter of the "show in My Gear" links: the pledge id to scroll to and highlight, e.g.
+ * `/account/pledges?page=52&highlight=68429257`. It is removed from the URL once handled.
+ */
+export const HIGHLIGHT_URL_PARAM = 'highlight';
+
+/**
+ * If the stored page of a pledge is outdated, up to this many neighbouring pages are searched
+ * (in the background) before giving up.
+ */
+export const HIGHLIGHT_MAX_PAGE_HOPS = 3;
+
 /** Delay after the last keystroke before the search term is written to the URL. */
 export const SEARCH_URL_SYNC_DELAY_MS = 300;
 
