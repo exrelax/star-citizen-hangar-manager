@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { i18n } from '@/i18n';
-import { ref, watch } from 'vue';
+import { i18n, locale } from '@/i18n';
+import { computed, ref, watch } from 'vue';
+import { formatDiscount } from '../discount-format';
 import type { PledgeView } from '../pledge-view';
 import { myGearHref } from '../route';
 import ShipLinks from './ShipLinks.vue';
@@ -10,6 +11,10 @@ const props = defineProps<{
   /** Set while this is the only pledge in the list: it then opens on its own. */
   autoExpand?: boolean;
 }>();
+
+const discount = computed(
+  () => props.pledge.discount && formatDiscount(props.pledge.discount, locale.value),
+);
 
 const expanded = ref(!!props.autoExpand);
 // Only rows opened automatically close again automatically; a manual toggle is kept.
@@ -69,6 +74,14 @@ const toggle = () => {
         <span class="shm-meta">
           <span>#{{ pledge.id }}</span>
           <span class="shm-value">{{ pledge.value }}</span>
+          <span
+            v-if="discount"
+            class="shm-discount"
+            :class="{ 'is-surcharge': discount.isSurcharge }"
+            :title="discount.title"
+          >
+            {{ discount.text }}
+          </span>
           <span v-if="pledge.createdAt">{{ pledge.createdAt }}</span>
         </span>
       </span>

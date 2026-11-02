@@ -175,6 +175,7 @@
 
 /* Display settings: classes on the list hide parts of all rows at once (no re-render). */
 .shm-hide-values .shm-value,
+.shm-hide-values .shm-discount,
 .shm-hide-erkul .is-erkul,
 .shm-hide-fleetyards .is-fleetyards {
   display: none;
@@ -215,4 +216,14 @@
 .shm-cart-error {
   color: #ff8a80;
   font-size: 12px;
+}
+
+/* Discount next to the pledge value (see ship-prices.ts); a surcharge is shown, too. */
+.shm-discount {
+  color: #7fd88b;
+  cursor: help;
+}
+
+.shm-discount.is-surcharge {
+  color: #f0b45a;
 }

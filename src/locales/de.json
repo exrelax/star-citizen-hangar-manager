@@ -24,7 +24,9 @@
     "notGiftable": "Nicht verschenkbar",
     "meltable": "Schmelzbar",
     "notMeltable": "Nicht schmelzbar",
-    "showInMyGear": "In „My Gear“ anzeigen (Seite $1)"
+    "showInMyGear": "In „My Gear“ anzeigen (Seite $1)",
+    "discountTitle": "Originalpreis: $1. Pledge-Wert: $2. Gespart: $3 ($4).",
+    "surchargeTitle": "Originalpreis: $1. Pledge-Wert: $2. Das sind $3 ($4) mehr als der Originalpreis."
   },
   "filter": {
     "label": "Pledges filtern",

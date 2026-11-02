@@ -24,7 +24,9 @@
     "notGiftable": "Not giftable",
     "meltable": "Meltable",
     "notMeltable": "Not meltable",
-    "showInMyGear": "Show in My Gear (page $1)"
+    "showInMyGear": "Show in My Gear (page $1)",
+    "discountTitle": "Original price: $1. Pledge value: $2. Saved: $3 ($4).",
+    "surchargeTitle": "Original price: $1. Pledge value: $2. That is $3 ($4) more than the original price."
   },
   "filter": {
     "label": "Filter pledges",

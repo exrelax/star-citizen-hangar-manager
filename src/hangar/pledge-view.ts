@@ -3,6 +3,7 @@ import type { Pledge, PledgeItem, PledgeUpgrade } from './pledge';
 import { rewardKind, type RewardKind } from './rewards';
 import { normalizeSearchText } from './search';
 import type { ShipLink, ShipLinks } from './ship-links';
+import { pledgeDiscount, type PledgeDiscount, type PriceLookup } from './ship-prices';
 
 /** A ship with its links to other platforms (if known). */
 export interface ShipRef {
@@ -27,6 +28,8 @@ export interface PledgeView {
   ships: ShipRef[];
   image?: string;
   value: string;
+  /** Discount compared to the original price of the ship or CCU, if known (see `ship-prices.ts`). */
+  discount?: PledgeDiscount;
   createdAt?: string;
   /** Set for reward pledges (value $0). */
   reward?: RewardKind;
@@ -54,8 +57,14 @@ const PLACEHOLDER_IMAGE = '/static/images/Temp/default-image';
 
 /**
  * `position`: index of the pledge in the stored hangar, which has RSI's order (newest first).
+ * `priceOf`: original ship prices, for the discount.
  */
-export function toPledgeView(pledge: Pledge, shipLinks: ShipLinks = {}, position = 0): PledgeView {
+export function toPledgeView(
+  pledge: Pledge,
+  shipLinks: ShipLinks = {},
+  position = 0,
+  priceOf?: PriceLookup,
+): PledgeView {
   // After a CCU the pledge keeps its original name and image, but the contained ship is current.
   const currentShip = pledge.isUpgraded
     ? pledge.items.find((item) => item.kind === 'Ship')
@@ -68,6 +77,9 @@ export function toPledgeView(pledge: Pledge, shipLinks: ShipLinks = {}, position
       .map((item) => item.title),
   );
   const ships = [...shipNames].map((name) => ({ name, link: shipLinks[name] }));
+  const hasGameAccess =
+    pledge.category === 'game_package' ||
+    pledge.items.some((item) => GAME_DOWNLOAD.test(item.title));
   return {
     id: pledge.id,
     page: Math.floor(position / HANGAR_PAGE_SIZE) + 1,
@@ -77,15 +89,14 @@ export function toPledgeView(pledge: Pledge, shipLinks: ShipLinks = {}, position
     ships,
     image: pledgeImage(pledge, currentShip),
     value: pledge.value,
+    discount: priceOf && pledgeDiscount(pledge, priceOf, hasGameAccess),
     createdAt: pledge.createdAt,
     reward: rewardKind(pledge),
     hasLti: pledge.items.some((item) => item.kind === 'Insurance' && /lifetime/i.test(item.title)),
     isPaint: !pledge.upgrade && pledge.items.length > 0 && pledge.items.every(isPaintItem),
     isCcu: pledge.upgrade !== undefined,
     isStandaloneShip: pledge.category === 'standalone_ship',
-    hasGameAccess:
-      pledge.category === 'game_package' ||
-      pledge.items.some((item) => GAME_DOWNLOAD.test(item.title)),
+    hasGameAccess,
     isGiftable: pledge.isGiftable,
     isMeltable: pledge.isExchangeable,
     isUpgraded: currentShip !== undefined,

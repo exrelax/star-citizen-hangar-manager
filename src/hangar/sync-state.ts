@@ -6,6 +6,7 @@ import { settingsItem, withDefaults } from '@/settings/settings';
 import { reactive, readonly } from 'vue';
 import { hangarCheckState, type CheckOutcome, type CheckState } from './hangar-storage';
 import { runSmartUpdate } from './smart-update/run';
+import { refreshShipPrices } from './ship-prices';
 import { prepareHangarSync } from './sync';
 import { SyncProgressTracker, type SyncProgress } from './sync-progress';
 
@@ -48,6 +49,8 @@ export async function startSync(): Promise<void> {
   state.progress = null;
   const startedAt = performance.now();
   try {
+    // Small and optional: loads alongside, a failure keeps the stored prices.
+    const shipPrices = refreshShipPrices({ maxAgeMs: 0 });
     // Reported only once both totals are known; the detail pages of the buy back join later.
     const progress = new SyncProgressTracker();
     const [runHangar, runBuyback] = await Promise.all([
@@ -63,6 +66,7 @@ export async function startSync(): Promise<void> {
     await recordOutcome(hangarCheckState, 'unchanged');
     const buyback = await runBuyback();
     await recordOutcome(buybackCheckState, 'unchanged');
+    await shipPrices;
 
     const seconds = ((performance.now() - startedAt) / 1000).toFixed(1);
     console.info(
@@ -87,6 +91,8 @@ export async function maybeRunSmartUpdate({ force = false } = {}): Promise<void>
   // Claimed right away, so triggers firing at the same time don't start two checks.
   state.checking = true;
   try {
+    // Independent of the smart update setting: one small request a day.
+    await refreshShipPrices();
     const settings = withDefaults(await settingsItem.getValue());
     if (!settings.smartUpdates) return;
     const { lastCheckAt } = await hangarCheckState.getValue();

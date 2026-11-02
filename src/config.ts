@@ -81,6 +81,12 @@ export const SYNC_CONCURRENCY = 3;
  */
 export const SYNC_WORK = { requestOverhead: 40, detailPage: 70, finish: 150 };
 
+/**
+ * The original ship prices (RSI's ship upgrade tool) are reloaded with every full refresh, and
+ * by the smart update once they are older than this. They change rarely.
+ */
+export const SHIP_PRICES_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+
 /** Fleetyards models per request when looking up erkul ids (~60 KB each). */
 export const FLEETYARDS_DETAILS_BATCH_SIZE = 20;
 
