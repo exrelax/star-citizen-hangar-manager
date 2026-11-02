@@ -4,13 +4,18 @@ import { computed, ref, watch } from 'vue';
 import { formatDiscount } from '../discount-format';
 import type { PledgeView } from '../pledge-view';
 import { myGearHref } from '../route';
-import ShipLinks from './ShipLinks.vue';
+import ExternalLinks from './ExternalLinks.vue';
 
 const props = defineProps<{
   pledge: PledgeView;
   /** Set while this is the only pledge in the list: it then opens on its own. */
   autoExpand?: boolean;
 }>();
+
+/** The current ship of an upgraded pledge first, then the other ships. */
+const linkedShips = computed(() =>
+  props.pledge.titleShip ? [props.pledge.titleShip, ...props.pledge.ships] : props.pledge.ships,
+);
 
 const discount = computed(
   () => props.pledge.discount && formatDiscount(props.pledge.discount, locale.value),
@@ -57,17 +62,14 @@ const toggle = () => {
       </span>
 
       <span class="shm-main">
-        <span class="shm-title">
-          {{ pledge.title }}
-          <ShipLinks v-if="pledge.titleShip" :link="pledge.titleShip.link" />
-        </span>
+        <span class="shm-title">{{ pledge.title }}</span>
         <span v-if="pledge.originalName" class="shm-original">
           {{ i18n.t('pledge.originalName', [pledge.originalName]) }}
         </span>
         <span v-if="pledge.ships.length" class="shm-ships">
           {{ i18n.t('pledge.shipsLabel') }}
           <template v-for="(ship, index) in pledge.ships" :key="ship.name">
-            <span class="shm-ship">{{ ship.name }}<ShipLinks :link="ship.link" /></span
+            <span class="shm-ship">{{ ship.name }}</span
             ><template v-if="index < pledge.ships.length - 1">, </template>
           </template>
         </span>
@@ -137,6 +139,7 @@ const toggle = () => {
           </span>
         </li>
       </ul>
+      <ExternalLinks :ships="linkedShips" />
     </div>
   </div>
 </template>

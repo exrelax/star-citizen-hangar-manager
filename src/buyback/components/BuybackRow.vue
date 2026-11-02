@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ShipLinks from '@/hangar/components/ShipLinks.vue';
+import ExternalLinks from '@/hangar/components/ExternalLinks.vue';
 import { buybackHref } from '@/hangar/route';
 import { i18n } from '@/i18n';
 import type { BuybackLinkMode } from '@/settings/settings';
@@ -94,7 +94,7 @@ async function addToCart() {
         <span v-if="pledge.ships.length" class="shm-ships">
           {{ i18n.t('pledge.shipsLabel') }}
           <template v-for="(ship, index) in pledge.ships" :key="ship.name">
-            <span class="shm-ship">{{ ship.name }}<ShipLinks :link="ship.link" /></span
+            <span class="shm-ship">{{ ship.name }}</span
             ><template v-if="index < pledge.ships.length - 1">, </template>
           </template>
         </span>
@@ -149,6 +149,7 @@ async function addToCart() {
         </li>
       </ul>
       <p v-else class="shm-hint">{{ i18n.t('buyback.contains', [pledge.contained]) }}</p>
+      <ExternalLinks :ships="pledge.ships" />
     </div>
   </div>
 </template>

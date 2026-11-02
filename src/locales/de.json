@@ -26,7 +26,9 @@
     "notMeltable": "Nicht schmelzbar",
     "showInMyGear": "In „My Gear“ anzeigen (Seite $1)",
     "discountTitle": "Originalpreis: $1. Pledge-Wert: $2. Gespart: $3 ($4).",
-    "surchargeTitle": "Originalpreis: $1. Pledge-Wert: $2. Das sind $3 ($4) mehr als der Originalpreis."
+    "surchargeTitle": "Originalpreis: $1. Pledge-Wert: $2. Das sind $3 ($4) mehr als der Originalpreis.",
+    "externalLinks": "Externe Links:",
+    "openOn": "$1 auf $2 öffnen (neuer Tab)"
   },
   "filter": {
     "label": "Pledges filtern",

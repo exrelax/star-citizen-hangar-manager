@@ -177,8 +177,10 @@
 .shm-hide-values .shm-value,
 .shm-hide-values .shm-discount,
 .shm-hide-erkul .is-erkul,
-.shm-hide-fleetyards .is-fleetyards {
-  display: none;
+.shm-hide-fleetyards .is-fleetyards,
+.shm-hide-erkul.shm-hide-fleetyards .shm-external-links {
+  /* Wins over the components' own `display` (e.g. the link buttons), whatever the order. */
+  display: none !important;
 }
 
 .shm-badge.is-giftable {

@@ -75,7 +75,7 @@ The dev build reloads itself on code changes; reload open RSI tabs afterwards. T
 to the dev server's port (3000, or a free port if 3000 is taken). If the port changes, reload the
 extension in `chrome://extensions`.
 
-Changing a locale file (`src/locales/*.yml`) restarts the whole extension, after which RSI tabs
+Changing a locale file (`src/locales/*.json`) restarts the whole extension, after which RSI tabs
 may keep getting an older content script. Reload the extension in `chrome://extensions` in that
 case.
 
@@ -122,10 +122,15 @@ src/
   entrypoints/
     background.ts        Background (service worker in Chrome, background script in Firefox)
     hangar.content/      Content script: nav entry and manager view on the RSI hangar page
+    ccugame.content/     Content script: links to the manager on ccugame.app
     options/             Manager page (Vue), opens in its own tab
   hangar/                Hangar data and view: sync, smart updates, list, filters, search
+  buyback/               Buy back data and view, adding buy back pledges to the RSI cart
+  ccugame/               Links from CCU Game (ccugame.app) to the manager
   settings/              Extension settings and their tab
+  assets/                Images bundled into the code (favicons of the linked sites)
   locales/               Translations (de, en), default locale is English
+  i18n/                  Runtime translation that follows the language setting
   shared/                Shared code and styles
   config.ts              Tunable values (intervals, page counts, limits)
 wxt.config.ts            Shared configuration and browser-specific manifest
