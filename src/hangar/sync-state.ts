@@ -1,12 +1,13 @@
 import { SMART_UPDATE } from '@/config';
 import { buybackCheckState } from '@/buyback/buyback-storage';
 import { runBuybackSmartUpdate } from '@/buyback/run';
-import { syncBuyback } from '@/buyback/sync-buyback';
+import { prepareBuybackSync } from '@/buyback/sync-buyback';
 import { settingsItem, withDefaults } from '@/settings/settings';
 import { reactive, readonly } from 'vue';
 import { hangarCheckState, type CheckOutcome, type CheckState } from './hangar-storage';
 import { runSmartUpdate } from './smart-update/run';
-import { syncHangar, type SyncProgress } from './sync';
+import { prepareHangarSync } from './sync';
+import { SyncProgressTracker, type SyncProgress } from './sync-progress';
 
 const state = reactive({
   /** A full sync is running. */
@@ -38,30 +39,29 @@ async function recordOutcome(item: CheckStateItem, status: CheckOutcome['status'
 }
 
 /**
- * Starts a full sync of the hangar and then the buy back, unless one is already running.
- * The progress counts the pages of both.
+ * Starts a full sync of the hangar and then the buy back, unless one is already running. The
+ * first pages of both are read up front, so the progress counts all their pages from the start.
  */
 export async function startSync(): Promise<void> {
   if (state.running) return;
   state.running = true;
   state.progress = null;
   const startedAt = performance.now();
-  let hangarPages = 0;
   try {
-    const hangar = await syncHangar({
-      onProgress: (progress) => {
-        state.progress = progress;
-        hangarPages = progress.total;
-      },
-    });
+    // Reported only once both totals are known; the detail pages of the buy back join later.
+    const progress = new SyncProgressTracker();
+    const [runHangar, runBuyback] = await Promise.all([
+      prepareHangarSync({ progress }),
+      prepareBuybackSync({ progress }),
+    ]);
+    progress.start();
+    progress.onChange = (value) => (state.progress = value);
+    state.progress = progress.progress;
+
+    const hangar = await runHangar();
     // A full sync is the most thorough check there is.
     await recordOutcome(hangarCheckState, 'unchanged');
-
-    const buyback = await syncBuyback({
-      onProgress: ({ done, total }) => {
-        state.progress = { done: hangarPages + done, total: hangarPages + total };
-      },
-    });
+    const buyback = await runBuyback();
     await recordOutcome(buybackCheckState, 'unchanged');
 
     const seconds = ((performance.now() - startedAt) / 1000).toFixed(1);

@@ -12,7 +12,8 @@
     "count": "$1 Pledges",
     "countFiltered": "$1 von $2 Pledges",
     "searchPlaceholder": "Titel, Schiffe und Pledge-IDs durchsuchen …",
-    "noResults": "Keine Pledges passen zu deiner Suche."
+    "noResults": "Keine Pledges passen zu deiner Suche.",
+    "syncProgress": "Lese RSI-Seiten: $1 von $2 ($3)"
   },
   "pledge": {
     "toggleDetails": "Enthaltene Items ein- oder ausblenden",

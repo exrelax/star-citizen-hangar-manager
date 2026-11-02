@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import type { PledgeCategory } from '@/hangar/pledge';
 import { BUYBACK_SNAPSHOT_VERSION, type BuybackPledge } from './buyback';
+import { SyncProgressTracker } from '@/hangar/sync-progress';
 import { buybackSnapshot } from './buyback-storage';
 import { syncBuyback, type FetchBuybackPage } from './sync-buyback';
 
@@ -29,7 +30,8 @@ beforeEach(() => fakeBrowser.reset());
 describe('syncBuyback', () => {
   it('stores all pledges with category and the items of pledges with several items', async () => {
     const fetchDetails = vi.fn(async (id: number) => [`Ship ${id}`, 'Lifetime Insurance']);
-    await syncBuyback({ fetchPage, fetchDetails, fetchShipLinks: async () => ({}) });
+    const progress = new SyncProgressTracker();
+    await syncBuyback({ fetchPage, fetchDetails, fetchShipLinks: async () => ({}), progress });
 
     const snapshot = await buybackSnapshot.getValue();
     expect(snapshot?.version).toBe(BUYBACK_SNAPSHOT_VERSION);
@@ -39,6 +41,8 @@ describe('syncBuyback', () => {
       [10, undefined, 2],
     ]);
     expect(fetchDetails.mock.calls.map(([id]) => id).sort()).toEqual([10, 30]);
+    // 2 pages of the full list + 1 page per category list, then the 2 detail pages.
+    expect(progress.progress).toEqual({ done: 2 + 2 + 2, total: 6, fraction: 1 });
   });
 
   it('reuses detail items known from the previous sync', async () => {

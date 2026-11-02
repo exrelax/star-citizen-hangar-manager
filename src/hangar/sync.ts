@@ -1,6 +1,6 @@
-import { SYNC_CONCURRENCY } from '@/config';
-import { mapWithConcurrency } from '@/shared/lib/pool';
+import { HANGAR_PAGE_SIZE, SYNC_WORK } from '@/config';
 import { hangarSnapshot } from './hangar-storage';
+import { prepareListPages } from './list-pages';
 import { parsePledgePage, type PledgePage } from './parse-pledges';
 import {
   HANGAR_SNAPSHOT_VERSION,
@@ -11,11 +11,7 @@ import {
 } from './pledge';
 import { fetchShipMatrixImages, resolveUpgradeImages, type ShipImages } from './ship-images';
 import { resolveShipLinks, type ShipLinks } from './ship-links';
-
-export interface SyncProgress {
-  done: number;
-  total: number;
-}
+import type { SyncProgressTracker } from './sync-progress';
 
 /** Fetches one page of the hangar, optionally limited to an RSI product category. */
 export type FetchPledgePage = (page: number, category?: PledgeCategory) => Promise<PledgePage>;
@@ -24,7 +20,8 @@ export interface SyncOptions {
   fetchPage?: FetchPledgePage;
   fetchShipImages?: () => Promise<ShipImages>;
   fetchShipLinks?: (pledges: Pledge[], previous: ShipLinks | undefined) => Promise<ShipLinks>;
-  onProgress?: (progress: SyncProgress) => void;
+  /** Hears about the pages, announced as soon as their number is known. */
+  progress?: SyncProgressTracker;
   concurrency?: number;
 }
 
@@ -36,62 +33,69 @@ export interface SyncOptions {
  * ships) are read to tag the pledges with their category.
  */
 export async function syncHangar(options: SyncOptions = {}): Promise<HangarSnapshot> {
+  const run = await prepareHangarSync(options);
+  return run();
+}
+
+/**
+ * First step of `syncHangar`: reads the first pages, which tell how many pages there are, and
+ * announces them to `options.progress`. The returned function does the rest.
+ */
+export async function prepareHangarSync(
+  options: SyncOptions = {},
+): Promise<() => Promise<HangarSnapshot>> {
   const {
     fetchPage = fetchPledgePage,
     fetchShipImages = fetchShipMatrixImages,
     fetchShipLinks = resolveShipLinks,
-    onProgress,
-    concurrency = SYNC_CONCURRENCY,
+    progress,
+    concurrency,
   } = options;
 
-  // Only needed for CCU images – loads alongside the pages, and a failure just means fewer images.
-  const shipImages = fetchShipImages().catch((error: unknown) => {
-    console.warn('[sc-hangar-manager] Ship matrix unavailable, CCU images may be missing', error);
-    return new Map() as ShipImages;
+  const readPages = await prepareListPages({
+    fetchPage,
+    pageSize: HANGAR_PAGE_SIZE,
+    progress,
+    concurrency,
   });
+  progress?.expect(0, SYNC_WORK.finish);
+  return async () => {
+    // Only needed for CCU images – loads alongside the pages; a failure just means fewer images.
+    const shipImages = fetchShipImages().catch((error: unknown) => {
+      console.warn('[sc-hangar-manager] Ship matrix unavailable, CCU images may be missing', error);
+      return new Map() as ShipImages;
+    });
+    const pagesOf = await readPages();
 
-  // The first page of each list tells how many pages there are in total.
-  const lists: (PledgeCategory | undefined)[] = [undefined, ...PLEDGE_CATEGORIES];
-  const firstPages = await Promise.all(lists.map((category) => fetchPage(1, category)));
-  const total = firstPages.reduce((sum, page) => sum + page.lastPage, 0);
-  let done = firstPages.length;
-  onProgress?.({ done, total });
-
-  const remaining = lists.flatMap((category, index) =>
-    Array.from({ length: firstPages[index]!.lastPage - 1 }, (_, page) => ({
-      category,
-      page: page + 2,
-    })),
-  );
-  const rest = await mapWithConcurrency(remaining, concurrency, async ({ category, page }) => {
-    const result = await fetchPage(page, category);
-    onProgress?.({ done: ++done, total });
-    return { category, result };
-  });
-
-  const pagesOf = (category: PledgeCategory | undefined) => [
-    firstPages[lists.indexOf(category)]!,
-    ...rest.filter((entry) => entry.category === category).map((entry) => entry.result),
-  ];
-
-  // Pledges can move between pages while syncing – keep each one once, in hangar order.
-  const pledges = new Map<number, Pledge>();
-  for (const page of pagesOf(undefined)) {
-    for (const pledge of page.pledges) {
-      if (!pledges.has(pledge.id)) pledges.set(pledge.id, pledge);
-    }
-  }
-  for (const category of PLEDGE_CATEGORIES) {
-    for (const page of pagesOf(category)) {
-      for (const { id } of page.pledges) {
-        const pledge = pledges.get(id);
-        if (pledge) pledge.category = category;
+    // Pledges can move between pages while syncing – keep each one once, in hangar order.
+    const pledges = new Map<number, Pledge>();
+    for (const page of pagesOf(undefined)) {
+      for (const pledge of page.pledges) {
+        if (!pledges.has(pledge.id)) pledges.set(pledge.id, pledge);
       }
     }
-  }
+    for (const category of PLEDGE_CATEGORIES) {
+      for (const page of pagesOf(category)) {
+        for (const { id } of page.pledges) {
+          const pledge = pledges.get(id);
+          if (pledge) pledge.category = category;
+        }
+      }
+    }
 
-  const allPledges = [...pledges.values()];
-  resolveUpgradeImages(allPledges, await shipImages);
+    const snapshot = await storeSnapshot([...pledges.values()], await shipImages, fetchShipLinks);
+    progress?.complete(0, SYNC_WORK.finish);
+    return snapshot;
+  };
+}
+
+/** Adds images and ship links to the pledges read and stores them as the new snapshot. */
+async function storeSnapshot(
+  allPledges: Pledge[],
+  shipImages: ShipImages,
+  fetchShipLinks: NonNullable<SyncOptions['fetchShipLinks']>,
+): Promise<HangarSnapshot> {
+  resolveUpgradeImages(allPledges, shipImages);
 
   // Links are optional as well: without Fleetyards the hangar is still stored, just without them.
   const previousLinks = (await hangarSnapshot.getValue())?.shipLinks;

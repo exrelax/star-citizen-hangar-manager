@@ -12,7 +12,8 @@
     "count": "$1 pledges",
     "countFiltered": "$1 of $2 pledges",
     "searchPlaceholder": "Search titles, ships and pledge IDs …",
-    "noResults": "No pledges match your search."
+    "noResults": "No pledges match your search.",
+    "syncProgress": "Reading RSI pages: $1 of $2 ($3)"
   },
   "pledge": {
     "toggleDetails": "Show or hide the contained items",

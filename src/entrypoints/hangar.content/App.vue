@@ -6,14 +6,29 @@ import PledgeList from '@/hangar/components/PledgeList.vue';
 import { hashOfTab, MANAGER_TABS, tabFromHash, type ManagerTab } from '@/hangar/route';
 import { startSync, syncState } from '@/hangar/sync-state';
 import { useHangarPledges } from '@/hangar/use-hangar-pledges';
-import { i18n } from '@/i18n';
+import { i18n, locale } from '@/i18n';
 import SettingsPanel from '@/settings/SettingsPanel.vue';
 import { useSettings } from '@/settings/use-settings';
-import { onMounted, onUnmounted, reactive, ref } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
 
 const { pledges, loaded, syncedAt } = useHangarPledges();
 const buyback = useBuybackPledges();
 const { settings, update: updateSettings } = useSettings();
+
+/** Progress of a running sync: pages for the counter, weighted work for the bar and percentage. */
+const syncProgress = computed(() => {
+  const { progress } = syncState;
+  if (!progress) return null;
+  // Rounded down, so 100 % only shows once everything is read.
+  const fraction = Math.floor(progress.fraction * 100) / 100;
+  const percent = new Intl.NumberFormat(locale.value, { style: 'percent' }).format(fraction);
+  return {
+    ...progress,
+    fraction,
+    percent,
+    text: i18n.t('manager.syncProgress', [progress.done, progress.total, percent]),
+  };
+});
 
 // The tab is part of the URL (`#hangar-manager`, `#hangar-manager-bb`, `#hangar-manager-settings`),
 // so it can be linked to and survives a reload.
@@ -52,16 +67,31 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
       class="shadow-button trans-02s trans-color shm-refresh"
       :class="{ 'is-hidden': activeTab === 'settings' }"
       :disabled="syncState.running"
-      :title="i18n.t('manager.refresh')"
+      :title="syncProgress?.text ?? i18n.t('manager.refresh')"
       :aria-label="i18n.t('manager.refresh')"
       :aria-busy="syncState.running"
       @click="startSync"
     >
       <span class="label js-label trans-02s">
         <span class="shm-refresh-icon" :class="{ 'is-spinning': syncState.running }">🔁</span>
-        <span v-if="syncState.progress" class="shm-refresh-progress">
-          {{ syncState.progress.done }} / {{ syncState.progress.total }}
+        <span v-if="syncProgress" class="shm-refresh-progress">
+          {{ syncProgress.done }} / {{ syncProgress.total }} · {{ syncProgress.percent }}
         </span>
+      </span>
+      <!-- The bar follows the estimated work, not the pages: buy back pages take much longer. -->
+      <span
+        v-if="syncProgress"
+        class="shm-refresh-bar"
+        role="progressbar"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        :aria-valuenow="Math.round(syncProgress.fraction * 100)"
+        :aria-valuetext="syncProgress.text"
+      >
+        <span
+          class="shm-refresh-bar-fill"
+          :style="{ transform: `scaleX(${syncProgress.fraction})` }"
+        ></span>
       </span>
       <span class="left-section"></span>
       <span class="right-section"></span>
@@ -156,6 +186,7 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
   font-family: Electrolize, sans-serif !important;
   font-size: 11px !important;
   line-height: 30px !important;
+  position: relative !important;
   background: none;
   border: 0;
   cursor: pointer;
@@ -178,8 +209,31 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
 }
 
 .shm-refresh-progress {
+  display: inline-block;
+  /* Room for "123 / 456 · 100 %", so the button doesn't change its width while counting. */
+  min-width: 15ch;
   margin-left: 6px;
+  text-align: left;
   font-variant-numeric: tabular-nums;
+}
+
+.shm-refresh-bar {
+  position: absolute;
+  right: 12px;
+  bottom: 3px;
+  left: 12px;
+  height: 3px;
+  overflow: hidden;
+  background: rgba(98, 196, 235, 0.2);
+}
+
+/* Scaled instead of resized: smooth steps between the pages without re-layout. */
+.shm-refresh-bar-fill {
+  display: block;
+  height: 100%;
+  background: #62c4eb;
+  transform-origin: left;
+  transition: transform 0.4s ease-out;
 }
 
 .shm-tabs {
@@ -227,6 +281,10 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
 @media (prefers-reduced-motion: reduce) {
   .shm-refresh-icon.is-spinning {
     animation: none;
+  }
+
+  .shm-refresh-bar-fill {
+    transition: none;
   }
 }
 </style>

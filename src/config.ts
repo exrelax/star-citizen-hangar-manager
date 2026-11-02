@@ -59,6 +59,18 @@ export const LIST_RENDER_AHEAD = '1200px';
 /** Full sync: hangar pages requested at the same time – fast, but gentle on the RSI servers. */
 export const SYNC_CONCURRENCY = 3;
 
+/**
+ * Estimated work of the full sync's requests, for its progress bar – in "list entries": a list
+ * page costs `requestOverhead` plus one per entry it lists, a buy back detail page `detailPage`.
+ * `finish` is what hangar and buy back each need after their pages: ship images and links
+ * (Fleetyards, slower when new ships came up) and storing – about 0.1–0.3 s. Counting it keeps
+ * the bar from showing 100 % while that still runs.
+ * Measured in a full sync (3 requests in parallel) in November 2026: ~80 ms per hangar page (10
+ * pledges) and ~470 ms per buy back page (250 pledges). A buy back page so fills the bar about
+ * 6 times as much as a hangar page – not 25 times, as every request has a fixed cost.
+ */
+export const SYNC_WORK = { requestOverhead: 40, detailPage: 70, finish: 150 };
+
 /** Fleetyards models per request when looking up erkul ids (~60 KB each). */
 export const FLEETYARDS_DETAILS_BATCH_SIZE = 20;
 

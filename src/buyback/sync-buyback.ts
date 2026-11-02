@@ -1,8 +1,9 @@
-import { BUYBACK_PAGE_SIZE, SYNC_CONCURRENCY } from '@/config';
+import { BUYBACK_PAGE_SIZE, SYNC_CONCURRENCY, SYNC_WORK } from '@/config';
+import { prepareListPages, type ListPagesOf } from '@/hangar/list-pages';
 import { PLEDGE_CATEGORIES, type Pledge, type PledgeCategory } from '@/hangar/pledge';
 import { resolveShipLinks, type ShipLinks } from '@/hangar/ship-links';
 import type { ListPage } from '@/hangar/smart-update/check';
-import type { SyncProgress } from '@/hangar/sync';
+import type { SyncProgressTracker } from '@/hangar/sync-progress';
 import { mapWithConcurrency } from '@/shared/lib/pool';
 import {
   BUYBACK_SNAPSHOT_VERSION,
@@ -24,7 +25,8 @@ export interface BuybackSyncDeps {
   fetchPage?: FetchBuybackPage;
   fetchDetails?: (id: number) => Promise<string[]>;
   fetchShipLinks?: (pledges: Pledge[], previous: ShipLinks | undefined) => Promise<ShipLinks>;
-  onProgress?: (progress: SyncProgress) => void;
+  /** Hears about the list pages and – once known – the detail pages to read. */
+  progress?: SyncProgressTracker;
   concurrency?: number;
 }
 
@@ -33,30 +35,37 @@ export interface BuybackSyncDeps {
  * sync, nothing is stored unless every page was read.
  */
 export async function syncBuyback(deps: BuybackSyncDeps = {}): Promise<BuybackSnapshot> {
-  const { fetchPage = fetchBuybackPage, onProgress, concurrency = SYNC_CONCURRENCY } = deps;
+  const run = await prepareBuybackSync(deps);
+  return run();
+}
 
-  const lists: (PledgeCategory | undefined)[] = [undefined, ...PLEDGE_CATEGORIES];
-  const firstPages = await Promise.all(lists.map((category) => fetchPage(1, category)));
-  const total = firstPages.reduce((sum, page) => sum + page.lastPage, 0);
-  let done = firstPages.length;
-  onProgress?.({ done, total });
-
-  const remaining = lists.flatMap((category, index) =>
-    Array.from({ length: firstPages[index]!.lastPage - 1 }, (_, page) => ({
-      category,
-      page: page + 2,
-    })),
-  );
-  const rest = await mapWithConcurrency(remaining, concurrency, async ({ category, page }) => {
-    const result = await fetchPage(page, category);
-    onProgress?.({ done: ++done, total });
-    return { category, result };
+/**
+ * First step of `syncBuyback`: reads the first pages, which tell how many pages there are, and
+ * announces them to `deps.progress`. The returned function does the rest.
+ */
+export async function prepareBuybackSync(
+  deps: BuybackSyncDeps = {},
+): Promise<() => Promise<BuybackSnapshot>> {
+  const { fetchPage = fetchBuybackPage, progress, concurrency } = deps;
+  const readPages = await prepareListPages({
+    fetchPage,
+    pageSize: BUYBACK_PAGE_SIZE,
+    progress,
+    concurrency,
   });
-  const pagesOf = (category: PledgeCategory | undefined) => [
-    firstPages[lists.indexOf(category)]!,
-    ...rest.filter((entry) => entry.category === category).map((entry) => entry.result),
-  ];
+  progress?.expect(0, SYNC_WORK.finish);
+  return async () => {
+    const snapshot = await storeBuyback(await readPages(), deps);
+    progress?.complete(0, SYNC_WORK.finish);
+    return snapshot;
+  };
+}
 
+/** Merges the pages read, adds the details and stores the result as the new snapshot. */
+async function storeBuyback(
+  pagesOf: ListPagesOf<BuybackPledge>,
+  deps: BuybackSyncDeps,
+): Promise<BuybackSnapshot> {
   const pledges = new Map<number, BuybackPledge>();
   for (const page of pagesOf(undefined)) {
     for (const pledge of page.pledges) if (!pledges.has(pledge.id)) pledges.set(pledge.id, pledge);
@@ -72,12 +81,7 @@ export async function syncBuyback(deps: BuybackSyncDeps = {}): Promise<BuybackSn
 
   const previous = await buybackSnapshot.getValue();
   const all = [...pledges.values()];
-  const shipLinks = await enrichBuyback(all, previous, {
-    ...deps,
-    onDetail: (count) => {
-      if (count.total) onProgress?.({ done: done + count.done, total: total + count.total });
-    },
-  });
+  const shipLinks = await enrichBuyback(all, previous, deps);
 
   const now = new Date().toISOString();
   const snapshot: BuybackSnapshot = {
@@ -98,13 +102,13 @@ export async function syncBuyback(deps: BuybackSyncDeps = {}): Promise<BuybackSn
 export async function enrichBuyback(
   pledges: BuybackPledge[],
   previous: BuybackSnapshot | null | undefined,
-  deps: BuybackSyncDeps & { onDetail?: (count: { done: number; total: number }) => void } = {},
+  deps: BuybackSyncDeps = {},
 ): Promise<ShipLinks | undefined> {
   const {
     fetchDetails = fetchBuybackDetails,
     fetchShipLinks = resolveShipLinks,
     concurrency = SYNC_CONCURRENCY,
-    onDetail,
+    progress,
   } = deps;
 
   const knownItems = new Map(
@@ -117,10 +121,11 @@ export async function enrichBuyback(
     if (items) pledge.items = items;
     else missing.push(pledge);
   }
-  let done = 0;
+  // Only known once the list pages are read, so they join the progress late.
+  progress?.expect(missing.length, missing.length * SYNC_WORK.detailPage);
   await mapWithConcurrency(missing, concurrency, async (pledge) => {
     pledge.items = await fetchDetails(pledge.id);
-    onDetail?.({ done: ++done, total: missing.length });
+    progress?.complete(1, SYNC_WORK.detailPage);
   });
 
   // Ship links reuse the hangar's matching; buy back ships have no manufacturer code.
