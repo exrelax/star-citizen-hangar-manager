@@ -16,3 +16,13 @@ ul.pledges > li.shm-highlight {
   outline-offset: 3px;
   box-shadow: 0 0 22px rgba(98, 196, 235, 0.55);
 }
+
+/*
+ * The manager view takes the place of RSI's content area next to the account navigation (a flex
+ * row). Like the original area it takes all the remaining width; otherwise its width would follow
+ * the content and the layout would shift when switching tabs or changing filters.
+ */
+.inner-content.shm-manager {
+  width: 100%;
+  min-width: 0;
+}

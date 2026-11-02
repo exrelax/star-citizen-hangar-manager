@@ -65,7 +65,7 @@ export default defineContentScript({
       append: 'after',
       onMount(container) {
         // Takes the place of the original content area, including its layout styles.
-        container.classList.add('inner-content');
+        container.classList.add('inner-content', 'shm-manager');
         const app = createApp(App);
         app.mount(container);
         return app;
