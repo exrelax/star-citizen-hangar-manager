@@ -10,6 +10,7 @@ import {
   managerSearchUrl,
   myGearHref,
   pageFromUrl,
+  pageSizeFromUrl,
   urlWithoutHighlight,
   searchFromUrl,
   tabFromHash,
@@ -129,5 +130,10 @@ describe('buy back links', () => {
     expect(buybackHref('/en/account/pledges', 7, 70485515)).toBe(
       '/en/account/buy-back-pledges?page=7&pagesize=250&highlight=70485515',
     );
+    expect(buybackHref('/en/account/pledges', 2828, 70485515, 1)).toBe(
+      '/en/account/buy-back-pledges?page=2828&pagesize=1&highlight=70485515',
+    );
+    expect(pageSizeFromUrl('?page=2828&pagesize=1', 250)).toBe(1);
+    expect(pageSizeFromUrl('?page=3', 250)).toBe(250);
   });
 });

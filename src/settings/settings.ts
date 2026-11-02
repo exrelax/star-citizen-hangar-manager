@@ -7,6 +7,13 @@ export type LanguageSetting = 'auto' | Locale;
 export const REWARD_VISIBILITIES = ['showAll', 'hideAll', 'hideConcierge', 'hideEvent'] as const;
 export type RewardVisibility = (typeof REWARD_VISIBILITIES)[number];
 
+/**
+ * What "Show in Buy Back" opens on RSI: `single` – a page with only this pledge (page size 1);
+ * `list` – the regular list page, scrolled to the pledge and highlighted.
+ */
+export const BUYBACK_LINK_MODES = ['single', 'list'] as const;
+export type BuybackLinkMode = (typeof BUYBACK_LINK_MODES)[number];
+
 export interface Settings {
   language: LanguageSetting;
   /** Hides the $ values in the hangar list. */
@@ -14,6 +21,7 @@ export interface Settings {
   rewardVisibility: RewardVisibility;
   /** Keeps the stored hangar current by checking a few hangar pages now and then. */
   smartUpdates: boolean;
+  buybackLinkMode: BuybackLinkMode;
   /** Links shown next to ships. */
   shipLinks: {
     erkul: boolean;
@@ -26,6 +34,7 @@ export const DEFAULT_SETTINGS: Settings = {
   hideMeltValue: false,
   rewardVisibility: 'showAll',
   smartUpdates: true,
+  buybackLinkMode: 'single',
   shipLinks: { erkul: true, fleetyards: true },
 };
 
@@ -52,6 +61,9 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
       typeof stored?.smartUpdates === 'boolean'
         ? stored.smartUpdates
         : DEFAULT_SETTINGS.smartUpdates,
+    buybackLinkMode: BUYBACK_LINK_MODES.includes(stored?.buybackLinkMode as BuybackLinkMode)
+      ? stored!.buybackLinkMode!
+      : DEFAULT_SETTINGS.buybackLinkMode,
     shipLinks: {
       erkul: stored?.shipLinks?.erkul ?? DEFAULT_SETTINGS.shipLinks.erkul,
       fleetyards: stored?.shipLinks?.fleetyards ?? DEFAULT_SETTINGS.shipLinks.fleetyards,

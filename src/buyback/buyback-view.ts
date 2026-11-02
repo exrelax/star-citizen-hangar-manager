@@ -8,7 +8,9 @@ import { buybackShipNames, hasSeveralItems, mainItem, type BuybackPledge } from 
 /** What the buy back list shows for a pledge. */
 export interface BuybackView {
   id: number;
-  /** Page of the pledge in RSI's buy back list, as of the last sync. */
+  /** Index of the pledge in RSI's buy back list (0-based), as of the last sync. */
+  position: number;
+  /** Page of the pledge in RSI's buy back list (250 per page), as of the last sync. */
   page: number;
   title: string;
   image?: string;
@@ -62,6 +64,7 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
   const shipNames = buybackShipNames(pledge);
   return {
     id: pledge.id,
+    position,
     page: Math.floor(position / BUYBACK_PAGE_SIZE) + 1,
     title: pledge.title,
     image: pledge.image,

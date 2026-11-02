@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { browserLocale, i18n, LOCALES, type Locale } from '@/i18n';
 import {
+  BUYBACK_LINK_MODES,
   REWARD_VISIBILITIES,
+  type BuybackLinkMode,
   type LanguageSetting,
   type RewardVisibility,
   type Settings,
@@ -84,6 +86,24 @@ function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
         </option>
       </select>
       <p class="shm-hint">{{ i18n.t('settings.rewardsHint') }}</p>
+    </section>
+
+    <section class="shm-setting">
+      <label class="shm-label" for="shm-buyback-link">{{ i18n.t('settings.buybackLink') }}</label>
+      <select
+        id="shm-buyback-link"
+        class="shm-select"
+        :value="settings.buybackLinkMode"
+        @change="
+          emit('update', {
+            buybackLinkMode: ($event.target as HTMLSelectElement).value as BuybackLinkMode,
+          })
+        "
+      >
+        <option v-for="mode in BUYBACK_LINK_MODES" :key="mode" :value="mode">
+          {{ i18n.t(`settings.buybackLinkOptions.${mode}`) }}
+        </option>
+      </select>
     </section>
 
     <fieldset class="shm-setting">

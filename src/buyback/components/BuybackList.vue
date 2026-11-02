@@ -41,7 +41,7 @@ const filterTitle = (filter: BuybackFilter) =>
     :active="active"
   >
     <template #row="{ entry, autoExpand }">
-      <BuybackRow :pledge="entry" :auto-expand="autoExpand" />
+      <BuybackRow :pledge="entry" :auto-expand="autoExpand" :link-mode="settings.buybackLinkMode" />
     </template>
   </ManagerList>
 </template>

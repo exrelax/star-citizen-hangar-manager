@@ -18,6 +18,7 @@ describe('withDefaults', () => {
       hideMeltValue: true,
       rewardVisibility: 'showAll',
       smartUpdates: true,
+      buybackLinkMode: 'single',
       shipLinks: { erkul: false, fleetyards: true },
     });
   });
@@ -28,6 +29,7 @@ describe('withDefaults', () => {
         language: 'fr',
         hideMeltValue: 'yes',
         rewardVisibility: 'sometimes',
+        buybackLinkMode: 'popup',
       } as never),
     ).toEqual(DEFAULT_SETTINGS);
   });

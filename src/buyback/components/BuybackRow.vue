@@ -2,7 +2,8 @@
 import ShipLinks from '@/hangar/components/ShipLinks.vue';
 import { buybackHref } from '@/hangar/route';
 import { i18n } from '@/i18n';
-import { ref, watch } from 'vue';
+import type { BuybackLinkMode } from '@/settings/settings';
+import { computed, ref, watch } from 'vue';
 import type { BuybackView } from '../buyback-view';
 import { giftableHint } from '../giftable-hint';
 
@@ -10,6 +11,8 @@ const props = defineProps<{
   pledge: BuybackView;
   /** Set while this is the only pledge in the list: it then opens on its own. */
   autoExpand?: boolean;
+  /** What "Show in Buy Back" opens (see the settings). */
+  linkMode: BuybackLinkMode;
 }>();
 
 const expanded = ref(!!props.autoExpand);
@@ -34,6 +37,18 @@ const toggle = () => {
 
 // The manager lives on the hangar page; buyback links keep its locale prefix.
 const pathname = location.pathname;
+const buybackLink = computed(() =>
+  props.linkMode === 'single'
+    ? {
+        // One pledge per page: its page number is its position in the list.
+        href: buybackHref(pathname, props.pledge.position + 1, props.pledge.id, 1),
+        text: i18n.t('buyback.showSingleInBuyback'),
+      }
+    : {
+        href: buybackHref(pathname, props.pledge.page, props.pledge.id),
+        text: i18n.t('buyback.showInBuyback', [props.pledge.page]),
+      },
+);
 </script>
 
 <template>
@@ -92,9 +107,7 @@ const pathname = location.pathname;
     </div>
 
     <div v-if="expanded" class="shm-details">
-      <a class="shm-my-gear-link" :href="buybackHref(pathname, pledge.page, pledge.id)">
-        {{ i18n.t('buyback.showInBuyback', [pledge.page]) }} →
-      </a>
+      <a class="shm-my-gear-link" :href="buybackLink.href">{{ buybackLink.text }} →</a>
       <p v-if="pledge.isProbablyGiftable" class="shm-hint">{{ giftableHint }}</p>
       <ul v-if="pledge.items.length" class="shm-items">
         <li v-for="(item, index) in pledge.items" :key="index">

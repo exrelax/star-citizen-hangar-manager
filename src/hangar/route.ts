@@ -94,9 +94,20 @@ export function isBuybackPath(pathname: string): boolean {
  * Link to a page of RSI's buy back list that highlights the given pledge. `hangarPathname` is
  * the path of the manager's hangar page; its locale prefix is kept.
  */
-export function buybackHref(hangarPathname: string, page: number, pledgeId: number): string {
+export function buybackHref(
+  hangarPathname: string,
+  page: number,
+  pledgeId: number,
+  pageSize = BUYBACK_PAGE_SIZE,
+): string {
   const pathname = hangarPathname.replace(/account\/pledges\/?$/, 'account/buy-back-pledges');
-  return `${pathname}?page=${page}&pagesize=${BUYBACK_PAGE_SIZE}&${HIGHLIGHT_URL_PARAM}=${pledgeId}`;
+  return `${pathname}?page=${page}&pagesize=${pageSize}&${HIGHLIGHT_URL_PARAM}=${pledgeId}`;
+}
+
+/** RSI's `pagesize` parameter from the page URL, or `fallback`. */
+export function pageSizeFromUrl(search: string, fallback: number): number {
+  const size = Number(new URLSearchParams(search).get('pagesize'));
+  return Number.isInteger(size) && size > 0 ? size : fallback;
 }
 
 /** Link to the manager view, derived from the site's own hangar link so its locale prefix is kept. */

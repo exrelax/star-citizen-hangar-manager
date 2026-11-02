@@ -59,7 +59,12 @@
     "smartUpdatesHint": "Prüft ab und zu die erste, die letzte und einige weitere Hangar-Seiten auf Änderungen und aktualisiert die Liste ohne vollständigen Abgleich.",
     "shipLinks": "Links bei Schiffen anzeigen",
     "shipLinkErkul": "Link zu erkul.games",
-    "shipLinkFleetyards": "Link zu fleetyards.net"
+    "shipLinkFleetyards": "Link zu fleetyards.net",
+    "buybackLink": "„Im Buy Back anzeigen“ öffnet",
+    "buybackLinkOptions": {
+      "single": "Nur diesen Pledge",
+      "list": "Die Listenseite, zum Pledge gescrollt und hervorgehoben"
+    }
   },
   "status": {
     "checking": "Suche nach Änderungen …",
@@ -80,6 +85,7 @@
     "contains": "Enthält: $1",
     "reclaimed": "Eingeschmolzen $1",
     "showInBuyback": "Im Buy Back anzeigen (Seite $1)",
-    "probablyGiftableHint": "Bei einem Rückkauf mit echtem Geld (Warbond) ist dieses Item vermutlich verschenkbar, da es ursprünglich vor dem $1 gekauft wurde."
+    "probablyGiftableHint": "Bei einem Rückkauf mit echtem Geld (Warbond) ist dieses Item vermutlich verschenkbar, da es ursprünglich vor dem $1 gekauft wurde.",
+    "showSingleInBuyback": "Im Buy Back anzeigen"
   }
 }

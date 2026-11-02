@@ -59,7 +59,12 @@
     "smartUpdatesHint": "Checks the first, the last and a few more hangar pages for changes now and then, and updates the list without a full refresh.",
     "shipLinks": "Show links for ships",
     "shipLinkErkul": "Link to erkul.games",
-    "shipLinkFleetyards": "Link to fleetyards.net"
+    "shipLinkFleetyards": "Link to fleetyards.net",
+    "buybackLink": "“Show in Buy Back” opens",
+    "buybackLinkOptions": {
+      "single": "Only this pledge",
+      "list": "The list page, scrolled to the pledge and highlighted"
+    }
   },
   "status": {
     "checking": "Checking for changes …",
@@ -80,6 +85,7 @@
     "contains": "Contains: $1",
     "reclaimed": "Melted $1",
     "showInBuyback": "Show in Buy Back (page $1)",
-    "probablyGiftableHint": "When bought back with real money (warbond), this item is probably giftable, as it was originally bought before $1."
+    "probablyGiftableHint": "When bought back with real money (warbond), this item is probably giftable, as it was originally bought before $1.",
+    "showSingleInBuyback": "Show in Buy Back"
   }
 }

@@ -1,8 +1,14 @@
 import { parseBuybackPage } from '@/buyback/parse-buyback';
 import { fetchBuybackPage } from '@/buyback/sync-buyback';
-import { HIGHLIGHT_MAX_PAGE_HOPS } from '@/config';
+import { BUYBACK_PAGE_SIZE, HIGHLIGHT_MAX_PAGE_HOPS } from '@/config';
 import { parsePledgePage } from './parse-pledges';
-import { buybackHref, myGearHref, pageFromUrl, urlWithoutHighlight } from './route';
+import {
+  buybackHref,
+  myGearHref,
+  pageFromUrl,
+  pageSizeFromUrl,
+  urlWithoutHighlight,
+} from './route';
 import type { ListPage } from './smart-update/check';
 import { fetchPledgePage } from './sync';
 
@@ -20,6 +26,11 @@ export interface HighlightList {
   fetchPage(page: number): Promise<PagedList>;
   /** Link to a page of the list that highlights the pledge (`pathname`: current page path). */
   href(pathname: string, page: number, pledgeId: number): string;
+  /**
+   * URL of the page the pledge moved to, if it isn't on the current one (outdated stored page).
+   * Defaults to searching the neighbouring pages (see `relocateByPages`).
+   */
+  relocate?(pledgeId: number): Promise<string | undefined>;
 }
 
 /** RSI's "My Gear" list (`/account/pledges`). */
@@ -45,9 +56,43 @@ export const BUYBACK_LIST: HighlightList = {
   parse: parseBuybackPage,
   fetchPage: (page) => fetchBuybackPage(page),
   // On the buy back page itself, the path is the buy back's – map it back to the hangar path.
-  href: (pathname, page, pledgeId) =>
-    buybackHref(pathname.replace(/buy-back-pledges\/?$/, 'pledges'), page, pledgeId),
+  href: (pathname, page, pledgeId) => buybackHref(hangarPath(pathname), page, pledgeId),
+  relocate: (pledgeId) =>
+    pageSizeFromUrl(location.search, BUYBACK_PAGE_SIZE) === BUYBACK_PAGE_SIZE
+      ? relocateByPages(BUYBACK_LIST, pledgeId)
+      : relocateSinglePledge(pledgeId),
 };
+
+function hangarPath(buybackPathname: string): string {
+  return buybackPathname.replace(/buy-back-pledges\/?$/, 'pledges');
+}
+
+/**
+ * A page that shows only one pledge (`pagesize=1`, see the "Show in Buy Back" setting) has the
+ * wrong one when the stored position is outdated. Searching neighbours one pledge at a time would
+ * take many requests, so the full list pages (250 pledges) around the position are searched and
+ * the pledge's exact position is taken from there.
+ */
+async function relocateSinglePledge(pledgeId: number): Promise<string | undefined> {
+  const position = (pageFromUrl(location.search) - 1) * pageSizeFromUrl(location.search, 1);
+  const fullPage = Math.floor(position / BUYBACK_PAGE_SIZE) + 1;
+  const fetchFull = (page: number) => fetchBuybackPage(page);
+
+  const around = await fetchFull(fullPage);
+  let page: number | undefined = fullPage;
+  let ids = around.pledges.map((pledge) => pledge.id);
+  if (!ids.includes(pledgeId)) {
+    const direction = directionOf(pledgeId, ids);
+    page =
+      direction === 0
+        ? undefined
+        : await locatePledgePage(pledgeId, fullPage, direction, around.lastPage, fetchFull);
+    if (!page) return undefined;
+    ids = (await fetchFull(page)).pledges.map((pledge) => pledge.id);
+  }
+  const index = (page - 1) * BUYBACK_PAGE_SIZE + ids.indexOf(pledgeId);
+  return buybackHref(hangarPath(location.pathname), index + 1, pledgeId, 1);
+}
 
 /** The `<li>` of a pledge on the current page of an original list. */
 export function findPledgeItem(
@@ -107,6 +152,20 @@ export function highlightPledgeItem(item: HTMLElement) {
   item.scrollIntoView({ block: 'center', behavior: 'smooth' });
 }
 
+/** Searches the neighbouring pages of the current one in the direction the pledge must be. */
+async function relocateByPages(list: HighlightList, pledgeId: number): Promise<string | undefined> {
+  const direction = directionOf(pledgeId, pageIds(document, list));
+  if (direction === 0) return undefined;
+  const page = await locatePledgePage(
+    pledgeId,
+    pageFromUrl(location.search),
+    direction,
+    list.parse(document).lastPage,
+    list.fetchPage,
+  );
+  return page ? list.href(location.pathname, page, pledgeId) : undefined;
+}
+
 /**
  * Handles a "show in …" link on an original list: highlights the pledge, or – if the stored page
  * was outdated – opens the page it moved to. The parameter is removed from the URL afterwards,
@@ -126,19 +185,10 @@ export async function revealPledge(
     return;
   }
 
-  const direction = directionOf(pledgeId, pageIds(document, list));
-  if (direction !== 0) {
-    const page = await locatePledgePage(
-      pledgeId,
-      pageFromUrl(location.search),
-      direction,
-      list.parse(document).lastPage,
-      list.fetchPage,
-    );
-    if (page) {
-      location.replace(list.href(location.pathname, page, pledgeId));
-      return;
-    }
+  const url = await (list.relocate ?? ((id: number) => relocateByPages(list, id)))(pledgeId);
+  if (url) {
+    location.replace(url);
+    return;
   }
   clearParam();
   console.info(`[sc-hangar-manager] Pledge #${pledgeId} is not in this list (any more).`);

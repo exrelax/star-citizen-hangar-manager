@@ -17,6 +17,7 @@ import { parseBuybackDetail, parseBuybackPage } from './parse-buyback';
 export type FetchBuybackPage = (
   page: number,
   category?: PledgeCategory,
+  pageSize?: number,
 ) => Promise<ListPage<BuybackPledge>>;
 
 export interface BuybackSyncDeps {
@@ -134,10 +135,14 @@ export async function enrichBuyback(
 }
 
 /** Fetches a buy back page with the user's session (English variant, largest page size). */
-export const fetchBuybackPage: FetchBuybackPage = async (page, category) => {
+export const fetchBuybackPage: FetchBuybackPage = async (
+  page,
+  category,
+  pageSize = BUYBACK_PAGE_SIZE,
+) => {
   const filter = category ? `&product-type=${category}` : '';
   const response = await fetch(
-    `/en/account/buy-back-pledges?page=${page}&pagesize=${BUYBACK_PAGE_SIZE}${filter}`,
+    `/en/account/buy-back-pledges?page=${page}&pagesize=${pageSize}${filter}`,
     { credentials: 'include' },
   );
   if (!response.ok)
