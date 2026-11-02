@@ -24,7 +24,7 @@ const linked = computed(() => props.ships.filter((ship) => ship.link));
       <span v-if="linked.length > 1" class="shm-external-ship-name">{{ ship.name }}</span>
       <a
         v-if="ship.link!.erkul"
-        class="shm-link-button is-erkul"
+        class="shm-button shm-link-button is-erkul"
         :href="erkulUrl(ship.link!.erkul)"
         target="_blank"
         rel="noopener noreferrer"
@@ -34,7 +34,7 @@ const linked = computed(() => props.ships.filter((ship) => ship.link));
         <img :src="erkulIcon" alt="" width="14" height="14" />erkul.games
       </a>
       <a
-        class="shm-link-button is-fleetyards"
+        class="shm-button shm-link-button is-fleetyards"
         :href="fleetyardsUrl(ship.link!.fleetyards)"
         target="_blank"
         rel="noopener noreferrer"
@@ -73,37 +73,15 @@ const linked = computed(() => props.ships.filter((ship) => ship.link));
   color: #dbe7ee;
 }
 
-/* Rounded and filled, unlike the square outlined tags (LTI, Gift, …) of the row. */
+/* The look comes from `.shm-button` (row.css); the icon goes left, the arrow right. */
 .shm-link-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px 4px 7px;
-  color: #dbe7ee;
-  font-size: 12px;
-  line-height: 16px;
-  text-decoration: none;
-  text-transform: none;
-  background: rgba(98, 196, 235, 0.14);
-  border: 1px solid rgba(98, 196, 235, 0.5);
-  border-radius: 4px;
-  transition:
-    background 0.15s,
-    border-color 0.15s;
+  padding-left: 7px;
 }
 
 .shm-link-button::after {
   content: '↗';
   color: #62c4eb;
   font-size: 11px;
-}
-
-.shm-link-button:hover,
-.shm-link-button:focus-visible {
-  color: #fff;
-  background: rgba(98, 196, 235, 0.3);
-  border-color: #62c4eb;
-  outline: none;
 }
 
 .shm-link-button img {

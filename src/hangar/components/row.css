@@ -127,23 +127,55 @@
   transform: rotate(90deg);
 }
 
+/* Same columns as the summary: image (112 px) and gap (14 px), then the content. */
 .shm-details {
-  padding: 4px 16px 12px 132px;
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  column-gap: 14px;
+  align-items: start;
+  padding: 4px 16px 12px 6px;
   color: #b4c3cc;
   font-size: 12px;
 }
 
-.shm-my-gear-link {
-  display: inline-block;
-  margin-bottom: 8px;
-  color: #62c4eb;
+/*
+ * Buttons inside the rows (link to RSI's original list, external links): rounded and filled,
+ * unlike the square outlined tags (LTI, Gift, …).
+ */
+.shm-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 10px;
+  color: #dbe7ee;
+  font-size: 12px;
+  line-height: 16px;
   text-decoration: none;
+  text-transform: none;
+  background: rgba(98, 196, 235, 0.14);
+  border: 1px solid rgba(98, 196, 235, 0.5);
+  border-radius: 4px;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
 }
 
-.shm-my-gear-link:hover,
-.shm-my-gear-link:focus-visible {
-  text-decoration: underline;
+.shm-button:hover,
+.shm-button:focus-visible {
+  color: #fff;
+  background: rgba(98, 196, 235, 0.3);
+  border-color: #62c4eb;
   outline: none;
+}
+
+/* Under the image, as wide as it; longer labels ("Show in My Gear (page 98)") wrap. */
+.shm-origin-button {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 5px 6px;
+  font-size: 11px;
+  text-align: center;
 }
 
 .shm-upgrade {

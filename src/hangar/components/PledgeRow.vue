@@ -121,25 +121,28 @@ const toggle = () => {
       </button>
     </div>
 
+    <!-- Two columns like the row above: the way to RSI's original under the image, then the rest. -->
     <div v-if="expanded" class="shm-details">
-      <a class="shm-my-gear-link" :href="myGearHref(pathname, pledge.page, pledge.id)">
-        {{ i18n.t('pledge.showInMyGear', [pledge.page]) }} →
+      <a class="shm-button shm-origin-button" :href="myGearHref(pathname, pledge.page, pledge.id)">
+        {{ i18n.t('pledge.showInMyGear', [pledge.page]) }}
       </a>
-      <p v-if="pledge.upgrade" class="shm-upgrade">
-        {{ pledge.upgrade.matchItems.map((item) => item.name).join(', ') }}
-        →
-        {{ pledge.upgrade.targetItems.map((item) => item.name).join(', ') }}
-      </p>
-      <ul v-if="pledge.items.length" class="shm-items">
-        <li v-for="(item, index) in pledge.items" :key="index">
-          <span class="shm-item-title">{{ item.title }}</span>
-          <span v-if="item.kind" class="shm-item-kind">{{ item.kind }}</span>
-          <span v-if="item.manufacturer" class="shm-item-manufacturer">
-            {{ item.manufacturer }}
-          </span>
-        </li>
-      </ul>
-      <ExternalLinks :ships="linkedShips" />
+      <div class="shm-details-main">
+        <p v-if="pledge.upgrade" class="shm-upgrade">
+          {{ pledge.upgrade.matchItems.map((item) => item.name).join(', ') }}
+          →
+          {{ pledge.upgrade.targetItems.map((item) => item.name).join(', ') }}
+        </p>
+        <ul v-if="pledge.items.length" class="shm-items">
+          <li v-for="(item, index) in pledge.items" :key="index">
+            <span class="shm-item-title">{{ item.title }}</span>
+            <span v-if="item.kind" class="shm-item-kind">{{ item.kind }}</span>
+            <span v-if="item.manufacturer" class="shm-item-manufacturer">
+              {{ item.manufacturer }}
+            </span>
+          </li>
+        </ul>
+        <ExternalLinks :ships="linkedShips" />
+      </div>
     </div>
   </div>
 </template>

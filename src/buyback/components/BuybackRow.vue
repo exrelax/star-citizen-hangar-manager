@@ -140,16 +140,19 @@ async function addToCart() {
       </button>
     </div>
 
+    <!-- Two columns like the row above: the way to RSI's original under the image, then the rest. -->
     <div v-if="expanded" class="shm-details">
-      <a class="shm-my-gear-link" :href="buybackLink.href">{{ buybackLink.text }} →</a>
-      <p v-if="pledge.isProbablyGiftable" class="shm-hint">{{ giftableHint }}</p>
-      <ul v-if="pledge.items.length" class="shm-items">
-        <li v-for="(item, index) in pledge.items" :key="index">
-          <span class="shm-item-title">{{ item }}</span>
-        </li>
-      </ul>
-      <p v-else class="shm-hint">{{ i18n.t('buyback.contains', [pledge.contained]) }}</p>
-      <ExternalLinks :ships="pledge.ships" />
+      <a class="shm-button shm-origin-button" :href="buybackLink.href">{{ buybackLink.text }}</a>
+      <div class="shm-details-main">
+        <p v-if="pledge.isProbablyGiftable" class="shm-hint">{{ giftableHint }}</p>
+        <ul v-if="pledge.items.length" class="shm-items">
+          <li v-for="(item, index) in pledge.items" :key="index">
+            <span class="shm-item-title">{{ item }}</span>
+          </li>
+        </ul>
+        <p v-else class="shm-hint">{{ i18n.t('buyback.contains', [pledge.contained]) }}</p>
+        <ExternalLinks :ships="pledge.ships" />
+      </div>
     </div>
   </div>
 </template>
