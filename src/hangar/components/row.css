@@ -190,3 +190,29 @@
   margin: 0 0 8px;
   color: #8a9ba8;
 }
+
+.shm-cart {
+  padding: 0 6px;
+  font: inherit;
+  font-size: 13px;
+  line-height: 20px;
+  background: none;
+  border: 1px solid rgba(98, 196, 235, 0.6);
+  cursor: pointer;
+}
+
+.shm-cart:hover,
+.shm-cart:focus-visible {
+  background: rgba(98, 196, 235, 0.25);
+  outline: none;
+}
+
+.shm-cart.is-busy {
+  cursor: progress;
+  opacity: 0.5;
+}
+
+.shm-cart-error {
+  color: #ff8a80;
+  font-size: 12px;
+}

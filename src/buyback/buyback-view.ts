@@ -3,7 +3,13 @@ import type { FilterDefinition } from '@/hangar/filters';
 import { GAME_DOWNLOAD, type ShipRef } from '@/hangar/pledge-view';
 import { normalizeSearchText } from '@/hangar/search';
 import type { ShipLinks } from '@/hangar/ship-links';
-import { buybackShipNames, hasSeveralItems, mainItem, type BuybackPledge } from './buyback';
+import {
+  buybackShipNames,
+  hasSeveralItems,
+  mainItem,
+  type BuybackPledge,
+  type BuybackUpgrade,
+} from './buyback';
 
 /** What the buy back list shows for a pledge. */
 export interface BuybackView {
@@ -22,6 +28,8 @@ export interface BuybackView {
   hasLti: boolean;
   isPaint: boolean;
   isCcu: boolean;
+  /** See `BuybackPledge.upgrade`. */
+  upgrade?: BuybackUpgrade;
   isStandaloneShip: boolean;
   hasGameAccess: boolean;
   /** Bought before `BUYBACK_GIFTABLE_PURCHASED_BEFORE`: giftable again after a warbond buy back. */
@@ -78,6 +86,7 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
       (/^paints?\b/i.test(pledge.title) ||
         (!hasSeveralItems(pledge) && /\b(paint|livery)\b/i.test(pledge.contained))),
     isCcu: pledge.isUpgrade,
+    upgrade: pledge.upgrade,
     isStandaloneShip: pledge.category === 'standalone_ship',
     hasGameAccess:
       pledge.category === 'game_package' || items.some((item) => GAME_DOWNLOAD.test(item)),

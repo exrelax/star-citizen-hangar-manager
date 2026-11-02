@@ -13,7 +13,8 @@ const entry = (id: number, title: string, contained: string, date: string, ccu =
       <dl><dt>Reclaim Date</dt><dd>${date}</dd><dt>Contained</dt><dd>${contained}</dd></dl>
       <div class="buyback-action">${
         ccu
-          ? `<a href="" class="holosmallbtn js-open-ship-upgrades" data-pledgeid="${id}">Buy Back</a>`
+          ? `<a href="" class="holosmallbtn js-open-ship-upgrades" data-pledgeid="${id}"
+              data-fromshipid="268" data-toshipid="5" data-toskuid="12991">Buy Back</a>`
           : `<a class="holosmallbtn" href="/pledge/buyback/${id}">Buy Back</a>`
       }</div>
     </div>
@@ -68,6 +69,7 @@ describe('parseBuybackPage', () => {
         reclaimedAt: '2026-10-02',
         contained: 'Upgrade - Pulse to Aurora LX',
         isUpgrade: true,
+        upgrade: { fromShipId: 268, toShipId: 5, toSkuId: 12991 },
       },
     ]);
   });

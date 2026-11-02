@@ -5,6 +5,7 @@ import { i18n } from '@/i18n';
 import type { BuybackLinkMode } from '@/settings/settings';
 import { computed, ref, watch } from 'vue';
 import type { BuybackView } from '../buyback-view';
+import { addBuybackToCart, CartError, RSI_CART_PATH } from '../cart';
 import { giftableHint } from '../giftable-hint';
 
 const props = defineProps<{
@@ -49,6 +50,27 @@ const buybackLink = computed(() =>
         text: i18n.t('buyback.showInBuyback', [props.pledge.page]),
       },
 );
+
+const addingToCart = ref(false);
+const cartError = ref<string>();
+async function addToCart() {
+  if (addingToCart.value) return;
+  addingToCart.value = true;
+  cartError.value = undefined;
+  try {
+    await addBuybackToCart(props.pledge);
+    // Still within the click's user activation for the popup blocker; if blocked, open it here.
+    if (!window.open(RSI_CART_PATH, '_blank')) location.assign(RSI_CART_PATH);
+  } catch (error) {
+    console.error('[sc-hangar-manager] Adding to cart failed', error);
+    cartError.value =
+      error instanceof CartError && error.reason === 'notFound'
+        ? i18n.t('buyback.cartNotFound')
+        : i18n.t('buyback.cartFailed', [error instanceof Error ? error.message : String(error)]);
+  } finally {
+    addingToCart.value = false;
+  }
+}
 </script>
 
 <template>
@@ -85,9 +107,21 @@ const buybackLink = computed(() =>
             {{ i18n.t('buyback.reclaimed', [pledge.reclaimedAt]) }}
           </span>
         </span>
+        <span v-if="cartError" class="shm-cart-error" role="alert">{{ cartError }}</span>
       </span>
 
       <span class="shm-badges">
+        <button
+          type="button"
+          class="shm-cart"
+          :class="{ 'is-busy': addingToCart }"
+          :disabled="addingToCart"
+          :title="i18n.t('buyback.addToCart')"
+          :aria-label="i18n.t('buyback.addToCart')"
+          @click.stop="addToCart"
+        >
+          🛒
+        </button>
         <span v-if="pledge.hasLti" class="shm-badge is-lti">LTI</span>
         <span v-if="pledge.isProbablyGiftable" class="shm-badge is-giftable" :title="giftableHint">
           {{ i18n.t('filter.probablyGiftable') }}

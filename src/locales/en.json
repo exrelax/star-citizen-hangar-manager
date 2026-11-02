@@ -86,6 +86,9 @@
     "reclaimed": "Melted $1",
     "showInBuyback": "Show in Buy Back (page $1)",
     "probablyGiftableHint": "When bought back with real money (warbond), this item is probably giftable, as it was originally bought before $1.",
-    "showSingleInBuyback": "Show in Buy Back"
+    "showSingleInBuyback": "Show in Buy Back",
+    "addToCart": "Add to cart on RSI and open the cart (new tab). RSI empties the cart for buy back pledges.",
+    "cartFailed": "Could not add to the RSI cart: $1",
+    "cartNotFound": "Not found at its stored position in RSI’s buy back any more – please sync and try again."
   }
 }

@@ -1,6 +1,6 @@
 import { parseDate } from '@/hangar/parse-pledges';
 import type { ListPage } from '@/hangar/smart-update/check';
-import type { BuybackPledge } from './buyback';
+import type { BuybackPledge, BuybackUpgrade } from './buyback';
 
 /** Parses one page of `/en/account/buy-back-pledges`. Expects the English page variant. */
 export function parseBuybackPage(doc: Document): ListPage<BuybackPledge> {
@@ -21,14 +21,30 @@ function parseEntry(li: HTMLElement): BuybackPledge | undefined {
 
   const title = text(li.querySelector('h1'));
   const image = li.querySelector('figure img')?.getAttribute('src');
+  const ccuButton = li.querySelector('.js-open-ship-upgrades');
+  const upgrade = ccuButton ? parseUpgrade(ccuButton) : undefined;
   return {
     id,
     title,
     image: image ? new URL(image, 'https://robertsspaceindustries.com').href : undefined,
     reclaimedAt: parseDate(definition(li, 'Reclaim Date')),
     contained: definition(li, 'Contained'),
-    isUpgrade: li.querySelector('.js-open-ship-upgrades') !== null || /^upgrade\b/i.test(title),
+    isUpgrade: ccuButton !== null || /^upgrade\b/i.test(title),
+    ...(upgrade && { upgrade }),
   };
+}
+
+/** The ids on a CCU's "Buy Back" button (`data-fromshipid`, `data-toshipid`, `data-toskuid`). */
+function parseUpgrade(button: Element): BuybackUpgrade | undefined {
+  const id = (name: string) => Number(button.getAttribute(`data-${name}`));
+  const upgrade = {
+    fromShipId: id('fromshipid'),
+    toShipId: id('toshipid'),
+    toSkuId: id('toskuid'),
+  };
+  return Object.values(upgrade).every((value) => Number.isInteger(value) && value > 0)
+    ? upgrade
+    : undefined;
 }
 
 /** Value of a `<dt>label</dt><dd>value</dd>` pair. */

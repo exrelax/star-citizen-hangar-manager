@@ -1,6 +1,13 @@
 import type { PledgeCategory } from '@/hangar/pledge';
 import type { ShipLinks } from '@/hangar/ship-links';
 
+/** RSI's ids of a CCU in the buy back, from its "Buy Back" button; needed to buy it back. */
+export interface BuybackUpgrade {
+  fromShipId: number;
+  toShipId: number;
+  toSkuId: number;
+}
+
 /** A pledge in the RSI buy back (`/account/buy-back-pledges`). It keeps its original id. */
 export interface BuybackPledge {
   id: number;
@@ -12,6 +19,8 @@ export interface BuybackPledge {
   contained: string;
   /** A CCU (upgrade). */
   isUpgrade: boolean;
+  /** CCUs only: what RSI needs to put the CCU into the cart. */
+  upgrade?: BuybackUpgrade;
   /** RSI product category, if it is one of `PLEDGE_CATEGORIES`. */
   category?: PledgeCategory;
   /**
