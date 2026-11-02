@@ -1,4 +1,4 @@
-import { HIGHLIGHT_URL_PARAM, SEARCH_URL_PARAM } from '@/config';
+import { BUYBACK_PAGE_SIZE, HIGHLIGHT_URL_PARAM, SEARCH_URL_PARAM } from '@/config';
 
 /** URL fragment that switches the original hangar page to the manager view. */
 export const MANAGER_HASH = '#hangar-manager';
@@ -56,8 +56,44 @@ export function pageFromUrl(search: string): number {
   return Number.isInteger(page) && page > 0 ? page : 1;
 }
 
+/** Tabs of the manager view, each with its own hash as deep link. */
+export const MANAGER_TABS = ['hangar', 'buyback', 'settings'] as const;
+export type ManagerTab = (typeof MANAGER_TABS)[number];
+
+const TAB_HASHES: Record<ManagerTab, string> = {
+  hangar: MANAGER_HASH,
+  buyback: `${MANAGER_HASH}-bb`,
+  settings: `${MANAGER_HASH}-settings`,
+};
+
+export function tabFromHash(hash: string): ManagerTab | undefined {
+  return MANAGER_TABS.find((tab) => TAB_HASHES[tab] === hash);
+}
+
+export function hashOfTab(tab: ManagerTab): string {
+  return TAB_HASHES[tab];
+}
+
+/** Whether the hash opens the manager view (any of its tabs). */
 export function isManagerRoute(hash: string): boolean {
-  return hash === MANAGER_HASH;
+  return tabFromHash(hash) !== undefined;
+}
+
+// "/account/buy-back-pledges", optionally with a locale prefix.
+const BUYBACK_PATH = /^\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?account\/buy-back-pledges\/?$/i;
+
+/** Whether the path is RSI's original buy back list. */
+export function isBuybackPath(pathname: string): boolean {
+  return BUYBACK_PATH.test(pathname);
+}
+
+/**
+ * Link to a page of RSI's buy back list that highlights the given pledge. `hangarPathname` is
+ * the path of the manager's hangar page; its locale prefix is kept.
+ */
+export function buybackHref(hangarPathname: string, page: number, pledgeId: number): string {
+  const pathname = hangarPathname.replace(/account\/pledges\/?$/, 'account/buy-back-pledges');
+  return `${pathname}?page=${page}&pagesize=${BUYBACK_PAGE_SIZE}&${HIGHLIGHT_URL_PARAM}=${pledgeId}`;
 }
 
 /** Link to the manager view, derived from the site's own hangar link so its locale prefix is kept. */

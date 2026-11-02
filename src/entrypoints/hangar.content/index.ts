@@ -2,9 +2,10 @@ import { i18n, locale } from '@/i18n';
 import { followLanguageSetting } from '@/settings/language';
 import { createApp, watch } from 'vue';
 import { createNavItem, findAccountNav, findHangarLink, setActiveItem } from '@/hangar/account-nav';
-import { revealPledge } from '@/hangar/highlight';
+import { BUYBACK_LIST, revealPledge } from '@/hangar/highlight';
 import {
   highlightFromUrl,
+  isBuybackPath,
   isHangarPath,
   isManagerRoute,
   MANAGER_HASH,
@@ -42,6 +43,13 @@ export default defineContentScript({
         navItem.querySelector('.bg')!.textContent = i18n.t('nav.manager');
       }),
     );
+
+    // Opened via "Show in Buy Back" from the manager: scroll to the pledge and highlight it.
+    if (isBuybackPath(location.pathname)) {
+      const buybackHighlight = highlightFromUrl(location.search);
+      if (buybackHighlight) void revealPledge(buybackHighlight, BUYBACK_LIST);
+      return;
+    }
 
     const originalContent = document.querySelector<HTMLElement>('.inner-content');
     if (!isHangarPath(location.pathname) || !originalContent) return;

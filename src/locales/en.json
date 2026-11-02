@@ -33,10 +33,12 @@
     "standaloneShips": "Standalone ships",
     "gameAccess": "Game access",
     "giftable": "Giftable",
-    "meltable": "Meltable"
+    "meltable": "Meltable",
+    "probablyGiftable": "Probably giftable"
   },
   "tabs": {
     "hangar": "🚀 My Hangar",
+    "buyback": "♻️ Buy Back",
     "settings": "⚙️ Settings"
   },
   "settings": {
@@ -71,5 +73,12 @@
   },
   "ccugame": {
     "openInManager": "Open in Hangar Manager (#$1)"
+  },
+  "buyback": {
+    "empty": "No buy back data yet. Click 🔁 to read your hangar and buy back.",
+    "contains": "Contains: $1",
+    "reclaimed": "Melted $1",
+    "showInBuyback": "Show in Buy Back (page $1)",
+    "probablyGiftableHint": "When bought back with real money (warbond), this item is probably giftable, as it was originally bought before $1."
   }
 }

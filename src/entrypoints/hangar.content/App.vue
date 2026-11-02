@@ -1,19 +1,41 @@
 <script setup lang="ts">
-import { i18n } from '@/i18n';
+import BuybackList from '@/buyback/components/BuybackList.vue';
+import { useBuybackPledges } from '@/buyback/use-buyback-pledges';
 import HangarStatus from '@/hangar/components/HangarStatus.vue';
 import PledgeList from '@/hangar/components/PledgeList.vue';
+import { hashOfTab, MANAGER_TABS, tabFromHash, type ManagerTab } from '@/hangar/route';
 import { startSync, syncState } from '@/hangar/sync-state';
 import { useHangarPledges } from '@/hangar/use-hangar-pledges';
+import { i18n } from '@/i18n';
 import SettingsPanel from '@/settings/SettingsPanel.vue';
 import { useSettings } from '@/settings/use-settings';
-import { ref } from 'vue';
-
-const TABS = ['hangar', 'settings'] as const;
-type Tab = (typeof TABS)[number];
+import { onMounted, onUnmounted, reactive, ref } from 'vue';
 
 const { pledges, loaded, syncedAt } = useHangarPledges();
+const buyback = useBuybackPledges();
 const { settings, update: updateSettings } = useSettings();
-const activeTab = ref<Tab>('hangar');
+
+// The tab is part of the URL (`#hangar-manager`, `#hangar-manager-bb`, `#hangar-manager-settings`),
+// so it can be linked to and survives a reload.
+const activeTab = ref<ManagerTab>(tabFromHash(location.hash) ?? 'hangar');
+/** Tabs opened so far: the big lists are built on first use and then kept. */
+const opened = reactive(new Set<ManagerTab>([activeTab.value]));
+
+function showTab(tab: ManagerTab) {
+  activeTab.value = tab;
+  opened.add(tab);
+  const url = new URL(location.href);
+  url.hash = hashOfTab(tab);
+  if (url.href !== location.href) history.replaceState(history.state, '', url.href);
+}
+
+// Follows hash changes from outside, e.g. a link or an edited address bar.
+const followHash = () => {
+  const tab = tabFromHash(location.hash);
+  if (tab && tab !== activeTab.value) showTab(tab);
+};
+onMounted(() => addEventListener('hashchange', followHash));
+onUnmounted(() => removeEventListener('hashchange', followHash));
 </script>
 
 <!-- Reuses the markup classes of the original hangar page so the view inherits the site's look. -->
@@ -21,13 +43,14 @@ const activeTab = ref<Tab>('hangar');
   <div class="top">
     <h2 class="title">{{ i18n.t('manager.title') }}</h2>
     <!--
-      Only hidden (not removed) outside "My Hangar", so the header keeps its height and the tabs
-      below don't jump. `visibility: hidden` also takes it out of the tab order.
+      Only hidden (not removed) in the settings, so the header keeps its height and the tabs below
+      don't jump. `visibility: hidden` also takes it out of the tab order. It refreshes hangar and
+      buy back together.
     -->
     <button
       type="button"
       class="shadow-button trans-02s trans-color shm-refresh"
-      :class="{ 'is-hidden': activeTab !== 'hangar' }"
+      :class="{ 'is-hidden': activeTab === 'settings' }"
       :disabled="syncState.running"
       :title="i18n.t('manager.refresh')"
       :aria-label="i18n.t('manager.refresh')"
@@ -50,7 +73,7 @@ const activeTab = ref<Tab>('hangar');
 
   <div class="shm-tabs" role="tablist">
     <button
-      v-for="tab in TABS"
+      v-for="tab in MANAGER_TABS"
       :id="`shm-tab-${tab}`"
       :key="tab"
       type="button"
@@ -59,13 +82,13 @@ const activeTab = ref<Tab>('hangar');
       :class="{ 'is-active': activeTab === tab }"
       :aria-selected="activeTab === tab"
       :aria-controls="`shm-panel-${tab}`"
-      @click="activeTab = tab"
+      @click="showTab(tab)"
     >
       {{ i18n.t(`tabs.${tab}`) }}
     </button>
   </div>
 
-  <!-- v-show keeps the (large) list mounted while the settings are open. -->
+  <!-- The lists stay mounted once opened (v-show), so switching tabs is instant. -->
   <div
     v-show="activeTab === 'hangar'"
     id="shm-panel-hangar"
@@ -78,8 +101,36 @@ const activeTab = ref<Tab>('hangar');
         :synced-at="syncedAt"
         :smart-updates="settings.smartUpdates"
       />
-      <PledgeList v-if="pledges.length" :pledges="pledges" :settings="settings" />
+      <PledgeList
+        v-if="pledges.length"
+        :pledges="pledges"
+        :settings="settings"
+        :active="activeTab === 'hangar'"
+      />
       <p v-else class="shm-empty">{{ i18n.t('manager.empty') }}</p>
+    </template>
+  </div>
+  <div
+    v-if="opened.has('buyback')"
+    v-show="activeTab === 'buyback'"
+    id="shm-panel-buyback"
+    role="tabpanel"
+    aria-labelledby="shm-tab-buyback"
+  >
+    <template v-if="buyback.loaded.value">
+      <HangarStatus
+        v-if="buyback.pledges.value.length"
+        source="buyback"
+        :synced-at="buyback.syncedAt.value"
+        :smart-updates="settings.smartUpdates"
+      />
+      <BuybackList
+        v-if="buyback.pledges.value.length"
+        :pledges="buyback.pledges.value"
+        :settings="settings"
+        :active="activeTab === 'buyback'"
+      />
+      <p v-else class="shm-empty">{{ i18n.t('buyback.empty') }}</p>
     </template>
   </div>
   <div

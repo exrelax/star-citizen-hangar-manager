@@ -48,7 +48,7 @@ export interface PledgeView {
 }
 
 /** Items that grant access to the game, e.g. in VIP packages. */
-const GAME_DOWNLOAD = /^(star citizen|squadron 42) digital download$/i;
+export const GAME_DOWNLOAD = /^(star citizen|squadron 42) digital download$/i;
 
 const PLACEHOLDER_IMAGE = '/static/images/Temp/default-image';
 

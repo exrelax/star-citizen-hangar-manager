@@ -33,10 +33,12 @@
     "standaloneShips": "Standalone-Schiffe",
     "gameAccess": "Spielzugang",
     "giftable": "Verschenkbar",
-    "meltable": "Schmelzbar"
+    "meltable": "Schmelzbar",
+    "probablyGiftable": "Vermutlich verschenkbar"
   },
   "tabs": {
     "hangar": "🚀 My Hangar",
+    "buyback": "♻️ Buy Back",
     "settings": "⚙️ Einstellungen"
   },
   "settings": {
@@ -71,5 +73,12 @@
   },
   "ccugame": {
     "openInManager": "Im Hangar Manager öffnen (#$1)"
+  },
+  "buyback": {
+    "empty": "Noch keine Buy-Back-Daten. Klicke auf 🔁, um Hangar und Buy Back einzulesen.",
+    "contains": "Enthält: $1",
+    "reclaimed": "Eingeschmolzen $1",
+    "showInBuyback": "Im Buy Back anzeigen (Seite $1)",
+    "probablyGiftableHint": "Bei einem Rückkauf mit echtem Geld (Warbond) ist dieses Item vermutlich verschenkbar, da es ursprünglich vor dem $1 gekauft wurde."
   }
 }

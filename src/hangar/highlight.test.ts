@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from 'vitest';
-import { directionOf, findPledgeItem, locatePledgePage, pageIds } from './highlight';
+import { BUYBACK_LIST, directionOf, findPledgeItem, locatePledgePage, pageIds } from './highlight';
 import type { Pledge } from './pledge';
 
 const listHtml = (ids: number[]) =>
@@ -14,6 +14,19 @@ describe('findPledgeItem / pageIds', () => {
     expect(pageIds(document)).toEqual([300, 200, 100]);
     expect(findPledgeItem(document, 200)).toBe(document.querySelectorAll('li')[1]);
     expect(findPledgeItem(document, 250)).toBeUndefined();
+  });
+});
+
+describe('buy back list', () => {
+  it('finds regular pledges by their buy back link and CCUs by data-pledgeid', () => {
+    document.body.innerHTML = `<ul class="pledges">
+      <li><a class="holosmallbtn" href="/pledge/buyback/70485515">Buy Back</a></li>
+      <li><a href="" class="js-open-ship-upgrades" data-pledgeid="70485510">Buy Back</a></li>
+    </ul>`;
+    expect(pageIds(document, BUYBACK_LIST)).toEqual([70485515, 70485510]);
+    expect(findPledgeItem(document, 70485510, BUYBACK_LIST)).toBe(
+      document.querySelectorAll('li')[1],
+    );
   });
 });
 

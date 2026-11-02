@@ -1,5 +1,4 @@
 import { HANGAR_PAGE_SIZE, SMART_UPDATE } from '@/config';
-import type { PledgePage } from '../parse-pledges';
 import type { Pledge } from '../pledge';
 import { shipKey } from '../ship-images';
 
@@ -14,34 +13,65 @@ import { shipKey } from '../ship-images';
  * stored number for that id range differs, something changed in between, and the page in the
  * middle is loaded next (binary search). Changes that keep the number of pledges (one removed,
  * one older one added in the same range) are found by the rotating spot check pages.
+ *
+ * The algorithm works for any list sorted that way (hangar, buy back); `checkList` is the generic
+ * core, `checkHangar` adds what is specific to the hangar.
  */
 
-export interface CheckOptions {
-  fetchPage: (page: number) => Promise<PledgePage>;
+/** Anything listed by RSI in pages, newest id first. */
+export interface ListEntry {
+  id: number;
+}
+
+export interface ListPage<T extends ListEntry> {
+  pledges: T[];
+  /** Highest page number linked from the pager. */
+  lastPage: number;
+}
+
+export interface CheckOptions<T extends ListEntry = Pledge> {
+  fetchPage: (page: number) => Promise<ListPage<T>>;
   /** Position of the rotating spot check, kept between runs. */
   cursor: number;
   spotCheckPages?: number;
   maxRepairPages?: number;
 }
 
+export interface ListCheckOptions<T extends ListEntry> extends CheckOptions<T> {
+  pageSize: number;
+  /** Content as RSI shows it; a different fingerprint for the same id means "changed". */
+  fingerprint: (entry: T) => string;
+  /** Extra pages to load once the first diff is known (e.g. pledges changed by an applied CCU). */
+  followUpPages?: (diff: ListDiff<T>, pageOf: (id: number) => number) => number[];
+  /** Combines the fresh version of a changed entry with the stored one. */
+  merge?: (fresh: T, stored: T) => T;
+}
+
+export interface ListDiff<T extends ListEntry> {
+  fresh: Map<number, T>;
+  added: T[];
+  removed: T[];
+  changed: T[];
+}
+
 interface CheckBase {
-  /** Number of hangar pages loaded. */
+  /** Number of pages loaded. */
   requests: number;
   /** Cursor for the next run's spot check pages. */
   nextCursor: number;
 }
 
-export type CheckResult = CheckBase &
+export type CheckResult<T extends ListEntry = Pledge> = CheckBase &
   (
     | { status: 'unchanged' }
     | { status: 'needsFullSync' }
     | {
         status: 'updated';
-        /** The complete new pledge list, in hangar order. */
-        pledges: Pledge[];
-        added: Pledge[];
-        removed: Pledge[];
-        changed: Pledge[];
+        /** The complete new list, in RSI's order. */
+        pledges: T[];
+        added: T[];
+        removed: T[];
+        changed: T[];
       }
   );
 
@@ -74,17 +104,62 @@ export function pledgeFingerprint(pledge: Pledge): string {
   ]);
 }
 
-export async function checkHangar(stored: Pledge[], options: CheckOptions): Promise<CheckResult> {
+export async function checkHangar(
+  stored: Pledge[],
+  options: CheckOptions<Pledge>,
+): Promise<CheckResult<Pledge>> {
+  return checkList(stored, {
+    ...options,
+    pageSize: HANGAR_PAGE_SIZE,
+    fingerprint: pledgeFingerprint,
+    followUpPages: (diff, pageOf) => ccuFollowUpPages(stored, diff, pageOf),
+    merge: withExtensionData,
+  });
+}
+
+/**
+ * An applied CCU disappears from the hangar and changes the pledge with the upgraded ship –
+ * which keeps its id and may be on any page. The pages of all pledges containing the CCU's
+ * "from" ship are loaded to refresh them.
+ */
+function ccuFollowUpPages(
+  stored: Pledge[],
+  { fresh, removed }: ListDiff<Pledge>,
+  pageOf: (id: number) => number,
+): number[] {
+  const fromShips = new Set(
+    removed.flatMap((pledge) => pledge.upgrade?.matchItems.map((item) => shipKey(item.name)) ?? []),
+  );
+  if (fromShips.size === 0) return [];
+  const removedIds = new Set(removed.map((pledge) => pledge.id));
+  return stored
+    .filter(
+      (pledge) =>
+        !fresh.has(pledge.id) &&
+        !removedIds.has(pledge.id) &&
+        pledge.items.some((item) => item.kind === 'Ship' && fromShips.has(shipKey(item.title))),
+    )
+    .map((pledge) => pageOf(pledge.id));
+}
+
+export async function checkList<T extends ListEntry>(
+  stored: T[],
+  options: ListCheckOptions<T>,
+): Promise<CheckResult<T>> {
   const {
     fetchPage,
     cursor,
     spotCheckPages = SMART_UPDATE.spotCheckPages,
     maxRepairPages = SMART_UPDATE.maxRepairPages,
+    pageSize,
+    fingerprint,
+    followUpPages,
+    merge = (fresh) => fresh,
   } = options;
 
   const storedIds = stored.map((pledge) => pledge.id).sort((a, b) => b - a);
   const storedById = new Map(stored.map((pledge) => [pledge.id, pledge]));
-  const pages = new Map<number, PledgePage>();
+  const pages = new Map<number, ListPage<T>>();
   let requests = 0;
 
   const load = async (list: number[]) => {
@@ -96,9 +171,9 @@ export async function checkHangar(stored: Pledge[], options: CheckOptions): Prom
 
   // First page, the stored last page and the spot check pages load together. The first page
   // tells the real last page; only if that changed, one more request is needed.
-  const storedLastPage = Math.max(1, Math.ceil(storedIds.length / HANGAR_PAGE_SIZE));
+  const storedLastPage = Math.max(1, Math.ceil(storedIds.length / pageSize));
   const spot = pickSpotPages(cursor, storedLastPage, spotCheckPages);
-  const done = (status: 'unchanged' | 'needsFullSync'): CheckResult => ({
+  const done = (status: 'unchanged' | 'needsFullSync'): CheckResult<T> => ({
     status,
     requests,
     nextCursor: spot.nextCursor,
@@ -111,7 +186,7 @@ export async function checkHangar(stored: Pledge[], options: CheckOptions): Prom
 
   // Every page but the last one is full; anything else means the list changed while loading.
   for (const [page, { pledges }] of pages) {
-    const expected = page < lastPage ? HANGAR_PAGE_SIZE : pledges.length;
+    const expected = page < lastPage ? pageSize : pledges.length;
     if (pledges.length !== expected || (page === lastPage && page > 1 && expected === 0)) {
       return done('needsFullSync');
     }
@@ -132,7 +207,7 @@ export async function checkHangar(stored: Pledge[], options: CheckOptions): Prom
       const [upper, lower] = [sorted[index]!, sorted[index + 1]!];
       const gapPages = lower - upper - 1;
       if (gapPages === 0) continue;
-      if (countStoredBetween(minId(upper), maxId(lower)) !== gapPages * HANGAR_PAGE_SIZE) {
+      if (countStoredBetween(minId(upper), maxId(lower)) !== gapPages * pageSize) {
         targets.push(Math.floor((upper + lower) / 2));
       }
     }
@@ -157,44 +232,27 @@ export async function checkHangar(stored: Pledge[], options: CheckOptions): Prom
   };
 
   const diff = () => {
-    const fresh = new Map<number, Pledge>();
+    const fresh = new Map<number, T>();
     for (const { pledges } of pages.values())
       for (const pledge of pledges) fresh.set(pledge.id, pledge);
     const removed = stored.filter((pledge) => !fresh.has(pledge.id) && isVerified(pledge.id));
     const added = [...fresh.values()].filter((pledge) => !storedById.has(pledge.id));
     const changed = [...fresh.values()].filter((pledge) => {
       const old = storedById.get(pledge.id);
-      return old !== undefined && pledgeFingerprint(old) !== pledgeFingerprint(pledge);
+      return old !== undefined && fingerprint(old) !== fingerprint(pledge);
     });
     return { fresh, removed, added, changed };
   };
 
-  /**
-   * An applied CCU disappears from the hangar and changes the pledge with the upgraded ship –
-   * which keeps its id and may be on any page. The pages of all pledges containing the CCU's
-   * "from" ship are loaded to refresh them.
-   */
-  const ccuFollowUpPages = ({ fresh, removed, added }: ReturnType<typeof diff>) => {
-    const fromShips = new Set(
-      removed.flatMap(
-        (pledge) => pledge.upgrade?.matchItems.map((item) => shipKey(item.name)) ?? [],
-      ),
-    );
-    if (fromShips.size === 0) return [];
-    const removedIds = new Set(removed.map((pledge) => pledge.id));
+  /** Page of an id in the current list, as far as the diff knows it. */
+  const pageOfIn = ({ removed, added }: ListDiff<T>) => {
+    const removedIds = new Set(removed.map((entry) => entry.id));
     const currentIds = [
       ...storedIds.filter((id) => !removedIds.has(id)),
-      ...added.map((pledge) => pledge.id),
+      ...added.map((entry) => entry.id),
     ].sort((a, b) => b - a);
     const position = new Map(currentIds.map((id, index) => [id, index]));
-    return stored
-      .filter(
-        (pledge) =>
-          !fresh.has(pledge.id) &&
-          !removedIds.has(pledge.id) &&
-          pledge.items.some((item) => item.kind === 'Ship' && fromShips.has(shipKey(item.title))),
-      )
-      .map((pledge) => Math.floor(position.get(pledge.id)! / HANGAR_PAGE_SIZE) + 1);
+    return (id: number) => Math.floor((position.get(id) ?? 0) / pageSize) + 1;
   };
 
   let extraPages = 0;
@@ -203,7 +261,10 @@ export async function checkHangar(stored: Pledge[], options: CheckOptions): Prom
     let targets = mismatchedGaps();
     if (targets.length === 0 && !followedUp) {
       followedUp = true;
-      targets = ccuFollowUpPages(diff()).filter((page) => !pages.has(page));
+      const current = diff();
+      targets = (followUpPages?.(current, pageOfIn(current)) ?? []).filter(
+        (page) => !pages.has(page),
+      );
     }
     if (targets.length === 0) break;
     const unique = [...new Set(targets)];
@@ -220,9 +281,7 @@ export async function checkHangar(stored: Pledge[], options: CheckOptions): Prom
   const pledges = [
     ...stored
       .filter((pledge) => !removedIds.has(pledge.id))
-      .map((pledge) =>
-        changedIds.has(pledge.id) ? withExtensionData(fresh.get(pledge.id)!, pledge) : pledge,
-      ),
+      .map((pledge) => (changedIds.has(pledge.id) ? merge(fresh.get(pledge.id)!, pledge) : pledge)),
     ...added,
   ].sort((a, b) => b.id - a.id);
 

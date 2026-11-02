@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
+  buybackHref,
+  hashOfTab,
   highlightFromUrl,
+  isBuybackPath,
   isHangarPath,
   isManagerRoute,
   managerHref,
@@ -9,6 +12,7 @@ import {
   pageFromUrl,
   urlWithoutHighlight,
   searchFromUrl,
+  tabFromHash,
   urlWithSearch,
 } from './route';
 
@@ -25,8 +29,11 @@ describe('isHangarPath', () => {
 });
 
 describe('isManagerRoute', () => {
-  it('matches only the manager hash', () => {
+  it('matches only the manager hashes', () => {
     expect(isManagerRoute('#hangar-manager')).toBe(true);
+    expect(isManagerRoute('#hangar-manager-bb')).toBe(true);
+    expect(isManagerRoute('#hangar-manager-settings')).toBe(true);
+    expect(isManagerRoute('#hangar-manager-other')).toBe(false);
     expect(isManagerRoute('')).toBe(false);
     expect(isManagerRoute('#other')).toBe(false);
   });
@@ -97,6 +104,27 @@ describe('managerSearchUrl', () => {
   it('opens the manager view with the pledge id as search', () => {
     expect(managerSearchUrl(62492122)).toBe(
       'https://robertsspaceindustries.com/account/pledges?search=62492122#hangar-manager',
+    );
+  });
+});
+
+describe('manager tabs', () => {
+  it('maps tabs to hashes and back', () => {
+    expect(hashOfTab('hangar')).toBe('#hangar-manager');
+    expect(hashOfTab('buyback')).toBe('#hangar-manager-bb');
+    expect(hashOfTab('settings')).toBe('#hangar-manager-settings');
+    expect(tabFromHash('#hangar-manager-bb')).toBe('buyback');
+    expect(tabFromHash('#other')).toBeUndefined();
+  });
+});
+
+describe('buy back links', () => {
+  it('recognizes the buy back page and links to a page of it', () => {
+    expect(isBuybackPath('/en/account/buy-back-pledges')).toBe(true);
+    expect(isBuybackPath('/account/buy-back-pledges/')).toBe(true);
+    expect(isBuybackPath('/en/account/pledges')).toBe(false);
+    expect(buybackHref('/en/account/pledges', 7, 70485515)).toBe(
+      '/en/account/buy-back-pledges?page=7&pagesize=250&highlight=70485515',
     );
   });
 });

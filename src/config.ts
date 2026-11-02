@@ -37,6 +37,25 @@ export const HIGHLIGHT_MAX_PAGE_HOPS = 3;
 /** Delay after the last keystroke before the search term is written to the URL. */
 export const SEARCH_URL_SYNC_DELAY_MS = 300;
 
+/** Buy back pledges per page; the largest page size RSI accepts for the buy back list. */
+export const BUYBACK_PAGE_SIZE = 250;
+
+/**
+ * Buy back pledges bought before this date are "probably giftable" when bought back with real
+ * money (warbond). Purchase dates aren't listed in the buy back, so they are derived from the
+ * pledge id (ids grow over time) and the reclaim date (see buyback-view.ts).
+ */
+export const BUYBACK_GIFTABLE_PURCHASED_BEFORE = '2026-10-30';
+
+/**
+ * Rows the manager lists render at first and per step while scrolling. Filtering and searching
+ * always cover all entries; only drawing is limited, which keeps thousands of entries fast.
+ */
+export const LIST_RENDER_BATCH = 100;
+
+/** How far before the end of the rendered rows the next batch is added (CSS margin). */
+export const LIST_RENDER_AHEAD = '1200px';
+
 /** Full sync: hangar pages requested at the same time – fast, but gentle on the RSI servers. */
 export const SYNC_CONCURRENCY = 3;
 
@@ -49,6 +68,8 @@ export const SMART_UPDATE = {
   checkIntervalMs: 5 * 60 * 1000,
   /** Pages checked per run in addition to the first and the last page (rotating through all). */
   spotCheckPages: 2,
+  /** The same for the buy back, whose pages are much larger (250 pledges, ~1 MB each). */
+  buybackSpotCheckPages: 1,
   /** Extra pages a check may load to locate changes; beyond that a full refresh is suggested. */
   maxRepairPages: 15,
   /** A full refresh is suggested once the last one is older than this. */

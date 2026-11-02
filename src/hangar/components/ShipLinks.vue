@@ -4,7 +4,7 @@ import { erkulUrl, fleetyardsUrl, type ShipLink } from '../ship-links';
 defineProps<{ link?: ShipLink }>();
 </script>
 
-<!-- Both links are always rendered; PledgeList hides them via classes per setting (no re-render). -->
+<!-- Both links are always rendered; the lists hide them via classes per setting (see row.css). -->
 <template>
   <span v-if="link" class="shm-ship-links">
     <a

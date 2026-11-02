@@ -1,0 +1,72 @@
+import type { PledgeCategory } from '@/hangar/pledge';
+import type { ShipLinks } from '@/hangar/ship-links';
+
+/** A pledge in the RSI buy back (`/account/buy-back-pledges`). It keeps its original id. */
+export interface BuybackPledge {
+  id: number;
+  title: string;
+  image?: string;
+  /** Date the pledge was melted (ISO date, YYYY-MM-DD). RSI shows no purchase date here. */
+  reclaimedAt?: string;
+  /** RSI's "Contained" summary, e.g. "Fury and 4 items" or "Sabre - Blue Steel Paint". */
+  contained: string;
+  /** A CCU (upgrade). */
+  isUpgrade: boolean;
+  /** RSI product category, if it is one of `PLEDGE_CATEGORIES`. */
+  category?: PledgeCategory;
+  /**
+   * All items, from the pledge's detail page. Only loaded for pledges with several items – the
+   * only ones that can contain insurance – and kept, as a melted pledge doesn't change any more.
+   */
+  items?: string[];
+}
+
+/** Locally stored result of the last buy back sync. */
+export interface BuybackSnapshot {
+  /** Format version; snapshots of other versions are ignored and need a new sync. */
+  version: number;
+  /** ISO timestamp of the last full sync. */
+  syncedAt: string;
+  /** ISO timestamp of the last change by a full sync or a smart update. */
+  updatedAt?: string;
+  pledges: BuybackPledge[];
+  /** Links of the contained ships to other platforms, by ship name. */
+  shipLinks?: ShipLinks;
+}
+
+export const BUYBACK_SNAPSHOT_VERSION = 1;
+
+const SEVERAL_ITEMS = /^(.*) and (\d+) items?$/i;
+
+/** Whether the pledge has more items than the one named in "Contained". */
+export function hasSeveralItems(pledge: Pick<BuybackPledge, 'contained'>): boolean {
+  return SEVERAL_ITEMS.test(pledge.contained);
+}
+
+/** The item named in "Contained" ("Fury and 4 items" → "Fury"). */
+export function mainItem(pledge: Pick<BuybackPledge, 'contained'>): string {
+  return SEVERAL_ITEMS.exec(pledge.contained)?.[1]?.trim() ?? pledge.contained.trim();
+}
+
+/** Ships of a buy back pledge: the main item of ship pledges and packages. */
+export function buybackShipNames(pledge: BuybackPledge): string[] {
+  if (pledge.isUpgrade) return [];
+  const isShipPledge =
+    pledge.category === 'standalone_ship' ||
+    pledge.category === 'game_package' ||
+    /^(standalone ships?|package)\b/i.test(pledge.title);
+  return isShipPledge && pledge.contained ? [mainItem(pledge)] : [];
+}
+
+/** Content as RSI shows it, to notice changes in smart updates. */
+export function buybackFingerprint(pledge: BuybackPledge): string {
+  return JSON.stringify([pledge.title, pledge.contained, pledge.reclaimedAt, pledge.isUpgrade]);
+}
+
+/** Keeps what the extension added (category, detail items) on a pledge's new version. */
+export function withBuybackExtensionData(fresh: BuybackPledge, old: BuybackPledge): BuybackPledge {
+  const pledge: BuybackPledge = { ...fresh };
+  if (old.category) pledge.category = old.category;
+  if (old.items) pledge.items = old.items;
+  return pledge;
+}

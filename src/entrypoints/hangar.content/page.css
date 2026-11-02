@@ -10,7 +10,8 @@
 }
 
 /* Pledge opened via "Show in My Gear" from the manager (see highlight.ts). */
-.list-items > li.shm-highlight {
+.list-items > li.shm-highlight,
+ul.pledges > li.shm-highlight {
   outline: 2px solid #62c4eb;
   outline-offset: 3px;
   box-shadow: 0 0 22px rgba(98, 196, 235, 0.55);

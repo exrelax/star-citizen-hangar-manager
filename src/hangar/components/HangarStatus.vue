@@ -6,9 +6,14 @@ import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { startSync, syncState } from '../sync-state';
 import { useCheckState } from '../use-check-state';
 
-const props = defineProps<{ syncedAt?: string; smartUpdates: boolean }>();
+const props = defineProps<{
+  syncedAt?: string;
+  smartUpdates: boolean;
+  /** Whose check state to show. */
+  source?: 'hangar' | 'buyback';
+}>();
 
-const checkState = useCheckState();
+const checkState = useCheckState(props.source);
 
 // Keeps "2 minutes ago" current.
 const now = ref(Date.now());
