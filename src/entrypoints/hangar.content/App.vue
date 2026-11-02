@@ -3,6 +3,7 @@ import BuybackList from '@/buyback/components/BuybackList.vue';
 import { useBuybackPledges } from '@/buyback/use-buyback-pledges';
 import HangarStatus from '@/hangar/components/HangarStatus.vue';
 import PledgeList from '@/hangar/components/PledgeList.vue';
+import RefreshIcon from '@/hangar/components/RefreshIcon.vue';
 import { hashOfTab, MANAGER_TABS, tabFromHash, type ManagerTab } from '@/hangar/route';
 import { startSync, syncState } from '@/hangar/sync-state';
 import { useHangarPledges } from '@/hangar/use-hangar-pledges';
@@ -65,7 +66,7 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
     <button
       type="button"
       class="shadow-button trans-02s trans-color shm-refresh"
-      :class="{ 'is-hidden': activeTab === 'settings' }"
+      :class="{ 'is-hidden': activeTab === 'settings', 'is-syncing': syncProgress }"
       :disabled="syncState.running"
       :title="syncProgress?.text ?? i18n.t('manager.refresh')"
       :aria-label="i18n.t('manager.refresh')"
@@ -73,7 +74,7 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
       @click="startSync"
     >
       <span class="label js-label trans-02s">
-        <span class="shm-refresh-icon" :class="{ 'is-spinning': syncState.running }">🔁</span>
+        <RefreshIcon :spinning="syncState.running" />
         <span v-if="syncProgress" class="shm-refresh-progress">
           {{ syncProgress.done }} / {{ syncProgress.total }} · {{ syncProgress.percent }}
         </span>
@@ -182,12 +183,17 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
 .shm-refresh {
   float: right !important;
   display: block !important;
-  padding: 0 12px !important;
+  /*
+   * RSI's background has a 30 px button face with a reflection below (40 px in all). The bottom
+   * padding keeps the content on the face; a <button> centres it vertically in what's left.
+   */
+  padding: 0 12px 10px !important;
   font-family: Electrolize, sans-serif !important;
   font-size: 11px !important;
   line-height: 30px !important;
   position: relative !important;
-  background: none;
+  box-sizing: border-box;
+  /* RSI's `.shadow-button` background (the middle part between the two end sections) stays. */
   border: 0;
   cursor: pointer;
 }
@@ -200,29 +206,31 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
   cursor: progress;
 }
 
-.shm-refresh-icon {
-  display: inline-block;
+/* Icon and progress text side by side, centred on the button face. */
+.shm-refresh .label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 30px;
 }
 
-.shm-refresh-icon.is-spinning {
-  animation: shm-spin 1s linear infinite;
+/* Room for icon and "1234 / 1234 · 100 %": the button keeps its width while counting. */
+.shm-refresh.is-syncing .label {
+  min-width: 11.5ch;
 }
 
 .shm-refresh-progress {
-  display: inline-block;
-  /* Room for "123 / 456 · 100 %", so the button doesn't change its width while counting. */
-  min-width: 15ch;
-  margin-left: 6px;
-  text-align: left;
   font-variant-numeric: tabular-nums;
 }
 
+/* Along the lower edge of the button face (RSI's background shows a reflection below it). */
 .shm-refresh-bar {
   position: absolute;
+  top: 27px;
   right: 12px;
-  bottom: 3px;
   left: 12px;
-  height: 3px;
+  height: 2px;
   overflow: hidden;
   background: rgba(98, 196, 235, 0.2);
 }
@@ -272,17 +280,7 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
   color: #8a9ba8;
 }
 
-@keyframes shm-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .shm-refresh-icon.is-spinning {
-    animation: none;
-  }
-
   .shm-refresh-bar-fill {
     transition: none;
   }

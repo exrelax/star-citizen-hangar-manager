@@ -6,9 +6,9 @@
   },
   "manager": {
     "title": "Hangar Manager",
-    "intro": "An overview of your hangar. Use 🔁 to read the latest state from RSI.",
+    "intro": "An overview of your hangar. Use the refresh button at the top right to read the latest state from RSI.",
     "refresh": "Refresh hangar data",
-    "empty": "No hangar data yet. Click 🔁 to read your hangar.",
+    "empty": "No hangar data yet. Click the refresh button at the top right to read your hangar.",
     "count": "$1 pledges",
     "countFiltered": "$1 of $2 pledges",
     "searchPlaceholder": "Search titles, ships and pledge IDs …",
@@ -82,7 +82,7 @@
     "openInManagerBuyback": "Open in Hangar Manager – Buy Back (#$1)"
   },
   "buyback": {
-    "empty": "No buy back data yet. Click 🔁 to read your hangar and buy back.",
+    "empty": "No buy back data yet. Click the refresh button at the top right to read your hangar and buy back.",
     "contains": "Contains: $1",
     "reclaimed": "Melted $1",
     "showInBuyback": "Show in Buy Back (page $1)",

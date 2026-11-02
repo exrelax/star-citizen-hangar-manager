@@ -5,6 +5,7 @@ import { formatRelativeTime } from '@/shared/lib/relative-time';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { startSync, syncState } from '../sync-state';
 import { useCheckState } from '../use-check-state';
+import RefreshIcon from './RefreshIcon.vue';
 
 const props = defineProps<{
   syncedAt?: string;
@@ -73,7 +74,7 @@ const status = computed((): { text: string; warn?: boolean } | null => {
       :disabled="syncState.running"
       @click="startSync"
     >
-      🔁 {{ i18n.t('status.fullRefresh') }}
+      <RefreshIcon /> {{ i18n.t('status.fullRefresh') }}
     </button>
   </p>
 </template>

@@ -6,9 +6,9 @@
   },
   "manager": {
     "title": "Hangar Manager",
-    "intro": "Eine Übersicht über deinen Hangar. Mit 🔁 liest du den aktuellen Stand bei RSI ein.",
+    "intro": "Eine Übersicht über deinen Hangar. Mit dem Aktualisieren-Button oben rechts liest du den aktuellen Stand bei RSI ein.",
     "refresh": "Hangar-Daten aktualisieren",
-    "empty": "Noch keine Hangar-Daten. Klicke auf 🔁, um deinen Hangar einzulesen.",
+    "empty": "Noch keine Hangar-Daten. Klicke oben rechts auf den Aktualisieren-Button, um deinen Hangar einzulesen.",
     "count": "$1 Pledges",
     "countFiltered": "$1 von $2 Pledges",
     "searchPlaceholder": "Titel, Schiffe und Pledge-IDs durchsuchen …",
@@ -82,7 +82,7 @@
     "openInManagerBuyback": "Im Hangar Manager öffnen – Buy Back (#$1)"
   },
   "buyback": {
-    "empty": "Noch keine Buy-Back-Daten. Klicke auf 🔁, um Hangar und Buy Back einzulesen.",
+    "empty": "Noch keine Buy-Back-Daten. Klicke oben rechts auf den Aktualisieren-Button, um Hangar und Buy Back einzulesen.",
     "contains": "Enthält: $1",
     "reclaimed": "Eingeschmolzen $1",
     "showInBuyback": "Im Buy Back anzeigen (Seite $1)",
