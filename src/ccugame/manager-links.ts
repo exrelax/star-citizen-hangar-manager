@@ -1,31 +1,67 @@
-import { i18n } from '@/i18n';
-import { managerSearchUrl } from '@/hangar/route';
+import { managerSearchUrl, type ManagerTab } from '@/hangar/route';
+import { i18n, type MessageKey } from '@/i18n';
 
 /*
- * CCU Game (ccugame.app) shows a link to the RSI hangar page of a pledge in the item details
- * (Ships, CCUs, Paints, Equipment, Other). Below it, a second link opens the pledge in the
- * Hangar Manager. CCU Game is an Angular app that re-renders the details (e.g. when paging
- * through grouped CCUs), so the links are kept in sync instead of added once.
+ * CCU Game (ccugame.app) shows a link to the RSI page of a pledge in the item details (Ships,
+ * CCUs, Paints, Equipment, Other). Next to it, the extension adds a link that opens the pledge in
+ * the Hangar Manager – for hangar items in the "My Hangar" tab, for buy back items (CCU Game's
+ * "buyback" filter) in the "Buy Back" tab. CCU Game is an Angular app that re-renders the details
+ * (e.g. when paging through grouped CCUs), so the links are kept in sync instead of added once.
  */
 
-/**
- * CCU Game's own link to the RSI hangar page, e.g. `…/connect?jumpto=…/account/pledges?page=59` –
- * with the target URL-encoded in the `jumpto` parameter, so it is matched after decoding.
- */
-const RSI_HANGAR_PAGE = /\/account\/pledges\?page=\d+/;
-
-function isRsiHangarLink(link: HTMLAnchorElement): boolean {
-  const href = link.getAttribute('href') ?? '';
-  try {
-    return RSI_HANGAR_PAGE.test(decodeURIComponent(href));
-  } catch {
-    return RSI_HANGAR_PAGE.test(href);
-  }
-}
 /** Marks the rows added by the extension. */
 const MANAGER_ROW_ATTRIBUTE = 'data-shm-manager-link';
+/** How many rows below the RSI link "Add to cart on RSI" is looked for. */
+const MAX_ROWS_TO_CART = 4;
+
+/** A kind of RSI link in CCU Game's details and where the manager link goes for it. */
+interface LinkKind {
+  /** Matches the RSI target – URL-encoded in the `jumpto` parameter, so tested after decoding. */
+  target: RegExp;
+  tab: ManagerTab;
+  text: MessageKey;
+  /** Row before which the manager link goes; without one it goes right after the RSI link. */
+  insertBefore?: (rsiRow: Element) => Element | undefined;
+}
+
+const LINK_KINDS: LinkKind[] = [
+  // Hangar item: `…/connect?jumpto=…/account/pledges?page=59`
+  { target: /\/account\/pledges\?page=\d+/, tab: 'hangar', text: 'ccugame.openInManager' },
+  // Buy back item: `…/connect?jumpto=…/account/buy-back-pledges?pagesize=1&page=657`. A few rows
+  // below (paints have an "In Store" row in between) follows "Add to cart on RSI" – the manager
+  // link goes right before that button.
+  {
+    target: /\/account\/buy-back-pledges\?/,
+    tab: 'buyback',
+    text: 'ccugame.openInManagerBuyback',
+    insertBefore: (rsiRow) => {
+      let row = rsiRow.nextElementSibling;
+      for (let step = 0; row && step < MAX_ROWS_TO_CART; step++, row = row.nextElementSibling) {
+        if (
+          !row.hasAttribute(MANAGER_ROW_ATTRIBUTE) &&
+          /add to cart/i.test(row.textContent ?? '')
+        ) {
+          return row;
+        }
+      }
+      return undefined;
+    },
+  },
+];
+
 /** How far up from the RSI link the pledge id is looked for (the details panel). */
 const MAX_PANEL_DEPTH = 8;
+
+function kindOf(link: HTMLAnchorElement): LinkKind | undefined {
+  const href = link.getAttribute('href') ?? '';
+  let decoded = href;
+  try {
+    decoded = decodeURIComponent(href);
+  } catch {
+    // Keep the raw href.
+  }
+  return LINK_KINDS.find((kind) => kind.target.test(decoded));
+}
 
 /** Pledge id shown in the same details panel as the link ("#62492122"). */
 export function findPledgeId(link: Element): number | undefined {
@@ -40,21 +76,28 @@ export function findPledgeId(link: Element): number | undefined {
 }
 
 /**
- * Adds or updates the Hangar Manager link below every RSI hangar link. The row is a copy of CCU
- * Game's row (icon and styling stay the same) with the link replaced.
+ * Adds or updates the Hangar Manager link for every RSI link. The row is a copy of CCU Game's
+ * link row (icon and styling stay the same) with the link replaced.
  */
 export function syncManagerLinks(root: ParentNode): void {
   for (const rsiLink of root.querySelectorAll<HTMLAnchorElement>('a[href*="pledges"]')) {
-    if (!isRsiHangarLink(rsiLink)) continue;
+    const kind = kindOf(rsiLink);
     const rsiRow = rsiLink.parentElement;
-    if (!rsiRow || rsiRow.hasAttribute(MANAGER_ROW_ATTRIBUTE)) continue;
+    if (!kind || !rsiRow || rsiRow.hasAttribute(MANAGER_ROW_ATTRIBUTE)) continue;
     const pledgeId = findPledgeId(rsiLink);
+    const beforeRow = kind.insertBefore?.(rsiRow);
 
-    let managerRow = rsiRow.nextElementSibling;
-    if (!managerRow?.hasAttribute(MANAGER_ROW_ATTRIBUTE)) {
+    // One manager row per RSI link: reuse an existing one and move it if the rows around changed
+    // (e.g. "Add to cart on RSI" rendered later than the link).
+    let managerRow = rsiRow.parentElement?.querySelector(`:scope > [${MANAGER_ROW_ATTRIBUTE}]`);
+    if (!managerRow) {
       if (pledgeId === undefined) continue;
       managerRow = rsiRow.cloneNode(true) as Element;
       managerRow.setAttribute(MANAGER_ROW_ATTRIBUTE, '');
+    }
+    if (beforeRow) {
+      if (beforeRow.previousElementSibling !== managerRow) beforeRow.before(managerRow);
+    } else if (rsiRow.nextElementSibling !== managerRow) {
       rsiRow.after(managerRow);
     }
     if (pledgeId === undefined) {
@@ -63,8 +106,8 @@ export function syncManagerLinks(root: ParentNode): void {
     }
 
     const link = managerRow.querySelector('a')!;
-    const href = managerSearchUrl(pledgeId);
-    const text = i18n.t('ccugame.openInManager', [pledgeId]);
+    const href = managerSearchUrl(pledgeId, kind.tab);
+    const text = i18n.t(kind.text, [pledgeId]);
     // Only touched when something changed, so the observer doesn't trigger itself endlessly.
     if (link.getAttribute('href') !== href) link.setAttribute('href', href);
     if (link.textContent !== text) link.textContent = text;

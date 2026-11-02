@@ -72,7 +72,8 @@
     "fullRefresh": "Full refresh"
   },
   "ccugame": {
-    "openInManager": "Open in Hangar Manager (#$1)"
+    "openInManager": "Open in Hangar Manager (#$1)",
+    "openInManagerBuyback": "Open in Hangar Manager – Buy Back (#$1)"
   },
   "buyback": {
     "empty": "No buy back data yet. Click 🔁 to read your hangar and buy back.",

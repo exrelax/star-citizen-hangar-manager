@@ -105,6 +105,9 @@ describe('managerSearchUrl', () => {
     expect(managerSearchUrl(62492122)).toBe(
       'https://robertsspaceindustries.com/account/pledges?search=62492122#hangar-manager',
     );
+    expect(managerSearchUrl(87544255, 'buyback')).toBe(
+      'https://robertsspaceindustries.com/account/pledges?search=87544255#hangar-manager-bb',
+    );
   });
 });
 
