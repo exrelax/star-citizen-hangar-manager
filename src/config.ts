@@ -48,13 +48,23 @@ export const BUYBACK_PAGE_SIZE = 250;
 export const BUYBACK_GIFTABLE_PURCHASED_BEFORE = '2026-10-30';
 
 /**
- * Rows the manager lists render at first and per step while scrolling. Filtering and searching
- * always cover all entries; only drawing is limited, which keeps thousands of entries fast.
+ * Rows the manager lists render at first. Filtering and searching always cover all entries; only
+ * drawing is limited, which keeps thousands of entries fast.
  */
 export const LIST_RENDER_BATCH = 100;
 
-/** How far before the end of the rendered rows the next batch is added (CSS margin). */
-export const LIST_RENDER_AHEAD = '1200px';
+/**
+ * Rows added per step while scrolling. Each step runs when the browser is idle, between the
+ * frames of the scrolling. Steps of 100 rows blocked scrolling for 50–150 ms each (noticeable
+ * hitches); small steps stay well below one frame.
+ */
+export const LIST_RENDER_STEP = 15;
+
+/**
+ * How far before the end of the rendered rows the next rows are added (CSS margin). Large enough
+ * that the small steps stay ahead of fast scrolling.
+ */
+export const LIST_RENDER_AHEAD = '2500px';
 
 /** Full sync: hangar pages requested at the same time – fast, but gentle on the RSI servers. */
 export const SYNC_CONCURRENCY = 3;

@@ -1,5 +1,10 @@
 <script setup lang="ts" generic="T extends { id: number; searchText: string }, F extends string">
-import { LIST_RENDER_AHEAD, LIST_RENDER_BATCH, SEARCH_URL_SYNC_DELAY_MS } from '@/config';
+import {
+  LIST_RENDER_AHEAD,
+  LIST_RENDER_BATCH,
+  LIST_RENDER_STEP,
+  SEARCH_URL_SYNC_DELAY_MS,
+} from '@/config';
 import { i18n } from '@/i18n';
 import {
   computed,
@@ -17,8 +22,8 @@ import { matchesSearch, parseSearchQuery } from '../search';
 /*
  * The list part shared by the manager's tabs: filter buttons, live search, counts, rows. Rows are
  * rendered by the `row` slot. Filtering and searching cover all entries, but only the first
- * matches are drawn and more follow while scrolling (`LIST_RENDER_BATCH`) – drawing thousands of
- * rows at once would make every keystroke slow.
+ * matches are drawn (`LIST_RENDER_BATCH`) and more follow in small steps while scrolling
+ * (`LIST_RENDER_STEP`) – drawing thousands of rows at once would make every keystroke slow.
  */
 
 const props = defineProps<{
@@ -101,32 +106,48 @@ const onlyVisibleId = computed(() =>
   matching.value.length === 1 ? matching.value[0]!.id : undefined,
 );
 
-// Progressive rendering: start with one batch, add the next when the end comes into reach.
+// Progressive rendering: start with one batch, add small steps while the end is within reach.
 const renderLimit = ref(LIST_RENDER_BATCH);
 const rendered = computed(() => matching.value.slice(0, renderLimit.value));
 watch(matching, () => (renderLimit.value = LIST_RENDER_BATCH));
 
 const sentinel = useTemplateRef<HTMLElement>('sentinel');
 let observer: IntersectionObserver | undefined;
-const renderMore = async () => {
-  if (renderLimit.value >= matching.value.length) return;
-  renderLimit.value += LIST_RENDER_BATCH;
-  // Still in reach after the new rows (e.g. fast scrolling or a tall screen)? Add another batch.
-  await nextTick();
-  const rect = sentinel.value?.getBoundingClientRect();
+/** A pending step; at most one, however often the observer fires. */
+let pendingStep: number | undefined;
+
+const inReach = () => {
+  const element = sentinel.value;
+  if (!element?.offsetParent) return false; // Hidden tab.
   const ahead = Number.parseInt(LIST_RENDER_AHEAD, 10);
-  if (rect && rect.height >= 0 && rect.top < innerHeight + ahead && sentinel.value!.offsetParent) {
-    void renderMore();
-  }
+  return element.getBoundingClientRect().top < innerHeight + ahead;
 };
+
+// Each step waits for idle time, so it never delays a frame of the scrolling. The timeout keeps
+// the rows coming during long, continuous scrolling, which leaves little idle time.
+const scheduleStep = () => {
+  pendingStep ??= requestIdleCallback(renderStep, { timeout: 100 });
+};
+const renderStep = async () => {
+  pendingStep = undefined;
+  if (renderLimit.value >= matching.value.length) return;
+  renderLimit.value += LIST_RENDER_STEP;
+  await nextTick();
+  // Still in reach after the new rows (e.g. fast scrolling or a tall screen)? Add another step.
+  if (inReach()) scheduleStep();
+};
+
 onMounted(() => {
   observer = new IntersectionObserver(
-    (records) => records.some((record) => record.isIntersecting) && void renderMore(),
+    (records) => records.some((record) => record.isIntersecting) && scheduleStep(),
     { rootMargin: `0px 0px ${LIST_RENDER_AHEAD} 0px` },
   );
   if (sentinel.value) observer.observe(sentinel.value);
 });
-onUnmounted(() => observer?.disconnect());
+onUnmounted(() => {
+  observer?.disconnect();
+  if (pendingStep !== undefined) cancelIdleCallback(pendingStep);
+});
 
 const countLabel = computed(() =>
   visibleIds.value
