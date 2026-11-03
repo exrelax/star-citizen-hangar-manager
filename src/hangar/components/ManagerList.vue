@@ -24,6 +24,7 @@ import {
   type FilterPredicates,
   type FilterState,
 } from '../filters';
+import SvgIcon from '@/icons/SvgIcon.vue';
 import { searchFromUrl, urlWithSearch } from '../route';
 import { matchesSearch, parseSearchQuery } from '../search';
 
@@ -65,6 +66,13 @@ watch(query, () => {
   clearTimeout(urlTimer);
   urlTimer = setTimeout(writeSearchToUrl, SEARCH_URL_SYNC_DELAY_MS);
 });
+const searchInput = useTemplateRef<HTMLInputElement>('search');
+/** The clear button in the search field: empties the search and keeps typing possible. */
+function clearSearch() {
+  query.value = '';
+  searchInput.value?.focus();
+}
+
 // Switching tabs hands the URL parameter over to the list that is shown now.
 watch(
   () => props.active,
@@ -260,15 +268,28 @@ const countLabel = computed(() =>
     </div>
 
     <div class="shm-toolbar">
-      <input
-        v-model="query"
-        type="search"
-        class="shm-search"
-        :placeholder="i18n.t('manager.searchPlaceholder')"
-        :aria-label="i18n.t('manager.searchPlaceholder')"
-        autocomplete="off"
-        spellcheck="false"
-      />
+      <span class="shm-search-field">
+        <input
+          ref="search"
+          v-model="query"
+          type="search"
+          class="shm-search"
+          :placeholder="i18n.t('manager.searchPlaceholder')"
+          :aria-label="i18n.t('manager.searchPlaceholder')"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button
+          v-if="query"
+          type="button"
+          class="shm-search-clear"
+          :title="i18n.t('manager.clearSearch')"
+          :aria-label="i18n.t('manager.clearSearch')"
+          @click="clearSearch"
+        >
+          <SvgIcon name="circle-xmark" />
+        </button>
+      </span>
       <p class="shm-count" aria-live="polite">{{ countLabel }}</p>
     </div>
 
@@ -389,16 +410,52 @@ const countLabel = computed(() =>
   margin-bottom: 10px;
 }
 
+/* The search field with its clear button inside, at the right. */
+.shm-search-field {
+  position: relative;
+  display: flex;
+  flex: 1;
+}
+
 .shm-search {
   flex: 1;
   height: 34px;
-  padding: 0 12px;
+  /* Room for the clear button. */
+  padding: 0 34px 0 12px;
   color: var(--shm-text);
   font: inherit;
   font-size: 13px;
   background: rgb(var(--shm-surface-rgb) / 0.8);
   border: 1px solid rgb(var(--shm-accent-rgb) / 0.35);
   border-radius: 0;
+  outline: none;
+}
+
+/* Chrome's own clear button of search fields: replaced by `.shm-search-clear`. */
+.shm-search::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.shm-search-clear {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  padding: 0;
+  color: var(--shm-text-muted);
+  font-size: 15px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.shm-search-clear:hover,
+.shm-search-clear:focus-visible {
+  color: var(--shm-text-strong);
   outline: none;
 }
 

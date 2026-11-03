@@ -9,6 +9,7 @@ import { insuranceLabel, supersededInsurances } from '../insurance';
 import type { PledgeView } from '../pledge-view';
 import { myGearHref } from '../route';
 import OrderInfo from '@/orders/OrderInfo.vue';
+import SvgIcon from '@/icons/SvgIcon.vue';
 import ExchangeOverlay from './ExchangeOverlay.vue';
 import ExternalLinks from './ExternalLinks.vue';
 import GiftOverlay from './GiftOverlay.vue';
@@ -188,6 +189,7 @@ const toggle = () => {
           :title="demo ? i18n.t('exchange.demo') : i18n.t('exchange.buttonHint')"
           @click="exchanging = true"
         >
+          <SvgIcon name="triangle-exclamation" />
           {{ i18n.t('exchange.button') }}
         </button>
         <ExchangeOverlay v-if="exchanging" :pledge="pledge" @close="exchanging = false" />
@@ -199,6 +201,7 @@ const toggle = () => {
           :title="demo ? i18n.t('gift.demo') : i18n.t('gift.buttonHint')"
           @click="gifting = true"
         >
+          <SvgIcon name="gift" />
           {{ i18n.t('gift.button') }}
         </button>
         <GiftOverlay v-if="gifting" :pledge="pledge" @close="gifting = false" />

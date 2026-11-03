@@ -41,6 +41,7 @@ and auto-imports that TypeScript and ESLint rely on.
 | `pnpm format`        | Formats all files with Prettier                                 |
 | `pnpm format:check`  | Checks formatting without changing files                        |
 | `pnpm test`          | Unit tests with Vitest (`pnpm test:watch` for watch mode)       |
+| `pnpm svg-sprite`    | Builds the icon sprites and icon names (see below)              |
 
 ## Trying the extension in the browser
 
@@ -130,13 +131,21 @@ src/
   buyback/               Buy back data and view, adding buy back pledges to the RSI cart
   ccugame/               Links from CCU Game (ccugame.app) to the manager
   settings/              Extension settings and their tab
-  assets/                Images bundled into the code (favicons of the linked sites)
+  assets/                Images bundled into the code (favicons, icon sprites)
+  icons/                 `SvgIcon` component, sprite loading, generated icon names
   locales/               Translations (de, en), default locale is English
   i18n/                  Runtime translation that follows the language setting
   shared/                Shared code and styles
   config.ts              Tunable values (intervals, page counts, limits)
 wxt.config.ts            Shared configuration and browser-specific manifest
 ```
+
+### Icons
+
+Icons are single SVG files in `src/assets/svg-sprites/<set>/` (currently `fa`, Font Awesome
+Free). After adding or changing one, run `pnpm svg-sprite`: it optimizes the icons with svgo and
+writes the sprite `src/assets/svg-sprites/<set>.svg` and the names in `src/icons/icon-names.ts`.
+Use an icon with `<SvgIcon name="circle-xmark" />`; it is as large as the text and in its color.
 
 Browser-specific differences should live in `wxt.config.ts` wherever possible; the rest of the code
 is the same for both browsers.

@@ -16,7 +16,8 @@
     "syncProgress": "Lese RSI-Seiten: $1 von $2 ($3)",
     "demoBadge": "Demo",
     "demoBadgeHint": "Demo-Modus: eine Auswahl deiner Pledges mit erfundenen Pledge-IDs. Abschalten in den Einstellungen.",
-    "firstSync": "Lese deinen Hangar, Buy Back und deine Orders von RSI … Den Fortschritt siehst du oben rechts."
+    "firstSync": "Lese deinen Hangar, Buy Back und deine Orders von RSI … Den Fortschritt siehst du oben rechts.",
+    "clearSearch": "Suche leeren"
   },
   "pledge": {
     "toggleDetails": "Enthaltene Items ein- oder ausblenden",
@@ -73,9 +74,9 @@
     }
   },
   "tabs": {
-    "hangar": "🚀 My Hangar",
-    "buyback": "♻️ Buy Back",
-    "settings": "⚙️ Einstellungen"
+    "hangar": "My Hangar",
+    "buyback": "Buy Back",
+    "settings": "Einstellungen"
   },
   "settings": {
     "language": "Sprache",

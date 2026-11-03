@@ -8,11 +8,20 @@ import { DEMO_CONTEXT, useDemo } from '@/demo/use-demo';
 import { hashOfTab, MANAGER_TABS, tabFromHash, type ManagerTab } from '@/hangar/route';
 import { startSync, syncState } from '@/hangar/sync-state';
 import { useHangarPledges } from '@/hangar/use-hangar-pledges';
+import type { IconName } from '@/icons/icon-names';
+import SvgIcon from '@/icons/SvgIcon.vue';
 import { i18n, locale } from '@/i18n';
 import SettingsPanel from '@/settings/SettingsPanel.vue';
 import { useSettings } from '@/settings/use-settings';
 import { MANAGER_CONTAINER, useThemeClass } from '@/themes/theme';
 import { computed, inject, onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue';
+
+/** Icon of each tab, before its label. */
+const TAB_ICONS: Record<ManagerTab, IconName> = {
+  hangar: 'box',
+  buyback: 'recycle',
+  settings: 'gear',
+};
 
 const hangar = useHangarPledges();
 const buyback = useBuybackPledges();
@@ -150,6 +159,7 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
       :aria-controls="`shm-panel-${tab}`"
       @click="showTab(tab)"
     >
+      <SvgIcon :name="TAB_ICONS[tab]" />
       {{ i18n.t(`tabs.${tab}`) }}
     </button>
   </div>
@@ -305,6 +315,9 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
 }
 
 .shm-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   padding: 8px 16px;
   color: var(--shm-text-muted);
   font: inherit;
