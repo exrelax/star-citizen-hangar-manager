@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ManagerList from '@/hangar/components/ManagerList.vue';
-import { shownFilters } from '@/hangar/filters';
+import { FILTER_CATEGORIES, shownFilters } from '@/hangar/filters';
 import { i18n } from '@/i18n';
 import type { Settings } from '@/settings/settings';
 import { computed } from 'vue';
@@ -17,7 +17,12 @@ const displayClasses = computed(() => ({
   'shm-hide-fleetyards': !props.settings.shipLinks.fleetyards,
 }));
 
-const filters = computed(() => shownFilters(props.settings.filters.buyback));
+const filterGroups = computed(() =>
+  FILTER_CATEGORIES.map((category) => ({
+    category,
+    filters: shownFilters(props.settings.filters.buyback[category]),
+  })),
+);
 
 const filterLabel = (filter: BuybackFilter) => i18n.t(`filter.${filter}`);
 
@@ -33,7 +38,7 @@ const filterHint = (filter: BuybackFilter) => {
   <ManagerList
     :class="displayClasses"
     :entries="pledges"
-    :filters="filters"
+    :filter-groups="filterGroups"
     :predicates="BUYBACK_FILTER_PREDICATES"
     :filter-label="filterLabel"
     :filter-hint="filterHint"

@@ -93,6 +93,28 @@ export function normalizeFilterLayout<F extends string>(
   return { order, shown };
 }
 
+/**
+ * Filters come in two categories, shown as separate groups: `types` say what a pledge is (a
+ * ship, a CCU, …), `features` what it has or allows (LTI, gift, melt, …).
+ */
+export const FILTER_CATEGORIES = ['types', 'features'] as const;
+export type FilterCategory = (typeof FILTER_CATEGORIES)[number];
+
+/** Order and selection of each category's filters. */
+export type FilterGroups<F extends string> = Record<FilterCategory, FilterLayout<F>>;
+
+/** `normalizeFilterLayout` for each category; `categories` says which filters belong to which. */
+export function normalizeFilterGroups<F extends string>(
+  stored: Partial<Record<FilterCategory, Partial<FilterLayout<string>>>> | null | undefined,
+  categories: Record<FilterCategory, readonly F[]>,
+  defaults: FilterGroups<F>,
+): FilterGroups<F> {
+  return {
+    types: normalizeFilterLayout(stored?.types, categories.types, defaults.types),
+    features: normalizeFilterLayout(stored?.features, categories.features, defaults.features),
+  };
+}
+
 /** The filter buttons of a layout, in their order. */
 export function shownFilters<F extends string>(layout: FilterLayout<F>): F[] {
   return layout.order.filter((filter) => layout.shown.includes(filter));
@@ -112,6 +134,11 @@ export const PLEDGE_FILTERS = [
   'rewards',
 ] as const;
 export type PledgeFilter = (typeof PLEDGE_FILTERS)[number];
+
+export const PLEDGE_FILTER_CATEGORIES: Record<FilterCategory, readonly PledgeFilter[]> = {
+  types: ['ships', 'ccus', 'paints', 'gameAccess', 'rewards'],
+  features: ['lti', 'warbond', 'giftable', 'meltable', 'valuable'],
+};
 
 export const PLEDGE_FILTER_PREDICATES: FilterPredicates<PledgeView, PledgeFilter> = {
   // Any pledge with a ship: standalone ships, packages, upgraded ships.

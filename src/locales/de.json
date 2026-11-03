@@ -56,6 +56,10 @@
       "valuable": "Pledges mit einem Wert über $$0.",
       "rewards": "Rewards mit einem Wert von $$0: Event-, Referral-, Concierge- und andere Rewards.",
       "rewardsByName": "Rewards, am Namen erkannt: Event-, Referral-, Concierge- und andere Rewards."
+    },
+    "categories": {
+      "types": "Typen",
+      "features": "Merkmale"
     }
   },
   "tabs": {
@@ -94,13 +98,15 @@
     },
     "filters": "Filter",
     "filtersHint": "Ziehe die Filter (oder nutze die Pfeile), um ihre Reihenfolge zu ändern; nicht angehakte Filter erscheinen nicht in der Liste.",
-    "filtersHangar": "My Hangar",
-    "filtersBuyback": "Buy Back",
     "filtersReset": "Zurücksetzen",
     "filterUp": "„$1“ nach oben",
     "filterDown": "„$1“ nach unten",
     "hideSupersededInsurances": "Bei geupgradeten Schiffen nur die beste Versicherung anzeigen",
-    "hideSupersededInsurancesHint": "Nach Upgrades listet ein Pledge die Versicherung jedes Schritts auf, es gilt aber nur die beste: LTI, falls vorhanden, sonst die mit den meisten Monaten. Die übrigen werden im aufgeklappten Item ausgeblendet."
+    "hideSupersededInsurancesHint": "Nach Upgrades listet ein Pledge die Versicherung jedes Schritts auf, es gilt aber nur die beste: LTI, falls vorhanden, sonst die mit den meisten Monaten. Die übrigen werden im aufgeklappten Item ausgeblendet.",
+    "filtersLists": {
+      "hangar": "My Hangar",
+      "buyback": "Buy Back"
+    }
   },
   "status": {
     "checking": "Suche nach Änderungen …",

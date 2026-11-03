@@ -2,7 +2,12 @@
 import { i18n, type MessageKey } from '@/i18n';
 import type { Settings } from '@/settings/settings';
 import { computed } from 'vue';
-import { PLEDGE_FILTER_PREDICATES, shownFilters, type PledgeFilter } from '../filters';
+import {
+  PLEDGE_FILTER_PREDICATES,
+  shownFilters,
+  FILTER_CATEGORIES,
+  type PledgeFilter,
+} from '../filters';
 import type { PledgeView } from '../pledge-view';
 import ManagerList from './ManagerList.vue';
 import PledgeRow from './PledgeRow.vue';
@@ -19,7 +24,12 @@ const displayClasses = computed(() => ({
   'shm-hide-fleetyards': !props.settings.shipLinks.fleetyards,
 }));
 
-const filters = computed(() => shownFilters(props.settings.filters.hangar));
+const filterGroups = computed(() =>
+  FILTER_CATEGORIES.map((category) => ({
+    category,
+    filters: shownFilters(props.settings.filters.hangar[category]),
+  })),
+);
 
 const filterLabel = (filter: PledgeFilter) => i18n.t(`filter.${filter}`);
 
@@ -40,7 +50,7 @@ const filterHint = (filter: PledgeFilter) => {
   <ManagerList
     :class="displayClasses"
     :entries="pledges"
-    :filters="filters"
+    :filter-groups="filterGroups"
     :predicates="PLEDGE_FILTER_PREDICATES"
     :filter-label="filterLabel"
     :filter-hint="filterHint"

@@ -56,6 +56,10 @@
       "valuable": "Pledges with a value above $$0.",
       "rewards": "Rewards with a value of $$0: event, referral, Concierge and other rewards.",
       "rewardsByName": "Rewards, recognized by their names: event, referral, Concierge and other rewards."
+    },
+    "categories": {
+      "types": "Types",
+      "features": "Features"
     }
   },
   "tabs": {
@@ -94,13 +98,15 @@
     },
     "filters": "Filters",
     "filtersHint": "Drag the filters (or use the arrows) to change their order; unchecked filters are not shown in the list.",
-    "filtersHangar": "My Hangar",
-    "filtersBuyback": "Buy Back",
     "filtersReset": "Reset",
     "filterUp": "Move “$1” up",
     "filterDown": "Move “$1” down",
     "hideSupersededInsurances": "Show only the best insurance of upgraded ships",
-    "hideSupersededInsurancesHint": "After upgrades a pledge lists the insurance of every step, but only the best one is kept: LTI if there is one, otherwise the most months. The others are hidden in the opened item."
+    "hideSupersededInsurancesHint": "After upgrades a pledge lists the insurance of every step, but only the best one is kept: LTI if there is one, otherwise the most months. The others are hidden in the opened item.",
+    "filtersLists": {
+      "hangar": "My Hangar",
+      "buyback": "Buy Back"
+    }
   },
   "status": {
     "checking": "Checking for changes …",

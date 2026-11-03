@@ -1,6 +1,6 @@
 import { BUYBACK_GIFTABLE_PURCHASED_BEFORE, BUYBACK_PAGE_SIZE } from '@/config';
 import type { PaidOrder } from '@/orders/orders';
-import type { FilterPredicates } from '@/hangar/filters';
+import type { FilterCategory, FilterPredicates } from '@/hangar/filters';
 import { isRewardTitle } from '@/hangar/rewards';
 import { bestInsurance, type Insurance } from '@/hangar/insurance';
 import { GAME_DOWNLOAD, type ShipRef } from '@/hangar/pledge-view';
@@ -120,6 +120,11 @@ export const BUYBACK_FILTERS = [
   'rewards',
 ] as const;
 export type BuybackFilter = (typeof BUYBACK_FILTERS)[number];
+
+export const BUYBACK_FILTER_CATEGORIES: Record<FilterCategory, readonly BuybackFilter[]> = {
+  types: ['ships', 'ccus', 'paints', 'gameAccess', 'rewards'],
+  features: ['lti', 'warbond', 'probablyGiftable'],
+};
 
 export const BUYBACK_FILTER_PREDICATES: FilterPredicates<BuybackView, BuybackFilter> = {
   ships: (pledge) => pledge.ships.length > 0,

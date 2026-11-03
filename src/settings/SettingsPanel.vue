@@ -10,6 +10,7 @@ import {
   type Theme,
 } from './settings';
 import FilterLayoutSetting from './FilterLayoutSetting.vue';
+import { FILTER_CATEGORIES, type FilterCategory, type FilterLayout } from '@/hangar/filters';
 
 const props = defineProps<{ settings: Settings }>();
 const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
@@ -22,8 +23,15 @@ function languageName(code: Locale) {
 
 const filterLabel = (filter: string) => i18n.t(`filter.${filter}` as MessageKey);
 
-function setFilters<L extends keyof Settings['filters']>(list: L, layout: Settings['filters'][L]) {
-  emit('update', { filters: { ...props.settings.filters, [list]: layout } });
+const FILTER_LISTS = ['hangar', 'buyback'] as const;
+
+function setFilters(
+  list: keyof Settings['filters'],
+  category: FilterCategory,
+  layout: FilterLayout<string>,
+) {
+  const groups = { ...props.settings.filters[list], [category]: layout };
+  emit('update', { filters: { ...props.settings.filters, [list]: groups } });
 }
 
 function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
@@ -162,22 +170,19 @@ function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
       <legend class="shm-label">{{ i18n.t('settings.filters') }}</legend>
       <p class="shm-hint is-first">{{ i18n.t('settings.filtersHint') }}</p>
       <div class="shm-filter-layouts">
-        <FilterLayoutSetting
-          id="shm-filters-hangar"
-          :title="i18n.t('settings.filtersHangar')"
-          :layout="settings.filters.hangar"
-          :defaults="FILTERS.hangar"
-          :filter-label="filterLabel"
-          @update="setFilters('hangar', $event)"
-        />
-        <FilterLayoutSetting
-          id="shm-filters-buyback"
-          :title="i18n.t('settings.filtersBuyback')"
-          :layout="settings.filters.buyback"
-          :defaults="FILTERS.buyback"
-          :filter-label="filterLabel"
-          @update="setFilters('buyback', $event)"
-        />
+        <div v-for="list in FILTER_LISTS" :key="list" class="shm-filter-list">
+          <span class="shm-filter-list-title">{{ i18n.t(`settings.filtersLists.${list}`) }}</span>
+          <FilterLayoutSetting
+            v-for="category in FILTER_CATEGORIES"
+            :id="`shm-filters-${list}-${category}`"
+            :key="category"
+            :title="i18n.t(`filter.categories.${category}`)"
+            :layout="settings.filters[list][category]"
+            :defaults="FILTERS[list][category]"
+            :filter-label="filterLabel"
+            @update="setFilters(list, category, $event)"
+          />
+        </div>
       </div>
     </fieldset>
 
@@ -274,7 +279,21 @@ function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
 .shm-filter-layouts {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px 28px;
+  gap: 20px 28px;
+}
+
+/* One list (My Hangar, Buy Back): its title, then a block per category. */
+.shm-filter-list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 220px;
+}
+
+.shm-filter-list-title {
+  color: var(--shm-text-strong);
+  font-size: 13px;
 }
 
 /* Hint of a checkbox in a group: under its label text, before the next checkbox. */

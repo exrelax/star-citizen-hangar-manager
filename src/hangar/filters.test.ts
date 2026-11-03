@@ -1,9 +1,13 @@
+import { BUYBACK_FILTER_CATEGORIES, BUYBACK_FILTERS } from '@/buyback/buyback-view';
+import { FILTERS } from '@/config';
 import { describe, expect, it } from 'vitest';
 import {
   filterCounts,
   matchesFilterStates,
   nextFilterState,
+  normalizeFilterGroups,
   normalizeFilterLayout,
+  PLEDGE_FILTER_CATEGORIES,
   PLEDGE_FILTER_PREDICATES,
   PLEDGE_FILTERS,
   shownFilters,
@@ -135,5 +139,25 @@ describe('normalizeFilterLayout', () => {
 
   it('shows the shown filters in their order', () => {
     expect(shownFilters({ order: ['c', 'a', 'b'], shown: ['b', 'c'] })).toEqual(['c', 'b']);
+  });
+});
+
+describe('filter categories', () => {
+  it('put every filter into exactly one category', () => {
+    const categorized = [...PLEDGE_FILTER_CATEGORIES.types, ...PLEDGE_FILTER_CATEGORIES.features];
+    expect([...categorized].sort()).toEqual([...PLEDGE_FILTERS].sort());
+    const buyback = [...BUYBACK_FILTER_CATEGORIES.types, ...BUYBACK_FILTER_CATEGORIES.features];
+    expect([...buyback].sort()).toEqual([...BUYBACK_FILTERS].sort());
+  });
+
+  it('normalize each category on its own', () => {
+    const groups = normalizeFilterGroups(
+      { types: { order: ['paints', 'ships'], shown: ['ships'] } },
+      PLEDGE_FILTER_CATEGORIES,
+      FILTERS.hangar,
+    );
+    expect(groups.types.order.slice(0, 2)).toEqual(['paints', 'ships']);
+    expect(groups.types.shown).not.toContain('paints');
+    expect(groups.features).toEqual(FILTERS.hangar.features);
   });
 });

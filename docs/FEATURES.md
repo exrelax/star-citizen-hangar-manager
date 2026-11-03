@@ -205,9 +205,11 @@ on its own.
   their start, so `f8c` finds the "F8C Lightning".
 - The search is part of the URL (`?search=…`): searches can be bookmarked or shared, and other
   tools can link to a pledge.
-- **Filters**: Ships, CCUs, Paints, Game access (game packages and other pledges that contain the
-  game), LTI, Warbond (bought with money, i.e. with an order ID), Giftable, Meltable, Valuable
-  (worth more than $0) and Rewards (Concierge, event and referral rewards).
+- **Filters** in two groups:
+  - **Types** – what a pledge is: Ships, CCUs, Paints, Game access (game packages and other
+    pledges that contain the game) and Rewards (Concierge, event and referral rewards).
+  - **Features** – what it has: LTI, Warbond (bought with money, i.e. with an order ID),
+    Giftable, Meltable and Valuable (worth more than $0).
 - **Include or exclude**: each click on a filter cycles through off → only pledges with it →
   only pledges without it ("−Rewards" hides all rewards). All active filters combine with "and";
   one click on "Reset filters" turns them all off.
@@ -314,8 +316,9 @@ Paints, Game access, LTI, Warbond, Probably giftable, Rewards), plus:
 - **Theme**: Default RSI or Modern Hangar.
 - **Smart updates**: on or off.
 - **Show refund period**: refund countdown and "Refund Request" button (on by default).
-- **Filters**: order and selection of the filter buttons, separately for My Hangar and Buy Back –
-  drag a filter (or use its arrows) to move it, uncheck it to hide its button.
+- **Filters**: order and selection of the filter buttons, separately for My Hangar and Buy Back
+  and for types and features – drag a filter (or use its arrows) to move it within its group,
+  uncheck it to hide its button.
 - **"Show in Buy Back" opens**: only the pledge, or the list page with the pledge highlighted.
 - **Show links for ships**: erkul.games and FleetYards.net, each on or off.
 

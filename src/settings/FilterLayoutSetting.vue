@@ -126,7 +126,6 @@ function onDrop(index: number) {
 
 <style scoped>
 .shm-filter-layout {
-  flex: 1;
   min-width: 220px;
 }
 
@@ -140,7 +139,10 @@ function onDrop(index: number) {
 }
 
 .shm-filter-layout-title {
-  color: var(--shm-text-strong);
+  color: var(--shm-text-muted);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .shm-link-button {

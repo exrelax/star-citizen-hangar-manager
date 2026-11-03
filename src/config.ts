@@ -1,5 +1,5 @@
 import type { BuybackFilter } from '@/buyback/buyback-view';
-import type { FilterLayout, PledgeFilter } from '@/hangar/filters';
+import type { FilterGroups, PledgeFilter } from '@/hangar/filters';
 
 /**
  * Tunable values of the extension in one place.
@@ -158,61 +158,35 @@ export const REFUND_REQUEST_FORM = {
 } as const;
 
 /**
- * Filters of "My Hangar" and the buy back, as preset until changed in the settings: `order` is
- * the order of the filter buttons, `shown` the filters shown at all. Filters missing in `order`
- * follow at the end. The settings store the user's own order and selection (see
- * `settings/settings.ts`); filters added in later versions appear there with these presets.
+ * Filters of "My Hangar" and the buy back, as preset until changed in the settings, per category
+ * (`types`: what a pledge is, `features`: what it has; which filter belongs where is fixed in
+ * `hangar/filters.ts` and `buyback/buyback-view.ts`). `order` is the order of the filter buttons,
+ * `shown` the filters shown at all; filters missing in `order` follow at the end. The settings
+ * store the user's own order and selection (see `settings/settings.ts`); filters added in later
+ * versions appear there with these presets.
  */
 export const FILTERS: {
-  hangar: FilterLayout<PledgeFilter>;
-  buyback: FilterLayout<BuybackFilter>;
+  hangar: FilterGroups<PledgeFilter>;
+  buyback: FilterGroups<BuybackFilter>;
 } = {
   hangar: {
-    order: [
-      'ships',
-      'ccus',
-      'paints',
-      'gameAccess',
-      'lti',
-      'warbond',
-      'giftable',
-      'meltable',
-      'valuable',
-      'rewards',
-    ],
-    shown: [
-      'ships',
-      'ccus',
-      'paints',
-      'gameAccess',
-      'lti',
-      'warbond',
-      'giftable',
-      'meltable',
-      'valuable',
-      'rewards',
-    ],
+    types: {
+      order: ['ships', 'ccus', 'paints', 'gameAccess', 'rewards'],
+      shown: ['ships', 'ccus', 'paints', 'gameAccess', 'rewards'],
+    },
+    features: {
+      order: ['lti', 'warbond', 'giftable', 'meltable', 'valuable'],
+      shown: ['lti', 'warbond', 'giftable', 'meltable', 'valuable'],
+    },
   },
   buyback: {
-    order: [
-      'ships',
-      'ccus',
-      'paints',
-      'gameAccess',
-      'lti',
-      'warbond',
-      'probablyGiftable',
-      'rewards',
-    ],
-    shown: [
-      'ships',
-      'ccus',
-      'paints',
-      'gameAccess',
-      'lti',
-      'warbond',
-      'probablyGiftable',
-      'rewards',
-    ],
+    types: {
+      order: ['ships', 'ccus', 'paints', 'gameAccess', 'rewards'],
+      shown: ['ships', 'ccus', 'paints', 'gameAccess', 'rewards'],
+    },
+    features: {
+      order: ['lti', 'warbond', 'probablyGiftable'],
+      shown: ['lti', 'warbond', 'probablyGiftable'],
+    },
   },
 };

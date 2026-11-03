@@ -20,6 +20,7 @@ import {
   filterCounts as countFilters,
   matchesFilterStates,
   nextFilterState,
+  type FilterCategory,
   type FilterPredicates,
   type FilterState,
 } from '../filters';
@@ -35,8 +36,8 @@ import { matchesSearch, parseSearchQuery } from '../search';
 
 const props = defineProps<{
   entries: T[];
-  /** The filters, in display order. */
-  filters: readonly F[];
+  /** The filter buttons per category (see `filters.ts`), each in display order. */
+  filterGroups: readonly { category: FilterCategory; filters: readonly F[] }[];
   /** The property behind each filter (see `filters.ts`). */
   predicates: FilterPredicates<T, F>;
   filterLabel: (filter: F) => string;
@@ -72,6 +73,10 @@ watch(
 // Switching to "My Gear" right after typing still keeps the latest term.
 onUnmounted(writeSearchToUrl);
 
+/** The categories with filter buttons, and all their buttons. */
+const shownGroups = computed(() => props.filterGroups.filter((group) => group.filters.length));
+const filters = computed(() => shownGroups.value.flatMap((group) => group.filters));
+
 // Replaced on every change, so a shallowRef is enough to trigger updates.
 const filterStates = shallowRef<ReadonlyMap<F, FilterState>>(new Map());
 
@@ -87,13 +92,10 @@ function cycleFilter(filter: F) {
 const resetFilters = () => (filterStates.value = new Map());
 
 // A filter turned off in the settings no longer filters the list, either.
-watch(
-  () => props.filters,
-  (filters) => {
-    const kept = [...filterStates.value].filter(([filter]) => filters.includes(filter));
-    if (kept.length !== filterStates.value.size) filterStates.value = new Map(kept);
-  },
-);
+watch(filters, (filters) => {
+  const kept = [...filterStates.value].filter(([filter]) => filters.includes(filter));
+  if (kept.length !== filterStates.value.size) filterStates.value = new Map(kept);
+});
 
 /** Entries matching the search; the filters and their counts work on these. */
 const searched = computed(() => {
@@ -105,7 +107,7 @@ const searched = computed(() => {
 
 /** Per filter: entries with it among those passing search and the other filters (filters.ts). */
 const filterCounts = computed(() =>
-  countFilters(searched.value, props.filters, filterStates.value, props.predicates),
+  countFilters(searched.value, filters.value, filterStates.value, props.predicates),
 );
 
 /** Ids of the entries matching search and filters; `null` while neither is active. */
@@ -205,37 +207,56 @@ const countLabel = computed(() =>
       role="group"
       :aria-label="i18n.t('filter.label')"
     >
-      <button
-        v-for="filter in filters"
-        :key="filter"
-        type="button"
-        class="shm-filter"
-        :class="{
-          'is-active': filterStates.get(filter) === 'include',
-          'is-excluded': filterStates.get(filter) === 'exclude',
-        }"
-        :aria-pressed="
-          filterStates.get(filter) === 'include'
-            ? 'true'
-            : filterStates.get(filter) === 'exclude'
-              ? 'mixed'
-              : 'false'
-        "
-        :title="filterTitle(filter)"
-        @click="cycleFilter(filter)"
+      <div
+        v-for="(group, index) in shownGroups"
+        :key="group.category"
+        class="shm-filter-group"
+        role="group"
+        :aria-label="i18n.t(`filter.categories.${group.category}`)"
       >
-        <span
-          v-if="filterStates.get(filter) === 'exclude'"
-          class="shm-filter-not"
-          aria-hidden="true"
-          >−</span
-        >
-        <span class="shm-filter-label">{{ filterLabel(filter) }}</span>
-        <span class="shm-filter-count">{{ filterCounts.get(filter) }}</span>
-      </button>
-      <button v-if="filterStates.size" type="button" class="shm-filter-reset" @click="resetFilters">
-        {{ i18n.t('filter.reset') }}
-      </button>
+        <span class="shm-filter-group-label" aria-hidden="true">
+          {{ i18n.t(`filter.categories.${group.category}`) }}
+        </span>
+        <div class="shm-filter-buttons">
+          <button
+            v-for="filter in group.filters"
+            :key="filter"
+            type="button"
+            class="shm-filter"
+            :class="{
+              'is-active': filterStates.get(filter) === 'include',
+              'is-excluded': filterStates.get(filter) === 'exclude',
+            }"
+            :aria-pressed="
+              filterStates.get(filter) === 'include'
+                ? 'true'
+                : filterStates.get(filter) === 'exclude'
+                  ? 'mixed'
+                  : 'false'
+            "
+            :title="filterTitle(filter)"
+            @click="cycleFilter(filter)"
+          >
+            <span
+              v-if="filterStates.get(filter) === 'exclude'"
+              class="shm-filter-not"
+              aria-hidden="true"
+              >−</span
+            >
+            <span class="shm-filter-label">{{ filterLabel(filter) }}</span>
+            <span class="shm-filter-count">{{ filterCounts.get(filter) }}</span>
+          </button>
+          <!-- After the last group's buttons, so it doesn't add a line when it appears. -->
+          <button
+            v-if="filterStates.size && index === shownGroups.length - 1"
+            type="button"
+            class="shm-filter-reset"
+            @click="resetFilters"
+          >
+            {{ i18n.t('filter.reset') }}
+          </button>
+        </div>
+      </div>
     </div>
 
     <div class="shm-toolbar">
@@ -269,9 +290,32 @@ const countLabel = computed(() =>
 
 .shm-filters {
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+/* One category per line: its label in a fixed column, then its buttons. */
+.shm-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.shm-filter-group-label {
+  flex: none;
+  width: 72px;
+  color: var(--shm-text-muted);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.shm-filter-buttons {
+  display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-bottom: 10px;
 }
 
 .shm-filter {
