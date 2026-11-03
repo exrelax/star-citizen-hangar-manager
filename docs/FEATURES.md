@@ -281,6 +281,15 @@ only. On top, the dialog makes clear what you are about to give up:
 - With any of these warnings, an **extra acknowledgement** is needed before the button
   "Exchange for $…" is enabled.
 
+## Gift
+
+**Gift** under "Exchange" (for giftable pledges) opens RSI's gift dialog of "My Gear" in the
+manager's design: RSI's texts, recipient name and email, and your password, sent to RSI only.
+The pledge is shown up front with its kind and value, notices tell when it is your last pledge
+with game access or carries applied upgrades, and the email address is entered twice, so a typo
+doesn't send your gift to someone else. Until it is claimed, the gift can be cancelled in
+"My Gear".
+
 ## Buy back
 
 The **Buy Back** tab lists all melted pledges with the same search and filters (Ships, CCUs,

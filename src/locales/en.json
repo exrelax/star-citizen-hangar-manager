@@ -31,7 +31,17 @@
     "discountTitle": "Original price: $1. Pledge value: $2. Saved: $3 ($4).",
     "surchargeTitle": "Original price: $1. Pledge value: $2. That is $3 ($4) more than the original price.",
     "externalLinks": "External links:",
-    "openOn": "Open $1 on $2 (new tab)"
+    "openOn": "Open $1 on $2 (new tab)",
+    "kinds": {
+      "upgradedShip": "Ship with applied upgrades",
+      "ship": "Ship",
+      "ships": "Ships",
+      "gamePackage": "Game package",
+      "ccu": "CCU (ship upgrade)",
+      "paint": "Paint",
+      "reward": "Reward",
+      "other": "Item"
+    }
   },
   "filter": {
     "label": "Filter pledges",
@@ -192,16 +202,6 @@
     "title": "Exchange pledge",
     "receive": "You receive",
     "storeCredit": "in store credit",
-    "kinds": {
-      "upgradedShip": "Ship with applied upgrades",
-      "ship": "Ship",
-      "ships": "Ships",
-      "gamePackage": "Game package",
-      "ccu": "CCU (ship upgrade)",
-      "paint": "Paint",
-      "reward": "Reward",
-      "other": "Item"
-    },
     "warnings": {
       "lastGameAccess": {
         "title": "Last pledge with game access",
@@ -247,5 +247,38 @@
     "failed": "The exchange failed: $1",
     "success": "Your ledger was credited with $1.",
     "successNote": "The pledge leaves the list when you close this dialog; the buy back shows it after the next update."
+  },
+  "gift": {
+    "button": "Gift",
+    "buttonHint": "Gift this pledge to another citizen by email, as in “My Gear”. Opens a dialog first.",
+    "demo": "Not available in demo mode.",
+    "title": "Gift your pledge",
+    "value": "Pledge value",
+    "warnings": {
+      "lastGameAccess": {
+        "title": "Last pledge with game access",
+        "text": "This is the last pledge on your account that gives access to Star Citizen. Once the gift is claimed, you can no longer play."
+      },
+      "upgraded": {
+        "title": "Applied upgrades go with it",
+        "text": "The recipient gets the ship as it is now, including the CCUs applied to it."
+      }
+    },
+    "intro": "You are about to gift your “$1” pledge to another citizen by email. This will transfer your pledge as soon as it is accepted by the recipient. You can cancel the gift at any time until then.",
+    "noRegifting": "Once your gift has been claimed it will be bound to the recipient's account and cannot be re-gifted.",
+    "recipient": "Who should we send this gift to?",
+    "name": "Recipient name",
+    "email": "Recipient email",
+    "emailRepeat": "Recipient email again (to rule out typos)",
+    "emailInvalid": "This doesn't look like an email address.",
+    "emailMismatch": "The two email addresses differ.",
+    "password": "Please type your password to confirm (sent to RSI only):",
+    "cancel": "Cancel",
+    "submit": "Send gift",
+    "submitting": "Sending the gift …",
+    "missing": "Please fill in all fields; both email addresses must match.",
+    "failed": "The gift could not be sent: $1",
+    "success": "A gift email was sent to $1 for your pledge ($2).",
+    "successNote": "You can cancel the gift in “My Gear” anytime before it is claimed."
   }
 }

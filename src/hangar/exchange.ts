@@ -11,21 +11,6 @@ import type { PledgeDiscount } from './ship-prices';
  * exchange costs beyond the pledge itself (see `exchangeWarnings`).
  */
 
-/** What kind of pledge is exchanged, shown prominently in the dialog. */
-export type ExchangeKind =
-  'upgradedShip' | 'ship' | 'ships' | 'gamePackage' | 'ccu' | 'paint' | 'reward' | 'other';
-
-export function exchangeKind(pledge: PledgeView): ExchangeKind {
-  if (pledge.isCcu) return 'ccu';
-  if (pledge.isUpgraded) return 'upgradedShip';
-  if (pledge.hasGameAccess) return 'gamePackage';
-  if (pledge.isPaint) return 'paint';
-  const ships = pledge.ships.length + (pledge.titleShip ? 1 : 0);
-  if (ships > 1) return 'ships';
-  if (ships === 1) return 'ship';
-  return pledge.reward ? 'reward' : 'other';
-}
-
 /** Something the exchange loses beyond the pledge itself. `danger`: lost for good. */
 export type ExchangeWarning =
   | { kind: 'lastGameAccess'; danger: true }

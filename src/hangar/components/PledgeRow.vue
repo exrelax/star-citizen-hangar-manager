@@ -11,6 +11,7 @@ import { myGearHref } from '../route';
 import OrderInfo from '@/orders/OrderInfo.vue';
 import ExchangeOverlay from './ExchangeOverlay.vue';
 import ExternalLinks from './ExternalLinks.vue';
+import GiftOverlay from './GiftOverlay.vue';
 import UpgradeLog from './UpgradeLog.vue';
 
 const props = defineProps<{
@@ -44,6 +45,8 @@ const discount = computed(
 
 /** RSI's exchange (melt) dialog, in the manager's design. */
 const exchanging = ref(false);
+/** RSI's gift dialog, in the manager's design. */
+const gifting = ref(false);
 
 const expanded = ref(!!props.autoExpand);
 // Only rows opened automatically close again automatically; a manual toggle is kept.
@@ -188,6 +191,17 @@ const toggle = () => {
           {{ i18n.t('exchange.button') }}
         </button>
         <ExchangeOverlay v-if="exchanging" :pledge="pledge" @close="exchanging = false" />
+        <button
+          v-if="pledge.isGiftable"
+          type="button"
+          class="shm-button shm-origin-button shm-gift-button"
+          :disabled="!!demo"
+          :title="demo ? i18n.t('gift.demo') : i18n.t('gift.buttonHint')"
+          @click="gifting = true"
+        >
+          {{ i18n.t('gift.button') }}
+        </button>
+        <GiftOverlay v-if="gifting" :pledge="pledge" @close="gifting = false" />
       </div>
       <div class="shm-details-main">
         <OrderInfo v-if="pledge.order" :order="pledge.order" :base="pledge.isUpgraded" refundable />

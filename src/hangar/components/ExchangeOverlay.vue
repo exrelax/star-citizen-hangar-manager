@@ -8,13 +8,13 @@ import { themeClass } from '@/themes/theme';
 import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 import { formatPercent, formatUsd } from '../discount-format';
 import {
-  exchangeKind,
   exchangeWarnings,
   reclaimPledge,
   removeFromStoredHangar,
   type ExchangeWarning,
 } from '../exchange';
 import type { PledgeView } from '../pledge-view';
+import PledgeActionSummary from './PledgeActionSummary.vue';
 import { maybeRunSmartUpdate } from '../sync-state';
 
 /*
@@ -29,13 +29,11 @@ const emit = defineEmits<{ close: [] }>();
 const { settings } = useSettings();
 const dialog = useTemplateRef<HTMLElement>('dialog');
 
-const kind = computed(() => exchangeKind(props.pledge));
 const warnings = computed(() => exchangeWarnings(props.pledge, today.value));
 const hasDanger = computed(() => warnings.value.some((warning) => warning.danger));
 
 // The settings for hiding sensitive information apply here as in the list.
 const value = computed(() => (settings.value.hideMeltValue ? HIDDEN : props.pledge.value));
-const pledgeId = computed(() => (settings.value.hidePledgeIds ? HIDDEN : props.pledge.id));
 const money = (amount: number) =>
   settings.value.hideMeltValue ? HIDDEN : formatUsd(amount, locale.value);
 
@@ -157,7 +155,7 @@ onUnmounted(() => {
     <div class="shm-overlay" :class="themeClass(settings.theme)" @click.self="close">
       <section
         ref="dialog"
-        class="shm-overlay-dialog shm-exchange"
+        class="shm-overlay-dialog shm-action-dialog"
         role="dialog"
         aria-modal="true"
         :aria-label="i18n.t('exchange.title')"
@@ -178,22 +176,13 @@ onUnmounted(() => {
         </header>
 
         <!-- What is exchanged, and for how much. -->
-        <div class="shm-exchange-summary">
-          <div class="shm-exchange-item">
-            <span class="shm-exchange-kind" :class="`is-${kind}`">
-              {{ i18n.t(`exchange.kinds.${kind}`) }}
-            </span>
-            <strong class="shm-exchange-title">{{ pledge.title }}</strong>
-            <span class="shm-exchange-id">#{{ pledgeId }}</span>
-          </div>
-          <div class="shm-exchange-value">
-            <span>{{ i18n.t('exchange.receive') }}</span>
-            <strong>{{ value }}</strong>
-            <span>{{ i18n.t('exchange.storeCredit') }}</span>
-          </div>
-        </div>
+        <PledgeActionSummary
+          :pledge="pledge"
+          :value-label="i18n.t('exchange.receive')"
+          :value-caption="i18n.t('exchange.storeCredit')"
+        />
 
-        <p v-if="done" class="shm-exchange-success" role="status">
+        <p v-if="done" class="shm-action-success" role="status">
           {{ i18n.t('exchange.success', [value]) }}
           <span>{{ i18n.t('exchange.successNote') }}</span>
         </p>
@@ -216,8 +205,8 @@ onUnmounted(() => {
           </button>
         </div>
 
-        <form v-else class="shm-exchange-form" @submit.prevent="submit">
-          <ul v-if="warnings.length" class="shm-exchange-warnings">
+        <form v-else class="shm-action-form" @submit.prevent="submit">
+          <ul v-if="warnings.length" class="shm-action-warnings">
             <li
               v-for="warning in warnings"
               :key="warning.kind"
@@ -237,7 +226,7 @@ onUnmounted(() => {
             {{ i18n.t(pledge.isBuybackable ? 'exchange.finalBuyback' : 'exchange.finalPermanent') }}
           </p>
 
-          <fieldset class="shm-exchange-consents">
+          <fieldset class="shm-action-consents">
             <legend>{{ i18n.t('exchange.acknowledge') }}</legend>
             <label>
               <input v-model="consentLimited" type="checkbox" name="consent_limited" />
@@ -253,7 +242,7 @@ onUnmounted(() => {
             </label>
           </fieldset>
 
-          <label class="shm-exchange-password">
+          <label class="shm-action-field">
             <span>{{ i18n.t('exchange.password') }}</span>
             <input
               v-model="password"
@@ -263,13 +252,13 @@ onUnmounted(() => {
             />
           </label>
 
-          <p v-if="error" class="shm-exchange-error" role="alert">{{ error }}</p>
+          <p v-if="error" class="shm-action-error" role="alert">{{ error }}</p>
 
-          <div class="shm-exchange-actions">
+          <div class="shm-action-buttons">
             <button type="button" class="shm-button" :disabled="submitting" @click="close">
               {{ i18n.t('exchange.cancel') }}
             </button>
-            <button type="submit" class="shm-button shm-exchange-submit" :disabled="!ready">
+            <button type="submit" class="shm-button is-danger shm-action-submit" :disabled="!ready">
               {{ submitting ? i18n.t('exchange.submitting') : i18n.t('exchange.submit', [value]) }}
             </button>
           </div>
@@ -280,117 +269,9 @@ onUnmounted(() => {
 </template>
 
 <style src="@/shared/overlay.css"></style>
+<style src="./action-dialog.css"></style>
 
 <style scoped>
-.shm-exchange {
-  width: min(640px, 100%);
-}
-
-.shm-exchange p {
-  margin: 0 0 10px;
-}
-
-.shm-exchange-summary {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px 24px;
-  margin-bottom: 16px;
-  padding: 12px 14px;
-  background: rgb(var(--shm-accent-rgb) / 0.06);
-  border: 1px solid rgb(var(--shm-accent-rgb) / 0.15);
-}
-
-.shm-exchange-item {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-  min-width: 0;
-}
-
-.shm-exchange-kind {
-  padding: 2px 7px;
-  color: var(--shm-accent);
-  font-size: 11px;
-  text-transform: uppercase;
-  border: 1px solid rgb(var(--shm-accent-rgb) / 0.6);
-}
-
-.shm-exchange-kind.is-upgradedShip {
-  color: var(--shm-upgraded);
-  border-color: rgb(var(--shm-upgraded-rgb) / 0.7);
-}
-
-.shm-exchange-title {
-  color: var(--shm-text-strong);
-  font-size: 15px;
-  font-weight: normal;
-}
-
-.shm-exchange-id {
-  color: var(--shm-text-muted);
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
-}
-
-.shm-exchange-value {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  color: var(--shm-text-muted);
-  font-size: 11px;
-  text-transform: uppercase;
-}
-
-.shm-exchange-value strong {
-  color: var(--shm-accent);
-  font-size: 22px;
-  font-weight: normal;
-  font-variant-numeric: tabular-nums;
-}
-
-.shm-exchange-warnings {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 0 0 16px;
-  padding: 0;
-  list-style: none;
-}
-
-.shm-exchange-warnings li {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 8px 12px;
-  border-left: 3px solid;
-}
-
-.shm-exchange-warnings strong {
-  font-weight: normal;
-  text-transform: uppercase;
-}
-
-.shm-exchange-warnings .is-danger {
-  border-color: var(--shm-danger);
-  background: color-mix(in srgb, var(--shm-danger) 12%, transparent);
-}
-
-.shm-exchange-warnings .is-danger strong {
-  color: var(--shm-danger);
-}
-
-.shm-exchange-warnings .is-notice {
-  border-color: var(--shm-warning);
-  background: color-mix(in srgb, var(--shm-warning) 10%, transparent);
-}
-
-.shm-exchange-warnings .is-notice strong {
-  color: var(--shm-warning);
-}
-
 .shm-exchange-final {
   color: var(--shm-danger);
 }
@@ -410,97 +291,5 @@ onUnmounted(() => {
   font-size: 15px;
   font-weight: normal;
   text-transform: uppercase;
-}
-
-.shm-exchange-consents {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 14px 0;
-  padding: 0;
-  border: 0;
-}
-
-.shm-exchange-consents legend {
-  margin-bottom: 8px;
-  padding: 0;
-  color: var(--shm-text);
-}
-
-.shm-exchange-consents label {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  color: var(--shm-text);
-  cursor: pointer;
-}
-
-.shm-exchange-consents label.is-danger {
-  color: var(--shm-danger);
-}
-
-.shm-exchange-consents input {
-  margin-top: 2px;
-  accent-color: var(--shm-accent);
-}
-
-.shm-exchange-password {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  color: var(--shm-text);
-}
-
-.shm-exchange-password input {
-  width: min(320px, 100%);
-  height: 32px;
-  padding: 0 10px;
-  color: var(--shm-text);
-  font: inherit;
-  background: rgb(var(--shm-surface-rgb) / 0.9);
-  border: 1px solid rgb(var(--shm-accent-rgb) / 0.35);
-}
-
-.shm-exchange-password input:focus-visible {
-  border-color: var(--shm-accent);
-  outline: none;
-}
-
-.shm-exchange-error {
-  margin-top: 12px !important;
-  color: var(--shm-danger);
-}
-
-.shm-exchange-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 16px;
-}
-
-.shm-exchange-submit:not(:disabled) {
-  color: var(--shm-danger);
-  border-color: var(--shm-danger);
-}
-
-.shm-exchange-submit:not(:disabled):hover,
-.shm-exchange-submit:not(:disabled):focus-visible {
-  color: var(--shm-text-strong);
-  background: color-mix(in srgb, var(--shm-danger) 35%, transparent);
-  border-color: var(--shm-danger);
-}
-
-.shm-exchange-success {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 12px 14px;
-  color: var(--shm-success);
-  border: 1px solid rgb(var(--shm-success-rgb) / 0.6);
-}
-
-.shm-exchange-success span {
-  color: var(--shm-text-secondary);
 }
 </style>

@@ -31,7 +31,17 @@
     "discountTitle": "Originalpreis: $1. Pledge-Wert: $2. Gespart: $3 ($4).",
     "surchargeTitle": "Originalpreis: $1. Pledge-Wert: $2. Das sind $3 ($4) mehr als der Originalpreis.",
     "externalLinks": "Externe Links:",
-    "openOn": "$1 auf $2 öffnen (neuer Tab)"
+    "openOn": "$1 auf $2 öffnen (neuer Tab)",
+    "kinds": {
+      "upgradedShip": "Schiff mit angewendeten Upgrades",
+      "ship": "Schiff",
+      "ships": "Schiffe",
+      "gamePackage": "Game Package",
+      "ccu": "CCU (Schiffs-Upgrade)",
+      "paint": "Paint",
+      "reward": "Reward",
+      "other": "Item"
+    }
   },
   "filter": {
     "label": "Pledges filtern",
@@ -192,16 +202,6 @@
     "title": "Pledge einschmelzen",
     "receive": "Du erhältst",
     "storeCredit": "Store Credit",
-    "kinds": {
-      "upgradedShip": "Schiff mit angewendeten Upgrades",
-      "ship": "Schiff",
-      "ships": "Schiffe",
-      "gamePackage": "Game Package",
-      "ccu": "CCU (Schiffs-Upgrade)",
-      "paint": "Paint",
-      "reward": "Reward",
-      "other": "Item"
-    },
     "warnings": {
       "lastGameAccess": {
         "title": "Letztes Pledge mit Spielzugang",
@@ -247,5 +247,38 @@
     "failed": "Das Einschmelzen ist fehlgeschlagen: $1",
     "success": "Deinem Konto wurden $1 gutgeschrieben.",
     "successNote": "Das Pledge verschwindet aus der Liste, sobald du diesen Dialog schließt; im Buy Back erscheint es nach dem nächsten Update."
+  },
+  "gift": {
+    "button": "Gift",
+    "buttonHint": "Verschenkt dieses Pledge per E-Mail an einen anderen Citizen, wie in „My Gear“. Öffnet zuerst einen Dialog.",
+    "demo": "Im Demo-Modus nicht verfügbar.",
+    "title": "Pledge verschenken",
+    "value": "Wert des Pledges",
+    "warnings": {
+      "lastGameAccess": {
+        "title": "Letztes Pledge mit Spielzugang",
+        "text": "Das ist das letzte Pledge deines Kontos, das Zugang zu Star Citizen gibt. Sobald das Geschenk angenommen ist, kannst du nicht mehr spielen."
+      },
+      "upgraded": {
+        "title": "Angewendete Upgrades gehen mit",
+        "text": "Der Empfänger bekommt das Schiff so, wie es jetzt ist, einschließlich der darauf angewendeten CCUs."
+      }
+    },
+    "intro": "Du bist dabei, dein Pledge „$1“ per E-Mail an einen anderen Citizen zu verschenken. Das Pledge wird übertragen, sobald der Empfänger es annimmt. Bis dahin kannst du das Geschenk jederzeit zurückziehen.",
+    "noRegifting": "Sobald dein Geschenk angenommen ist, ist es an das Konto des Empfängers gebunden und kann nicht weiterverschenkt werden.",
+    "recipient": "An wen sollen wir das Geschenk senden?",
+    "name": "Name des Empfängers",
+    "email": "E-Mail des Empfängers",
+    "emailRepeat": "E-Mail des Empfängers wiederholen (gegen Tippfehler)",
+    "emailInvalid": "Das sieht nicht nach einer E-Mail-Adresse aus.",
+    "emailMismatch": "Die beiden E-Mail-Adressen unterscheiden sich.",
+    "password": "Gib zur Bestätigung dein Passwort ein (wird nur an RSI gesendet):",
+    "cancel": "Abbrechen",
+    "submit": "Geschenk senden",
+    "submitting": "Geschenk wird gesendet …",
+    "missing": "Bitte fülle alle Felder aus; beide E-Mail-Adressen müssen übereinstimmen.",
+    "failed": "Das Geschenk konnte nicht gesendet werden: $1",
+    "success": "Eine Geschenk-E-Mail für dein Pledge ($2) wurde an $1 gesendet.",
+    "successNote": "Bis es angenommen ist, kannst du das Geschenk in „My Gear“ jederzeit zurückziehen."
   }
 }

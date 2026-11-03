@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { exchangeKind, exchangeWarnings } from './exchange';
+import { exchangeWarnings } from './exchange';
 import type { PledgeView } from './pledge-view';
 
 const pledge = (overrides: Partial<PledgeView> = {}) =>
@@ -16,26 +16,6 @@ const pledge = (overrides: Partial<PledgeView> = {}) =>
     isBuybackable: true,
     ...overrides,
   }) as PledgeView;
-
-describe('exchangeKind', () => {
-  it('tells CCUs, upgraded ships, game packages and paints apart', () => {
-    expect(exchangeKind(pledge({ isCcu: true }))).toBe('ccu');
-    expect(exchangeKind(pledge({ isUpgraded: true, titleShip: { name: 'Polaris' } }))).toBe(
-      'upgradedShip',
-    );
-    expect(exchangeKind(pledge({ hasGameAccess: true, ships: [{ name: 'Aurora' }] }))).toBe(
-      'gamePackage',
-    );
-    expect(exchangeKind(pledge({ isPaint: true }))).toBe('paint');
-  });
-
-  it('counts the ships of other pledges', () => {
-    expect(exchangeKind(pledge({ ships: [{ name: 'Fury' }] }))).toBe('ship');
-    expect(exchangeKind(pledge({ ships: [{ name: 'Fury' }, { name: 'Pisces' }] }))).toBe('ships');
-    expect(exchangeKind(pledge({ reward: 'event' as PledgeView['reward'] }))).toBe('reward');
-    expect(exchangeKind(pledge())).toBe('other');
-  });
-});
 
 describe('exchangeWarnings', () => {
   it('has none for a plain pledge', () => {
