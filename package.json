@@ -25,7 +25,8 @@
     "format:check": "prettier --check .",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
-    "postinstall": "wxt prepare"
+    "postinstall": "wxt prepare",
+    "svg-sprite": "node ./scripts/writeSvgSprites.js && node ./scripts/writeIconList.js"
   },
   "dependencies": {
     "vue": "^3.5.44"
@@ -41,6 +42,7 @@
     "eslint-plugin-vue": "^10.12.0",
     "happy-dom": "^21.0.4",
     "prettier": "^3.9.10",
+    "svg-symbol-sprite": "^1.5.2",
     "typescript": "~6.0.3",
     "vitest": "^5.0.5",
     "vue-tsc": "^3.3.14",
