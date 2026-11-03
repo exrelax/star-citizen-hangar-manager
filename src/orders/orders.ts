@@ -261,3 +261,47 @@ export function anonymizeOrderDetails(
     ),
   };
 }
+
+/** "Jane Doe, Main St. 12" → "xxxx xxx, xxxx xx. 00": same shape, nothing of the original. */
+const unreadable = (text: string) => text.replace(/\p{L}/gu, 'x').replace(/\d/g, '0');
+
+/** Shown instead of hidden order ids and amounts. */
+export const HIDDEN = '•••';
+
+// "$8.93 USD", "€124.53 EUR", "£5.00"
+const MONEY = /[$€£]\s?[\d.,]+(?:\s?[A-Z]{3})?/g;
+
+/**
+ * Order details following the settings for hiding sensitive information: with `hideIds` the
+ * order id is replaced by `HIDDEN` and the billing address (with the name) made unreadable – every
+ * letter an "x", every digit a "0", so it keeps its shape for a blurred look but never reaches the
+ * page; with `hideValues` all amounts are replaced by `HIDDEN` (the tables keep their layout).
+ */
+export function maskOrderDetails(
+  details: OrderDetails,
+  { hideIds, hideValues }: { hideIds: boolean; hideValues: boolean },
+): OrderDetails {
+  if (!hideIds && !hideValues) return details;
+  const mask = (text: string) => {
+    let masked = text;
+    if (hideIds) {
+      masked = masked.split(details.id).join(HIDDEN);
+      if (details.slug) masked = masked.split(details.slug).join(HIDDEN);
+    }
+    return hideValues ? masked.replace(MONEY, HIDDEN) : masked;
+  };
+  const table = (input: Table): Table => ({
+    columns: input.columns,
+    rows: input.rows.map((row) => row.map(mask)),
+  });
+  const pairs = (input: LabelledValue[]) =>
+    input.map(({ label, value }) => ({ label, value: mask(value) }));
+  return {
+    ...details,
+    billTo: hideIds ? details.billTo.map(unreadable) : details.billTo,
+    header: pairs(details.header),
+    items: table(details.items),
+    totals: pairs(details.totals),
+    payments: table(details.payments),
+  };
+}

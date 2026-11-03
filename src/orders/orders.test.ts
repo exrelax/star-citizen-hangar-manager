@@ -5,6 +5,8 @@ import {
   anonymizeOrderDetails,
   DEMO_BILL_TO,
   DEMO_PROCESSOR,
+  HIDDEN,
+  maskOrderDetails,
   ORDERS_SNAPSHOT_VERSION,
   paidOrderOf,
   parseBillingPage,
@@ -163,6 +165,36 @@ describe('anonymizeOrderDetails', () => {
       'PAID',
       '$8.93 USD',
     ]);
+  });
+});
+
+describe('maskOrderDetails', () => {
+  const details = {
+    id: '4OLB2S5WUG6PX',
+    slug: '4olb2s5wug6px',
+    header: [
+      { label: 'Order Id', value: '4OLB2S5WUG6PX' },
+      { label: 'Amount', value: '€124.53 EUR' },
+    ],
+    items: { columns: ['Item', 'Total'], rows: [['Polaris', '$7.50 USD']] },
+    billTo: ['Jane Doe'],
+    totals: [{ label: 'VAT', value: '$1.43 USD' }],
+    payments: { columns: ['Processor', 'Amount'], rows: [['PAYPAL', '$8.93 USD']] },
+  };
+
+  it('hides the order id and the amounts, each by its setting', () => {
+    const ids = maskOrderDetails(details, { hideIds: true, hideValues: false });
+    expect(ids.header.map((field) => field.value)).toEqual([HIDDEN, '€124.53 EUR']);
+    // Name and address become unreadable along with the ids.
+    expect(ids.billTo).toEqual(['xxxx xxx']);
+
+    const values = maskOrderDetails(details, { hideIds: false, hideValues: true });
+    expect(values.header.map((field) => field.value)).toEqual(['4OLB2S5WUG6PX', HIDDEN]);
+    expect(values.items.rows).toEqual([['Polaris', HIDDEN]]);
+    expect(values.totals[0]!.value).toBe(HIDDEN);
+    expect(values.payments.rows).toEqual([['PAYPAL', HIDDEN]]);
+
+    expect(maskOrderDetails(details, { hideIds: false, hideValues: false })).toBe(details);
   });
 });
 

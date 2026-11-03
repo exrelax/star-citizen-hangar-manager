@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import { useDemoContext } from '@/demo/use-demo';
 import { i18n } from '@/i18n';
-import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
-import { anonymizeOrderDetails, type Order, type OrderDetails } from './orders';
+import { useSettings } from '@/settings/use-settings';
+import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
+import {
+  anonymizeOrderDetails,
+  HIDDEN,
+  maskOrderDetails,
+  type Order,
+  type OrderDetails,
+} from './orders';
 import { fetchOrderDetails } from './sync-orders';
 
 const props = defineProps<{ order: Order }>();
@@ -16,6 +23,18 @@ const dialog = useTemplateRef<HTMLElement>('dialog');
  * anonymized before they are shown, so no real order id, address or payment provider appears.
  */
 const demo = useDemoContext();
+
+// The settings for hiding sensitive information apply here as in the lists.
+const { settings } = useSettings();
+const shown = computed(
+  () =>
+    details.value &&
+    maskOrderDetails(details.value, {
+      hideIds: settings.value.hidePledgeIds,
+      hideValues: settings.value.hideMeltValue,
+    }),
+);
+const titleId = computed(() => (settings.value.hidePledgeIds ? HIDDEN : props.order.id));
 
 onMounted(async () => {
   addEventListener('keydown', onKeydown);
@@ -63,11 +82,11 @@ function openInvoice() {
         class="shm-overlay-dialog"
         role="dialog"
         aria-modal="true"
-        :aria-label="i18n.t('order.title', [order.id])"
+        :aria-label="i18n.t('order.title', [titleId])"
         tabindex="-1"
       >
         <header class="shm-overlay-header">
-          <h3>{{ i18n.t('order.title', [order.id]) }}</h3>
+          <h3>{{ i18n.t('order.title', [titleId]) }}</h3>
           <button
             type="button"
             class="shm-overlay-close"
@@ -80,10 +99,10 @@ function openInvoice() {
         </header>
 
         <p v-if="error" class="shm-overlay-note is-error" role="alert">{{ error }}</p>
-        <p v-else-if="!details" class="shm-overlay-note">{{ i18n.t('order.loading') }}</p>
+        <p v-else-if="!shown" class="shm-overlay-note">{{ i18n.t('order.loading') }}</p>
         <template v-else>
           <dl class="shm-order-header">
-            <div v-for="field in details.header" :key="field.label">
+            <div v-for="field in shown.header" :key="field.label">
               <dt>{{ field.label }}</dt>
               <dd>{{ field.value }}</dd>
             </div>
@@ -105,41 +124,46 @@ function openInvoice() {
           <table class="shm-order-table">
             <thead>
               <tr>
-                <th v-for="(column, index) in details.items.columns" :key="index">{{ column }}</th>
+                <th v-for="(column, index) in shown.items.columns" :key="index">{{ column }}</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(row, index) in details.items.rows" :key="index">
+              <tr v-for="(row, index) in shown.items.rows" :key="index">
                 <td v-for="(cell, cellIndex) in row" :key="cellIndex">{{ cell }}</td>
               </tr>
             </tbody>
           </table>
 
           <div class="shm-order-billing">
-            <div v-if="details.billTo.length">
+            <!-- Hidden with the ids: masked (see maskOrderDetails) and blurred. -->
+            <div
+              v-if="shown.billTo.length"
+              :class="{ 'is-blurred': settings.hidePledgeIds }"
+              :aria-hidden="settings.hidePledgeIds || undefined"
+            >
               <h4>{{ i18n.t('order.billTo') }}</h4>
-              <p v-for="(line, index) in details.billTo" :key="index">{{ line }}</p>
+              <p v-for="(line, index) in shown.billTo" :key="index">{{ line }}</p>
             </div>
             <dl class="shm-order-totals">
-              <div v-for="total in details.totals" :key="total.label">
+              <div v-for="total in shown.totals" :key="total.label">
                 <dt>{{ total.label }}</dt>
                 <dd>{{ total.value }}</dd>
               </div>
             </dl>
           </div>
 
-          <template v-if="details.payments.rows.length">
+          <template v-if="shown.payments.rows.length">
             <h4>{{ i18n.t('order.paymentInfo') }}</h4>
             <table class="shm-order-table">
               <thead>
                 <tr>
-                  <th v-for="(column, index) in details.payments.columns" :key="index">
+                  <th v-for="(column, index) in shown.payments.columns" :key="index">
                     {{ column }}
                   </th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(row, index) in details.payments.rows" :key="index">
+                <tr v-for="(row, index) in shown.payments.rows" :key="index">
                   <td v-for="(cell, cellIndex) in row" :key="cellIndex">{{ cell }}</td>
                 </tr>
               </tbody>
@@ -291,6 +315,11 @@ dd {
 .shm-order-billing p {
   margin: 0;
   color: #dbe7ee;
+}
+
+.is-blurred p {
+  filter: blur(4px);
+  user-select: none;
 }
 
 .shm-order-totals {

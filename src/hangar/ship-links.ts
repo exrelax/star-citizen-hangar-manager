@@ -1,3 +1,4 @@
+import { settingsItem, withDefaults } from '@/settings/settings';
 import { FLEETYARDS_DETAILS_BATCH_SIZE } from '@/config';
 import type { Pledge } from './pledge';
 
@@ -72,13 +73,18 @@ export interface ShipLinkSource {
 
 /**
  * Resolves the links of all ships in the hangar. erkul ids already known from the previous sync
- * are reused, so only new ships cost a details request.
+ * are reused, so only new ships cost a details request. With both links turned off in the
+ * settings, Fleetyards isn't asked at all – the extension then talks to RSI only – and the known
+ * links are kept for when they are turned on again.
  */
 export async function resolveShipLinks(
   pledges: readonly Pledge[],
   previous: ShipLinks | undefined,
   source: ShipLinkSource = fleetyardsSource,
 ): Promise<ShipLinks> {
+  const { shipLinks } = withDefaults(await settingsItem.getValue());
+  if (!shipLinks.erkul && !shipLinks.fleetyards) return previous ?? {};
+
   const index = createSlugIndex(await source.fetchSlugs());
 
   const links: ShipLinks = {};

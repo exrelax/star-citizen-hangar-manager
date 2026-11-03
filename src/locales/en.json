@@ -73,8 +73,8 @@
       "list": "The list page, scrolled to the pledge and highlighted"
     },
     "privacy": "Hide sensitive information (for screenshots or content creators)",
-    "hidePledgeIds": "Hide pledge and order IDs",
-    "hidePledgeIdsHint": "Hides the pledge IDs of all items, also those of applied upgrades, and the order IDs. Searching by ID still works.",
+    "hidePledgeIds": "Hide pledge and order IDs, name and address",
+    "hidePledgeIdsHint": "Hides the pledge IDs of all items, also those of applied upgrades, and the order IDs. Your name and billing address in the order details are made unreadable. Searching by ID still works.",
     "demoMode": "Demo mode",
     "demoModeHint": "Shows only $1 pledges of “My Hangar” and $2 of the buy back, with made-up pledge IDs – e.g. for screenshots. Links to RSI and the cart do nothing meanwhile.",
     "showRefund": "Show refund period",

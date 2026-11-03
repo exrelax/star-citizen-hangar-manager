@@ -16,8 +16,13 @@ export function useSettings() {
   onMounted(async () => apply(await settingsItem.getValue()));
   onUnmounted(unwatch);
 
+  /**
+   * Changes some settings. They are merged into the stored ones, not into `settings`: right
+   * after opening, `settings` still holds the defaults, and a click then mustn't reset the rest.
+   */
   async function update(patch: Partial<Settings>) {
-    const next = { ...settings.value, ...patch };
+    settings.value = { ...settings.value, ...patch };
+    const next = { ...withDefaults(await settingsItem.getValue()), ...patch };
     settings.value = next;
     await settingsItem.setValue(next);
   }

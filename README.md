@@ -4,6 +4,8 @@ Browser extension for managing your Star Citizen hangar on
 [robertsspaceindustries.com](https://robertsspaceindustries.com). It runs in Chrome and Firefox from
 a single shared code base.
 
+What it does: see [docs/FEATURES.md](docs/FEATURES.md).
+
 Built with [WXT](https://wxt.dev) (based on Vite), Vue 3 and TypeScript. Both browsers are built as
 Manifest V3; WXT generates the matching manifest for each browser.
 

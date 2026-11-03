@@ -1,18 +1,21 @@
 <script setup lang="ts">
 import { i18n } from '@/i18n';
+import { useSettings } from '@/settings/use-settings';
 import { ref } from 'vue';
 import OrderOverlay from './OrderOverlay.vue';
-import type { PaidOrder } from './orders';
+import { HIDDEN, type PaidOrder } from './orders';
 
 /** `base`: the pledge's ship was upgraded since – the order is the one of its base pledge. */
 defineProps<{ order: PaidOrder; base?: boolean }>();
 
 const open = ref(false);
+// With hidden ids the link stays, masked, so the details can still be opened (also masked).
+const { settings } = useSettings();
 </script>
 
 <!--
   The order that created a pledge, if paid with money. Id and amount follow the settings for
-  hiding sensitive information (see row.css). The id opens the order's details (in the demo
+  hiding sensitive information: the amount is hidden by the list (row.css), the id masked here. The id opens the order's details (in the demo
   anonymized, see OrderOverlay.vue).
 -->
 <template>
@@ -24,7 +27,7 @@ const open = ref(false);
       :title="i18n.t('order.open')"
       @click.prevent="open = true"
     >
-      #{{ order.id }}
+      #{{ settings.hidePledgeIds ? HIDDEN : order.id }}
     </a>
     <span class="shm-value"> · {{ i18n.t('order.paid', [order.amount]) }}</span>
     <template v-if="order.placedAt"> · {{ order.placedAt }}</template>
