@@ -7,7 +7,6 @@ import RefreshIcon from '@/hangar/components/RefreshIcon.vue';
 import { DEMO_CONTEXT, useDemo } from '@/demo/use-demo';
 import { hashOfTab, MANAGER_TABS, tabFromHash, type ManagerTab } from '@/hangar/route';
 import { startSync, syncState } from '@/hangar/sync-state';
-import { OPEN_STYLEGUIDE } from '@/shared/messages';
 import { useHangarPledges } from '@/hangar/use-hangar-pledges';
 import type { IconName } from '@/icons/icon-names';
 import TabBar from '@/shared/components/TabBar.vue';
@@ -16,9 +15,6 @@ import SettingsPanel from '@/settings/SettingsPanel.vue';
 import { useSettings } from '@/settings/use-settings';
 import { MANAGER_CONTAINER, useThemeClass } from '@/themes/theme';
 import { computed, inject, onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue';
-
-const isDev = import.meta.env.DEV;
-const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
 
 /** Icon of each tab, before its label. */
 const TAB_ICONS: Record<ManagerTab, IconName> = {
@@ -109,8 +105,6 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
       <span v-if="demo" class="shm-demo-badge" :title="i18n.t('manager.demoBadgeHint')">
         {{ i18n.t('manager.demoBadge') }}
       </span>
-      <!-- Development builds only: the styleguide with all building blocks (wxt.config.ts). -->
-      <a v-if="isDev" class="shm-dev-link" href="#" @click.prevent="openStyleguide">Styleguide</a>
     </h2>
     <!--
       Only hidden (not removed) in the settings, so the header keeps its height and the tabs below
@@ -246,14 +240,6 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
   /* RSI's `.shadow-button` background (the middle part between the two end sections) stays. */
   border: 0;
   cursor: pointer;
-}
-
-.shm-dev-link {
-  margin-left: 12px;
-  color: var(--shm-accent);
-  font-size: 12px;
-  text-transform: none;
-  vertical-align: 3px;
 }
 
 .shm-demo-badge {

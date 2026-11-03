@@ -32,7 +32,7 @@ export default defineConfig({
     // unlimitedStorage: large hangars can exceed the default quota of storage.local.
     permissions: ['storage', 'unlimitedStorage'],
     host_permissions: ['https://robertsspaceindustries.com/*'],
-    // No popup: clicking the icon opens the manager page (see background.ts).
+    // The toolbar icon opens the popup with links to the manager (src/entrypoints/popup).
     action: {
       default_title: '__MSG_extName__',
     },

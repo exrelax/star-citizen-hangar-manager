@@ -117,7 +117,9 @@
     "filtersLists": {
       "hangar": "My Hangar",
       "buyback": "Buy Back"
-    }
+    },
+    "development": "Entwicklung",
+    "repositoryHint": "Quellcode, Issues und Änderungen der Extension."
   },
   "status": {
     "checking": "Suche nach Änderungen …",
@@ -281,5 +283,10 @@
     "failed": "Das Geschenk konnte nicht gesendet werden: $1",
     "success": "Eine Geschenk-E-Mail für dein Pledge ($2) wurde an $1 gesendet.",
     "successNote": "Bis es angenommen ist, kannst du das Geschenk in „My Gear“ jederzeit zurückziehen."
+  },
+  "popup": {
+    "manager": "Hangar Manager",
+    "settings": "Einstellungen",
+    "repository": "GitHub-Repository"
   }
 }

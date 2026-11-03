@@ -16,6 +16,12 @@ import type { FilterGroups, PledgeFilter } from '@/hangar/filters';
  */
 export const AUTO_LANGUAGE_SOURCE: 'ui' | 'preferred' = 'preferred';
 
+/** RSI's hangar page, which hosts the manager (the popup's links add the tab's hash). */
+export const RSI_HANGAR_URL = 'https://robertsspaceindustries.com/en/account/pledges';
+
+/** The extension's source code, linked from the popup. */
+export const REPOSITORY_URL = 'https://github.com/exrelax/sc-hangar-manager';
+
 /** Pledges per page in the RSI hangar ("My Gear"). Fixed by RSI. */
 export const HANGAR_PAGE_SIZE = 10;
 

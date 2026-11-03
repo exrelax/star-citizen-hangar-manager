@@ -87,7 +87,7 @@ case.
 The dev build adds a styleguide page with the manager's building blocks: the theme colors of the
 current theme, all icons, the real hangar and buy back lists with made-up pledges of every kind
 (filters, search, rows, their buttons and dialogs) and the settings. Open it with the
-**Styleguide** link next to the manager's title (dev builds only), or at
+**Styleguide** link at the bottom of the manager's settings (dev builds only), or at
 `chrome-extension://<extension id>/styleguide.html`.
 
 - It shows the real components (`src/entrypoints/styleguide`), so it stays current with the code.
@@ -118,7 +118,8 @@ Firefox removes temporary add-ons when it quits.
 
 - **Icon:** The extension shows up in the toolbar or the extensions menu (puzzle icon) as
   “SC Hangar Manager”. There are no custom icons yet, so the browser shows a default icon.
-- **Manager page:** Clicking the icon opens the “Hangar Manager” page in a new tab.
+- **Popup:** Clicking the icon opens a small popup with links to the Hangar Manager, its settings
+  and the GitHub repository; each opens in a new tab.
 - **Content script:** On the RSI account pages (e.g.
   [My Hangar](https://robertsspaceindustries.com/account/pledges)) the left navigation gets a new
   first entry “Hangar Manager”. It opens the manager view at `/account/pledges#hangar-manager`.
@@ -142,7 +143,7 @@ src/
     background.ts        Background (service worker in Chrome, background script in Firefox)
     hangar.content/      Content script: nav entry and manager view on the RSI hangar page
     ccugame.content/     Content script: links to the manager on ccugame.app
-    options/             Manager page (Vue), opens in its own tab
+    popup/               Popup of the toolbar icon: links to the manager, settings, repository
     styleguide/          Styleguide page with all building blocks (dev builds only)
   hangar/                Hangar data and view: sync, smart updates, list, filters, search
   buyback/               Buy back data and view, adding buy back pledges to the RSI cart
