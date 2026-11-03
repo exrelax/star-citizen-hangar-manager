@@ -308,6 +308,8 @@ Paints, Game access, LTI, Warbond, Probably giftable, Rewards), plus:
 ## Settings
 
 - **Language**: automatic, English or German.
+- **Show only the best insurance of upgraded ships** (on by default): after upgrades a pledge lists
+  the insurance of every step; only the one that counts (LTI, otherwise the most months) is listed.
 - **Hide sensitive information**: see [Private by design](#private-by-design).
 - **Theme**: Default RSI or Modern Hangar.
 - **Smart updates**: on or off.

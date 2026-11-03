@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bestInsurance, insuranceLabel, parseInsurance } from './insurance';
+import { bestInsurance, insuranceLabel, parseInsurance, supersededInsurances } from './insurance';
 
 describe('parseInsurance', () => {
   it('reads lifetime and month insurances, nothing else', () => {
@@ -38,5 +38,30 @@ describe('insuranceLabel', () => {
     expect(insuranceLabel({ lifetime: false, months: 12 })).toBe('1 year');
     expect(insuranceLabel({ lifetime: false, months: 6 })).toBe('6 months');
     expect(insuranceLabel({ lifetime: false, months: 1 })).toBe('1 month');
+  });
+});
+
+describe('supersededInsurances', () => {
+  it('keeps only the first lifetime insurance', () => {
+    expect([
+      ...supersededInsurances([
+        'Aurora MR',
+        '6 Month Insurance',
+        'Lifetime Insurance',
+        '120 Month Insurance',
+        'Lifetime Insurance',
+      ]),
+    ]).toEqual([1, 3, 4]);
+  });
+
+  it('keeps the most months without lifetime insurance', () => {
+    expect([...supersededInsurances(['3 Month Insurance', '120 Month Insurance', 'Hull'])]).toEqual(
+      [0],
+    );
+  });
+
+  it('supersedes nothing with a single or no insurance', () => {
+    expect(supersededInsurances(['Lifetime Insurance', 'Ship']).size).toBe(0);
+    expect(supersededInsurances(['Ship']).size).toBe(0);
   });
 });

@@ -25,6 +25,25 @@ export function bestInsurance(titles: Iterable<string>): Insurance | undefined {
   return best;
 }
 
+/**
+ * Indices of the insurances among the given item titles that are superseded: all but the first
+ * of the best one. After CCUs a pledge lists the insurance of every step, but only the best one
+ * is kept.
+ */
+export function supersededInsurances(titles: readonly string[]): Set<number> {
+  const best = bestInsurance(titles);
+  const superseded = new Set<number>();
+  if (!best) return superseded;
+  let kept = false;
+  titles.forEach((title, index) => {
+    const insurance = parseInsurance(title);
+    if (!insurance) return;
+    if (!kept && !isBetter(best, insurance)) kept = true;
+    else superseded.add(index);
+  });
+  return superseded;
+}
+
 function isBetter(insurance: Insurance, than: Insurance): boolean {
   if (than.lifetime) return false;
   return insurance.lifetime || insurance.months > than.months;

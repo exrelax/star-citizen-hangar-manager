@@ -98,7 +98,9 @@
     "filtersBuyback": "Buy Back",
     "filtersReset": "Zurücksetzen",
     "filterUp": "„$1“ nach oben",
-    "filterDown": "„$1“ nach unten"
+    "filterDown": "„$1“ nach unten",
+    "hideSupersededInsurances": "Bei geupgradeten Schiffen nur die beste Versicherung anzeigen",
+    "hideSupersededInsurancesHint": "Nach Upgrades listet ein Pledge die Versicherung jedes Schritts auf, es gilt aber nur die beste: LTI, falls vorhanden, sonst die mit den meisten Monaten. Die übrigen werden im aufgeklappten Item ausgeblendet."
   },
   "status": {
     "checking": "Suche nach Änderungen …",

@@ -26,6 +26,8 @@ export interface Settings {
   language: LanguageSetting;
   /** Hides the $ values (pledge values, discounts, upgrade costs). */
   hideMeltValue: boolean;
+  /** Lists only the best insurance in the items of upgraded ships, the one that counts. */
+  hideSupersededInsurances: boolean;
   /** Hides the pledge ids (also those of applied CCUs). */
   hidePledgeIds: boolean;
   /** Shows a selection of the pledges with made-up ids instead of all (see `src/demo`). */
@@ -51,6 +53,7 @@ export interface Settings {
 export const DEFAULT_SETTINGS: Settings = {
   language: 'auto',
   hideMeltValue: false,
+  hideSupersededInsurances: true,
   hidePledgeIds: false,
   demoMode: false,
   showRefund: true,
@@ -80,6 +83,10 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
       typeof stored?.hideMeltValue === 'boolean'
         ? stored.hideMeltValue
         : DEFAULT_SETTINGS.hideMeltValue,
+    hideSupersededInsurances:
+      typeof stored?.hideSupersededInsurances === 'boolean'
+        ? stored.hideSupersededInsurances
+        : DEFAULT_SETTINGS.hideSupersededInsurances,
     hidePledgeIds:
       typeof stored?.hidePledgeIds === 'boolean'
         ? stored.hidePledgeIds

@@ -5,7 +5,7 @@ import { computed, ref, watch } from 'vue';
 import { REFUND_DAYS, REFUND_URGENT_DAYS } from '@/config';
 import { refundRequestUrl, refundWindow, today } from '@/orders/refund';
 import { formatDiscount } from '../discount-format';
-import { insuranceLabel } from '../insurance';
+import { insuranceLabel, supersededInsurances } from '../insurance';
 import type { PledgeView } from '../pledge-view';
 import { myGearHref } from '../route';
 import OrderInfo from '@/orders/OrderInfo.vue';
@@ -26,6 +26,15 @@ const linkedShips = computed(() =>
 /** Days left to refund a purchase paid with money (CIG: 30 days), while there are any. */
 const refund = computed(() =>
   props.pledge.order?.placedAt ? refundWindow(props.pledge.order.placedAt, today.value) : undefined,
+);
+
+/** Insurances of an upgraded ship replaced by a better one (hidden by a setting, see row.css). */
+const superseded = computed(() =>
+  props.pledge.isUpgraded
+    ? supersededInsurances(
+        props.pledge.items.map((item) => (item.kind === 'Insurance' ? item.title : '')),
+      )
+    : new Set<number>(),
 );
 
 const discount = computed(
@@ -194,7 +203,11 @@ const toggle = () => {
           {{ pledge.upgrade.targetItems.map((item) => item.name).join(', ') }}
         </p>
         <ul v-if="pledge.items.length" class="shm-items">
-          <li v-for="(item, index) in pledge.items" :key="index">
+          <li
+            v-for="(item, index) in pledge.items"
+            :key="index"
+            :class="{ 'is-superseded-insurance': superseded.has(index) }"
+          >
             <span class="shm-item-title">{{ item.title }}</span>
             <span v-if="item.kind" class="shm-item-kind">{{ item.kind }}</span>
             <span v-if="item.manufacturer" class="shm-item-manufacturer">

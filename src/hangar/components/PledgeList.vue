@@ -14,6 +14,7 @@ const displayClasses = computed(() => ({
   'shm-hide-values': props.settings.hideMeltValue,
   'shm-hide-ids': props.settings.hidePledgeIds,
   'shm-hide-refund': !props.settings.showRefund,
+  'shm-hide-superseded-insurances': props.settings.hideSupersededInsurances,
   'shm-hide-erkul': !props.settings.shipLinks.erkul,
   'shm-hide-fleetyards': !props.settings.shipLinks.fleetyards,
 }));

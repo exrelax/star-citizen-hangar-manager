@@ -98,7 +98,9 @@
     "filtersBuyback": "Buy Back",
     "filtersReset": "Reset",
     "filterUp": "Move “$1” up",
-    "filterDown": "Move “$1” down"
+    "filterDown": "Move “$1” down",
+    "hideSupersededInsurances": "Show only the best insurance of upgraded ships",
+    "hideSupersededInsurancesHint": "After upgrades a pledge lists the insurance of every step, but only the best one is kept: LTI if there is one, otherwise the most months. The others are hidden in the opened item."
   },
   "status": {
     "checking": "Checking for changes …",
