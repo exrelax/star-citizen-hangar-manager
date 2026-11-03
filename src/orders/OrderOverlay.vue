@@ -7,6 +7,7 @@ import {
   anonymizeOrderDetails,
   HIDDEN,
   maskOrderDetails,
+  redateOrderDetails,
   type Order,
   type OrderDetails,
 } from './orders';
@@ -44,7 +45,12 @@ onMounted(async () => {
     if (context) {
       const real = context.realOrder(props.order.id);
       if (!real) throw new Error(i18n.t('order.notFound'));
-      details.value = anonymizeOrderDetails(await fetchOrderDetails(real), context.fakeId);
+      const anonymized = anonymizeOrderDetails(await fetchOrderDetails(real), context.fakeId);
+      // Some demo pledges have a recent purchase date, for the refund tags.
+      details.value =
+        real.placedAt && props.order.placedAt
+          ? redateOrderDetails(anonymized, real.placedAt, props.order.placedAt)
+          : anonymized;
     } else {
       details.value = await fetchOrderDetails(props.order);
     }

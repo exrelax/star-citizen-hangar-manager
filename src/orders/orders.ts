@@ -305,3 +305,47 @@ export function maskOrderDetails(
     payments: table(details.payments),
   };
 }
+
+const MONTH_NAMES = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
+/** "2026-09-30" → "September 30, 2026", as RSI's billing list writes dates. */
+function longDate(iso: string): string {
+  const [year, month, day] = iso.split('-').map(Number);
+  return `${MONTH_NAMES[month! - 1]} ${day}, ${year}`;
+}
+
+/**
+ * Order details with the purchase date moved from `from` to `to` (ISO dates), in RSI's two
+ * spellings ("September 30, 2026" and "2026-09-30") – for the demo's recent purchases.
+ */
+export function redateOrderDetails(details: OrderDetails, from: string, to: string): OrderDetails {
+  if (from === to) return details;
+  const redate = (text: string) =>
+    text.split(longDate(from)).join(longDate(to)).split(from).join(to);
+  const table = (input: Table): Table => ({
+    columns: input.columns,
+    rows: input.rows.map((row) => row.map(redate)),
+  });
+  const pairs = (input: LabelledValue[]) =>
+    input.map(({ label, value }) => ({ label, value: redate(value) }));
+  return {
+    ...details,
+    header: pairs(details.header),
+    items: table(details.items),
+    totals: pairs(details.totals),
+    payments: table(details.payments),
+  };
+}

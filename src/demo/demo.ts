@@ -1,5 +1,6 @@
 import type { BuybackView } from '@/buyback/buyback-view';
-import { BUYBACK_PAGE_SIZE, DEMO, HANGAR_PAGE_SIZE } from '@/config';
+import { BUYBACK_PAGE_SIZE, DEMO, HANGAR_PAGE_SIZE, REFUND_DAYS } from '@/config';
+import { localToday } from '@/orders/refund';
 import type { PledgeView } from '@/hangar/pledge-view';
 import { normalizeSearchText } from '@/hangar/search';
 
@@ -69,8 +70,15 @@ export function pickDemo<T extends { id: number }>(
 const containsShip = (pledge: PledgeView, names: readonly string[]) =>
   pledge.items.some((item) => item.kind === 'Ship' && names.includes(item.title));
 
-/** The demo selection of the hangar, with made-up ids (also for the search) and demo pages. */
-export function demoHangar(pledges: readonly PledgeView[], key: string): PledgeView[] {
+/**
+ * The demo selection of the hangar, with made-up ids (also for the search) and demo pages; two
+ * pledges get purchase dates relative to `today` for the refund tags (see `DEMO.refundDaysLeft`).
+ */
+export function demoHangar(
+  pledges: readonly PledgeView[],
+  key: string,
+  today = localToday(),
+): PledgeView[] {
   const fakeId = createFakeIds(key);
   // Some upgraded pledges for their "Applied upgrades", in the same fixed random order.
   const upgraded = new Set(
@@ -86,10 +94,29 @@ export function demoHangar(pledges: readonly PledgeView[], key: string): PledgeV
     key,
     (pledge) => upgraded.has(pledge) || containsShip(pledge, DEMO.includeShips),
   );
-  return selection.map((pledge, position) => ({
+  const demo = selection.map((pledge, position) => ({
     ...anonymized(pledge, fakeId),
     page: Math.floor(position / HANGAR_PAGE_SIZE) + 1,
   }));
+
+  // The first pledges with a money-paid order get recent purchase dates for the refund tags.
+  const withOrder = demo.filter((pledge) => pledge.order);
+  DEMO.refundDaysLeft.forEach((daysLeft, index) => {
+    const pledge = withOrder[index];
+    if (pledge?.order) {
+      const placedAt = addDays(today, daysLeft - REFUND_DAYS);
+      // The pledge's own date shown in the row follows, so both dates match.
+      pledge.order = { ...pledge.order, placedAt };
+      pledge.createdAt = placedAt;
+    }
+  });
+  return demo;
+}
+
+/** The ISO date `days` days after `date` (before it for negative days). */
+function addDays(date: string, days: number): string {
+  const time = Date.parse(`${date}T00:00:00Z`) + days * 24 * 60 * 60 * 1000;
+  return new Date(time).toISOString().slice(0, 10);
 }
 
 /** The demo selection of the buy back, with made-up ids (also for the search). */

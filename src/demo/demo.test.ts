@@ -3,6 +3,7 @@ import type { BuybackView } from '@/buyback/buyback-view';
 import { DEMO } from '@/config';
 import type { PledgeView } from '@/hangar/pledge-view';
 import { matchesSearch, parseSearchQuery } from '@/hangar/search';
+import { refundWindow } from '@/orders/refund';
 import { createFakeIds, demoBuyback, demoHangar, pickDemo } from './demo';
 
 const KEY = 'test-key';
@@ -78,6 +79,23 @@ describe('demoHangar', () => {
     expect(demoPledge!.order!.id).toMatch(/^[0-9A-Z]{9}$/);
     expect(demoPledge!.order!.id).not.toBe('J4SHJM5S2GUF5');
     expect(demoPledge!.searchText).not.toContain('j4shjm5s2guf5');
+  });
+
+  it('gives the first two pledges with an order recent purchase dates for the refund tags', () => {
+    const order = { amount: '$10.00 USD', placedAt: '2020-01-01', buyback: false };
+    const withOrders = [
+      pledge(99_996_003, { order: { ...order, id: 'A' } }),
+      pledge(99_996_002, { order: { ...order, id: 'B' } }),
+      pledge(99_996_001, { order: { ...order, id: 'C' } }),
+    ];
+    const demo = demoHangar(withOrders, KEY, '2026-11-03');
+    const today = '2026-11-03';
+    expect(demo.map((entry) => refundWindow(entry.order!.placedAt!, today)?.daysLeft)).toEqual([
+      20,
+      3,
+      undefined,
+    ]);
+    expect(demo[0]!.createdAt).toBe(demo[0]!.order!.placedAt);
   });
 
   it('numbers the pages of the demo list', () => {

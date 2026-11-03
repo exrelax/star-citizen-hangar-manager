@@ -7,6 +7,7 @@ import {
   DEMO_PROCESSOR,
   HIDDEN,
   maskOrderDetails,
+  redateOrderDetails,
   ORDERS_SNAPSHOT_VERSION,
   paidOrderOf,
   parseBillingPage,
@@ -195,6 +196,23 @@ describe('maskOrderDetails', () => {
     expect(values.payments.rows).toEqual([['PAYPAL', HIDDEN]]);
 
     expect(maskOrderDetails(details, { hideIds: false, hideValues: false })).toBe(details);
+  });
+});
+
+describe('redateOrderDetails', () => {
+  it('moves the purchase date in both of RSI spellings', () => {
+    const details = {
+      id: 'A',
+      slug: 'a',
+      header: [{ label: 'Order Placed', value: 'September 30, 2026 17:32' }],
+      items: { columns: [], rows: [] },
+      billTo: [],
+      totals: [],
+      payments: { columns: ['Date', 'Amount'], rows: [['2026-09-30, 17:33', '$1.00 USD']] },
+    };
+    const moved = redateOrderDetails(details, '2026-09-30', '2026-10-24');
+    expect(moved.header[0]!.value).toBe('October 24, 2026 17:32');
+    expect(moved.payments.rows[0]![0]).toBe('2026-10-24, 17:33');
   });
 });
 

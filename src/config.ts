@@ -118,6 +118,11 @@ export const DEMO = {
   includeShips: ['Polaris'],
   /** Pledges with applied CCUs always part of the demo, for their "Applied upgrades". */
   upgradedPledges: 4,
+  /**
+   * Days left to refund for the first pledges with a money-paid order: their purchase date is
+   * moved accordingly, so the demo always shows the refund tag – normal and in its last week.
+   */
+  refundDaysLeft: [20, 3],
 } as const;
 
 /**
