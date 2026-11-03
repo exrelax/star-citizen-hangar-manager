@@ -89,7 +89,7 @@
     "demoMode": "Demo mode",
     "demoModeHint": "Shows only $1 pledges of “My Hangar” and $2 of the buy back, with made-up pledge IDs – e.g. for screenshots. Links to RSI and the cart do nothing meanwhile.",
     "showRefund": "Show refund period",
-    "showRefundHint": "Shows for purchases paid with money how many of the $1 days for a refund are left, and a “Refund Request” button in the opened item.",
+    "showRefundHint": "Shows for purchases paid with money how many of the $1 days for a refund are left, and a “Refund Request” button in the order details.",
     "theme": "Theme",
     "themeHint": "Only changes the look of the Hangar Manager; the rest of RSI's website stays as it is. “Modern Hangar” follows the system's light or dark appearance.",
     "themeOptions": {
@@ -180,6 +180,9 @@
     "hint": "Bought with money on $1: CIG refunds it within $2 days, until $3.",
     "request": "Refund Request",
     "requestHint": "Opens RSI's support form in a new tab, filled in for a refund of order $1.",
-    "requestDemo": "Not available in demo mode."
+    "requestDemo": "Not available in demo mode.",
+    "leftDays": "$1 days left for a refund (until $2)",
+    "leftDay": "1 day left for a refund (until $2)",
+    "leftLastDay": "Last day for a refund: today ($1)"
   }
 }

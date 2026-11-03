@@ -258,7 +258,7 @@ For upgraded ships it is labelled **Base Order**: the order of the original pled
 - **Retrieve invoice** opens RSI's invoice of the order.
 - **Refund countdown**: CIG refunds purchases paid with money within 30 days. Such pledges get a
   tag with the days left (e.g. `Refund: 26 days`), highlighted in the last week.
-- **Refund Request**: a button in the opened row opens RSI's support form in a new tab, already
+- **Refund Request**: a button in the order details opens RSI's support form in a new tab, already
   filled in for a refund of the order – category, subject and message included. You only review
   and send it.
 

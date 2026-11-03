@@ -12,9 +12,12 @@ import {
   type Order,
   type OrderDetails,
 } from './orders';
+import { REFUND_URGENT_DAYS } from '@/config';
+import { refundRequestUrl, refundWindow, today } from './refund';
 import { fetchOrderDetails } from './sync-orders';
 
-const props = defineProps<{ order: Order }>();
+/** `refundable`: offer a refund request while the refund period lasts (see OrderInfo.vue). */
+const props = defineProps<{ order: Order; refundable?: boolean }>();
 const emit = defineEmits<{ close: [] }>();
 
 const details = ref<OrderDetails>();
@@ -37,6 +40,22 @@ const shown = computed(
     }),
 );
 const titleId = computed(() => (settings.value.hidePledgeIds ? HIDDEN : props.order.id));
+
+/** The time left to refund the order, with RSI's support form filled in for it – if shown. */
+const refund = computed(() =>
+  props.refundable && settings.value.showRefund && props.order.placedAt
+    ? refundWindow(props.order.placedAt, today.value)
+    : undefined,
+);
+const refundLeft = computed(() => {
+  const window = refund.value;
+  if (!window) return undefined;
+  if (window.daysLeft === 0) return i18n.t('refund.leftLastDay', [window.until]);
+  return i18n.t(window.daysLeft === 1 ? 'refund.leftDay' : 'refund.leftDays', [
+    window.daysLeft,
+    window.until,
+  ]);
+});
 
 onMounted(async () => {
   addEventListener('keydown', onKeydown);
@@ -118,16 +137,45 @@ function openInvoice() {
 
           <div class="shm-order-section-title">
             <h4>{{ i18n.t('order.summary') }}</h4>
-            <!-- Disabled in the demo: RSI's invoice shows the real order. -->
-            <button
-              type="button"
-              class="shm-button"
-              :disabled="!!demo"
-              :title="demo ? i18n.t('order.invoiceDemo') : undefined"
-              @click="openInvoice"
-            >
-              {{ i18n.t('order.invoice') }}
-            </button>
+            <div class="shm-order-actions">
+              <span
+                v-if="refund"
+                class="shm-order-refund"
+                :class="{ 'is-urgent': refund.daysLeft < REFUND_URGENT_DAYS }"
+              >
+                {{ refundLeft }}
+              </span>
+              <!-- Disabled in the demo: its order id is made up. -->
+              <button
+                v-if="refund && demo"
+                type="button"
+                class="shm-button"
+                disabled
+                :title="i18n.t('refund.requestDemo')"
+              >
+                {{ i18n.t('refund.request') }}
+              </button>
+              <a
+                v-else-if="refund"
+                class="shm-button"
+                :href="refundRequestUrl(order.id)"
+                target="_blank"
+                rel="noopener"
+                :title="i18n.t('refund.requestHint', [titleId])"
+              >
+                {{ i18n.t('refund.request') }}
+              </a>
+              <!-- Disabled in the demo: RSI's invoice shows the real order. -->
+              <button
+                type="button"
+                class="shm-button"
+                :disabled="!!demo"
+                :title="demo ? i18n.t('order.invoiceDemo') : undefined"
+                @click="openInvoice"
+              >
+                {{ i18n.t('order.invoice') }}
+              </button>
+            </div>
           </div>
           <table class="shm-order-table">
             <thead>
@@ -282,6 +330,24 @@ dd {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+}
+
+.shm-order-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Like the refund tag of the row: green, in the last days highlighted. */
+.shm-order-refund {
+  margin-right: 4px;
+  color: var(--shm-success);
+  font-size: 12px;
+}
+
+.shm-order-refund.is-urgent {
+  color: var(--shm-warning);
 }
 
 .shm-order-table {

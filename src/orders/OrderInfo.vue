@@ -5,8 +5,12 @@ import { ref } from 'vue';
 import OrderOverlay from './OrderOverlay.vue';
 import { HIDDEN, type PaidOrder } from './orders';
 
-/** `base`: the pledge's ship was upgraded since – the order is the one of its base pledge. */
-defineProps<{ order: PaidOrder; base?: boolean }>();
+/**
+ * `base`: the pledge's ship was upgraded since – the order is the one of its base pledge.
+ * `refundable`: the pledge is still in the hangar, so its details offer a refund request while
+ * the refund period lasts (not for melted pledges).
+ */
+defineProps<{ order: PaidOrder; base?: boolean; refundable?: boolean }>();
 
 const open = ref(false);
 // With hidden ids the link stays, masked, so the details can still be opened (also masked).
@@ -33,7 +37,7 @@ const { settings } = useSettings();
     <template v-if="order.placedAt"> · {{ order.placedAt }}</template>
     <span v-if="order.buyback" class="shm-order-buyback"> · {{ i18n.t('order.buyback') }}</span>
   </p>
-  <OrderOverlay v-if="open" :order="order" @close="open = false" />
+  <OrderOverlay v-if="open" :order="order" :refundable="refundable" @close="open = false" />
 </template>
 
 <style scoped>

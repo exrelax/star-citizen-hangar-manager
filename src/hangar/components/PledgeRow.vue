@@ -3,7 +3,7 @@ import { useDemoContext } from '@/demo/use-demo';
 import { i18n, locale } from '@/i18n';
 import { computed, ref, watch } from 'vue';
 import { REFUND_DAYS, REFUND_URGENT_DAYS } from '@/config';
-import { refundRequestUrl, refundWindow, today } from '@/orders/refund';
+import { refundWindow, today } from '@/orders/refund';
 import { formatDiscount } from '../discount-format';
 import { insuranceLabel, supersededInsurances } from '../insurance';
 import type { PledgeView } from '../pledge-view';
@@ -172,31 +172,9 @@ const toggle = () => {
         >
           {{ i18n.t('pledge.showInMyGear', [pledge.page]) }}
         </a>
-        <!-- RSI's support form, filled in; disabled in the demo (its order id is made up). -->
-        <template v-if="refund && pledge.order">
-          <button
-            v-if="demo"
-            type="button"
-            class="shm-button shm-origin-button shm-refund-button"
-            disabled
-            :title="i18n.t('refund.requestDemo')"
-          >
-            {{ i18n.t('refund.request') }}
-          </button>
-          <a
-            v-else
-            class="shm-button shm-origin-button shm-refund-button"
-            :href="refundRequestUrl(pledge.order.id)"
-            target="_blank"
-            rel="noopener"
-            :title="i18n.t('refund.requestHint', [pledge.order.id])"
-          >
-            {{ i18n.t('refund.request') }}
-          </a>
-        </template>
       </div>
       <div class="shm-details-main">
-        <OrderInfo v-if="pledge.order" :order="pledge.order" :base="pledge.isUpgraded" />
+        <OrderInfo v-if="pledge.order" :order="pledge.order" :base="pledge.isUpgraded" refundable />
         <p v-if="pledge.upgrade" class="shm-upgrade">
           {{ pledge.upgrade.matchItems.map((item) => item.name).join(', ') }}
           →
