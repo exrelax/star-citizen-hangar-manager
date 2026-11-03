@@ -97,8 +97,8 @@ const kind = computed(() =>
           alt=""
           loading="lazy"
           decoding="async"
-          width="112"
-          height="63"
+          width="128"
+          height="72"
         />
         <!-- The kind of item (ship, CCU, paint, …) as a badge on the image. -->
         <span v-if="kind" class="shm-row-kind"><SvgIcon :name="kind" /></span>

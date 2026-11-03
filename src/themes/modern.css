@@ -342,7 +342,8 @@ html .shm-theme-modern .shm-row + .shm-row::before {
   position: absolute;
   top: 0;
   right: 0;
-  left: 136px;
+  /* Past the image: padding 12 + image 128 + gap 12. */
+  left: 152px;
   height: 1px;
   background: var(--shm-separator);
   content: '';
@@ -354,7 +355,7 @@ html .shm-theme-modern .shm-row-summary {
   grid-template-areas:
     'thumb main chevron'
     'thumb badges chevron';
-  grid-template-columns: 112px minmax(0, 1fr) auto;
+  grid-template-columns: 128px minmax(0, 1fr) auto;
   column-gap: 12px;
   row-gap: 6px;
   padding: 10px 12px;

@@ -7,7 +7,7 @@
   background: rgb(var(--shm-surface-rgb) / 0.6);
   /* Rows outside the viewport skip layout and paint – keeps long hangars smooth. */
   content-visibility: auto;
-  contain-intrinsic-size: auto 77px;
+  contain-intrinsic-size: auto 86px;
 }
 
 /*
@@ -16,15 +16,15 @@
  */
 .shm-row-kind {
   position: absolute;
-  bottom: 5px;
-  left: 5px;
+  bottom: 6px;
+  left: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   color: var(--shm-accent);
-  font-size: 12px;
+  font-size: 14px;
   background: rgb(5 12 19 / 0.78);
   border-radius: 999px;
 }
@@ -48,8 +48,8 @@
 .shm-thumb {
   position: relative;
   flex: none;
-  width: 112px;
-  height: 63px;
+  width: 128px;
+  height: 72px;
   background: rgb(var(--shm-accent-rgb) / 0.08);
 }
 
@@ -154,10 +154,10 @@
   transform: rotate(90deg);
 }
 
-/* Same columns as the summary: image (112 px) and gap (14 px), then the content. */
+/* Same columns as the summary: image (128 px) and gap (14 px), then the content. */
 .shm-details {
   display: grid;
-  grid-template-columns: 112px minmax(0, 1fr);
+  grid-template-columns: 128px minmax(0, 1fr);
   column-gap: 14px;
   align-items: start;
   padding: 4px 16px 12px 6px;
