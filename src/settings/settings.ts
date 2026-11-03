@@ -14,6 +14,10 @@ export type RewardVisibility = (typeof REWARD_VISIBILITIES)[number];
 export const BUYBACK_LINK_MODES = ['single', 'list'] as const;
 export type BuybackLinkMode = (typeof BUYBACK_LINK_MODES)[number];
 
+/** Look of the manager: `rsi` like RSI's account pages, `modern` after Apple's HIG (src/themes). */
+export const THEMES = ['rsi', 'modern'] as const;
+export type Theme = (typeof THEMES)[number];
+
 export interface Settings {
   language: LanguageSetting;
   /** Hides the $ values (pledge values, discounts, upgrade costs). */
@@ -28,6 +32,7 @@ export interface Settings {
   /** Keeps the stored hangar current by checking a few hangar pages now and then. */
   smartUpdates: boolean;
   buybackLinkMode: BuybackLinkMode;
+  theme: Theme;
   /** Links shown next to ships. */
   shipLinks: {
     erkul: boolean;
@@ -44,6 +49,7 @@ export const DEFAULT_SETTINGS: Settings = {
   rewardVisibility: 'showAll',
   smartUpdates: true,
   buybackLinkMode: 'single',
+  theme: 'rsi',
   shipLinks: { erkul: true, fleetyards: true },
 };
 
@@ -80,6 +86,7 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
     buybackLinkMode: BUYBACK_LINK_MODES.includes(stored?.buybackLinkMode as BuybackLinkMode)
       ? stored!.buybackLinkMode!
       : DEFAULT_SETTINGS.buybackLinkMode,
+    theme: THEMES.includes(stored?.theme as Theme) ? stored!.theme! : DEFAULT_SETTINGS.theme,
     shipLinks: {
       erkul: stored?.shipLinks?.erkul ?? DEFAULT_SETTINGS.shipLinks.erkul,
       fleetyards: stored?.shipLinks?.fleetyards ?? DEFAULT_SETTINGS.shipLinks.fleetyards,

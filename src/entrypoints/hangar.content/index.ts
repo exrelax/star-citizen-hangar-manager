@@ -13,6 +13,7 @@ import {
 } from '@/hangar/route';
 import { maybeRunSmartUpdate } from '@/hangar/sync-state';
 import { isPlainLeftClick } from '@/shared/dom';
+import { MANAGER_CONTAINER } from '@/themes/theme';
 import App from './App.vue';
 import './page.css';
 
@@ -67,6 +68,8 @@ export default defineContentScript({
         // Takes the place of the original content area, including its layout styles.
         container.classList.add('inner-content', 'shm-manager');
         const app = createApp(App);
+        // The theme (a setting) is applied to the container: see App.vue and src/themes.
+        app.provide(MANAGER_CONTAINER, container);
         app.mount(container);
         return app;
       },

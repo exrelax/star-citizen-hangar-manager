@@ -11,13 +11,18 @@ import { useHangarPledges } from '@/hangar/use-hangar-pledges';
 import { i18n, locale } from '@/i18n';
 import SettingsPanel from '@/settings/SettingsPanel.vue';
 import { useSettings } from '@/settings/use-settings';
-import { computed, onMounted, onUnmounted, provide, reactive, ref } from 'vue';
+import { MANAGER_CONTAINER, useThemeClass } from '@/themes/theme';
+import { computed, inject, onMounted, onUnmounted, provide, reactive, ref } from 'vue';
 
 const hangar = useHangarPledges();
 const buyback = useBuybackPledges();
 const { loaded, syncedAt } = hangar;
 
 const { settings, loaded: settingsLoaded, update: updateSettings } = useSettings();
+useThemeClass(
+  inject(MANAGER_CONTAINER, undefined),
+  computed(() => settings.value.theme),
+);
 
 // The demo mode (a setting) shows a selection of anonymized pledges (see src/demo).
 const demo = computed(() => settings.value.demoMode);
@@ -223,12 +228,12 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
   display: inline-block;
   margin-left: 10px;
   padding: 0 8px;
-  color: #0b141c;
+  color: var(--shm-text-on-accent);
   font-size: 11px;
   line-height: 18px;
   letter-spacing: 0.08em;
   vertical-align: 3px;
-  background: #f0b45a;
+  background: var(--shm-warning);
   border-radius: 3px;
   cursor: help;
 }
@@ -267,14 +272,14 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
   left: 12px;
   height: 2px;
   overflow: hidden;
-  background: rgba(98, 196, 235, 0.2);
+  background: rgb(var(--shm-accent-rgb) / 0.2);
 }
 
 /* Scaled instead of resized: smooth steps between the pages without re-layout. */
 .shm-refresh-bar-fill {
   display: block;
   height: 100%;
-  background: #62c4eb;
+  background: var(--shm-accent);
   transform-origin: left;
   transition: transform 0.4s ease-out;
 }
@@ -283,12 +288,12 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
   display: flex;
   gap: 4px;
   margin-top: 18px;
-  border-bottom: 1px solid rgba(98, 196, 235, 0.25);
+  border-bottom: 1px solid rgb(var(--shm-accent-rgb) / 0.25);
 }
 
 .shm-tab {
   padding: 8px 16px;
-  color: #8a9ba8;
+  color: var(--shm-text-muted);
   font: inherit;
   font-size: 13px;
   text-transform: uppercase;
@@ -301,18 +306,18 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
 
 .shm-tab:hover,
 .shm-tab:focus-visible {
-  color: #dbe7ee;
+  color: var(--shm-text);
   outline: none;
 }
 
 .shm-tab.is-active {
-  color: #62c4eb;
-  border-bottom-color: #62c4eb;
+  color: var(--shm-accent);
+  border-bottom-color: var(--shm-accent);
 }
 
 .shm-empty {
   margin-top: 20px;
-  color: #8a9ba8;
+  color: var(--shm-text-muted);
 }
 
 @media (prefers-reduced-motion: reduce) {

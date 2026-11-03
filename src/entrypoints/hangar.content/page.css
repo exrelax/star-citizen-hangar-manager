@@ -1,4 +1,7 @@
 /*
+ * Styles for RSI's page outside the manager. They are not part of the themes (src/themes): they
+ * only touch RSI's own areas and keep RSI's look there, whatever theme the manager uses.
+ *
  * Page-level tweaks while the manager view is shown (class set on <html> by the content script).
  *
  * The page background of #contentbody has three layers; the middle one is a large image with

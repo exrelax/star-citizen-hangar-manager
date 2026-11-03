@@ -1,0 +1,436 @@
+/*
+ * "Modern Hangar": a theme after Apple's Human Interface Guidelines – system font, system colors
+ * (dark and light, following the system appearance), grouped rounded surfaces, separators instead
+ * of outlines, a segmented control for the tabs, capsule tags and a blurred overlay backdrop.
+ *
+ * It applies only inside `.shm-theme-modern` (the manager's container and its overlays) and may
+ * stand out from the rest of RSI's website. Rules start with `html` to win over the components'
+ * scoped styles; RSI's own styles of the manager header need `!important`.
+ */
+
+.shm-theme-modern {
+  /*
+   * Dark appearance: Apple's accent and status colors on the very dark blues of RSI's website
+   * instead of Apple's black and grays.
+   */
+  --shm-accent: #0a84ff;
+  --shm-accent-rgb: 10 132 255;
+  --shm-text: #fff;
+  --shm-text-secondary: rgb(214 228 242 / 0.62);
+  --shm-text-muted: rgb(214 228 242 / 0.62);
+  --shm-text-faint: rgb(214 228 242 / 0.32);
+  --shm-text-strong: #fff;
+  --shm-text-on-accent: #fff;
+  --shm-surface-rgb: 13 26 38;
+  --shm-surface-elevated: #0d1a26;
+  --shm-success: #30d158;
+  --shm-success-rgb: 48 209 88;
+  --shm-warning: #ff9f0a;
+  --shm-upgraded: #ffd60a;
+  --shm-upgraded-rgb: 255 214 10;
+  --shm-danger: #ff453a;
+  --shm-backdrop: rgb(2 8 14 / 0.45);
+  /* Only used by this theme. */
+  --shm-background: #050c13;
+  --shm-fill: rgb(98 150 200 / 0.14);
+  --shm-fill-strong: rgb(98 150 200 / 0.24);
+  --shm-separator: rgb(98 150 200 / 0.2);
+  --shm-segment: #1d3245;
+  --shm-hover: rgb(98 150 200 / 0.06);
+  --shm-text-on-warning: #000;
+  --shm-font:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', 'Segoe UI', system-ui,
+    sans-serif;
+}
+
+@media (prefers-color-scheme: light) {
+  .shm-theme-modern {
+    --shm-accent: #007aff;
+    --shm-accent-rgb: 0 122 255;
+    --shm-text: #000;
+    --shm-text-secondary: rgb(60 60 67 / 0.6);
+    --shm-text-muted: rgb(60 60 67 / 0.6);
+    --shm-text-faint: rgb(60 60 67 / 0.3);
+    --shm-text-strong: #000;
+    --shm-surface-rgb: 255 255 255;
+    --shm-surface-elevated: #fff;
+    --shm-success: #248a3d;
+    --shm-success-rgb: 36 138 61;
+    --shm-warning: #ff9500;
+    --shm-upgraded: #b25000;
+    --shm-upgraded-rgb: 178 80 0;
+    --shm-danger: #ff3b30;
+    --shm-backdrop: rgb(0 0 0 / 0.2);
+    --shm-background: #f2f2f7;
+    --shm-fill: rgb(120 120 128 / 0.12);
+    --shm-fill-strong: rgb(120 120 128 / 0.2);
+    --shm-separator: rgb(60 60 67 / 0.18);
+    --shm-segment: #fff;
+    --shm-hover: rgb(0 0 0 / 0.03);
+  }
+}
+
+/* ---- Container and typography ---- */
+
+html .shm-theme-modern,
+html .shm-theme-modern * {
+  font-family: var(--shm-font) !important;
+  letter-spacing: normal;
+}
+
+html .shm-manager.shm-theme-modern {
+  box-sizing: border-box;
+  padding: 28px 28px 32px !important;
+  color: var(--shm-text);
+  background: var(--shm-background) !important;
+  border-radius: 20px;
+}
+
+/* ---- Header: title, intro, refresh button (RSI's markup) ---- */
+
+html .shm-theme-modern .top {
+  padding: 0 !important;
+  background: none !important;
+  border: 0 !important;
+}
+
+html .shm-theme-modern .top .title {
+  margin: 0 !important;
+  color: var(--shm-text) !important;
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  line-height: 34px !important;
+  text-transform: none !important;
+}
+
+html .shm-theme-modern .top > p {
+  margin: 4px 0 0 !important;
+  color: var(--shm-text-secondary) !important;
+  font-size: 13px !important;
+  text-transform: none !important;
+}
+
+html .shm-theme-modern .top .separator {
+  display: none !important;
+}
+
+html .shm-theme-modern .shm-refresh {
+  height: 32px !important;
+  margin: 0 !important;
+  padding: 0 14px !important;
+  color: var(--shm-accent) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 32px !important;
+  background: rgb(var(--shm-accent-rgb) / 0.15) !important;
+  border-radius: 999px !important;
+}
+
+html .shm-theme-modern .shm-refresh:not(:disabled):hover {
+  background: rgb(var(--shm-accent-rgb) / 0.25) !important;
+}
+
+html .shm-theme-modern .shm-refresh .left-section,
+html .shm-theme-modern .shm-refresh .right-section {
+  display: none !important;
+}
+
+html .shm-theme-modern .shm-refresh .label {
+  height: 32px;
+  color: inherit !important;
+  text-transform: none !important;
+}
+
+html .shm-theme-modern .shm-refresh-bar {
+  top: auto;
+  right: 14px;
+  bottom: 4px;
+  left: 14px;
+  border-radius: 1px;
+}
+
+html .shm-theme-modern .shm-demo-badge {
+  padding: 0 9px;
+  color: var(--shm-text-on-warning);
+  font-size: 12px;
+  font-weight: 600;
+  vertical-align: 5px;
+  border-radius: 999px;
+}
+
+/* ---- Tabs as a segmented control ---- */
+
+html .shm-theme-modern .shm-tabs {
+  display: inline-flex;
+  gap: 2px;
+  margin-top: 22px;
+  padding: 2px;
+  background: var(--shm-fill);
+  border: 0;
+  border-radius: 9px;
+}
+
+html .shm-theme-modern .shm-tab {
+  margin: 0;
+  padding: 6px 18px;
+  color: var(--shm-text);
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: none;
+  border: 0;
+  border-radius: 7px;
+}
+
+html .shm-theme-modern .shm-tab.is-active {
+  color: var(--shm-text);
+  background: var(--shm-segment);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.2);
+}
+
+/* ---- Status, filters, search ---- */
+
+html .shm-theme-modern .shm-status {
+  font-size: 13px;
+}
+
+html .shm-theme-modern .shm-status-action {
+  padding: 4px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(var(--shm-upgraded-rgb) / 0.18);
+}
+
+html .shm-theme-modern .shm-filter {
+  height: 30px;
+  padding: 0 12px;
+  color: var(--shm-text);
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--shm-fill);
+  border: 0;
+  border-radius: 999px;
+}
+
+html .shm-theme-modern .shm-filter:hover,
+html .shm-theme-modern .shm-filter:focus-visible {
+  background: var(--shm-fill-strong);
+}
+
+html .shm-theme-modern .shm-filter.is-active {
+  color: var(--shm-text-on-accent);
+  background: var(--shm-accent);
+}
+
+html .shm-theme-modern .shm-search {
+  height: 36px;
+  font-size: 15px;
+  background: var(--shm-fill);
+  border: 0;
+  border-radius: 10px;
+}
+
+html .shm-theme-modern .shm-search:focus {
+  box-shadow: 0 0 0 3px rgb(var(--shm-accent-rgb) / 0.4);
+}
+
+html .shm-theme-modern .shm-count {
+  font-size: 13px;
+}
+
+/* ---- Rows: rounded cells of a grouped list ---- */
+
+html .shm-theme-modern .shm-row {
+  margin-bottom: 8px;
+  overflow: hidden;
+  background: var(--shm-surface-elevated);
+  border: 0;
+  border-radius: 12px;
+}
+
+html .shm-theme-modern .shm-row-summary {
+  padding: 10px 12px;
+}
+
+html .shm-theme-modern .shm-row-summary:hover {
+  background: var(--shm-hover);
+}
+
+html .shm-theme-modern .shm-thumb {
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+html .shm-theme-modern .shm-title {
+  color: var(--shm-text);
+  font-size: 15px;
+  font-weight: 600;
+  text-transform: none;
+}
+
+html .shm-theme-modern .shm-meta {
+  font-size: 13px;
+}
+
+html .shm-theme-modern .shm-badge {
+  padding: 2px 9px;
+  color: var(--shm-accent);
+  font-size: 11px;
+  font-weight: 600;
+  background: rgb(var(--shm-accent-rgb) / 0.16);
+  border: 0;
+  border-radius: 999px;
+}
+
+html .shm-theme-modern .shm-badge.is-lti {
+  color: var(--shm-text-on-accent);
+  background: var(--shm-accent);
+}
+
+html .shm-theme-modern .shm-badge.is-upgraded {
+  color: var(--shm-upgraded);
+  background: rgb(var(--shm-upgraded-rgb) / 0.18);
+}
+
+html .shm-theme-modern .shm-badge.is-giftable,
+html .shm-theme-modern .shm-badge.is-refund {
+  color: var(--shm-success);
+  background: rgb(var(--shm-success-rgb) / 0.18);
+}
+
+html .shm-theme-modern .shm-badge.is-refund.is-urgent {
+  color: var(--shm-text-on-warning);
+  background: var(--shm-warning);
+}
+
+html .shm-theme-modern .shm-chevron {
+  color: var(--shm-text-faint);
+}
+
+html .shm-theme-modern .shm-details {
+  padding: 4px 12px 14px;
+}
+
+html .shm-theme-modern .shm-items li,
+html .shm-theme-modern .shm-upgrade-log-entries :is(th, td),
+html .shm-theme-modern .shm-order-table :is(th, td) {
+  border-top-color: var(--shm-separator);
+}
+
+/* Separators between entries only, as in Apple's lists. */
+html .shm-theme-modern .shm-items li:first-child {
+  border-top-color: transparent;
+}
+
+html .shm-theme-modern .shm-upgrade-log-entries th,
+html .shm-theme-modern .shm-order-table th {
+  border-top-color: transparent;
+}
+
+html .shm-theme-modern .shm-external-links {
+  border-top-color: var(--shm-separator);
+}
+
+/* ---- Buttons: tinted, rounded ---- */
+
+html .shm-theme-modern .shm-button {
+  color: var(--shm-accent);
+  font-size: 13px;
+  font-weight: 500;
+  background: rgb(var(--shm-accent-rgb) / 0.15);
+  border: 0;
+  border-radius: 8px;
+}
+
+html .shm-theme-modern .shm-button:not(:disabled):hover,
+html .shm-theme-modern .shm-button:not(:disabled):focus-visible {
+  color: var(--shm-accent);
+  background: rgb(var(--shm-accent-rgb) / 0.25);
+}
+
+html .shm-theme-modern .shm-cart {
+  background: var(--shm-fill);
+  border: 0;
+  border-radius: 999px;
+}
+
+/* ---- Settings: grouped sections ---- */
+
+html .shm-theme-modern .shm-setting {
+  background: var(--shm-surface-elevated);
+  border: 0;
+  border-radius: 12px;
+}
+
+html .shm-theme-modern .shm-label {
+  color: var(--shm-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: none;
+}
+
+html .shm-theme-modern .shm-settings {
+  color: var(--shm-text);
+  font-size: 14px;
+}
+
+html .shm-theme-modern .shm-select {
+  height: 32px;
+  color: var(--shm-text);
+  background-color: var(--shm-fill);
+  border: 0;
+  border-radius: 8px;
+}
+
+/* ---- Overlay: blurred backdrop, rounded sheet ---- */
+
+html .shm-overlay.shm-theme-modern {
+  background: var(--shm-backdrop);
+  backdrop-filter: blur(20px) saturate(180%);
+}
+
+html .shm-theme-modern .shm-overlay-dialog {
+  color: var(--shm-text-secondary);
+  font-size: 13px;
+  background: var(--shm-surface-elevated);
+  border: 0;
+  border-radius: 16px;
+  box-shadow:
+    0 0 0 1px var(--shm-separator),
+    0 24px 60px rgb(0 0 0 / 0.5);
+}
+
+html .shm-theme-modern .shm-overlay-dialog h3 {
+  color: var(--shm-text);
+  font-size: 17px;
+  font-weight: 600;
+  text-transform: none;
+}
+
+html .shm-theme-modern .shm-overlay-dialog h4 {
+  color: var(--shm-text-secondary);
+  font-weight: 600;
+  text-transform: none;
+}
+
+html .shm-theme-modern .shm-overlay-dialog dt {
+  text-transform: none;
+}
+
+html .shm-theme-modern .shm-order-header {
+  background: var(--shm-fill);
+  border: 0;
+  border-radius: 10px;
+}
+
+html .shm-theme-modern .shm-overlay-close {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 18px;
+  background: var(--shm-fill);
+  border-radius: 999px;
+}
+
+html .shm-theme-modern .shm-order-totals > div:last-child {
+  border-top-color: var(--shm-separator);
+}

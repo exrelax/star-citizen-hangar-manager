@@ -39,16 +39,16 @@ const { settings } = useSettings();
 <style scoped>
 .shm-order {
   margin: 0 0 6px;
-  color: #8a9ba8;
+  color: var(--shm-text-muted);
 }
 
 .shm-order-id {
-  color: #dbe7ee;
+  color: var(--shm-text);
   font-variant-numeric: tabular-nums;
 }
 
 .shm-order-id.is-link {
-  color: #62c4eb;
+  color: var(--shm-accent);
   text-decoration: none;
 }
 

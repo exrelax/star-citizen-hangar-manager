@@ -55,11 +55,11 @@ const linked = computed(() => props.ships.filter((ship) => ship.link));
   gap: 8px 14px;
   margin-top: 10px;
   padding-top: 10px;
-  border-top: 1px solid rgba(98, 196, 235, 0.15);
+  border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.15);
 }
 
 .shm-external-label {
-  color: #8a9ba8;
+  color: var(--shm-text-muted);
 }
 
 .shm-external-ship {
@@ -70,7 +70,7 @@ const linked = computed(() => props.ships.filter((ship) => ship.link));
 }
 
 .shm-external-ship-name {
-  color: #dbe7ee;
+  color: var(--shm-text);
 }
 
 /* The look comes from `.shm-button` (row.css); the icon goes left, the arrow right. */
@@ -80,7 +80,7 @@ const linked = computed(() => props.ships.filter((ship) => ship.link));
 
 .shm-link-button::after {
   content: '↗';
-  color: #62c4eb;
+  color: var(--shm-accent);
   font-size: 11px;
 }
 

@@ -216,25 +216,25 @@ const countLabel = computed(() =>
   gap: 6px;
   height: 28px;
   padding: 0 10px;
-  color: #62c4eb;
+  color: var(--shm-accent);
   font: inherit;
   font-size: 12px;
-  background: rgba(10, 20, 30, 0.8);
-  border: 1px solid rgba(98, 196, 235, 0.35);
+  background: rgb(var(--shm-surface-rgb) / 0.8);
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.35);
   border-radius: 0;
   cursor: pointer;
 }
 
 .shm-filter:hover,
 .shm-filter:focus-visible {
-  border-color: #62c4eb;
+  border-color: var(--shm-accent);
   outline: none;
 }
 
 .shm-filter.is-active {
-  color: #0b141c;
-  background: #62c4eb;
-  border-color: #62c4eb;
+  color: var(--shm-text-on-accent);
+  background: var(--shm-accent);
+  border-color: var(--shm-accent);
 }
 
 .shm-filter-count {
@@ -253,28 +253,28 @@ const countLabel = computed(() =>
   flex: 1;
   height: 34px;
   padding: 0 12px;
-  color: #dbe7ee;
+  color: var(--shm-text);
   font: inherit;
   font-size: 13px;
-  background: rgba(10, 20, 30, 0.8);
-  border: 1px solid rgba(98, 196, 235, 0.35);
+  background: rgb(var(--shm-surface-rgb) / 0.8);
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.35);
   border-radius: 0;
   outline: none;
 }
 
 .shm-search::placeholder {
-  color: #6f8494;
+  color: var(--shm-text-faint);
 }
 
 .shm-search:focus {
-  border-color: #62c4eb;
-  box-shadow: 0 0 0 1px rgba(98, 196, 235, 0.35);
+  border-color: var(--shm-accent);
+  box-shadow: 0 0 0 1px rgb(var(--shm-accent-rgb) / 0.35);
 }
 
 .shm-count {
   flex: none;
   margin: 0;
-  color: #8a9ba8;
+  color: var(--shm-text-muted);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
@@ -285,6 +285,6 @@ const countLabel = computed(() =>
 
 .shm-no-results {
   margin: 20px 0;
-  color: #8a9ba8;
+  color: var(--shm-text-muted);
 }
 </style>

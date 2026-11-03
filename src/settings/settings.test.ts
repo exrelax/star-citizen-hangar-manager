@@ -25,6 +25,7 @@ describe('withDefaults', () => {
       rewardVisibility: 'showAll',
       smartUpdates: true,
       buybackLinkMode: 'single',
+      theme: 'rsi',
       shipLinks: { erkul: false, fleetyards: true },
     });
   });
@@ -37,6 +38,7 @@ describe('withDefaults', () => {
         hidePledgeIds: 1,
         rewardVisibility: 'sometimes',
         buybackLinkMode: 'popup',
+        theme: 'neon',
       } as never),
     ).toEqual(DEFAULT_SETTINGS);
   });

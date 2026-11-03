@@ -1,0 +1,28 @@
+/*
+ * Design tokens of the manager's themes. The theme class (`.shm-theme-rsi`, `.shm-theme-modern`)
+ * sits on the manager's container and on its overlays, so a theme never reaches the rest of RSI's
+ * website (whose own areas are styled in hangar.content/page.css, outside of the themes).
+ *
+ * "Default RSI" mirrors RSI's account pages. Its values are also the fallback on `:root`, for
+ * anything rendered before the setting is read.
+ */
+:root,
+.shm-theme-rsi {
+  --shm-accent: #62c4eb;
+  --shm-accent-rgb: 98 196 235;
+  --shm-text: #dbe7ee;
+  --shm-text-secondary: #b4c3cc;
+  --shm-text-muted: #8a9ba8;
+  --shm-text-faint: #6f8494;
+  --shm-text-strong: #fff;
+  --shm-text-on-accent: #0b141c;
+  --shm-surface-rgb: 10 20 30;
+  --shm-surface-elevated: #0b141c;
+  --shm-success: #7fd88b;
+  --shm-success-rgb: 127 216 139;
+  --shm-warning: #f0b45a;
+  --shm-upgraded: #f0b232;
+  --shm-upgraded-rgb: 240 178 50;
+  --shm-danger: #ff8a80;
+  --shm-backdrop: rgba(0, 0, 0, 0.7);
+}

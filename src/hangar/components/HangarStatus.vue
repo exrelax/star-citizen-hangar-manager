@@ -85,27 +85,27 @@ const status = computed((): { text: string; warn?: boolean } | null => {
   align-items: center;
   gap: 12px;
   margin: 14px 0 0;
-  color: #8a9ba8;
+  color: var(--shm-text-muted);
   font-size: 12px;
 }
 
 .shm-status.is-warn {
-  color: #f0b232;
+  color: var(--shm-upgraded);
 }
 
 .shm-status-action {
   padding: 3px 10px;
-  color: #f0b232;
+  color: var(--shm-upgraded);
   font: inherit;
   background: none;
-  border: 1px solid rgba(240, 178, 50, 0.7);
+  border: 1px solid rgb(var(--shm-upgraded-rgb) / 0.7);
   cursor: pointer;
 }
 
 .shm-status-action:hover:not(:disabled),
 .shm-status-action:focus-visible {
-  color: #0b141c;
-  background: #f0b232;
+  color: var(--shm-text-on-accent);
+  background: var(--shm-upgraded);
   outline: none;
 }
 

@@ -120,7 +120,7 @@ const shortName = (name: string) => name.replace(/^upgrade\s*-\s*/i, '');
   align-items: center;
   gap: 6px;
   padding: 2px 0;
-  color: #62c4eb;
+  color: var(--shm-accent);
   font: inherit;
   background: none;
   border: 0;
@@ -129,7 +129,7 @@ const shortName = (name: string) => name.replace(/^upgrade\s*-\s*/i, '');
 
 .shm-upgrade-log-toggle:hover,
 .shm-upgrade-log-toggle:focus-visible {
-  color: #fff;
+  color: var(--shm-text-strong);
   outline: none;
 }
 
@@ -143,16 +143,16 @@ const shortName = (name: string) => name.replace(/^upgrade\s*-\s*/i, '');
 }
 
 .shm-upgrade-log-count {
-  color: #8a9ba8;
+  color: var(--shm-text-muted);
 }
 
 .shm-upgrade-log-note {
   margin: 4px 0 0;
-  color: #8a9ba8;
+  color: var(--shm-text-muted);
 }
 
 .shm-upgrade-log-note.is-error {
-  color: #ff8a80;
+  color: var(--shm-danger);
 }
 
 .shm-upgrade-log-entries {
@@ -166,7 +166,7 @@ const shortName = (name: string) => name.replace(/^upgrade\s*-\s*/i, '');
   padding: 3px 0 3px 12px;
   text-align: left;
   vertical-align: top;
-  border-top: 1px solid rgba(98, 196, 235, 0.08);
+  border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.08);
 }
 
 .shm-upgrade-log-entries :is(th, td):first-child {
@@ -175,7 +175,7 @@ const shortName = (name: string) => name.replace(/^upgrade\s*-\s*/i, '');
 }
 
 .shm-upgrade-log-entries th {
-  color: #8a9ba8;
+  color: var(--shm-text-muted);
   font-weight: normal;
   border-top: 0;
 }
@@ -187,26 +187,26 @@ const shortName = (name: string) => name.replace(/^upgrade\s*-\s*/i, '');
 }
 
 .shm-upgrade-log-date {
-  color: #8a9ba8;
+  color: var(--shm-text-muted);
   font-variant-numeric: tabular-nums;
 }
 
 .shm-upgrade-log-id {
   margin-left: 6px;
-  color: #8a9ba8;
+  color: var(--shm-text-muted);
 }
 
 /* What was really spent in orange, the discount in green (like the discount in the row). */
 td.is-paid {
-  color: #f0b45a;
+  color: var(--shm-warning);
 }
 
 td.is-discount {
-  color: #7fd88b;
+  color: var(--shm-success);
 }
 
 td.is-surcharge {
-  color: #f0b45a;
+  color: var(--shm-warning);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -2,15 +2,15 @@
 
 .shm-row {
   margin-bottom: 6px;
-  border: 1px solid rgba(98, 196, 235, 0.15);
-  background: rgba(10, 20, 30, 0.6);
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.15);
+  background: rgb(var(--shm-surface-rgb) / 0.6);
   /* Rows outside the viewport skip layout and paint – keeps long hangars smooth. */
   content-visibility: auto;
   contain-intrinsic-size: auto 77px;
 }
 
 .shm-row.is-expanded {
-  border-color: rgba(98, 196, 235, 0.45);
+  border-color: rgb(var(--shm-accent-rgb) / 0.45);
 }
 
 .shm-row-summary {
@@ -22,14 +22,14 @@
 }
 
 .shm-row-summary:hover {
-  background: rgba(98, 196, 235, 0.08);
+  background: rgb(var(--shm-accent-rgb) / 0.08);
 }
 
 .shm-thumb {
   flex: none;
   width: 112px;
   height: 63px;
-  background: rgba(98, 196, 235, 0.08);
+  background: rgb(var(--shm-accent-rgb) / 0.08);
 }
 
 .shm-thumb img {
@@ -49,7 +49,7 @@
 
 .shm-title {
   overflow: hidden;
-  color: #62c4eb;
+  color: var(--shm-accent);
   font-size: 14px;
   text-transform: uppercase;
   text-overflow: ellipsis;
@@ -59,23 +59,29 @@
 .shm-original,
 .shm-ships {
   overflow: hidden;
-  color: #8a9ba8;
+  color: var(--shm-text-muted);
   font-size: 11px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .shm-ships {
-  color: #dbe7ee;
+  color: var(--shm-text);
   font-size: 12px;
 }
 
 .shm-meta {
   display: flex;
-  gap: 14px;
-  color: #b4c3cc;
+  flex-wrap: wrap;
+  gap: 2px 14px;
+  color: var(--shm-text-secondary);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
+}
+
+/* With many tags the line wraps between its values, never within one ("$270.00 / USD"). */
+.shm-meta > * {
+  white-space: nowrap;
 }
 
 .shm-badges {
@@ -86,19 +92,19 @@
 
 .shm-badge {
   padding: 2px 7px;
-  color: #62c4eb;
+  color: var(--shm-accent);
   font-size: 11px;
-  border: 1px solid rgba(98, 196, 235, 0.6);
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.6);
 }
 
 .shm-badge.is-lti {
-  color: #0b141c;
-  background: #62c4eb;
+  color: var(--shm-text-on-accent);
+  background: var(--shm-accent);
 }
 
 .shm-badge.is-upgraded {
-  color: #f0b232;
-  border-color: rgba(240, 178, 50, 0.7);
+  color: var(--shm-upgraded);
+  border-color: rgb(var(--shm-upgraded-rgb) / 0.7);
 }
 
 .shm-badge.is-off {
@@ -111,7 +117,7 @@
   width: 28px;
   height: 28px;
   padding: 0;
-  color: #62c4eb;
+  color: var(--shm-accent);
   font: inherit;
   background: none;
   border: 0;
@@ -120,7 +126,7 @@
 }
 
 .shm-chevron:focus-visible {
-  outline: 1px solid #62c4eb;
+  outline: 1px solid var(--shm-accent);
 }
 
 .is-expanded .shm-chevron {
@@ -134,7 +140,7 @@
   column-gap: 14px;
   align-items: start;
   padding: 4px 16px 12px 6px;
-  color: #b4c3cc;
+  color: var(--shm-text-secondary);
   font-size: 12px;
 }
 
@@ -148,13 +154,13 @@
   justify-content: center;
   gap: 6px;
   padding: 4px 10px;
-  color: #dbe7ee;
+  color: var(--shm-text);
   font-size: 12px;
   line-height: 16px;
   text-decoration: none;
   text-transform: none;
-  background: rgba(98, 196, 235, 0.14);
-  border: 1px solid rgba(98, 196, 235, 0.5);
+  background: rgb(var(--shm-accent-rgb) / 0.14);
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.5);
   border-radius: 4px;
   transition:
     background 0.15s,
@@ -168,9 +174,9 @@
 
 .shm-button:not(:disabled):hover,
 .shm-button:not(:disabled):focus-visible {
-  color: #fff;
-  background: rgba(98, 196, 235, 0.3);
-  border-color: #62c4eb;
+  color: var(--shm-text-strong);
+  background: rgb(var(--shm-accent-rgb) / 0.3);
+  border-color: var(--shm-accent);
   outline: none;
 }
 
@@ -192,7 +198,7 @@
 
 .shm-upgrade {
   margin: 0 0 6px;
-  color: #f0b232;
+  color: var(--shm-upgraded);
 }
 
 .shm-items {
@@ -205,7 +211,7 @@
   display: flex;
   gap: 12px;
   padding: 3px 0;
-  border-top: 1px solid rgba(98, 196, 235, 0.08);
+  border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.08);
 }
 
 .shm-item-title {
@@ -214,7 +220,7 @@
 
 .shm-item-kind,
 .shm-item-manufacturer {
-  color: #8a9ba8;
+  color: var(--shm-text-muted);
 }
 
 /* Display settings: classes on the list hide parts of all rows at once (no re-render). */
@@ -231,27 +237,27 @@
 }
 
 .shm-badge.is-refund {
-  color: #7fd88b;
-  border-color: rgba(127, 216, 139, 0.6);
+  color: var(--shm-success);
+  border-color: rgb(var(--shm-success-rgb) / 0.6);
   cursor: help;
 }
 
 /* The last days of the refund window. */
 .shm-badge.is-refund.is-urgent {
-  color: #0b141c;
-  background: #f0b45a;
-  border-color: #f0b45a;
+  color: var(--shm-text-on-accent);
+  background: var(--shm-warning);
+  border-color: var(--shm-warning);
 }
 
 .shm-badge.is-giftable {
-  color: #7fd88b;
-  border-color: rgba(127, 216, 139, 0.6);
+  color: var(--shm-success);
+  border-color: rgb(var(--shm-success-rgb) / 0.6);
   cursor: help;
 }
 
 .shm-hint {
   margin: 0 0 8px;
-  color: #8a9ba8;
+  color: var(--shm-text-muted);
 }
 
 .shm-cart {
@@ -260,13 +266,13 @@
   font-size: 13px;
   line-height: 20px;
   background: none;
-  border: 1px solid rgba(98, 196, 235, 0.6);
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.6);
   cursor: pointer;
 }
 
 .shm-cart:hover,
 .shm-cart:focus-visible {
-  background: rgba(98, 196, 235, 0.25);
+  background: rgb(var(--shm-accent-rgb) / 0.25);
   outline: none;
 }
 
@@ -276,16 +282,16 @@
 }
 
 .shm-cart-error {
-  color: #ff8a80;
+  color: var(--shm-danger);
   font-size: 12px;
 }
 
 /* Discount next to the pledge value (see ship-prices.ts); a surcharge is shown, too. */
 .shm-discount {
-  color: #7fd88b;
+  color: var(--shm-success);
   cursor: help;
 }
 
 .shm-discount.is-surcharge {
-  color: #f0b45a;
+  color: var(--shm-warning);
 }

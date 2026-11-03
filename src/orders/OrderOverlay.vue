@@ -2,6 +2,7 @@
 import { useDemoContext } from '@/demo/use-demo';
 import { i18n } from '@/i18n';
 import { useSettings } from '@/settings/use-settings';
+import { themeClass } from '@/themes/theme';
 import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 import {
   anonymizeOrderDetails,
@@ -82,7 +83,8 @@ function openInvoice() {
 <!-- An order of RSI's billing list with its expanded details, over the manager view. -->
 <template>
   <Teleport to="body">
-    <div class="shm-overlay" @click.self="emit('close')">
+    <!-- Teleported out of the manager: it carries the theme class itself. -->
+    <div class="shm-overlay" :class="themeClass(settings.theme)" @click.self="emit('close')">
       <section
         ref="dialog"
         class="shm-overlay-dialog"
@@ -192,18 +194,18 @@ function openInvoice() {
   justify-content: center;
   padding: 60px 16px;
   overflow-y: auto;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--shm-backdrop);
 }
 
 .shm-overlay-dialog {
   width: min(900px, 100%);
   padding: 20px 24px 24px;
-  color: #b4c3cc;
+  color: var(--shm-text-secondary);
   font-family: Electrolize, sans-serif;
   font-size: 13px;
-  background: #0b141c;
-  border: 1px solid rgba(98, 196, 235, 0.45);
-  box-shadow: 0 0 40px rgba(98, 196, 235, 0.15);
+  background: var(--shm-surface-elevated);
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.45);
+  box-shadow: 0 0 40px rgb(var(--shm-accent-rgb) / 0.15);
   outline: none;
 }
 
@@ -216,14 +218,14 @@ function openInvoice() {
 
 h3 {
   margin: 0;
-  color: #62c4eb;
+  color: var(--shm-accent);
   font-size: 16px;
   text-transform: uppercase;
 }
 
 h4 {
   margin: 18px 0 8px;
-  color: #62c4eb;
+  color: var(--shm-accent);
   font-size: 13px;
   font-weight: normal;
   text-transform: uppercase;
@@ -231,7 +233,7 @@ h4 {
 
 .shm-overlay-close {
   padding: 0 6px;
-  color: #8a9ba8;
+  color: var(--shm-text-muted);
   font-size: 24px;
   line-height: 1;
   background: none;
@@ -241,7 +243,7 @@ h4 {
 
 .shm-overlay-close:hover,
 .shm-overlay-close:focus-visible {
-  color: #fff;
+  color: var(--shm-text-strong);
   outline: none;
 }
 
@@ -250,7 +252,7 @@ h4 {
 }
 
 .shm-overlay-note.is-error {
-  color: #ff8a80;
+  color: var(--shm-danger);
 }
 
 /* The order's header as a row of labelled values, like RSI's columns. */
@@ -260,19 +262,19 @@ h4 {
   gap: 10px 28px;
   margin: 0;
   padding: 12px 14px;
-  background: rgba(98, 196, 235, 0.06);
-  border: 1px solid rgba(98, 196, 235, 0.15);
+  background: rgb(var(--shm-accent-rgb) / 0.06);
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.15);
 }
 
 dt {
-  color: #8a9ba8;
+  color: var(--shm-text-muted);
   font-size: 11px;
   text-transform: uppercase;
 }
 
 dd {
   margin: 2px 0 0;
-  color: #dbe7ee;
+  color: var(--shm-text);
 }
 
 .shm-order-section-title {
@@ -291,7 +293,7 @@ dd {
 .shm-order-table td {
   padding: 5px 0 5px 12px;
   text-align: right;
-  border-top: 1px solid rgba(98, 196, 235, 0.1);
+  border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.1);
 }
 
 .shm-order-table :is(th, td):first-child {
@@ -300,13 +302,13 @@ dd {
 }
 
 .shm-order-table th {
-  color: #8a9ba8;
+  color: var(--shm-text-muted);
   font-weight: normal;
   border-top: 0;
 }
 
 .shm-order-table td {
-  color: #dbe7ee;
+  color: var(--shm-text);
   font-variant-numeric: tabular-nums;
 }
 
@@ -320,7 +322,7 @@ dd {
 
 .shm-order-billing p {
   margin: 0;
-  color: #dbe7ee;
+  color: var(--shm-text);
 }
 
 .is-blurred p {
@@ -343,11 +345,11 @@ dd {
 .shm-order-totals > div:last-child {
   margin-top: 4px;
   padding-top: 6px;
-  border-top: 1px solid rgba(98, 196, 235, 0.25);
+  border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.25);
 }
 
 .shm-order-totals > div:last-child :is(dt, dd) {
-  color: #62c4eb;
+  color: var(--shm-accent);
 }
 
 .shm-order-totals dd {

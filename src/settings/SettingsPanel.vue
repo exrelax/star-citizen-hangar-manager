@@ -4,10 +4,12 @@ import { browserLocale, i18n, LOCALES, type Locale } from '@/i18n';
 import {
   BUYBACK_LINK_MODES,
   REWARD_VISIBILITIES,
+  THEMES,
   type BuybackLinkMode,
   type LanguageSetting,
   type RewardVisibility,
   type Settings,
+  type Theme,
 } from './settings';
 
 const props = defineProps<{ settings: Settings }>();
@@ -44,6 +46,21 @@ function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
         <option v-for="code in LOCALES" :key="code" :value="code">{{ languageName(code) }}</option>
       </select>
       <p class="shm-hint">{{ i18n.t('settings.languageHint') }}</p>
+    </section>
+
+    <section class="shm-setting">
+      <label class="shm-label" for="shm-theme">{{ i18n.t('settings.theme') }}</label>
+      <select
+        id="shm-theme"
+        class="shm-select"
+        :value="settings.theme"
+        @change="emit('update', { theme: ($event.target as HTMLSelectElement).value as Theme })"
+      >
+        <option v-for="theme in THEMES" :key="theme" :value="theme">
+          {{ i18n.t(`settings.themeOptions.${theme}`) }}
+        </option>
+      </select>
+      <p class="shm-hint">{{ i18n.t('settings.themeHint') }}</p>
     </section>
 
     <fieldset class="shm-setting">
@@ -168,22 +185,22 @@ function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
   flex-direction: column;
   gap: 18px;
   margin-top: 20px;
-  color: #dbe7ee;
+  color: var(--shm-text);
   font-size: 13px;
 }
 
 .shm-setting {
   margin: 0;
   padding: 14px 16px;
-  background: rgba(10, 20, 30, 0.6);
-  border: 1px solid rgba(98, 196, 235, 0.15);
+  background: rgb(var(--shm-surface-rgb) / 0.6);
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.15);
 }
 
 .shm-label {
   display: block;
   margin-bottom: 8px;
   padding: 0;
-  color: #62c4eb;
+  color: var(--shm-accent);
   font-size: 13px;
   text-transform: uppercase;
 }
@@ -197,22 +214,31 @@ function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
 }
 
 .shm-check input {
-  accent-color: #62c4eb;
+  accent-color: var(--shm-accent);
 }
 
 .shm-select {
   min-width: 280px;
   height: 32px;
-  padding: 0 8px;
-  color: #dbe7ee;
+  /* Room on the right for the arrow, which sits inside instead of at the edge. */
+  padding: 0 34px 0 10px;
+  color: var(--shm-text);
   font: inherit;
-  background: rgba(10, 20, 30, 0.9);
-  border: 1px solid rgba(98, 196, 235, 0.35);
+  /* Own arrow instead of the browser's (that one sits right at the edge). Its gray works on
+   * the dark and light backgrounds of all themes. */
+  appearance: none;
+  background-color: rgb(var(--shm-surface-rgb) / 0.9);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%238a9ba8' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px 8px;
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.35);
+  cursor: pointer;
 }
 
 .shm-hint {
   margin: 6px 0 0;
-  color: #8a9ba8;
+  color: var(--shm-text-muted);
   font-size: 12px;
 }
 
