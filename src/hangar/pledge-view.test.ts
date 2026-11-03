@@ -223,3 +223,32 @@ describe('toPledgeView', () => {
     expect(view.hasLti).toBe(false);
   });
 });
+
+describe('insurance', () => {
+  it('takes the best insurance of the items, or the one a CCU brings', () => {
+    const ship = toPledgeView(
+      pledge({
+        items: [
+          { title: 'Dragonfly Star Kitten Edition', kind: 'Ship' },
+          { title: '120 Month Insurance', kind: 'Insurance' },
+          { title: '6 Month Insurance', kind: 'Insurance' },
+        ],
+      }),
+    );
+    expect(ship.insurance).toEqual({ lifetime: false, months: 120 });
+
+    const ccu = toPledgeView(
+      pledge({
+        upgrade: {
+          type: 'R',
+          matchItems: [{ id: 1, name: '600i Exploration Module' }],
+          targetItems: [
+            { id: 2, name: 'Hercules Starlifter M2' },
+            { id: 3, name: '120 Month Insurance' },
+          ],
+        },
+      }),
+    );
+    expect(ccu.insurance).toEqual({ lifetime: false, months: 120 });
+  });
+});

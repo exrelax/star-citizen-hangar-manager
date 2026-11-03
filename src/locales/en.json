@@ -114,5 +114,12 @@
     "paidHint": "What this upgrade added to the pledge value, i.e. what it really cost",
     "discount": "Discount",
     "discountHint": "Price difference of the two ships minus what the upgrade cost. Not known for the first upgrade: RSI doesn't log the value before it."
+  },
+  "insurance": {
+    "year": "1 year",
+    "years": "$1 years",
+    "month": "1 month",
+    "months": "$1 months",
+    "badgeTitle": "Insurance – of several, only the best one counts"
   }
 }

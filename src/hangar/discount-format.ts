@@ -43,7 +43,8 @@ export function formatDiscount(discount: PledgeDiscount, locale: Locale) {
       : `${first?.name} ${money(discount.original)}`;
   return {
     isSurcharge,
-    text: `${isSurcharge ? '+' : '−'}${amount} (${share})`,
+    // No sign for no discount ("$0 (0%)").
+    text: `${discount.amount === 0 ? '' : isSurcharge ? '+' : '−'}${amount} (${share})`,
     title: i18n.t(isSurcharge ? 'pledge.surchargeTitle' : 'pledge.discountTitle', [
       source,
       money(discount.paid),

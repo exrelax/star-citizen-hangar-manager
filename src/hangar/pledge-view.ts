@@ -1,6 +1,7 @@
 import { HANGAR_PAGE_SIZE } from '@/config';
 import type { Pledge, PledgeItem, PledgeUpgrade } from './pledge';
 import { rewardKind, type RewardKind } from './rewards';
+import { bestInsurance, type Insurance } from './insurance';
 import { normalizeSearchText } from './search';
 import type { ShipLink, ShipLinks } from './ship-links';
 import { pledgeDiscount, type PledgeDiscount, type PriceLookup } from './ship-prices';
@@ -34,6 +35,11 @@ export interface PledgeView {
   /** Set for reward pledges (value $0). */
   reward?: RewardKind;
   hasLti: boolean;
+  /**
+   * The best insurance of the pledge, the one that counts (see `insurance.ts`). For a CCU: the
+   * insurance it brings (RSI lists it with the upgrade's target items).
+   */
+  insurance?: Insurance;
   /** Pure paint pledge: contains nothing but paints (no ship, poster, gear, …). */
   isPaint: boolean;
   /** CCU that has not been applied yet (applied ones disappear from the hangar). */
@@ -93,6 +99,11 @@ export function toPledgeView(
     createdAt: pledge.createdAt,
     reward: rewardKind(pledge),
     hasLti: pledge.items.some((item) => item.kind === 'Insurance' && /lifetime/i.test(item.title)),
+    insurance: bestInsurance(
+      pledge.upgrade
+        ? pledge.upgrade.targetItems.map((item) => item.name)
+        : pledge.items.filter((item) => item.kind === 'Insurance').map((item) => item.title),
+    ),
     isPaint: !pledge.upgrade && pledge.items.length > 0 && pledge.items.every(isPaintItem),
     isCcu: pledge.upgrade !== undefined,
     isStandaloneShip: pledge.category === 'standalone_ship',

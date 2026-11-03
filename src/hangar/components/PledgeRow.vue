@@ -2,6 +2,7 @@
 import { i18n, locale } from '@/i18n';
 import { computed, ref, watch } from 'vue';
 import { formatDiscount } from '../discount-format';
+import { insuranceLabel } from '../insurance';
 import type { PledgeView } from '../pledge-view';
 import { myGearHref } from '../route';
 import ExternalLinks from './ExternalLinks.vue';
@@ -90,7 +91,14 @@ const toggle = () => {
       </span>
 
       <span class="shm-badges">
-        <span v-if="pledge.hasLti" class="shm-badge is-lti">LTI</span>
+        <span
+          v-if="pledge.insurance"
+          class="shm-badge"
+          :class="{ 'is-lti': pledge.insurance.lifetime }"
+          :title="i18n.t('insurance.badgeTitle')"
+        >
+          {{ insuranceLabel(pledge.insurance) }}
+        </span>
         <span v-if="pledge.isUpgraded" class="shm-badge is-upgraded">
           {{ i18n.t('pledge.upgraded') }}
         </span>

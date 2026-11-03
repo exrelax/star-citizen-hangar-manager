@@ -1,5 +1,6 @@
 import { BUYBACK_GIFTABLE_PURCHASED_BEFORE, BUYBACK_PAGE_SIZE } from '@/config';
 import type { FilterDefinition } from '@/hangar/filters';
+import { bestInsurance, type Insurance } from '@/hangar/insurance';
 import { GAME_DOWNLOAD, type ShipRef } from '@/hangar/pledge-view';
 import { normalizeSearchText } from '@/hangar/search';
 import type { ShipLinks } from '@/hangar/ship-links';
@@ -26,6 +27,8 @@ export interface BuybackView {
   items: string[];
   ships: ShipRef[];
   hasLti: boolean;
+  /** The best insurance, if known (see `insurance.ts`): only pledges with several items list them. */
+  insurance?: Insurance;
   isPaint: boolean;
   isCcu: boolean;
   /** See `BuybackPledge.upgrade`. */
@@ -81,6 +84,7 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
     items,
     ships: shipNames.map((name) => ({ name, link: shipLinks[name] })),
     hasLti: items.some((item) => /lifetime insurance/i.test(item)),
+    insurance: bestInsurance(items),
     isPaint:
       !pledge.isUpgrade &&
       (/^paints?\b/i.test(pledge.title) ||

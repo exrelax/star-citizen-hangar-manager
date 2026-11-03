@@ -26,4 +26,12 @@ describe('formatDiscount', () => {
     expect(isSurcharge).toBe(true);
     expect(text).toBe('+$12.50 (20.8%)');
   });
+
+  it('shows no sign when there is no discount', () => {
+    const { text } = formatDiscount(
+      { original: 55, paid: 55, amount: 0, percent: 0, ships: [ships[0]!] },
+      'en',
+    );
+    expect(text).toBe('$0 (0%)');
+  });
 });

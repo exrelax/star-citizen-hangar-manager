@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ExternalLinks from '@/hangar/components/ExternalLinks.vue';
+import { insuranceLabel } from '@/hangar/insurance';
 import { buybackHref } from '@/hangar/route';
 import { i18n } from '@/i18n';
 import type { BuybackLinkMode } from '@/settings/settings';
@@ -122,7 +123,14 @@ async function addToCart() {
         >
           🛒
         </button>
-        <span v-if="pledge.hasLti" class="shm-badge is-lti">LTI</span>
+        <span
+          v-if="pledge.insurance"
+          class="shm-badge"
+          :class="{ 'is-lti': pledge.insurance.lifetime }"
+          :title="i18n.t('insurance.badgeTitle')"
+        >
+          {{ insuranceLabel(pledge.insurance) }}
+        </span>
         <span v-if="pledge.isProbablyGiftable" class="shm-badge is-giftable" :title="giftableHint">
           {{ i18n.t('filter.probablyGiftable') }}
         </span>

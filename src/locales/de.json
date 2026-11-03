@@ -114,5 +114,12 @@
     "paidHint": "Was dieses Upgrade zum Pledge-Wert hinzugefügt hat, also was es wirklich gekostet hat",
     "discount": "Rabatt",
     "discountHint": "Preisdifferenz der beiden Schiffe minus Kosten des Upgrades. Für das erste Upgrade unbekannt: RSI protokolliert den Wert davor nicht."
+  },
+  "insurance": {
+    "year": "1 Jahr",
+    "years": "$1 Jahre",
+    "month": "1 Monat",
+    "months": "$1 Monate",
+    "badgeTitle": "Versicherung – von mehreren zählt nur die beste"
   }
 }
