@@ -1,15 +1,10 @@
 <script setup lang="ts">
 import ManagerList from '@/hangar/components/ManagerList.vue';
-import { matchesFilterDefinition } from '@/hangar/filters';
+import { shownFilters } from '@/hangar/filters';
 import { i18n } from '@/i18n';
 import type { Settings } from '@/settings/settings';
 import { computed } from 'vue';
-import {
-  BUYBACK_FILTER_DEFINITION,
-  BUYBACK_FILTERS,
-  type BuybackFilter,
-  type BuybackView,
-} from '../buyback-view';
+import { BUYBACK_FILTER_PREDICATES, type BuybackFilter, type BuybackView } from '../buyback-view';
 import { giftableHint } from '../giftable-hint';
 import BuybackRow from './BuybackRow.vue';
 
@@ -22,24 +17,26 @@ const displayClasses = computed(() => ({
   'shm-hide-fleetyards': !props.settings.shipLinks.fleetyards,
 }));
 
-const matches = (pledge: BuybackView, active: ReadonlySet<BuybackFilter>) =>
-  matchesFilterDefinition(pledge, active, BUYBACK_FILTER_DEFINITION);
+const filters = computed(() => shownFilters(props.settings.filters.buyback));
 
 const filterLabel = (filter: BuybackFilter) => i18n.t(`filter.${filter}`);
 
-/** Explains "probably giftable" on its filter button. */
-const filterTitle = (filter: BuybackFilter) =>
-  filter === 'probablyGiftable' ? giftableHint.value : undefined;
+/** Filters whose meaning isn't obvious from the label explain it in their tooltip. */
+const filterHint = (filter: BuybackFilter) => {
+  if (filter === 'probablyGiftable') return giftableHint.value;
+  if (filter === 'ships' || filter === 'warbond') return i18n.t(`filter.hints.${filter}`);
+  return filter === 'rewards' ? i18n.t('filter.hints.rewardsByName') : undefined;
+};
 </script>
 
 <template>
   <ManagerList
     :class="displayClasses"
     :entries="pledges"
-    :filters="BUYBACK_FILTERS"
-    :matches="matches"
+    :filters="filters"
+    :predicates="BUYBACK_FILTER_PREDICATES"
     :filter-label="filterLabel"
-    :filter-title="filterTitle"
+    :filter-hint="filterHint"
     :active="active"
   >
     <template #row="{ entry, autoExpand }">

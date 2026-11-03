@@ -15,7 +15,8 @@
     "noResults": "Keine Pledges passen zu deiner Suche.",
     "syncProgress": "Lese RSI-Seiten: $1 von $2 ($3)",
     "demoBadge": "Demo",
-    "demoBadgeHint": "Demo-Modus: eine Auswahl deiner Pledges mit erfundenen Pledge-IDs. Abschalten in den Einstellungen."
+    "demoBadgeHint": "Demo-Modus: eine Auswahl deiner Pledges mit erfundenen Pledge-IDs. Abschalten in den Einstellungen.",
+    "firstSync": "Lese deinen Hangar, Buy Back und deine Orders von RSI … Den Fortschritt siehst du oben rechts."
   },
   "pledge": {
     "toggleDetails": "Enthaltene Items ein- oder ausblenden",
@@ -37,11 +38,25 @@
     "lti": "LTI",
     "paints": "Paints",
     "ccus": "CCUs",
-    "standaloneShips": "Standalone-Schiffe",
     "gameAccess": "Spielzugang",
     "giftable": "Verschenkbar",
     "meltable": "Schmelzbar",
-    "probablyGiftable": "Vermutlich verschenkbar"
+    "probablyGiftable": "Vermutlich verschenkbar",
+    "ships": "Schiffe",
+    "warbond": "Warbond",
+    "valuable": "Mit Wert",
+    "rewards": "Rewards",
+    "reset": "Filter zurücksetzen",
+    "stateOff": "Klick: nur Items mit „$1“ anzeigen.",
+    "stateInclude": "Nur Items mit „$1“ werden angezeigt. Klick: sie stattdessen ausschließen.",
+    "stateExclude": "Items mit „$1“ sind ausgeschlossen. Klick: Filter ausschalten.",
+    "hints": {
+      "ships": "Pledges mit einem Schiff: Standalone-Schiffe, Pakete und per CCU veränderte Schiffe.",
+      "warbond": "Mit Geld gekauft: Der Pledge hat eine mit Geld bezahlte Order (nicht mit Store Credit).",
+      "valuable": "Pledges mit einem Wert über $$0.",
+      "rewards": "Rewards mit einem Wert von $$0: Event-, Referral-, Concierge- und andere Rewards.",
+      "rewardsByName": "Rewards, am Namen erkannt: Event-, Referral-, Concierge- und andere Rewards."
+    }
   },
   "tabs": {
     "hangar": "🚀 My Hangar",
@@ -54,14 +69,6 @@
     "languageHint": "Automatisch nutzt die Browsersprache, sofern die Extension in diese übersetzt ist, sonst Englisch.",
     "hideMeltValue": "Schmelzwert ausblenden",
     "hideMeltValueHint": "Blendet die $$-Werte aus: Pledge-Werte, Rabatte und die Kosten angewendeter Upgrades.",
-    "rewards": "Rewards ausblenden",
-    "rewardsHint": "Rewards sind Pledges mit einem Wert von $$0. Concierge- und Event-Rewards werden am Namen erkannt.",
-    "rewardOptions": {
-      "showAll": "Keine Rewards ausblenden",
-      "hideAll": "Alle Rewards ausblenden",
-      "hideConcierge": "Concierge-Rewards ausblenden",
-      "hideEvent": "Event-Rewards ausblenden"
-    },
     "smartUpdates": "Intelligente Updates",
     "smartUpdatesHint": "Prüft ab und zu die erste, die letzte und einige weitere Hangar-Seiten auf Änderungen und aktualisiert die Liste ohne vollständigen Abgleich.",
     "shipLinks": "Links bei Schiffen anzeigen",
@@ -84,7 +91,14 @@
     "themeOptions": {
       "rsi": "Default RSI",
       "modern": "Modern Hangar"
-    }
+    },
+    "filters": "Filter",
+    "filtersHint": "Ziehe die Filter (oder nutze die Pfeile), um ihre Reihenfolge zu ändern; nicht angehakte Filter erscheinen nicht in der Liste.",
+    "filtersHangar": "My Hangar",
+    "filtersBuyback": "Buy Back",
+    "filtersReset": "Zurücksetzen",
+    "filterUp": "„$1“ nach oben",
+    "filterDown": "„$1“ nach unten"
   },
   "status": {
     "checking": "Suche nach Änderungen …",

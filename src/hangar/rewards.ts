@@ -1,5 +1,3 @@
-import type { RewardVisibility } from '@/settings/settings';
-
 /**
  * Reward pledges are the ones RSI lists with a value of $0. Concierge and event rewards are
  * recognized by their names; everything else (referral bonuses, subscriber items, …) is "other".
@@ -52,20 +50,10 @@ export function rewardKind(pledge: { title: string; value: string; valueUsd: num
   return 'other';
 }
 
-/** Whether a pledge with this reward kind is hidden by the reward setting. */
-export function isHiddenReward(
-  kind: RewardKind | undefined,
-  visibility: RewardVisibility,
-): boolean {
-  if (!kind) return false;
-  switch (visibility) {
-    case 'hideAll':
-      return true;
-    case 'hideConcierge':
-      return kind === 'concierge';
-    case 'hideEvent':
-      return kind === 'event';
-    default:
-      return false;
-  }
+/**
+ * Whether a title names a reward – for lists without values (the buy back): concierge and event
+ * rewards as above, and anything called a reward or referral bonus.
+ */
+export function isRewardTitle(title: string): boolean {
+  return CONCIERGE.test(title) || EVENT.test(title) || /\breward|\breferral\b/i.test(title);
 }

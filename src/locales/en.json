@@ -15,7 +15,8 @@
     "noResults": "No pledges match your search.",
     "syncProgress": "Reading RSI pages: $1 of $2 ($3)",
     "demoBadge": "Demo",
-    "demoBadgeHint": "Demo mode: a selection of your pledges with made-up pledge IDs. Turn it off in the settings."
+    "demoBadgeHint": "Demo mode: a selection of your pledges with made-up pledge IDs. Turn it off in the settings.",
+    "firstSync": "Reading your hangar, buy back and orders from RSI … The progress is shown at the top right."
   },
   "pledge": {
     "toggleDetails": "Show or hide the contained items",
@@ -37,11 +38,25 @@
     "lti": "LTI",
     "paints": "Paints",
     "ccus": "CCUs",
-    "standaloneShips": "Standalone ships",
     "gameAccess": "Game access",
     "giftable": "Giftable",
     "meltable": "Meltable",
-    "probablyGiftable": "Probably giftable"
+    "probablyGiftable": "Probably giftable",
+    "ships": "Ships",
+    "warbond": "Warbond",
+    "valuable": "Valuable",
+    "rewards": "Rewards",
+    "reset": "Reset filters",
+    "stateOff": "Click: show only items with “$1”.",
+    "stateInclude": "Showing only items with “$1”. Click: exclude them instead.",
+    "stateExclude": "Items with “$1” are excluded. Click: turn the filter off.",
+    "hints": {
+      "ships": "Pledges with a ship: standalone ships, packages and upgraded ships.",
+      "warbond": "Bought with money: the pledge has an order paid with money (not with store credit).",
+      "valuable": "Pledges with a value above $$0.",
+      "rewards": "Rewards with a value of $$0: event, referral, Concierge and other rewards.",
+      "rewardsByName": "Rewards, recognized by their names: event, referral, Concierge and other rewards."
+    }
   },
   "tabs": {
     "hangar": "🚀 My Hangar",
@@ -54,14 +69,6 @@
     "languageHint": "Automatic uses the browser language if the extension is translated into it, English otherwise.",
     "hideMeltValue": "Hide melt value",
     "hideMeltValueHint": "Hides the $$ values: pledge values, discounts and the costs of applied upgrades.",
-    "rewards": "Hide rewards",
-    "rewardsHint": "Rewards are pledges with a value of $$0. Concierge and event rewards are recognized by their names.",
-    "rewardOptions": {
-      "showAll": "Don't hide any rewards",
-      "hideAll": "Hide all rewards",
-      "hideConcierge": "Hide Concierge rewards",
-      "hideEvent": "Hide event rewards"
-    },
     "smartUpdates": "Smart updates",
     "smartUpdatesHint": "Checks the first, the last and a few more hangar pages for changes now and then, and updates the list without a full refresh.",
     "shipLinks": "Show links for ships",
@@ -84,7 +91,14 @@
     "themeOptions": {
       "rsi": "Default RSI",
       "modern": "Modern Hangar"
-    }
+    },
+    "filters": "Filters",
+    "filtersHint": "Drag the filters (or use the arrows) to change their order; unchecked filters are not shown in the list.",
+    "filtersHangar": "My Hangar",
+    "filtersBuyback": "Buy Back",
+    "filtersReset": "Reset",
+    "filterUp": "Move “$1” up",
+    "filterDown": "Move “$1” down"
   },
   "status": {
     "checking": "Checking for changes …",

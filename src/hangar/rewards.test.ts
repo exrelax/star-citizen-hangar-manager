@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isHiddenReward, rewardKind } from './rewards';
+import { isRewardTitle, rewardKind } from './rewards';
 
 const kind = (title: string, value = '$0.00 USD') =>
   rewardKind({ title, value, valueUsd: Number(value.replace(/[^\d.]/g, '')) || 0 });
@@ -31,17 +31,11 @@ describe('rewardKind', () => {
   });
 });
 
-describe('isHiddenReward', () => {
-  it('never hides regular pledges', () => {
-    expect(isHiddenReward(undefined, 'hideAll')).toBe(false);
-  });
-
-  it('hides rewards according to the setting', () => {
-    expect(isHiddenReward('other', 'showAll')).toBe(false);
-    expect(isHiddenReward('other', 'hideAll')).toBe(true);
-    expect(isHiddenReward('concierge', 'hideConcierge')).toBe(true);
-    expect(isHiddenReward('event', 'hideConcierge')).toBe(false);
-    expect(isHiddenReward('event', 'hideEvent')).toBe(true);
-    expect(isHiddenReward('other', 'hideEvent')).toBe(false);
+describe('isRewardTitle', () => {
+  it('recognizes rewards by their names', () => {
+    expect(isRewardTitle('Luminalia 2952 Argo MPUV - Referral')).toBe(true);
+    expect(isRewardTitle('3.18 Referral Reward - Merlin')).toBe(true);
+    expect(isRewardTitle('RSI Disc. Defense Tier 3 Reward')).toBe(true);
+    expect(isRewardTitle('Standalone Ship - F8C Lightning')).toBe(false);
   });
 });

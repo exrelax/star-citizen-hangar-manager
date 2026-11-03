@@ -16,8 +16,8 @@ describe('matchLocale', () => {
 
 describe('translate', () => {
   it('returns the message of the locale', () => {
-    expect(translate('en', 'settings.rewards')).toBe('Hide rewards');
-    expect(translate('de', 'settings.rewards')).toBe('Rewards ausblenden');
+    expect(translate('en', 'settings.smartUpdates')).toBe('Smart updates');
+    expect(translate('de', 'settings.smartUpdates')).toBe('Intelligente Updates');
   });
 
   it('fills in substitutions and unescapes dollar signs', () => {

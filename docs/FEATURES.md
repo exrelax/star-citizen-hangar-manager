@@ -36,7 +36,8 @@ announcements.
   pledge IDs stay in your browser; options to hide IDs, name, address and values for screenshots
   and streams
 - Your whole hangar and buy back on one page, instead of RSI's 10 pledges per page
-- Instant search and filters (LTI, paints, CCUs, standalone ships, game access, giftable, meltable)
+- Instant search and filters that include or exclude (ships, CCUs, paints, LTI, warbond, giftable,
+  meltable, valuable, rewards, …)
 - Discounts of ships and CCUs compared to their original price
 - The best insurance of every pledge as a tag (LTI, 10 years, …)
 - The full CCU history of upgraded ships, with the discount of every step
@@ -204,9 +205,14 @@ on its own.
   their start, so `f8c` finds the "F8C Lightning".
 - The search is part of the URL (`?search=…`): searches can be bookmarked or shared, and other
   tools can link to a pledge.
-- **Filters**: LTI, Paints, CCUs, Standalone ships, Game access (game packages and other pledges
-  that contain the game), Giftable, Meltable. Each filter shows how many pledges it matches.
-  Categories combine with "or", properties with "and".
+- **Filters**: Ships, CCUs, Paints, Game access (game packages and other pledges that contain the
+  game), LTI, Warbond (bought with money, i.e. with an order ID), Giftable, Meltable, Valuable
+  (worth more than $0) and Rewards (Concierge, event and referral rewards).
+- **Include or exclude**: each click on a filter cycles through off → only pledges with it →
+  only pledges without it ("−Rewards" hides all rewards). All active filters combine with "and";
+  one click on "Reset filters" turns them all off.
+- **Live counts**: each filter shows how many pledges it would leave in combination with the
+  other active filters – a filter showing 0 would empty the list.
 - Thousands of pledges stay fast: rows are drawn while scrolling, in small steps between frames.
 
 ---
@@ -260,7 +266,8 @@ The first refresh reads the whole pledge log once; after that only new entries a
 
 ## Buy back
 
-The **Buy Back** tab lists all melted pledges with the same search and filters, plus:
+The **Buy Back** tab lists all melted pledges with the same search and filters (Ships, CCUs,
+Paints, Game access, LTI, Warbond, Probably giftable, Rewards), plus:
 
 - **Probably giftable**: pledges bought before 30 Oct 2026 are probably giftable again when bought
   back with money (warbond).
@@ -288,6 +295,8 @@ The **Buy Back** tab lists all melted pledges with the same search and filters, 
 
 ## Keeping the data current
 
+- **First start**: when no pledges are stored yet, opening the manager starts the first refresh
+  by itself.
 - **Refresh** reads hangar, buy back and orders from RSI. Large hangars take a moment; a progress
   bar shows pages and percentage, weighted by how long each kind of page takes.
 - **Smart updates** (on by default): check a few RSI pages for changes and update the list
@@ -300,9 +309,11 @@ The **Buy Back** tab lists all melted pledges with the same search and filters, 
 
 - **Language**: automatic, English or German.
 - **Hide sensitive information**: see [Private by design](#private-by-design).
+- **Theme**: Default RSI or Modern Hangar.
 - **Smart updates**: on or off.
 - **Show refund period**: refund countdown and "Refund Request" button (on by default).
-- **Hide rewards**: show all, or hide all, Concierge or event rewards ($0 pledges).
+- **Filters**: order and selection of the filter buttons, separately for My Hangar and Buy Back –
+  drag a filter (or use its arrows) to move it, uncheck it to hide its button.
 - **"Show in Buy Back" opens**: only the pledge, or the list page with the pledge highlighted.
 - **Show links for ships**: erkul.games and FleetYards.net, each on or off.
 

@@ -1,11 +1,15 @@
+import { BUYBACK_FILTERS, type BuybackFilter } from '@/buyback/buyback-view';
+import { FILTERS } from '@/config';
+import {
+  normalizeFilterLayout,
+  PLEDGE_FILTERS,
+  type FilterLayout,
+  type PledgeFilter,
+} from '@/hangar/filters';
 import { isLocale, type Locale } from '@/i18n';
 
 /** `auto`: the browser's language if there is a translation for it, English otherwise. */
 export type LanguageSetting = 'auto' | Locale;
-
-/** Which reward pledges the hangar list hides. */
-export const REWARD_VISIBILITIES = ['showAll', 'hideAll', 'hideConcierge', 'hideEvent'] as const;
-export type RewardVisibility = (typeof REWARD_VISIBILITIES)[number];
 
 /**
  * What "Show in Buy Back" opens on RSI: `single` – a page with only this pledge (page size 1);
@@ -28,11 +32,15 @@ export interface Settings {
   demoMode: boolean;
   /** Shows how many days are left to refund purchases paid with money (see `orders/refund.ts`). */
   showRefund: boolean;
-  rewardVisibility: RewardVisibility;
   /** Keeps the stored hangar current by checking a few hangar pages now and then. */
   smartUpdates: boolean;
   buybackLinkMode: BuybackLinkMode;
   theme: Theme;
+  /** Order and selection of the filter buttons of both lists (presets: `FILTERS` in config). */
+  filters: {
+    hangar: FilterLayout<PledgeFilter>;
+    buyback: FilterLayout<BuybackFilter>;
+  };
   /** Links shown next to ships. */
   shipLinks: {
     erkul: boolean;
@@ -46,10 +54,13 @@ export const DEFAULT_SETTINGS: Settings = {
   hidePledgeIds: false,
   demoMode: false,
   showRefund: true,
-  rewardVisibility: 'showAll',
   smartUpdates: true,
   buybackLinkMode: 'single',
   theme: 'rsi',
+  filters: {
+    hangar: normalizeFilterLayout(FILTERS.hangar, PLEDGE_FILTERS, FILTERS.hangar),
+    buyback: normalizeFilterLayout(FILTERS.buyback, BUYBACK_FILTERS, FILTERS.buyback),
+  },
   shipLinks: { erkul: true, fleetyards: true },
 };
 
@@ -76,9 +87,6 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
     demoMode: typeof stored?.demoMode === 'boolean' ? stored.demoMode : DEFAULT_SETTINGS.demoMode,
     showRefund:
       typeof stored?.showRefund === 'boolean' ? stored.showRefund : DEFAULT_SETTINGS.showRefund,
-    rewardVisibility: REWARD_VISIBILITIES.includes(stored?.rewardVisibility as RewardVisibility)
-      ? stored!.rewardVisibility!
-      : DEFAULT_SETTINGS.rewardVisibility,
     smartUpdates:
       typeof stored?.smartUpdates === 'boolean'
         ? stored.smartUpdates
@@ -87,6 +95,10 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
       ? stored!.buybackLinkMode!
       : DEFAULT_SETTINGS.buybackLinkMode,
     theme: THEMES.includes(stored?.theme as Theme) ? stored!.theme! : DEFAULT_SETTINGS.theme,
+    filters: {
+      hangar: normalizeFilterLayout(stored?.filters?.hangar, PLEDGE_FILTERS, FILTERS.hangar),
+      buyback: normalizeFilterLayout(stored?.filters?.buyback, BUYBACK_FILTERS, FILTERS.buyback),
+    },
     shipLinks: {
       erkul: stored?.shipLinks?.erkul ?? DEFAULT_SETTINGS.shipLinks.erkul,
       fleetyards: stored?.shipLinks?.fleetyards ?? DEFAULT_SETTINGS.shipLinks.fleetyards,

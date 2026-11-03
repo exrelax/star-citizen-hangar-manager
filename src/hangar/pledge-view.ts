@@ -32,6 +32,8 @@ export interface PledgeView {
   ships: ShipRef[];
   image?: string;
   value: string;
+  /** `value` in USD, e.g. for the "valuable" filter. */
+  valueUsd: number;
   /** The order that created the pledge, if it was paid with money (see `src/orders`). */
   order?: PaidOrder;
   /** Discount compared to the original price of the ship or CCU, if known (see `ship-prices.ts`). */
@@ -100,6 +102,7 @@ export function toPledgeView(
     ships,
     image: pledgeImage(pledge, currentShip),
     value: pledge.value,
+    valueUsd: pledge.valueUsd,
     discount: priceOf && pledgeDiscount(pledge, priceOf, hasGameAccess),
     createdAt: pledge.createdAt,
     reward: rewardKind(pledge),

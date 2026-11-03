@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import { DEMO, REFUND_DAYS } from '@/config';
-import { browserLocale, i18n, LOCALES, type Locale } from '@/i18n';
+import { DEMO, FILTERS, REFUND_DAYS } from '@/config';
+import { browserLocale, i18n, LOCALES, type Locale, type MessageKey } from '@/i18n';
 import {
   BUYBACK_LINK_MODES,
-  REWARD_VISIBILITIES,
   THEMES,
   type BuybackLinkMode,
   type LanguageSetting,
-  type RewardVisibility,
   type Settings,
   type Theme,
 } from './settings';
+import FilterLayoutSetting from './FilterLayoutSetting.vue';
 
 const props = defineProps<{ settings: Settings }>();
 const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
@@ -19,6 +18,12 @@ const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
 function languageName(code: Locale) {
   const name = new Intl.DisplayNames([code], { type: 'language' }).of(code) ?? code;
   return name.charAt(0).toLocaleUpperCase(code) + name.slice(1);
+}
+
+const filterLabel = (filter: string) => i18n.t(`filter.${filter}` as MessageKey);
+
+function setFilters<L extends keyof Settings['filters']>(list: L, layout: Settings['filters'][L]) {
+  emit('update', { filters: { ...props.settings.filters, [list]: layout } });
 }
 
 function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
@@ -119,26 +124,6 @@ function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
       </label>
       <p class="shm-hint">{{ i18n.t('settings.showRefundHint', [REFUND_DAYS]) }}</p>
     </section>
-
-    <section class="shm-setting">
-      <label class="shm-label" for="shm-reward-visibility">{{ i18n.t('settings.rewards') }}</label>
-      <select
-        id="shm-reward-visibility"
-        class="shm-select"
-        :value="settings.rewardVisibility"
-        @change="
-          emit('update', {
-            rewardVisibility: ($event.target as HTMLSelectElement).value as RewardVisibility,
-          })
-        "
-      >
-        <option v-for="option in REWARD_VISIBILITIES" :key="option" :value="option">
-          {{ i18n.t(`settings.rewardOptions.${option}`) }}
-        </option>
-      </select>
-      <p class="shm-hint">{{ i18n.t('settings.rewardsHint') }}</p>
-    </section>
-
     <section class="shm-setting">
       <label class="shm-label" for="shm-buyback-link">{{ i18n.t('settings.buybackLink') }}</label>
       <select
@@ -156,6 +141,29 @@ function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
         </option>
       </select>
     </section>
+
+    <fieldset class="shm-setting">
+      <legend class="shm-label">{{ i18n.t('settings.filters') }}</legend>
+      <p class="shm-hint is-first">{{ i18n.t('settings.filtersHint') }}</p>
+      <div class="shm-filter-layouts">
+        <FilterLayoutSetting
+          id="shm-filters-hangar"
+          :title="i18n.t('settings.filtersHangar')"
+          :layout="settings.filters.hangar"
+          :defaults="FILTERS.hangar"
+          :filter-label="filterLabel"
+          @update="setFilters('hangar', $event)"
+        />
+        <FilterLayoutSetting
+          id="shm-filters-buyback"
+          :title="i18n.t('settings.filtersBuyback')"
+          :layout="settings.filters.buyback"
+          :defaults="FILTERS.buyback"
+          :filter-label="filterLabel"
+          @update="setFilters('buyback', $event)"
+        />
+      </div>
+    </fieldset>
 
     <fieldset class="shm-setting">
       <legend class="shm-label">{{ i18n.t('settings.shipLinks') }}</legend>
@@ -240,6 +248,17 @@ function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
   margin: 6px 0 0;
   color: var(--shm-text-muted);
   font-size: 12px;
+}
+
+/* Hint right under the legend, before the controls. */
+.shm-hint.is-first {
+  margin: 0 0 12px;
+}
+
+.shm-filter-layouts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 28px;
 }
 
 /* Hint of a checkbox in a group: under its label text, before the next checkbox. */

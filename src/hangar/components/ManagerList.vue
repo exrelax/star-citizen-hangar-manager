@@ -16,6 +16,13 @@ import {
   useTemplateRef,
   watch,
 } from 'vue';
+import {
+  filterCounts as countFilters,
+  matchesFilterStates,
+  nextFilterState,
+  type FilterPredicates,
+  type FilterState,
+} from '../filters';
 import { searchFromUrl, urlWithSearch } from '../route';
 import { matchesSearch, parseSearchQuery } from '../search';
 
@@ -28,11 +35,13 @@ import { matchesSearch, parseSearchQuery } from '../search';
 
 const props = defineProps<{
   entries: T[];
+  /** The filters, in display order. */
   filters: readonly F[];
-  /** Whether an entry passes the active filters. */
-  matches: (entry: T, active: ReadonlySet<F>) => boolean;
+  /** The property behind each filter (see `filters.ts`). */
+  predicates: FilterPredicates<T, F>;
   filterLabel: (filter: F) => string;
-  filterTitle?: (filter: F) => string | undefined;
+  /** An explanation of a filter, shown in its tooltip before the state. */
+  filterHint?: (filter: F) => string | undefined;
   /** The list's tab is shown: only then it owns the search parameter of the URL. */
   active: boolean;
 }>();
@@ -64,35 +73,67 @@ watch(
 onUnmounted(writeSearchToUrl);
 
 // Replaced on every change, so a shallowRef is enough to trigger updates.
-const activeFilters = shallowRef<ReadonlySet<F>>(new Set());
+const filterStates = shallowRef<ReadonlyMap<F, FilterState>>(new Map());
 
-function toggleFilter(filter: F) {
-  const next = new Set(activeFilters.value);
-  if (!next.delete(filter)) next.add(filter);
-  activeFilters.value = next;
+/** A click on a filter: off → only entries with it → entries without it → off. */
+function cycleFilter(filter: F) {
+  const next = new Map(filterStates.value);
+  const state = nextFilterState(next.get(filter));
+  if (state) next.set(filter, state);
+  else next.delete(filter);
+  filterStates.value = next;
 }
 
-/** Number of entries each filter matches on its own. */
-const filterCounts = computed(() => {
-  const counts = new Map<F, number>();
-  for (const filter of props.filters) {
-    const only = new Set([filter]);
-    counts.set(filter, props.entries.filter((entry) => props.matches(entry, only)).length);
-  }
-  return counts;
+const resetFilters = () => (filterStates.value = new Map());
+
+// A filter turned off in the settings no longer filters the list, either.
+watch(
+  () => props.filters,
+  (filters) => {
+    const kept = [...filterStates.value].filter(([filter]) => filters.includes(filter));
+    if (kept.length !== filterStates.value.size) filterStates.value = new Map(kept);
+  },
+);
+
+/** Entries matching the search; the filters and their counts work on these. */
+const searched = computed(() => {
+  const terms = parseSearchQuery(query.value);
+  return terms.length
+    ? props.entries.filter((entry) => matchesSearch(entry.searchText, terms))
+    : props.entries;
 });
+
+/** Per filter: entries with it among those passing search and the other filters (filters.ts). */
+const filterCounts = computed(() =>
+  countFilters(searched.value, props.filters, filterStates.value, props.predicates),
+);
 
 /** Ids of the entries matching search and filters; `null` while neither is active. */
 const visibleIds = computed(() => {
-  const terms = parseSearchQuery(query.value);
-  const filters = activeFilters.value;
-  if (terms.length === 0 && filters.size === 0) return null;
+  const states = filterStates.value;
+  if (searched.value === props.entries && states.size === 0) return null;
   const ids = new Set<number>();
-  for (const entry of props.entries) {
-    if (props.matches(entry, filters) && matchesSearch(entry.searchText, terms)) ids.add(entry.id);
+  for (const entry of searched.value) {
+    if (matchesFilterStates(entry, states, props.predicates)) ids.add(entry.id);
   }
   return ids;
 });
+
+/** Tooltip of a filter: its explanation, its state and what a click does. */
+function filterTitle(filter: F) {
+  const label = props.filterLabel(filter);
+  const state = filterStates.value.get(filter);
+  const action = i18n.t(
+    state === 'include'
+      ? 'filter.stateInclude'
+      : state === 'exclude'
+        ? 'filter.stateExclude'
+        : 'filter.stateOff',
+    [label],
+  );
+  const hint = props.filterHint?.(filter);
+  return hint ? `${hint}\n\n${action}` : action;
+}
 
 /** All entries passing search and filters, in list order. */
 const matching = computed(() =>
@@ -158,19 +199,42 @@ const countLabel = computed(() =>
 
 <template>
   <div class="shm-list">
-    <div class="shm-filters" role="group" :aria-label="i18n.t('filter.label')">
+    <div
+      v-if="filters.length"
+      class="shm-filters"
+      role="group"
+      :aria-label="i18n.t('filter.label')"
+    >
       <button
         v-for="filter in filters"
         :key="filter"
         type="button"
         class="shm-filter"
-        :class="{ 'is-active': activeFilters.has(filter) }"
-        :aria-pressed="activeFilters.has(filter)"
-        :title="filterTitle?.(filter)"
-        @click="toggleFilter(filter)"
+        :class="{
+          'is-active': filterStates.get(filter) === 'include',
+          'is-excluded': filterStates.get(filter) === 'exclude',
+        }"
+        :aria-pressed="
+          filterStates.get(filter) === 'include'
+            ? 'true'
+            : filterStates.get(filter) === 'exclude'
+              ? 'mixed'
+              : 'false'
+        "
+        :title="filterTitle(filter)"
+        @click="cycleFilter(filter)"
       >
-        {{ filterLabel(filter) }}
+        <span
+          v-if="filterStates.get(filter) === 'exclude'"
+          class="shm-filter-not"
+          aria-hidden="true"
+          >−</span
+        >
+        <span class="shm-filter-label">{{ filterLabel(filter) }}</span>
         <span class="shm-filter-count">{{ filterCounts.get(filter) }}</span>
+      </button>
+      <button v-if="filterStates.size" type="button" class="shm-filter-reset" @click="resetFilters">
+        {{ i18n.t('filter.reset') }}
       </button>
     </div>
 
@@ -235,6 +299,38 @@ const countLabel = computed(() =>
   color: var(--shm-text-on-accent);
   background: var(--shm-accent);
   border-color: var(--shm-accent);
+}
+
+.shm-filter.is-excluded {
+  color: var(--shm-danger);
+  border-color: var(--shm-danger);
+}
+
+/* Excluded: crossed out and with a minus, so it can't be mistaken for an active filter. */
+.shm-filter.is-excluded .shm-filter-label {
+  text-decoration: line-through;
+}
+
+.shm-filter-not {
+  font-weight: 700;
+}
+
+.shm-filter-reset {
+  height: 28px;
+  padding: 0 10px;
+  color: var(--shm-text-muted);
+  font: inherit;
+  font-size: 12px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.shm-filter-reset:hover,
+.shm-filter-reset:focus-visible {
+  color: var(--shm-text);
+  text-decoration: underline;
+  outline: none;
 }
 
 .shm-filter-count {

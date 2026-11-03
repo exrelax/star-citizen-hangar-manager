@@ -12,11 +12,20 @@ import { i18n, locale } from '@/i18n';
 import SettingsPanel from '@/settings/SettingsPanel.vue';
 import { useSettings } from '@/settings/use-settings';
 import { MANAGER_CONTAINER, useThemeClass } from '@/themes/theme';
-import { computed, inject, onMounted, onUnmounted, provide, reactive, ref } from 'vue';
+import { computed, inject, onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue';
 
 const hangar = useHangarPledges();
 const buyback = useBuybackPledges();
 const { loaded, syncedAt } = hangar;
+
+// First visit, nothing stored yet: read hangar, buy back and orders from RSI right away.
+watch(
+  loaded,
+  () => {
+    if (!hangar.pledges.value.length) void startSync();
+  },
+  { once: true },
+);
 
 const { settings, loaded: settingsLoaded, update: updateSettings } = useSettings();
 useThemeClass(
@@ -164,7 +173,9 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
         :settings="settings"
         :active="activeTab === 'hangar'"
       />
-      <p v-else class="shm-empty">{{ i18n.t('manager.empty') }}</p>
+      <p v-else class="shm-empty">
+        {{ i18n.t(syncState.running ? 'manager.firstSync' : 'manager.empty') }}
+      </p>
     </template>
   </div>
   <div
@@ -187,7 +198,9 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
         :settings="settings"
         :active="activeTab === 'buyback'"
       />
-      <p v-else class="shm-empty">{{ i18n.t('buyback.empty') }}</p>
+      <p v-else class="shm-empty">
+        {{ i18n.t(syncState.running ? 'manager.firstSync' : 'buyback.empty') }}
+      </p>
     </template>
   </div>
   <div

@@ -1,3 +1,6 @@
+import type { BuybackFilter } from '@/buyback/buyback-view';
+import type { FilterLayout, PledgeFilter } from '@/hangar/filters';
+
 /**
  * Tunable values of the extension in one place.
  */
@@ -153,3 +156,63 @@ export const REFUND_REQUEST_FORM = {
   problemFieldId: '360014846974',
   problemValue: 'other_ship_or_pledge_query',
 } as const;
+
+/**
+ * Filters of "My Hangar" and the buy back, as preset until changed in the settings: `order` is
+ * the order of the filter buttons, `shown` the filters shown at all. Filters missing in `order`
+ * follow at the end. The settings store the user's own order and selection (see
+ * `settings/settings.ts`); filters added in later versions appear there with these presets.
+ */
+export const FILTERS: {
+  hangar: FilterLayout<PledgeFilter>;
+  buyback: FilterLayout<BuybackFilter>;
+} = {
+  hangar: {
+    order: [
+      'ships',
+      'ccus',
+      'paints',
+      'gameAccess',
+      'lti',
+      'warbond',
+      'giftable',
+      'meltable',
+      'valuable',
+      'rewards',
+    ],
+    shown: [
+      'ships',
+      'ccus',
+      'paints',
+      'gameAccess',
+      'lti',
+      'warbond',
+      'giftable',
+      'meltable',
+      'valuable',
+      'rewards',
+    ],
+  },
+  buyback: {
+    order: [
+      'ships',
+      'ccus',
+      'paints',
+      'gameAccess',
+      'lti',
+      'warbond',
+      'probablyGiftable',
+      'rewards',
+    ],
+    shown: [
+      'ships',
+      'ccus',
+      'paints',
+      'gameAccess',
+      'lti',
+      'warbond',
+      'probablyGiftable',
+      'rewards',
+    ],
+  },
+};

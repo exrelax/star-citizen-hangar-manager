@@ -22,10 +22,10 @@ describe('withDefaults', () => {
       hidePledgeIds: true,
       demoMode: true,
       showRefund: false,
-      rewardVisibility: 'showAll',
       smartUpdates: true,
       buybackLinkMode: 'single',
       theme: 'rsi',
+      filters: DEFAULT_SETTINGS.filters,
       shipLinks: { erkul: false, fleetyards: true },
     });
   });
@@ -36,9 +36,9 @@ describe('withDefaults', () => {
         language: 'fr',
         hideMeltValue: 'yes',
         hidePledgeIds: 1,
-        rewardVisibility: 'sometimes',
         buybackLinkMode: 'popup',
         theme: 'neon',
+        filters: { hangar: 'all', buyback: { order: 5 } },
       } as never),
     ).toEqual(DEFAULT_SETTINGS);
   });

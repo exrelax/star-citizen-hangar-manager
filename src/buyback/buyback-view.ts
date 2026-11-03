@@ -1,6 +1,7 @@
 import { BUYBACK_GIFTABLE_PURCHASED_BEFORE, BUYBACK_PAGE_SIZE } from '@/config';
 import type { PaidOrder } from '@/orders/orders';
-import type { FilterDefinition } from '@/hangar/filters';
+import type { FilterPredicates } from '@/hangar/filters';
+import { isRewardTitle } from '@/hangar/rewards';
 import { bestInsurance, type Insurance } from '@/hangar/insurance';
 import { GAME_DOWNLOAD, type ShipRef } from '@/hangar/pledge-view';
 import { normalizeSearchText } from '@/hangar/search';
@@ -107,26 +108,27 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
   };
 }
 
-/** Filters of the buy back list, in display order. */
+/** All filters of the buy back list (their order and selection: `FILTERS` in config). */
 export const BUYBACK_FILTERS = [
-  'lti',
-  'paints',
+  'ships',
   'ccus',
-  'standaloneShips',
+  'paints',
   'gameAccess',
+  'lti',
+  'warbond',
   'probablyGiftable',
+  'rewards',
 ] as const;
 export type BuybackFilter = (typeof BUYBACK_FILTERS)[number];
 
-export const BUYBACK_FILTER_DEFINITION: FilterDefinition<BuybackView, BuybackFilter> = {
-  categories: {
-    paints: (pledge) => pledge.isPaint,
-    ccus: (pledge) => pledge.isCcu,
-    standaloneShips: (pledge) => pledge.isStandaloneShip,
-    gameAccess: (pledge) => pledge.hasGameAccess,
-  },
-  properties: {
-    lti: (pledge) => pledge.hasLti,
-    probablyGiftable: (pledge) => pledge.isProbablyGiftable,
-  },
+export const BUYBACK_FILTER_PREDICATES: FilterPredicates<BuybackView, BuybackFilter> = {
+  ships: (pledge) => pledge.ships.length > 0,
+  ccus: (pledge) => pledge.isCcu,
+  paints: (pledge) => pledge.isPaint,
+  gameAccess: (pledge) => pledge.hasGameAccess,
+  lti: (pledge) => pledge.hasLti,
+  warbond: (pledge) => pledge.order !== undefined,
+  probablyGiftable: (pledge) => pledge.isProbablyGiftable,
+  // The buy back shows no values, so rewards are recognized by their names.
+  rewards: (pledge) => isRewardTitle(pledge.title),
 };

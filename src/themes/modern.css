@@ -221,6 +221,17 @@ html .shm-theme-modern .shm-filter.is-active {
   background: var(--shm-accent);
 }
 
+html .shm-theme-modern .shm-filter.is-excluded {
+  color: var(--shm-danger);
+  background: color-mix(in srgb, var(--shm-danger) 18%, transparent);
+}
+
+html .shm-theme-modern .shm-filter-reset {
+  height: 30px;
+  color: var(--shm-accent);
+  font-size: 13px;
+}
+
 html .shm-theme-modern .shm-search {
   height: 36px;
   font-size: 15px;
