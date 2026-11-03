@@ -8,6 +8,7 @@
     "title": "Hangar Manager",
     "intro": "An overview of your hangar. Use the refresh button at the top right to read the latest state from RSI.",
     "refresh": "Refresh hangar data",
+    "refreshLabel": "Refresh",
     "empty": "No hangar data yet. Click the refresh button at the top right to read your hangar.",
     "count": "$1 pledges",
     "countFiltered": "$1 of $2 pledges",

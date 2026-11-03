@@ -80,7 +80,7 @@ async function addToCart() {
   }
 }
 
-/** The icon of the pledge's kind in the row's corner; the buy back recognizes rewards by name. */
+/** The icon of the pledge's kind, on the row's image; the buy back recognizes rewards by name. */
 const kind = computed(() =>
   kindIcon({ ...props.pledge, isReward: isRewardTitle(props.pledge.title) }),
 );
@@ -88,7 +88,6 @@ const kind = computed(() =>
 
 <template>
   <div class="shm-row" :class="{ 'is-expanded': expanded }">
-    <SvgIcon v-if="kind" class="shm-row-kind" :name="kind" />
     <!-- Clicking anywhere toggles the details; the chevron button makes it keyboard accessible. -->
     <div class="shm-row-summary" @click="toggle">
       <span class="shm-thumb">
@@ -101,6 +100,8 @@ const kind = computed(() =>
           width="112"
           height="63"
         />
+        <!-- The kind of item (ship, CCU, paint, …) as a badge on the image. -->
+        <span v-if="kind" class="shm-row-kind"><SvgIcon :name="kind" /></span>
       </span>
 
       <span class="shm-main">

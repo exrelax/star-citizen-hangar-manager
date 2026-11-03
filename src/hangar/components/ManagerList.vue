@@ -209,66 +209,10 @@ const countLabel = computed(() =>
 
 <template>
   <div class="shm-list">
-    <div
-      v-if="filters.length"
-      class="shm-filters"
-      role="group"
-      :aria-label="i18n.t('filter.label')"
-    >
-      <div
-        v-for="(group, index) in shownGroups"
-        :key="group.category"
-        class="shm-filter-group"
-        role="group"
-        :aria-label="i18n.t(`filter.categories.${group.category}`)"
-      >
-        <span class="shm-filter-group-label" aria-hidden="true">
-          {{ i18n.t(`filter.categories.${group.category}`) }}
-        </span>
-        <div class="shm-filter-buttons">
-          <button
-            v-for="filter in group.filters"
-            :key="filter"
-            type="button"
-            class="shm-filter"
-            :class="{
-              'is-active': filterStates.get(filter) === 'include',
-              'is-excluded': filterStates.get(filter) === 'exclude',
-            }"
-            :aria-pressed="
-              filterStates.get(filter) === 'include'
-                ? 'true'
-                : filterStates.get(filter) === 'exclude'
-                  ? 'mixed'
-                  : 'false'
-            "
-            :title="filterTitle(filter)"
-            @click="cycleFilter(filter)"
-          >
-            <span
-              v-if="filterStates.get(filter) === 'exclude'"
-              class="shm-filter-not"
-              aria-hidden="true"
-              >−</span
-            >
-            <span class="shm-filter-label">{{ filterLabel(filter) }}</span>
-            <span class="shm-filter-count">{{ filterCounts.get(filter) }}</span>
-          </button>
-          <!-- After the last group's buttons, so it doesn't add a line when it appears. -->
-          <button
-            v-if="filterStates.size && index === shownGroups.length - 1"
-            type="button"
-            class="shm-filter-reset"
-            @click="resetFilters"
-          >
-            {{ i18n.t('filter.reset') }}
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="shm-toolbar">
+    <!-- Search first, then the filters: one block, as the filters narrow down what is found. -->
+    <div class="shm-controls">
       <span class="shm-search-field">
+        <SvgIcon class="shm-search-icon" name="magnifying-glass" />
         <input
           ref="search"
           v-model="query"
@@ -290,12 +234,73 @@ const countLabel = computed(() =>
           <SvgIcon name="circle-xmark" />
         </button>
       </span>
-      <p class="shm-count" aria-live="polite">{{ countLabel }}</p>
+      <div
+        v-if="filters.length"
+        class="shm-filters"
+        role="group"
+        :aria-label="i18n.t('filter.label')"
+      >
+        <div
+          v-for="(group, index) in shownGroups"
+          :key="group.category"
+          class="shm-filter-group"
+          role="group"
+          :aria-label="i18n.t(`filter.categories.${group.category}`)"
+        >
+          <span class="shm-filter-group-label" aria-hidden="true">
+            {{ i18n.t(`filter.categories.${group.category}`) }}
+          </span>
+          <div class="shm-filter-buttons">
+            <button
+              v-for="filter in group.filters"
+              :key="filter"
+              type="button"
+              class="shm-filter"
+              :class="{
+                'is-active': filterStates.get(filter) === 'include',
+                'is-excluded': filterStates.get(filter) === 'exclude',
+              }"
+              :aria-pressed="
+                filterStates.get(filter) === 'include'
+                  ? 'true'
+                  : filterStates.get(filter) === 'exclude'
+                    ? 'mixed'
+                    : 'false'
+              "
+              :title="filterTitle(filter)"
+              @click="cycleFilter(filter)"
+            >
+              <span
+                v-if="filterStates.get(filter) === 'exclude'"
+                class="shm-filter-not"
+                aria-hidden="true"
+                >−</span
+              >
+              <span class="shm-filter-label">{{ filterLabel(filter) }}</span>
+              <span class="shm-filter-count">{{ filterCounts.get(filter) }}</span>
+            </button>
+            <!-- After the last group's buttons, so it doesn't add a line when it appears. -->
+            <button
+              v-if="filterStates.size && index === shownGroups.length - 1"
+              type="button"
+              class="shm-filter-reset"
+              @click="resetFilters"
+            >
+              {{ i18n.t('filter.reset') }}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <template v-for="entry in rendered" :key="entry.id">
-      <slot name="row" :entry="entry" :auto-expand="entry.id === onlyVisibleId" />
-    </template>
+    <p class="shm-count" aria-live="polite">{{ countLabel }}</p>
+
+    <!-- One grouped list (Modern Hangar) or separate rows (Default RSI). -->
+    <div v-if="rendered.length" class="shm-rows">
+      <template v-for="entry in rendered" :key="entry.id">
+        <slot name="row" :entry="entry" :auto-expand="entry.id === onlyVisibleId" />
+      </template>
+    </div>
     <div ref="sentinel" class="shm-sentinel" aria-hidden="true"></div>
 
     <p v-if="visibleIds && visibleIds.size === 0" class="shm-no-results">
@@ -309,12 +314,17 @@ const countLabel = computed(() =>
   margin-top: 20px;
 }
 
+.shm-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .shm-filters {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
-  margin-bottom: 10px;
 }
 
 /* One category per line: its label in a fixed column, then its buttons. */
@@ -403,13 +413,6 @@ const countLabel = computed(() =>
   font-variant-numeric: tabular-nums;
 }
 
-.shm-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 10px;
-}
-
 /* The search field with its clear button inside, at the right. */
 .shm-search-field {
   position: relative;
@@ -420,8 +423,8 @@ const countLabel = computed(() =>
 .shm-search {
   flex: 1;
   height: 34px;
-  /* Room for the clear button. */
-  padding: 0 34px 0 12px;
+  /* Room for the search icon and the clear button. */
+  padding: 0 34px;
   color: var(--shm-text);
   font: inherit;
   font-size: 13px;
@@ -434,6 +437,16 @@ const countLabel = computed(() =>
 /* Chrome's own clear button of search fields: replaced by `.shm-search-clear`. */
 .shm-search::-webkit-search-cancel-button {
   appearance: none;
+}
+
+.shm-search-icon {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  color: var(--shm-text-muted);
+  font-size: 14px;
+  transform: translateY(-50%);
+  pointer-events: none;
 }
 
 .shm-search-clear {
@@ -469,8 +482,7 @@ const countLabel = computed(() =>
 }
 
 .shm-count {
-  flex: none;
-  margin: 0;
+  margin: 10px 0;
   color: var(--shm-text-muted);
   font-size: 12px;
   font-variant-numeric: tabular-nums;

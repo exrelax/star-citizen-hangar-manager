@@ -3,14 +3,14 @@ import BuybackList from '@/buyback/components/BuybackList.vue';
 import { useBuybackPledges } from '@/buyback/use-buyback-pledges';
 import HangarStatus from '@/hangar/components/HangarStatus.vue';
 import PledgeList from '@/hangar/components/PledgeList.vue';
-import RefreshIcon from '@/hangar/components/RefreshIcon.vue';
+import RefreshButton from '@/hangar/components/RefreshButton.vue';
 import { DEMO_CONTEXT, useDemo } from '@/demo/use-demo';
 import { hashOfTab, MANAGER_TABS, tabFromHash, type ManagerTab } from '@/hangar/route';
 import { startSync, syncState } from '@/hangar/sync-state';
 import { useHangarPledges } from '@/hangar/use-hangar-pledges';
 import type { IconName } from '@/icons/icon-names';
 import TabBar from '@/shared/components/TabBar.vue';
-import { i18n, locale } from '@/i18n';
+import { i18n } from '@/i18n';
 import SettingsPanel from '@/settings/SettingsPanel.vue';
 import { useSettings } from '@/settings/use-settings';
 import { MANAGER_CONTAINER, useThemeClass } from '@/themes/theme';
@@ -58,19 +58,16 @@ provide(DEMO_CONTEXT, demoView.context);
 const pledges = demoView.pledges;
 const buybackPledges = demoView.buyback;
 
-/** Progress of a running sync: pages for the counter, weighted work for the bar and percentage. */
-const syncProgress = computed(() => {
-  const { progress } = syncState;
-  if (!progress) return null;
-  // Rounded down, so 100 % only shows once everything is read.
-  const fraction = Math.floor(progress.fraction * 100) / 100;
-  const percent = new Intl.NumberFormat(locale.value, { style: 'percent' }).format(fraction);
-  return {
-    ...progress,
-    fraction,
-    percent,
-    text: i18n.t('manager.syncProgress', [progress.done, progress.total, percent]),
-  };
+/** The status line of the list shown: its last refresh and check. None in the settings. */
+const status = computed(() => {
+  if (!listsReady.value) return undefined;
+  if (activeTab.value === 'hangar' && loaded.value && pledges.value.length) {
+    return { source: 'hangar' as const, syncedAt: syncedAt.value };
+  }
+  if (activeTab.value === 'buyback' && buyback.loaded.value && buybackPledges.value.length) {
+    return { source: 'buyback' as const, syncedAt: buyback.syncedAt.value };
+  }
+  return undefined;
 });
 
 // The tab is part of the URL (`#hangar-manager`, `#hangar-manager-bb`, `#hangar-manager-settings`),
@@ -99,6 +96,25 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
 <!-- Reuses the markup classes of the original hangar page so the view inherits the site's look. -->
 <template>
   <div class="top">
+    <!--
+      The refresh button with the state of the list (none in the settings). Before the title, so
+      it floats into the top right corner.
+    -->
+    <div class="shm-header-side">
+      <!--
+        Only hidden (not removed) in the settings, so the header keeps its height and the tabs below
+        don't jump. It refreshes hangar and buy back together.
+      -->
+      <RefreshButton :hidden="activeTab === 'settings'" />
+      <HangarStatus
+        v-if="status"
+        :key="status.source"
+        class="shm-header-status"
+        :source="status.source"
+        :synced-at="status.syncedAt"
+        :smart-updates="settings.smartUpdates"
+      />
+    </div>
     <h2 class="title">
       {{ i18n.t('manager.title') }}
       <!-- In the header, so every tab shows that the lists are a demo selection. -->
@@ -106,46 +122,7 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
         {{ i18n.t('manager.demoBadge') }}
       </span>
     </h2>
-    <!--
-      Only hidden (not removed) in the settings, so the header keeps its height and the tabs below
-      don't jump. `visibility: hidden` also takes it out of the tab order. It refreshes hangar and
-      buy back together.
-    -->
-    <button
-      type="button"
-      class="shadow-button trans-02s trans-color shm-refresh"
-      :class="{ 'is-hidden': activeTab === 'settings', 'is-syncing': syncProgress }"
-      :disabled="syncState.running"
-      :title="syncProgress?.text ?? i18n.t('manager.refresh')"
-      :aria-label="i18n.t('manager.refresh')"
-      :aria-busy="syncState.running"
-      @click="startSync"
-    >
-      <span class="label js-label trans-02s">
-        <RefreshIcon :spinning="syncState.running" />
-        <span v-if="syncProgress" class="shm-refresh-progress">
-          {{ syncProgress.done }} / {{ syncProgress.total }} · {{ syncProgress.percent }}
-        </span>
-      </span>
-      <!-- The bar follows the estimated work, not the pages: buy back pages take much longer. -->
-      <span
-        v-if="syncProgress"
-        class="shm-refresh-bar"
-        role="progressbar"
-        aria-valuemin="0"
-        aria-valuemax="100"
-        :aria-valuenow="Math.round(syncProgress.fraction * 100)"
-        :aria-valuetext="syncProgress.text"
-      >
-        <span
-          class="shm-refresh-bar-fill"
-          :style="{ transform: `scaleX(${syncProgress.fraction})` }"
-        ></span>
-      </span>
-      <span class="left-section"></span>
-      <span class="right-section"></span>
-    </button>
-    <p>{{ i18n.t('manager.intro') }}</p>
+    <p class="shm-intro">{{ i18n.t('manager.intro') }}</p>
     <div class="separator"></div>
     <div class="cboth"></div>
   </div>
@@ -167,11 +144,6 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
     aria-labelledby="shm-tab-hangar"
   >
     <template v-if="loaded && listsReady">
-      <HangarStatus
-        v-if="pledges.length"
-        :synced-at="syncedAt"
-        :smart-updates="settings.smartUpdates"
-      />
       <PledgeList
         v-if="pledges.length"
         :pledges="pledges"
@@ -191,12 +163,6 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
     aria-labelledby="shm-tab-buyback"
   >
     <template v-if="buyback.loaded.value && listsReady">
-      <HangarStatus
-        v-if="buybackPledges.length"
-        source="buyback"
-        :synced-at="buyback.syncedAt.value"
-        :smart-updates="settings.smartUpdates"
-      />
       <BuybackList
         v-if="buybackPledges.length"
         :pledges="buybackPledges"
@@ -224,22 +190,28 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
  * More specific RSI rules (from stylesheets on their CDN) override layout and font otherwise,
  * hence `!important` on those properties.
  */
-.shm-refresh {
-  float: right !important;
-  display: block !important;
-  /*
-   * RSI's background has a 30 px button face with a reflection below (40 px in all). The bottom
-   * padding keeps the content on the face; a <button> centres it vertically in what's left.
-   */
-  padding: 0 12px 10px !important;
-  font-family: Electrolize, sans-serif !important;
-  font-size: 11px !important;
-  line-height: 30px !important;
-  position: relative !important;
-  box-sizing: border-box;
-  /* RSI's `.shadow-button` background (the middle part between the two end sections) stays. */
-  border: 0;
-  cursor: pointer;
+/* Refresh button and status line, on the right of the title. */
+.shm-header-side {
+  float: right;
+  display: flex;
+  /* RSI's header has no room below the button: the status goes to its left. Modern Hangar puts
+   * it below (modern.css). */
+  flex-direction: row-reverse;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+/* In the type of the intro below the title (RSI's 11px), centred on the 30px face of the button. */
+.shm-header-side .shm-header-status {
+  justify-content: flex-end;
+  margin: 7px 0 0;
+  font-size: 11px;
+  line-height: 16px;
+}
+
+/* Clear of the refresh button and the status beside it. */
+.shm-intro {
+  max-width: 60%;
 }
 
 .shm-demo-badge {
@@ -256,52 +228,6 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
   cursor: help;
 }
 
-.shm-refresh.is-hidden {
-  visibility: hidden;
-}
-
-.shm-refresh:disabled {
-  cursor: progress;
-}
-
-/* Icon and progress text side by side, centred on the button face. */
-.shm-refresh .label {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  height: 30px;
-}
-
-/* Room for icon and "1234 / 1234 · 100 %": the button keeps its width while counting. */
-.shm-refresh.is-syncing .label {
-  min-width: 11.5ch;
-}
-
-.shm-refresh-progress {
-  font-variant-numeric: tabular-nums;
-}
-
-/* Along the lower edge of the button face (RSI's background shows a reflection below it). */
-.shm-refresh-bar {
-  position: absolute;
-  top: 27px;
-  right: 12px;
-  left: 12px;
-  height: 2px;
-  overflow: hidden;
-  background: rgb(var(--shm-accent-rgb) / 0.2);
-}
-
-/* Scaled instead of resized: smooth steps between the pages without re-layout. */
-.shm-refresh-bar-fill {
-  display: block;
-  height: 100%;
-  background: var(--shm-accent);
-  transform-origin: left;
-  transition: transform 0.4s ease-out;
-}
-
 .shm-manager-tabs {
   margin-top: 18px;
 }
@@ -309,11 +235,5 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
 .shm-empty {
   margin-top: 20px;
   color: var(--shm-text-muted);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .shm-refresh-bar-fill {
-    transition: none;
-  }
 }
 </style>

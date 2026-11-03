@@ -2,8 +2,6 @@
 
 .shm-row {
   position: relative;
-  /* The kind icon stays behind the row's content. */
-  isolation: isolate;
   margin-bottom: 6px;
   border: 1px solid rgb(var(--shm-accent-rgb) / 0.15);
   background: rgb(var(--shm-surface-rgb) / 0.6);
@@ -13,19 +11,22 @@
 }
 
 /*
- * The kind of item (ship, CCU, paint) as a large, faint icon in the top right corner. Text and
- * buttons may lie on it; it only hints at the kind.
+ * The kind of item (ship, CCU, paint, game package, reward) as a small badge in the image's
+ * bottom left corner. Its dark disc keeps the icon readable on any image, in both themes.
  */
 .shm-row-kind {
   position: absolute;
-  top: 8px;
-  right: 10px;
-  z-index: -1;
-  width: 48px;
-  height: 48px;
+  bottom: 5px;
+  left: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
   color: var(--shm-accent);
-  opacity: 0.12;
-  pointer-events: none;
+  font-size: 12px;
+  background: rgb(5 12 19 / 0.78);
+  border-radius: 999px;
 }
 
 .shm-row.is-expanded {
@@ -45,6 +46,7 @@
 }
 
 .shm-thumb {
+  position: relative;
   flex: none;
   width: 112px;
   height: 63px;

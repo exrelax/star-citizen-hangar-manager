@@ -114,6 +114,20 @@ html .shm-theme-modern .top .separator {
   display: none !important;
 }
 
+html .shm-theme-modern .shm-header-side {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+/* In the type of the intro below the title. */
+html .shm-theme-modern .shm-header-side .shm-header-status {
+  margin: 0;
+  color: var(--shm-text-secondary);
+  font-size: 13px;
+  line-height: 16px;
+}
+
 html .shm-theme-modern .shm-refresh {
   height: 32px !important;
   margin: 0 !important;
@@ -160,8 +174,11 @@ html .shm-theme-modern .shm-demo-badge {
 
 /* ---- Tabs as a segmented control ---- */
 
+/* Full width, the segments sharing it equally. */
 html .shm-theme-modern .shm-tabs {
-  display: inline-flex;
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
   gap: 2px;
   margin-top: 22px;
   padding: 2px;
@@ -171,10 +188,12 @@ html .shm-theme-modern .shm-tabs {
 }
 
 html .shm-theme-modern .shm-tab {
+  justify-content: center;
+  height: 32px;
   margin: 0;
-  padding: 6px 18px;
-  color: var(--shm-text);
-  font-size: 13px;
+  padding: 0 12px;
+  color: var(--shm-text-secondary);
+  font-size: 14px;
   font-weight: 500;
   text-transform: none;
   border: 0;
@@ -183,6 +202,7 @@ html .shm-theme-modern .shm-tab {
 
 html .shm-theme-modern .shm-tab.is-active {
   color: var(--shm-text);
+  font-weight: 600;
   background: var(--shm-segment);
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.2);
 }
@@ -200,11 +220,51 @@ html .shm-theme-modern .shm-status-action {
   background: rgb(var(--shm-upgraded-rgb) / 0.18);
 }
 
+/* Search and filters in one grouped block. */
+html .shm-theme-modern .shm-controls {
+  gap: 12px;
+  margin-top: 22px;
+  padding: 12px;
+  background: var(--shm-surface-elevated);
+  border-radius: 12px;
+}
+
+html .shm-theme-modern .shm-filters {
+  gap: 12px;
+}
+
+html .shm-theme-modern .shm-filter-group-label {
+  width: 72px;
+  color: var(--shm-text-secondary);
+  font-weight: 600;
+}
+
+html .shm-theme-modern .shm-filter-group {
+  gap: 0;
+}
+
+/* A separator between the groups, starting at the chips. */
+html .shm-theme-modern .shm-filter-group + .shm-filter-group {
+  position: relative;
+  align-self: stretch;
+  padding-top: 12px;
+}
+
+html .shm-theme-modern .shm-filter-group + .shm-filter-group::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 72px;
+  height: 1px;
+  background: var(--shm-separator);
+  content: '';
+}
+
 html .shm-theme-modern .shm-filter {
-  height: 30px;
-  padding: 0 12px;
+  height: 26px;
+  padding: 0 10px;
   color: var(--shm-text);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   background: var(--shm-fill);
   border: 0;
@@ -226,10 +286,21 @@ html .shm-theme-modern .shm-filter.is-excluded {
   background: color-mix(in srgb, var(--shm-danger) 18%, transparent);
 }
 
+html .shm-theme-modern .shm-filter-count {
+  color: var(--shm-text-secondary);
+  opacity: 1;
+}
+
+html .shm-theme-modern .shm-filter.is-active .shm-filter-count,
+html .shm-theme-modern .shm-filter.is-excluded .shm-filter-count {
+  color: inherit;
+  opacity: 0.8;
+}
+
 html .shm-theme-modern .shm-filter-reset {
-  height: 30px;
+  height: 26px;
   color: var(--shm-accent);
-  font-size: 13px;
+  font-size: 12px;
 }
 
 html .shm-theme-modern .shm-search {
@@ -245,21 +316,67 @@ html .shm-theme-modern .shm-search:focus {
 }
 
 html .shm-theme-modern .shm-count {
+  margin: 22px 0 8px;
+  padding: 0 12px;
+  color: var(--shm-text-secondary);
   font-size: 13px;
 }
 
 /* ---- Rows: rounded cells of a grouped list ---- */
 
-html .shm-theme-modern .shm-row {
-  margin-bottom: 8px;
+/* The rows as one grouped list: a rounded block, separators between the rows. */
+html .shm-theme-modern .shm-rows {
   overflow: hidden;
   background: var(--shm-surface-elevated);
-  border: 0;
   border-radius: 12px;
 }
 
+html .shm-theme-modern .shm-row {
+  margin: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
+
+html .shm-theme-modern .shm-row + .shm-row::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 136px;
+  height: 1px;
+  background: var(--shm-separator);
+  content: '';
+}
+
+/* Image, then title and meta with the tags below them, then the chevron. */
 html .shm-theme-modern .shm-row-summary {
+  display: grid;
+  grid-template-areas:
+    'thumb main chevron'
+    'thumb badges chevron';
+  grid-template-columns: 112px minmax(0, 1fr) auto;
+  column-gap: 12px;
+  row-gap: 6px;
   padding: 10px 12px;
+}
+
+html .shm-theme-modern .shm-thumb {
+  grid-area: thumb;
+}
+
+html .shm-theme-modern .shm-main {
+  grid-area: main;
+  align-self: end;
+}
+
+html .shm-theme-modern .shm-badges {
+  flex-wrap: wrap;
+  grid-area: badges;
+  align-self: start;
+}
+
+html .shm-theme-modern .shm-chevron {
+  grid-area: chevron;
 }
 
 html .shm-theme-modern .shm-row-summary:hover {

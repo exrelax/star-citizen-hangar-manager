@@ -45,7 +45,7 @@ const discount = computed(
   () => props.pledge.discount && formatDiscount(props.pledge.discount, locale.value),
 );
 
-/** The icon of the pledge's kind in the row's corner. */
+/** The icon of the pledge's kind, on the row's image. */
 const kind = computed(() => kindIcon({ ...props.pledge, isReward: !!props.pledge.reward }));
 
 /** RSI's exchange (melt) dialog, in the manager's design. */
@@ -80,7 +80,6 @@ const toggle = () => {
 
 <template>
   <div class="shm-row" :class="{ 'is-expanded': expanded }">
-    <SvgIcon v-if="kind" class="shm-row-kind" :name="kind" />
     <!-- Clicking anywhere toggles the details; the chevron button makes it keyboard accessible. -->
     <div class="shm-row-summary" @click="toggle">
       <span class="shm-thumb">
@@ -93,6 +92,8 @@ const toggle = () => {
           width="112"
           height="63"
         />
+        <!-- The kind of item (ship, CCU, paint, …) as a badge on the image. -->
+        <span v-if="kind" class="shm-row-kind"><SvgIcon :name="kind" /></span>
       </span>
 
       <span class="shm-main">

@@ -16,6 +16,7 @@ export const ICON_NAMES = {
     'github',
     'globe-pointer',
     'lock-open',
+    'magnifying-glass',
     'paintbrush',
     'palette',
     'recycle',
