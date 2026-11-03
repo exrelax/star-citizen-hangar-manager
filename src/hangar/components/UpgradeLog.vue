@@ -61,13 +61,13 @@ const shortName = (name: string) => name.replace(/^upgrade\s*-\s*/i, '');
             <th class="is-amount" :title="i18n.t('upgradeLog.targetPriceHint')">
               {{ i18n.t('upgradeLog.targetPrice') }}
             </th>
-            <th class="is-amount" :title="i18n.t('upgradeLog.valueAfterHint')">
+            <th class="is-amount shm-value" :title="i18n.t('upgradeLog.valueAfterHint')">
               {{ i18n.t('upgradeLog.valueAfter') }}
             </th>
-            <th class="is-amount" :title="i18n.t('upgradeLog.paidHint')">
+            <th class="is-amount shm-value" :title="i18n.t('upgradeLog.paidHint')">
               {{ i18n.t('upgradeLog.paid') }}
             </th>
-            <th class="is-amount" :title="i18n.t('upgradeLog.discountHint')">
+            <th class="is-amount shm-value" :title="i18n.t('upgradeLog.discountHint')">
               {{ i18n.t('upgradeLog.discount') }}
             </th>
           </tr>
@@ -77,22 +77,27 @@ const shortName = (name: string) => name.replace(/^upgrade\s*-\s*/i, '');
             <td class="shm-upgrade-log-date">{{ entry.appliedAt }}</td>
             <td>
               {{ shortName(entry.name) }}
-              <span v-if="entry.ccuId" class="shm-upgrade-log-id">#{{ entry.ccuId }}</span>
+              <span v-if="entry.ccuId" class="shm-upgrade-log-id shm-pledge-id"
+                >#{{ entry.ccuId }}</span
+              >
             </td>
             <td class="is-amount">
               <template v-if="entry.targetPrice !== undefined">
                 {{ money(entry.targetPrice) }}
               </template>
             </td>
-            <td class="is-amount">
+            <td class="is-amount shm-value">
               <template v-if="entry.valueAfter !== undefined">{{
                 money(entry.valueAfter)
               }}</template>
             </td>
-            <td class="is-amount is-paid">
+            <td class="is-amount is-paid shm-value">
               <template v-if="entry.added !== undefined">{{ signed(entry.added) }}</template>
             </td>
-            <td class="is-amount" :class="entry.discount! < 0 ? 'is-surcharge' : 'is-discount'">
+            <td
+              class="is-amount shm-value"
+              :class="entry.discount! < 0 ? 'is-surcharge' : 'is-discount'"
+            >
               <template v-if="entry.discount !== undefined">{{ signed(-entry.discount) }}</template>
             </td>
           </tr>

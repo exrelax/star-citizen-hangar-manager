@@ -51,7 +51,7 @@
     "languageAuto": "Automatic ($1)",
     "languageHint": "Automatic uses the browser language if the extension is translated into it, English otherwise.",
     "hideMeltValue": "Hide melt value",
-    "hideMeltValueHint": "Hides the $$ values in the hangar list.",
+    "hideMeltValueHint": "Hides the $$ values: pledge values, discounts and the costs of applied upgrades.",
     "rewards": "Hide rewards",
     "rewardsHint": "Rewards are pledges with a value of $$0. Concierge and event rewards are recognized by their names.",
     "rewardOptions": {
@@ -69,7 +69,10 @@
     "buybackLinkOptions": {
       "single": "Only this pledge",
       "list": "The list page, scrolled to the pledge and highlighted"
-    }
+    },
+    "privacy": "Hide sensitive information (for screenshots or content creators)",
+    "hidePledgeIds": "Hide pledge IDs",
+    "hidePledgeIdsHint": "Hides the pledge IDs of all items, also those of applied upgrades. Searching by ID still works."
   },
   "status": {
     "checking": "Checking for changes …",

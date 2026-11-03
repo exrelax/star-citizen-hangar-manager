@@ -23,7 +23,7 @@ describe('translate', () => {
   it('fills in substitutions and unescapes dollar signs', () => {
     expect(translate('en', 'manager.countFiltered', [3, 986])).toBe('3 of 986 pledges');
     expect(translate('en', 'settings.hideMeltValueHint')).toBe(
-      'Hides the $ values in the hangar list.',
+      'Hides the $ values: pledge values, discounts and the costs of applied upgrades.',
     );
   });
 });

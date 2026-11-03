@@ -45,7 +45,8 @@ function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
       <p class="shm-hint">{{ i18n.t('settings.languageHint') }}</p>
     </section>
 
-    <section class="shm-setting">
+    <fieldset class="shm-setting">
+      <legend class="shm-label">{{ i18n.t('settings.privacy') }}</legend>
       <label class="shm-check">
         <input
           type="checkbox"
@@ -54,8 +55,17 @@ function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
         />
         {{ i18n.t('settings.hideMeltValue') }}
       </label>
-      <p class="shm-hint">{{ i18n.t('settings.hideMeltValueHint') }}</p>
-    </section>
+      <p class="shm-hint is-indented">{{ i18n.t('settings.hideMeltValueHint') }}</p>
+      <label class="shm-check">
+        <input
+          type="checkbox"
+          :checked="settings.hidePledgeIds"
+          @change="emit('update', { hidePledgeIds: ($event.target as HTMLInputElement).checked })"
+        />
+        {{ i18n.t('settings.hidePledgeIds') }}
+      </label>
+      <p class="shm-hint is-indented">{{ i18n.t('settings.hidePledgeIdsHint') }}</p>
+    </fieldset>
 
     <section class="shm-setting">
       <label class="shm-check">
@@ -180,5 +190,10 @@ function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
   margin: 6px 0 0;
   color: #8a9ba8;
   font-size: 12px;
+}
+
+/* Hint of a checkbox in a group: under its label text, before the next checkbox. */
+.shm-hint.is-indented {
+  margin: 0 0 8px 21px;
 }
 </style>

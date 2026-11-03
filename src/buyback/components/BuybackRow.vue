@@ -102,7 +102,7 @@ async function addToCart() {
           {{ i18n.t('buyback.contains', [pledge.contained]) }}
         </span>
         <span class="shm-meta">
-          <span>#{{ pledge.id }}</span>
+          <span class="shm-pledge-id">#{{ pledge.id }}</span>
           <span v-if="pledge.reclaimedAt">
             {{ i18n.t('buyback.reclaimed', [pledge.reclaimedAt]) }}
           </span>

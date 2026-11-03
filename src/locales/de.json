@@ -51,7 +51,7 @@
     "languageAuto": "Automatisch ($1)",
     "languageHint": "Automatisch nutzt die Browsersprache, sofern die Extension in diese übersetzt ist, sonst Englisch.",
     "hideMeltValue": "Schmelzwert ausblenden",
-    "hideMeltValueHint": "Blendet die $$-Werte in der Hangar-Liste aus.",
+    "hideMeltValueHint": "Blendet die $$-Werte aus: Pledge-Werte, Rabatte und die Kosten angewendeter Upgrades.",
     "rewards": "Rewards ausblenden",
     "rewardsHint": "Rewards sind Pledges mit einem Wert von $$0. Concierge- und Event-Rewards werden am Namen erkannt.",
     "rewardOptions": {
@@ -69,7 +69,10 @@
     "buybackLinkOptions": {
       "single": "Nur diesen Pledge",
       "list": "Die Listenseite, zum Pledge gescrollt und hervorgehoben"
-    }
+    },
+    "privacy": "Sensible Informationen ausblenden (für Screenshots oder Content Creator)",
+    "hidePledgeIds": "Pledge-IDs ausblenden",
+    "hidePledgeIdsHint": "Blendet die Pledge-IDs aller Items aus, auch die angewendeter Upgrades. Die Suche nach IDs funktioniert weiterhin."
   },
   "status": {
     "checking": "Suche nach Änderungen …",

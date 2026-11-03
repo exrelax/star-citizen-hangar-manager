@@ -15,7 +15,8 @@ import BuybackRow from './BuybackRow.vue';
 
 const props = defineProps<{ pledges: BuybackView[]; settings: Settings; active: boolean }>();
 
-const linkClasses = computed(() => ({
+const displayClasses = computed(() => ({
+  'shm-hide-ids': props.settings.hidePledgeIds,
   'shm-hide-erkul': !props.settings.shipLinks.erkul,
   'shm-hide-fleetyards': !props.settings.shipLinks.fleetyards,
 }));
@@ -32,7 +33,7 @@ const filterTitle = (filter: BuybackFilter) =>
 
 <template>
   <ManagerList
-    :class="linkClasses"
+    :class="displayClasses"
     :entries="pledges"
     :filters="BUYBACK_FILTERS"
     :matches="matches"

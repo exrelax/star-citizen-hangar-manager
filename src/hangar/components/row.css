@@ -208,6 +208,7 @@
 /* Display settings: classes on the list hide parts of all rows at once (no re-render). */
 .shm-hide-values .shm-value,
 .shm-hide-values .shm-discount,
+.shm-hide-ids .shm-pledge-id,
 .shm-hide-erkul .is-erkul,
 .shm-hide-fleetyards .is-fleetyards,
 .shm-hide-erkul.shm-hide-fleetyards .shm-external-links {

@@ -11,11 +11,13 @@ describe('withDefaults', () => {
       withDefaults({
         language: 'de',
         hideMeltValue: true,
+        hidePledgeIds: true,
         shipLinks: { erkul: false, fleetyards: true },
       }),
     ).toEqual({
       language: 'de',
       hideMeltValue: true,
+      hidePledgeIds: true,
       rewardVisibility: 'showAll',
       smartUpdates: true,
       buybackLinkMode: 'single',
@@ -28,6 +30,7 @@ describe('withDefaults', () => {
       withDefaults({
         language: 'fr',
         hideMeltValue: 'yes',
+        hidePledgeIds: 1,
         rewardVisibility: 'sometimes',
         buybackLinkMode: 'popup',
       } as never),

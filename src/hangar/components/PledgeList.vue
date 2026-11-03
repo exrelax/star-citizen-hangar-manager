@@ -22,6 +22,7 @@ const listed = computed(() =>
 // Value and link settings only toggle classes, so the rows don't need to re-render.
 const displayClasses = computed(() => ({
   'shm-hide-values': props.settings.hideMeltValue,
+  'shm-hide-ids': props.settings.hidePledgeIds,
   'shm-hide-erkul': !props.settings.shipLinks.erkul,
   'shm-hide-fleetyards': !props.settings.shipLinks.fleetyards,
 }));

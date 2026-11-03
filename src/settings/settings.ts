@@ -16,8 +16,10 @@ export type BuybackLinkMode = (typeof BUYBACK_LINK_MODES)[number];
 
 export interface Settings {
   language: LanguageSetting;
-  /** Hides the $ values in the hangar list. */
+  /** Hides the $ values (pledge values, discounts, upgrade costs). */
   hideMeltValue: boolean;
+  /** Hides the pledge ids (also those of applied CCUs). */
+  hidePledgeIds: boolean;
   rewardVisibility: RewardVisibility;
   /** Keeps the stored hangar current by checking a few hangar pages now and then. */
   smartUpdates: boolean;
@@ -32,6 +34,7 @@ export interface Settings {
 export const DEFAULT_SETTINGS: Settings = {
   language: 'auto',
   hideMeltValue: false,
+  hidePledgeIds: false,
   rewardVisibility: 'showAll',
   smartUpdates: true,
   buybackLinkMode: 'single',
@@ -54,6 +57,10 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
       typeof stored?.hideMeltValue === 'boolean'
         ? stored.hideMeltValue
         : DEFAULT_SETTINGS.hideMeltValue,
+    hidePledgeIds:
+      typeof stored?.hidePledgeIds === 'boolean'
+        ? stored.hidePledgeIds
+        : DEFAULT_SETTINGS.hidePledgeIds,
     rewardVisibility: REWARD_VISIBILITIES.includes(stored?.rewardVisibility as RewardVisibility)
       ? stored!.rewardVisibility!
       : DEFAULT_SETTINGS.rewardVisibility,

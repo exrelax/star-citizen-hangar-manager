@@ -75,7 +75,7 @@ const toggle = () => {
           </template>
         </span>
         <span class="shm-meta">
-          <span>#{{ pledge.id }}</span>
+          <span class="shm-pledge-id">#{{ pledge.id }}</span>
           <span class="shm-value">{{ pledge.value }}</span>
           <span
             v-if="discount"
