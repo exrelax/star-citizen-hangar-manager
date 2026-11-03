@@ -1,12 +1,31 @@
 /* Rows of the manager lists (hangar and buy back), shared by PledgeRow and BuybackRow. */
 
 .shm-row {
+  position: relative;
+  /* The kind icon stays behind the row's content. */
+  isolation: isolate;
   margin-bottom: 6px;
   border: 1px solid rgb(var(--shm-accent-rgb) / 0.15);
   background: rgb(var(--shm-surface-rgb) / 0.6);
   /* Rows outside the viewport skip layout and paint – keeps long hangars smooth. */
   content-visibility: auto;
   contain-intrinsic-size: auto 77px;
+}
+
+/*
+ * The kind of item (ship, CCU, paint) as a large, faint icon in the top right corner. Text and
+ * buttons may lie on it; it only hints at the kind.
+ */
+.shm-row-kind {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  z-index: -1;
+  width: 48px;
+  height: 48px;
+  color: var(--shm-accent);
+  opacity: 0.12;
+  pointer-events: none;
 }
 
 .shm-row.is-expanded {

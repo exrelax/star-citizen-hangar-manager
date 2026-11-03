@@ -14,6 +14,7 @@ export const ICON_NAMES = {
     'gear',
     'gift',
     'globe-pointer',
+    'lock-open',
     'palette',
     'recycle',
     'shuttle-space',

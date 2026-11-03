@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { pledgeKind } from './pledge-kind';
+import { kindIcon, pledgeKind } from './pledge-kind';
 import type { PledgeView } from './pledge-view';
 
 const pledge = (overrides: Partial<PledgeView> = {}) =>
@@ -34,5 +34,29 @@ describe('pledgeKind', () => {
     expect(pledgeKind(pledge({ ships: [{ name: 'Fury' }, { name: 'Pisces' }] }))).toBe('ships');
     expect(pledgeKind(pledge({ reward: 'event' as PledgeView['reward'] }))).toBe('reward');
     expect(pledgeKind(pledge())).toBe('other');
+  });
+});
+
+describe('kindIcon', () => {
+  it('marks CCUs, paints and pledges with ships', () => {
+    const base = {
+      isCcu: false,
+      isPaint: false,
+      isGamePackage: false,
+      isReward: false,
+      hasGameAccess: false,
+      ships: [],
+    };
+    expect(kindIcon({ ...base, isCcu: true })).toBe('square-up-right');
+    expect(kindIcon({ ...base, isPaint: true })).toBe('palette');
+    expect(kindIcon({ ...base, ships: [{ name: 'Fury' }] })).toBe('shuttle-space');
+    expect(kindIcon({ ...base, titleShip: { name: 'Polaris' } })).toBe('shuttle-space');
+    expect(kindIcon({ ...base, isReward: true })).toBe('award');
+    // The primary kind wins: a game package with a ship, a ship with the game in it.
+    const ship = { ships: [{ name: 'Nomad' }], hasGameAccess: true };
+    expect(kindIcon({ ...base, ...ship, isGamePackage: true })).toBe('lock-open');
+    expect(kindIcon({ ...base, ...ship, isReward: true })).toBe('shuttle-space');
+    expect(kindIcon({ ...base, hasGameAccess: true })).toBe('lock-open');
+    expect(kindIcon(base)).toBeUndefined();
   });
 });

@@ -40,6 +40,8 @@ export interface BuybackView {
   /** See `BuybackPledge.upgrade`. */
   upgrade?: BuybackUpgrade;
   isStandaloneShip: boolean;
+  /** RSI's product category "game package": the game is what the pledge is about. */
+  isGamePackage: boolean;
   hasGameAccess: boolean;
   /** Bought before `BUYBACK_GIFTABLE_PURCHASED_BEFORE`: giftable again after a warbond buy back. */
   isProbablyGiftable: boolean;
@@ -98,6 +100,7 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
     isCcu: pledge.isUpgrade,
     upgrade: pledge.upgrade,
     isStandaloneShip: pledge.category === 'standalone_ship',
+    isGamePackage: pledge.category === 'game_package',
     hasGameAccess:
       pledge.category === 'game_package' || items.some((item) => GAME_DOWNLOAD.test(item)),
     // Melted before the cutoff means bought before it; otherwise the id tells.

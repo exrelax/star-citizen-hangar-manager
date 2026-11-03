@@ -2,6 +2,9 @@
 import ExternalLinks from '@/hangar/components/ExternalLinks.vue';
 import OrderInfo from '@/orders/OrderInfo.vue';
 import { insuranceLabel } from '@/hangar/insurance';
+import { kindIcon } from '@/hangar/pledge-kind';
+import { isRewardTitle } from '@/hangar/rewards';
+import SvgIcon from '@/icons/SvgIcon.vue';
 import { buybackHref } from '@/hangar/route';
 import { useDemoContext } from '@/demo/use-demo';
 import { i18n } from '@/i18n';
@@ -76,10 +79,16 @@ async function addToCart() {
     addingToCart.value = false;
   }
 }
+
+/** The icon of the pledge's kind in the row's corner; the buy back recognizes rewards by name. */
+const kind = computed(() =>
+  kindIcon({ ...props.pledge, isReward: isRewardTitle(props.pledge.title) }),
+);
 </script>
 
 <template>
   <div class="shm-row" :class="{ 'is-expanded': expanded }">
+    <SvgIcon v-if="kind" class="shm-row-kind" :name="kind" />
     <!-- Clicking anywhere toggles the details; the chevron button makes it keyboard accessible. -->
     <div class="shm-row-summary" @click="toggle">
       <span class="shm-thumb">

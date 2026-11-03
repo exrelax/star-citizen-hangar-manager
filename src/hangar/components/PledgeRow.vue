@@ -6,6 +6,7 @@ import { REFUND_DAYS, REFUND_URGENT_DAYS } from '@/config';
 import { refundWindow, today } from '@/orders/refund';
 import { formatDiscount } from '../discount-format';
 import { insuranceLabel, supersededInsurances } from '../insurance';
+import { kindIcon } from '../pledge-kind';
 import type { PledgeView } from '../pledge-view';
 import { myGearHref } from '../route';
 import OrderInfo from '@/orders/OrderInfo.vue';
@@ -44,6 +45,9 @@ const discount = computed(
   () => props.pledge.discount && formatDiscount(props.pledge.discount, locale.value),
 );
 
+/** The icon of the pledge's kind in the row's corner. */
+const kind = computed(() => kindIcon({ ...props.pledge, isReward: !!props.pledge.reward }));
+
 /** RSI's exchange (melt) dialog, in the manager's design. */
 const exchanging = ref(false);
 /** RSI's gift dialog, in the manager's design. */
@@ -76,6 +80,7 @@ const toggle = () => {
 
 <template>
   <div class="shm-row" :class="{ 'is-expanded': expanded }">
+    <SvgIcon v-if="kind" class="shm-row-kind" :name="kind" />
     <!-- Clicking anywhere toggles the details; the chevron button makes it keyboard accessible. -->
     <div class="shm-row-summary" @click="toggle">
       <span class="shm-thumb">

@@ -52,6 +52,8 @@ export interface PledgeView {
   /** CCU that has not been applied yet (applied ones disappear from the hangar). */
   isCcu: boolean;
   isStandaloneShip: boolean;
+  /** RSI's product category "game package": the game is what the pledge is about. */
+  isGamePackage: boolean;
   /** Game package or another pledge that contains the game (e.g. "VIP High Admiral"). */
   hasGameAccess: boolean;
   isGiftable: boolean;
@@ -119,6 +121,7 @@ export function toPledgeView(
     isPaint: !pledge.upgrade && pledge.items.length > 0 && pledge.items.every(isPaintItem),
     isCcu: pledge.upgrade !== undefined,
     isStandaloneShip: pledge.category === 'standalone_ship',
+    isGamePackage: pledge.category === 'game_package',
     hasGameAccess,
     isGiftable: pledge.isGiftable,
     isMeltable: pledge.isExchangeable,
