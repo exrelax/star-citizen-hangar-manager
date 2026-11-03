@@ -1,0 +1,57 @@
+<script setup lang="ts">
+import { i18n } from '@/i18n';
+import { ref } from 'vue';
+import OrderOverlay from './OrderOverlay.vue';
+import type { PaidOrder } from './orders';
+
+/** `base`: the pledge's ship was upgraded since – the order is the one of its base pledge. */
+defineProps<{ order: PaidOrder; base?: boolean }>();
+
+const open = ref(false);
+</script>
+
+<!--
+  The order that created a pledge, if paid with money. Id and amount follow the settings for
+  hiding sensitive information (see row.css). The id opens the order's details (in the demo
+  anonymized, see OrderOverlay.vue).
+-->
+<template>
+  <p class="shm-order">
+    {{ i18n.t(base ? 'order.baseLabel' : 'order.label') }}
+    <a
+      class="shm-order-id is-link"
+      href="#"
+      :title="i18n.t('order.open')"
+      @click.prevent="open = true"
+    >
+      #{{ order.id }}
+    </a>
+    <span class="shm-value"> · {{ i18n.t('order.paid', [order.amount]) }}</span>
+    <template v-if="order.placedAt"> · {{ order.placedAt }}</template>
+    <span v-if="order.buyback" class="shm-order-buyback"> · {{ i18n.t('order.buyback') }}</span>
+  </p>
+  <OrderOverlay v-if="open" :order="order" @close="open = false" />
+</template>
+
+<style scoped>
+.shm-order {
+  margin: 0 0 6px;
+  color: #8a9ba8;
+}
+
+.shm-order-id {
+  color: #dbe7ee;
+  font-variant-numeric: tabular-nums;
+}
+
+.shm-order-id.is-link {
+  color: #62c4eb;
+  text-decoration: none;
+}
+
+.shm-order-id.is-link:hover,
+.shm-order-id.is-link:focus-visible {
+  text-decoration: underline;
+  outline: none;
+}
+</style>

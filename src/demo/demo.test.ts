@@ -69,6 +69,17 @@ describe('demoHangar', () => {
     expect(matchesSearch(first!.searchText, parseSearchQuery(String(first!.id)))).toBe(false);
   });
 
+  it('replaces the order ids, too', () => {
+    const withOrder = pledge(99_997_000, {
+      items: [{ title: 'Polaris', kind: 'Ship' }],
+      order: { id: 'J4SHJM5S2GUF5', amount: '$1.00 USD', buyback: false },
+    });
+    const [demoPledge] = demoHangar([withOrder], KEY);
+    expect(demoPledge!.order!.id).toMatch(/^[0-9A-Z]{9}$/);
+    expect(demoPledge!.order!.id).not.toBe('J4SHJM5S2GUF5');
+    expect(demoPledge!.searchText).not.toContain('j4shjm5s2guf5');
+  });
+
   it('numbers the pages of the demo list', () => {
     expect(demo[0]!.page).toBe(1);
     expect(demo[10]!.page).toBe(2);

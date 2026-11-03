@@ -1,5 +1,6 @@
 import type { BuybackView } from '@/buyback/buyback-view';
 import type { PledgeView } from '@/hangar/pledge-view';
+import type { Order } from '@/orders/orders';
 import { computed, inject, onMounted, shallowRef, type InjectionKey, type Ref } from 'vue';
 import { createFakeIds, demoBuyback, demoHangar } from './demo';
 
@@ -18,8 +19,13 @@ async function demoKey(): Promise<string> {
 
 /** What the rows need to know in the demo; `null` outside of it. */
 export interface DemoContext {
-  /** Made-up id for a real pledge id, e.g. of an applied CCU. */
-  fakeId: (id: number) => string;
+  /** Made-up id for a real pledge or order id, e.g. of an applied CCU. */
+  fakeId: (id: number | string) => string;
+  /**
+   * The real order behind a made-up order id, to load its details. Only kept in memory: the
+   * details are anonymized before they are shown (see `anonymizeOrderDetails`).
+   */
+  realOrder: (fakeOrderId: string) => Order | undefined;
 }
 
 export const DEMO_CONTEXT: InjectionKey<Ref<DemoContext | null>> = Symbol('shm-demo');
@@ -42,9 +48,21 @@ export function useDemo(
   onMounted(async () => (key.value = await demoKey()));
 
   const ready = computed(() => !active.value || key.value !== undefined);
-  const context = computed<DemoContext | null>(() =>
-    active.value && key.value ? { fakeId: createFakeIds(key.value) } : null,
-  );
+  const context = computed<DemoContext | null>(() => {
+    if (!active.value || !key.value) return null;
+    const fakeId = createFakeIds(key.value);
+    // Built on first use: most demo visits never open an order.
+    let orders: Map<string, Order> | undefined;
+    const realOrder = (fakeOrderId: string) => {
+      orders ??= new Map(
+        [...pledges.value, ...buyback.value]
+          .flatMap((pledge) => (pledge.order ? [pledge.order] : []))
+          .map((order) => [fakeId(order.id), order]),
+      );
+      return orders.get(fakeOrderId);
+    };
+    return { fakeId, realOrder };
+  });
   const demoPledges = computed(() => (key.value ? demoHangar(pledges.value, key.value) : []));
   const demoBuybackPledges = computed(() =>
     key.value ? demoBuyback(buyback.value, key.value) : [],

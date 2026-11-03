@@ -17,6 +17,7 @@ const props = defineProps<{ pledges: BuybackView[]; settings: Settings; active: 
 
 const displayClasses = computed(() => ({
   'shm-hide-ids': props.settings.hidePledgeIds,
+  'shm-hide-values': props.settings.hideMeltValue,
   'shm-hide-erkul': !props.settings.shipLinks.erkul,
   'shm-hide-fleetyards': !props.settings.shipLinks.fleetyards,
 }));

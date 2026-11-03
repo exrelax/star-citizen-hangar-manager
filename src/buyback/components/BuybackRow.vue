@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ExternalLinks from '@/hangar/components/ExternalLinks.vue';
+import OrderInfo from '@/orders/OrderInfo.vue';
 import { insuranceLabel } from '@/hangar/insurance';
 import { buybackHref } from '@/hangar/route';
 import { useDemoContext } from '@/demo/use-demo';
@@ -162,6 +163,7 @@ async function addToCart() {
         {{ buybackLink.text }}
       </a>
       <div class="shm-details-main">
+        <OrderInfo v-if="pledge.order" :order="pledge.order" />
         <p v-if="pledge.isProbablyGiftable" class="shm-hint">{{ giftableHint }}</p>
         <ul v-if="pledge.items.length" class="shm-items">
           <li v-for="(item, index) in pledge.items" :key="index">

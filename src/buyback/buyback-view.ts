@@ -1,4 +1,5 @@
 import { BUYBACK_GIFTABLE_PURCHASED_BEFORE, BUYBACK_PAGE_SIZE } from '@/config';
+import type { PaidOrder } from '@/orders/orders';
 import type { FilterDefinition } from '@/hangar/filters';
 import { bestInsurance, type Insurance } from '@/hangar/insurance';
 import { GAME_DOWNLOAD, type ShipRef } from '@/hangar/pledge-view';
@@ -17,6 +18,8 @@ export interface BuybackView {
   id: number;
   /** Shown instead of the id, if set (made-up ids of the demo view). */
   displayId?: string;
+  /** The order that created the pledge, if it was paid with money (see `src/orders`). */
+  order?: PaidOrder;
   /** Index of the pledge in RSI's buy back list (0-based), as of the last sync. */
   position: number;
   /** Page of the pledge in RSI's buy back list (250 per page), as of the last sync. */

@@ -6,6 +6,7 @@ import { formatDiscount } from '../discount-format';
 import { insuranceLabel } from '../insurance';
 import type { PledgeView } from '../pledge-view';
 import { myGearHref } from '../route';
+import OrderInfo from '@/orders/OrderInfo.vue';
 import ExternalLinks from './ExternalLinks.vue';
 import UpgradeLog from './UpgradeLog.vue';
 
@@ -143,6 +144,7 @@ const toggle = () => {
         {{ i18n.t('pledge.showInMyGear', [pledge.page]) }}
       </a>
       <div class="shm-details-main">
+        <OrderInfo v-if="pledge.order" :order="pledge.order" :base="pledge.isUpgraded" />
         <p v-if="pledge.upgrade" class="shm-upgrade">
           {{ pledge.upgrade.matchItems.map((item) => item.name).join(', ') }}
           →

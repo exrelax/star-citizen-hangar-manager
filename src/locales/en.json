@@ -73,8 +73,8 @@
       "list": "The list page, scrolled to the pledge and highlighted"
     },
     "privacy": "Hide sensitive information (for screenshots or content creators)",
-    "hidePledgeIds": "Hide pledge IDs",
-    "hidePledgeIdsHint": "Hides the pledge IDs of all items, also those of applied upgrades. Searching by ID still works.",
+    "hidePledgeIds": "Hide pledge and order IDs",
+    "hidePledgeIdsHint": "Hides the pledge IDs of all items, also those of applied upgrades, and the order IDs. Searching by ID still works.",
     "demoMode": "Demo mode",
     "demoModeHint": "Shows only $1 pledges of “My Hangar” and $2 of the buy back, with made-up pledge IDs – e.g. for screenshots. Links to RSI and the cart do nothing meanwhile."
   },
@@ -125,5 +125,22 @@
     "month": "1 month",
     "months": "$1 months",
     "badgeTitle": "Insurance – of several, only the best one counts"
+  },
+  "order": {
+    "label": "Order",
+    "paid": "paid $1",
+    "buyback": "bought back",
+    "baseLabel": "Base Order",
+    "open": "Show the order",
+    "title": "Order #$1",
+    "loading": "Loading the order from RSI …",
+    "failed": "Could not load the order: $1",
+    "close": "Close",
+    "summary": "Order summary",
+    "invoice": "Retrieve invoice",
+    "billTo": "Bill to",
+    "paymentInfo": "Payment info",
+    "notFound": "Order not found",
+    "invoiceDemo": "Not available in demo mode: the invoice shows the real order."
   }
 }

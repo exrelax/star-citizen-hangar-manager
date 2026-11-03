@@ -27,11 +27,11 @@ export function hash(text: string): number {
 const LETTERS = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
 
 /**
- * Made-up pledge ids like "99FE3X712": nine digits and capital letters, never all digits – so
- * they can't be mistaken for (or looked up as) RSI's numeric ids.
+ * Made-up ids like "99FE3X712" for pledge ids and order ids: nine digits and capital letters,
+ * never all digits – so they can't be mistaken for (or looked up as) RSI's ids.
  */
-export function createFakeIds(key: string): (id: number) => string {
-  const cache = new Map<number, string>();
+export function createFakeIds(key: string): (id: number | string) => string {
+  const cache = new Map<number | string, string>();
   return (id) => {
     let fake = cache.get(id);
     if (!fake) {
@@ -86,30 +86,34 @@ export function demoHangar(pledges: readonly PledgeView[], key: string): PledgeV
     key,
     (pledge) => upgraded.has(pledge) || containsShip(pledge, DEMO.includeShips),
   );
-  return selection.map((pledge, position) => {
-    const displayId = fakeId(pledge.id);
-    const names = [pledge.title, ...pledge.ships.map((ship) => ship.name)];
-    return {
-      ...pledge,
-      displayId,
-      page: Math.floor(position / HANGAR_PAGE_SIZE) + 1,
-      searchText: normalizeSearchText([...names, displayId].join(' ')),
-    };
-  });
+  return selection.map((pledge, position) => ({
+    ...anonymized(pledge, fakeId),
+    page: Math.floor(position / HANGAR_PAGE_SIZE) + 1,
+  }));
 }
 
 /** The demo selection of the buy back, with made-up ids (also for the search). */
 export function demoBuyback(pledges: readonly BuybackView[], key: string): BuybackView[] {
   const fakeId = createFakeIds(key);
-  return pickDemo(pledges, DEMO.buybackPledges, key).map((pledge, position) => {
-    const displayId = fakeId(pledge.id);
-    const names = [pledge.title, ...pledge.ships.map((ship) => ship.name)];
-    return {
-      ...pledge,
-      displayId,
-      position,
-      page: Math.floor(position / BUYBACK_PAGE_SIZE) + 1,
-      searchText: normalizeSearchText([...names, displayId].join(' ')),
-    };
-  });
+  return pickDemo(pledges, DEMO.buybackPledges, key).map((pledge, position) => ({
+    ...anonymized(pledge, fakeId),
+    position,
+    page: Math.floor(position / BUYBACK_PAGE_SIZE) + 1,
+  }));
+}
+
+/** A pledge with made-up pledge and order ids, searchable by them instead of the real ones. */
+function anonymized<T extends PledgeView | BuybackView>(
+  pledge: T,
+  fakeId: (id: number | string) => string,
+): T {
+  const displayId = fakeId(pledge.id);
+  const order = pledge.order && { ...pledge.order, id: fakeId(pledge.order.id) };
+  const names = [pledge.title, ...pledge.ships.map((ship) => ship.name)];
+  return {
+    ...pledge,
+    displayId,
+    order,
+    searchText: normalizeSearchText([...names, displayId, order?.id ?? ''].join(' ')),
+  };
 }

@@ -161,8 +161,13 @@
     border-color 0.15s;
 }
 
-.shm-button:hover,
-.shm-button:focus-visible {
+.shm-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.shm-button:not(:disabled):hover,
+.shm-button:not(:disabled):focus-visible {
   color: #fff;
   background: rgba(98, 196, 235, 0.3);
   border-color: #62c4eb;
@@ -209,6 +214,7 @@
 .shm-hide-values .shm-value,
 .shm-hide-values .shm-discount,
 .shm-hide-ids .shm-pledge-id,
+.shm-hide-ids .shm-order-id,
 .shm-hide-erkul .is-erkul,
 .shm-hide-fleetyards .is-fleetyards,
 .shm-hide-erkul.shm-hide-fleetyards .shm-external-links {

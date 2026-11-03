@@ -119,3 +119,16 @@ export const DEMO = {
   /** Pledges with applied CCUs always part of the demo, for their "Applied upgrades". */
   upgradedPledges: 4,
 } as const;
+
+/**
+ * Orders of the pledges (see `src/orders`): read from RSI's pledge log (25 entries per page,
+ * hundreds of pages for large accounts) and billing list (100 orders per page). The first sync
+ * reads everything, later ones only the new entries.
+ */
+export const ORDERS = {
+  /** Requests at the same time. RSI already throttles three (HTTP 429) every now and then. */
+  concurrency: 2,
+  /** Waits before trying a throttled (HTTP 429) request again. */
+  retryDelaysMs: [2_000, 4_000, 8_000, 16_000],
+  billingPageSize: 100,
+} as const;

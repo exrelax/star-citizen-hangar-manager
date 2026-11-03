@@ -6,6 +6,7 @@ import { settingsItem, withDefaults } from '@/settings/settings';
 import { reactive, readonly } from 'vue';
 import { hangarCheckState, type CheckOutcome, type CheckState } from './hangar-storage';
 import { runSmartUpdate } from './smart-update/run';
+import { prepareOrderSync, updateOrders } from '@/orders/sync-orders';
 import { refreshShipPrices } from './ship-prices';
 import { prepareHangarSync } from './sync';
 import { SyncProgressTracker, type SyncProgress } from './sync-progress';
@@ -40,8 +41,9 @@ async function recordOutcome(item: CheckStateItem, status: CheckOutcome['status'
 }
 
 /**
- * Starts a full sync of the hangar and then the buy back, unless one is already running. The
- * first pages of both are read up front, so the progress counts all their pages from the start.
+ * Starts a full sync of the hangar, the buy back and then the orders, unless one is already
+ * running. The first pages of all are read up front, so the progress counts all their pages from
+ * the start.
  */
 export async function startSync(): Promise<void> {
   if (state.running) return;
@@ -53,9 +55,14 @@ export async function startSync(): Promise<void> {
     const shipPrices = refreshShipPrices({ maxAgeMs: 0 });
     // Reported only once both totals are known; the detail pages of the buy back join later.
     const progress = new SyncProgressTracker();
-    const [runHangar, runBuyback] = await Promise.all([
+    const [runHangar, runBuyback, runOrders] = await Promise.all([
       prepareHangarSync({ progress }),
       prepareBuybackSync({ progress }),
+      // An extra as well: without the orders, hangar and buy back are still stored.
+      prepareOrderSync({ progress }).catch((error: unknown) => {
+        console.warn('[sc-hangar-manager] Orders unavailable', error);
+        return null;
+      }),
     ]);
     progress.start();
     progress.onChange = (value) => (state.progress = value);
@@ -66,12 +73,18 @@ export async function startSync(): Promise<void> {
     await recordOutcome(hangarCheckState, 'unchanged');
     const buyback = await runBuyback();
     await recordOutcome(buybackCheckState, 'unchanged');
+    const orders = await runOrders?.().catch((error: unknown) => {
+      console.warn('[sc-hangar-manager] Order sync failed', error);
+      return null;
+    });
     await shipPrices;
 
     const seconds = ((performance.now() - startedAt) / 1000).toFixed(1);
     console.info(
       `[sc-hangar-manager] Synced ${hangar.pledges.length} hangar and ` +
-        `${buyback.pledges.length} buy back pledges in ${seconds} s`,
+        `${buyback.pledges.length} buy back pledges` +
+        (orders ? ` and ${Object.keys(orders.orders).length} orders` : '') +
+        ` in ${seconds} s`,
     );
   } catch (error) {
     console.error('[sc-hangar-manager] Sync failed', error);
@@ -100,6 +113,10 @@ export async function maybeRunSmartUpdate({ force = false } = {}): Promise<void>
 
     await runLogged('Smart update', hangarCheckState, () => runSmartUpdate());
     await runLogged('Buy back smart update', buybackCheckState, () => runBuybackSmartUpdate());
+    // New orders: usually only the first page of the pledge log and of the billing list.
+    await updateOrders().catch((error: unknown) =>
+      console.warn('[sc-hangar-manager] Order update failed', error),
+    );
   } finally {
     state.checking = false;
   }

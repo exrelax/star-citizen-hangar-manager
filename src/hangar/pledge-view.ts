@@ -1,5 +1,6 @@
 import { HANGAR_PAGE_SIZE } from '@/config';
 import type { Pledge, PledgeItem, PledgeUpgrade } from './pledge';
+import type { PaidOrder } from '@/orders/orders';
 import { rewardKind, type RewardKind } from './rewards';
 import { bestInsurance, type Insurance } from './insurance';
 import { normalizeSearchText } from './search';
@@ -31,6 +32,8 @@ export interface PledgeView {
   ships: ShipRef[];
   image?: string;
   value: string;
+  /** The order that created the pledge, if it was paid with money (see `src/orders`). */
+  order?: PaidOrder;
   /** Discount compared to the original price of the ship or CCU, if known (see `ship-prices.ts`). */
   discount?: PledgeDiscount;
   createdAt?: string;
