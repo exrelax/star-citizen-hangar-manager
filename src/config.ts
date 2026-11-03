@@ -141,6 +141,12 @@ export const ORDERS = {
   billingPageSize: 100,
 } as const;
 
+/**
+ * Exchanging the last pledge with game access first shows a warning whose "Continue" is enabled
+ * after this delay – as in RSI's own dialog.
+ */
+export const EXCHANGE_ATTENTION_DELAY_MS = 5_000;
+
 /** CIG refunds purchases paid with money within this many days (shown in "My Hangar"). */
 export const REFUND_DAYS = 30;
 /** From this many days left on, the refund tag is highlighted. */

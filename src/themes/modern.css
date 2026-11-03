@@ -358,6 +358,17 @@ html .shm-theme-modern .shm-button:not(:disabled):focus-visible {
   background: rgb(var(--shm-accent-rgb) / 0.25);
 }
 
+html .shm-theme-modern .shm-button.is-danger {
+  color: var(--shm-danger);
+  background: color-mix(in srgb, var(--shm-danger) 15%, transparent);
+}
+
+html .shm-theme-modern .shm-button.is-danger:not(:disabled):hover,
+html .shm-theme-modern .shm-button.is-danger:not(:disabled):focus-visible {
+  color: var(--shm-danger);
+  background: color-mix(in srgb, var(--shm-danger) 25%, transparent);
+}
+
 html .shm-theme-modern .shm-cart {
   background: var(--shm-fill);
   border: 0;

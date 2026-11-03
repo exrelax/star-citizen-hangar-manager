@@ -184,5 +184,68 @@
     "leftDays": "$1 days left for a refund (until $2)",
     "leftDay": "1 day left for a refund (until $2)",
     "leftLastDay": "Last day for a refund: today ($1)"
+  },
+  "exchange": {
+    "button": "Exchange",
+    "buttonHint": "Exchange this pledge for store credit (melt it), as in “My Gear”. Opens a dialog first.",
+    "demo": "Not available in demo mode.",
+    "title": "Exchange pledge",
+    "receive": "You receive",
+    "storeCredit": "in store credit",
+    "kinds": {
+      "upgradedShip": "Ship with applied upgrades",
+      "ship": "Ship",
+      "ships": "Ships",
+      "gamePackage": "Game package",
+      "ccu": "CCU (ship upgrade)",
+      "paint": "Paint",
+      "reward": "Reward",
+      "other": "Item"
+    },
+    "warnings": {
+      "lastGameAccess": {
+        "title": "Last pledge with game access",
+        "text": "This is the last pledge on your account that gives access to Star Citizen. Without it you can no longer play."
+      },
+      "notBuybackable": {
+        "title": "No buy back",
+        "text": "This pledge is not eligible for reacquisition through the buy back: the exchange is permanent."
+      },
+      "upgraded": {
+        "title": "Applied upgrades are exchanged, too",
+        "text": "The CCUs applied to this ship are exchanged with it and can't be separated again. What they saved you (warbond and sale prices) is relinquished."
+      },
+      "discount": {
+        "title": "You give up a discount of $1 ($2)",
+        "text": "The original price is $1, this pledge is worth $2. A discounted price is permanently relinquished on exchange."
+      },
+      "giftable": {
+        "title": "Giftable now",
+        "text": "Bought back with store credit, the pledge is bound to your account and no longer giftable."
+      },
+      "refundable": {
+        "title": "Refund still possible",
+        "text": "$1. A refund pays back money, an exchange only store credit."
+      }
+    },
+    "attention": "Attention",
+    "continue": "Continue",
+    "continueIn": "Continue ($1)",
+    "intro": "You are about to exchange your “$1” pledge. This will remove the pledge, including any upgrades (such as customizations or CCUs) from your account, awarding $2 in store credit.",
+    "notBuybackable": "This pledge is NOT ELIGIBLE for reacquisition through the BuyBack system. This exchange is permanent.",
+    "finalBuyback": "This process is intended to be final, although some pledges may be available for reacquisition using the BuyBack system, if applicable and as long as the BuyBack system remains available. Items acquired with the use of store credits are BOUND TO YOUR ACCOUNT and non-giftable.",
+    "finalPermanent": "This process is final. Items acquired with the use of store credits are BOUND TO YOUR ACCOUNT and non-giftable.",
+    "acknowledge": "Please acknowledge the following before submitting:",
+    "consentLimited": "Some limited availability items included or contained within the exchanged pledge are permanently relinquished.",
+    "consentDiscount": "If this Pledge was made at a discounted price, the discounted price will be permanently RELINQUISHED on exchange.",
+    "consentWarnings": "I have read the warnings above and still want to exchange this pledge.",
+    "password": "Type in your password to confirm (sent to RSI only):",
+    "cancel": "Cancel",
+    "submit": "Exchange for $1",
+    "submitting": "Exchanging …",
+    "missing": "Please acknowledge all points and type in your password.",
+    "failed": "The exchange failed: $1",
+    "success": "Your ledger was credited with $1.",
+    "successNote": "The pledge leaves the list when you close this dialog; the buy back shows it after the next update."
   }
 }

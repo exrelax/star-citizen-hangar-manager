@@ -266,6 +266,21 @@ The first refresh reads the whole pledge log once; after that only new entries a
 
 ---
 
+## Exchange (melt) with a safety net
+
+**Exchange** under the image of a pledge opens RSI's exchange dialog of "My Gear" in the
+manager's design – with RSI's texts, its two acknowledgements and your password, sent to RSI
+only. On top, the dialog makes clear what you are about to give up:
+
+- **What and how much** up front: the kind of pledge (ship, ship with applied upgrades, CCU,
+  paint, game package, …) and the store credit you receive.
+- **Warnings** for what can't be undone: applied upgrades, the discount you give up (e.g.
+  "$705 (72.3 %)" with original price and pledge value), no buy back, the last pledge with game
+  access (with RSI's waiting time before you can continue). Notices for giftable pledges and a
+  refund period that still runs – a refund pays back money instead of store credit.
+- With any of these warnings, an **extra acknowledgement** is needed before the button
+  "Exchange for $…" is enabled.
+
 ## Buy back
 
 The **Buy Back** tab lists all melted pledges with the same search and filters (Ships, CCUs,

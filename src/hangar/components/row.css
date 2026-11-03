@@ -180,6 +180,20 @@
   outline: none;
 }
 
+/* Destructive actions (exchanging a pledge): red, so they stand apart from the other buttons. */
+.shm-button.is-danger {
+  color: var(--shm-danger);
+  background: color-mix(in srgb, var(--shm-danger) 12%, transparent);
+  border-color: color-mix(in srgb, var(--shm-danger) 60%, transparent);
+}
+
+.shm-button.is-danger:not(:disabled):hover,
+.shm-button.is-danger:not(:disabled):focus-visible {
+  color: var(--shm-text-strong);
+  background: color-mix(in srgb, var(--shm-danger) 35%, transparent);
+  border-color: var(--shm-danger);
+}
+
 /* The buttons under the image. */
 .shm-details-side {
   display: flex;

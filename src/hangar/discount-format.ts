@@ -27,6 +27,11 @@ export function formatUsd(value: number, locale: Locale): string {
   return Number.isInteger(value) ? usd.format(value) : cents.format(value);
 }
 
+/** A share in percent ("12.5 %" or "12,5 %", by locale), e.g. of a discount. */
+export function formatPercent(percent: number, locale: Locale): string {
+  return formattersOf(locale).percent.format(percent / 100);
+}
+
 /** What the row shows for a discount: the short text and the explanation for its tooltip. */
 export function formatDiscount(discount: PledgeDiscount, locale: Locale) {
   const { percent } = formattersOf(locale);

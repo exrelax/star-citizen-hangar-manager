@@ -1,0 +1,72 @@
+/* Frame of the manager's dialogs (order details, exchange), teleported to the page's body. */
+
+/* Above RSI's header and navigation. */
+.shm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 60px 16px;
+  overflow-y: auto;
+  background: var(--shm-backdrop);
+}
+
+.shm-overlay-dialog {
+  width: min(900px, 100%);
+  padding: 20px 24px 24px;
+  color: var(--shm-text-secondary);
+  font-family: Electrolize, sans-serif;
+  font-size: 13px;
+  background: var(--shm-surface-elevated);
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.45);
+  box-shadow: 0 0 40px rgb(var(--shm-accent-rgb) / 0.15);
+  outline: none;
+}
+
+.shm-overlay-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.shm-overlay-dialog h3 {
+  margin: 0;
+  color: var(--shm-accent);
+  font-size: 16px;
+  text-transform: uppercase;
+}
+
+.shm-overlay-dialog h4 {
+  margin: 18px 0 8px;
+  color: var(--shm-accent);
+  font-size: 13px;
+  font-weight: normal;
+  text-transform: uppercase;
+}
+
+.shm-overlay-close {
+  padding: 0 6px;
+  color: var(--shm-text-muted);
+  font-size: 24px;
+  line-height: 1;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.shm-overlay-close:hover,
+.shm-overlay-close:focus-visible {
+  color: var(--shm-text-strong);
+  outline: none;
+}
+
+.shm-overlay-note {
+  margin: 0;
+}
+
+.shm-overlay-note.is-error {
+  color: var(--shm-danger);
+}

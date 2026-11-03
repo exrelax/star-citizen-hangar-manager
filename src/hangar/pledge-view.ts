@@ -56,6 +56,10 @@ export interface PledgeView {
   hasGameAccess: boolean;
   isGiftable: boolean;
   isMeltable: boolean;
+  /** RSI: the last pledge of the account with game access ("last alpha"). */
+  isLastAlpha: boolean;
+  /** RSI: once exchanged, the pledge can be bought back. */
+  isBuybackable: boolean;
   isUpgraded: boolean;
   items: PledgeItem[];
   upgrade?: PledgeUpgrade;
@@ -118,6 +122,8 @@ export function toPledgeView(
     hasGameAccess,
     isGiftable: pledge.isGiftable,
     isMeltable: pledge.isExchangeable,
+    isLastAlpha: pledge.isLastAlpha,
+    isBuybackable: pledge.isBuybackable,
     isUpgraded: currentShip !== undefined,
     items: pledge.items,
     upgrade: pledge.upgrade,

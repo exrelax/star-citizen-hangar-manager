@@ -184,5 +184,68 @@
     "leftDays": "Noch $1 Tage für einen Refund (bis $2)",
     "leftDay": "Noch 1 Tag für einen Refund (bis $2)",
     "leftLastDay": "Letzter Tag für einen Refund: heute ($1)"
+  },
+  "exchange": {
+    "button": "Exchange",
+    "buttonHint": "Tauscht dieses Pledge gegen Store Credit (Einschmelzen), wie in „My Gear“. Öffnet zuerst einen Dialog.",
+    "demo": "Im Demo-Modus nicht verfügbar.",
+    "title": "Pledge einschmelzen",
+    "receive": "Du erhältst",
+    "storeCredit": "Store Credit",
+    "kinds": {
+      "upgradedShip": "Schiff mit angewendeten Upgrades",
+      "ship": "Schiff",
+      "ships": "Schiffe",
+      "gamePackage": "Game Package",
+      "ccu": "CCU (Schiffs-Upgrade)",
+      "paint": "Paint",
+      "reward": "Reward",
+      "other": "Item"
+    },
+    "warnings": {
+      "lastGameAccess": {
+        "title": "Letztes Pledge mit Spielzugang",
+        "text": "Das ist das letzte Pledge deines Kontos, das Zugang zu Star Citizen gibt. Ohne es kannst du nicht mehr spielen."
+      },
+      "notBuybackable": {
+        "title": "Kein Buy Back",
+        "text": "Dieses Pledge lässt sich nicht über das Buy Back zurückkaufen: Das Einschmelzen ist endgültig."
+      },
+      "upgraded": {
+        "title": "Angewendete Upgrades werden mit eingeschmolzen",
+        "text": "Die auf dieses Schiff angewendeten CCUs werden mit ihm eingeschmolzen und lassen sich nicht mehr trennen. Was sie gespart haben (Warbond- und Sale-Preise), geht verloren."
+      },
+      "discount": {
+        "title": "Du gibst einen Rabatt von $1 ($2) auf",
+        "text": "Der Originalpreis ist $1, dieses Pledge ist $2 wert. Ein rabattierter Preis geht beim Einschmelzen dauerhaft verloren."
+      },
+      "giftable": {
+        "title": "Aktuell verschenkbar",
+        "text": "Mit Store Credit zurückgekauft, ist das Pledge an dein Konto gebunden und nicht mehr verschenkbar."
+      },
+      "refundable": {
+        "title": "Refund noch möglich",
+        "text": "$1. Ein Refund erstattet Geld, Einschmelzen nur Store Credit."
+      }
+    },
+    "attention": "Achtung",
+    "continue": "Weiter",
+    "continueIn": "Weiter ($1)",
+    "intro": "Du bist dabei, dein Pledge „$1“ einzuschmelzen. Dadurch wird das Pledge einschließlich aller Upgrades (z. B. Anpassungen oder CCUs) von deinem Konto entfernt, und du erhältst $2 als Store Credit.",
+    "notBuybackable": "Dieses Pledge kann NICHT über das Buy-Back-System zurückgekauft werden. Das Einschmelzen ist endgültig.",
+    "finalBuyback": "Dieser Vorgang ist als endgültig gedacht, auch wenn manche Pledges über das Buy-Back-System zurückgekauft werden können, sofern zutreffend und solange es das Buy-Back-System gibt. Mit Store Credit erworbene Items sind AN DEIN KONTO GEBUNDEN und nicht verschenkbar.",
+    "finalPermanent": "Dieser Vorgang ist endgültig. Mit Store Credit erworbene Items sind AN DEIN KONTO GEBUNDEN und nicht verschenkbar.",
+    "acknowledge": "Bitte bestätige vor dem Absenden:",
+    "consentLimited": "Einige limitierte Items, die im eingeschmolzenen Pledge enthalten sind, gehen dauerhaft verloren.",
+    "consentDiscount": "Wurde dieses Pledge zu einem rabattierten Preis gekauft, geht der rabattierte Preis beim Einschmelzen DAUERHAFT VERLOREN.",
+    "consentWarnings": "Ich habe die Warnungen oben gelesen und möchte dieses Pledge trotzdem einschmelzen.",
+    "password": "Gib zur Bestätigung dein Passwort ein (wird nur an RSI gesendet):",
+    "cancel": "Abbrechen",
+    "submit": "Für $1 einschmelzen",
+    "submitting": "Wird eingeschmolzen …",
+    "missing": "Bitte bestätige alle Punkte und gib dein Passwort ein.",
+    "failed": "Das Einschmelzen ist fehlgeschlagen: $1",
+    "success": "Deinem Konto wurden $1 gutgeschrieben.",
+    "successNote": "Das Pledge verschwindet aus der Liste, sobald du diesen Dialog schließt; im Buy Back erscheint es nach dem nächsten Update."
   }
 }

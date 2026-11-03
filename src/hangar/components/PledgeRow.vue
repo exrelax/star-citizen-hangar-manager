@@ -9,6 +9,7 @@ import { insuranceLabel, supersededInsurances } from '../insurance';
 import type { PledgeView } from '../pledge-view';
 import { myGearHref } from '../route';
 import OrderInfo from '@/orders/OrderInfo.vue';
+import ExchangeOverlay from './ExchangeOverlay.vue';
 import ExternalLinks from './ExternalLinks.vue';
 import UpgradeLog from './UpgradeLog.vue';
 
@@ -40,6 +41,9 @@ const superseded = computed(() =>
 const discount = computed(
   () => props.pledge.discount && formatDiscount(props.pledge.discount, locale.value),
 );
+
+/** RSI's exchange (melt) dialog, in the manager's design. */
+const exchanging = ref(false);
 
 const expanded = ref(!!props.autoExpand);
 // Only rows opened automatically close again automatically; a manual toggle is kept.
@@ -172,6 +176,18 @@ const toggle = () => {
         >
           {{ i18n.t('pledge.showInMyGear', [pledge.page]) }}
         </a>
+        <!-- Disabled in the demo: its pledge id is made up. -->
+        <button
+          v-if="pledge.isMeltable"
+          type="button"
+          class="shm-button shm-origin-button shm-exchange-button is-danger"
+          :disabled="!!demo"
+          :title="demo ? i18n.t('exchange.demo') : i18n.t('exchange.buttonHint')"
+          @click="exchanging = true"
+        >
+          {{ i18n.t('exchange.button') }}
+        </button>
+        <ExchangeOverlay v-if="exchanging" :pledge="pledge" @close="exchanging = false" />
       </div>
       <div class="shm-details-main">
         <OrderInfo v-if="pledge.order" :order="pledge.order" :base="pledge.isUpgraded" refundable />
