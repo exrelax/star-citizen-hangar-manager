@@ -132,3 +132,19 @@ export const ORDERS = {
   retryDelaysMs: [2_000, 4_000, 8_000, 16_000],
   billingPageSize: 100,
 } as const;
+
+/** CIG refunds purchases paid with money within this many days (shown in "My Hangar"). */
+export const REFUND_DAYS = 30;
+/** From this many days left on, the refund tag is highlighted. */
+export const REFUND_URGENT_DAYS = 7;
+
+/**
+ * RSI's support form (Zendesk) opened by "Refund Request": its "Ship & Pledge Query" form with
+ * "Tell us more about your problem" set to "Other ship or pledge query" (a custom field).
+ */
+export const REFUND_REQUEST_FORM = {
+  url: 'https://support.robertsspaceindustries.com/hc/en-us/requests/new',
+  ticketFormId: '360000663594',
+  problemFieldId: '360014846974',
+  problemValue: 'other_ship_or_pledge_query',
+} as const;

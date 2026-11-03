@@ -76,7 +76,9 @@
     "hidePledgeIds": "Pledge- und Order-IDs ausblenden",
     "hidePledgeIdsHint": "Blendet die Pledge-IDs aller Items aus, auch die angewendeter Upgrades, und die Order-IDs. Die Suche nach IDs funktioniert weiterhin.",
     "demoMode": "Demo-Modus",
-    "demoModeHint": "Zeigt nur $1 Pledges aus „My Hangar“ und $2 aus dem Buy Back, mit erfundenen Pledge-IDs – z. B. für Screenshots. Links zu RSI und der Warenkorb sind währenddessen ohne Funktion."
+    "demoModeHint": "Zeigt nur $1 Pledges aus „My Hangar“ und $2 aus dem Buy Back, mit erfundenen Pledge-IDs – z. B. für Screenshots. Links zu RSI und der Warenkorb sind währenddessen ohne Funktion.",
+    "showRefund": "Refund-Frist anzeigen",
+    "showRefundHint": "Zeigt bei Käufen mit Geld, wie viele der $1 Tage für einen Refund noch übrig sind, und im geöffneten Item einen Button „Refund Request“."
   },
   "status": {
     "checking": "Suche nach Änderungen …",
@@ -142,5 +144,14 @@
     "paymentInfo": "Zahlungen",
     "notFound": "Order nicht gefunden",
     "invoiceDemo": "Im Demo-Modus nicht verfügbar: Die Rechnung zeigt die echte Order."
+  },
+  "refund": {
+    "days": "Refund: $1 Tage",
+    "day": "Refund: 1 Tag",
+    "lastDay": "Refund: letzter Tag",
+    "hint": "Am $1 mit Geld gekauft: CIG erstattet den Kauf innerhalb von $2 Tagen, bis zum $3.",
+    "request": "Refund Request",
+    "requestHint": "Öffnet RSIs Support-Formular in einem neuen Tab, ausgefüllt für einen Refund der Order $1.",
+    "requestDemo": "Im Demo-Modus nicht verfügbar."
   }
 }

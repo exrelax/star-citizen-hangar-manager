@@ -13,6 +13,7 @@ describe('withDefaults', () => {
         hideMeltValue: true,
         hidePledgeIds: true,
         demoMode: true,
+        showRefund: false,
         shipLinks: { erkul: false, fleetyards: true },
       }),
     ).toEqual({
@@ -20,6 +21,7 @@ describe('withDefaults', () => {
       hideMeltValue: true,
       hidePledgeIds: true,
       demoMode: true,
+      showRefund: false,
       rewardVisibility: 'showAll',
       smartUpdates: true,
       buybackLinkMode: 'single',

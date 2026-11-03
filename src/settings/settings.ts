@@ -22,6 +22,8 @@ export interface Settings {
   hidePledgeIds: boolean;
   /** Shows a selection of the pledges with made-up ids instead of all (see `src/demo`). */
   demoMode: boolean;
+  /** Shows how many days are left to refund purchases paid with money (see `orders/refund.ts`). */
+  showRefund: boolean;
   rewardVisibility: RewardVisibility;
   /** Keeps the stored hangar current by checking a few hangar pages now and then. */
   smartUpdates: boolean;
@@ -38,6 +40,7 @@ export const DEFAULT_SETTINGS: Settings = {
   hideMeltValue: false,
   hidePledgeIds: false,
   demoMode: false,
+  showRefund: true,
   rewardVisibility: 'showAll',
   smartUpdates: true,
   buybackLinkMode: 'single',
@@ -65,6 +68,8 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
         ? stored.hidePledgeIds
         : DEFAULT_SETTINGS.hidePledgeIds,
     demoMode: typeof stored?.demoMode === 'boolean' ? stored.demoMode : DEFAULT_SETTINGS.demoMode,
+    showRefund:
+      typeof stored?.showRefund === 'boolean' ? stored.showRefund : DEFAULT_SETTINGS.showRefund,
     rewardVisibility: REWARD_VISIBILITIES.includes(stored?.rewardVisibility as RewardVisibility)
       ? stored!.rewardVisibility!
       : DEFAULT_SETTINGS.rewardVisibility,

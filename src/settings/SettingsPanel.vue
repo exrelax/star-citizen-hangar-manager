@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DEMO } from '@/config';
+import { DEMO, REFUND_DAYS } from '@/config';
 import { browserLocale, i18n, LOCALES, type Locale } from '@/i18n';
 import {
   BUYBACK_LINK_MODES,
@@ -89,6 +89,18 @@ function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
         {{ i18n.t('settings.smartUpdates') }}
       </label>
       <p class="shm-hint">{{ i18n.t('settings.smartUpdatesHint') }}</p>
+    </section>
+
+    <section class="shm-setting">
+      <label class="shm-check">
+        <input
+          type="checkbox"
+          :checked="settings.showRefund"
+          @change="emit('update', { showRefund: ($event.target as HTMLInputElement).checked })"
+        />
+        {{ i18n.t('settings.showRefund') }}
+      </label>
+      <p class="shm-hint">{{ i18n.t('settings.showRefundHint', [REFUND_DAYS]) }}</p>
     </section>
 
     <section class="shm-setting">

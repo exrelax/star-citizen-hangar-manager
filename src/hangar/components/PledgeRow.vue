@@ -2,6 +2,8 @@
 import { useDemoContext } from '@/demo/use-demo';
 import { i18n, locale } from '@/i18n';
 import { computed, ref, watch } from 'vue';
+import { REFUND_DAYS, REFUND_URGENT_DAYS } from '@/config';
+import { refundRequestUrl, refundWindow, today } from '@/orders/refund';
 import { formatDiscount } from '../discount-format';
 import { insuranceLabel } from '../insurance';
 import type { PledgeView } from '../pledge-view';
@@ -19,6 +21,11 @@ const props = defineProps<{
 /** The current ship of an upgraded pledge first, then the other ships. */
 const linkedShips = computed(() =>
   props.pledge.titleShip ? [props.pledge.titleShip, ...props.pledge.ships] : props.pledge.ships,
+);
+
+/** Days left to refund a purchase paid with money (CIG: 30 days), while there are any. */
+const refund = computed(() =>
+  props.pledge.order?.placedAt ? refundWindow(props.pledge.order.placedAt, today.value) : undefined,
 );
 
 const discount = computed(
@@ -95,6 +102,18 @@ const toggle = () => {
 
       <span class="shm-badges">
         <span
+          v-if="refund"
+          class="shm-badge is-refund"
+          :class="{ 'is-urgent': refund.daysLeft < REFUND_URGENT_DAYS }"
+          :title="i18n.t('refund.hint', [pledge.order!.placedAt!, REFUND_DAYS, refund.until])"
+        >
+          {{
+            refund.daysLeft === 0
+              ? i18n.t('refund.lastDay')
+              : i18n.t(refund.daysLeft === 1 ? 'refund.day' : 'refund.days', [refund.daysLeft])
+          }}
+        </span>
+        <span
           v-if="pledge.insurance"
           class="shm-badge"
           :class="{ 'is-lti': pledge.insurance.lifetime }"
@@ -135,14 +154,38 @@ const toggle = () => {
 
     <!-- Two columns like the row above: the way to RSI's original under the image, then the rest. -->
     <div v-if="expanded" class="shm-details">
-      <!-- In the demo the link would reveal the real pledge id (and page): it stays inert. -->
-      <a
-        class="shm-button shm-origin-button"
-        :href="demo ? '#' : myGearHref(pathname, pledge.page, pledge.id)"
-        @click="demo && $event.preventDefault()"
-      >
-        {{ i18n.t('pledge.showInMyGear', [pledge.page]) }}
-      </a>
+      <div class="shm-details-side">
+        <!-- In the demo the link would reveal the real pledge id (and page): it stays inert. -->
+        <a
+          class="shm-button shm-origin-button"
+          :href="demo ? '#' : myGearHref(pathname, pledge.page, pledge.id)"
+          @click="demo && $event.preventDefault()"
+        >
+          {{ i18n.t('pledge.showInMyGear', [pledge.page]) }}
+        </a>
+        <!-- RSI's support form, filled in; disabled in the demo (its order id is made up). -->
+        <template v-if="refund && pledge.order">
+          <button
+            v-if="demo"
+            type="button"
+            class="shm-button shm-origin-button shm-refund-button"
+            disabled
+            :title="i18n.t('refund.requestDemo')"
+          >
+            {{ i18n.t('refund.request') }}
+          </button>
+          <a
+            v-else
+            class="shm-button shm-origin-button shm-refund-button"
+            :href="refundRequestUrl(pledge.order.id)"
+            target="_blank"
+            rel="noopener"
+            :title="i18n.t('refund.requestHint', [pledge.order.id])"
+          >
+            {{ i18n.t('refund.request') }}
+          </a>
+        </template>
+      </div>
       <div class="shm-details-main">
         <OrderInfo v-if="pledge.order" :order="pledge.order" :base="pledge.isUpgraded" />
         <p v-if="pledge.upgrade" class="shm-upgrade">

@@ -76,7 +76,9 @@
     "hidePledgeIds": "Hide pledge and order IDs",
     "hidePledgeIdsHint": "Hides the pledge IDs of all items, also those of applied upgrades, and the order IDs. Searching by ID still works.",
     "demoMode": "Demo mode",
-    "demoModeHint": "Shows only $1 pledges of “My Hangar” and $2 of the buy back, with made-up pledge IDs – e.g. for screenshots. Links to RSI and the cart do nothing meanwhile."
+    "demoModeHint": "Shows only $1 pledges of “My Hangar” and $2 of the buy back, with made-up pledge IDs – e.g. for screenshots. Links to RSI and the cart do nothing meanwhile.",
+    "showRefund": "Show refund period",
+    "showRefundHint": "Shows for purchases paid with money how many of the $1 days for a refund are left, and a “Refund Request” button in the opened item."
   },
   "status": {
     "checking": "Checking for changes …",
@@ -142,5 +144,14 @@
     "paymentInfo": "Payment info",
     "notFound": "Order not found",
     "invoiceDemo": "Not available in demo mode: the invoice shows the real order."
+  },
+  "refund": {
+    "days": "Refund: $1 days",
+    "day": "Refund: 1 day",
+    "lastDay": "Refund: last day",
+    "hint": "Bought with money on $1: CIG refunds it within $2 days, until $3.",
+    "request": "Refund Request",
+    "requestHint": "Opens RSI's support form in a new tab, filled in for a refund of order $1.",
+    "requestDemo": "Not available in demo mode."
   }
 }
