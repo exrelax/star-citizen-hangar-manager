@@ -171,7 +171,7 @@ const toggle = () => {
         :title="i18n.t('pledge.toggleDetails')"
         @click.stop="toggle"
       >
-        ▸
+        <SvgIcon name="chevron-right" />
       </button>
     </div>
 

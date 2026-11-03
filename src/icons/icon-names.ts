@@ -3,6 +3,10 @@
 export const ICON_NAMES = {
   fa: [
     'address-card',
+    'angle-down',
+    'angle-left',
+    'angle-right',
+    'angle-up',
     'arrow-down',
     'arrow-left',
     'arrow-right',
@@ -10,6 +14,10 @@ export const ICON_NAMES = {
     'award',
     'bars',
     'box',
+    'chevron-down',
+    'chevron-left',
+    'chevron-right',
+    'chevron-up',
     'circle-xmark',
     'gear',
     'gift',

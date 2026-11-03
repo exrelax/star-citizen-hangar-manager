@@ -141,17 +141,28 @@
   color: var(--shm-accent);
   font: inherit;
   background: none;
+  font-size: 14px;
   border: 0;
   cursor: pointer;
-  transition: transform 0.15s;
 }
 
 .shm-chevron:focus-visible {
   outline: 1px solid var(--shm-accent);
 }
 
-.is-expanded .shm-chevron {
+/* Turns a quarter clockwise when the row opens, back when it closes. */
+.shm-chevron .shm-icon {
+  transition: transform 0.2s ease;
+}
+
+.is-expanded .shm-chevron .shm-icon {
   transform: rotate(90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shm-chevron .shm-icon {
+    transition: none;
+  }
 }
 
 /* Same columns as the summary: image (128 px) and gap (14 px), then the content. */
