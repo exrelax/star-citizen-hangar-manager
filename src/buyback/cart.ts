@@ -1,3 +1,4 @@
+import { postRsiJson } from '@/shared/rsi-api';
 import type { BuybackUpgrade } from './buyback';
 import { fetchBuybackPage, type FetchBuybackPage } from './sync-buyback';
 
@@ -9,9 +10,6 @@ import { fetchBuybackPage, type FetchBuybackPage } from './sync-buyback';
 
 /** RSI's cart, opened after a pledge was added. */
 export const RSI_CART_PATH = '/store/pledge/cart';
-
-/** Cookie with the session token RSI expects in the `X-Rsi-Token` header. */
-const TOKEN_COOKIE = 'Rsi-Token';
 
 /** RSI refused a request, with RSI's reason (or the pledge was not found). */
 export class CartError extends Error {
@@ -46,7 +44,7 @@ export async function addBuybackToCart(
   // Same order as RSI's upgrade dialog: session, then the CCU as context of the upgrade API.
   await postRsi('/api/account/v2/setAuthToken');
   await postRsi('/api/ship-upgrades/setContextToken', { ...upgrade, pledgeId: pledge.id });
-  const [result] = await postJson<UpgradeCartResponse>('/pledge-store/api/upgrade/graphql', [
+  const [result] = await postRsiJson<UpgradeCartResponse>('/pledge-store/api/upgrade/graphql', [
     {
       operationName: 'addToCart',
       variables: { from: upgrade.fromShipId, to: upgrade.toSkuId },
@@ -80,29 +78,9 @@ interface RsiResponse {
 
 /** A request to RSI's platform API, which answers with `success: 1` or a reason. */
 async function postRsi(path: string, body?: unknown): Promise<void> {
-  const response = await postJson<RsiResponse>(path, body);
+  const response = await postRsiJson<RsiResponse>(path, body);
   if (response.success === 1) return;
   const details =
     response.data && typeof response.data === 'object' ? Object.values(response.data) : [];
   throw new CartError(details.length ? details.join('\n') : (response.msg ?? 'Request failed'));
-}
-
-async function postJson<T>(path: string, body?: unknown): Promise<T> {
-  const token = document.cookie
-    .split('; ')
-    .find((cookie) => cookie.startsWith(`${TOKEN_COOKIE}=`))
-    ?.slice(TOKEN_COOKIE.length + 1);
-  const response = await fetch(path, {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      // RSI's messages are shown as they are; the extension asks for English like for the pages.
-      'Accept-Language': 'en',
-      ...(token && { 'X-Rsi-Token': token }),
-    },
-    body: body === undefined ? undefined : JSON.stringify(body),
-  });
-  if (!response.ok) throw new CartError(`${path}: HTTP ${response.status}`);
-  return (await response.json()) as T;
 }

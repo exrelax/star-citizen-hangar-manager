@@ -99,12 +99,15 @@ const ALIASES: Record<string, string> = {
 };
 
 /**
- * Finds the price of a ship by its hangar name. Names mostly match; otherwise one name is usually
- * a shorter form of the other: "Mercury" for "Mercury Star Runner", "C2 Hercules" for "Hercules
- * Starlifter C2", or the other way round "F7C-M Hornet Heartseeker Mk I" for "F7C-M Super Hornet
- * Heartseeker Mk I". Of the ships whose words all appear in the name (or the other way round),
- * the one with the most shared and the fewest extra words is taken – only if it is the only one
- * with that score, otherwise the price stays unknown.
+ * Finds the price of a ship by its hangar name. Names mostly match; otherwise:
+ * - Names without a mark mean the Mk I: RSI renamed ships to "… Mk I" when a Mk II came out
+ *   ("F7C-S Hornet Ghost" is the "F7C-S Hornet Ghost Mk I").
+ * - One name is usually a shorter form of the other: "Mercury" for "Mercury Star Runner", "C2
+ *   Hercules" for "Hercules Starlifter C2", or the other way round "F7C-M Hornet Heartseeker Mk I"
+ *   for "F7C-M Super Hornet Heartseeker Mk I". Of the ships whose words all appear in the name (or
+ *   the other way round), the one with the most shared and the fewest extra words is taken; on a
+ *   tie the one without extra words ("Ballista" for "Anvil Ballista", not "Anvil Ballista
+ *   Snowblind"). If ships are still equal, the price stays unknown.
  */
 export function createPriceLookup(ships: readonly ShipPrice[]) {
   const entries = ships.map((ship) => ({ ship, words: words(ship.name) }));
@@ -115,22 +118,27 @@ export function createPriceLookup(ships: readonly ShipPrice[]) {
     if (alias) name = alias;
     else if (NOT_A_SHIP.test(name)) return undefined;
     const nameWords = words(name);
-    const match = exact.get(nameWords.join(' '));
+    const match =
+      exact.get(nameWords.join(' ')) ??
+      (nameWords.includes('mk') ? undefined : exact.get([...nameWords, 'mk', 'i'].join(' ')));
     if (match) return match;
 
     const present = new Set(nameWords);
     let best: ShipPrice | undefined;
     let bestScore = 0;
+    let bestExtra = 0;
     let tie = false;
     for (const entry of entries) {
       const shared = entry.words.filter((word) => present.has(word)).length;
-      const shorter = shared === entry.words.length;
-      const longer = shared === present.size;
-      if (!shorter && !longer) continue;
+      const extra = entry.words.length - shared;
+      if (extra > 0 && shared < present.size) continue; // Neither name contains the other.
       // Shared words count, extra words of the upgrade tool's name (a variant?) count against.
-      const score = shared - (entry.words.length - shared);
-      if (score > bestScore) [best, bestScore, tie] = [entry.ship, score, false];
-      else if (score === bestScore) tie = true;
+      const score = shared - extra;
+      if (score > bestScore || (score === bestScore && extra < bestExtra)) {
+        [best, bestScore, bestExtra, tie] = [entry.ship, score, extra, false];
+      } else if (score === bestScore && extra === bestExtra) {
+        tie = true;
+      }
     }
     return tie ? undefined : best;
   };

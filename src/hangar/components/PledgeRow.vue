@@ -5,6 +5,7 @@ import { formatDiscount } from '../discount-format';
 import type { PledgeView } from '../pledge-view';
 import { myGearHref } from '../route';
 import ExternalLinks from './ExternalLinks.vue';
+import UpgradeLog from './UpgradeLog.vue';
 
 const props = defineProps<{
   pledge: PledgeView;
@@ -141,6 +142,7 @@ const toggle = () => {
             </span>
           </li>
         </ul>
+        <UpgradeLog v-if="pledge.isUpgraded" :pledge-id="pledge.id" />
         <ExternalLinks :ships="linkedShips" />
       </div>
     </div>

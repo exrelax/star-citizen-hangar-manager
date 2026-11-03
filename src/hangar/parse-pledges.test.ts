@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { parseAmount, parseDate, parsePledgePage } from './parse-pledges';
 
 // Trimmed-down copy of the markup of `/en/account/pledges` with made-up values.
-const pledgeHtml = (id: number, extra = '', title = `Package - Test Ship ${id}`) => `
+const pledgeHtml = (id: number, extra = '', heading = `<h3>Package - Test Ship ${id}</h3>`) => `
   <li>
     <div class="row">
       <div class="basic-infos clearfix">
@@ -12,7 +12,7 @@ const pledgeHtml = (id: number, extra = '', title = `Package - Test Ship ${id}`)
         </div>
         <div class="wrapper-col">
           <div class="title-col">
-            <div class="pledge-title-row"><h3>${title}</h3></div>
+            <div class="pledge-title-row">${heading}</div>
             <script class="js-pledge-name-reservations" type="application/json">[]</script>
             <script class="js-pledge-nameable-ships" type="application/json">null</script>
             <input type="hidden" class="js-pledge-id" value="${id}" />
@@ -116,13 +116,17 @@ describe('parsePledgePage', () => {
     ]);
   });
 
-  it('detects an applied CCU by the " Upgrades" title suffix', () => {
-    const [upgraded] = parse(
-      pageHtml(pledgeHtml(1, '', 'Package - Test Ship 1 Upgrades'), [1]),
-    ).pledges;
+  it('detects an applied CCU and reads the title without the buttons in the heading', () => {
+    // As RSI renders an upgraded pledge with a nameable ship.
+    const heading = `<h3 class="upgraded"> Package - Test Ship 1
+      <a class="shadow-button js-upgrade-log upgrade"><span class="label">Upgrades</span></a>
+      <div class="contains-nameable"><div class="nameable-icon"></div>
+        Contains <span class="nameable-count">1</span> nameable ship</div>
+    </h3>`;
+    const [upgraded] = parse(pageHtml(pledgeHtml(1, '', heading), [1])).pledges;
     const [plain] = parse(pageHtml(pledgeHtml(2), [1])).pledges;
-    expect(upgraded?.isUpgraded).toBe(true);
-    expect(plain?.isUpgraded).toBe(false);
+    expect(upgraded).toMatchObject({ title: 'Package - Test Ship 1', isUpgraded: true });
+    expect(plain).toMatchObject({ title: 'Package - Test Ship 2', isUpgraded: false });
   });
 
   it('reads the upgrade data of CCU pledges', () => {

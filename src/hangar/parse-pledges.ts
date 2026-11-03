@@ -35,7 +35,10 @@ function parsePledge(li: HTMLElement): Pledge | undefined {
 
   const value = inputValue(li, 'js-pledge-value');
   const name = inputValue(li, 'js-pledge-name');
-  const title = text(li.querySelector('.pledge-title-row h3'));
+  // The heading also holds RSI's "Upgrades" button and "Contains 1 nameable ship": only its own
+  // text is the title.
+  const heading = li.querySelector('.pledge-title-row h3');
+  const title = ownText(heading);
   return {
     id,
     name,
@@ -53,8 +56,10 @@ function parsePledge(li: HTMLElement): Pledge | undefined {
     isGiftable: li.querySelector('.js-gift-v2, .js-gift') !== null,
     isExchangeable: li.querySelector('.js-reclaim') !== null,
     isUpgradeable: li.querySelector('.js-apply-upgrade') !== null,
-    // RSI keeps the original pledge name and appends " Upgrades" to the title once a CCU is applied.
-    isUpgraded: / Upgrades$/.test(title) && !/ Upgrades$/.test(name),
+    // Once a CCU is applied, RSI marks the heading and adds the "Upgrades" button (its log).
+    isUpgraded:
+      heading?.classList.contains('upgraded') === true ||
+      li.querySelector('.js-upgrade-log') !== null,
     upgrade: parseUpgrade(li),
     nameReservations: jsonScript(li, 'js-pledge-name-reservations'),
     nameableShips: jsonScript(li, 'js-pledge-nameable-ships'),
@@ -112,6 +117,17 @@ function parseLastPage(doc: Document): number {
     if (page > lastPage) lastPage = page;
   }
   return lastPage;
+}
+
+/** Text of the element itself, without the text of its child elements. */
+function ownText(element: Element | null): string {
+  if (!element) return '';
+  const own = [...element.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE);
+  return own
+    .map((node) => node.textContent)
+    .join(' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function text(element: Element | null | undefined): string {

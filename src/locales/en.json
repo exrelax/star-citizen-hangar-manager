@@ -95,5 +95,21 @@
     "addToCart": "Add to cart on RSI and open the cart (new tab). RSI empties the cart for buy back pledges.",
     "cartFailed": "Could not add to the RSI cart: $1",
     "cartNotFound": "Not found at its stored position in RSI’s buy back any more – please sync and try again."
+  },
+  "upgradeLog": {
+    "title": "Applied upgrades",
+    "loading": "Loading the upgrades from RSI …",
+    "empty": "RSI lists no applied upgrades for this pledge.",
+    "failed": "Could not load the upgrades: $1",
+    "date": "Applied",
+    "upgrade": "Upgrade",
+    "targetPrice": "Target ship",
+    "targetPriceHint": "Original price of the target ship (RSI's ship upgrade tool)",
+    "valueAfter": "Value after",
+    "valueAfterHint": "Pledge value after this upgrade",
+    "paid": "Paid",
+    "paidHint": "What this upgrade added to the pledge value, i.e. what it really cost",
+    "discount": "Discount",
+    "discountHint": "Price difference of the two ships minus what the upgrade cost. Not known for the first upgrade: RSI doesn't log the value before it."
   }
 }

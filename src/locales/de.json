@@ -95,5 +95,21 @@
     "addToCart": "In den RSI-Warenkorb legen und ihn öffnen (neuer Tab). Für Buy-Back-Pledges leert RSI den Warenkorb.",
     "cartFailed": "Konnte nicht in den RSI-Warenkorb gelegt werden: $1",
     "cartNotFound": "Nicht mehr an der gespeicherten Stelle in RSIs Buy Back – bitte synchronisieren und erneut versuchen."
+  },
+  "upgradeLog": {
+    "title": "Angewendete Upgrades",
+    "loading": "Lade die Upgrades von RSI …",
+    "empty": "RSI führt für diesen Pledge keine angewendeten Upgrades.",
+    "failed": "Die Upgrades konnten nicht geladen werden: $1",
+    "date": "Angewendet",
+    "upgrade": "Upgrade",
+    "targetPrice": "Zielschiff",
+    "targetPriceHint": "Originalpreis des Zielschiffs (RSIs Ship-Upgrade-Tool)",
+    "valueAfter": "Wert danach",
+    "valueAfterHint": "Pledge-Wert nach diesem Upgrade",
+    "paid": "Bezahlt",
+    "paidHint": "Was dieses Upgrade zum Pledge-Wert hinzugefügt hat, also was es wirklich gekostet hat",
+    "discount": "Rabatt",
+    "discountHint": "Preisdifferenz der beiden Schiffe minus Kosten des Upgrades. Für das erste Upgrade unbekannt: RSI protokolliert den Wert davor nicht."
   }
 }

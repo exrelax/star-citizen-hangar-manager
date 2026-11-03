@@ -21,12 +21,16 @@ function formattersOf(locale: Locale) {
   return entry;
 }
 
+/** An amount in USD: whole dollars without cents ("$25"), otherwise with ("$12.50"). */
+export function formatUsd(value: number, locale: Locale): string {
+  const { usd, cents } = formattersOf(locale);
+  return Number.isInteger(value) ? usd.format(value) : cents.format(value);
+}
+
 /** What the row shows for a discount: the short text and the explanation for its tooltip. */
 export function formatDiscount(discount: PledgeDiscount, locale: Locale) {
-  const { usd, cents, percent } = formattersOf(locale);
-  // Whole dollars without cents ("$25"), otherwise with ("$12.50").
-  const money = (value: number) =>
-    Number.isInteger(value) ? usd.format(value) : cents.format(value);
+  const { percent } = formattersOf(locale);
+  const money = (value: number) => formatUsd(value, locale);
 
   const isSurcharge = discount.amount < 0;
   const amount = money(Math.abs(discount.amount));

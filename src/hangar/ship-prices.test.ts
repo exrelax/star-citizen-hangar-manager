@@ -16,6 +16,11 @@ const priceOf = createPriceLookup([
   { name: 'Aurora Mk I SE', price: 60 },
   { name: '600i Explorer', price: 475 },
   { name: 'F7C Hornet Mk I', price: 125 },
+  { name: 'F7C-S Hornet Ghost Mk I', price: 140 },
+  { name: 'F7C-S Hornet Ghost Mk II', price: 185 },
+  { name: 'Ballista ', price: 140 },
+  { name: 'Anvil Ballista Snowblind', price: 140 },
+  { name: 'Anvil Ballista Dunestalker', price: 140 },
   { name: 'F7C-M Super Hornet Mk I', price: 180 },
   { name: 'F7C-M Super Hornet Heartseeker Mk I', price: 200 },
 ]);
@@ -41,6 +46,14 @@ describe('createPriceLookup', () => {
     expect(priceOf('F7C-M Super Hornet')?.price).toBe(180);
     // Two ships fit equally well: no guess.
     expect(priceOf('Hercules')).toBeUndefined();
+  });
+
+  it('takes the Mk I for names without a mark', () => {
+    expect(priceOf('F7C-S Hornet Ghost')?.price).toBe(140);
+  });
+
+  it('prefers the base name over longer variants that fit as well', () => {
+    expect(priceOf('Anvil Ballista')?.name).toBe('Ballista ');
   });
 
   it('knows ships the upgrade tool lists under another name', () => {
