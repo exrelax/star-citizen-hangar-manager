@@ -86,8 +86,8 @@
     "smartUpdates": "Intelligente Updates",
     "smartUpdatesHint": "Prüft ab und zu die erste, die letzte und einige weitere Hangar-Seiten auf Änderungen und aktualisiert die Liste ohne vollständigen Abgleich.",
     "shipLinks": "Links bei Schiffen anzeigen",
-    "shipLinkErkul": "Link zu erkul.games",
-    "shipLinkFleetyards": "Link zu fleetyards.net",
+    "shipLinkErkul": "erkul.games",
+    "shipLinkFleetyards": "FleetYards.net",
     "buybackLink": "„Im Buy Back anzeigen“ öffnet",
     "buybackLinkOptions": {
       "single": "Nur diesen Pledge",

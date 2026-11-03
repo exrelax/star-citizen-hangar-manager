@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import erkulIcon from '@/assets/erkul.png';
+import fleetyardsIcon from '@/assets/fleetyards.png';
 import { DEMO, FILTERS, REFUND_DAYS } from '@/config';
 import { browserLocale, i18n, LOCALES, type Locale, type MessageKey } from '@/i18n';
 import {
@@ -194,6 +196,7 @@ function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
           :checked="settings.shipLinks.erkul"
           @change="setShipLink('erkul', ($event.target as HTMLInputElement).checked)"
         />
+        <img class="shm-check-icon" :src="erkulIcon" alt="" width="14" height="14" />
         {{ i18n.t('settings.shipLinkErkul') }}
       </label>
       <label class="shm-check">
@@ -202,6 +205,7 @@ function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
           :checked="settings.shipLinks.fleetyards"
           @change="setShipLink('fleetyards', ($event.target as HTMLInputElement).checked)"
         />
+        <img class="shm-check-icon" :src="fleetyardsIcon" alt="" width="14" height="14" />
         {{ i18n.t('settings.shipLinkFleetyards') }}
       </label>
     </fieldset>
@@ -244,6 +248,12 @@ function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
 
 .shm-check input {
   accent-color: var(--shm-accent);
+}
+
+/* Favicon of the platform a checkbox stands for, as on its link buttons. */
+.shm-check-icon {
+  flex: none;
+  margin-right: -2px;
 }
 
 .shm-select {
