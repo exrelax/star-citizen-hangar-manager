@@ -4,17 +4,32 @@ import { useBuybackPledges } from '@/buyback/use-buyback-pledges';
 import HangarStatus from '@/hangar/components/HangarStatus.vue';
 import PledgeList from '@/hangar/components/PledgeList.vue';
 import RefreshIcon from '@/hangar/components/RefreshIcon.vue';
+import { DEMO_CONTEXT, useDemo } from '@/demo/use-demo';
 import { hashOfTab, MANAGER_TABS, tabFromHash, type ManagerTab } from '@/hangar/route';
 import { startSync, syncState } from '@/hangar/sync-state';
 import { useHangarPledges } from '@/hangar/use-hangar-pledges';
 import { i18n, locale } from '@/i18n';
 import SettingsPanel from '@/settings/SettingsPanel.vue';
 import { useSettings } from '@/settings/use-settings';
-import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
+import { computed, onMounted, onUnmounted, provide, reactive, ref } from 'vue';
 
-const { pledges, loaded, syncedAt } = useHangarPledges();
+const hangar = useHangarPledges();
 const buyback = useBuybackPledges();
-const { settings, update: updateSettings } = useSettings();
+const { loaded, syncedAt } = hangar;
+
+const { settings, loaded: settingsLoaded, update: updateSettings } = useSettings();
+
+// The demo mode (a setting) shows a selection of anonymized pledges (see src/demo).
+const demo = computed(() => settings.value.demoMode);
+const demoView = useDemo(demo, hangar.pledges, buyback.pledges);
+/**
+ * The lists wait for the settings: until they are read the demo mode counts as off, and the real
+ * pledges would show for a moment.
+ */
+const listsReady = computed(() => settingsLoaded.value && demoView.ready.value);
+provide(DEMO_CONTEXT, demoView.context);
+const pledges = demoView.pledges;
+const buybackPledges = demoView.buyback;
 
 /** Progress of a running sync: pages for the counter, weighted work for the bar and percentage. */
 const syncProgress = computed(() => {
@@ -57,7 +72,13 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
 <!-- Reuses the markup classes of the original hangar page so the view inherits the site's look. -->
 <template>
   <div class="top">
-    <h2 class="title">{{ i18n.t('manager.title') }}</h2>
+    <h2 class="title">
+      {{ i18n.t('manager.title') }}
+      <!-- In the header, so every tab shows that the lists are a demo selection. -->
+      <span v-if="demo" class="shm-demo-badge" :title="i18n.t('manager.demoBadgeHint')">
+        {{ i18n.t('manager.demoBadge') }}
+      </span>
+    </h2>
     <!--
       Only hidden (not removed) in the settings, so the header keeps its height and the tabs below
       don't jump. `visibility: hidden` also takes it out of the tab order. It refreshes hangar and
@@ -126,7 +147,7 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
     role="tabpanel"
     aria-labelledby="shm-tab-hangar"
   >
-    <template v-if="loaded">
+    <template v-if="loaded && listsReady">
       <HangarStatus
         v-if="pledges.length"
         :synced-at="syncedAt"
@@ -148,16 +169,16 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
     role="tabpanel"
     aria-labelledby="shm-tab-buyback"
   >
-    <template v-if="buyback.loaded.value">
+    <template v-if="buyback.loaded.value && listsReady">
       <HangarStatus
-        v-if="buyback.pledges.value.length"
+        v-if="buybackPledges.length"
         source="buyback"
         :synced-at="buyback.syncedAt.value"
         :smart-updates="settings.smartUpdates"
       />
       <BuybackList
-        v-if="buyback.pledges.value.length"
-        :pledges="buyback.pledges.value"
+        v-if="buybackPledges.length"
+        :pledges="buybackPledges"
         :settings="settings"
         :active="activeTab === 'buyback'"
       />
@@ -196,6 +217,20 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
   /* RSI's `.shadow-button` background (the middle part between the two end sections) stays. */
   border: 0;
   cursor: pointer;
+}
+
+.shm-demo-badge {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 0 8px;
+  color: #0b141c;
+  font-size: 11px;
+  line-height: 18px;
+  letter-spacing: 0.08em;
+  vertical-align: 3px;
+  background: #f0b45a;
+  border-radius: 3px;
+  cursor: help;
 }
 
 .shm-refresh.is-hidden {

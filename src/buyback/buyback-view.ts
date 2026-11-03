@@ -15,6 +15,8 @@ import {
 /** What the buy back list shows for a pledge. */
 export interface BuybackView {
   id: number;
+  /** Shown instead of the id, if set (made-up ids of the demo view). */
+  displayId?: string;
   /** Index of the pledge in RSI's buy back list (0-based), as of the last sync. */
   position: number;
   /** Page of the pledge in RSI's buy back list (250 per page), as of the last sync. */

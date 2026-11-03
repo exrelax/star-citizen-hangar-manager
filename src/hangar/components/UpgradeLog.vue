@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDemoContext } from '@/demo/use-demo';
 import { i18n, locale } from '@/i18n';
 import { ref } from 'vue';
 import { formatUsd } from '../discount-format';
@@ -7,6 +8,8 @@ import { createPriceLookup } from '../ship-prices';
 import { loadUpgradeLog, withPrices, type PricedUpgradeLogEntry } from '../upgrade-log';
 
 const props = defineProps<{ pledgeId: number }>();
+/** In the demo, the ids of the applied CCUs are made up, too. */
+const demo = useDemoContext();
 
 const open = ref(false);
 const entries = ref<PricedUpgradeLogEntry[]>();
@@ -78,7 +81,7 @@ const shortName = (name: string) => name.replace(/^upgrade\s*-\s*/i, '');
             <td>
               {{ shortName(entry.name) }}
               <span v-if="entry.ccuId" class="shm-upgrade-log-id shm-pledge-id"
-                >#{{ entry.ccuId }}</span
+                >#{{ demo ? demo.fakeId(entry.ccuId) : entry.ccuId }}</span
               >
             </td>
             <td class="is-amount">

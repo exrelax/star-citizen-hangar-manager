@@ -2,6 +2,7 @@
 import ExternalLinks from '@/hangar/components/ExternalLinks.vue';
 import { insuranceLabel } from '@/hangar/insurance';
 import { buybackHref } from '@/hangar/route';
+import { useDemoContext } from '@/demo/use-demo';
 import { i18n } from '@/i18n';
 import type { BuybackLinkMode } from '@/settings/settings';
 import { computed, ref, watch } from 'vue';
@@ -39,6 +40,7 @@ const toggle = () => {
 
 // The manager lives on the hangar page; buyback links keep its locale prefix.
 const pathname = location.pathname;
+const demo = useDemoContext();
 const buybackLink = computed(() =>
   props.linkMode === 'single'
     ? {
@@ -55,7 +57,8 @@ const buybackLink = computed(() =>
 const addingToCart = ref(false);
 const cartError = ref<string>();
 async function addToCart() {
-  if (addingToCart.value) return;
+  // The demo is for screenshots: nothing goes into the real cart.
+  if (addingToCart.value || demo.value) return;
   addingToCart.value = true;
   cartError.value = undefined;
   try {
@@ -103,7 +106,7 @@ async function addToCart() {
           {{ i18n.t('buyback.contains', [pledge.contained]) }}
         </span>
         <span class="shm-meta">
-          <span class="shm-pledge-id">#{{ pledge.id }}</span>
+          <span class="shm-pledge-id">#{{ pledge.displayId ?? pledge.id }}</span>
           <span v-if="pledge.reclaimedAt">
             {{ i18n.t('buyback.reclaimed', [pledge.reclaimedAt]) }}
           </span>
@@ -150,7 +153,14 @@ async function addToCart() {
 
     <!-- Two columns like the row above: the way to RSI's original under the image, then the rest. -->
     <div v-if="expanded" class="shm-details">
-      <a class="shm-button shm-origin-button" :href="buybackLink.href">{{ buybackLink.text }}</a>
+      <!-- In the demo the link would reveal the real pledge id: it stays inert. -->
+      <a
+        class="shm-button shm-origin-button"
+        :href="demo ? '#' : buybackLink.href"
+        @click="demo && $event.preventDefault()"
+      >
+        {{ buybackLink.text }}
+      </a>
       <div class="shm-details-main">
         <p v-if="pledge.isProbablyGiftable" class="shm-hint">{{ giftableHint }}</p>
         <ul v-if="pledge.items.length" class="shm-items">

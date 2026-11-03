@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDemoContext } from '@/demo/use-demo';
 import { i18n, locale } from '@/i18n';
 import { computed, ref, watch } from 'vue';
 import { formatDiscount } from '../discount-format';
@@ -41,6 +42,7 @@ watch(
 
 // The manager lives on the hangar page, so this is its path including the locale prefix.
 const pathname = location.pathname;
+const demo = useDemoContext();
 const toggle = () => {
   expanded.value = !expanded.value;
   openedAutomatically = false;
@@ -76,7 +78,7 @@ const toggle = () => {
           </template>
         </span>
         <span class="shm-meta">
-          <span class="shm-pledge-id">#{{ pledge.id }}</span>
+          <span class="shm-pledge-id">#{{ pledge.displayId ?? pledge.id }}</span>
           <span class="shm-value">{{ pledge.value }}</span>
           <span
             v-if="discount"
@@ -132,7 +134,12 @@ const toggle = () => {
 
     <!-- Two columns like the row above: the way to RSI's original under the image, then the rest. -->
     <div v-if="expanded" class="shm-details">
-      <a class="shm-button shm-origin-button" :href="myGearHref(pathname, pledge.page, pledge.id)">
+      <!-- In the demo the link would reveal the real pledge id (and page): it stays inert. -->
+      <a
+        class="shm-button shm-origin-button"
+        :href="demo ? '#' : myGearHref(pathname, pledge.page, pledge.id)"
+        @click="demo && $event.preventDefault()"
+      >
         {{ i18n.t('pledge.showInMyGear', [pledge.page]) }}
       </a>
       <div class="shm-details-main">

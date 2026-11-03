@@ -105,3 +105,17 @@ export const SMART_UPDATE = {
   /** How often relative times in the status line ("2 min ago") are refreshed. */
   statusRefreshMs: 30 * 1000,
 } as const;
+
+/**
+ * Demo mode (a setting) for screenshots: a fixed selection of the stored pledges with made-up
+ * pledge ids (see `src/demo`).
+ */
+export const DEMO = {
+  /** Pledges shown in "My Hangar" and in the buy back. */
+  hangarPledges: 100,
+  buybackPledges: 50,
+  /** Ships whose pledges are always part of the demo (by the ship's name, not by pledge id). */
+  includeShips: ['Polaris'],
+  /** Pledges with applied CCUs always part of the demo, for their "Applied upgrades". */
+  upgradedPledges: 4,
+} as const;

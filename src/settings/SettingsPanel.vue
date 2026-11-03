@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { DEMO } from '@/config';
 import { browserLocale, i18n, LOCALES, type Locale } from '@/i18n';
 import {
   BUYBACK_LINK_MODES,
@@ -65,6 +66,17 @@ function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
         {{ i18n.t('settings.hidePledgeIds') }}
       </label>
       <p class="shm-hint is-indented">{{ i18n.t('settings.hidePledgeIdsHint') }}</p>
+      <label class="shm-check">
+        <input
+          type="checkbox"
+          :checked="settings.demoMode"
+          @change="emit('update', { demoMode: ($event.target as HTMLInputElement).checked })"
+        />
+        {{ i18n.t('settings.demoMode') }}
+      </label>
+      <p class="shm-hint is-indented">
+        {{ i18n.t('settings.demoModeHint', [DEMO.hangarPledges, DEMO.buybackPledges]) }}
+      </p>
     </fieldset>
 
     <section class="shm-setting">

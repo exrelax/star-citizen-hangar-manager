@@ -13,7 +13,9 @@
     "countFiltered": "$1 von $2 Pledges",
     "searchPlaceholder": "Titel, Schiffe und Pledge-IDs durchsuchen …",
     "noResults": "Keine Pledges passen zu deiner Suche.",
-    "syncProgress": "Lese RSI-Seiten: $1 von $2 ($3)"
+    "syncProgress": "Lese RSI-Seiten: $1 von $2 ($3)",
+    "demoBadge": "Demo",
+    "demoBadgeHint": "Demo-Modus: eine Auswahl deiner Pledges mit erfundenen Pledge-IDs. Abschalten in den Einstellungen."
   },
   "pledge": {
     "toggleDetails": "Enthaltene Items ein- oder ausblenden",
@@ -72,7 +74,9 @@
     },
     "privacy": "Sensible Informationen ausblenden (für Screenshots oder Content Creator)",
     "hidePledgeIds": "Pledge-IDs ausblenden",
-    "hidePledgeIdsHint": "Blendet die Pledge-IDs aller Items aus, auch die angewendeter Upgrades. Die Suche nach IDs funktioniert weiterhin."
+    "hidePledgeIdsHint": "Blendet die Pledge-IDs aller Items aus, auch die angewendeter Upgrades. Die Suche nach IDs funktioniert weiterhin.",
+    "demoMode": "Demo-Modus",
+    "demoModeHint": "Zeigt nur $1 Pledges aus „My Hangar“ und $2 aus dem Buy Back, mit erfundenen Pledge-IDs – z. B. für Screenshots. Links zu RSI und der Warenkorb sind währenddessen ohne Funktion."
   },
   "status": {
     "checking": "Suche nach Änderungen …",

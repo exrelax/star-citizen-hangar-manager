@@ -20,6 +20,8 @@ export interface Settings {
   hideMeltValue: boolean;
   /** Hides the pledge ids (also those of applied CCUs). */
   hidePledgeIds: boolean;
+  /** Shows a selection of the pledges with made-up ids instead of all (see `src/demo`). */
+  demoMode: boolean;
   rewardVisibility: RewardVisibility;
   /** Keeps the stored hangar current by checking a few hangar pages now and then. */
   smartUpdates: boolean;
@@ -35,6 +37,7 @@ export const DEFAULT_SETTINGS: Settings = {
   language: 'auto',
   hideMeltValue: false,
   hidePledgeIds: false,
+  demoMode: false,
   rewardVisibility: 'showAll',
   smartUpdates: true,
   buybackLinkMode: 'single',
@@ -61,6 +64,7 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
       typeof stored?.hidePledgeIds === 'boolean'
         ? stored.hidePledgeIds
         : DEFAULT_SETTINGS.hidePledgeIds,
+    demoMode: typeof stored?.demoMode === 'boolean' ? stored.demoMode : DEFAULT_SETTINGS.demoMode,
     rewardVisibility: REWARD_VISIBILITIES.includes(stored?.rewardVisibility as RewardVisibility)
       ? stored!.rewardVisibility!
       : DEFAULT_SETTINGS.rewardVisibility,

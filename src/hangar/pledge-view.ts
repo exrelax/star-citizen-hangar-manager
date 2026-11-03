@@ -15,6 +15,8 @@ export interface ShipRef {
 /** What the manager list shows for a pledge. */
 export interface PledgeView {
   id: number;
+  /** Shown instead of the id, if set (made-up ids of the demo view). */
+  displayId?: string;
   /** Page of the pledge in RSI's "My Gear" list, as of the last sync. */
   page: number;
   title: string;
