@@ -82,6 +82,22 @@ Changing a locale file (`src/locales/*.json`) restarts the whole extension, afte
 may keep getting an older content script. Reload the extension in `chrome://extensions` in that
 case.
 
+### Styleguide
+
+The dev build adds a styleguide page with the manager's building blocks: the theme colors of the
+current theme, all icons, the real hangar and buy back lists with made-up pledges of every kind
+(filters, search, rows, their buttons and dialogs) and the settings. Open it with the
+**Styleguide** link next to the manager's title (dev builds only), or at
+`chrome-extension://<extension id>/styleguide.html`.
+
+- It shows the real components (`src/entrypoints/styleguide`), so it stays current with the code.
+  New kinds of pledges or states go into `fixtures.ts` there.
+- Theme, language and display options are the extension's own settings: switching the theme there
+  switches the manager, too. Check changes in both themes and, for "Modern Hangar", in the light
+  and dark system appearance.
+- Requests to RSI fail on this page, so nothing can be exchanged, gifted or bought from it.
+- `wxt build` leaves the page out (see `wxt.config.ts`); it is never part of a release.
+
 ### Option 2: Load a build manually
 
 **Chrome**
@@ -127,6 +143,7 @@ src/
     hangar.content/      Content script: nav entry and manager view on the RSI hangar page
     ccugame.content/     Content script: links to the manager on ccugame.app
     options/             Manager page (Vue), opens in its own tab
+    styleguide/          Styleguide page with all building blocks (dev builds only)
   hangar/                Hangar data and view: sync, smart updates, list, filters, search
   buyback/               Buy back data and view, adding buy back pledges to the RSI cart
   ccugame/               Links from CCU Game (ccugame.app) to the manager

@@ -16,6 +16,15 @@ export default defineConfig({
       port: Number(process.env.PORT) || 3000,
     },
   },
+  hooks: {
+    // The styleguide (src/entrypoints/styleguide) is a page for development: `wxt build` skips it.
+    'entrypoints:resolved': (wxt, entrypoints) => {
+      if (wxt.config.command !== 'build') return;
+      for (const entrypoint of entrypoints) {
+        if (entrypoint.name === 'styleguide') entrypoint.skipped = true;
+      }
+    },
+  },
   manifest: ({ browser }) => ({
     name: '__MSG_extName__',
     description: '__MSG_extDescription__',

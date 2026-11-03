@@ -7,14 +7,18 @@ import RefreshIcon from '@/hangar/components/RefreshIcon.vue';
 import { DEMO_CONTEXT, useDemo } from '@/demo/use-demo';
 import { hashOfTab, MANAGER_TABS, tabFromHash, type ManagerTab } from '@/hangar/route';
 import { startSync, syncState } from '@/hangar/sync-state';
+import { OPEN_STYLEGUIDE } from '@/shared/messages';
 import { useHangarPledges } from '@/hangar/use-hangar-pledges';
 import type { IconName } from '@/icons/icon-names';
-import SvgIcon from '@/icons/SvgIcon.vue';
+import TabBar from '@/shared/components/TabBar.vue';
 import { i18n, locale } from '@/i18n';
 import SettingsPanel from '@/settings/SettingsPanel.vue';
 import { useSettings } from '@/settings/use-settings';
 import { MANAGER_CONTAINER, useThemeClass } from '@/themes/theme';
 import { computed, inject, onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue';
+
+const isDev = import.meta.env.DEV;
+const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
 
 /** Icon of each tab, before its label. */
 const TAB_ICONS: Record<ManagerTab, IconName> = {
@@ -22,6 +26,10 @@ const TAB_ICONS: Record<ManagerTab, IconName> = {
   buyback: 'recycle',
   settings: 'gear',
 };
+
+const tabItems = computed(() =>
+  MANAGER_TABS.map((tab) => ({ id: tab, label: i18n.t(`tabs.${tab}`), icon: TAB_ICONS[tab] })),
+);
 
 const hangar = useHangarPledges();
 const buyback = useBuybackPledges();
@@ -101,6 +109,8 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
       <span v-if="demo" class="shm-demo-badge" :title="i18n.t('manager.demoBadgeHint')">
         {{ i18n.t('manager.demoBadge') }}
       </span>
+      <!-- Development builds only: the styleguide with all building blocks (wxt.config.ts). -->
+      <a v-if="isDev" class="shm-dev-link" href="#" @click.prevent="openStyleguide">Styleguide</a>
     </h2>
     <!--
       Only hidden (not removed) in the settings, so the header keeps its height and the tabs below
@@ -146,23 +156,14 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
     <div class="cboth"></div>
   </div>
 
-  <div class="shm-tabs" role="tablist">
-    <button
-      v-for="tab in MANAGER_TABS"
-      :id="`shm-tab-${tab}`"
-      :key="tab"
-      type="button"
-      role="tab"
-      class="shm-tab"
-      :class="{ 'is-active': activeTab === tab }"
-      :aria-selected="activeTab === tab"
-      :aria-controls="`shm-panel-${tab}`"
-      @click="showTab(tab)"
-    >
-      <SvgIcon :name="TAB_ICONS[tab]" />
-      {{ i18n.t(`tabs.${tab}`) }}
-    </button>
-  </div>
+  <TabBar
+    class="shm-manager-tabs"
+    :items="tabItems"
+    :selected="activeTab"
+    :label="i18n.t('manager.title')"
+    panels="shm"
+    @select="showTab"
+  />
 
   <!-- The lists stay mounted once opened (v-show), so switching tabs is instant. -->
   <div
@@ -247,6 +248,14 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
   cursor: pointer;
 }
 
+.shm-dev-link {
+  margin-left: 12px;
+  color: var(--shm-accent);
+  font-size: 12px;
+  text-transform: none;
+  vertical-align: 3px;
+}
+
 .shm-demo-badge {
   display: inline-block;
   margin-left: 10px;
@@ -307,38 +316,8 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
   transition: transform 0.4s ease-out;
 }
 
-.shm-tabs {
-  display: flex;
-  gap: 4px;
+.shm-manager-tabs {
   margin-top: 18px;
-  border-bottom: 1px solid rgb(var(--shm-accent-rgb) / 0.25);
-}
-
-.shm-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 8px 16px;
-  color: var(--shm-text-muted);
-  font: inherit;
-  font-size: 13px;
-  text-transform: uppercase;
-  background: none;
-  border: 0;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  cursor: pointer;
-}
-
-.shm-tab:hover,
-.shm-tab:focus-visible {
-  color: var(--shm-text);
-  outline: none;
-}
-
-.shm-tab.is-active {
-  color: var(--shm-accent);
-  border-bottom-color: var(--shm-accent);
 }
 
 .shm-empty {
