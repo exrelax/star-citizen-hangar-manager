@@ -16,6 +16,18 @@ announcements.
 
 ---
 
+## Tech stack
+
+- **[WXT](https://wxt.dev)** – framework for cross-browser extensions: one code base, built as
+  Manifest V3 for **Chrome and Firefox** today, with more browsers possible
+- **[Vite](https://vite.dev)** – fast builds and hot reload during development
+- **[Vue 3](https://vuejs.org)** – the manager's interface, integrated into RSI's own pages
+- **TypeScript** – typed throughout
+- **Vitest** – unit and component tests, plus ESLint and Prettier for consistent code
+- **No runtime dependencies besides Vue** – no tracking, analytics or third-party SDKs
+
+---
+
 ## At a glance
 
 - **Built for speed**: opens instantly from local data, searches as you type, and checks your
@@ -30,6 +42,8 @@ announcements.
 - The full CCU history of upgraded ships, with the discount of every step
 - Orders of your purchases with invoices, refund countdown and a prefilled refund request
 - Buy back pledges straight into the RSI cart
+- Links from CCU Game (ccugame.app) straight to the pledge in the Hangar Manager
+- An addition to RSI's website: "My Gear" and "Buy Back Pledges" stay untouched and usable
 - A demo mode with anonymized data for screenshots
 - English and German
 
@@ -143,13 +157,23 @@ information (for screenshots or content creators)** keeps private details off sc
 
 ## The Hangar Manager page
 
-A new **Hangar Manager** entry at the top of the RSI account navigation opens the manager in place
-of RSI's "My Gear" list. Switching between the manager and the original RSI pages is instant – no
-page reload. The manager has three tabs, each with its own link to bookmark or share:
+A new **Hangar Manager** entry at the top of the RSI account navigation opens the manager.
+Switching between the manager and the original RSI pages is instant – no page reload. The manager
+has three tabs, each with its own link to bookmark or share:
 
 - **My Hangar** – all pledges of your hangar
 - **Buy Back** – all pledges you melted and can buy back
 - **Settings**
+
+### An addition, not a replacement
+
+The Hangar Manager adds to the RSI website – it doesn't take anything away. RSI's own **My Gear**
+and **Buy Back Pledges** pages stay exactly as they are and remain fully usable, with all of RSI's
+functions (gift, melt, apply upgrades, buy back, …): one click on their entry in the account
+navigation, and you are back on RSI's original page. The extension doesn't overwrite or change
+any area of the RSI website: it adds its own navigation entry, shows the manager in the content
+area only while you have it open, and highlights a pledge on RSI's lists when you opened it via
+"Show in My Gear" or "Show in Buy Back".
 
 ### Compact, expandable rows
 
@@ -254,8 +278,11 @@ The **Buy Back** tab lists all melted pledges with the same search and filters, 
   and highlighted – also when it moved to another page in the meantime.
 - **External links**: ships link to their pages on **erkul.games** and **FleetYards.net** (can be
   turned off in the settings).
-- **CCU Game** (ccugame.app): the extension adds "Open in Hangar Manager" next to the RSI links of
-  CCU Game's item details, for hangar and buy back items.
+- **CCU Game** (ccugame.app): in CCU Game's detail view of an item (ships, CCUs, paints, equipment
+  and more), the extension adds a link **"Open in Hangar Manager"** right below CCU Game's link to
+  RSI. It opens the pledge directly in the Hangar Manager – found by its pledge ID and opened –
+  for hangar items in "My Hangar", for buy back items in "Buy Back" (placed right before CCU
+  Game's "Add to cart on RSI").
 
 ---
 
