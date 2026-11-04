@@ -1,6 +1,7 @@
 import { AUTO_LANGUAGE_SOURCE } from '@/config';
 import de from '@/locales/de.json';
 import en from '@/locales/en.json';
+import es from '@/locales/es.json';
 import fr from '@/locales/fr.json';
 import { readonly, ref } from 'vue';
 
@@ -10,7 +11,7 @@ import { readonly, ref } from 'vue';
  * The same locale files also feed WXT's `_locales` (manifest name and description).
  */
 
-const MESSAGES = { en, de, fr };
+const MESSAGES = { en, de, fr, es };
 
 export type Locale = keyof typeof MESSAGES;
 export const LOCALES = Object.keys(MESSAGES) as Locale[];
