@@ -31,7 +31,7 @@ export type FontSize = keyof typeof FONT_SIZE_SCALES;
 
 export interface Settings {
   language: LanguageSetting;
-  /** Hides the $ values (pledge values, discounts, upgrade costs). */
+  /** Hides all $ amounts (pledge values, discounts, upgrade costs, orders, dialogs). */
   hideMeltValue: boolean;
   /**
    * Shows the exchange and gift dialogs in the selected theme; off: after RSI's own dialogs of
@@ -54,7 +54,7 @@ export interface Settings {
    * (see `orders/refund.ts`). Replaces `showRefund` (stored until version 0.1), its opposite.
    */
   hideRefund: boolean;
-  /** Keeps the stored hangar current by checking a few hangar pages now and then. */
+  /** Keeps hangar, buy back and orders current by checking a few of their pages now and then. */
   smartUpdates: boolean;
   buybackLinkMode: BuybackLinkMode;
   theme: Theme;
@@ -112,51 +112,45 @@ interface LegacySettings {
   showRefund?: boolean;
 }
 
+const isBoolean = (value: unknown): value is boolean => typeof value === 'boolean';
+
+/** A check that accepts only the given values, e.g. the themes. */
+const oneOf =
+  <T extends string>(values: readonly T[]) =>
+  (value: unknown): value is T =>
+    values.includes(value as T);
+
 /** Complete settings from stored values, falling back to the defaults for missing or invalid ones. */
 export function withDefaults(stored: Partial<Settings> | null | undefined): Settings {
+  /** The stored value of `key` if `isValid` accepts it, `fallback` (the default) otherwise. */
+  const pick = <K extends keyof Settings>(
+    key: K,
+    isValid: (value: unknown) => value is Settings[K],
+    fallback: Settings[K] = DEFAULT_SETTINGS[key],
+  ): Settings[K] => {
+    const value = stored?.[key];
+    return isValid(value) ? value : fallback;
+  };
   const legacy = stored as LegacySettings | null | undefined;
+
   return {
-    language: isLocale(stored?.language) ? stored.language : DEFAULT_SETTINGS.language,
-    hideMeltValue:
-      typeof stored?.hideMeltValue === 'boolean'
-        ? stored.hideMeltValue
-        : DEFAULT_SETTINGS.hideMeltValue,
-    themedActionDialogs:
-      typeof stored?.themedActionDialogs === 'boolean'
-        ? stored.themedActionDialogs
-        : DEFAULT_SETTINGS.themedActionDialogs,
-    translateRsiTexts:
-      typeof stored?.translateRsiTexts === 'boolean'
-        ? stored.translateRsiTexts
-        : DEFAULT_SETTINGS.translateRsiTexts,
-    hideSupersededInsurances:
-      typeof stored?.hideSupersededInsurances === 'boolean'
-        ? stored.hideSupersededInsurances
-        : DEFAULT_SETTINGS.hideSupersededInsurances,
-    hidePledgeIds:
-      typeof stored?.hidePledgeIds === 'boolean'
-        ? stored.hidePledgeIds
-        : DEFAULT_SETTINGS.hidePledgeIds,
-    demoMode: typeof stored?.demoMode === 'boolean' ? stored.demoMode : DEFAULT_SETTINGS.demoMode,
-    hideRefund:
-      typeof stored?.hideRefund === 'boolean'
-        ? stored.hideRefund
-        : typeof legacy?.showRefund === 'boolean'
-          ? !legacy.showRefund
-          : DEFAULT_SETTINGS.hideRefund,
-    smartUpdates:
-      typeof stored?.smartUpdates === 'boolean'
-        ? stored.smartUpdates
-        : DEFAULT_SETTINGS.smartUpdates,
-    buybackLinkMode: BUYBACK_LINK_MODES.includes(stored?.buybackLinkMode as BuybackLinkMode)
-      ? stored!.buybackLinkMode!
-      : DEFAULT_SETTINGS.buybackLinkMode,
-    theme: THEMES.includes(stored?.theme as Theme) ? stored!.theme! : DEFAULT_SETTINGS.theme,
-    fontSize: FONT_SIZES.includes(stored?.fontSize as FontSize)
-      ? stored!.fontSize!
-      : DEFAULT_SETTINGS.fontSize,
-    compactView:
-      typeof stored?.compactView === 'boolean' ? stored.compactView : DEFAULT_SETTINGS.compactView,
+    language: pick('language', isLocale),
+    hideMeltValue: pick('hideMeltValue', isBoolean),
+    themedActionDialogs: pick('themedActionDialogs', isBoolean),
+    translateRsiTexts: pick('translateRsiTexts', isBoolean),
+    hideSupersededInsurances: pick('hideSupersededInsurances', isBoolean),
+    hidePledgeIds: pick('hidePledgeIds', isBoolean),
+    demoMode: pick('demoMode', isBoolean),
+    hideRefund: pick(
+      'hideRefund',
+      isBoolean,
+      isBoolean(legacy?.showRefund) ? !legacy.showRefund : undefined,
+    ),
+    smartUpdates: pick('smartUpdates', isBoolean),
+    buybackLinkMode: pick('buybackLinkMode', oneOf(BUYBACK_LINK_MODES)),
+    theme: pick('theme', oneOf(THEMES)),
+    fontSize: pick('fontSize', oneOf(FONT_SIZES)),
+    compactView: pick('compactView', isBoolean),
     filters: {
       hangar: normalizeFilterGroups(
         stored?.filters?.hangar,

@@ -16,18 +16,6 @@ announcements.
 
 ---
 
-## Tech stack
-
-- **[WXT](https://wxt.dev)** – framework for cross-browser extensions: one code base, built as
-  Manifest V3 for **Chrome and Firefox** today, with more browsers possible
-- **[Vite](https://vite.dev)** – fast builds and hot reload during development
-- **[Vue 3](https://vuejs.org)** – the manager's interface, integrated into RSI's own pages
-- **TypeScript** – typed throughout
-- **Vitest** – unit and component tests, plus ESLint and Prettier for consistent code
-- **No runtime dependencies besides Vue** – no tracking, analytics or third-party SDKs
-
----
-
 ## At a glance
 
 - **Built for speed**: opens instantly from local data, searches as you type, and checks your
@@ -63,8 +51,10 @@ Switching between the manager and RSI's own pages doesn't reload anything.
 
 ### Smart updates: a few pages instead of all
 
-A full refresh reads every page of the hangar and buy back – for a hangar of ~1,000 pledges and a
-buy back of ~4,000 that takes 15–20 seconds. Smart updates find changes with a fraction of that:
+Reading everything from RSI – every page of the hangar and buy back, plus the orders – takes
+about **20 seconds for 1,000 pledges** and about **1.5 minutes for 5,000 pledges** (hangar and buy
+back together; the times the manager shows before the first load). Smart updates find changes with
+a fraction of that:
 
 - **A handful of pages per check**: the first page (new purchases), the last page – together they
   show whether pledges were added or removed anywhere – and two rotating spot-check pages (one in
@@ -107,7 +97,8 @@ orders are read only as far as there is something new – usually a single page.
 
 ## Private by design
 
-Your hangar is nobody else's business. The extension is built so that your data stays with you.
+Your hangar is nobody else's business. The extension is built so that your data stays with you
+(in detail: [privacy policy](../PRIVACY.md)).
 
 ### Your data stays in your browser
 
@@ -146,8 +137,8 @@ information (for screenshots or content creators)** keeps private details off sc
   of applied upgrades and in the order details – and blurs your name and billing address in the
   order details. The real name and address don't even reach the page then, only a placeholder of
   the same shape. Searching by ID still works.
-- **Hide melt value**: hides all amounts – pledge values, discounts, upgrade costs, amounts paid
-  and the amounts in the order details.
+- **Hide melt value**: hides all amounts – pledge values, discounts, upgrade costs, amounts paid,
+  the amounts in the order details and the values in the exchange and gift dialogs.
 - **Hide refund period**: hides the refund countdown of purchases paid with money and the
   "Refund Request" button in the order details (off by default).
 - **Demo mode**: shows a fixed selection of 100 hangar and 50 buy back pledges with made-up pledge
@@ -267,7 +258,7 @@ For upgraded ships it is labelled **Base Order**: the order of the original pled
   filled in for a refund of the order – category, subject and message included. You only review
   and send it.
 
-The first refresh reads the whole pledge log once; after that only new entries are read.
+The initial load reads the whole pledge log once; after that only new entries are read.
 
 ---
 
@@ -347,7 +338,8 @@ Paints, Game access, LTI, Warbond, Probably giftable, Rewards), plus:
 ## Keeping the data current
 
 - **First start**: when no pledges are stored yet, the lists show an **Initial Load** button
-  instead, with how long the first load takes (examples in `INITIAL_LOAD_EXAMPLES` in
+  instead, with how long the first load takes: about 20 seconds for 1,000 pledges, about
+  1.5 minutes for 5,000 (hangar and buy back together; from `INITIAL_LOAD_EXAMPLES` in
   `src/config.ts`). The extension never reads the hangar on its own; after the click the refresh
   button shows the progress and the lists appear when it is done.
 - **Refresh** reads hangar, buy back and orders from RSI. Large hangars take a moment; a progress
@@ -360,32 +352,49 @@ Paints, Game access, LTI, Warbond, Probably giftable, Rewards), plus:
 
 ## Settings
 
+In the order of the settings tab:
+
 - **Language**: automatic, English, German, French or Spanish. The exchange and gift dialogs
   show RSI's own texts in RSI's English by default, as its wording counts; translating them too
   is an experimental option, as RSI's changes reach the translations only later.
-- **Show only the best insurance of upgraded ships** (on by default): after upgrades a pledge lists
-  the insurance of every step; only the one that counts (LTI, otherwise the most months) is listed.
-- **Hide sensitive information**: see [Private by design](#private-by-design).
-- **Theme**: Modern Hangar (the default) or Classic RSI. The exchange and gift dialogs look like RSI's own
-  dialogs in "My Gear" by default (with the manager's summary and warnings); an option shows them
-  in the selected theme instead.
-  - **Font size** (the same for both themes): small, medium (the default) or large – for the lists, the settings
-    and the dialogs (the factors are in `FONT_SIZE_SCALES` in `src/config.ts`).
-  - **Compact view** (off by default, the same for both themes): in Modern Hangar the items as one grouped list
-    with separators instead of cards with gaps; in Classic RSI the items without gaps, separated
-    by a 1 px border.
-- **Smart updates**: on or off.
+- **Theme**: Modern Hangar (the default) or Classic RSI.
+  - **Font size** (the same for both themes): small, medium (the default) or large – for the
+    lists, the settings and the dialogs (the factors are in `FONT_SIZE_SCALES` in
+    `src/config.ts`).
+  - **Compact view** (off by default, the same for both themes): in Modern Hangar the items as one
+    grouped list with separators instead of cards with gaps; in Classic RSI the items without
+    gaps, separated by a 1 px border.
+  - The exchange and gift dialogs look like RSI's own dialogs in "My Gear" by default (with the
+    manager's summary and warnings); an option shows them in the selected theme instead.
+- **Hide sensitive information**: see [Anonymization for content creators](#anonymization-for-content-creators).
+- **General**:
+  - **Smart updates** (on by default) – see [Built for speed](#built-for-speed).
+  - **Show only the best insurance of upgraded ships** (on by default): after upgrades a pledge
+    lists the insurance of every step; only the one that counts (LTI, otherwise the most months)
+    is listed.
+  - **"Show in Buy Back" opens**: only the pledge, or the list page with the pledge highlighted.
 - **Filters**: order and selection of the filter buttons, separately for My Hangar and Buy Back
   and for types and features – drag a filter (or use its arrows) to move it within its group,
   uncheck it to hide its button.
-- **"Show in Buy Back" opens**: only the pledge, or the list page with the pledge highlighted.
 - **Show links for ships**: erkul.games and FleetYards.net, each on or off.
 - **Reset**, each after a confirmation:
   - **Delete local hangar & buy back data**: removes only the extension's copy in this browser
     (pledges, orders, ship prices, smart update state); nothing changes on RSI's website, and the
-    next refresh reads everything again. Not possible during a refresh.
+    lists offer the initial load again. Not possible during a refresh.
   - **Reset settings**: all settings back to their defaults (on all synced devices); the stored
     hangar stays.
 
 Settings follow your browser profile to your other devices (see
 [Private by design](#private-by-design)).
+
+---
+
+## Tech stack
+
+- **[WXT](https://wxt.dev)** – framework for cross-browser extensions: one code base, built as
+  Manifest V3 for **Chrome and Firefox** today, with more browsers possible
+- **[Vite](https://vite.dev)** – fast builds and hot reload during development
+- **[Vue 3](https://vuejs.org)** – the manager's interface, integrated into RSI's own pages
+- **TypeScript** – typed throughout
+- **Vitest** – unit and component tests, plus ESLint and Prettier for consistent code
+- **No runtime dependencies besides Vue** – no tracking, analytics or third-party SDKs

@@ -1,0 +1,101 @@
+/*
+ * The building blocks shared by all sections of the settings tab (src/settings/sections). Not
+ * scoped, so they reach into the sections; `.shm-settings` keeps them inside the tab.
+ */
+
+.shm-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 20px;
+  color: var(--shm-text);
+  font-size: calc(13px * var(--shm-font-scale));
+}
+
+.shm-settings .shm-setting {
+  margin: 0;
+  padding: 14px 16px;
+  background: rgb(var(--shm-surface-rgb) / 0.6);
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.15);
+}
+
+.shm-settings .shm-label {
+  display: block;
+  margin-bottom: 8px;
+  padding: 0;
+  color: var(--shm-accent);
+  font-size: calc(13px * var(--shm-font-scale));
+  text-transform: uppercase;
+}
+
+/*
+ * A legend sits in the fieldset's top border by default, above the padding. Floated, it flows
+ * inside the padding like the headings of the other sections; what follows starts below it.
+ */
+.shm-settings legend.shm-label {
+  float: left;
+  width: 100%;
+}
+
+.shm-settings legend.shm-label + * {
+  clear: both;
+}
+
+/* Label of a field inside a group, below the group's heading. */
+.shm-settings .shm-field-label {
+  display: block;
+  margin: 14px 0 6px;
+  color: var(--shm-text);
+}
+
+.shm-settings .shm-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+  cursor: pointer;
+}
+
+.shm-settings .shm-check input {
+  accent-color: var(--shm-accent);
+}
+
+/* A checkbox set apart from the field above it (see SettingCheck.vue). */
+.shm-settings .shm-check-setting.is-spaced {
+  margin-top: 14px;
+}
+
+.shm-settings .shm-select {
+  min-width: 280px;
+  height: 32px;
+  /* Room on the right for the arrow, which sits inside instead of at the edge. */
+  padding: 0 34px 0 10px;
+  color: var(--shm-text);
+  font: inherit;
+  /* Own arrow instead of the browser's (that one sits right at the edge). Its gray works on
+   * the dark and light backgrounds of all themes. */
+  appearance: none;
+  background-color: rgb(var(--shm-surface-rgb) / 0.9);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%238a9ba8' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px 8px;
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.35);
+  cursor: pointer;
+}
+
+.shm-settings .shm-hint {
+  margin: 6px 0 0;
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+/* Hint right under the legend, before the controls. */
+.shm-settings .shm-hint.is-first {
+  margin: 0 0 12px;
+}
+
+/* Hint of a checkbox in a group: under its label text, before the next checkbox. */
+.shm-settings .shm-hint.is-indented {
+  margin: 0 0 8px 21px;
+}

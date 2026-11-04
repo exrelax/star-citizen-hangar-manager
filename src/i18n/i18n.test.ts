@@ -31,7 +31,7 @@ describe('translate', () => {
   it('fills in substitutions and unescapes dollar signs', () => {
     expect(translate('en', 'manager.countFiltered', [3, 986])).toBe('3 of 986 pledges');
     expect(translate('en', 'settings.hideMeltValueHint')).toBe(
-      'Hides the $ values: pledge values, discounts and the costs of applied upgrades.',
+      'Hides all $ amounts: pledge values, discounts, the costs of applied upgrades, the amounts of the orders and the values in the exchange and gift dialogs.',
     );
   });
 });

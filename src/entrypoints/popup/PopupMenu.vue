@@ -2,14 +2,19 @@
 import { RSI_HANGAR_URL, REPOSITORY_URL } from '@/config';
 import { hashOfTab } from '@/hangar/route';
 import { i18n, type MessageKey } from '@/i18n';
-import type { IconName } from '@/icons/icon-names';
+import type { IconName, IconSet } from '@/icons/icon-names';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { useSettings } from '@/settings/use-settings';
 import { themeClass } from '@/themes/theme';
 
 /** The popup of the toolbar icon: where to go from it. */
-const LINKS: { label: MessageKey; icon: IconName; url: string }[] = [
-  { label: 'popup.manager', icon: 'box', url: RSI_HANGAR_URL + hashOfTab('hangar') },
+const LINKS: { label: MessageKey; icon: IconName; iconSet?: IconSet; url: string }[] = [
+  {
+    label: 'popup.manager',
+    icon: 'hangar',
+    iconSet: 'custom',
+    url: RSI_HANGAR_URL + hashOfTab('hangar'),
+  },
   { label: 'popup.settings', icon: 'gear', url: RSI_HANGAR_URL + hashOfTab('settings') },
   { label: 'popup.repository', icon: 'github', url: REPOSITORY_URL },
 ];
@@ -29,7 +34,7 @@ async function open(url: string) {
     <ul>
       <li v-for="link in LINKS" :key="link.url">
         <a class="shm-popup-link" :href="link.url" @click.prevent="open(link.url)">
-          <SvgIcon :name="link.icon" />
+          <SvgIcon :name="link.icon" :set="link.iconSet" />
           {{ i18n.t(link.label) }}
         </a>
       </li>

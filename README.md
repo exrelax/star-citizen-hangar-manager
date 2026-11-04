@@ -8,6 +8,8 @@ What it does: see [docs/FEATURES.md](docs/FEATURES.md).
 
 Want to help? See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+Which data it handles and where it is kept: see the [privacy policy](PRIVACY.md).
+
 Built with [WXT](https://wxt.dev) (based on Vite), Vue 3 and TypeScript. Both browsers are built as
 Manifest V3; WXT generates the matching manifest for each browser.
 
@@ -130,8 +132,8 @@ Firefox removes temporary add-ons when it quits.
   `chrome://extensions`; in Firefox, click **Inspect** in `about:debugging`. Errors and logs of the
   background script show up there.
 
-If the navigation entry does not appear in Firefox, check under `about:addons` → SC Hangar
-Manager → **Permissions** that access to `robertsspaceindustries.com` is allowed.
+If the navigation entry does not appear in Firefox, check under `about:addons` → Star Citizen
+Hangar Manager → **Permissions** that access to `robertsspaceindustries.com` is allowed.
 
 ## Configuration
 
@@ -150,8 +152,11 @@ src/
     styleguide/          Styleguide page with all building blocks (dev builds only)
   hangar/                Hangar data and view: sync, smart updates, list, filters, search
   buyback/               Buy back data and view, adding buy back pledges to the RSI cart
+  orders/                Orders of the pledges: invoices, refund periods, refund requests
   ccugame/               Links from CCU Game (ccugame.app) to the manager
+  demo/                  Demo mode: an anonymized selection of the pledges for screenshots
   settings/              Extension settings and their tab
+  themes/                Themes ("Modern Hangar", "Classic RSI"), font sizes, compact view
   assets/                Images bundled into the code (favicons, icon sprites, logo)
   icons/                 `SvgIcon` component, sprite loading, generated icon names
   locales/               Translations (de, en, es, fr), default locale is English
