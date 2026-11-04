@@ -173,6 +173,8 @@
     "showInBuyback": "Show in Buy Back (page $1)",
     "probablyGiftableHint": "When bought back with real money (warbond), this item is probably giftable, as it was originally bought before $1.",
     "showSingleInBuyback": "Show in Buy Back",
+    "tokens": "Buy back tokens: $1",
+    "tokensHint": "Pledges you can still buy back with store credit (one token per pledge), as RSI shows them on “Buy Back Pledges” at the last refresh or check. Buying back with money needs no token.",
     "toCart": "To Cart",
     "addToCart": "Add to cart on RSI and open the cart (new tab). RSI empties the cart for buy back pledges.",
     "cartFailed": "Could not add to the RSI cart: $1",

@@ -173,6 +173,8 @@
     "showInBuyback": "Im Buy Back anzeigen (Seite $1)",
     "probablyGiftableHint": "Bei einem Rückkauf mit echtem Geld (Warbond) ist dieses Item vermutlich verschenkbar, da es ursprünglich vor dem $1 gekauft wurde.",
     "showSingleInBuyback": "Im Buy Back anzeigen",
+    "tokens": "Buy-Back-Tokens: $1",
+    "tokensHint": "So viele Pledges kannst du noch mit Store Credit zurückkaufen (ein Token pro Pledge), wie RSI es bei „Buy Back Pledges“ beim letzten Refresh oder Check anzeigte. Ein Rückkauf mit Geld braucht kein Token.",
     "toCart": "In den Warenkorb",
     "addToCart": "In den RSI-Warenkorb legen und ihn öffnen (neuer Tab). Für Buy-Back-Pledges leert RSI den Warenkorb.",
     "cartFailed": "Konnte nicht in den RSI-Warenkorb gelegt werden: $1",

@@ -173,6 +173,8 @@
     "showInBuyback": "Afficher dans Buy Back (page $1)",
     "probablyGiftableHint": "Racheté en argent réel (warbond), cet élément est probablement offrable, car il a été acheté à l’origine avant le $1.",
     "showSingleInBuyback": "Afficher dans Buy Back",
+    "tokens": "Jetons de rachat : $1",
+    "tokensHint": "Nombre de pledges que tu peux encore racheter avec du crédit boutique (un jeton par pledge), tel que RSI l’affichait sur « Buy Back Pledges » lors de la dernière actualisation ou vérification. Un rachat avec de l’argent ne nécessite pas de jeton.",
     "toCart": "Au panier",
     "addToCart": "Ajouter au panier RSI et ouvrir le panier (nouvel onglet). RSI vide le panier pour les pledges du buy back.",
     "cartFailed": "Impossible d’ajouter au panier RSI : $1",

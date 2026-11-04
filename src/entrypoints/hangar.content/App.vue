@@ -167,6 +167,7 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
         :pledges="buybackPledges"
         :settings="settings"
         :active="activeTab === 'buyback'"
+        :tokens="buyback.tokens.value"
       />
       <template v-else-if="neverLoaded">
         <InitialLoad v-if="!syncState.running" />

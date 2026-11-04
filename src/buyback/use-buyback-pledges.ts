@@ -15,6 +15,8 @@ export function useBuybackPledges() {
   const pledges = shallowRef<BuybackView[]>([]);
   const loaded = ref(false);
   const syncedAt = ref<string>();
+  /** Buy back tokens left, as of the last sync or smart update; unset if unknown. */
+  const tokens = ref<number>();
 
   let buyback: BuybackSnapshot | null = null;
   let hangar: HangarSnapshot | null = null;
@@ -31,6 +33,7 @@ export function useBuybackPledges() {
         )
       : [];
     syncedAt.value = current?.syncedAt;
+    tokens.value = current?.tokens;
   };
 
   const unwatchBuyback = buybackSnapshot.watch((value) => {
@@ -60,5 +63,5 @@ export function useBuybackPledges() {
     unwatchOrders();
   });
 
-  return { pledges, loaded, syncedAt };
+  return { pledges, loaded, syncedAt, tokens };
 }

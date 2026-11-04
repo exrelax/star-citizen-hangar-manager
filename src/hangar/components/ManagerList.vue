@@ -48,7 +48,11 @@ const props = defineProps<{
   active: boolean;
 }>();
 
-defineSlots<{ row(props: { entry: T; autoExpand: boolean }): unknown }>();
+defineSlots<{
+  row(props: { entry: T; autoExpand: boolean }): unknown;
+  /** Next to the count, on the right. */
+  'count-side'?(): unknown;
+}>();
 
 // Pre-filled from the page URL, e.g. `…/account/pledges?search=polaris#hangar-manager`, and kept
 // in it, so a reload or bookmark keeps the search. `replaceState` adds no history entries.
@@ -293,7 +297,11 @@ const countLabel = computed(() =>
       </div>
     </div>
 
-    <p class="shm-count" aria-live="polite">{{ countLabel }}</p>
+    <!-- The count, and on the right what the list adds (the buy back: its tokens). -->
+    <div class="shm-count">
+      <span aria-live="polite">{{ countLabel }}</span>
+      <slot name="count-side" />
+    </div>
 
     <!-- One grouped list (Modern Hangar) or separate rows (Classic RSI). -->
     <div v-if="rendered.length" class="shm-rows">
@@ -483,6 +491,10 @@ const countLabel = computed(() =>
 }
 
 .shm-count {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 16px;
   margin: 10px 0;
   color: var(--shm-text-muted);
   font-size: calc(12px * var(--shm-font-scale));

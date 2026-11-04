@@ -2,7 +2,6 @@ import { BUYBACK_PAGE_SIZE, SYNC_CONCURRENCY, SYNC_WORK } from '@/config';
 import { prepareListPages, type ListPagesOf } from '@/hangar/list-pages';
 import { PLEDGE_CATEGORIES, type Pledge, type PledgeCategory } from '@/hangar/pledge';
 import { resolveShipLinks, type ShipLinks } from '@/hangar/ship-links';
-import type { ListPage } from '@/hangar/smart-update/check';
 import type { SyncProgressTracker } from '@/hangar/sync-progress';
 import { mapWithConcurrency } from '@/shared/lib/pool';
 import {
@@ -13,13 +12,13 @@ import {
   type BuybackSnapshot,
 } from './buyback';
 import { buybackSnapshot } from './buyback-storage';
-import { parseBuybackDetail, parseBuybackPage } from './parse-buyback';
+import { parseBuybackDetail, parseBuybackPage, type BuybackListPage } from './parse-buyback';
 
 export type FetchBuybackPage = (
   page: number,
   category?: PledgeCategory,
   pageSize?: number,
-) => Promise<ListPage<BuybackPledge>>;
+) => Promise<BuybackListPage>;
 
 export interface BuybackSyncDeps {
   fetchPage?: FetchBuybackPage;
@@ -83,6 +82,8 @@ async function storeBuyback(
   const all = [...pledges.values()];
   const shipLinks = await enrichBuyback(all, previous, deps);
 
+  // RSI shows the tokens above every page of the list; the first one is read anyway.
+  const tokens = (pagesOf(undefined)[0] as BuybackListPage | undefined)?.tokens;
   const now = new Date().toISOString();
   const snapshot: BuybackSnapshot = {
     version: BUYBACK_SNAPSHOT_VERSION,
@@ -90,6 +91,7 @@ async function storeBuyback(
     updatedAt: now,
     pledges: all,
     shipLinks,
+    ...(tokens !== undefined && { tokens }),
   };
   await buybackSnapshot.setValue(snapshot);
   return snapshot;

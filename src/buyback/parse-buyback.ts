@@ -2,12 +2,34 @@ import { parseDate } from '@/hangar/parse-pledges';
 import type { ListPage } from '@/hangar/smart-update/check';
 import type { BuybackPledge, BuybackUpgrade } from './buyback';
 
+/** A page of the buy back list, with the buy back tokens RSI shows above it. */
+export interface BuybackListPage extends ListPage<BuybackPledge> {
+  /** Buy back tokens left (see `parseBuybackTokens`); unset if RSI shows none. */
+  tokens?: number;
+}
+
 /** Parses one page of `/en/account/buy-back-pledges`. Expects the English page variant. */
-export function parseBuybackPage(doc: Document): ListPage<BuybackPledge> {
+export function parseBuybackPage(doc: Document): BuybackListPage {
   const pledges = [...doc.querySelectorAll<HTMLElement>('ul.pledges > li')]
     .map(parseEntry)
     .filter((pledge): pledge is BuybackPledge => pledge !== undefined);
-  return { pledges, lastPage: parseLastPage(doc) };
+  const tokens = parseBuybackTokens(doc);
+  return { pledges, lastPage: parseLastPage(doc), ...(tokens !== undefined && { tokens }) };
+}
+
+/**
+ * The buy back tokens from RSI's yellow box above the list: how many pledges can still be bought
+ * back with store credit ("You have <strong>2</strong> opportunity to buy back a pledge with store
+ * credits."). Unset without the box or a number in it.
+ */
+export function parseBuybackTokens(doc: Document): number | undefined {
+  const box = doc.querySelector('.buy-back-warning');
+  if (!box) return undefined;
+  const count = text(box.querySelector('strong')) || /you have (\d+|no)\b/i.exec(text(box))?.[1];
+  if (count === undefined) return undefined;
+  if (/^no$/i.test(count)) return 0;
+  const tokens = Number(count);
+  return Number.isInteger(tokens) && tokens >= 0 ? tokens : undefined;
 }
 
 function parseEntry(li: HTMLElement): BuybackPledge | undefined {

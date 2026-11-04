@@ -2,7 +2,12 @@ import { BUYBACK_PAGE_SIZE, SMART_UPDATE } from '@/config';
 import { PLEDGE_CATEGORIES } from '@/hangar/pledge';
 import { hangarSnapshot, type CheckOutcome } from '@/hangar/hangar-storage';
 import { checkList } from '@/hangar/smart-update/check';
-import { BUYBACK_SNAPSHOT_VERSION, buybackFingerprint, withBuybackExtensionData } from './buyback';
+import {
+  BUYBACK_SNAPSHOT_VERSION,
+  buybackFingerprint,
+  withBuybackExtensionData,
+  type BuybackSnapshot,
+} from './buyback';
 import { buybackCheckState, buybackSnapshot } from './buyback-storage';
 import { enrichBuyback, fetchBuybackPage, type BuybackSyncDeps } from './sync-buyback';
 
@@ -19,8 +24,14 @@ export async function runBuybackSmartUpdate(
   if (snapshot?.version !== BUYBACK_SNAPSHOT_VERSION) return null;
   const checkState = await buybackCheckState.getValue();
 
+  // The first page is always checked; it shows the current buy back tokens, too.
+  let tokens = snapshot.tokens;
   const result = await checkList(snapshot.pledges, {
-    fetchPage: (page) => fetchPage(page),
+    fetchPage: async (page) => {
+      const listPage = await fetchPage(page);
+      if (page === 1 && listPage.tokens !== undefined) tokens = listPage.tokens;
+      return listPage;
+    },
     cursor: checkState.cursor,
     pageSize: BUYBACK_PAGE_SIZE,
     spotCheckPages: SMART_UPDATE.buybackSpotCheckPages,
@@ -35,6 +46,10 @@ export async function runBuybackSmartUpdate(
     return lastOutcome;
   };
   if (result.status !== 'updated') {
+    // No changes to the pledges, but the tokens may have changed (e.g. by a buy back elsewhere).
+    if (tokens !== snapshot.tokens && (await unchangedSince(snapshot))) {
+      await buybackSnapshot.setValue({ ...snapshot, tokens });
+    }
     return save({ status: result.status, added: 0, removed: 0, changed: 0 });
   }
 
@@ -60,14 +75,12 @@ export async function runBuybackSmartUpdate(
   }
   const shipLinks = await enrichBuyback(pledges, snapshot, deps);
 
-  const current = await buybackSnapshot.getValue();
-  if (current?.syncedAt !== snapshot.syncedAt || current?.updatedAt !== snapshot.updatedAt) {
-    return null;
-  }
+  if (!(await unchangedSince(snapshot))) return null;
   await buybackSnapshot.setValue({
     ...snapshot,
     pledges,
     shipLinks,
+    ...(tokens !== undefined && { tokens }),
     updatedAt: new Date(now()).toISOString(),
   });
   return save({
@@ -76,4 +89,10 @@ export async function runBuybackSmartUpdate(
     removed: removed.length,
     changed: changed.length,
   });
+}
+
+/** Whether the stored buy back is still `snapshot`: no sync or other update stored meanwhile. */
+async function unchangedSince(snapshot: BuybackSnapshot): Promise<boolean> {
+  const current = await buybackSnapshot.getValue();
+  return current?.syncedAt === snapshot.syncedAt && current?.updatedAt === snapshot.updatedAt;
 }

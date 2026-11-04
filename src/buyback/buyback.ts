@@ -41,6 +41,11 @@ export interface BuybackSnapshot {
   pledges: BuybackPledge[];
   /** Links of the contained ships to other platforms, by ship name. */
   shipLinks?: ShipLinks;
+  /**
+   * Buy back tokens left as of the last sync or smart update: pledges that can still be bought
+   * back with store credit. Unset if RSI showed none.
+   */
+  tokens?: number;
 }
 
 export const BUYBACK_SNAPSHOT_VERSION = 1;

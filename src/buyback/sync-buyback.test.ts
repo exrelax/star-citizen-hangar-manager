@@ -4,6 +4,8 @@ import type { PledgeCategory } from '@/hangar/pledge';
 import { BUYBACK_SNAPSHOT_VERSION, type BuybackPledge } from './buyback';
 import { SyncProgressTracker } from '@/hangar/sync-progress';
 import { buybackSnapshot } from './buyback-storage';
+import { runBuybackSmartUpdate } from './run';
+import { buybackCheckState } from './buyback-storage';
 import { syncBuyback, type FetchBuybackPage } from './sync-buyback';
 
 const pledge = (id: number, contained = `Item ${id}`): BuybackPledge => ({
@@ -57,5 +59,33 @@ describe('syncBuyback', () => {
     expect(fetchDetails.mock.calls.map(([id]) => id)).toEqual([10]);
     const fury = (await buybackSnapshot.getValue())?.pledges.find((p) => p.id === 30);
     expect(fury?.items).toEqual(['Fury', 'Lifetime Insurance']);
+  });
+});
+
+describe('buy back tokens', () => {
+  const withTokens =
+    (tokens: number): FetchBuybackPage =>
+    async (page, category) => ({
+      ...(await fetchPage(page, category)),
+      ...(page === 1 && !category && { tokens }),
+    });
+  const deps = { fetchDetails: async () => ['Item'], fetchShipLinks: async () => ({}) };
+
+  it('stores the tokens of the first page on a full sync', async () => {
+    await syncBuyback({ ...deps, fetchPage: withTokens(2) });
+    expect((await buybackSnapshot.getValue())?.tokens).toBe(2);
+  });
+
+  it('updates them on a smart update that changes no pledges', async () => {
+    await syncBuyback({ ...deps, fetchPage: withTokens(2) });
+    const before = await buybackSnapshot.getValue();
+    const outcome = await runBuybackSmartUpdate({ ...deps, fetchPage: withTokens(1) });
+
+    // The short test pages count as a changed list; the tokens are taken over anyway.
+    expect(outcome?.status).not.toBe('updated');
+    const after = await buybackSnapshot.getValue();
+    expect(after?.tokens).toBe(1);
+    expect(after?.pledges).toEqual(before?.pledges);
+    expect((await buybackCheckState.getValue()).lastOutcome?.status).toBe(outcome?.status);
   });
 });

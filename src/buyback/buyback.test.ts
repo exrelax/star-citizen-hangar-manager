@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { buybackShipNames, hasSeveralItems, mainItem, type BuybackPledge } from './buyback';
 import { giftableIdLimit, toBuybackView } from './buyback-view';
-import { parseBuybackDetail, parseBuybackPage } from './parse-buyback';
+import { parseBuybackDetail, parseBuybackPage, parseBuybackTokens } from './parse-buyback';
 
 // Trimmed-down copy of `/en/account/buy-back-pledges` with made-up values.
 const entry = (id: number, title: string, contained: string, date: string, ccu = false) => `
@@ -72,6 +72,26 @@ describe('parseBuybackPage', () => {
         upgrade: { fromShipId: 268, toShipId: 5, toSkuId: 12991 },
       },
     ]);
+  });
+});
+
+describe('parseBuybackTokens', () => {
+  const doc = (html: string) => new DOMParser().parseFromString(html, 'text/html');
+
+  it("reads the buy back tokens from RSI's box above the list", () => {
+    const box = `<p class="buy-back-warning"><span class="warn-icon"></span>You have
+      <strong>2</strong> opportunity to buy back a pledge with store credits.<br>NOTE: Valid for
+      ONE pledge buy back with any amount of store credits applied.</p>`;
+    expect(parseBuybackTokens(doc(box))).toBe(2);
+    expect(parse(box + pageHtml('', [])).tokens).toBe(2);
+  });
+
+  it('reads none as 0 and leaves the tokens unset without the box', () => {
+    expect(
+      parseBuybackTokens(doc('<p class="buy-back-warning">You have no opportunity left.</p>')),
+    ).toBe(0);
+    expect(parseBuybackTokens(doc(pageHtml('', [])))).toBeUndefined();
+    expect(parse(pageHtml('', []))).not.toHaveProperty('tokens');
   });
 });
 
