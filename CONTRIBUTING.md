@@ -77,6 +77,9 @@ pnpm lint
 pnpm test
 ```
 
+The [CI workflow](.github/workflows/ci.yml) runs the same checks, plus the production builds of
+both browsers, on every pull request and every push to `main`.
+
 ## Commit messages
 
 Commits follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/):

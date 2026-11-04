@@ -169,6 +169,7 @@ src/
   shared/                Shared code and styles
   config.ts              Tunable values (intervals, page counts, limits)
 wxt.config.ts            Shared configuration and browser-specific manifest
+.github/workflows/       CI: checks and builds of every push to main and every pull request
 public/icon/             Extension icons, rendered from the logo by `pnpm icons`
 store/                   Texts for the store pages and their review (see store/README.md)
 ```

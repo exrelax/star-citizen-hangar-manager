@@ -1,0 +1,41 @@
+# Checks every push to main and every pull request: the same commands CONTRIBUTING.md asks for
+# before a pull request, plus the production builds of both browsers.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Reads the code only; no secrets needed.
+permissions:
+  contents: read
+
+# A newer push to the same branch or pull request cancels the run still going.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      # The version comes from `packageManager` in package.json.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      # Also runs `wxt prepare` (postinstall), which the type check and ESLint rely on.
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm format:check
+      - run: pnpm compile
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm build
