@@ -70,9 +70,8 @@ export const GIFTING_FAQ_URL =
 export const LIST_RENDER_BATCH = 100;
 
 /**
- * Rows added per step while scrolling. Each step runs when the browser is idle, between the
- * frames of the scrolling. Steps of 100 rows blocked scrolling for 50–150 ms each (noticeable
- * hitches); small steps stay well below one frame.
+ * Rows added per step while scrolling, each when the browser is idle. Small steps stay well below
+ * one frame; steps of 100 rows made scrolling stutter (50–150 ms each).
  */
 export const LIST_RENDER_STEP = 15;
 
@@ -86,14 +85,15 @@ export const LIST_RENDER_AHEAD = '2500px';
 export const SYNC_CONCURRENCY = 3;
 
 /**
- * Estimated work of the full sync's requests, for its progress bar – in "list entries": a list
- * page costs `requestOverhead` plus one per entry it lists, a buy back detail page `detailPage`.
- * `finish` is what hangar and buy back each need after their pages: ship images and links
- * (Fleetyards, slower when new ships came up) and storing – about 0.1–0.3 s. Counting it keeps
- * the bar from showing 100 % while that still runs.
- * Measured in a full sync (3 requests in parallel) in November 2026: ~80 ms per hangar page (10
- * pledges) and ~470 ms per buy back page (250 pledges). A buy back page so fills the bar about
- * 6 times as much as a hangar page – not 25 times, as every request has a fixed cost.
+ * Weights of the full sync's steps for its progress bar, counted in list entries:
+ * - a list page: `requestOverhead` plus one per entry on it
+ * - a buy back detail page: `detailPage`
+ * - `finish`: the work after the pages of hangar and buy back each (ship images and links,
+ *   storing; 0.1–0.3 s), so the bar doesn't reach 100 % too early
+ *
+ * Measured in November 2026 (3 requests in parallel): ~80 ms per hangar page (10 pledges),
+ * ~470 ms per buy back page (250 pledges). So a buy back page weighs about 6 hangar pages, not
+ * 25: every request has a fixed cost.
  */
 export const SYNC_WORK = { requestOverhead: 40, detailPage: 70, finish: 150 };
 
@@ -179,12 +179,14 @@ export const REFUND_REQUEST_FORM = {
 } as const;
 
 /**
- * Filters of "My Hangar" and the buy back, as preset until changed in the settings, per category
- * (`types`: what a pledge is, `features`: what it has; which filter belongs where is fixed in
- * `hangar/filters.ts` and `buyback/buyback-view.ts`). `order` is the order of the filter buttons,
- * `shown` the filters shown at all; filters missing in `order` follow at the end. The settings
- * store the user's own order and selection (see `settings/settings.ts`); filters added in later
- * versions appear there with these presets.
+ * Preset filter buttons of "My Hangar" and the buy back, until the user changes them in the
+ * settings. Per category (`types`: what a pledge is, `features`: what it has):
+ * - `order`: the order of the buttons; filters missing here follow at the end
+ * - `shown`: the buttons shown at all
+ *
+ * Which filter belongs to which category is fixed in `hangar/filters.ts` and
+ * `buyback/buyback-view.ts`. Filters added in later versions get these presets in the stored
+ * settings, too.
  */
 export const FILTERS: {
   hangar: FilterGroups<PledgeFilter>;
@@ -219,11 +221,12 @@ export const FILTERS: {
 export const FONT_SIZE_SCALES = { small: 0.9, medium: 1, large: 1.15 } as const;
 
 /**
- * Examples of how long the initial load takes, shown before it starts: pledges of hangar and buy
- * back together and about how long they take. Measured in Chrome with nothing stored: 986 hangar
- * and 3,976 buy back pledges (plus 1,555 orders, 634 RSI pages) in 81.8 s. The first load reads
- * more than a refresh, which then takes 18.7 s (128 pages). The 1,000 pledges are scaled from
- * that.
+ * How long the initial load takes, shown before it starts: pledges of hangar and buy back
+ * together, and about how many seconds.
+ *
+ * Measured in Chrome with nothing stored: ~5,000 pledges (986 hangar, 3,976 buy back, plus 1,555
+ * orders; 634 RSI pages) took 81.8 s. The example for 1,000 pledges is scaled down from that.
+ * Later refreshes read only the new orders and are much faster (18.7 s, 128 pages).
  */
 export const INITIAL_LOAD_EXAMPLES = [
   { pledges: 1000, seconds: 20 },
