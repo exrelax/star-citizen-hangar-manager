@@ -333,7 +333,9 @@ Paints, Game access, LTI, Warbond, Probably giftable, Rewards), plus:
 
 ## Settings
 
-- **Language**: automatic, English, German, French or Spanish.
+- **Language**: automatic, English, German, French or Spanish. The exchange and gift dialogs
+  show RSI's own texts in RSI's English by default, as its wording counts; translating them too
+  is an experimental option, as RSI's changes reach the translations only later.
 - **Show only the best insurance of upgraded ships** (on by default): after upgrades a pledge lists
   the insurance of every step; only the one that counts (LTI, otherwise the most months) is listed.
 - **Hide sensitive information**: see [Private by design](#private-by-design).

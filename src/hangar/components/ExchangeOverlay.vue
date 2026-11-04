@@ -14,6 +14,7 @@ import {
   type ExchangeWarning,
 } from '../exchange';
 import type { PledgeView } from '../pledge-view';
+import { useRsiText } from '../rsi-text';
 import PledgeActionSummary from './PledgeActionSummary.vue';
 import { maybeRunSmartUpdate } from '../sync-state';
 
@@ -27,6 +28,8 @@ const props = defineProps<{ pledge: PledgeView }>();
 const emit = defineEmits<{ close: [] }>();
 
 const { settings } = useSettings();
+/** RSI's own texts: in English unless the setting translates them (see rsi-text.ts). */
+const rsi = useRsiText();
 const dialog = useTemplateRef<HTMLElement>('dialog');
 
 const warnings = computed(() => exchangeWarnings(props.pledge, today.value));
@@ -183,13 +186,13 @@ onUnmounted(() => {
         />
 
         <p v-if="done" class="shm-action-success" role="status">
-          {{ i18n.t('exchange.success', [value]) }}
+          {{ rsi('exchange.success', [value]) }}
           <span>{{ i18n.t('exchange.successNote') }}</span>
         </p>
 
         <!-- RSI's first step for the last pledge with game access. -->
         <div v-else-if="step === 'attention'" class="shm-exchange-attention" role="alert">
-          <strong>{{ i18n.t('exchange.attention') }}</strong>
+          <strong>{{ rsi('exchange.attention') }}</strong>
           <p>{{ i18n.t('exchange.warnings.lastGameAccess.text') }}</p>
           <button
             type="button"
@@ -199,8 +202,8 @@ onUnmounted(() => {
           >
             {{
               attentionLeft > 0
-                ? i18n.t('exchange.continueIn', [attentionLeft])
-                : i18n.t('exchange.continue')
+                ? rsi('exchange.continueIn', [attentionLeft])
+                : rsi('exchange.continue')
             }}
           </button>
         </div>
@@ -218,23 +221,23 @@ onUnmounted(() => {
           </ul>
 
           <!-- RSI's texts of the dialog. -->
-          <p>{{ i18n.t('exchange.intro', [pledge.title, value]) }}</p>
+          <p>{{ rsi('exchange.intro', [pledge.title, value]) }}</p>
           <p v-if="!pledge.isBuybackable" class="shm-exchange-final">
-            {{ i18n.t('exchange.notBuybackable') }}
+            {{ rsi('exchange.notBuybackable') }}
           </p>
           <p>
-            {{ i18n.t(pledge.isBuybackable ? 'exchange.finalBuyback' : 'exchange.finalPermanent') }}
+            {{ rsi(pledge.isBuybackable ? 'exchange.finalBuyback' : 'exchange.finalPermanent') }}
           </p>
 
           <fieldset class="shm-action-consents">
-            <legend>{{ i18n.t('exchange.acknowledge') }}</legend>
+            <legend>{{ rsi('exchange.acknowledge') }}</legend>
             <label>
               <input v-model="consentLimited" type="checkbox" name="consent_limited" />
-              <span>{{ i18n.t('exchange.consentLimited') }}</span>
+              <span>{{ rsi('exchange.consentLimited') }}</span>
             </label>
             <label>
               <input v-model="consentDiscount" type="checkbox" name="consent_discount" />
-              <span>{{ i18n.t('exchange.consentDiscount') }}</span>
+              <span>{{ rsi('exchange.consentDiscount') }}</span>
             </label>
             <label v-if="hasDanger" class="is-danger">
               <input v-model="consentWarnings" type="checkbox" />

@@ -19,6 +19,7 @@ describe('withDefaults', () => {
     ).toEqual({
       language: 'de',
       hideMeltValue: true,
+      translateRsiTexts: false,
       hideSupersededInsurances: true,
       hidePledgeIds: true,
       demoMode: true,

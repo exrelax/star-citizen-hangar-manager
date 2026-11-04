@@ -26,6 +26,11 @@ export interface Settings {
   language: LanguageSetting;
   /** Hides the $ values (pledge values, discounts, upgrade costs). */
   hideMeltValue: boolean;
+  /**
+   * Shows RSI's own texts of the exchange and gift dialogs translated; off: in RSI's English,
+   * whose wording counts (see `hangar/rsi-text.ts`).
+   */
+  translateRsiTexts: boolean;
   /** Lists only the best insurance in the items of upgraded ships, the one that counts. */
   hideSupersededInsurances: boolean;
   /** Hides the pledge ids (also those of applied CCUs). */
@@ -53,6 +58,7 @@ export interface Settings {
 export const DEFAULT_SETTINGS: Settings = {
   language: 'auto',
   hideMeltValue: false,
+  translateRsiTexts: false,
   hideSupersededInsurances: true,
   hidePledgeIds: false,
   demoMode: false,
@@ -83,6 +89,10 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
       typeof stored?.hideMeltValue === 'boolean'
         ? stored.hideMeltValue
         : DEFAULT_SETTINGS.hideMeltValue,
+    translateRsiTexts:
+      typeof stored?.translateRsiTexts === 'boolean'
+        ? stored.translateRsiTexts
+        : DEFAULT_SETTINGS.translateRsiTexts,
     hideSupersededInsurances:
       typeof stored?.hideSupersededInsurances === 'boolean'
         ? stored.hideSupersededInsurances

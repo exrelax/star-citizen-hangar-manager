@@ -66,6 +66,21 @@ const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
         <option v-for="code in LOCALES" :key="code" :value="code">{{ languageName(code) }}</option>
       </select>
       <p class="shm-hint">{{ i18n.t('settings.languageHint') }}</p>
+      <label class="shm-check shm-language-option">
+        <input
+          type="checkbox"
+          :checked="settings.translateRsiTexts"
+          @change="
+            emit('update', { translateRsiTexts: ($event.target as HTMLInputElement).checked })
+          "
+        />
+        {{ i18n.t('settings.translateRsiTexts') }}
+        <span class="shm-experimental">
+          <SvgIcon name="triangle-exclamation" />
+          {{ i18n.t('settings.experimental') }}
+        </span>
+      </label>
+      <p class="shm-hint is-indented">{{ i18n.t('settings.translateRsiTextsHint') }}</p>
     </section>
 
     <section class="shm-setting">
@@ -324,6 +339,22 @@ const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
 .shm-dev-link:focus-visible {
   text-decoration: underline;
   outline: none;
+}
+
+.shm-language-option {
+  margin-top: 14px;
+}
+
+/* Marks a setting whose result may not always be right (here: translations that lag behind). */
+.shm-experimental {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 7px;
+  color: var(--shm-warning);
+  font-size: 11px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
 }
 
 .shm-hint {

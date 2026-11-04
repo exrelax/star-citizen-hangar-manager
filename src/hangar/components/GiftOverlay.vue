@@ -5,6 +5,7 @@ import { themeClass } from '@/themes/theme';
 import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 import { giftPledge, giftWarnings, isEmail } from '../gift';
 import type { PledgeView } from '../pledge-view';
+import { useRsiText } from '../rsi-text';
 import { maybeRunSmartUpdate } from '../sync-state';
 import PledgeActionSummary from './PledgeActionSummary.vue';
 
@@ -18,6 +19,8 @@ const props = defineProps<{ pledge: PledgeView }>();
 const emit = defineEmits<{ close: [] }>();
 
 const { settings } = useSettings();
+/** RSI's own texts: in English unless the setting translates them (see rsi-text.ts). */
+const rsi = useRsiText();
 const dialog = useTemplateRef<HTMLElement>('dialog');
 
 const warnings = computed(() => giftWarnings(props.pledge));
@@ -111,8 +114,8 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
         <PledgeActionSummary :pledge="pledge" :value-label="i18n.t('gift.value')" />
 
         <p v-if="sentTo" class="shm-action-success" role="status">
-          {{ i18n.t('gift.success', [sentTo, pledge.title]) }}
-          <span>{{ i18n.t('gift.successNote') }}</span>
+          {{ rsi('gift.success', [sentTo, pledge.title]) }}
+          <span>{{ rsi('gift.successNote') }}</span>
         </p>
 
         <form v-else class="shm-action-form" @submit.prevent="submit">
@@ -128,17 +131,17 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
           </ul>
 
           <!-- RSI's texts of the dialog; RSI disables re-gifting for all accounts. -->
-          <p>{{ i18n.t('gift.intro', [pledge.title]) }}</p>
-          <p class="shm-gift-final">{{ i18n.t('gift.noRegifting') }}</p>
+          <p>{{ rsi('gift.intro', [pledge.title]) }}</p>
+          <p class="shm-gift-final">{{ rsi('gift.noRegifting') }}</p>
 
           <div class="shm-action-fields">
-            <span class="shm-gift-legend">{{ i18n.t('gift.recipient') }}</span>
+            <span class="shm-gift-legend">{{ rsi('gift.recipient') }}</span>
             <label class="shm-action-field">
-              <span>{{ i18n.t('gift.name') }}</span>
+              <span>{{ rsi('gift.name') }}</span>
               <input v-model="name" type="text" name="name" autocomplete="off" />
             </label>
             <label class="shm-action-field">
-              <span>{{ i18n.t('gift.email') }}</span>
+              <span>{{ rsi('gift.email') }}</span>
               <input
                 v-model="email"
                 type="email"
