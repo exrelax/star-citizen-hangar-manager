@@ -1,0 +1,91 @@
+name: Bug report
+description: Something doesn't work as expected.
+title: '[Bug]: '
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please check the [existing issues](https://github.com/exrelax/star-citizen-hangar-manager/issues) first.
+
+        **Never post personal data:** no pledge or order IDs, names, email or billing addresses, passwords or session tokens. For screenshots, turn on the demo mode or "Hide pledge and order IDs, name and address" in the settings.
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A short description of the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the Hangar Manager
+        2. Click on …
+        3. See …
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect instead?
+    validations:
+      required: true
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      options:
+        - Chrome
+        - Firefox
+        - Other Chromium-based browser (Edge, Brave, Opera, …)
+    validations:
+      required: true
+  - type: input
+    id: browser-version
+    attributes:
+      label: Browser version
+      placeholder: e.g. 142.0
+  - type: input
+    id: extension-version
+    attributes:
+      label: Extension version
+      description: Shown in the browser's extension management (chrome://extensions or about:addons).
+      placeholder: e.g. 0.1.0
+  - type: dropdown
+    id: theme
+    attributes:
+      label: Theme
+      options:
+        - Modern Hangar
+        - Classic RSI
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language of the extension
+      options:
+        - English
+        - Deutsch
+        - Français
+        - Español
+  - type: textarea
+    id: console
+    attributes:
+      label: Console messages
+      description: Messages in the browser console (F12) that start with `[star-citizen-hangar-manager]`. Remove personal data first.
+      render: text
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Drag images here if they help – without personal data.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you submit
+      options:
+        - label: I searched the existing issues and this bug isn't reported yet.
+          required: true
+        - label: This report contains no personal data (pledge or order IDs, names, addresses, passwords).
+          required: true
