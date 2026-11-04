@@ -322,6 +322,12 @@
   color: var(--shm-text-muted);
 }
 
+/* A link at the end of a hint, e.g. to RSI's Gifting FAQs. */
+.shm-hint-link {
+  color: var(--shm-accent);
+  white-space: nowrap;
+}
+
 /* While the pledge is put into RSI's cart. */
 .shm-cart-button.is-busy {
   cursor: progress;

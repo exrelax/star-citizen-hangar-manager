@@ -301,6 +301,8 @@
         "text": "Der Empfänger bekommt das Schiff so, wie es jetzt ist, einschließlich der darauf angewendeten CCUs."
       }
     },
+    "rules": "Seit dem $1 gelten bei RSI neue Regeln fürs Verschenken: Vorher gekaufte Pledges lassen sich einmal verschenken (ohne Store Credit), neuere nur, wenn sie als Geschenk gekauft wurden.",
+    "faqLink": "Gifting FAQs von RSI",
     "intro": "Du bist dabei, dein Pledge „$1“ per E-Mail an einen anderen Citizen zu verschenken. Das Pledge wird übertragen, sobald der Empfänger es annimmt. Bis dahin kannst du das Geschenk jederzeit zurückziehen.",
     "noRegifting": "Sobald dein Geschenk angenommen ist, ist es an das Konto des Empfängers gebunden und kann nicht weiterverschenkt werden.",
     "recipient": "An wen sollen wir das Geschenk senden?",

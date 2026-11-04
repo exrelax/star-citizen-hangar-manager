@@ -301,6 +301,8 @@
         "text": "The recipient gets the ship as it is now, including the CCUs applied to it."
       }
     },
+    "rules": "Since $1, RSI has new gifting rules: pledges bought before can be gifted once (without store credit), newer ones only if they were bought as a gift.",
+    "faqLink": "RSI's Gifting FAQs",
     "intro": "You are about to gift your “$1” pledge to another citizen by email. This will transfer your pledge as soon as it is accepted by the recipient. You can cancel the gift at any time until then.",
     "noRegifting": "Once your gift has been claimed it will be bound to the recipient's account and cannot be re-gifted.",
     "recipient": "Who should we send this gift to?",

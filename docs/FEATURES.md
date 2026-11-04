@@ -295,13 +295,30 @@ with game access or carries applied upgrades, and the email address is entered t
 doesn't send your gift to someone else. Until it is claimed, the gift can be cancelled in
 "My Gear".
 
+This concerns pledges bought **before 30 Oct 2026**: those can still be gifted with RSI's legacy
+gifting system – once per pledge, and only if no store credit was used. Since 30 Oct 2026, RSI has
+new rules for gifting: a pledge is a gift only if it is bought as one in the pledge store. The
+rules in detail:
+
+- [Gifting FAQs](https://support.robertsspaceindustries.com/hc/en-us/articles/115013325608-Gifting-FAQs)
+  in RSI's knowledge base – the current rules, including what can't be gifted and gifting after a
+  buy back
+- [Updates to pledge gifting and game access](https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/updates-to-pledge-gifting-and-game-access)
+  and its [FAQ](https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/updates-to-pledge-gifting-faq)
+  on Spectrum – the announcement of the change
+
 ## Buy back
 
 The **Buy Back** tab lists all melted pledges with the same search and filters (Ships, CCUs,
 Paints, Game access, LTI, Warbond, Probably giftable, Rewards), plus:
 
-- **Probably giftable**: pledges bought before 30 Oct 2026 are probably giftable again when bought
-  back with money (warbond).
+- **Probably giftable**: a pledge bought back keeps the giftable status it had when it was
+  melted, and buying back with store credit makes it ungiftable (see RSI's
+  [Gifting FAQs](https://support.robertsspaceindustries.com/hc/en-us/articles/115013325608-Gifting-FAQs),
+  "If I use the Buy Back Tool to recover a pledge, can I gift it to someone else?"). So pledges
+  bought before 30 Oct 2026 are probably giftable again when bought back with money (warbond) –
+  "probably", as the extension can't tell whether a pledge was giftable when it was melted (e.g.
+  bought with store credit, or already gifted once).
 - **Buy back tokens**: how many pledges can still be bought back with store credit, as RSI shows
   it above its buy back list – next to the number of pledges, read with every refresh and smart
   update.

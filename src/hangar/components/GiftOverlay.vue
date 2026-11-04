@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { giftingRulesDate } from '@/buyback/giftable-hint';
+import { GIFTING_FAQ_URL } from '@/config';
 import { i18n } from '@/i18n';
 import { useSettings } from '@/settings/use-settings';
 import { fontScaleStyle, themeClasses } from '@/themes/theme';
@@ -138,6 +140,14 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
             </li>
           </ul>
 
+          <!-- The rules changed on 30 Oct 2026; RSI's dialog doesn't say so (see config). -->
+          <p class="shm-gift-rules">
+            {{ i18n.t('gift.rules', [giftingRulesDate]) }}
+            <a :href="GIFTING_FAQ_URL" target="_blank" rel="noopener noreferrer">
+              {{ i18n.t('gift.faqLink') }}
+            </a>
+          </p>
+
           <!-- RSI's texts of the dialog; RSI disables re-gifting for all accounts. -->
           <p>{{ rsi('gift.intro', [pledge.title]) }}</p>
           <p class="shm-gift-final">{{ rsi('gift.noRegifting') }}</p>
@@ -211,5 +221,14 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
 
 .shm-gift-legend {
   color: var(--shm-text);
+}
+
+/* Note on the gifting rules, with the link to RSI's FAQ. */
+.shm-gift-rules {
+  color: var(--shm-text-secondary);
+}
+
+.shm-gift-rules a {
+  color: var(--shm-accent);
 }
 </style>

@@ -301,6 +301,8 @@
         "text": "Le destinataire reçoit le vaisseau tel qu’il est maintenant, y compris les CCU qui y sont appliqués."
       }
     },
+    "rules": "Depuis le $1, RSI applique de nouvelles règles de don : les pledges achetés avant peuvent être offerts une fois (sans crédit boutique), les plus récents seulement s’ils ont été achetés comme cadeau.",
+    "faqLink": "FAQ de RSI sur les cadeaux",
     "intro": "Tu es sur le point d’offrir ton pledge « $1 » à un autre citoyen par e-mail. Le pledge sera transféré dès que le destinataire l’aura accepté. Jusque-là, tu peux annuler le cadeau à tout moment.",
     "noRegifting": "Une fois ton cadeau accepté, il sera lié au compte du destinataire et ne pourra plus être offert.",
     "recipient": "À qui devons-nous envoyer ce cadeau ?",

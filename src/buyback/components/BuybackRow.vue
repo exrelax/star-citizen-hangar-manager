@@ -13,6 +13,7 @@ import { computed, ref, watch } from 'vue';
 import type { BuybackView } from '../buyback-view';
 import { addBuybackToCart, CartError, RSI_CART_PATH } from '../cart';
 import { giftableHint } from '../giftable-hint';
+import { GIFTING_FAQ_URL } from '@/config';
 
 const props = defineProps<{
   pledge: BuybackView;
@@ -176,7 +177,18 @@ const kind = computed(() =>
       </div>
       <div class="shm-details-main">
         <OrderInfo v-if="pledge.order" :order="pledge.order" />
-        <p v-if="pledge.isProbablyGiftable" class="shm-hint">{{ giftableHint }}</p>
+        <p v-if="pledge.isProbablyGiftable" class="shm-hint">
+          {{ giftableHint }}
+          <a
+            class="shm-hint-link"
+            :href="GIFTING_FAQ_URL"
+            target="_blank"
+            rel="noopener noreferrer"
+            @click.stop
+          >
+            {{ i18n.t('gift.faqLink') }}
+          </a>
+        </p>
         <ul v-if="pledge.items.length" class="shm-items">
           <li v-for="(item, index) in pledge.items" :key="index">
             <span class="shm-item-title">{{ item }}</span>

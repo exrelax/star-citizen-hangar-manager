@@ -301,6 +301,8 @@
         "text": "El destinatario recibe la nave tal como está ahora, incluidos los CCU aplicados."
       }
     },
+    "rules": "Desde el $1, RSI tiene nuevas reglas para regalar: los pledges comprados antes se pueden regalar una vez (sin crédito de tienda), los más recientes solo si se compraron como regalo.",
+    "faqLink": "FAQ de RSI sobre regalos",
     "intro": "Estás a punto de regalar tu pledge «$1» a otro ciudadano por correo electrónico. El pledge se transferirá en cuanto el destinatario lo acepte. Hasta entonces puedes cancelar el regalo en cualquier momento.",
     "noRegifting": "Una vez aceptado, tu regalo quedará vinculado a la cuenta del destinatario y no se podrá volver a regalar.",
     "recipient": "¿A quién enviamos este regalo?",

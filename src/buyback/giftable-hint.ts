@@ -7,10 +7,13 @@ import { computed } from 'vue';
  * text only changes with the language.
  */
 export const giftableHint = computed(() =>
-  i18n.t('buyback.probablyGiftableHint', [
-    new Date(BUYBACK_GIFTABLE_PURCHASED_BEFORE).toLocaleDateString(locale.value, {
-      dateStyle: 'medium',
-      timeZone: 'UTC',
-    }),
-  ]),
+  i18n.t('buyback.probablyGiftableHint', [giftingRulesDate.value]),
+);
+
+/** The date RSI's gifting rules changed (`BUYBACK_GIFTABLE_PURCHASED_BEFORE`), in the language. */
+export const giftingRulesDate = computed(() =>
+  new Date(BUYBACK_GIFTABLE_PURCHASED_BEFORE).toLocaleDateString(locale.value, {
+    dateStyle: 'medium',
+    timeZone: 'UTC',
+  }),
 );

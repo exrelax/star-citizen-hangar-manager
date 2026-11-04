@@ -57,6 +57,13 @@ export const BUYBACK_PAGE_SIZE = 250;
 export const BUYBACK_GIFTABLE_PURCHASED_BEFORE = '2026-10-30';
 
 /**
+ * RSI's Gifting FAQs: the gifting rules since `BUYBACK_GIFTABLE_PURCHASED_BEFORE`, including
+ * gifting after a buy back. Linked from the gift dialog and the "probably giftable" notes.
+ */
+export const GIFTING_FAQ_URL =
+  'https://support.robertsspaceindustries.com/hc/en-us/articles/115013325608-Gifting-FAQs';
+
+/**
  * Rows the manager lists render at first. Filtering and searching always cover all entries; only
  * drawing is limited, which keeps thousands of entries fast.
  */
