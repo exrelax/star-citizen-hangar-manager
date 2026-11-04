@@ -43,7 +43,7 @@ const titleId = computed(() => (settings.value.hidePledgeIds ? HIDDEN : props.or
 
 /** The time left to refund the order, with RSI's support form filled in for it – if shown. */
 const refund = computed(() =>
-  props.refundable && settings.value.showRefund && props.order.placedAt
+  props.refundable && !settings.value.hideRefund && props.order.placedAt
     ? refundWindow(props.order.placedAt, today.value)
     : undefined,
 );

@@ -13,7 +13,7 @@ describe('withDefaults', () => {
         hideMeltValue: true,
         hidePledgeIds: true,
         demoMode: true,
-        showRefund: false,
+        hideRefund: true,
         shipLinks: { erkul: false, fleetyards: true },
       }),
     ).toEqual({
@@ -24,7 +24,7 @@ describe('withDefaults', () => {
       hideSupersededInsurances: true,
       hidePledgeIds: true,
       demoMode: true,
-      showRefund: false,
+      hideRefund: true,
       smartUpdates: true,
       buybackLinkMode: 'single',
       theme: 'modern',
@@ -48,5 +48,11 @@ describe('withDefaults', () => {
         filters: { hangar: 'all', buyback: { order: 5 } },
       } as never),
     ).toEqual(DEFAULT_SETTINGS);
+  });
+
+  it('takes the refund setting of earlier versions over, inverted', () => {
+    expect(withDefaults({ showRefund: false } as never).hideRefund).toBe(true);
+    expect(withDefaults({ showRefund: true } as never).hideRefund).toBe(false);
+    expect(withDefaults({ showRefund: false, hideRefund: false } as never).hideRefund).toBe(false);
   });
 });

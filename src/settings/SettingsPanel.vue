@@ -197,6 +197,15 @@ const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
       <label class="shm-check">
         <input
           type="checkbox"
+          :checked="settings.hideRefund"
+          @change="emit('update', { hideRefund: ($event.target as HTMLInputElement).checked })"
+        />
+        {{ i18n.t('settings.hideRefund') }}
+      </label>
+      <p class="shm-hint is-indented">{{ i18n.t('settings.hideRefundHint', [REFUND_DAYS]) }}</p>
+      <label class="shm-check">
+        <input
+          type="checkbox"
           :checked="settings.demoMode"
           @change="emit('update', { demoMode: ($event.target as HTMLInputElement).checked })"
         />
@@ -219,17 +228,6 @@ const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
       <p class="shm-hint">{{ i18n.t('settings.smartUpdatesHint') }}</p>
     </section>
 
-    <section class="shm-setting">
-      <label class="shm-check">
-        <input
-          type="checkbox"
-          :checked="settings.showRefund"
-          @change="emit('update', { showRefund: ($event.target as HTMLInputElement).checked })"
-        />
-        {{ i18n.t('settings.showRefund') }}
-      </label>
-      <p class="shm-hint">{{ i18n.t('settings.showRefundHint', [REFUND_DAYS]) }}</p>
-    </section>
     <section class="shm-setting">
       <label class="shm-label" for="shm-buyback-link">{{ i18n.t('settings.buybackLink') }}</label>
       <select

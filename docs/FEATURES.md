@@ -148,6 +148,8 @@ information (for screenshots or content creators)** keeps private details off sc
   the same shape. Searching by ID still works.
 - **Hide melt value**: hides all amounts – pledge values, discounts, upgrade costs, amounts paid
   and the amounts in the order details.
+- **Hide refund period**: hides the refund countdown of purchases paid with money and the
+  "Refund Request" button in the order details (off by default).
 - **Demo mode**: shows a fixed selection of 100 hangar and 50 buy back pledges with made-up pledge
   and order IDs (e.g. `99FE3X712`). Order details show a dummy billing address and payment
   provider instead of the real ones; links to RSI, the cart, invoices and refund requests are
@@ -350,7 +352,6 @@ Paints, Game access, LTI, Warbond, Probably giftable, Rewards), plus:
     with separators instead of cards with gaps; in Classic RSI the items without gaps, separated
     by a 1 px border.
 - **Smart updates**: on or off.
-- **Show refund period**: refund countdown and "Refund Request" button (on by default).
 - **Filters**: order and selection of the filter buttons, separately for My Hangar and Buy Back
   and for types and features – drag a filter (or use its arrows) to move it within its group,
   uncheck it to hide its button.

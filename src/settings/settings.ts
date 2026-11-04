@@ -49,8 +49,11 @@ export interface Settings {
   hidePledgeIds: boolean;
   /** Shows a selection of the pledges with made-up ids instead of all (see `src/demo`). */
   demoMode: boolean;
-  /** Shows how many days are left to refund purchases paid with money (see `orders/refund.ts`). */
-  showRefund: boolean;
+  /**
+   * Hides how many days are left to refund purchases paid with money, and the refund request
+   * (see `orders/refund.ts`). Replaces `showRefund` (stored until version 0.1), its opposite.
+   */
+  hideRefund: boolean;
   /** Keeps the stored hangar current by checking a few hangar pages now and then. */
   smartUpdates: boolean;
   buybackLinkMode: BuybackLinkMode;
@@ -82,7 +85,7 @@ export const DEFAULT_SETTINGS: Settings = {
   hideSupersededInsurances: true,
   hidePledgeIds: false,
   demoMode: false,
-  showRefund: true,
+  hideRefund: false,
   smartUpdates: true,
   buybackLinkMode: 'single',
   theme: 'modern',
@@ -103,8 +106,15 @@ export const settingsItem = storage.defineItem<Partial<Settings> | null>('sync:s
   fallback: null,
 });
 
+/** Settings stored by earlier versions, read once more so nobody loses a choice. */
+interface LegacySettings {
+  /** Before `hideRefund`: shows the refund period (default on). */
+  showRefund?: boolean;
+}
+
 /** Complete settings from stored values, falling back to the defaults for missing or invalid ones. */
 export function withDefaults(stored: Partial<Settings> | null | undefined): Settings {
+  const legacy = stored as LegacySettings | null | undefined;
   return {
     language: isLocale(stored?.language) ? stored.language : DEFAULT_SETTINGS.language,
     hideMeltValue:
@@ -128,8 +138,12 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
         ? stored.hidePledgeIds
         : DEFAULT_SETTINGS.hidePledgeIds,
     demoMode: typeof stored?.demoMode === 'boolean' ? stored.demoMode : DEFAULT_SETTINGS.demoMode,
-    showRefund:
-      typeof stored?.showRefund === 'boolean' ? stored.showRefund : DEFAULT_SETTINGS.showRefund,
+    hideRefund:
+      typeof stored?.hideRefund === 'boolean'
+        ? stored.hideRefund
+        : typeof legacy?.showRefund === 'boolean'
+          ? !legacy.showRefund
+          : DEFAULT_SETTINGS.hideRefund,
     smartUpdates:
       typeof stored?.smartUpdates === 'boolean'
         ? stored.smartUpdates
