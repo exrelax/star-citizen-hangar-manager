@@ -16,7 +16,7 @@
     "initialLoadDuration": "The first load can take a few seconds: about $1 for $2 pledges, about $3 for $4 pledges (hangar and buy back together). The progress shows on the refresh button at the top right.",
     "count": "$1 pledges",
     "countFiltered": "$1 of $2 pledges",
-    "searchPlaceholder": "Search titles, ships and pledge IDs …",
+    "searchPlaceholder": "Search titles, ships, pledge and order IDs …",
     "noResults": "No pledges match your search.",
     "syncProgress": "Reading RSI pages: $1 of $2 ($3)",
     "demoBadge": "Demo",

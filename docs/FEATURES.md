@@ -203,8 +203,9 @@ on its own.
 
 ## Search and filters
 
-- **Live search** as you type – by title, ship name, pledge ID or order ID. Words are matched at
-  their start, so `f8c` finds the "F8C Lightning".
+- **Live search** as you type – by title, ship name, pledge ID or order ID (also of orders paid with
+  store credit, which are shown nowhere). Words are matched at their start, so `f8c` finds the
+  "F8C Lightning".
 - The search is part of the URL (`?search=…`): searches can be bookmarked or shared, and other
   tools can link to a pledge.
 - **Filters** in two groups:

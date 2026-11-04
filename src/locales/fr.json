@@ -16,7 +16,7 @@
     "initialLoadDuration": "Le premier chargement peut prendre quelques secondes : environ $1 pour $2 pledges, environ $3 pour $4 pledges (hangar et rachat ensemble). La progression s’affiche sur le bouton d’actualisation en haut à droite.",
     "count": "$1 pledges",
     "countFiltered": "$1 sur $2 pledges",
-    "searchPlaceholder": "Rechercher des titres, vaisseaux et ID de pledge…",
+    "searchPlaceholder": "Rechercher des titres, vaisseaux, ID de pledge et de commande…",
     "noResults": "Aucun pledge ne correspond à ta recherche.",
     "syncProgress": "Lecture des pages RSI : $1 sur $2 ($3)",
     "demoBadge": "Démo",

@@ -231,15 +231,24 @@ describe('paidOrderOf / withOrder', () => {
     recentLogEntries: [],
   };
 
-  it('gives only orders paid with money, and makes them searchable', () => {
+  it('gives only orders paid with money', () => {
     expect(paidOrderOf(1, snapshot)?.id).toBe('MONEY');
     expect(paidOrderOf(2, snapshot)).toBeUndefined();
     expect(paidOrderOf(3, snapshot)).toBeUndefined();
-    expect(withOrder({ id: 1, searchText: ' aurora' }, snapshot).searchText).toBe(' aurora money');
-    expect(withOrder({ id: 2, searchText: 'aurora' }, snapshot)).toEqual({
-      id: 2,
-      searchText: 'aurora',
+  });
+
+  it('attaches the money-paid order and makes the ids of all orders searchable', () => {
+    expect(withOrder({ id: 1, searchText: ' aurora' }, snapshot)).toMatchObject({
+      order: { id: 'MONEY' },
+      searchText: ' aurora money',
     });
+    // Store credit: not shown, but found by its order id.
+    expect(withOrder({ id: 2, searchText: ' aurora' }, snapshot)).toEqual({
+      id: 2,
+      searchText: ' aurora credit',
+    });
+    const view = { id: 3, searchText: ' aurora' };
+    expect(withOrder(view, snapshot)).toBe(view);
   });
 });
 

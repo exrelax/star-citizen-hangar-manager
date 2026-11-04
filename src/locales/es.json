@@ -16,7 +16,7 @@
     "initialLoadDuration": "La primera carga puede tardar unos segundos: unos $1 para $2 pledges, unos $3 para $4 pledges (hangar y recompra juntos). El progreso se muestra en el botón de actualizar arriba a la derecha.",
     "count": "$1 pledges",
     "countFiltered": "$1 de $2 pledges",
-    "searchPlaceholder": "Buscar títulos, naves e ID de pledge…",
+    "searchPlaceholder": "Buscar títulos, naves, ID de pledge y de pedido…",
     "noResults": "Ningún pledge coincide con tu búsqueda.",
     "syncProgress": "Leyendo páginas de RSI: $1 de $2 ($3)",
     "demoBadge": "Demo",

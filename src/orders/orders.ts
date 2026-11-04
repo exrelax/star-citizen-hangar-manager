@@ -209,18 +209,21 @@ function totalsOf(element: Element | null): LabelledValue[] {
 const clean = (text: string | null | undefined) => text?.replace(/\s+/g, ' ').trim() ?? '';
 
 /**
- * The view of a pledge with its money-paid order attached; the order id becomes searchable.
- * Returns the view itself when there is none.
+ * The view of a pledge with its money-paid order attached. The id of its order becomes
+ * searchable in any case, also of orders paid with store credit (shown nowhere, but known from
+ * RSI's billing list or emails). Returns the view itself when no order is known.
  */
 export function withOrder<T extends { id: number; searchText: string; order?: PaidOrder }>(
   view: T,
   snapshot: OrdersSnapshot | null | undefined,
 ): T {
+  const orderId =
+    snapshot?.version === ORDERS_SNAPSHOT_VERSION ? snapshot.pledgeOrders[view.id]?.orderId : '';
+  if (!orderId) return view;
+  // Normalized texts start with a space before each word, so they just join.
+  const searchText = view.searchText + normalizeSearchText(orderId);
   const order = paidOrderOf(view.id, snapshot);
-  return order
-    ? // Normalized texts start with a space before each word, so they just join.
-      { ...view, order, searchText: view.searchText + normalizeSearchText(order.id) }
-    : view;
+  return order ? { ...view, order, searchText } : { ...view, searchText };
 }
 
 /** The billing address shown in the demo instead of the real one. */
