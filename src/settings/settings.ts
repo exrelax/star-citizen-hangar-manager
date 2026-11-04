@@ -27,6 +27,11 @@ export interface Settings {
   /** Hides the $ values (pledge values, discounts, upgrade costs). */
   hideMeltValue: boolean;
   /**
+   * Shows the exchange and gift dialogs in the selected theme; off: after RSI's own dialogs of
+   * "My Gear" (see `hangar/components/action-dialog.css`).
+   */
+  themedActionDialogs: boolean;
+  /**
    * Shows RSI's own texts of the exchange and gift dialogs translated; off: in RSI's English,
    * whose wording counts (see `hangar/rsi-text.ts`).
    */
@@ -58,6 +63,7 @@ export interface Settings {
 export const DEFAULT_SETTINGS: Settings = {
   language: 'auto',
   hideMeltValue: false,
+  themedActionDialogs: false,
   translateRsiTexts: false,
   hideSupersededInsurances: true,
   hidePledgeIds: false,
@@ -89,6 +95,10 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
       typeof stored?.hideMeltValue === 'boolean'
         ? stored.hideMeltValue
         : DEFAULT_SETTINGS.hideMeltValue,
+    themedActionDialogs:
+      typeof stored?.themedActionDialogs === 'boolean'
+        ? stored.themedActionDialogs
+        : DEFAULT_SETTINGS.themedActionDialogs,
     translateRsiTexts:
       typeof stored?.translateRsiTexts === 'boolean'
         ? stored.translateRsiTexts

@@ -155,7 +155,14 @@ onUnmounted(() => {
 <template>
   <Teleport to="body">
     <!-- Teleported out of the manager: it carries the theme class itself. -->
-    <div class="shm-overlay" :class="themeClass(settings.theme)" @click.self="close">
+    <!-- In the selected theme, or (the default) after RSI's own dialog (action-dialog.css). -->
+    <div
+      class="shm-overlay"
+      :class="
+        settings.themedActionDialogs ? themeClass(settings.theme) : 'shm-theme-rsi shm-rsi-dialog'
+      "
+      @click.self="close"
+    >
       <section
         ref="dialog"
         class="shm-overlay-dialog shm-action-dialog"

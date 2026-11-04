@@ -96,6 +96,17 @@ const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
         </option>
       </select>
       <p class="shm-hint">{{ i18n.t('settings.themeHint') }}</p>
+      <label class="shm-check shm-language-option">
+        <input
+          type="checkbox"
+          :checked="settings.themedActionDialogs"
+          @change="
+            emit('update', { themedActionDialogs: ($event.target as HTMLInputElement).checked })
+          "
+        />
+        {{ i18n.t('settings.themedActionDialogs') }}
+      </label>
+      <p class="shm-hint is-indented">{{ i18n.t('settings.themedActionDialogsHint') }}</p>
     </section>
 
     <section class="shm-setting">

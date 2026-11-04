@@ -198,3 +198,235 @@
   gap: 12px;
   margin: 14px 0;
 }
+
+/*
+ * After RSI's own exchange and gift dialogs in "My Gear" (the default; the setting
+ * `themedActionDialogs` shows the selected theme instead): a 480px panel between two glowing
+ * bars, RSI's typefaces (on RSI's page already), muted blue text, the acknowledgements in a red
+ * frame, a password field with corner marks and plain uppercase buttons. The values are RSI's.
+ * The manager's own parts (summary, warnings) keep their structure in RSI's colours.
+ */
+.shm-rsi-dialog {
+  --rsi-cyan: #00f0ff;
+  --rsi-bar: #8cf1ff;
+  --rsi-text: #5a7a93;
+  --rsi-label: #7696ae;
+  --rsi-strong: #fff;
+  --rsi-alert: #ff7474;
+  --rsi-close: #ff1e3c;
+
+  background: rgb(0 0 0 / 0.85);
+}
+
+.shm-rsi-dialog .shm-overlay-dialog {
+  position: relative;
+  width: min(480px, 100%);
+  padding: 22px 24px 30px;
+  color: var(--rsi-text);
+  font-family: univia-pro, sans-serif;
+  font-size: 12px;
+  line-height: 18px;
+  background: linear-gradient(180deg, #08131c, #050b11);
+  border: 1px solid rgb(98 196 235 / 0.22);
+  border-radius: 0;
+  box-shadow: 0 0 40px rgb(0 240 255 / 0.08);
+}
+
+/* The two glowing bars: under the title and at the bottom. */
+.shm-rsi-dialog .shm-overlay-header {
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 4px solid var(--rsi-bar);
+  box-shadow: 0 6px 10px -6px rgb(0 240 255 / 0.6);
+}
+
+.shm-rsi-dialog .shm-overlay-dialog::after {
+  position: absolute;
+  right: 24px;
+  bottom: 18px;
+  left: 24px;
+  height: 4px;
+  background: var(--rsi-bar);
+  box-shadow: 0 0 10px rgb(0 240 255 / 0.5);
+  content: '';
+}
+
+.shm-rsi-dialog .shm-overlay-dialog h3 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--rsi-cyan);
+  font-family: Electrolize, sans-serif;
+  font-size: 22px;
+  font-weight: normal;
+  text-transform: uppercase;
+  text-shadow: 0 0 12px rgb(0 240 255 / 0.4);
+}
+
+.shm-rsi-dialog .shm-overlay-dialog h3::before {
+  font-size: 18px;
+  content: '▷';
+}
+
+.shm-rsi-dialog .shm-overlay-close {
+  color: var(--rsi-close);
+  font-size: 22px;
+  background: none;
+  border-radius: 0;
+}
+
+.shm-rsi-dialog .shm-overlay-close:hover,
+.shm-rsi-dialog .shm-overlay-close:focus-visible {
+  color: #fff;
+}
+
+.shm-rsi-dialog .shm-action-dialog p {
+  margin: 12px 0;
+  /* RSI's page colours <p> itself; the dialog's own colour wouldn't reach it. */
+  color: var(--rsi-text);
+}
+
+/* The manager's summary of the pledge, framed like RSI's panels. */
+.shm-rsi-dialog .shm-action-summary {
+  background: rgb(0 0 0 / 0.4);
+  border: 1px solid rgb(22 42 63 / 0.8);
+  border-radius: 0;
+}
+
+.shm-rsi-dialog .shm-action-kind {
+  color: var(--rsi-cyan);
+  font-family: Electrolize, sans-serif;
+  border-color: rgb(0 240 255 / 0.5);
+  border-radius: 0;
+}
+
+.shm-rsi-dialog .shm-action-title {
+  color: var(--rsi-strong);
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.shm-rsi-dialog .shm-action-id,
+.shm-rsi-dialog .shm-action-value {
+  color: var(--rsi-text);
+}
+
+.shm-rsi-dialog .shm-action-value strong {
+  color: var(--rsi-strong);
+  font-family: Electrolize, sans-serif;
+}
+
+.shm-rsi-dialog .shm-action-warnings li {
+  background: rgb(0 0 0 / 0.35);
+}
+
+.shm-rsi-dialog .shm-action-warnings strong {
+  font-family: Electrolize, sans-serif;
+  font-size: 12px;
+}
+
+.shm-rsi-dialog .shm-action-warnings span {
+  color: var(--rsi-label);
+}
+
+/* RSI's acknowledgements: a red heading above a red frame around the checkboxes. */
+.shm-rsi-dialog .shm-action-consents {
+  position: relative;
+  margin: 12px 0 18px;
+  padding: 0 8px 8px;
+  border: 0;
+}
+
+.shm-rsi-dialog .shm-action-consents legend {
+  float: left;
+  width: calc(100% + 16px);
+  margin: 0 -8px 16px;
+  color: var(--rsi-alert);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+/* The frame starts below the heading: its 18px line and an 8px gap. */
+.shm-rsi-dialog .shm-action-consents::after {
+  position: absolute;
+  top: 26px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border: 1px solid var(--rsi-alert);
+  pointer-events: none;
+  content: '';
+}
+
+.shm-rsi-dialog .shm-action-consents label {
+  color: var(--rsi-label);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16.8px;
+}
+
+.shm-rsi-dialog .shm-action-consents label.is-danger {
+  color: var(--rsi-alert);
+}
+
+.shm-rsi-dialog .shm-action-field {
+  color: var(--rsi-text);
+  font-size: 12px;
+}
+
+/* RSI's field: dark, a thin border and small marks at its corners. */
+.shm-rsi-dialog .shm-action-field input {
+  --mark: rgb(0 240 255 / 0.8);
+
+  box-sizing: border-box;
+  width: 100%;
+  height: 36px;
+  color: #c5d6e2;
+  background:
+    linear-gradient(var(--mark), var(--mark)) left top / 7px 1px no-repeat,
+    linear-gradient(var(--mark), var(--mark)) left top / 1px 7px no-repeat,
+    linear-gradient(var(--mark), var(--mark)) right top / 7px 1px no-repeat,
+    linear-gradient(var(--mark), var(--mark)) right top / 1px 7px no-repeat,
+    linear-gradient(var(--mark), var(--mark)) left bottom / 7px 1px no-repeat,
+    linear-gradient(var(--mark), var(--mark)) left bottom / 1px 7px no-repeat,
+    linear-gradient(var(--mark), var(--mark)) right bottom / 7px 1px no-repeat,
+    linear-gradient(var(--mark), var(--mark)) right bottom / 1px 7px no-repeat,
+    rgb(0 0 0 / 0.4);
+  border: 1px solid rgb(22 42 63 / 0.8);
+  border-radius: 0;
+}
+
+.shm-rsi-dialog .shm-action-field input:focus-visible {
+  border-color: rgb(0 240 255 / 0.6);
+}
+
+.shm-rsi-dialog .shm-action-buttons {
+  margin-top: 22px;
+  margin-bottom: 18px;
+}
+
+/* RSI's buttons are words, not boxes: "SUBMIT" in its display type. */
+.shm-rsi-dialog .shm-action-buttons .shm-button {
+  padding: 6px 4px;
+  color: var(--rsi-label);
+  font-family: Electrolize, sans-serif;
+  font-size: 14px;
+  text-transform: uppercase;
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
+
+.shm-rsi-dialog .shm-action-buttons .shm-action-submit {
+  color: var(--rsi-strong);
+}
+
+.shm-rsi-dialog .shm-action-buttons .shm-button:not(:disabled):hover,
+.shm-rsi-dialog .shm-action-buttons .shm-button:not(:disabled):focus-visible {
+  color: var(--rsi-cyan);
+  background: none;
+}
+
+.shm-rsi-dialog .shm-action-success {
+  border-radius: 0;
+}

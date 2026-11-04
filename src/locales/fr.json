@@ -107,6 +107,8 @@
     "showRefundHint": "Affiche, pour les achats payés en argent, combien des $1 jours de remboursement il reste, ainsi qu’un bouton « Refund Request » dans les détails de la commande.",
     "theme": "Thème",
     "themeHint": "Ne change que l’apparence du Hangar Manager ; le reste du site de RSI reste inchangé. « Modern Hangar » suit l’apparence claire ou sombre du système.",
+    "themedActionDialogs": "Afficher les fenêtres d’échange et de cadeau dans le thème choisi",
+    "themedActionDialogsHint": "Désactivé : elles ressemblent aux fenêtres de RSI dans « My Gear », avec les indications du Hangar Manager sur le pledge et sa valeur.",
     "themeOptions": {
       "rsi": "RSI par défaut",
       "modern": "Modern Hangar"
