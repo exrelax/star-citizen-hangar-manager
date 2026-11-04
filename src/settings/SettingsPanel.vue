@@ -11,9 +11,13 @@ import {
   type LanguageSetting,
   type Settings,
   type Theme,
+  resetSettings,
 } from './settings';
 import FilterLayoutSetting from './FilterLayoutSetting.vue';
 import FontSizeSlider from './FontSizeSlider.vue';
+import { syncState } from '@/hangar/sync-state';
+import { clearLocalCache } from '@/shared/local-cache';
+import { ref } from 'vue';
 import { OPEN_STYLEGUIDE } from '@/shared/messages';
 import { FILTER_CATEGORIES, type FilterCategory, type FilterLayout } from '@/hangar/filters';
 
@@ -41,6 +45,21 @@ function setFilters(
 
 function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
   emit('update', { shipLinks: { ...props.settings.shipLinks, [platform]: enabled } });
+}
+
+/** What the last reset did, shown below its button until the next one. */
+const resetDone = ref<'cache' | 'settings'>();
+
+async function clearCache() {
+  if (!confirm(i18n.t('settings.clearCacheConfirm'))) return;
+  await clearLocalCache();
+  resetDone.value = 'cache';
+}
+
+async function resetAllSettings() {
+  if (!confirm(i18n.t('settings.resetSettingsConfirm'))) return;
+  await resetSettings();
+  resetDone.value = 'settings';
 }
 
 const showStyleguideLink = import.meta.env.DEV && !location.pathname.endsWith('/styleguide.html');
@@ -271,6 +290,38 @@ const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
       </label>
     </fieldset>
 
+    <fieldset class="shm-setting">
+      <legend class="shm-label">{{ i18n.t('settings.reset') }}</legend>
+      <ul class="shm-reset-actions">
+        <li>
+          <!-- Not during a refresh: it would store the pledges again right after. -->
+          <button
+            type="button"
+            class="shm-button is-danger"
+            :disabled="syncState.running"
+            @click="clearCache"
+          >
+            <SvgIcon name="trash" />
+            {{ i18n.t('settings.clearCache') }}
+          </button>
+          <p class="shm-hint">{{ i18n.t('settings.clearCacheHint') }}</p>
+          <p v-if="resetDone === 'cache'" class="shm-hint is-done" role="status">
+            {{ i18n.t('settings.clearCacheDone', [i18n.t('manager.refreshLabel')]) }}
+          </p>
+        </li>
+        <li>
+          <button type="button" class="shm-button is-danger" @click="resetAllSettings">
+            <SvgIcon name="rotate-left" />
+            {{ i18n.t('settings.resetSettings') }}
+          </button>
+          <p class="shm-hint">{{ i18n.t('settings.resetSettingsHint') }}</p>
+          <p v-if="resetDone === 'settings'" class="shm-hint is-done" role="status">
+            {{ i18n.t('settings.resetSettingsDone') }}
+          </p>
+        </li>
+      </ul>
+    </fieldset>
+
     <section class="shm-setting">
       <span class="shm-label">{{ i18n.t('settings.development') }}</span>
       <ul class="shm-dev-links">
@@ -357,6 +408,19 @@ const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
   background-size: 12px 8px;
   border: 1px solid rgb(var(--shm-accent-rgb) / 0.35);
   cursor: pointer;
+}
+
+.shm-reset-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shm-hint.is-done {
+  color: var(--shm-success);
 }
 
 .shm-dev-links {

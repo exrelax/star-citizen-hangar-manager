@@ -9,7 +9,11 @@
     "intro": "An overview of your hangar. Use the refresh button at the top right to read the latest state from RSI.",
     "refresh": "Refresh hangar data",
     "refreshLabel": "Refresh",
-    "empty": "No hangar data yet. Click the refresh button at the top right to read your hangar.",
+    "empty": "RSI lists no pledges in your hangar.",
+    "initialLoadTitle": "No hangar items loaded yet",
+    "initialLoadText": "The Hangar Manager reads your hangar, buy back and orders from RSI's website and keeps them in this browser. It doesn't do this on its own – start the first load here.",
+    "initialLoad": "Initial Load",
+    "initialLoadDuration": "The first load can take a few seconds: about $1 for $2 pledges, about $3 for $4 pledges (hangar and buy back together). The progress shows on the refresh button at the top right.",
     "count": "$1 pledges",
     "countFiltered": "$1 of $2 pledges",
     "searchPlaceholder": "Search titles, ships and pledge IDs …",
@@ -17,7 +21,6 @@
     "syncProgress": "Reading RSI pages: $1 of $2 ($3)",
     "demoBadge": "Demo",
     "demoBadgeHint": "Demo mode: a selection of your pledges with made-up pledge IDs. Turn it off in the settings.",
-    "firstSync": "Reading your hangar, buy back and orders from RSI … The progress is shown at the top right.",
     "clearSearch": "Clear search"
   },
   "pledge": {
@@ -135,10 +138,20 @@
       "hangar": "My Hangar",
       "buyback": "Buy Back"
     },
+    "reset": "Reset",
+    "clearCache": "Delete local hangar & buy back data",
+    "clearCacheHint": "Deletes only the copy the extension keeps in this browser: pledges, orders, ship prices and the state of the smart updates. Nothing is changed in your hangar on RSI's website; the next refresh reads everything again.",
+    "clearCacheConfirm": "Delete the hangar and buy back data stored by the extension in this browser?\n\nYour hangar on RSI's website stays as it is.",
+    "clearCacheDone": "Deleted. Use “$1” to read your hangar again.",
+    "resetSettings": "Reset settings",
+    "resetSettingsHint": "Sets all settings back to their defaults, on all devices they are synced to. The stored hangar stays.",
+    "resetSettingsConfirm": "Set all settings back to their defaults?",
+    "resetSettingsDone": "The settings are back to their defaults.",
     "development": "Development",
     "repositoryHint": "Source code, issues and changes of the extension."
   },
   "status": {
+    "refreshing": "Refreshing …",
     "checking": "Checking for changes …",
     "upToDate": "Up to date · checked $1",
     "updated": "Updated $1: $2 new, $3 removed, $4 changed",
@@ -153,7 +166,7 @@
     "openInManagerBuyback": "Open in Hangar Manager – Buy Back (#$1)"
   },
   "buyback": {
-    "empty": "No buy back data yet. Click the refresh button at the top right to read your hangar and buy back.",
+    "empty": "RSI lists no buy back pledges for your account.",
     "contains": "Contains: $1",
     "reclaimed": "Melted $1",
     "showInBuyback": "Show in Buy Back (page $1)",

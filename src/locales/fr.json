@@ -9,7 +9,11 @@
     "intro": "Un aperçu de ton hangar. Utilise le bouton d’actualisation en haut à droite pour lire l’état actuel depuis RSI.",
     "refresh": "Actualiser les données du hangar",
     "refreshLabel": "Actualiser",
-    "empty": "Pas encore de données de hangar. Clique sur le bouton d’actualisation en haut à droite pour lire ton hangar.",
+    "empty": "RSI n’indique aucun pledge dans ton hangar.",
+    "initialLoadTitle": "Aucun élément du hangar chargé pour l’instant",
+    "initialLoadText": "Le Hangar Manager lit ton hangar, le rachat et les commandes sur le site de RSI et les garde dans ce navigateur. Il ne le fait pas de lui-même – lance le premier chargement ici.",
+    "initialLoad": "Premier chargement",
+    "initialLoadDuration": "Le premier chargement peut prendre quelques secondes : environ $1 pour $2 pledges, environ $3 pour $4 pledges (hangar et rachat ensemble). La progression s’affiche sur le bouton d’actualisation en haut à droite.",
     "count": "$1 pledges",
     "countFiltered": "$1 sur $2 pledges",
     "searchPlaceholder": "Rechercher des titres, vaisseaux et ID de pledge…",
@@ -17,7 +21,6 @@
     "syncProgress": "Lecture des pages RSI : $1 sur $2 ($3)",
     "demoBadge": "Démo",
     "demoBadgeHint": "Mode démo : une sélection de tes pledges avec des ID inventés. Désactive-le dans les paramètres.",
-    "firstSync": "Lecture de ton hangar, de ton buy back et de tes commandes depuis RSI… La progression s’affiche en haut à droite.",
     "clearSearch": "Effacer la recherche"
   },
   "pledge": {
@@ -135,10 +138,20 @@
       "hangar": "My Hangar",
       "buyback": "Buy Back"
     },
+    "reset": "Réinitialiser",
+    "clearCache": "Supprimer les données locales du hangar et du rachat",
+    "clearCacheHint": "Supprime seulement la copie que l’extension garde dans ce navigateur : pledges, commandes, prix des vaisseaux et état des mises à jour intelligentes. Rien n’est modifié dans ton hangar sur le site de RSI ; la prochaine actualisation relit tout.",
+    "clearCacheConfirm": "Supprimer les données du hangar et du rachat enregistrées par l’extension dans ce navigateur ?\n\nTon hangar sur le site de RSI reste inchangé.",
+    "clearCacheDone": "Supprimé. Utilise « $1 » pour relire ton hangar.",
+    "resetSettings": "Réinitialiser les paramètres",
+    "resetSettingsHint": "Remet tous les paramètres à leurs valeurs par défaut, aussi sur tous les appareils synchronisés. Le hangar enregistré est conservé.",
+    "resetSettingsConfirm": "Remettre tous les paramètres à leurs valeurs par défaut ?",
+    "resetSettingsDone": "Les paramètres sont revenus à leurs valeurs par défaut.",
     "development": "Développement",
     "repositoryHint": "Code source, tickets et modifications de l’extension."
   },
   "status": {
+    "refreshing": "Actualisation …",
     "checking": "Recherche de modifications…",
     "upToDate": "À jour · vérifié $1",
     "updated": "Mis à jour $1 : $2 nouveaux, $3 supprimés, $4 modifiés",
@@ -153,7 +166,7 @@
     "openInManagerBuyback": "Ouvrir dans le Hangar Manager – Buy Back (#$1)"
   },
   "buyback": {
-    "empty": "Pas encore de données de buy back. Clique sur le bouton d’actualisation en haut à droite pour lire ton hangar et ton buy back.",
+    "empty": "RSI n’indique aucun pledge à racheter pour ton compte.",
     "contains": "Contient : $1",
     "reclaimed": "Fusionné le $1",
     "showInBuyback": "Afficher dans Buy Back (page $1)",

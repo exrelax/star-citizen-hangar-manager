@@ -29,6 +29,7 @@ export const ICON_NAMES = {
     'paintbrush',
     'palette',
     'recycle',
+    'rotate-left',
     'shuttle-space',
     'square-up-right',
     'trash',

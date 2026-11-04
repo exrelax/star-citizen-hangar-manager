@@ -161,3 +161,8 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
     },
   };
 }
+
+/** Back to the defaults: the stored settings are removed, `withDefaults` then gives the defaults. */
+export async function resetSettings(): Promise<void> {
+  await settingsItem.removeValue();
+}

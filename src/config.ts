@@ -208,3 +208,15 @@ export const FILTERS: {
  * the manager and its dialogs. `medium` is the size the themes are designed in.
  */
 export const FONT_SIZE_SCALES = { small: 0.9, medium: 1, large: 1.15 } as const;
+
+/**
+ * Examples of how long the initial load takes, shown before it starts: pledges of hangar and buy
+ * back together and about how long they take. Measured in Chrome with nothing stored: 986 hangar
+ * and 3,976 buy back pledges (plus 1,555 orders, 634 RSI pages) in 81.8 s. The first load reads
+ * more than a refresh, which then takes 18.7 s (128 pages). The 1,000 pledges are scaled from
+ * that.
+ */
+export const INITIAL_LOAD_EXAMPLES = [
+  { pledges: 1000, seconds: 20 },
+  { pledges: 5000, seconds: 90 },
+] as const;

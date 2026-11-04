@@ -16,9 +16,6 @@ import RefreshIcon from './RefreshIcon.vue';
  * ("123 / 123 · 100 %"), so the button keeps its width while the pages count up.
  */
 
-/** `hidden`: kept in the layout (the header keeps its height), but invisible and not focusable. */
-defineProps<{ hidden?: boolean }>();
-
 const STEP_MS = 200;
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const step = () => (reducedMotion.matches ? 0 : STEP_MS);
@@ -116,7 +113,7 @@ const spinning = computed(() => phase.value !== 'idle' && phase.value !== 'shrin
   <button
     type="button"
     class="shadow-button trans-02s trans-color shm-refresh"
-    :class="[`is-${phase}`, { 'is-hidden': hidden }]"
+    :class="`is-${phase}`"
     :disabled="syncState.running"
     :title="progress?.text ?? i18n.t('manager.refresh')"
     :aria-label="i18n.t('manager.refresh')"
@@ -175,10 +172,6 @@ const spinning = computed(() => phase.value !== 'idle' && phase.value !== 'shrin
   /* RSI's `.shadow-button` background (the middle part between the two end sections) stays. */
   border: 0;
   cursor: pointer;
-}
-
-.shm-refresh.is-hidden {
-  visibility: hidden;
 }
 
 .shm-refresh:disabled {

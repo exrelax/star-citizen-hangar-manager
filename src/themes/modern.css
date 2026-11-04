@@ -592,3 +592,24 @@ html .shm-theme-modern .shm-overlay-close {
 html .shm-theme-modern .shm-order-totals > div:last-child {
   border-top-color: var(--shm-separator);
 }
+
+/* ---- Initial load: a card in place of the list ---- */
+
+html .shm-theme-modern .shm-initial-load {
+  background: var(--shm-surface-elevated);
+  border: 0;
+  border-radius: 12px;
+}
+
+html .shm-theme-modern .shm-initial-load-title {
+  font-weight: 600;
+}
+
+/* The one action of the card: filled, as Apple's prominent buttons. */
+html .shm-theme-modern .shm-initial-load-button,
+html .shm-theme-modern .shm-initial-load-button:not(:disabled):hover,
+html .shm-theme-modern .shm-initial-load-button:not(:disabled):focus-visible {
+  color: var(--shm-text-on-accent);
+  font-weight: 600;
+  background: var(--shm-accent);
+}

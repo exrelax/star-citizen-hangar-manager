@@ -3,10 +3,11 @@ import BuybackList from '@/buyback/components/BuybackList.vue';
 import { useBuybackPledges } from '@/buyback/use-buyback-pledges';
 import HangarStatus from '@/hangar/components/HangarStatus.vue';
 import PledgeList from '@/hangar/components/PledgeList.vue';
+import InitialLoad from '@/hangar/components/InitialLoad.vue';
 import RefreshButton from '@/hangar/components/RefreshButton.vue';
 import { DEMO_CONTEXT, useDemo } from '@/demo/use-demo';
 import { hashOfTab, MANAGER_TABS, tabFromHash, type ManagerTab } from '@/hangar/route';
-import { startSync, syncState } from '@/hangar/sync-state';
+import { syncState } from '@/hangar/sync-state';
 import { useHangarPledges } from '@/hangar/use-hangar-pledges';
 import type { IconName, IconSet } from '@/icons/icon-names';
 import TabBar from '@/shared/components/TabBar.vue';
@@ -14,7 +15,7 @@ import { i18n } from '@/i18n';
 import SettingsPanel from '@/settings/SettingsPanel.vue';
 import { useSettings } from '@/settings/use-settings';
 import { MANAGER_CONTAINER, useThemeClass } from '@/themes/theme';
-import { computed, inject, onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue';
+import { computed, inject, onMounted, onUnmounted, provide, reactive, ref } from 'vue';
 
 /** Icon of each tab, before its label. */
 const TAB_ICONS: Record<ManagerTab, { icon: IconName; iconSet?: IconSet }> = {
@@ -31,14 +32,11 @@ const hangar = useHangarPledges();
 const buyback = useBuybackPledges();
 const { loaded, syncedAt } = hangar;
 
-// First visit, nothing stored yet: read hangar, buy back and orders from RSI right away.
-watch(
-  loaded,
-  () => {
-    if (!hangar.pledges.value.length) void startSync();
-  },
-  { once: true },
-);
+/**
+ * Nothing stored yet (first visit, deleted data, or a snapshot of an older version): the lists
+ * offer the initial load instead. The extension never reads the hangar from RSI on its own.
+ */
+const neverLoaded = computed(() => loaded.value && !syncedAt.value);
 
 const { settings, loaded: settingsLoaded, update: updateSettings } = useSettings();
 useThemeClass(inject(MANAGER_CONTAINER, undefined), settings);
@@ -55,14 +53,19 @@ provide(DEMO_CONTEXT, demoView.context);
 const pledges = demoView.pledges;
 const buybackPledges = demoView.buyback;
 
-/** The status line of the list shown: its last refresh and check. None in the settings. */
+/** The status line of the list shown (in the settings the hangar's): its last refresh and check. */
 const status = computed(() => {
   if (!listsReady.value) return undefined;
-  if (activeTab.value === 'hangar' && loaded.value && pledges.value.length) {
+  if (activeTab.value !== 'buyback' && loaded.value && pledges.value.length) {
     return { source: 'hangar' as const, syncedAt: syncedAt.value };
   }
   if (activeTab.value === 'buyback' && buyback.loaded.value && buybackPledges.value.length) {
     return { source: 'buyback' as const, syncedAt: buyback.syncedAt.value };
+  }
+  // Also during the initial load, when the lists are still empty: it then says "Refreshing".
+  if (syncState.running) {
+    const source = activeTab.value === 'buyback' ? ('buyback' as const) : ('hangar' as const);
+    return { source, syncedAt: undefined };
   }
   return undefined;
 });
@@ -94,15 +97,12 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
 <template>
   <div class="top">
     <!--
-      The refresh button with the state of the list (none in the settings). Before the title, so
+      The refresh button with the state of the list (the hangar's in the settings). Before the title, so
       it floats into the top right corner.
     -->
     <div class="shm-header-side">
-      <!--
-        Only hidden (not removed) in the settings, so the header keeps its height and the tabs below
-        don't jump. It refreshes hangar and buy back together.
-      -->
-      <RefreshButton :hidden="activeTab === 'settings'" />
+      <!-- On every tab, the settings too: it refreshes hangar and buy back together. -->
+      <RefreshButton />
       <HangarStatus
         v-if="status"
         :key="status.source"
@@ -147,9 +147,11 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
         :settings="settings"
         :active="activeTab === 'hangar'"
       />
-      <p v-else class="shm-empty">
-        {{ i18n.t(syncState.running ? 'manager.firstSync' : 'manager.empty') }}
-      </p>
+      <!-- While the initial load runs, its progress shows on the refresh button. -->
+      <template v-else-if="neverLoaded">
+        <InitialLoad v-if="!syncState.running" />
+      </template>
+      <p v-else-if="!syncState.running" class="shm-empty">{{ i18n.t('manager.empty') }}</p>
     </template>
   </div>
   <div
@@ -166,9 +168,10 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
         :settings="settings"
         :active="activeTab === 'buyback'"
       />
-      <p v-else class="shm-empty">
-        {{ i18n.t(syncState.running ? 'manager.firstSync' : 'buyback.empty') }}
-      </p>
+      <template v-else-if="neverLoaded">
+        <InitialLoad v-if="!syncState.running" />
+      </template>
+      <p v-else-if="!syncState.running" class="shm-empty">{{ i18n.t('buyback.empty') }}</p>
     </template>
   </div>
   <div

@@ -35,6 +35,8 @@ const fullSyncIsOld = computed(() => {
 /** One line of status; `warn` adds the full refresh button. */
 const status = computed((): { text: string; warn?: boolean } | null => {
   const outcome = checkState.value?.lastOutcome;
+  // Until the refresh is done, the last update and its outcome are about to change.
+  if (syncState.running) return { text: i18n.t('status.refreshing') };
   if (syncState.checking) return { text: i18n.t('status.checking') };
   if (outcome?.status === 'needsFullSync')
     return { text: i18n.t('status.needsFullSync'), warn: true };

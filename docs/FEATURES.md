@@ -321,8 +321,10 @@ Paints, Game access, LTI, Warbond, Probably giftable, Rewards), plus:
 
 ## Keeping the data current
 
-- **First start**: when no pledges are stored yet, opening the manager starts the first refresh
-  by itself.
+- **First start**: when no pledges are stored yet, the lists show an **Initial Load** button
+  instead, with how long the first load takes (examples in `INITIAL_LOAD_EXAMPLES` in
+  `src/config.ts`). The extension never reads the hangar on its own; after the click the refresh
+  button shows the progress and the lists appear when it is done.
 - **Refresh** reads hangar, buy back and orders from RSI. Large hangars take a moment; a progress
   bar shows pages and percentage, weighted by how long each kind of page takes.
 - **Smart updates** (on by default): check a few RSI pages for changes and update the list
@@ -354,6 +356,12 @@ Paints, Game access, LTI, Warbond, Probably giftable, Rewards), plus:
   uncheck it to hide its button.
 - **"Show in Buy Back" opens**: only the pledge, or the list page with the pledge highlighted.
 - **Show links for ships**: erkul.games and FleetYards.net, each on or off.
+- **Reset**, each after a confirmation:
+  - **Delete local hangar & buy back data**: removes only the extension's copy in this browser
+    (pledges, orders, ship prices, smart update state); nothing changes on RSI's website, and the
+    next refresh reads everything again. Not possible during a refresh.
+  - **Reset settings**: all settings back to their defaults (on all synced devices); the stored
+    hangar stays.
 
 Settings follow your browser profile to your other devices (see
 [Private by design](#private-by-design)).
