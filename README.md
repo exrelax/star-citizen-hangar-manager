@@ -151,7 +151,7 @@ The [release workflow](.github/workflows/release.yml) then checks that the tag m
 `package.json` and that the changelog has the version's section, runs the type check, ESLint and
 the tests, builds the zips (`pnpm zip`) and creates a **draft** release on GitHub with them:
 the Chrome and Firefox packages and the sources for addons.mozilla.org. Check the draft and publish
-it on GitHub, then upload the zips to the stores (texts in [`store/`](store/README.md)).
+it on GitHub, then upload the zips to the stores (texts and images in [`store/`](store/README.md)).
 
 `node scripts/release-notes.js 1.0.0` shows locally what the release notes will be.
 
@@ -186,7 +186,7 @@ src/
 wxt.config.ts            Shared configuration and browser-specific manifest
 .github/workflows/       CI (checks and builds of pushes and pull requests) and releases
 public/icon/             Extension icons, rendered from the logo by `pnpm icons`
-store/                   Texts for the store pages and their review (see store/README.md)
+store/                   Texts and images for the store pages, the review (see store/README.md)
 ```
 
 ### Icons

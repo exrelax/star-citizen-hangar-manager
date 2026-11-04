@@ -1,8 +1,8 @@
-# Store texts
+# Store texts and images
 
-The texts for the extension's store pages. They are kept here so they are versioned with the
-code and can be reviewed like the translations in `src/locales/`. On a release, copy them into the
-stores' dashboards.
+The texts and images for the extension's store pages. They are kept here so they are versioned
+with the code and can be reviewed like the translations in `src/locales/`. On a release, copy them
+into the stores' dashboards.
 
 | File                           | What                                                             |
 | ------------------------------ | ---------------------------------------------------------------- |
@@ -14,6 +14,26 @@ stores' dashboards.
 
 The texts in code blocks are meant to be copied as they are: the Chrome Web Store shows the
 description as plain text, so they use no Markdown.
+
+## Images
+
+| File                                                         | Size     | Where                                       |
+| ------------------------------------------------------------ | -------- | ------------------------------------------- |
+| [01-my-hangar.png](screenshots/01-my-hangar.png)             | 1280×800 | Screenshots of both stores, in this order   |
+| [02-buy-back.png](screenshots/02-buy-back.png)               | 1280×800 |                                             |
+| [03-pledge-upgrades.png](screenshots/03-pledge-upgrades.png) | 1280×800 |                                             |
+| [04-theme-rsi.png](screenshots/04-theme-rsi.png)             | 1280×800 |                                             |
+| [05-settings.png](screenshots/05-settings.png)               | 1280×800 |                                             |
+| [small-tile-440x280.png](small-tile-440x280.png)             | 440×280  | Chrome: small promo tile (required)         |
+| [marquee-1400x560.png](marquee-1400x560.png)                 | 1400×560 | Chrome: marquee promo tile (optional)       |
+| [social-preview-1280x640.png](social-preview-1280x640.png)   | 1280×640 | GitHub: Settings → General → Social preview |
+
+The store icon is the extension's own: [public/icon/128.png](../public/icon/128.png).
+
+The screenshots are taken in the demo mode (Settings), so they show made-up pledge and order IDs,
+at exactly 1280×800: in Chrome's DevTools, device toolbar "Responsive" with 1280 × 800 and DPR 1,
+then "Capture screenshot". Check that RSI's header with the account name isn't in the picture.
+Both stores take PNG or JPEG without transparency.
 
 ## Where each text goes
 
