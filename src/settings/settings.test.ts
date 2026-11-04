@@ -34,7 +34,7 @@ describe('withDefaults', () => {
   it('ignores invalid values', () => {
     expect(
       withDefaults({
-        language: 'fr',
+        language: 'es',
         hideMeltValue: 'yes',
         hidePledgeIds: 1,
         buybackLinkMode: 'popup',

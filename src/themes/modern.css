@@ -230,31 +230,28 @@ html .shm-theme-modern .shm-controls {
 }
 
 html .shm-theme-modern .shm-filters {
-  gap: 12px;
+  row-gap: 12px;
 }
 
 html .shm-theme-modern .shm-filter-group-label {
-  width: 72px;
   color: var(--shm-text-secondary);
   font-weight: 600;
 }
 
-html .shm-theme-modern .shm-filter-group {
-  gap: 0;
-}
-
 /* A separator between the groups, starting at the chips. */
 html .shm-theme-modern .shm-filter-group + .shm-filter-group {
-  position: relative;
-  align-self: stretch;
   padding-top: 12px;
 }
 
-html .shm-theme-modern .shm-filter-group + .shm-filter-group::before {
+html .shm-theme-modern .shm-filter-group + .shm-filter-group .shm-filter-buttons {
+  position: relative;
+}
+
+html .shm-theme-modern .shm-filter-group + .shm-filter-group .shm-filter-buttons::before {
   position: absolute;
-  top: 0;
+  top: -12px;
   right: 0;
-  left: 72px;
+  left: 0;
   height: 1px;
   background: var(--shm-separator);
   content: '';

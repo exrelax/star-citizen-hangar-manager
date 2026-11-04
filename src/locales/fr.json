@@ -1,0 +1,293 @@
+{
+  "extName": "SC Hangar Manager",
+  "extDescription": "Gère ton hangar Star Citizen sur robertsspaceindustries.com.",
+  "nav": {
+    "manager": "Hangar Manager"
+  },
+  "manager": {
+    "title": "Hangar Manager",
+    "intro": "Un aperçu de ton hangar. Utilise le bouton d’actualisation en haut à droite pour lire l’état actuel depuis RSI.",
+    "refresh": "Actualiser les données du hangar",
+    "refreshLabel": "Actualiser",
+    "empty": "Pas encore de données de hangar. Clique sur le bouton d’actualisation en haut à droite pour lire ton hangar.",
+    "count": "$1 pledges",
+    "countFiltered": "$1 sur $2 pledges",
+    "searchPlaceholder": "Rechercher des titres, vaisseaux et ID de pledge…",
+    "noResults": "Aucun pledge ne correspond à ta recherche.",
+    "syncProgress": "Lecture des pages RSI : $1 sur $2 ($3)",
+    "demoBadge": "Démo",
+    "demoBadgeHint": "Mode démo : une sélection de tes pledges avec des ID inventés. Désactive-le dans les paramètres.",
+    "firstSync": "Lecture de ton hangar, de ton buy back et de tes commandes depuis RSI… La progression s’affiche en haut à droite.",
+    "clearSearch": "Effacer la recherche"
+  },
+  "pledge": {
+    "toggleDetails": "Afficher ou masquer les éléments contenus",
+    "originalName": "À l’origine : $1",
+    "shipsLabel": "Vaisseaux :",
+    "upgraded": "Amélioré",
+    "giftable": "Offrable",
+    "notGiftable": "Non offrable",
+    "meltable": "Fusionnable",
+    "notMeltable": "Non fusionnable",
+    "showInMyGear": "Afficher dans My Gear (page $1)",
+    "discountTitle": "Prix d’origine : $1. Valeur du pledge : $2. Économie : $3 ($4).",
+    "surchargeTitle": "Prix d’origine : $1. Valeur du pledge : $2. Soit $3 ($4) de plus que le prix d’origine.",
+    "externalLinks": "Liens externes :",
+    "openOn": "Ouvrir $1 sur $2 (nouvel onglet)",
+    "kinds": {
+      "upgradedShip": "Vaisseau avec améliorations appliquées",
+      "ship": "Vaisseau",
+      "ships": "Vaisseaux",
+      "gamePackage": "Pack de jeu",
+      "ccu": "CCU (amélioration de vaisseau)",
+      "paint": "Peinture",
+      "reward": "Récompense",
+      "other": "Objet"
+    }
+  },
+  "filter": {
+    "label": "Filtrer les pledges",
+    "lti": "LTI",
+    "paints": "Peintures",
+    "ccus": "CCU",
+    "gameAccess": "Accès au jeu",
+    "giftable": "Offrables",
+    "meltable": "Fusionnables",
+    "probablyGiftable": "Probablement offrables",
+    "ships": "Vaisseaux",
+    "warbond": "Warbond",
+    "valuable": "Avec valeur",
+    "rewards": "Récompenses",
+    "reset": "Réinitialiser les filtres",
+    "stateOff": "Clic : n’afficher que les éléments avec « $1 ».",
+    "stateInclude": "Seuls les éléments avec « $1 » sont affichés. Clic : les exclure à la place.",
+    "stateExclude": "Les éléments avec « $1 » sont exclus. Clic : désactiver le filtre.",
+    "hints": {
+      "ships": "Pledges avec un vaisseau : vaisseaux seuls, packs et vaisseaux améliorés.",
+      "warbond": "Payé en argent réel : le pledge a une commande payée en argent (et non en store credit).",
+      "valuable": "Pledges d’une valeur supérieure à 0 $$.",
+      "rewards": "Récompenses d’une valeur de 0 $$ : événements, parrainage, Concierge et autres récompenses.",
+      "rewardsByName": "Récompenses, reconnues à leur nom : événements, parrainage, Concierge et autres récompenses."
+    },
+    "categories": {
+      "types": "Types",
+      "features": "Propriétés"
+    }
+  },
+  "tabs": {
+    "hangar": "My Hangar",
+    "buyback": "Buy Back",
+    "settings": "Paramètres"
+  },
+  "settings": {
+    "language": "Langue",
+    "languageAuto": "Automatique ($1)",
+    "languageHint": "Automatique utilise la langue du navigateur si l’extension est traduite dans cette langue, sinon l’anglais.",
+    "hideMeltValue": "Masquer la valeur de fusion",
+    "hideMeltValueHint": "Masque les montants en $ : valeurs des pledges, remises et coûts des améliorations appliquées.",
+    "smartUpdates": "Mises à jour intelligentes",
+    "smartUpdatesHint": "Vérifie de temps en temps la première, la dernière et quelques autres pages du hangar et met la liste à jour sans actualisation complète.",
+    "shipLinks": "Afficher des liens pour les vaisseaux",
+    "shipLinkErkul": "erkul.games",
+    "shipLinkFleetyards": "FleetYards.net",
+    "buybackLink": "« Afficher dans Buy Back » ouvre",
+    "buybackLinkOptions": {
+      "single": "Seulement ce pledge",
+      "list": "La page de la liste, défilée jusqu’au pledge et mise en évidence"
+    },
+    "privacy": "Masquer les informations sensibles (pour les captures d’écran ou les créateurs de contenu)",
+    "hidePledgeIds": "Masquer les ID de pledge et de commande, le nom et l’adresse",
+    "hidePledgeIdsHint": "Masque les ID de pledge de tous les éléments, y compris ceux des améliorations appliquées, ainsi que les ID de commande. Ton nom et ton adresse de facturation dans les détails de commande sont rendus illisibles. La recherche par ID fonctionne toujours.",
+    "demoMode": "Mode démo",
+    "demoModeHint": "N’affiche que $1 pledges de « My Hangar » et $2 du buy back, avec des ID inventés – p. ex. pour des captures d’écran. Les liens vers RSI et le panier ne font rien pendant ce temps.",
+    "showRefund": "Afficher le délai de remboursement",
+    "showRefundHint": "Affiche, pour les achats payés en argent, combien des $1 jours de remboursement il reste, ainsi qu’un bouton « Refund Request » dans les détails de la commande.",
+    "theme": "Thème",
+    "themeHint": "Ne change que l’apparence du Hangar Manager ; le reste du site de RSI reste inchangé. « Modern Hangar » suit l’apparence claire ou sombre du système.",
+    "themeOptions": {
+      "rsi": "RSI par défaut",
+      "modern": "Modern Hangar"
+    },
+    "filters": "Filtres",
+    "filtersHint": "Fais glisser les filtres (ou utilise les flèches) pour changer leur ordre ; les filtres décochés ne s’affichent pas dans la liste.",
+    "filtersReset": "Réinitialiser",
+    "filterUp": "Monter « $1 »",
+    "filterDown": "Descendre « $1 »",
+    "hideSupersededInsurances": "N’afficher que la meilleure assurance des vaisseaux améliorés",
+    "hideSupersededInsurancesHint": "Après des améliorations, un pledge liste l’assurance de chaque étape, mais seule la meilleure est conservée : la LTI s’il y en a une, sinon celle avec le plus de mois. Les autres sont masquées dans l’élément ouvert.",
+    "filtersLists": {
+      "hangar": "My Hangar",
+      "buyback": "Buy Back"
+    },
+    "development": "Développement",
+    "repositoryHint": "Code source, tickets et modifications de l’extension."
+  },
+  "status": {
+    "checking": "Recherche de modifications…",
+    "upToDate": "À jour · vérifié $1",
+    "updated": "Mis à jour $1 : $2 nouveaux, $3 supprimés, $4 modifiés",
+    "failed": "La dernière vérification a échoué ($1).",
+    "needsFullSync": "Trop de modifications pour une mise à jour rapide.",
+    "fullSyncOld": "Dernière actualisation complète $1.",
+    "lastFullSync": "Dernière actualisation complète $1",
+    "fullRefresh": "Actualisation complète"
+  },
+  "ccugame": {
+    "openInManager": "Ouvrir dans le Hangar Manager (#$1)",
+    "openInManagerBuyback": "Ouvrir dans le Hangar Manager – Buy Back (#$1)"
+  },
+  "buyback": {
+    "empty": "Pas encore de données de buy back. Clique sur le bouton d’actualisation en haut à droite pour lire ton hangar et ton buy back.",
+    "contains": "Contient : $1",
+    "reclaimed": "Fusionné le $1",
+    "showInBuyback": "Afficher dans Buy Back (page $1)",
+    "probablyGiftableHint": "Racheté en argent réel (warbond), cet élément est probablement offrable, car il a été acheté à l’origine avant le $1.",
+    "showSingleInBuyback": "Afficher dans Buy Back",
+    "addToCart": "Ajouter au panier RSI et ouvrir le panier (nouvel onglet). RSI vide le panier pour les pledges du buy back.",
+    "cartFailed": "Impossible d’ajouter au panier RSI : $1",
+    "cartNotFound": "Introuvable à sa position enregistrée dans le buy back de RSI – synchronise puis réessaie."
+  },
+  "upgradeLog": {
+    "title": "Améliorations appliquées",
+    "loading": "Chargement des améliorations depuis RSI…",
+    "empty": "RSI n’indique aucune amélioration appliquée pour ce pledge.",
+    "failed": "Impossible de charger les améliorations : $1",
+    "date": "Appliquée",
+    "upgrade": "Amélioration",
+    "targetPrice": "Vaisseau cible",
+    "targetPriceHint": "Prix d’origine du vaisseau cible (outil d’amélioration de vaisseaux de RSI)",
+    "valueAfter": "Valeur après",
+    "valueAfterHint": "Valeur du pledge après cette amélioration",
+    "paid": "Payé",
+    "paidHint": "Ce que cette amélioration a ajouté à la valeur du pledge, c.-à-d. ce qu’elle a réellement coûté",
+    "discount": "Remise",
+    "discountHint": "Différence de prix entre les deux vaisseaux moins le coût de l’amélioration. Inconnue pour la première amélioration : RSI n’enregistre pas la valeur d’avant."
+  },
+  "insurance": {
+    "year": "1 an",
+    "years": "$1 ans",
+    "month": "1 mois",
+    "months": "$1 mois",
+    "badgeTitle": "Assurance – parmi plusieurs, seule la meilleure compte"
+  },
+  "order": {
+    "label": "Commande",
+    "paid": "payée $1",
+    "buyback": "rachetée",
+    "baseLabel": "Commande de base",
+    "open": "Afficher la commande",
+    "title": "Commande n°$1",
+    "loading": "Chargement de la commande depuis RSI…",
+    "failed": "Impossible de charger la commande : $1",
+    "close": "Fermer",
+    "summary": "Récapitulatif de la commande",
+    "invoice": "Obtenir la facture",
+    "billTo": "Facturé à",
+    "paymentInfo": "Informations de paiement",
+    "notFound": "Commande introuvable",
+    "invoiceDemo": "Non disponible en mode démo : la facture montre la vraie commande."
+  },
+  "refund": {
+    "days": "Remboursement : $1 jours",
+    "day": "Remboursement : 1 jour",
+    "lastDay": "Remboursement : dernier jour",
+    "hint": "Acheté en argent le $1 : CIG le rembourse sous $2 jours, jusqu’au $3.",
+    "request": "Refund Request",
+    "requestHint": "Ouvre le formulaire d’assistance de RSI dans un nouvel onglet, rempli pour le remboursement de la commande $1.",
+    "requestDemo": "Non disponible en mode démo.",
+    "leftDays": "Encore $1 jours pour un remboursement (jusqu’au $2)",
+    "leftDay": "Encore 1 jour pour un remboursement (jusqu’au $2)",
+    "leftLastDay": "Dernier jour pour un remboursement : aujourd’hui ($1)"
+  },
+  "exchange": {
+    "button": "Exchange",
+    "buttonHint": "Échange ce pledge contre du store credit (le fusionner), comme dans « My Gear ». Ouvre d’abord une fenêtre de dialogue.",
+    "demo": "Non disponible en mode démo.",
+    "title": "Échanger le pledge",
+    "receive": "Tu reçois",
+    "storeCredit": "en store credit",
+    "warnings": {
+      "lastGameAccess": {
+        "title": "Dernier pledge avec accès au jeu",
+        "text": "C’est le dernier pledge de ton compte qui donne accès à Star Citizen. Sans lui, tu ne pourras plus jouer."
+      },
+      "notBuybackable": {
+        "title": "Pas de buy back",
+        "text": "Ce pledge ne peut pas être racheté via le buy back : l’échange est définitif."
+      },
+      "upgraded": {
+        "title": "Les améliorations appliquées sont échangées aussi",
+        "text": "Les CCU appliqués à ce vaisseau sont échangés avec lui et ne peuvent plus en être séparés. Ce qu’ils t’ont fait économiser (prix warbond et promotions) est perdu."
+      },
+      "discount": {
+        "title": "Tu renonces à une remise de $1 ($2)",
+        "text": "Le prix d’origine est de $1, ce pledge vaut $2. Un prix réduit est définitivement perdu lors de l’échange."
+      },
+      "giftable": {
+        "title": "Actuellement offrable",
+        "text": "Racheté avec du store credit, le pledge est lié à ton compte et n’est plus offrable."
+      },
+      "refundable": {
+        "title": "Remboursement encore possible",
+        "text": "$1. Un remboursement rend de l’argent, un échange seulement du store credit."
+      }
+    },
+    "attention": "Attention",
+    "continue": "Continuer",
+    "continueIn": "Continuer ($1)",
+    "intro": "Tu es sur le point d’échanger ton pledge « $1 ». Le pledge sera retiré de ton compte, y compris toutes ses améliorations (personnalisations ou CCU), et tu recevras $2 en store credit.",
+    "notBuybackable": "Ce pledge n’est PAS ÉLIGIBLE au rachat via le système BuyBack. Cet échange est définitif.",
+    "finalBuyback": "Cette opération est censée être définitive, même si certains pledges peuvent être rachetés via le système BuyBack, le cas échéant et tant que le système BuyBack reste disponible. Les éléments acquis avec du store credit sont LIÉS À TON COMPTE et ne peuvent pas être offerts.",
+    "finalPermanent": "Cette opération est définitive. Les éléments acquis avec du store credit sont LIÉS À TON COMPTE et ne peuvent pas être offerts.",
+    "acknowledge": "Merci de confirmer ce qui suit avant d’envoyer :",
+    "consentLimited": "Certains éléments à disponibilité limitée inclus ou contenus dans le pledge échangé sont définitivement perdus.",
+    "consentDiscount": "Si ce pledge a été acheté à prix réduit, le prix réduit sera DÉFINITIVEMENT PERDU lors de l’échange.",
+    "consentWarnings": "J’ai lu les avertissements ci-dessus et je veux quand même échanger ce pledge.",
+    "password": "Saisis ton mot de passe pour confirmer (envoyé uniquement à RSI) :",
+    "cancel": "Annuler",
+    "submit": "Échanger contre $1",
+    "submitting": "Échange en cours…",
+    "missing": "Merci de confirmer tous les points et de saisir ton mot de passe.",
+    "failed": "L’échange a échoué : $1",
+    "success": "Ton compte a été crédité de $1.",
+    "successNote": "Le pledge disparaît de la liste quand tu fermes cette fenêtre ; le buy back l’affiche après la prochaine mise à jour."
+  },
+  "gift": {
+    "button": "Gift",
+    "buttonHint": "Offre ce pledge à un autre citoyen par e-mail, comme dans « My Gear ». Ouvre d’abord une fenêtre de dialogue.",
+    "demo": "Non disponible en mode démo.",
+    "title": "Offrir ton pledge",
+    "value": "Valeur du pledge",
+    "warnings": {
+      "lastGameAccess": {
+        "title": "Dernier pledge avec accès au jeu",
+        "text": "C’est le dernier pledge de ton compte qui donne accès à Star Citizen. Une fois le cadeau accepté, tu ne pourras plus jouer."
+      },
+      "upgraded": {
+        "title": "Les améliorations appliquées partent avec",
+        "text": "Le destinataire reçoit le vaisseau tel qu’il est maintenant, y compris les CCU qui y sont appliqués."
+      }
+    },
+    "intro": "Tu es sur le point d’offrir ton pledge « $1 » à un autre citoyen par e-mail. Le pledge sera transféré dès que le destinataire l’aura accepté. Jusque-là, tu peux annuler le cadeau à tout moment.",
+    "noRegifting": "Une fois ton cadeau accepté, il sera lié au compte du destinataire et ne pourra plus être offert.",
+    "recipient": "À qui devons-nous envoyer ce cadeau ?",
+    "name": "Nom du destinataire",
+    "email": "E-mail du destinataire",
+    "emailRepeat": "E-mail du destinataire à nouveau (pour éviter les fautes de frappe)",
+    "emailInvalid": "Cela ne ressemble pas à une adresse e-mail.",
+    "emailMismatch": "Les deux adresses e-mail sont différentes.",
+    "password": "Saisis ton mot de passe pour confirmer (envoyé uniquement à RSI) :",
+    "cancel": "Annuler",
+    "submit": "Envoyer le cadeau",
+    "submitting": "Envoi du cadeau…",
+    "missing": "Merci de remplir tous les champs ; les deux adresses e-mail doivent être identiques.",
+    "failed": "Le cadeau n’a pas pu être envoyé : $1",
+    "success": "Un e-mail de cadeau a été envoyé à $1 pour ton pledge ($2).",
+    "successNote": "Tu peux annuler le cadeau dans « My Gear » à tout moment avant qu’il soit accepté."
+  },
+  "popup": {
+    "manager": "Hangar Manager",
+    "settings": "Paramètres",
+    "repository": "Dépôt GitHub"
+  }
+}

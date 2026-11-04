@@ -151,7 +151,7 @@ src/
   settings/              Extension settings and their tab
   assets/                Images bundled into the code (favicons, icon sprites)
   icons/                 `SvgIcon` component, sprite loading, generated icon names
-  locales/               Translations (de, en), default locale is English
+  locales/               Translations (de, en, fr), default locale is English
   i18n/                  Runtime translation that follows the language setting
   shared/                Shared code and styles
   config.ts              Tunable values (intervals, page counts, limits)

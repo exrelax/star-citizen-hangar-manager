@@ -46,7 +46,7 @@ announcements.
 - Links from CCU Game (ccugame.app) straight to the pledge in the Hangar Manager
 - An addition to RSI's website: "My Gear" and "Buy Back Pledges" stay untouched and usable
 - A demo mode with anonymized data for screenshots
-- English and German
+- English, German and French
 
 ---
 
@@ -333,7 +333,7 @@ Paints, Game access, LTI, Warbond, Probably giftable, Rewards), plus:
 
 ## Settings
 
-- **Language**: automatic, English or German.
+- **Language**: automatic, English, German or French.
 - **Show only the best insurance of upgraded ships** (on by default): after upgrades a pledge lists
   the insurance of every step; only the one that counts (LTI, otherwise the most months) is listed.
 - **Hide sensitive information**: see [Private by design](#private-by-design).

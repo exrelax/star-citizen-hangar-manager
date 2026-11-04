@@ -1,4 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import de from '@/locales/de.json';
+import en from '@/locales/en.json';
+import fr from '@/locales/fr.json';
 import { browserLocale, matchLocale, translate } from './index';
 
 describe('matchLocale', () => {
@@ -6,10 +9,11 @@ describe('matchLocale', () => {
     expect(matchLocale('de')).toBe('de');
     expect(matchLocale('de-AT')).toBe('de');
     expect(matchLocale('en-US')).toBe('en');
+    expect(matchLocale('fr-CA')).toBe('fr');
   });
 
   it('falls back to English', () => {
-    expect(matchLocale('fr-FR')).toBe('en');
+    expect(matchLocale('es-ES')).toBe('en');
     expect(matchLocale(undefined)).toBe('en');
   });
 });
@@ -18,6 +22,7 @@ describe('translate', () => {
   it('returns the message of the locale', () => {
     expect(translate('en', 'settings.smartUpdates')).toBe('Smart updates');
     expect(translate('de', 'settings.smartUpdates')).toBe('Intelligente Updates');
+    expect(translate('fr', 'settings.smartUpdates')).toBe('Mises à jour intelligentes');
   });
 
   it('fills in substitutions and unescapes dollar signs', () => {
@@ -37,5 +42,21 @@ describe('browserLocale', () => {
 
     expect(browserLocale('ui')).toBe('en');
     expect(browserLocale('preferred')).toBe('de');
+  });
+});
+
+describe('locale files', () => {
+  type Messages = { [key: string]: string | Messages };
+  /** Every key of the file with the placeholders of its message, e.g. "manager.count $1". */
+  const keys = (messages: Messages, prefix = ''): string[] =>
+    Object.entries(messages).flatMap(([key, value]) =>
+      typeof value === 'string'
+        ? [`${prefix}${key} ${(value.match(/\$[1-9]/g) ?? []).sort().join(' ')}`]
+        : keys(value, `${prefix}${key}.`),
+    );
+
+  it('have the same keys and placeholders as English', () => {
+    expect(keys(de)).toEqual(keys(en));
+    expect(keys(fr)).toEqual(keys(en));
   });
 });

@@ -320,23 +320,24 @@ const countLabel = computed(() =>
   gap: 10px;
 }
 
+/*
+ * One category per line: its label, then its buttons. The labels share one column as wide as the
+ * longest (e.g. "Propriétés"), so the buttons of all groups start at the same point.
+ */
 .shm-filters {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 8px 10px;
 }
 
-/* One category per line: its label in a fixed column, then its buttons. */
 .shm-filter-group {
-  display: flex;
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
   align-items: center;
-  gap: 10px;
 }
 
 .shm-filter-group-label {
-  flex: none;
-  width: 72px;
   color: var(--shm-text-muted);
   font-size: 11px;
   letter-spacing: 0.04em;
