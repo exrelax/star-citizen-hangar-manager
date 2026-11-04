@@ -181,3 +181,21 @@ which WXT puts into the manifest. Run it after changing the logo; the PNGs are c
 
 Browser-specific differences should live in `wxt.config.ts` wherever possible; the rest of the code
 is the same for both browsers.
+
+## License
+
+[MIT](LICENSE) © exrelax. Provided "as is", without warranty: actions such as exchanging or
+gifting pledges are sent to RSI only when you confirm them in the dialog, and you are responsible
+for them.
+
+Third-party parts keep their own licenses:
+
+- Icons in `src/assets/svg-sprites/fa/`:
+  [Font Awesome Free](https://fontawesome.com/license/free) (icons: CC BY 4.0); the notice is kept
+  in the built sprite.
+- The favicons of [erkul.games](https://www.erkul.games) and [FleetYards.net](https://fleetyards.net)
+  belong to these sites; they are only used to label the links to them.
+
+This is an unofficial fan project, not affiliated with or endorsed by Cloud Imperium Games or
+Roberts Space Industries. Star Citizen® and Roberts Space Industries® are trademarks of Cloud
+Imperium Rights LLC.

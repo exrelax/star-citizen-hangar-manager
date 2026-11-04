@@ -3,6 +3,9 @@
 Thanks for helping to improve the Star Citizen Hangar Manager! This guide explains how to report
 problems, suggest features and contribute code, so your work can be reviewed and merged quickly.
 
+By contributing, you agree that your contributions are licensed under the project's
+[MIT License](LICENSE).
+
 ## Ways to contribute
 
 - **Report a bug** – open an [issue](#reporting-bugs) with the "Bug report" form.
