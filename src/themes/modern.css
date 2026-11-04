@@ -505,12 +505,6 @@ html .shm-theme-modern .shm-button.is-danger:not(:disabled):focus-visible {
   background: color-mix(in srgb, var(--shm-danger) 25%, transparent);
 }
 
-html .shm-theme-modern .shm-cart {
-  background: var(--shm-fill);
-  border: 0;
-  border-radius: 999px;
-}
-
 /* ---- Settings: grouped sections ---- */
 
 html .shm-theme-modern .shm-setting {

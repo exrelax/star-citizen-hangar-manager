@@ -173,6 +173,7 @@
     "showInBuyback": "Afficher dans Buy Back (page $1)",
     "probablyGiftableHint": "Racheté en argent réel (warbond), cet élément est probablement offrable, car il a été acheté à l’origine avant le $1.",
     "showSingleInBuyback": "Afficher dans Buy Back",
+    "toCart": "Au panier",
     "addToCart": "Ajouter au panier RSI et ouvrir le panier (nouvel onglet). RSI vide le panier pour les pledges du buy back.",
     "cartFailed": "Impossible d’ajouter au panier RSI : $1",
     "cartNotFound": "Introuvable à sa position enregistrée dans le buy back de RSI – synchronise puis réessaie."

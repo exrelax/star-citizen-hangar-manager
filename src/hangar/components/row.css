@@ -322,25 +322,9 @@
   color: var(--shm-text-muted);
 }
 
-.shm-cart {
-  padding: 0 6px;
-  font: inherit;
-  font-size: calc(13px * var(--shm-font-scale));
-  line-height: calc(20px * var(--shm-font-scale));
-  background: none;
-  border: 1px solid rgb(var(--shm-accent-rgb) / 0.6);
-  cursor: pointer;
-}
-
-.shm-cart:hover,
-.shm-cart:focus-visible {
-  background: rgb(var(--shm-accent-rgb) / 0.25);
-  outline: none;
-}
-
-.shm-cart.is-busy {
+/* While the pledge is put into RSI's cart. */
+.shm-cart-button.is-busy {
   cursor: progress;
-  opacity: 0.5;
 }
 
 .shm-cart-error {

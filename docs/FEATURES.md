@@ -302,8 +302,8 @@ Paints, Game access, LTI, Warbond, Probably giftable, Rewards), plus:
 
 - **Probably giftable**: pledges bought before 30 Oct 2026 are probably giftable again when bought
   back with money (warbond).
-- **Add to cart**: one click puts a buy back pledge – or a buy back CCU – into the RSI cart and
-  opens it, without going through RSI's pages.
+- **To Cart**: a button in the opened item, under "Show in Buy Back": one click puts a buy back
+  pledge – or a buy back CCU – into the RSI cart and opens it, without going through RSI's pages.
 - **Show in Buy Back**: opens the pledge on RSI's own buy back page (only this pledge, or the list
   page with the pledge highlighted).
 - Insurances, ships and orders as in "My Hangar".

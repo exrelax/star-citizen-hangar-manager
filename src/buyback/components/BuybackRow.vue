@@ -126,17 +126,6 @@ const kind = computed(() =>
       </span>
 
       <span class="shm-badges">
-        <button
-          type="button"
-          class="shm-cart"
-          :class="{ 'is-busy': addingToCart }"
-          :disabled="addingToCart"
-          :title="i18n.t('buyback.addToCart')"
-          :aria-label="i18n.t('buyback.addToCart')"
-          @click.stop="addToCart"
-        >
-          🛒
-        </button>
         <span
           v-if="pledge.insurance"
           class="shm-badge"
@@ -162,16 +151,29 @@ const kind = computed(() =>
       </button>
     </div>
 
-    <!-- Two columns like the row above: the way to RSI's original under the image, then the rest. -->
+    <!-- Two columns like the row above: RSI's original and the cart under the image, then the rest. -->
     <div v-if="expanded" class="shm-details">
       <!-- In the demo the link would reveal the real pledge id: it stays inert. -->
-      <a
-        class="shm-button shm-origin-button"
-        :href="demo ? '#' : buybackLink.href"
-        @click="demo && $event.preventDefault()"
-      >
-        {{ buybackLink.text }}
-      </a>
+      <div class="shm-details-side">
+        <a
+          class="shm-button shm-origin-button"
+          :href="demo ? '#' : buybackLink.href"
+          @click="demo && $event.preventDefault()"
+        >
+          {{ buybackLink.text }}
+        </a>
+        <button
+          type="button"
+          class="shm-button shm-origin-button shm-cart-button"
+          :class="{ 'is-busy': addingToCart }"
+          :disabled="addingToCart"
+          :title="i18n.t('buyback.addToCart')"
+          @click="addToCart"
+        >
+          <SvgIcon name="basket-shopping" />
+          {{ i18n.t('buyback.toCart') }}
+        </button>
+      </div>
       <div class="shm-details-main">
         <OrderInfo v-if="pledge.order" :order="pledge.order" />
         <p v-if="pledge.isProbablyGiftable" class="shm-hint">{{ giftableHint }}</p>

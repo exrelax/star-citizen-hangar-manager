@@ -173,6 +173,7 @@
     "showInBuyback": "Mostrar en Buy Back (página $1)",
     "probablyGiftableHint": "Si lo recompras con dinero real (warbond), este elemento probablemente es regalable, ya que se compró originalmente antes del $1.",
     "showSingleInBuyback": "Mostrar en Buy Back",
+    "toCart": "Al carrito",
     "addToCart": "Añadir al carrito de RSI y abrir el carrito (nueva pestaña). RSI vacía el carrito para los pledges del buy back.",
     "cartFailed": "No se ha podido añadir al carrito de RSI: $1",
     "cartNotFound": "Ya no se encuentra en su posición guardada en el buy back de RSI. Sincroniza e inténtalo de nuevo."
