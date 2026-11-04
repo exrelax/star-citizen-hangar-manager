@@ -91,6 +91,7 @@
     "translateRsiTextsHint": "Standardmäßig zeigen diese Dialoge RSIs eigene Texte – Einleitungen, Bestätigungen, Meldungen – in RSIs Englisch, dessen Wortlaut maßgeblich ist. Die Übersetzungen stammen vom Hangar Manager: Ändert RSI seine Texte, fließt das erst später ein, daher sind sie nicht immer aktuell.",
     "hideMeltValue": "Schmelzwert ausblenden",
     "hideMeltValueHint": "Blendet die $$-Werte aus: Pledge-Werte, Rabatte und die Kosten angewendeter Upgrades.",
+    "general": "Allgemein",
     "smartUpdates": "Intelligente Updates",
     "smartUpdatesHint": "Prüft ab und zu die erste, die letzte und einige weitere Hangar-Seiten auf Änderungen und aktualisiert die Liste ohne vollständigen Abgleich.",
     "shipLinks": "Links bei Schiffen anzeigen",

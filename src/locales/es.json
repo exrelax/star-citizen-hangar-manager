@@ -91,6 +91,7 @@
     "translateRsiTextsHint": "Por defecto, estos diálogos muestran los textos de RSI (introducciones, confirmaciones, mensajes) en el inglés de RSI, cuya redacción es la que vale. Sus traducciones son del Hangar Manager: los cambios que RSI hace en sus textos solo llegan a ellas más tarde, por lo que no siempre están al día.",
     "hideMeltValue": "Ocultar el valor de fusión",
     "hideMeltValueHint": "Oculta los importes en $$: valores de los pledges, descuentos y costes de las mejoras aplicadas.",
+    "general": "General",
     "smartUpdates": "Actualizaciones inteligentes",
     "smartUpdatesHint": "Comprueba de vez en cuando la primera, la última y algunas páginas más del hangar y actualiza la lista sin una actualización completa.",
     "shipLinks": "Mostrar enlaces para naves",

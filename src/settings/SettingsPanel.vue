@@ -216,7 +216,8 @@ const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
       </p>
     </fieldset>
 
-    <section class="shm-setting">
+    <fieldset class="shm-setting">
+      <legend class="shm-label">{{ i18n.t('settings.general') }}</legend>
       <label class="shm-check">
         <input
           type="checkbox"
@@ -225,11 +226,11 @@ const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
         />
         {{ i18n.t('settings.smartUpdates') }}
       </label>
-      <p class="shm-hint">{{ i18n.t('settings.smartUpdatesHint') }}</p>
-    </section>
+      <p class="shm-hint is-indented">{{ i18n.t('settings.smartUpdatesHint') }}</p>
 
-    <section class="shm-setting">
-      <label class="shm-label" for="shm-buyback-link">{{ i18n.t('settings.buybackLink') }}</label>
+      <label class="shm-field-label" for="shm-buyback-link">
+        {{ i18n.t('settings.buybackLink') }}
+      </label>
       <select
         id="shm-buyback-link"
         class="shm-select"
@@ -244,7 +245,7 @@ const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
           {{ i18n.t(`settings.buybackLinkOptions.${mode}`) }}
         </option>
       </select>
-    </section>
+    </fieldset>
 
     <fieldset class="shm-setting">
       <legend class="shm-label">{{ i18n.t('settings.filters') }}</legend>
@@ -369,6 +370,26 @@ const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
   color: var(--shm-accent);
   font-size: calc(13px * var(--shm-font-scale));
   text-transform: uppercase;
+}
+
+/*
+ * A legend sits in the fieldset's top border by default, above the padding. Floated, it flows
+ * inside the padding like the headings of the other sections; what follows starts below it.
+ */
+legend.shm-label {
+  float: left;
+  width: 100%;
+}
+
+legend.shm-label + * {
+  clear: both;
+}
+
+/* Label of a field inside a group, below the group's heading. */
+.shm-field-label {
+  display: block;
+  margin: 14px 0 6px;
+  color: var(--shm-text);
 }
 
 .shm-check {
