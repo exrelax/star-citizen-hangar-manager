@@ -160,10 +160,13 @@ wxt.config.ts            Shared configuration and browser-specific manifest
 
 ### Icons
 
-Icons are single SVG files in `src/assets/svg-sprites/<set>/` (currently `fa`, Font Awesome
-Free). After adding or changing one, run `pnpm svg-sprite`: it optimizes the icons with svgo and
-writes the sprite `src/assets/svg-sprites/<set>.svg` and the names in `src/icons/icon-names.ts`.
-Use an icon with `<SvgIcon name="circle-xmark" />`; it is as large as the text and in its color.
+Icons are single SVG files in `src/assets/svg-sprites/<set>/`: `fa` (Font Awesome Free) and
+`custom` (the extension's own, e.g. `hangar`). After adding or changing one, run
+`pnpm svg-sprite`: it optimizes the icons with svgo and writes the sprite
+`src/assets/svg-sprites/<set>.svg` and the names in `src/icons/icon-names.ts`. A new set also needs
+its sprite in `src/icons/sprite.ts`. Use an icon with `<SvgIcon name="circle-xmark" />`, one of
+another set with `<SvgIcon name="hangar" set="custom" />`; it is as large as the text and in its
+color.
 
 Browser-specific differences should live in `wxt.config.ts` wherever possible; the rest of the code
 is the same for both browsers.

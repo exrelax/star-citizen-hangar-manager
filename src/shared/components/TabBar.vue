@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T extends string">
-import type { IconName } from '@/icons/icon-names';
+import type { IconName, IconSet } from '@/icons/icon-names';
 import SvgIcon from '@/icons/SvgIcon.vue';
 
 /*
@@ -8,7 +8,8 @@ import SvgIcon from '@/icons/SvgIcon.vue';
  */
 
 defineProps<{
-  items: readonly { id: T; label: string; icon?: IconName }[];
+  /** `iconSet`: the sprite of `icon`, Font Awesome unless set. */
+  items: readonly { id: T; label: string; icon?: IconName; iconSet?: IconSet }[];
   selected: T;
   /** Accessible name of the group. */
   label: string;
@@ -36,7 +37,7 @@ const emit = defineEmits<{ select: [id: T] }>();
       :aria-controls="panels && `${panels}-panel-${item.id}`"
       @click="emit('select', item.id)"
     >
-      <SvgIcon v-if="item.icon" :name="item.icon" />
+      <SvgIcon v-if="item.icon" :name="item.icon" :set="item.iconSet" />
       {{ item.label }}
     </button>
   </div>

@@ -1,3 +1,4 @@
+import customSprite from '@/assets/svg-sprites/custom.svg?raw';
 import faSprite from '@/assets/svg-sprites/fa.svg?raw';
 import type { IconSet } from './icon-names';
 
@@ -7,7 +8,7 @@ import type { IconSet } from './icon-names';
  * of the extension (another origin) can't be referenced from RSI's page.
  */
 
-const SPRITES: Record<IconSet, string> = { fa: faSprite };
+const SPRITES: Record<IconSet, string> = { fa: faSprite, custom: customSprite };
 const added = new Set<IconSet>();
 
 /** Adds the sprite of `set` to the page, unless it is already there. */

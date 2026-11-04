@@ -8,7 +8,7 @@ import { DEMO_CONTEXT, useDemo } from '@/demo/use-demo';
 import { hashOfTab, MANAGER_TABS, tabFromHash, type ManagerTab } from '@/hangar/route';
 import { startSync, syncState } from '@/hangar/sync-state';
 import { useHangarPledges } from '@/hangar/use-hangar-pledges';
-import type { IconName } from '@/icons/icon-names';
+import type { IconName, IconSet } from '@/icons/icon-names';
 import TabBar from '@/shared/components/TabBar.vue';
 import { i18n } from '@/i18n';
 import SettingsPanel from '@/settings/SettingsPanel.vue';
@@ -17,14 +17,14 @@ import { MANAGER_CONTAINER, useThemeClass } from '@/themes/theme';
 import { computed, inject, onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue';
 
 /** Icon of each tab, before its label. */
-const TAB_ICONS: Record<ManagerTab, IconName> = {
-  hangar: 'box',
-  buyback: 'recycle',
-  settings: 'gear',
+const TAB_ICONS: Record<ManagerTab, { icon: IconName; iconSet?: IconSet }> = {
+  hangar: { icon: 'hangar', iconSet: 'custom' },
+  buyback: { icon: 'recycle' },
+  settings: { icon: 'gear' },
 };
 
 const tabItems = computed(() =>
-  MANAGER_TABS.map((tab) => ({ id: tab, label: i18n.t(`tabs.${tab}`), icon: TAB_ICONS[tab] })),
+  MANAGER_TABS.map((tab) => ({ id: tab, label: i18n.t(`tabs.${tab}`), ...TAB_ICONS[tab] })),
 );
 
 const hangar = useHangarPledges();
