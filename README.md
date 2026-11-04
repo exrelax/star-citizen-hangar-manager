@@ -202,9 +202,10 @@ color.
 ### Extension icon
 
 The logo lives in `src/assets/logo/` in three levels of detail: `logo-full.svg` (from 64 px, with
-the ship's cockpit and panel lines), `logo-mid.svg` (32–48 px, the ship as a silhouette) and
-`logo-tiny.svg` (16 px, only the hangar). `pnpm icons` renders them to `public/icon/<size>.png`,
-which WXT puts into the manifest. Run it after changing the logo; the PNGs are committed.
+the hangar's interior, position lights, the ship's cockpit and engine glow), `logo-mid.svg`
+(32–48 px, the hangar and the ship without the small details) and `logo-tiny.svg` (16 px, only
+the hangar). `pnpm icons` renders them to `public/icon/<size>.png`, which WXT puts into the
+manifest. Run it after changing the logo; the PNGs are committed.
 
 Browser-specific differences should live in `wxt.config.ts` wherever possible; the rest of the code
 is the same for both browsers.

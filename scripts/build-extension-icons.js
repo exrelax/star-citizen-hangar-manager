@@ -1,7 +1,7 @@
 /**
- * Renders the extension's icons (`pnpm icons`) from the logo in `src/assets/logo/` – the
- * "Hangar with ship, staggered" design: the full logo from 64 px, the ship as a plain silhouette
- * at 32–48 px, only the hangar at 16 px, where more detail would blur.
+ * Renders the extension's icons (`pnpm icons`) from the logo in `src/assets/logo/` – the hangar
+ * of the "My Hangar" tab in colour: the full logo from 64 px, without the small details at
+ * 32–48 px, only the hangar at 16 px, where more detail would blur.
  *
  * Writes `public/icon/<size>.png`, which WXT turns into the manifest's icons.
  */
