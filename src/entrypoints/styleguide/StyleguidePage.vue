@@ -75,7 +75,7 @@ watch(
       <div>
         <h1 class="shm-sg-title">Styleguide</h1>
         <p class="shm-sg-intro">
-          The Hangar Manager's building blocks with made-up pledges, in both themes: "Default RSI"
+          The Hangar Manager's building blocks with made-up pledges, in both themes: "Classic RSI"
           follows the layout of RSI's website, "Modern Hangar" Apple's Human Interface Guidelines.
           Theme, language and display options are the extension's settings: changing them here
           changes the manager, too.
@@ -166,7 +166,7 @@ html:has(.shm-styleguide) {
   margin: 24px auto;
   padding: 28px;
   color: var(--shm-text);
-  /* "Default RSI" relies on RSI's page for its background; "Modern Hangar" sets its own. */
+  /* "Classic RSI" relies on RSI's page for its background; "Modern Hangar" sets its own. */
   background: rgb(var(--shm-surface-rgb) / 0.9);
 }
 

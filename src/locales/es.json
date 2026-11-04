@@ -110,7 +110,7 @@
     "themedActionDialogs": "Mostrar los diálogos de cambio y regalo en el tema elegido",
     "themedActionDialogsHint": "Desactivado: se ven como los diálogos de RSI en «My Gear», con las indicaciones del Hangar Manager sobre el pledge y su valor.",
     "themeOptions": {
-      "rsi": "RSI predeterminado",
+      "rsi": "RSI clásico",
       "modern": "Modern Hangar"
     },
     "filters": "Filtros",

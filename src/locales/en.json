@@ -110,7 +110,7 @@
     "themedActionDialogs": "Show the exchange and gift dialogs in the selected theme",
     "themedActionDialogsHint": "Off: they look like RSI's own dialogs in “My Gear”, with the Hangar Manager's notes on the pledge and its value.",
     "themeOptions": {
-      "rsi": "Default RSI",
+      "rsi": "Classic RSI",
       "modern": "Modern Hangar"
     },
     "filters": "Filters",

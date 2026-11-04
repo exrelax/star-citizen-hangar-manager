@@ -110,7 +110,7 @@
     "themedActionDialogs": "Afficher les fenêtres d’échange et de cadeau dans le thème choisi",
     "themedActionDialogsHint": "Désactivé : elles ressemblent aux fenêtres de RSI dans « My Gear », avec les indications du Hangar Manager sur le pledge et sa valeur.",
     "themeOptions": {
-      "rsi": "RSI par défaut",
+      "rsi": "RSI classique",
       "modern": "Modern Hangar"
     },
     "filters": "Filtres",

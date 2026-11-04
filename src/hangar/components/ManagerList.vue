@@ -295,7 +295,7 @@ const countLabel = computed(() =>
 
     <p class="shm-count" aria-live="polite">{{ countLabel }}</p>
 
-    <!-- One grouped list (Modern Hangar) or separate rows (Default RSI). -->
+    <!-- One grouped list (Modern Hangar) or separate rows (Classic RSI). -->
     <div v-if="rendered.length" class="shm-rows">
       <template v-for="entry in rendered" :key="entry.id">
         <slot name="row" :entry="entry" :auto-expand="entry.id === onlyVisibleId" />

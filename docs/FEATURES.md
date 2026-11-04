@@ -339,7 +339,7 @@ Paints, Game access, LTI, Warbond, Probably giftable, Rewards), plus:
 - **Show only the best insurance of upgraded ships** (on by default): after upgrades a pledge lists
   the insurance of every step; only the one that counts (LTI, otherwise the most months) is listed.
 - **Hide sensitive information**: see [Private by design](#private-by-design).
-- **Theme**: Default RSI or Modern Hangar. The exchange and gift dialogs look like RSI's own
+- **Theme**: Modern Hangar (the default) or Classic RSI. The exchange and gift dialogs look like RSI's own
   dialogs in "My Gear" by default (with the manager's summary and warnings); an option shows them
   in the selected theme instead.
 - **Smart updates**: on or off.

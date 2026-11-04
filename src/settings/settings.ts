@@ -18,8 +18,11 @@ export type LanguageSetting = 'auto' | Locale;
 export const BUYBACK_LINK_MODES = ['single', 'list'] as const;
 export type BuybackLinkMode = (typeof BUYBACK_LINK_MODES)[number];
 
-/** Look of the manager: `rsi` like RSI's account pages, `modern` after Apple's HIG (src/themes). */
-export const THEMES = ['rsi', 'modern'] as const;
+/**
+ * Look of the manager, in the order of the setting's options: `modern` after Apple's HIG (the
+ * default), `rsi` ("Classic RSI") like RSI's account pages (src/themes).
+ */
+export const THEMES = ['modern', 'rsi'] as const;
 export type Theme = (typeof THEMES)[number];
 
 export interface Settings {
@@ -71,7 +74,7 @@ export const DEFAULT_SETTINGS: Settings = {
   showRefund: true,
   smartUpdates: true,
   buybackLinkMode: 'single',
-  theme: 'rsi',
+  theme: 'modern',
   filters: {
     hangar: normalizeFilterGroups(FILTERS.hangar, PLEDGE_FILTER_CATEGORIES, FILTERS.hangar),
     buyback: normalizeFilterGroups(FILTERS.buyback, BUYBACK_FILTER_CATEGORIES, FILTERS.buyback),

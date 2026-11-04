@@ -3,7 +3,7 @@
  * sits on the manager's container and on its overlays, so a theme never reaches the rest of RSI's
  * website (whose own areas are styled in hangar.content/page.css, outside of the themes).
  *
- * "Default RSI" mirrors RSI's account pages. Its values are also the fallback on `:root`, for
+ * "Classic RSI" mirrors RSI's account pages. Its values are also the fallback on `:root`, for
  * anything rendered before the setting is read.
  */
 :root,

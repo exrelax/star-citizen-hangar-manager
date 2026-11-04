@@ -27,7 +27,7 @@ describe('withDefaults', () => {
       showRefund: false,
       smartUpdates: true,
       buybackLinkMode: 'single',
-      theme: 'rsi',
+      theme: 'modern',
       filters: DEFAULT_SETTINGS.filters,
       shipLinks: { erkul: false, fleetyards: true },
     });

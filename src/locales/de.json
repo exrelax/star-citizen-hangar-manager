@@ -110,7 +110,7 @@
     "themedActionDialogs": "Dialoge zum Einschmelzen und Verschenken im gewählten Theme darstellen",
     "themedActionDialogsHint": "Aus: Sie sehen aus wie RSIs eigene Dialoge in „My Gear“, mit den Hinweisen des Hangar Managers zum Pledge und seinem Wert.",
     "themeOptions": {
-      "rsi": "Default RSI",
+      "rsi": "Classic RSI",
       "modern": "Modern Hangar"
     },
     "filters": "Filter",
