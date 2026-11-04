@@ -140,6 +140,21 @@ Hangar Manager → **Permissions** that access to `robertsspaceindustries.com` i
 The version lives only in `package.json`: WXT writes it into the manifest, and the extension reads
 it from there (`src/shared/extension-version.ts`) for the settings ("About") and the popup.
 
+## Releasing
+
+1. Set the new `version` in `package.json` (the only place it lives, see [Version](#version)).
+2. Add its section to [`CHANGELOG.md`](CHANGELOG.md), e.g. `## [1.0.0] – 2026-11-30` followed by
+   the changes. These become the notes of the GitHub release.
+3. Commit, then tag and push: `git tag v1.0.0 && git push origin main v1.0.0`.
+
+The [release workflow](.github/workflows/release.yml) then checks that the tag matches
+`package.json` and that the changelog has the version's section, runs the type check, ESLint and
+the tests, builds the zips (`pnpm zip`) and creates a **draft** release on GitHub with them:
+the Chrome and Firefox packages and the sources for addons.mozilla.org. Check the draft and publish
+it on GitHub, then upload the zips to the stores (texts in [`store/`](store/README.md)).
+
+`node scripts/release-notes.js 1.0.0` shows locally what the release notes will be.
+
 ## Configuration
 
 Tunable values – e.g. how often smart updates check the hangar, how many pages they check and
@@ -169,7 +184,7 @@ src/
   shared/                Shared code and styles
   config.ts              Tunable values (intervals, page counts, limits)
 wxt.config.ts            Shared configuration and browser-specific manifest
-.github/workflows/       CI: checks and builds of every push to main and every pull request
+.github/workflows/       CI (checks and builds of pushes and pull requests) and releases
 public/icon/             Extension icons, rendered from the logo by `pnpm icons`
 store/                   Texts for the store pages and their review (see store/README.md)
 ```
