@@ -1,6 +1,6 @@
 {
   "extName": "Star Citizen Hangar Manager",
-  "extDescription": "Gestiona tu hangar de Star Citizen en robertsspaceindustries.com.",
+  "extDescription": "Todo tu hangar de Star Citizen y la recompra en una página rápida y con búsqueda, en la web de RSI. Tus datos no salen de tu equipo.",
   "nav": {
     "manager": "Hangar Manager"
   },

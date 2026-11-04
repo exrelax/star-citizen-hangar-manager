@@ -165,6 +165,7 @@ src/
   config.ts              Tunable values (intervals, page counts, limits)
 wxt.config.ts            Shared configuration and browser-specific manifest
 public/icon/             Extension icons, rendered from the logo by `pnpm icons`
+store/                   Texts for the store pages and their review (see store/README.md)
 ```
 
 ### Icons
