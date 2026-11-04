@@ -1,6 +1,6 @@
 # Pushing a tag like `v1.0.0` builds the store zips and creates a draft GitHub release with them.
-# The release stays a draft until it is published by hand on GitHub. See "Releasing" in the
-# README.
+# The release stays a draft until it is published by hand on GitHub. See "Releasing" in
+# docs/DEVELOPMENT.md.
 name: Release
 
 on:

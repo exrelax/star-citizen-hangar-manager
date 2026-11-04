@@ -35,16 +35,16 @@ Every contribution has to keep these promises of the extension (see
 
 ## Getting started
 
-Setup, commands and how to load the extension in Chrome or Firefox are described in the
-[README](README.md):
+Setup, commands and how to load the extension in Chrome or Firefox are described in
+[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md):
 
 1. Fork the repository and clone your fork.
-2. Install the dependencies as described in [Installation](README.md#installation).
-3. Run the extension in dev mode ([Trying the extension in the browser](README.md#trying-the-extension-in-the-browser)).
+2. Install the dependencies as described in [Installation](docs/DEVELOPMENT.md#installation).
+3. Run the extension in dev mode ([Trying the extension in the browser](docs/DEVELOPMENT.md#trying-the-extension-in-the-browser)).
 4. Create a branch from `main` for your change, e.g. `fix/refresh-button-width` or
    `feat/sort-pledges`.
 
-The dev build adds a [styleguide](README.md#styleguide) page with all building blocks of the
+The dev build adds a [styleguide](docs/DEVELOPMENT.md#styleguide) page with all building blocks of the
 manager and made-up pledges – the quickest way to check a visual change.
 
 ## Coding guidelines
@@ -66,7 +66,7 @@ manager and made-up pledges – the quickest way to check a visual change.
   translations of them are optional (see the setting "Translate RSI's texts").
 - **Icons** – add an SVG to `src/assets/svg-sprites/<set>/` and run `pnpm svg-sprite`; for the
   extension icon change the logo in `src/assets/logo/` and run `pnpm icons`
-  (see [Icons](README.md#icons)). Commit the generated files together with their sources.
+  (see [Icons](docs/DEVELOPMENT.md#icons)). Commit the generated files together with their sources.
 
 Before you open a pull request, run:
 
@@ -115,8 +115,8 @@ on their own if needed. If your work touches several topics, split it into sever
   "Hide pledge and order IDs, name and address" so no personal data shows up.
 - Keep unrelated changes out: no drive-by formatting or renaming in other files.
 - Keep your branch up to date with `main` and make sure all checks pass.
-- Update the documentation (README, [docs/FEATURES.md](docs/FEATURES.md)) when you change
-  behaviour that is described there.
+- Update the documentation (README, [docs/FEATURES.md](docs/FEATURES.md),
+  [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)) when you change behaviour that is described there.
 
 ## Reporting bugs
 
