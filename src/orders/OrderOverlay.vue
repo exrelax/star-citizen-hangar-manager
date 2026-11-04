@@ -66,7 +66,7 @@ onMounted(async () => {
       const real = context.realOrder(props.order.id);
       if (!real) throw new Error(i18n.t('order.notFound'));
       const anonymized = anonymizeOrderDetails(await fetchOrderDetails(real), context.fakeId);
-      // Some demo pledges have a recent purchase date, for the refund tags.
+      // Demo pledges have made-up purchase dates (see `demoDates`).
       details.value =
         real.placedAt && props.order.placedAt
           ? redateOrderDetails(anonymized, real.placedAt, props.order.placedAt)

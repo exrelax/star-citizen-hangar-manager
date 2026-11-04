@@ -129,9 +129,11 @@ export const DEMO = {
   upgradedPledges: 4,
   /**
    * Days left to refund for the first pledges with a money-paid order: their purchase date is
-   * moved accordingly, so the demo always shows the refund tag – normal and in its last week.
+   * set accordingly, so the demo always shows the refund tag – normal and in its last week.
    */
   refundDaysLeft: [20, 3],
+  /** Earliest made-up purchase date (the other dates are random, up to today). */
+  earliestDate: '2013-01-01',
 } as const;
 
 /**

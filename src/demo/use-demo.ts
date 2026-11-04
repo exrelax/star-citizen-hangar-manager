@@ -2,7 +2,8 @@ import type { BuybackView } from '@/buyback/buyback-view';
 import type { PledgeView } from '@/hangar/pledge-view';
 import type { Order } from '@/orders/orders';
 import { computed, inject, onMounted, shallowRef, type InjectionKey, type Ref } from 'vue';
-import { createFakeIds, demoBuyback, demoHangar } from './demo';
+import { createFakeIds, demoBuyback, demoHangar, demoUpgradeLog } from './demo';
+import type { UpgradeLogEntry } from '@/hangar/upgrade-log';
 
 /** Random key of the demo, created on first use and kept only in this browser. */
 const demoKeyItem = storage.defineItem<string | null>('local:demo.key', { fallback: null });
@@ -26,6 +27,12 @@ export interface DemoContext {
    * details are anonymized before they are shown (see `anonymizeOrderDetails`).
    */
   realOrder: (fakeOrderId: string) => Order | undefined;
+  /** The applied CCUs of a pledge with made-up dates after its demo purchase date. */
+  upgradeLog: (
+    pledgeId: number,
+    createdAt: string | undefined,
+    entries: readonly UpgradeLogEntry[],
+  ) => UpgradeLogEntry[];
 }
 
 export const DEMO_CONTEXT: InjectionKey<Ref<DemoContext | null>> = Symbol('shm-demo');
@@ -61,7 +68,10 @@ export function useDemo(
       );
       return orders.get(fakeOrderId);
     };
-    return { fakeId, realOrder };
+    const demoKey = key.value;
+    const upgradeLog: DemoContext['upgradeLog'] = (pledgeId, createdAt, entries) =>
+      demoUpgradeLog(entries, pledgeId, createdAt, demoKey);
+    return { fakeId, realOrder, upgradeLog };
   });
   const demoPledges = computed(() => (key.value ? demoHangar(pledges.value, key.value) : []));
   const demoBuybackPledges = computed(() =>

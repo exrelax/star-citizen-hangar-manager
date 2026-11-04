@@ -153,7 +153,9 @@ information (for screenshots or content creators)** keeps private details off sc
 - **Demo mode**: shows a fixed selection of 100 hangar and 50 buy back pledges with made-up pledge
   and order IDs (e.g. `99FE3X712`). Order details show a dummy billing address and payment
   provider instead of the real ones; links to RSI, the cart, invoices and refund requests are
-  disabled. A **Demo** badge shows on every tab. The made-up IDs are derived from a random key
+  disabled. A **Demo** badge shows on every tab. Purchase dates are made up as well (newest first,
+  two of them recent enough for the refund tags), and the dates of applied upgrades follow them:
+  after the purchase, in their real order. The made-up IDs and dates are derived from a random key
   that exists only in your browser, so they can't be traced back to the real ones.
 
 ---

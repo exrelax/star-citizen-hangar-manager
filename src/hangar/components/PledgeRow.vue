@@ -232,7 +232,11 @@ const toggle = () => {
             </span>
           </li>
         </ul>
-        <UpgradeLog v-if="pledge.isUpgraded" :pledge-id="pledge.id" />
+        <UpgradeLog
+          v-if="pledge.isUpgraded"
+          :pledge-id="pledge.id"
+          :created-at="pledge.createdAt"
+        />
         <ExternalLinks :ships="linkedShips" />
       </div>
     </div>

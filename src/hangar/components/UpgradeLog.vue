@@ -7,8 +7,12 @@ import { shipPricesItem } from '../hangar-storage';
 import { createPriceLookup } from '../ship-prices';
 import { loadUpgradeLog, withPrices, type PricedUpgradeLogEntry } from '../upgrade-log';
 
-const props = defineProps<{ pledgeId: number }>();
-/** In the demo, the ids of the applied CCUs are made up, too. */
+const props = defineProps<{
+  pledgeId: number;
+  /** Purchase date as shown in the row: in the demo, the made-up CCU dates come after it. */
+  createdAt?: string;
+}>();
+/** In the demo, the ids and dates of the applied CCUs are made up, too. */
 const demo = useDemoContext();
 
 const open = ref(false);
@@ -25,7 +29,8 @@ async function toggle() {
       loadUpgradeLog(props.pledgeId),
       shipPricesItem.getValue(),
     ]);
-    entries.value = withPrices(log, createPriceLookup(prices?.ships ?? []));
+    const shown = demo.value ? demo.value.upgradeLog(props.pledgeId, props.createdAt, log) : log;
+    entries.value = withPrices(shown, createPriceLookup(prices?.ships ?? []));
   } catch (failure) {
     console.error('[star-citizen-hangar-manager] Loading the upgrade log failed', failure);
     error.value = i18n.t('upgradeLog.failed', [
