@@ -28,7 +28,8 @@ description as plain text, so they use no Markdown.
 | [marquee-1400x560.png](marquee-1400x560.png)                 | 1400×560 | Chrome: marquee promo tile (optional)       |
 | [social-preview-1280x640.png](social-preview-1280x640.png)   | 1280×640 | GitHub: Settings → General → Social preview |
 
-The store icon is the extension's own: [public/icon/128.png](../public/icon/128.png).
+The store icon is the extension's own, [public/icon/128.png](../public/icon/128.png): the logo at
+96 px with 16 px of transparent padding, as the Chrome Web Store asks for.
 
 The screenshots are taken in the demo mode (Settings), so they show made-up pledge and order IDs,
 at exactly 1280×800: in Chrome's DevTools, device toolbar "Responsive" with 1280 × 800 and DPR 1,
