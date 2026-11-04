@@ -42,6 +42,7 @@ and auto-imports that TypeScript and ESLint rely on.
 | `pnpm format:check`  | Checks formatting without changing files                        |
 | `pnpm test`          | Unit tests with Vitest (`pnpm test:watch` for watch mode)       |
 | `pnpm svg-sprite`    | Builds the icon sprites and icon names (see below)              |
+| `pnpm icons`         | Renders the extension's icons from the logo (see below)         |
 
 ## Trying the extension in the browser
 
@@ -117,7 +118,7 @@ Firefox removes temporary add-ons when it quits.
 ### How to tell the extension is running
 
 - **Icon:** The extension shows up in the toolbar or the extensions menu (puzzle icon) as
-  “Star Citizen Hangar Manager”. There are no custom icons yet, so the browser shows a default icon.
+  “Star Citizen Hangar Manager”, with the hangar logo.
 - **Popup:** Clicking the icon opens a small popup with links to the Hangar Manager, its settings
   and the GitHub repository; each opens in a new tab.
 - **Content script:** On the RSI account pages (e.g.
@@ -149,13 +150,14 @@ src/
   buyback/               Buy back data and view, adding buy back pledges to the RSI cart
   ccugame/               Links from CCU Game (ccugame.app) to the manager
   settings/              Extension settings and their tab
-  assets/                Images bundled into the code (favicons, icon sprites)
+  assets/                Images bundled into the code (favicons, icon sprites, logo)
   icons/                 `SvgIcon` component, sprite loading, generated icon names
   locales/               Translations (de, en, es, fr), default locale is English
   i18n/                  Runtime translation that follows the language setting
   shared/                Shared code and styles
   config.ts              Tunable values (intervals, page counts, limits)
 wxt.config.ts            Shared configuration and browser-specific manifest
+public/icon/             Extension icons, rendered from the logo by `pnpm icons`
 ```
 
 ### Icons
@@ -167,6 +169,13 @@ Icons are single SVG files in `src/assets/svg-sprites/<set>/`: `fa` (Font Awesom
 its sprite in `src/icons/sprite.ts`. Use an icon with `<SvgIcon name="circle-xmark" />`, one of
 another set with `<SvgIcon name="hangar" set="custom" />`; it is as large as the text and in its
 color.
+
+### Extension icon
+
+The logo lives in `src/assets/logo/` in three levels of detail: `logo-full.svg` (from 64 px, with
+the ship's cockpit and panel lines), `logo-mid.svg` (32–48 px, the ship as a silhouette) and
+`logo-tiny.svg` (16 px, only the hangar). `pnpm icons` renders them to `public/icon/<size>.png`,
+which WXT puts into the manifest. Run it after changing the logo; the PNGs are committed.
 
 Browser-specific differences should live in `wxt.config.ts` wherever possible; the rest of the code
 is the same for both browsers.
