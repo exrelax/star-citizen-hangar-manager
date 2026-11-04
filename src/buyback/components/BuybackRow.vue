@@ -70,7 +70,7 @@ async function addToCart() {
     // Still within the click's user activation for the popup blocker; if blocked, open it here.
     if (!window.open(RSI_CART_PATH, '_blank')) location.assign(RSI_CART_PATH);
   } catch (error) {
-    console.error('[sc-hangar-manager] Adding to cart failed', error);
+    console.error('[star-citizen-hangar-manager] Adding to cart failed', error);
     cartError.value =
       error instanceof CartError && error.reason === 'notFound'
         ? i18n.t('buyback.cartNotFound')

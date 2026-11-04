@@ -1,6 +1,6 @@
-# SC Hangar Manager – Features
+# Star Citizen Hangar Manager – Features
 
-SC Hangar Manager is a browser extension for Chrome and Firefox that turns the Star Citizen hangar
+Star Citizen Hangar Manager is a browser extension for Chrome and Firefox that turns the Star Citizen hangar
 on [robertsspaceindustries.com](https://robertsspaceindustries.com) into a fast, searchable
 overview. **Speed is what sets it apart**: it opens instantly, searches thousands of pledges as you
 type, and keeps itself up to date in the background with a handful of requests instead of

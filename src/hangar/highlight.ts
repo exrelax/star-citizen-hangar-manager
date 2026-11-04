@@ -191,5 +191,5 @@ export async function revealPledge(
     return;
   }
   clearParam();
-  console.info(`[sc-hangar-manager] Pledge #${pledgeId} is not in this list (any more).`);
+  console.info(`[star-citizen-hangar-manager] Pledge #${pledgeId} is not in this list (any more).`);
 }

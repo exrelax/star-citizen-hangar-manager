@@ -1,4 +1,4 @@
-# SC Hangar Manager
+# Star Citizen Hangar Manager
 
 Browser extension for managing your Star Citizen hangar on
 [robertsspaceindustries.com](https://robertsspaceindustries.com). It runs in Chrome and Firefox from
@@ -117,7 +117,7 @@ Firefox removes temporary add-ons when it quits.
 ### How to tell the extension is running
 
 - **Icon:** The extension shows up in the toolbar or the extensions menu (puzzle icon) as
-  “SC Hangar Manager”. There are no custom icons yet, so the browser shows a default icon.
+  “Star Citizen Hangar Manager”. There are no custom icons yet, so the browser shows a default icon.
 - **Popup:** Clicking the icon opens a small popup with links to the Hangar Manager, its settings
   and the GitHub repository; each opens in a new tab.
 - **Content script:** On the RSI account pages (e.g.

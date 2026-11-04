@@ -134,7 +134,10 @@ export async function enrichBuyback(
   if (ships.every((name) => previousLinks?.[name])) return previousLinks;
   const shipPledges = [{ items: ships.map((title) => ({ title, kind: 'Ship' })) }] as Pledge[];
   return fetchShipLinks(shipPledges, previousLinks).catch((error: unknown) => {
-    console.warn('[sc-hangar-manager] Fleetyards unavailable, buy back ship links missing', error);
+    console.warn(
+      '[star-citizen-hangar-manager] Fleetyards unavailable, buy back ship links missing',
+      error,
+    );
     return previousLinks;
   });
 }

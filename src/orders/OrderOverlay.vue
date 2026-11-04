@@ -75,7 +75,7 @@ onMounted(async () => {
       details.value = await fetchOrderDetails(props.order);
     }
   } catch (failure) {
-    console.error('[sc-hangar-manager] Loading the order failed', failure);
+    console.error('[star-citizen-hangar-manager] Loading the order failed', failure);
     error.value = i18n.t('order.failed', [
       failure instanceof Error ? failure.message : String(failure),
     ]);

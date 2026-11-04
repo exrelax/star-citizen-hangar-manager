@@ -62,7 +62,10 @@ export async function prepareHangarSync(
   return async () => {
     // Only needed for CCU images – loads alongside the pages; a failure just means fewer images.
     const shipImages = fetchShipImages().catch((error: unknown) => {
-      console.warn('[sc-hangar-manager] Ship matrix unavailable, CCU images may be missing', error);
+      console.warn(
+        '[star-citizen-hangar-manager] Ship matrix unavailable, CCU images may be missing',
+        error,
+      );
       return new Map() as ShipImages;
     });
     const pagesOf = await readPages();
@@ -100,7 +103,10 @@ async function storeSnapshot(
   // Links are optional as well: without Fleetyards the hangar is still stored, just without them.
   const previousLinks = (await hangarSnapshot.getValue())?.shipLinks;
   const shipLinks = await fetchShipLinks(allPledges, previousLinks).catch((error: unknown) => {
-    console.warn('[sc-hangar-manager] Fleetyards unavailable, ship links may be missing', error);
+    console.warn(
+      '[star-citizen-hangar-manager] Fleetyards unavailable, ship links may be missing',
+      error,
+    );
     return previousLinks ?? {};
   });
 

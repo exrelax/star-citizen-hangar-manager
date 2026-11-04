@@ -40,7 +40,7 @@ export default defineConfig({
       browser_specific_settings: {
         gecko: {
           // TODO: replace with the final add-on ID before publishing on addons.mozilla.org
-          id: 'sc-hangar-manager@extension',
+          id: 'star-citizen-hangar-manager@extension',
           strict_min_version: '128.0',
           data_collection_permissions: {
             required: ['none'],

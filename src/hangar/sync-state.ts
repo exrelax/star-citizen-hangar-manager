@@ -60,7 +60,7 @@ export async function startSync(): Promise<void> {
       prepareBuybackSync({ progress }),
       // An extra as well: without the orders, hangar and buy back are still stored.
       prepareOrderSync({ progress }).catch((error: unknown) => {
-        console.warn('[sc-hangar-manager] Orders unavailable', error);
+        console.warn('[star-citizen-hangar-manager] Orders unavailable', error);
         return null;
       }),
     ]);
@@ -74,20 +74,20 @@ export async function startSync(): Promise<void> {
     const buyback = await runBuyback();
     await recordOutcome(buybackCheckState, 'unchanged');
     const orders = await runOrders?.().catch((error: unknown) => {
-      console.warn('[sc-hangar-manager] Order sync failed', error);
+      console.warn('[star-citizen-hangar-manager] Order sync failed', error);
       return null;
     });
     await shipPrices;
 
     const seconds = ((performance.now() - startedAt) / 1000).toFixed(1);
     console.info(
-      `[sc-hangar-manager] Synced ${hangar.pledges.length} hangar and ` +
+      `[star-citizen-hangar-manager] Synced ${hangar.pledges.length} hangar and ` +
         `${buyback.pledges.length} buy back pledges` +
         (orders ? ` and ${Object.keys(orders.orders).length} orders` : '') +
         ` in ${seconds} s`,
     );
   } catch (error) {
-    console.error('[sc-hangar-manager] Sync failed', error);
+    console.error('[star-citizen-hangar-manager] Sync failed', error);
   } finally {
     state.running = false;
     state.progress = null;
@@ -115,7 +115,7 @@ export async function maybeRunSmartUpdate({ force = false } = {}): Promise<void>
     await runLogged('Buy back smart update', buybackCheckState, () => runBuybackSmartUpdate());
     // New orders: usually only the first page of the pledge log and of the billing list.
     await updateOrders().catch((error: unknown) =>
-      console.warn('[sc-hangar-manager] Order update failed', error),
+      console.warn('[star-citizen-hangar-manager] Order update failed', error),
     );
   } finally {
     state.checking = false;
@@ -133,11 +133,11 @@ async function runLogged(
     if (!outcome) return;
     const ms = Math.round(performance.now() - startedAt);
     console.info(
-      `[sc-hangar-manager] ${label}: ${outcome.status} ` +
+      `[star-citizen-hangar-manager] ${label}: ${outcome.status} ` +
         `(+${outcome.added} / -${outcome.removed} / ~${outcome.changed}) in ${ms} ms`,
     );
   } catch (error) {
-    console.error(`[sc-hangar-manager] ${label} failed`, error);
+    console.error(`[star-citizen-hangar-manager] ${label} failed`, error);
     // Counts as a check, so a broken connection isn't retried on every trigger.
     await recordOutcome(checkState, 'failed');
   }

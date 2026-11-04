@@ -77,7 +77,7 @@ export async function refreshShipPrices({
     const ships = await fetchPrices();
     await shipPricesItem.setValue({ fetchedAt: new Date().toISOString(), ships });
   } catch (error) {
-    console.warn('[sc-hangar-manager] Ship prices unavailable', error);
+    console.warn('[star-citizen-hangar-manager] Ship prices unavailable', error);
   }
 }
 

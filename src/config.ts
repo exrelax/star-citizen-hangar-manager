@@ -20,7 +20,7 @@ export const AUTO_LANGUAGE_SOURCE: 'ui' | 'preferred' = 'preferred';
 export const RSI_HANGAR_URL = 'https://robertsspaceindustries.com/en/account/pledges';
 
 /** The extension's source code, linked from the popup. */
-export const REPOSITORY_URL = 'https://github.com/exrelax/sc-hangar-manager';
+export const REPOSITORY_URL = 'https://github.com/exrelax/star-citizen-hangar-manager';
 
 /** Pledges per page in the RSI hangar ("My Gear"). Fixed by RSI. */
 export const HANGAR_PAGE_SIZE = 10;
