@@ -51,7 +51,7 @@ export interface Settings {
   demoMode: boolean;
   /**
    * Hides how many days are left to refund purchases paid with money, and the refund request
-   * (see `orders/refund.ts`). Replaces `showRefund` (stored until version 0.1), its opposite.
+   * (see `orders/refund.ts`).
    */
   hideRefund: boolean;
   /** Keeps hangar, buy back and orders current by checking a few of their pages now and then. */
@@ -106,12 +106,6 @@ export const settingsItem = storage.defineItem<Partial<Settings> | null>('sync:s
   fallback: null,
 });
 
-/** Settings stored by earlier versions, read once more so nobody loses a choice. */
-interface LegacySettings {
-  /** Before `hideRefund`: shows the refund period (default on). */
-  showRefund?: boolean;
-}
-
 const isBoolean = (value: unknown): value is boolean => typeof value === 'boolean';
 
 /** A check that accepts only the given values, e.g. the themes. */
@@ -122,16 +116,14 @@ const oneOf =
 
 /** Complete settings from stored values, falling back to the defaults for missing or invalid ones. */
 export function withDefaults(stored: Partial<Settings> | null | undefined): Settings {
-  /** The stored value of `key` if `isValid` accepts it, `fallback` (the default) otherwise. */
+  /** The stored value of `key` if `isValid` accepts it, the default otherwise. */
   const pick = <K extends keyof Settings>(
     key: K,
     isValid: (value: unknown) => value is Settings[K],
-    fallback: Settings[K] = DEFAULT_SETTINGS[key],
   ): Settings[K] => {
     const value = stored?.[key];
-    return isValid(value) ? value : fallback;
+    return isValid(value) ? value : DEFAULT_SETTINGS[key];
   };
-  const legacy = stored as LegacySettings | null | undefined;
 
   return {
     language: pick('language', isLocale),
@@ -141,11 +133,7 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
     hideSupersededInsurances: pick('hideSupersededInsurances', isBoolean),
     hidePledgeIds: pick('hidePledgeIds', isBoolean),
     demoMode: pick('demoMode', isBoolean),
-    hideRefund: pick(
-      'hideRefund',
-      isBoolean,
-      isBoolean(legacy?.showRefund) ? !legacy.showRefund : undefined,
-    ),
+    hideRefund: pick('hideRefund', isBoolean),
     smartUpdates: pick('smartUpdates', isBoolean),
     buybackLinkMode: pick('buybackLinkMode', oneOf(BUYBACK_LINK_MODES)),
     theme: pick('theme', oneOf(THEMES)),

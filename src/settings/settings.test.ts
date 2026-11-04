@@ -49,10 +49,4 @@ describe('withDefaults', () => {
       } as never),
     ).toEqual(DEFAULT_SETTINGS);
   });
-
-  it('takes the refund setting of earlier versions over, inverted', () => {
-    expect(withDefaults({ showRefund: false } as never).hideRefund).toBe(true);
-    expect(withDefaults({ showRefund: true } as never).hideRefund).toBe(false);
-    expect(withDefaults({ showRefund: false, hideRefund: false } as never).hideRefund).toBe(false);
-  });
 });
