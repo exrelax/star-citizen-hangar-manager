@@ -158,22 +158,6 @@ const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
       <p class="shm-hint is-indented">{{ i18n.t('settings.themedActionDialogsHint') }}</p>
     </section>
 
-    <section class="shm-setting">
-      <label class="shm-check">
-        <input
-          type="checkbox"
-          :checked="settings.hideSupersededInsurances"
-          @change="
-            emit('update', {
-              hideSupersededInsurances: ($event.target as HTMLInputElement).checked,
-            })
-          "
-        />
-        {{ i18n.t('settings.hideSupersededInsurances') }}
-      </label>
-      <p class="shm-hint">{{ i18n.t('settings.hideSupersededInsurancesHint') }}</p>
-    </section>
-
     <fieldset class="shm-setting">
       <legend class="shm-label">{{ i18n.t('settings.privacy') }}</legend>
       <label class="shm-check">
@@ -227,6 +211,19 @@ const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
         {{ i18n.t('settings.smartUpdates') }}
       </label>
       <p class="shm-hint is-indented">{{ i18n.t('settings.smartUpdatesHint') }}</p>
+      <label class="shm-check">
+        <input
+          type="checkbox"
+          :checked="settings.hideSupersededInsurances"
+          @change="
+            emit('update', {
+              hideSupersededInsurances: ($event.target as HTMLInputElement).checked,
+            })
+          "
+        />
+        {{ i18n.t('settings.hideSupersededInsurances') }}
+      </label>
+      <p class="shm-hint is-indented">{{ i18n.t('settings.hideSupersededInsurancesHint') }}</p>
 
       <label class="shm-field-label" for="shm-buyback-link">
         {{ i18n.t('settings.buybackLink') }}
