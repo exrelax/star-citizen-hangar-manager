@@ -13,6 +13,7 @@ import {
   type Theme,
 } from './settings';
 import FilterLayoutSetting from './FilterLayoutSetting.vue';
+import FontSizeSlider from './FontSizeSlider.vue';
 import { OPEN_STYLEGUIDE } from '@/shared/messages';
 import { FILTER_CATEGORIES, type FilterCategory, type FilterLayout } from '@/hangar/filters';
 
@@ -84,18 +85,47 @@ const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
     </section>
 
     <section class="shm-setting">
-      <label class="shm-label" for="shm-theme">{{ i18n.t('settings.theme') }}</label>
-      <select
-        id="shm-theme"
-        class="shm-select"
-        :value="settings.theme"
-        @change="emit('update', { theme: ($event.target as HTMLSelectElement).value as Theme })"
-      >
-        <option v-for="theme in THEMES" :key="theme" :value="theme">
-          {{ i18n.t(`settings.themeOptions.${theme}`) }}
-        </option>
-      </select>
+      <!-- The theme and, to its right, the font size (the same for both themes). -->
+      <div class="shm-theme-row">
+        <div>
+          <label class="shm-label" for="shm-theme">{{ i18n.t('settings.theme') }}</label>
+          <select
+            id="shm-theme"
+            class="shm-select"
+            :value="settings.theme"
+            @change="emit('update', { theme: ($event.target as HTMLSelectElement).value as Theme })"
+          >
+            <option v-for="theme in THEMES" :key="theme" :value="theme">
+              {{ i18n.t(`settings.themeOptions.${theme}`) }}
+            </option>
+          </select>
+        </div>
+        <div class="shm-font-size-setting">
+          <span id="shm-font-size-label" class="shm-label">{{ i18n.t('settings.fontSize') }}</span>
+          <FontSizeSlider
+            :model-value="settings.fontSize"
+            labelledby="shm-font-size-label"
+            @update:model-value="(fontSize) => emit('update', { fontSize })"
+          />
+        </div>
+      </div>
       <p class="shm-hint">{{ i18n.t('settings.themeHint') }}</p>
+
+      <!-- One setting for both themes; each theme shows it in its own way (see its hint). -->
+      <div class="shm-theme-options">
+        <label class="shm-check shm-language-option">
+          <input
+            type="checkbox"
+            :checked="settings.compactView"
+            @change="emit('update', { compactView: ($event.target as HTMLInputElement).checked })"
+          />
+          {{ i18n.t('settings.compactView') }}
+        </label>
+        <p class="shm-hint is-indented">
+          {{ i18n.t(`settings.compactViewHint.${settings.theme}`) }}
+        </p>
+      </div>
+
       <label class="shm-check shm-language-option">
         <input
           type="checkbox"
@@ -273,7 +303,7 @@ const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
   gap: 18px;
   margin-top: 20px;
   color: var(--shm-text);
-  font-size: 13px;
+  font-size: calc(13px * var(--shm-font-scale));
 }
 
 .shm-setting {
@@ -288,7 +318,7 @@ const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
   margin-bottom: 8px;
   padding: 0;
   color: var(--shm-accent);
-  font-size: 13px;
+  font-size: calc(13px * var(--shm-font-scale));
   text-transform: uppercase;
 }
 
@@ -356,6 +386,23 @@ const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
   margin-top: 14px;
 }
 
+/* Options of the selected theme, below the theme and its font size. */
+.shm-theme-options {
+  margin-top: 14px;
+}
+
+.shm-theme-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px 32px;
+}
+
+/* The font size at the right edge of the section, also when it wraps below the theme. */
+.shm-font-size-setting {
+  margin-left: auto;
+}
+
 /* Marks a setting whose result may not always be right (here: translations that lag behind). */
 .shm-experimental {
   display: inline-flex;
@@ -363,7 +410,7 @@ const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
   gap: 4px;
   padding: 1px 7px;
   color: var(--shm-warning);
-  font-size: 11px;
+  font-size: calc(11px * var(--shm-font-scale));
   border: 1px solid currentColor;
   border-radius: 999px;
 }
@@ -371,7 +418,7 @@ const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
 .shm-hint {
   margin: 6px 0 0;
   color: var(--shm-text-muted);
-  font-size: 12px;
+  font-size: calc(12px * var(--shm-font-scale));
 }
 
 /* Hint right under the legend, before the controls. */
@@ -396,7 +443,7 @@ const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
 
 .shm-filter-list-title {
   color: var(--shm-text-strong);
-  font-size: 13px;
+  font-size: calc(13px * var(--shm-font-scale));
 }
 
 /* Hint of a checkbox in a group: under its label text, before the next checkbox. */

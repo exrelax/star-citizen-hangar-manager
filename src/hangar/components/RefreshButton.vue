@@ -168,7 +168,7 @@ const spinning = computed(() => phase.value !== 'idle' && phase.value !== 'shrin
    */
   padding: 0 12px 10px !important;
   font-family: Electrolize, sans-serif !important;
-  font-size: 11px !important;
+  font-size: calc(11px * var(--shm-font-scale)) !important;
   line-height: 30px !important;
   position: relative !important;
   box-sizing: border-box;

@@ -1,5 +1,5 @@
 import { BUYBACK_FILTER_CATEGORIES, type BuybackFilter } from '@/buyback/buyback-view';
-import { FILTERS } from '@/config';
+import { FILTERS, FONT_SIZE_SCALES } from '@/config';
 import {
   normalizeFilterGroups,
   PLEDGE_FILTER_CATEGORIES,
@@ -24,6 +24,10 @@ export type BuybackLinkMode = (typeof BUYBACK_LINK_MODES)[number];
  */
 export const THEMES = ['modern', 'rsi'] as const;
 export type Theme = (typeof THEMES)[number];
+
+/** Text sizes, smallest first; `medium` is the one the themes are designed in. */
+export const FONT_SIZES = Object.keys(FONT_SIZE_SCALES) as (keyof typeof FONT_SIZE_SCALES)[];
+export type FontSize = keyof typeof FONT_SIZE_SCALES;
 
 export interface Settings {
   language: LanguageSetting;
@@ -51,6 +55,13 @@ export interface Settings {
   smartUpdates: boolean;
   buybackLinkMode: BuybackLinkMode;
   theme: Theme;
+  /** Text size of the manager and its dialogs, the same for both themes. */
+  fontSize: FontSize;
+  /**
+   * Rows without gaps, in every theme: "Modern Hangar" as one grouped list with separators (off:
+   * each row as a card of its own), "Classic RSI" with a 1 px border between them.
+   */
+  compactView: boolean;
   /** Order and selection of the filter buttons of both lists (presets: `FILTERS` in config). */
   filters: {
     hangar: FilterGroups<PledgeFilter>;
@@ -75,6 +86,8 @@ export const DEFAULT_SETTINGS: Settings = {
   smartUpdates: true,
   buybackLinkMode: 'single',
   theme: 'modern',
+  fontSize: 'medium',
+  compactView: false,
   filters: {
     hangar: normalizeFilterGroups(FILTERS.hangar, PLEDGE_FILTER_CATEGORIES, FILTERS.hangar),
     buyback: normalizeFilterGroups(FILTERS.buyback, BUYBACK_FILTER_CATEGORIES, FILTERS.buyback),
@@ -125,6 +138,11 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
       ? stored!.buybackLinkMode!
       : DEFAULT_SETTINGS.buybackLinkMode,
     theme: THEMES.includes(stored?.theme as Theme) ? stored!.theme! : DEFAULT_SETTINGS.theme,
+    fontSize: FONT_SIZES.includes(stored?.fontSize as FontSize)
+      ? stored!.fontSize!
+      : DEFAULT_SETTINGS.fontSize,
+    compactView:
+      typeof stored?.compactView === 'boolean' ? stored.compactView : DEFAULT_SETTINGS.compactView,
     filters: {
       hangar: normalizeFilterGroups(
         stored?.filters?.hangar,

@@ -57,7 +57,7 @@ const emit = defineEmits<{ select: [id: T] }>();
   padding: 8px 16px;
   color: var(--shm-text-muted);
   font: inherit;
-  font-size: 13px;
+  font-size: calc(13px * var(--shm-font-scale));
   text-transform: uppercase;
   background: none;
   border: 0;

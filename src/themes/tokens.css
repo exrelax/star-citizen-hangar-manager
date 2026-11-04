@@ -26,3 +26,11 @@
   --shm-danger: #ff8a80;
   --shm-backdrop: rgba(0, 0, 0, 0.7);
 }
+
+/*
+ * Text size (setting "Font size", factors in `FONT_SIZE_SCALES` in config):
+ * set inline on the manager's container and its overlays; all font sizes are multiplied by it.
+ */
+:root {
+  --shm-font-scale: 1;
+}

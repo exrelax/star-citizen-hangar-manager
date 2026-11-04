@@ -107,6 +107,17 @@
     "showRefundHint": "Zeigt bei Käufen mit Geld, wie viele der $1 Tage für einen Refund noch übrig sind, und in den Order-Details einen Button „Refund Request“.",
     "theme": "Theme",
     "themeHint": "Ändert nur das Aussehen des Hangar Managers, der Rest der RSI-Website bleibt unverändert. „Modern Hangar“ folgt dem hellen oder dunklen Erscheinungsbild des Systems.",
+    "fontSize": "Schriftgröße",
+    "fontSizeOptions": {
+      "small": "Klein",
+      "medium": "Mittel (Standard)",
+      "large": "Groß"
+    },
+    "compactView": "Kompakte Ansicht",
+    "compactViewHint": {
+      "modern": "Zeigt die Einträge als eine Liste mit Trennlinien statt als einzelne Karten, so passen mehr auf den Bildschirm.",
+      "rsi": "Zeigt die Einträge ohne Abstand, nur durch einen 1-px-Rahmen getrennt, so passen mehr auf den Bildschirm."
+    },
     "themedActionDialogs": "Dialoge zum Einschmelzen und Verschenken im gewählten Theme darstellen",
     "themedActionDialogsHint": "Aus: Sie sehen aus wie RSIs eigene Dialoge in „My Gear“, mit den Hinweisen des Hangar Managers zum Pledge und seinem Wert.",
     "themeOptions": {

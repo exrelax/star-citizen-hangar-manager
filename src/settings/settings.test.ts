@@ -28,6 +28,8 @@ describe('withDefaults', () => {
       smartUpdates: true,
       buybackLinkMode: 'single',
       theme: 'modern',
+      fontSize: 'medium',
+      compactView: false,
       filters: DEFAULT_SETTINGS.filters,
       shipLinks: { erkul: false, fleetyards: true },
     });
@@ -41,6 +43,8 @@ describe('withDefaults', () => {
         hidePledgeIds: 1,
         buybackLinkMode: 'popup',
         theme: 'neon',
+        fontSize: 'huge',
+        compactView: 'no',
         filters: { hangar: 'all', buyback: { order: 5 } },
       } as never),
     ).toEqual(DEFAULT_SETTINGS);

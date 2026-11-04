@@ -107,6 +107,17 @@
     "showRefundHint": "Affiche, pour les achats payés en argent, combien des $1 jours de remboursement il reste, ainsi qu’un bouton « Refund Request » dans les détails de la commande.",
     "theme": "Thème",
     "themeHint": "Ne change que l’apparence du Hangar Manager ; le reste du site de RSI reste inchangé. « Modern Hangar » suit l’apparence claire ou sombre du système.",
+    "fontSize": "Taille du texte",
+    "fontSizeOptions": {
+      "small": "Petite",
+      "medium": "Moyenne (par défaut)",
+      "large": "Grande"
+    },
+    "compactView": "Vue compacte",
+    "compactViewHint": {
+      "modern": "Affiche les éléments dans une seule liste avec des séparateurs au lieu de cartes séparées, pour en voir davantage à l’écran.",
+      "rsi": "Affiche les éléments sans espace, séparés seulement par une bordure de 1 px, pour en voir davantage à l’écran."
+    },
     "themedActionDialogs": "Afficher les fenêtres d’échange et de cadeau dans le thème choisi",
     "themedActionDialogsHint": "Désactivé : elles ressemblent aux fenêtres de RSI dans « My Gear », avec les indications du Hangar Manager sur le pledge et sa valeur.",
     "themeOptions": {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { i18n } from '@/i18n';
 import { useSettings } from '@/settings/use-settings';
-import { themeClass } from '@/themes/theme';
+import { fontScaleStyle, themeClasses } from '@/themes/theme';
 import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 import { giftPledge, giftWarnings, isEmail } from '../gift';
 import type { PledgeView } from '../pledge-view';
@@ -92,8 +92,9 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
     <div
       class="shm-overlay"
       :class="
-        settings.themedActionDialogs ? themeClass(settings.theme) : 'shm-theme-rsi shm-rsi-dialog'
+        settings.themedActionDialogs ? themeClasses(settings) : 'shm-theme-rsi shm-rsi-dialog'
       "
+      :style="fontScaleStyle(settings)"
       @click.self="close"
     >
       <section

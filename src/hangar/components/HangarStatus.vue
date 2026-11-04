@@ -86,7 +86,7 @@ const status = computed((): { text: string; warn?: boolean } | null => {
   gap: 12px;
   margin: 14px 0 0;
   color: var(--shm-text-muted);
-  font-size: 12px;
+  font-size: calc(12px * var(--shm-font-scale));
 }
 
 .shm-status.is-warn {

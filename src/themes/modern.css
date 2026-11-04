@@ -97,16 +97,16 @@ html .shm-theme-modern .top {
 html .shm-theme-modern .top .title {
   margin: 0 !important;
   color: var(--shm-text) !important;
-  font-size: 28px !important;
+  font-size: calc(28px * var(--shm-font-scale)) !important;
   font-weight: 700 !important;
-  line-height: 34px !important;
+  line-height: calc(34px * var(--shm-font-scale)) !important;
   text-transform: none !important;
 }
 
 html .shm-theme-modern .top > p {
   margin: 4px 0 0 !important;
   color: var(--shm-text-secondary) !important;
-  font-size: 13px !important;
+  font-size: calc(13px * var(--shm-font-scale)) !important;
   text-transform: none !important;
 }
 
@@ -124,8 +124,8 @@ html .shm-theme-modern .shm-header-side {
 html .shm-theme-modern .shm-header-side .shm-header-status {
   margin: 0;
   color: var(--shm-text-secondary);
-  font-size: 13px;
-  line-height: 16px;
+  font-size: calc(13px * var(--shm-font-scale));
+  line-height: calc(16px * var(--shm-font-scale));
 }
 
 html .shm-theme-modern .shm-refresh {
@@ -133,7 +133,7 @@ html .shm-theme-modern .shm-refresh {
   margin: 0 !important;
   padding: 0 14px !important;
   color: var(--shm-accent) !important;
-  font-size: 13px !important;
+  font-size: calc(13px * var(--shm-font-scale)) !important;
   font-weight: 600 !important;
   line-height: 32px !important;
   background: rgb(var(--shm-accent-rgb) / 0.15) !important;
@@ -166,7 +166,7 @@ html .shm-theme-modern .shm-refresh-bar {
 html .shm-theme-modern .shm-demo-badge {
   padding: 0 9px;
   color: var(--shm-text-on-warning);
-  font-size: 12px;
+  font-size: calc(12px * var(--shm-font-scale));
   font-weight: 600;
   vertical-align: 5px;
   border-radius: 999px;
@@ -193,7 +193,7 @@ html .shm-theme-modern .shm-tab {
   margin: 0;
   padding: 0 12px;
   color: var(--shm-text-secondary);
-  font-size: 14px;
+  font-size: calc(14px * var(--shm-font-scale));
   font-weight: 500;
   text-transform: none;
   border: 0;
@@ -210,7 +210,7 @@ html .shm-theme-modern .shm-tab.is-active {
 /* ---- Status, filters, search ---- */
 
 html .shm-theme-modern .shm-status {
-  font-size: 13px;
+  font-size: calc(13px * var(--shm-font-scale));
 }
 
 html .shm-theme-modern .shm-status-action {
@@ -261,7 +261,7 @@ html .shm-theme-modern .shm-filter {
   height: 26px;
   padding: 0 10px;
   color: var(--shm-text);
-  font-size: 12px;
+  font-size: calc(12px * var(--shm-font-scale));
   font-weight: 500;
   background: var(--shm-fill);
   border: 0;
@@ -297,12 +297,12 @@ html .shm-theme-modern .shm-filter.is-excluded .shm-filter-count {
 html .shm-theme-modern .shm-filter-reset {
   height: 26px;
   color: var(--shm-accent);
-  font-size: 12px;
+  font-size: calc(12px * var(--shm-font-scale));
 }
 
 html .shm-theme-modern .shm-search {
   height: 36px;
-  font-size: 15px;
+  font-size: calc(15px * var(--shm-font-scale));
   background: var(--shm-fill);
   border: 0;
   border-radius: 10px;
@@ -316,26 +316,47 @@ html .shm-theme-modern .shm-count {
   margin: 22px 0 8px;
   padding: 0 12px;
   color: var(--shm-text-secondary);
-  font-size: 13px;
+  font-size: calc(13px * var(--shm-font-scale));
 }
 
-/* ---- Rows: rounded cells of a grouped list ---- */
+/* ---- Rows: cards, or rounded cells of a grouped list in the compact view ---- */
 
-/* The rows as one grouped list: a rounded block, separators between the rows. */
+/* Each row as a card of its own, with a gap between them (setting "Compact view" off). */
 html .shm-theme-modern .shm-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+html .shm-theme-modern .shm-row {
+  margin: 0;
+  overflow: hidden;
+  background: var(--shm-surface-elevated);
+  border: 0;
+  border-radius: 12px;
+}
+
+/* An open card stands out with a ring in the accent color. */
+html .shm-theme-modern .shm-row.is-expanded {
+  box-shadow: 0 0 0 1px rgb(var(--shm-accent-rgb) / 0.45);
+}
+
+/* Compact view: the rows as one grouped list, a rounded block with separators between them. */
+html .shm-theme-modern.shm-compact .shm-rows {
+  display: block;
   overflow: hidden;
   background: var(--shm-surface-elevated);
   border-radius: 12px;
 }
 
-html .shm-theme-modern .shm-row {
-  margin: 0;
+html .shm-theme-modern.shm-compact .shm-row {
+  overflow: visible;
   background: none;
-  border: 0;
   border-radius: 0;
+  box-shadow: none;
 }
 
-html .shm-theme-modern .shm-row + .shm-row::before {
+html .shm-theme-modern.shm-compact .shm-row + .shm-row::before {
   position: absolute;
   top: 0;
   right: 0;
@@ -388,19 +409,19 @@ html .shm-theme-modern .shm-thumb {
 
 html .shm-theme-modern .shm-title {
   color: var(--shm-text);
-  font-size: 15px;
+  font-size: calc(15px * var(--shm-font-scale));
   font-weight: 600;
   text-transform: none;
 }
 
 html .shm-theme-modern .shm-meta {
-  font-size: 13px;
+  font-size: calc(13px * var(--shm-font-scale));
 }
 
 html .shm-theme-modern .shm-badge {
   padding: 2px 9px;
   color: var(--shm-accent);
-  font-size: 11px;
+  font-size: calc(11px * var(--shm-font-scale));
   font-weight: 600;
   background: rgb(var(--shm-accent-rgb) / 0.16);
   border: 0;
@@ -460,7 +481,7 @@ html .shm-theme-modern .shm-external-links {
 
 html .shm-theme-modern .shm-button {
   color: var(--shm-accent);
-  font-size: 13px;
+  font-size: calc(13px * var(--shm-font-scale));
   font-weight: 500;
   background: rgb(var(--shm-accent-rgb) / 0.15);
   border: 0;
@@ -500,14 +521,14 @@ html .shm-theme-modern .shm-setting {
 
 html .shm-theme-modern .shm-label {
   color: var(--shm-text-secondary);
-  font-size: 13px;
+  font-size: calc(13px * var(--shm-font-scale));
   font-weight: 600;
   text-transform: none;
 }
 
 html .shm-theme-modern .shm-settings {
   color: var(--shm-text);
-  font-size: 14px;
+  font-size: calc(14px * var(--shm-font-scale));
 }
 
 html .shm-theme-modern .shm-select {
@@ -527,7 +548,7 @@ html .shm-overlay.shm-theme-modern {
 
 html .shm-theme-modern .shm-overlay-dialog {
   color: var(--shm-text-secondary);
-  font-size: 13px;
+  font-size: calc(13px * var(--shm-font-scale));
   background: var(--shm-surface-elevated);
   border: 0;
   border-radius: 16px;
@@ -538,7 +559,7 @@ html .shm-theme-modern .shm-overlay-dialog {
 
 html .shm-theme-modern .shm-overlay-dialog h3 {
   color: var(--shm-text);
-  font-size: 17px;
+  font-size: calc(17px * var(--shm-font-scale));
   font-weight: 600;
   text-transform: none;
 }
@@ -563,7 +584,7 @@ html .shm-theme-modern .shm-overlay-close {
   width: 28px;
   height: 28px;
   padding: 0;
-  font-size: 18px;
+  font-size: calc(18px * var(--shm-font-scale));
   background: var(--shm-fill);
   border-radius: 999px;
 }

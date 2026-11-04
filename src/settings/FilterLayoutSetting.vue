@@ -140,7 +140,7 @@ function onDrop(index: number) {
 
 .shm-filter-layout-title {
   color: var(--shm-text-muted);
-  font-size: 11px;
+  font-size: calc(11px * var(--shm-font-scale));
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -149,7 +149,7 @@ function onDrop(index: number) {
   padding: 0;
   color: var(--shm-accent);
   font: inherit;
-  font-size: 12px;
+  font-size: calc(12px * var(--shm-font-scale));
   background: none;
   border: 0;
   cursor: pointer;
@@ -197,7 +197,7 @@ function onDrop(index: number) {
 
 .shm-drag-handle {
   color: var(--shm-text-muted);
-  font-size: 14px;
+  font-size: calc(14px * var(--shm-font-scale));
 }
 
 .shm-check {
@@ -224,7 +224,7 @@ function onDrop(index: number) {
   padding: 0;
   color: var(--shm-accent);
   font: inherit;
-  font-size: 12px;
+  font-size: calc(12px * var(--shm-font-scale));
   background: none;
   border: 1px solid transparent;
   border-radius: 3px;

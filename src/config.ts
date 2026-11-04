@@ -202,3 +202,9 @@ export const FILTERS: {
     },
   },
 };
+
+/**
+ * Text sizes of the setting "Font size": factors on all font sizes (and line heights) of
+ * the manager and its dialogs. `medium` is the size the themes are designed in.
+ */
+export const FONT_SIZE_SCALES = { small: 0.9, medium: 1, large: 1.15 } as const;

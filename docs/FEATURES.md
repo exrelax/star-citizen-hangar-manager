@@ -342,6 +342,11 @@ Paints, Game access, LTI, Warbond, Probably giftable, Rewards), plus:
 - **Theme**: Modern Hangar (the default) or Classic RSI. The exchange and gift dialogs look like RSI's own
   dialogs in "My Gear" by default (with the manager's summary and warnings); an option shows them
   in the selected theme instead.
+  - **Font size** (the same for both themes): small, medium (the default) or large – for the lists, the settings
+    and the dialogs (the factors are in `FONT_SIZE_SCALES` in `src/config.ts`).
+  - **Compact view** (off by default, the same for both themes): in Modern Hangar the items as one grouped list
+    with separators instead of cards with gaps; in Classic RSI the items without gaps, separated
+    by a 1 px border.
 - **Smart updates**: on or off.
 - **Show refund period**: refund countdown and "Refund Request" button (on by default).
 - **Filters**: order and selection of the filter buttons, separately for My Hangar and Buy Back

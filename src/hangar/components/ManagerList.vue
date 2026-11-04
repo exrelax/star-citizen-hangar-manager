@@ -339,7 +339,7 @@ const countLabel = computed(() =>
 
 .shm-filter-group-label {
   color: var(--shm-text-muted);
-  font-size: 11px;
+  font-size: calc(11px * var(--shm-font-scale));
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -358,7 +358,7 @@ const countLabel = computed(() =>
   padding: 0 10px;
   color: var(--shm-accent);
   font: inherit;
-  font-size: 12px;
+  font-size: calc(12px * var(--shm-font-scale));
   background: rgb(var(--shm-surface-rgb) / 0.8);
   border: 1px solid rgb(var(--shm-accent-rgb) / 0.35);
   border-radius: 0;
@@ -396,7 +396,7 @@ const countLabel = computed(() =>
   padding: 0 10px;
   color: var(--shm-text-muted);
   font: inherit;
-  font-size: 12px;
+  font-size: calc(12px * var(--shm-font-scale));
   background: none;
   border: 0;
   cursor: pointer;
@@ -428,7 +428,7 @@ const countLabel = computed(() =>
   padding: 0 34px;
   color: var(--shm-text);
   font: inherit;
-  font-size: 13px;
+  font-size: calc(13px * var(--shm-font-scale));
   background: rgb(var(--shm-surface-rgb) / 0.8);
   border: 1px solid rgb(var(--shm-accent-rgb) / 0.35);
   border-radius: 0;
@@ -445,7 +445,7 @@ const countLabel = computed(() =>
   top: 50%;
   left: 12px;
   color: var(--shm-text-muted);
-  font-size: 14px;
+  font-size: calc(14px * var(--shm-font-scale));
   transform: translateY(-50%);
   pointer-events: none;
 }
@@ -461,7 +461,7 @@ const countLabel = computed(() =>
   width: 34px;
   padding: 0;
   color: var(--shm-text-muted);
-  font-size: 15px;
+  font-size: calc(15px * var(--shm-font-scale));
   background: none;
   border: 0;
   cursor: pointer;
@@ -485,7 +485,7 @@ const countLabel = computed(() =>
 .shm-count {
   margin: 10px 0;
   color: var(--shm-text-muted);
-  font-size: 12px;
+  font-size: calc(12px * var(--shm-font-scale));
   font-variant-numeric: tabular-nums;
 }
 

@@ -2,7 +2,7 @@
 import { useDemoContext } from '@/demo/use-demo';
 import { i18n } from '@/i18n';
 import { useSettings } from '@/settings/use-settings';
-import { themeClass } from '@/themes/theme';
+import { fontScaleStyle, themeClasses } from '@/themes/theme';
 import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 import {
   anonymizeOrderDetails,
@@ -103,7 +103,12 @@ function openInvoice() {
 <template>
   <Teleport to="body">
     <!-- Teleported out of the manager: it carries the theme class itself. -->
-    <div class="shm-overlay" :class="themeClass(settings.theme)" @click.self="emit('close')">
+    <div
+      class="shm-overlay"
+      :class="themeClasses(settings)"
+      :style="fontScaleStyle(settings)"
+      @click.self="emit('close')"
+    >
       <section
         ref="dialog"
         class="shm-overlay-dialog"
@@ -247,7 +252,7 @@ function openInvoice() {
 
 dt {
   color: var(--shm-text-muted);
-  font-size: 11px;
+  font-size: calc(11px * var(--shm-font-scale));
   text-transform: uppercase;
 }
 
@@ -274,7 +279,7 @@ dd {
 .shm-order-refund {
   margin-right: 4px;
   color: var(--shm-success);
-  font-size: 12px;
+  font-size: calc(12px * var(--shm-font-scale));
 }
 
 .shm-order-refund.is-urgent {

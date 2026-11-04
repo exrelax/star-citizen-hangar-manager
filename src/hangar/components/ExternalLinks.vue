@@ -81,7 +81,7 @@ const linked = computed(() => props.ships.filter((ship) => ship.link));
 .shm-link-button::after {
   content: '↗';
   color: var(--shm-accent);
-  font-size: 11px;
+  font-size: calc(11px * var(--shm-font-scale));
 }
 
 .shm-link-button img {

@@ -24,13 +24,29 @@
   width: 26px;
   height: 26px;
   color: var(--shm-accent);
-  font-size: 14px;
+  font-size: calc(14px * var(--shm-font-scale));
   background: rgb(5 12 19 / 0.78);
   border-radius: 999px;
 }
 
 .shm-row.is-expanded {
   border-color: rgb(var(--shm-accent-rgb) / 0.45);
+}
+
+/*
+ * Compact view of "Classic RSI": no gaps, the rows overlap by their border, so a single 1 px line
+ * separates them. An open row lies on top, so its brighter border shows all around.
+ */
+.shm-theme-rsi.shm-compact .shm-row {
+  margin-bottom: 0;
+}
+
+.shm-theme-rsi.shm-compact .shm-row + .shm-row {
+  margin-top: -1px;
+}
+
+.shm-theme-rsi.shm-compact .shm-row.is-expanded {
+  z-index: 1;
 }
 
 .shm-row-summary {
@@ -71,7 +87,7 @@
 .shm-title {
   overflow: hidden;
   color: var(--shm-accent);
-  font-size: 14px;
+  font-size: calc(14px * var(--shm-font-scale));
   text-transform: uppercase;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -81,14 +97,14 @@
 .shm-ships {
   overflow: hidden;
   color: var(--shm-text-muted);
-  font-size: 11px;
+  font-size: calc(11px * var(--shm-font-scale));
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .shm-ships {
   color: var(--shm-text);
-  font-size: 12px;
+  font-size: calc(12px * var(--shm-font-scale));
 }
 
 .shm-meta {
@@ -96,7 +112,7 @@
   flex-wrap: wrap;
   gap: 2px 14px;
   color: var(--shm-text-secondary);
-  font-size: 12px;
+  font-size: calc(12px * var(--shm-font-scale));
   font-variant-numeric: tabular-nums;
 }
 
@@ -114,7 +130,7 @@
 .shm-badge {
   padding: 2px 7px;
   color: var(--shm-accent);
-  font-size: 11px;
+  font-size: calc(11px * var(--shm-font-scale));
   border: 1px solid rgb(var(--shm-accent-rgb) / 0.6);
 }
 
@@ -141,7 +157,7 @@
   color: var(--shm-accent);
   font: inherit;
   background: none;
-  font-size: 14px;
+  font-size: calc(14px * var(--shm-font-scale));
   border: 0;
   cursor: pointer;
 }
@@ -173,7 +189,7 @@
   align-items: start;
   padding: 4px 16px 12px 6px;
   color: var(--shm-text-secondary);
-  font-size: 12px;
+  font-size: calc(12px * var(--shm-font-scale));
 }
 
 /*
@@ -187,8 +203,8 @@
   gap: 6px;
   padding: 4px 10px;
   color: var(--shm-text);
-  font-size: 12px;
-  line-height: 16px;
+  font-size: calc(12px * var(--shm-font-scale));
+  line-height: calc(16px * var(--shm-font-scale));
   text-decoration: none;
   text-transform: none;
   background: rgb(var(--shm-accent-rgb) / 0.14);
@@ -238,7 +254,7 @@
   box-sizing: border-box;
   width: 100%;
   padding: 5px 6px;
-  font-size: 11px;
+  font-size: calc(11px * var(--shm-font-scale));
   text-align: center;
 }
 
@@ -309,8 +325,8 @@
 .shm-cart {
   padding: 0 6px;
   font: inherit;
-  font-size: 13px;
-  line-height: 20px;
+  font-size: calc(13px * var(--shm-font-scale));
+  line-height: calc(20px * var(--shm-font-scale));
   background: none;
   border: 1px solid rgb(var(--shm-accent-rgb) / 0.6);
   cursor: pointer;
@@ -329,7 +345,7 @@
 
 .shm-cart-error {
   color: var(--shm-danger);
-  font-size: 12px;
+  font-size: calc(12px * var(--shm-font-scale));
 }
 
 /* Discount next to the pledge value (see ship-prices.ts); a surcharge is shown, too. */

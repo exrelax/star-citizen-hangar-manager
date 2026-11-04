@@ -18,7 +18,7 @@
   padding: 20px 24px 24px;
   color: var(--shm-text-secondary);
   font-family: Electrolize, sans-serif;
-  font-size: 13px;
+  font-size: calc(13px * var(--shm-font-scale));
   background: var(--shm-surface-elevated);
   border: 1px solid rgb(var(--shm-accent-rgb) / 0.45);
   box-shadow: 0 0 40px rgb(var(--shm-accent-rgb) / 0.15);
@@ -35,14 +35,14 @@
 .shm-overlay-dialog h3 {
   margin: 0;
   color: var(--shm-accent);
-  font-size: 16px;
+  font-size: calc(16px * var(--shm-font-scale));
   text-transform: uppercase;
 }
 
 .shm-overlay-dialog h4 {
   margin: 18px 0 8px;
   color: var(--shm-accent);
-  font-size: 13px;
+  font-size: calc(13px * var(--shm-font-scale));
   font-weight: normal;
   text-transform: uppercase;
 }
@@ -50,7 +50,7 @@
 .shm-overlay-close {
   padding: 0 6px;
   color: var(--shm-text-muted);
-  font-size: 24px;
+  font-size: calc(24px * var(--shm-font-scale));
   line-height: 1;
   background: none;
   border: 0;

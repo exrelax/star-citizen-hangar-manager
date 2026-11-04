@@ -34,7 +34,7 @@
 .shm-action-kind {
   padding: 2px 7px;
   color: var(--shm-accent);
-  font-size: 11px;
+  font-size: calc(11px * var(--shm-font-scale));
   text-transform: uppercase;
   border: 1px solid rgb(var(--shm-accent-rgb) / 0.6);
 }
@@ -46,13 +46,13 @@
 
 .shm-action-title {
   color: var(--shm-text-strong);
-  font-size: 15px;
+  font-size: calc(15px * var(--shm-font-scale));
   font-weight: normal;
 }
 
 .shm-action-id {
   color: var(--shm-text-muted);
-  font-size: 12px;
+  font-size: calc(12px * var(--shm-font-scale));
   font-variant-numeric: tabular-nums;
 }
 
@@ -61,13 +61,13 @@
   flex-direction: column;
   align-items: flex-end;
   color: var(--shm-text-muted);
-  font-size: 11px;
+  font-size: calc(11px * var(--shm-font-scale));
   text-transform: uppercase;
 }
 
 .shm-action-value strong {
   color: var(--shm-accent);
-  font-size: 22px;
+  font-size: calc(22px * var(--shm-font-scale));
   font-weight: normal;
   font-variant-numeric: tabular-nums;
 }
@@ -224,8 +224,8 @@
   padding: 22px 24px 30px;
   color: var(--rsi-text);
   font-family: univia-pro, sans-serif;
-  font-size: 12px;
-  line-height: 18px;
+  font-size: calc(12px * var(--shm-font-scale));
+  line-height: calc(18px * var(--shm-font-scale));
   background: linear-gradient(180deg, #08131c, #050b11);
   border: 1px solid rgb(98 196 235 / 0.22);
   border-radius: 0;
@@ -257,20 +257,20 @@
   gap: 12px;
   color: var(--rsi-cyan);
   font-family: Electrolize, sans-serif;
-  font-size: 22px;
+  font-size: calc(22px * var(--shm-font-scale));
   font-weight: normal;
   text-transform: uppercase;
   text-shadow: 0 0 12px rgb(0 240 255 / 0.4);
 }
 
 .shm-rsi-dialog .shm-overlay-dialog h3::before {
-  font-size: 18px;
+  font-size: calc(18px * var(--shm-font-scale));
   content: '▷';
 }
 
 .shm-rsi-dialog .shm-overlay-close {
   color: var(--rsi-close);
-  font-size: 22px;
+  font-size: calc(22px * var(--shm-font-scale));
   background: none;
   border-radius: 0;
 }
@@ -302,7 +302,7 @@
 
 .shm-rsi-dialog .shm-action-title {
   color: var(--rsi-strong);
-  font-size: 14px;
+  font-size: calc(14px * var(--shm-font-scale));
   text-transform: uppercase;
 }
 
@@ -322,7 +322,7 @@
 
 .shm-rsi-dialog .shm-action-warnings strong {
   font-family: Electrolize, sans-serif;
-  font-size: 12px;
+  font-size: calc(12px * var(--shm-font-scale));
 }
 
 .shm-rsi-dialog .shm-action-warnings span {
@@ -342,8 +342,8 @@
   width: calc(100% + 16px);
   margin: 0 -8px 16px;
   color: var(--rsi-alert);
-  font-size: 12px;
-  line-height: 18px;
+  font-size: calc(12px * var(--shm-font-scale));
+  line-height: calc(18px * var(--shm-font-scale));
 }
 
 /* The frame starts below the heading: its 18px line and an 8px gap. */
@@ -360,9 +360,9 @@
 
 .shm-rsi-dialog .shm-action-consents label {
   color: var(--rsi-label);
-  font-size: 12px;
+  font-size: calc(12px * var(--shm-font-scale));
   font-weight: 700;
-  line-height: 16.8px;
+  line-height: calc(16.8px * var(--shm-font-scale));
 }
 
 .shm-rsi-dialog .shm-action-consents label.is-danger {
@@ -371,7 +371,7 @@
 
 .shm-rsi-dialog .shm-action-field {
   color: var(--rsi-text);
-  font-size: 12px;
+  font-size: calc(12px * var(--shm-font-scale));
 }
 
 /* RSI's field: dark, a thin border and small marks at its corners. */
@@ -410,7 +410,7 @@
   padding: 6px 4px;
   color: var(--rsi-label);
   font-family: Electrolize, sans-serif;
-  font-size: 14px;
+  font-size: calc(14px * var(--shm-font-scale));
   text-transform: uppercase;
   background: none;
   border: 0;

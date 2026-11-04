@@ -4,7 +4,7 @@ import { i18n, locale } from '@/i18n';
 import { HIDDEN } from '@/orders/orders';
 import { today } from '@/orders/refund';
 import { useSettings } from '@/settings/use-settings';
-import { themeClass } from '@/themes/theme';
+import { fontScaleStyle, themeClasses } from '@/themes/theme';
 import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 import { formatPercent, formatUsd } from '../discount-format';
 import {
@@ -159,8 +159,9 @@ onUnmounted(() => {
     <div
       class="shm-overlay"
       :class="
-        settings.themedActionDialogs ? themeClass(settings.theme) : 'shm-theme-rsi shm-rsi-dialog'
+        settings.themedActionDialogs ? themeClasses(settings) : 'shm-theme-rsi shm-rsi-dialog'
       "
+      :style="fontScaleStyle(settings)"
       @click.self="close"
     >
       <section
@@ -298,7 +299,7 @@ onUnmounted(() => {
 
 .shm-exchange-attention strong {
   color: var(--shm-danger);
-  font-size: 15px;
+  font-size: calc(15px * var(--shm-font-scale));
   font-weight: normal;
   text-transform: uppercase;
 }

@@ -8,7 +8,7 @@ import SettingsPanel from '@/settings/SettingsPanel.vue';
 import { THEMES } from '@/settings/settings';
 import TabBar from '@/shared/components/TabBar.vue';
 import { useSettings } from '@/settings/use-settings';
-import { themeClass } from '@/themes/theme';
+import { fontScaleStyle, themeClasses } from '@/themes/theme';
 import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 import { buybackFixtures, hangarFixtures } from './fixtures';
 
@@ -70,7 +70,12 @@ watch(
 </script>
 
 <template>
-  <div ref="stage" class="shm-styleguide shm-manager" :class="themeClass(settings.theme)">
+  <div
+    ref="stage"
+    class="shm-styleguide shm-manager"
+    :class="themeClasses(settings)"
+    :style="fontScaleStyle(settings)"
+  >
     <header class="shm-sg-header">
       <div>
         <h1 class="shm-sg-title">Styleguide</h1>

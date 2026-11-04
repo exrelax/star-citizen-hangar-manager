@@ -41,10 +41,7 @@ watch(
 );
 
 const { settings, loaded: settingsLoaded, update: updateSettings } = useSettings();
-useThemeClass(
-  inject(MANAGER_CONTAINER, undefined),
-  computed(() => settings.value.theme),
-);
+useThemeClass(inject(MANAGER_CONTAINER, undefined), settings);
 
 // The demo mode (a setting) shows a selection of anonymized pledges (see src/demo).
 const demo = computed(() => settings.value.demoMode);
@@ -205,8 +202,8 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
 .shm-header-side .shm-header-status {
   justify-content: flex-end;
   margin: 7px 0 0;
-  font-size: 11px;
-  line-height: 16px;
+  font-size: calc(11px * var(--shm-font-scale));
+  line-height: calc(16px * var(--shm-font-scale));
 }
 
 /* Clear of the refresh button and the status beside it. */
@@ -219,8 +216,8 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
   margin-left: 10px;
   padding: 0 8px;
   color: var(--shm-text-on-accent);
-  font-size: 11px;
-  line-height: 18px;
+  font-size: calc(11px * var(--shm-font-scale));
+  line-height: calc(18px * var(--shm-font-scale));
   letter-spacing: 0.08em;
   vertical-align: 3px;
   background: var(--shm-warning);
