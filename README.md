@@ -123,8 +123,8 @@ Firefox removes temporary add-ons when it quits.
 
 - **Icon:** The extension shows up in the toolbar or the extensions menu (puzzle icon) as
   “Star Citizen Hangar Manager”, with the hangar logo.
-- **Popup:** Clicking the icon opens a small popup with links to the Hangar Manager, its settings
-  and the GitHub repository; each opens in a new tab.
+- **Popup:** Clicking the icon opens a small popup with the extension's version and links to the
+  Hangar Manager, its settings and the GitHub repository; each opens in a new tab.
 - **Content script:** On the RSI account pages (e.g.
   [My Hangar](https://robertsspaceindustries.com/account/pledges)) the left navigation gets a new
   first entry “Hangar Manager”. It opens the manager view at `/account/pledges#hangar-manager`.
@@ -134,6 +134,11 @@ Firefox removes temporary add-ons when it quits.
 
 If the navigation entry does not appear in Firefox, check under `about:addons` → Star Citizen
 Hangar Manager → **Permissions** that access to `robertsspaceindustries.com` is allowed.
+
+## Version
+
+The version lives only in `package.json`: WXT writes it into the manifest, and the extension reads
+it from there (`src/shared/extension-version.ts`) for the settings ("About") and the popup.
 
 ## Configuration
 

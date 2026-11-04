@@ -149,7 +149,18 @@
     "resetSettingsConfirm": "¿Devolver todos los ajustes a sus valores predeterminados?",
     "resetSettingsDone": "Los ajustes han vuelto a sus valores predeterminados.",
     "development": "Desarrollo",
-    "repositoryHint": "Código fuente, incidencias y cambios de la extensión."
+    "repositoryHint": "El código fuente de la extensión.",
+    "about": "Acerca de",
+    "version": "Versión $1",
+    "reportIssue": "Informar de un error o proponer una función",
+    "reportIssueHint": "En GitHub. Por favor, no publiques datos personales como ID de pledges o de pedidos.",
+    "privacyPolicy": "Política de privacidad",
+    "privacyPolicyHint": "Qué datos trata la extensión y dónde se guardan.",
+    "changelog": "Registro de cambios",
+    "changelogHint": "Qué ha cambiado en cada versión.",
+    "license": "Licencia MIT",
+    "licenseHint": "Código abierto, tal cual, sin garantía.",
+    "disclaimer": "Un proyecto no oficial de fans, sin relación con Cloud Imperium Games ni Roberts Space Industries ni respaldado por ellas."
   },
   "status": {
     "refreshing": "Actualizando …",

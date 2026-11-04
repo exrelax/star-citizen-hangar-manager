@@ -149,7 +149,18 @@
     "resetSettingsConfirm": "Set all settings back to their defaults?",
     "resetSettingsDone": "The settings are back to their defaults.",
     "development": "Development",
-    "repositoryHint": "Source code, issues and changes of the extension."
+    "repositoryHint": "The source code of the extension.",
+    "about": "About",
+    "version": "Version $1",
+    "reportIssue": "Report a bug or suggest a feature",
+    "reportIssueHint": "On GitHub. Please don't post personal data such as pledge or order IDs.",
+    "privacyPolicy": "Privacy policy",
+    "privacyPolicyHint": "Which data the extension handles and where it is kept.",
+    "changelog": "Changelog",
+    "changelogHint": "What changed in each version.",
+    "license": "MIT License",
+    "licenseHint": "Open source, provided as is, without warranty.",
+    "disclaimer": "An unofficial fan project, not affiliated with or endorsed by Cloud Imperium Games or Roberts Space Industries."
   },
   "status": {
     "refreshing": "Refreshing …",

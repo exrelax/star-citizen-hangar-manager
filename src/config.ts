@@ -19,8 +19,17 @@ export const AUTO_LANGUAGE_SOURCE: 'ui' | 'preferred' = 'preferred';
 /** RSI's hangar page, which hosts the manager (the popup's links add the tab's hash). */
 export const RSI_HANGAR_URL = 'https://robertsspaceindustries.com/en/account/pledges';
 
-/** The extension's source code, linked from the popup. */
+/** The extension's source code, linked from the popup and the settings ("About"). */
 export const REPOSITORY_URL = 'https://github.com/exrelax/star-citizen-hangar-manager';
+
+/** Pages of the repository linked from the settings ("About"). */
+export const REPOSITORY_LINKS = {
+  /** The issue forms: bug report or feature request. */
+  issues: `${REPOSITORY_URL}/issues/new/choose`,
+  privacy: `${REPOSITORY_URL}/blob/main/PRIVACY.md`,
+  changelog: `${REPOSITORY_URL}/blob/main/CHANGELOG.md`,
+  license: `${REPOSITORY_URL}/blob/main/LICENSE`,
+} as const;
 
 /** Pledges per page in the RSI hangar ("My Gear"). Fixed by RSI. */
 export const HANGAR_PAGE_SIZE = 10;

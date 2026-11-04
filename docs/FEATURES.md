@@ -383,6 +383,9 @@ In the order of the settings tab:
     lists offer the initial load again. Not possible during a refresh.
   - **Reset settings**: all settings back to their defaults (on all synced devices); the stored
     hangar stays.
+- **About**: the extension's version, and links to the source code, the issue forms (bug report
+  or feature request), the privacy policy, the changelog and the license. The popup of the
+  toolbar icon shows the version, too.
 
 Settings follow your browser profile to your other devices (see
 [Private by design](#private-by-design)).

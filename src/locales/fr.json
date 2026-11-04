@@ -149,7 +149,18 @@
     "resetSettingsConfirm": "Remettre tous les paramètres à leurs valeurs par défaut ?",
     "resetSettingsDone": "Les paramètres sont revenus à leurs valeurs par défaut.",
     "development": "Développement",
-    "repositoryHint": "Code source, tickets et modifications de l’extension."
+    "repositoryHint": "Le code source de l’extension.",
+    "about": "À propos",
+    "version": "Version $1",
+    "reportIssue": "Signaler un bug ou proposer une fonctionnalité",
+    "reportIssueHint": "Sur GitHub. Merci de ne pas publier de données personnelles comme les ID de pledges ou de commandes.",
+    "privacyPolicy": "Politique de confidentialité",
+    "privacyPolicyHint": "Quelles données l’extension traite et où elles sont conservées.",
+    "changelog": "Journal des modifications",
+    "changelogHint": "Ce qui a changé dans chaque version.",
+    "license": "Licence MIT",
+    "licenseHint": "Open source, fourni tel quel, sans garantie.",
+    "disclaimer": "Un projet de fan non officiel, ni affilié à ni approuvé par Cloud Imperium Games ou Roberts Space Industries."
   },
   "status": {
     "refreshing": "Actualisation …",

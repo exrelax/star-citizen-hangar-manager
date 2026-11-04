@@ -99,3 +99,34 @@
 .shm-settings .shm-hint.is-indented {
   margin: 0 0 8px 21px;
 }
+
+/* Links of the "About" and "Development" sections, each with its hint below it. */
+.shm-settings .shm-link-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Side by side as far as there is room. */
+.shm-settings .shm-link-list.is-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px 28px;
+}
+
+.shm-settings .shm-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--shm-accent);
+  text-decoration: none;
+}
+
+.shm-settings .shm-link:hover,
+.shm-settings .shm-link:focus-visible {
+  text-decoration: underline;
+  outline: none;
+}

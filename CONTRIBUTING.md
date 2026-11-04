@@ -121,7 +121,8 @@ Please search the existing issues first, then use the "Bug report" form. A good 
 contains:
 
 - what you did, what you expected and what happened instead
-- browser and version (Chrome or Firefox), the extension's version, theme and language
+- browser and version (Chrome or Firefox), the extension's version (settings → "About"), theme and
+  language
 - messages in the browser console that start with `[star-citizen-hangar-manager]`
 - screenshots, if they help
 

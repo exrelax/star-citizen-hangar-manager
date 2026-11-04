@@ -51,7 +51,7 @@ body:
     id: extension-version
     attributes:
       label: Extension version
-      description: Shown in the browser's extension management (chrome://extensions or about:addons).
+      description: Shown in the Hangar Manager's settings under "About", in the extension's popup and in the browser's extension management (chrome://extensions or about:addons).
       placeholder: e.g. 0.1.0
   - type: dropdown
     id: theme

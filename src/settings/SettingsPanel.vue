@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AboutSection from './sections/AboutSection.vue';
 import DevelopmentSection from './sections/DevelopmentSection.vue';
 import FilterSection from './sections/FilterSection.vue';
 import GeneralSection from './sections/GeneralSection.vue';
@@ -28,6 +29,7 @@ const update = (patch: Partial<Settings>) => emit('update', patch);
     <FilterSection :settings="settings" @update="update" />
     <ShipLinkSection :settings="settings" @update="update" />
     <ResetSection />
+    <AboutSection />
     <DevelopmentSection />
   </div>
 </template>
