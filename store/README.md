@@ -26,6 +26,9 @@ description as plain text, so they use no Markdown.
 | [05-settings.png](screenshots/05-settings.png)               | 1280×800 |                                             |
 | [small-tile-440x280.png](small-tile-440x280.png)             | 440×280  | Chrome: small promo tile (required)         |
 | [marquee-1400x560.png](marquee-1400x560.png)                 | 1400×560 | Chrome: marquee promo tile (optional)       |
+| [screenshots-opera/](screenshots-opera)                      | 612×408  | Opera: the same screenshots, smaller        |
+| [promo-300x188.png](promo-300x188.png)                       | 300×188  | Opera: promotional image                    |
+| [icon-64x64.png](icon-64x64.png)                             | 64×64    | Opera: icon (made by `pnpm icons`)          |
 | [social-preview-1280x640.png](social-preview-1280x640.png)   | 1280×640 | GitHub: Settings → General → Social preview |
 
 The store icon is the extension's own, [public/icon/128.png](../public/icon/128.png): the logo at
@@ -35,6 +38,11 @@ The screenshots are taken in the demo mode (Settings), so they show made-up pled
 at exactly 1280×800: in Chrome's DevTools, device toolbar "Responsive" with 1280 × 800 and DPR 1,
 then "Capture screenshot". Check that RSI's header with the account name isn't in the picture.
 Both stores take PNG or JPEG without transparency.
+
+Opera allows screenshots of at most 800×600 and prefers 612×408 (3:2). The Opera images are made
+from the ones above: the screenshots cropped by 40 px on the left and right to 1200×800 and scaled
+down, the promotional image scaled down from the small tile (300×191, then 1 px cut off at the top
+and 2 px at the bottom).
 
 ## Where each text goes
 
@@ -59,7 +67,16 @@ Both stores take PNG or JPEG without transparency.
   writes the sources zip next to the extension's zip.
 - **Release notes** of a version: from [CHANGELOG.md](../CHANGELOG.md).
 
-**Both**: homepage and support URL are the repository and its issues, the privacy policy is
+**Opera Add-ons** (addons.opera.com/developer):
+
+- **Package**: the Chrome zip (`pnpm zip:chrome`); Opera runs the Chrome build.
+- **Summary and description**: from the listings, as for the Chrome Web Store.
+- **Screenshots, promotional image and icon**: the Opera images above.
+- **Service website URL**: the repository. **Extension support page URL**: its issues.
+- The two **Extension source code URL** fields and **Build instructions**, and the notes for the moderators in
+  the version's conversation: see [review.md](review.md).
+
+**All stores**: homepage and support URL are the repository and its issues, the privacy policy is
 <https://github.com/exrelax/star-citizen-hangar-manager/blob/main/PRIVACY.md>.
 
 ## Keeping them current

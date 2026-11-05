@@ -101,6 +101,43 @@ Requests: robertsspaceindustries.com (the user's data, with the user's session) 
 Source code: https://github.com/exrelax/star-citizen-hangar-manager
 ```
 
+## Source code and notes (Opera)
+
+Opera reviews only readable code, and the built extension is minified. The version form has fields
+for the source code and how to build it:
+
+- **Extension source code URL (public)**: the tag of the uploaded version,
+  <https://github.com/exrelax/star-citizen-hangar-manager/tree/v1.0.0>
+- **Extension source code URL (required only for Opera moderators)**: meant for sources that
+  aren't public. Ours are, so it gets the sources zip of the GitHub release, a direct download:
+  <https://github.com/exrelax/star-citizen-hangar-manager/releases/download/v1.0.0/star-citizen-hangar-manager-1.0.0-sources.zip>
+- **Build instructions**:
+
+```text
+Requirements: Node.js 24 (at least 22), pnpm 10 (the version is set in package.json).
+
+pnpm install
+pnpm build:chrome
+
+The extension is written to .output/chrome-mv3: Opera uses the Chrome build. The JavaScript is minified by the build (Vite); the uploaded package is this build, zipped.
+```
+
+The notes for the moderators go into the conversation of the version, right after uploading it:
+
+```text
+The extension works on robertsspaceindustries.com and needs a logged-in RSI account with pledges to show anything. RSI accounts are free (robertsspaceindustries.com/enlist); no test account is shared, as sharing RSI accounts is against RSI's ToS. After installing:
+
+1. Log in on robertsspaceindustries.com and open "My Hangar" (https://robertsspaceindustries.com/account/pledges).
+2. Click the new first entry "Hangar Manager" in the account navigation.
+3. Click "Initial Load". The extension reads the hangar, buy back and orders.
+
+The extension never buys, exchanges (melts) or gifts anything on its own: these actions are sent to RSI only when the user confirms them in their dialog.
+
+Requests: robertsspaceindustries.com (the user's data, with the user's session) and api.fleetyards.net (public ship data, only ship model names are sent). No analytics, no tracking. All JavaScript is part of the package; the readable source code and the build instructions are given in the version's fields.
+```
+
+On a new version, change the version in both source code URLs.
+
 ## Source code (Firefox)
 
 Upload the sources zip from `pnpm zip:firefox` (`.output/*-sources.zip`). Build instructions for
