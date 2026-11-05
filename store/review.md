@@ -48,9 +48,18 @@ and keeps locally:
 - the RSI password in the exchange and gift dialogs, and the gift recipient's name and email –
   sent only to RSI, not stored
 
-The form asks what data is _collected_. Check before submitting whether Google counts data that is
-only processed in the browser; if so, tick "Personally identifiable information", "Financial and
-payment information" and "Website content". Certify in any case:
+Google counts data that is only processed or stored locally as handled, so it has to be disclosed
+as well ([User Data FAQ](https://developer.chrome.com/docs/webstore/program-policies/user-data-faq)).
+Tick:
+
+- **Personally identifiable information**: name and billing address in the order details, the gift
+  recipient's name and email
+- **Financial and payment information**: orders, amounts paid, invoices
+- **Authentication information**: the RSI password typed into the exchange and gift dialogs
+- **Website content**: the hangar, buy back and orders read from RSI's pages
+
+Leave the others unticked: health, personal communications, location, web history and user
+activity. Certify all three:
 
 - The data is not sold or transferred to third parties.
 - It is not used for purposes unrelated to the single purpose.
@@ -65,7 +74,16 @@ The manifest declares `data_collection_permissions: { required: ['none'] }`: no 
 transmitted to the developer or third parties. The requests to api.fleetyards.net contain only ship
 model names (see [PRIVACY.md](../PRIVACY.md)); they can be turned off with the ship links.
 
-## Notes to the reviewers
+## Test instructions (Chrome)
+
+The "Test instructions" of the Chrome Web Store (max. 500 characters). Leave username and password
+empty: no RSI account is shared.
+
+```text
+No test account: sharing RSI accounts is against RSI's ToS, and RSI accounts are free (robertsspaceindustries.com/enlist). Log in, open My Hangar (robertsspaceindustries.com/account/pledges), click the new nav entry "Hangar Manager", then "Initial Load". A new account has an empty hangar; the screenshots show a full one (demo mode). Exchange, gift and buy back are sent to RSI only after the user confirms. No tracking. Source: github.com/exrelax/star-citizen-hangar-manager
+```
+
+## Notes to the reviewers (Firefox)
 
 ```text
 The extension works on robertsspaceindustries.com and needs a logged-in RSI account with pledges to show anything. After installing:

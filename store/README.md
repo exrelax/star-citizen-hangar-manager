@@ -47,6 +47,7 @@ Both stores take PNG or JPEG without transparency.
 - **Category**: Tools. **Language**: the four languages of the extension.
 - **Privacy practices** tab: single purpose, permission justifications, data usage and the
   privacy policy URL – see [review.md](review.md).
+- **Test instructions**: no login data, only the short notes – see [review.md](review.md).
 
 **Firefox Add-ons** (addons.mozilla.org):
 
