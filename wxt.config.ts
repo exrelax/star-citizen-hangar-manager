@@ -16,6 +16,11 @@ export default defineConfig({
       port: Number(process.env.PORT) || 3000,
     },
   },
+  zip: {
+    // The sources zip for addons.mozilla.org needs only what builds the extension: the store
+    // texts and images (several MB) stay out.
+    excludeSources: ['store/**'],
+  },
   hooks: {
     // The styleguide (src/entrypoints/styleguide) is a page for development: `wxt build` skips it.
     'entrypoints:resolved': (wxt, entrypoints) => {

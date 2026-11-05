@@ -2,7 +2,7 @@
   "name": "star-citizen-hangar-manager",
   "description": "Browser extension for managing the Star Citizen hangar on robertsspaceindustries.com.",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "engines": {
     "node": ">=22"
