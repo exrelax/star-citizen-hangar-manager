@@ -6,7 +6,8 @@
  * The 128 px icon is also the Chrome Web Store's icon. As Google asks, it draws the logo at 96 px
  * with 16 px of transparent padding on each side, so it looks as large as other extensions' icons.
  *
- * Writes `public/icon/<size>.png`, which WXT turns into the manifest's icons.
+ * Writes `public/icon/<size>.png`, which WXT turns into the manifest's icons, and the icons that
+ * stores ask for separately to `store/` (Opera Add-ons: 64 px, the full logo without padding).
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -22,6 +23,10 @@ const SIZES = {
   96: { file: 'logo-full.svg' },
   128: { file: 'logo-full.svg', padding: 16 },
 };
+/** Store icons: target file → the logo, its size and padding as above. */
+const STORE_ICONS = {
+  'store/icon-64x64.png': { file: 'logo-full.svg', size: 64 },
+};
 
 /** The logo at `size` px, `padding` px away from each edge (nested in a larger SVG). */
 function withPadding(svg, size, padding) {
@@ -33,13 +38,17 @@ function withPadding(svg, size, padding) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">${logo}</svg>`;
 }
 
-fs.mkdirSync(TARGET, { recursive: true });
-for (const [key, { file, padding = 0 }] of Object.entries(SIZES)) {
-  const size = Number(key);
+/** Renders `file` at `size` px with `padding` and writes it to `target`. */
+function render(target, { file, size, padding = 0 }) {
   const logo = fs.readFileSync(path.join(SOURCE, file), 'utf8');
   const svg = padding ? withPadding(logo, size, padding) : logo;
   const png = new Resvg(svg, { fitTo: { mode: 'width', value: size } }).render().asPng();
-  const target = path.join(TARGET, `${size}.png`);
   fs.writeFileSync(target, png);
   console.log(`${target}: ${file}${padding ? `, ${padding} px padding` : ''}, ${png.length} bytes`);
 }
+
+fs.mkdirSync(TARGET, { recursive: true });
+for (const [key, icon] of Object.entries(SIZES)) {
+  render(path.join(TARGET, `${key}.png`), { ...icon, size: Number(key) });
+}
+for (const [target, icon] of Object.entries(STORE_ICONS)) render(target, icon);
