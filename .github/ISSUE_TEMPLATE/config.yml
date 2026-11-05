@@ -1,6 +1,9 @@
 # Only the forms: they ask for what a report needs and warn about personal data.
 blank_issues_enabled: false
 contact_links:
+  - name: Ideas and feature requests
+    url: https://github.com/exrelax/star-citizen-hangar-manager/discussions/categories/ideas
+    about: Suggest a feature or vote on the ideas of others. Approved ideas become issues.
   - name: Report a security problem
     url: https://github.com/exrelax/star-citizen-hangar-manager/security/advisories/new
     about: Please report security problems privately, not in a public issue.

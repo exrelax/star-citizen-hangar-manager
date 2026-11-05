@@ -9,9 +9,11 @@ By contributing, you agree that your contributions are licensed under the projec
 ## Ways to contribute
 
 - **Report a bug** – open an [issue](#reporting-bugs) with the "Bug report" form.
-- **Suggest a feature** – open an issue with the "Feature request" form and describe the problem
-  it solves; no code needed. Please discuss a feature in an issue before you start coding it, so
-  we can agree on the approach first.
+- **Suggest a feature** – start a discussion in
+  [Ideas](https://github.com/exrelax/star-citizen-hangar-manager/discussions/categories/ideas) and
+  describe the problem it solves; no code needed. Others can vote and comment, and approved ideas
+  become issues. Please wait for that before you start coding a feature, so we can agree on the
+  approach first.
 - **Improve a translation** – the extension speaks English, German, French and Spanish. Native
   speakers are very welcome to review the texts in `src/locales/`.
 - **Contribute code** – fix a bug or build an agreed feature in a [pull request](#pull-requests).
@@ -128,6 +130,8 @@ contains:
   language
 - messages in the browser console that start with `[star-citizen-hangar-manager]`
 - screenshots, if they help
+
+New reports are checked first; once a bug is confirmed, it moves to the backlog.
 
 **Never post personal data** in an issue: no pledge or order IDs, names, email or billing
 addresses, and no passwords or session tokens. Use the demo mode or the hide settings for
