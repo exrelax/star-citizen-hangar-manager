@@ -10,8 +10,27 @@ data stays in your browser.
 
 ## Install
 
-- **Chrome:** Chrome Web Store – coming soon
-- **Firefox:** Firefox Add-ons – coming soon
+Submitted on 2026-11-05, currently in review:
+
+- **Chrome:** "Star Citizen Hangar Manager" in the Chrome Web Store, ID
+  `nofhjnkljndooegpllppamacogkikdjg`:
+  <https://chromewebstore.google.com/detail/nofhjnkljndooegpllppamacogkikdjg> (available once the
+  review is done)
+- **Firefox:** "Star Citizen Hangar Manager" on Firefox Add-ons, add-on ID
+  `star-citizen-hangar-manager@exrelax`:
+  <https://addons.mozilla.org/firefox/addon/star-citizen-hangar-manager/> (available once the
+  review is done)
+
+Until then, you can install the extension from a file of the
+[latest release on GitHub](https://github.com/exrelax/star-citizen-hangar-manager/releases/latest).
+Installed this way, it doesn't update itself.
+
+- **Chrome:** download `star-citizen-hangar-manager-1.0.0-chrome.zip` and unzip it into a
+  folder. Open `chrome://extensions`, switch on **Developer mode** in the top right corner, click
+  **Load unpacked** and select the folder.
+- **Firefox:** download `star-citizen-hangar-manager-1.0.0-firefox.zip`. Open
+  `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on…** and select the zip.
+  Firefox removes the extension again when it is closed.
 
 ## What it does
 
