@@ -24,7 +24,7 @@ export const REPOSITORY_URL = 'https://github.com/exrelax/star-citizen-hangar-ma
 
 /** Pages of the repository linked from the settings ("About"). */
 export const REPOSITORY_LINKS = {
-  /** The issue forms: bug report or feature request. */
+  /** The issue forms: bug reports, and a link to the ideas in GitHub Discussions. */
   issues: `${REPOSITORY_URL}/issues/new/choose`,
   privacy: `${REPOSITORY_URL}/blob/main/PRIVACY.md`,
   changelog: `${REPOSITORY_URL}/blob/main/CHANGELOG.md`,
