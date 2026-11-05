@@ -21,8 +21,9 @@ export function ensureSprite(set: IconSet, doc: Document = document): void {
   holder.id = id;
   holder.hidden = true;
   holder.setAttribute('aria-hidden', 'true');
-  // Bundled with the extension, not page content.
-  holder.innerHTML = SPRITES[set];
+  // Parsed as SVG instead of set as `innerHTML`, which Firefox's add-on review flags.
+  const sprite = new DOMParser().parseFromString(SPRITES[set], 'image/svg+xml').documentElement;
+  holder.append(doc.importNode(sprite, true));
   doc.body.append(holder);
 }
 

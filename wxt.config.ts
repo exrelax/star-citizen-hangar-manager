@@ -39,9 +39,11 @@ export default defineConfig({
     ...(browser === 'firefox' && {
       browser_specific_settings: {
         gecko: {
-          // TODO: replace with the final add-on ID before publishing on addons.mozilla.org
-          id: 'star-citizen-hangar-manager@extension',
-          strict_min_version: '128.0',
+          // The add-on's ID on addons.mozilla.org. Bound to the add-on with its first upload: never
+          // change it, or Firefox treats the extension as a new add-on.
+          id: 'star-citizen-hangar-manager@exrelax',
+          // `data_collection_permissions` needs Firefox 140 (ESR).
+          strict_min_version: '140.0',
           data_collection_permissions: {
             required: ['none'],
           },
