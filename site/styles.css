@@ -189,6 +189,83 @@ h3 {
   border-bottom: 1px solid var(--site-border);
 }
 
+/*
+ * Logo and name on the left, the section links and the community badge on the right. At phone
+ * width the links move to a row of their own below logo and badge.
+ */
+.site-header-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  padding-block: 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-right: auto;
+  color: var(--site-text);
+  text-decoration: none;
+}
+
+.brand img {
+  flex: none;
+  width: 48px;
+  height: 48px;
+}
+
+.brand-name {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.site-nav a {
+  color: var(--site-text-muted);
+  text-decoration: none;
+}
+
+.site-nav a:hover {
+  color: var(--site-text);
+}
+
+.community-badge {
+  flex: none;
+  width: 64px;
+  height: 64px;
+}
+
+@media (max-width: 560px) {
+  .brand img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .brand-name {
+    font-size: 16px;
+  }
+
+  .community-badge {
+    width: 48px;
+    height: 48px;
+  }
+
+  .site-nav {
+    order: 1;
+    width: 100%;
+  }
+}
+
 .site-footer {
   background: var(--site-bg-deep);
   border-top: 1px solid var(--site-border);
