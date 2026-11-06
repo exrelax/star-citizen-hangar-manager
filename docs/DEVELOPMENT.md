@@ -164,9 +164,15 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   them into `site/`.
 - **Nothing from other servers**: no web fonts, scripts, analytics or embedded images from
   elsewhere, in line with [`PRIVACY.md`](../PRIVACY.md).
+- **Roadmap**: built from the repository's open milestones (with a due date) and issues while
+  building, by [`site/roadmap/roadmap.ts`](../site/roadmap/roadmap.ts); open `enhancement` issues
+  without a milestone are listed under "Later", issues labelled `website` never show. With a
+  `GITHUB_TOKEN` that can read the [project board](https://github.com/users/exrelax/projects/1),
+  the issues are grouped by its columns, otherwise into open and done. Locally it works without a
+  token (GitHub allows 60 requests an hour without one).
 - **Deployment**: the [website workflow](../.github/workflows/site.yml) builds and deploys the site
-  to GitHub Pages on every push to `main` that changes it (or the images it shows), and by hand via
-  "Run workflow". Pages has to use "GitHub Actions" as its source (repository settings → Pages).
+  to GitHub Pages on every push to `main` that changes it (or the images it shows), when issues or
+  milestones change, daily and by hand via "Run workflow". Pages has to use "GitHub Actions" as its source (repository settings → Pages).
 
 ## Configuration
 
