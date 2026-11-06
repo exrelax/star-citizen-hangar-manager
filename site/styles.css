@@ -285,6 +285,30 @@ h3 {
   min-width: 0;
 }
 
+/* The eyebrow and the current version next to it; the version wraps below at phone width. */
+.hero-eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+/* The current version ("v1.0.0 · November 5, 2026"), linked to its release notes. */
+.version-badge {
+  padding: 3px 10px;
+  color: var(--site-success);
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+  background: rgb(48 209 88 / 0.14);
+  border-radius: var(--site-radius-pill);
+}
+
+a.version-badge:hover {
+  color: var(--site-text);
+}
+
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
@@ -704,6 +728,25 @@ a.install-item:hover .install-name {
   background: var(--site-accent);
   border-radius: var(--site-radius-pill);
   box-shadow: 0 0 0 4px rgb(var(--site-accent-rgb) / 0.25);
+}
+
+/* The current version: released, so a green dot and a green label. */
+.roadmap-step.is-released .roadmap-dot {
+  background: var(--site-success);
+  box-shadow: 0 0 0 4px rgb(48 209 88 / 0.25);
+}
+
+.roadmap-released {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 9px;
+  color: var(--site-success);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  vertical-align: middle;
+  background: rgb(48 209 88 / 0.16);
+  border-radius: var(--site-radius-pill);
 }
 
 /* "Later" isn't scheduled: an open ring instead of a dot. */
