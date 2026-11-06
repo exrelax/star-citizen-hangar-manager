@@ -94,7 +94,7 @@ and 2 px at the bottom).
 - **Notes for certification**: see [review.md](review.md).
 
 **All stores**: homepage and support URL are the repository and its issues, the privacy policy is
-<https://github.com/exrelax/star-citizen-hangar-manager/blob/main/PRIVACY.md>.
+the website's page <https://exrelax.github.io/star-citizen-hangar-manager/privacy.html> (made from [PRIVACY.md](../PRIVACY.md)).
 
 ## Keeping them current
 

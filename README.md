@@ -77,7 +77,7 @@ Exchanging (melting) and gifting pledges is sent to RSI only when you confirm it
 The extension reads your hangar with your own RSI session and keeps it only in your browser. It
 never sees your RSI login and has no server, no account and no tracking. For the ship links to
 FleetYards.net and erkul.games it asks FleetYards.net about ship models – with nothing but their
-names. Details: [privacy policy](PRIVACY.md).
+names. Details: [privacy policy](https://exrelax.github.io/star-citizen-hangar-manager/privacy.html).
 
 ## Help and feedback
 
