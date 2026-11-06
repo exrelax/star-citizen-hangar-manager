@@ -18,6 +18,9 @@
     "zip": "pnpm zip:chrome && pnpm zip:firefox",
     "zip:chrome": "wxt zip -b chrome",
     "zip:firefox": "wxt zip -b firefox",
+    "site:dev": "vite --config site/vite.config.ts",
+    "site:build": "vite build --config site/vite.config.ts",
+    "site:preview": "vite preview --config site/vite.config.ts",
     "compile": "vue-tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -46,6 +49,7 @@
     "prettier": "^3.9.10",
     "svgo": "^4.1.0",
     "typescript": "~6.0.3",
+    "vite": "8.3.5",
     "vitest": "^5.0.5",
     "vue-tsc": "^3.3.14",
     "wxt": "^0.21.5"
