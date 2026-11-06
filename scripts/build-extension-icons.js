@@ -7,7 +7,10 @@
  * with 16 px of transparent padding on each side, so it looks as large as other extensions' icons.
  *
  * Writes `public/icon/<size>.png`, which WXT turns into the manifest's icons, and the icons that
- * stores ask for separately to `store/` (Opera Add-ons: 64 px, the full logo without padding).
+ * stores ask for separately to `store/`:
+ * - Opera Add-ons: 64 px, the full logo without padding
+ * - Microsoft Edge Add-ons: 300 px, padded like the 128 px icon (38 px, the logo at 224 px), so it
+ *   looks the same as in the Chrome Web Store
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -26,6 +29,7 @@ const SIZES = {
 /** Store icons: target file → the logo, its size and padding as above. */
 const STORE_ICONS = {
   'store/icon-64x64.png': { file: 'logo-full.svg', size: 64 },
+  'store/logo-300x300.png': { file: 'logo-full.svg', size: 300, padding: 38 },
 };
 
 /** The logo at `size` px, `padding` px away from each edge (nested in a larger SVG). */

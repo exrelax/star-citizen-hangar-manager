@@ -138,6 +138,27 @@ Requests: robertsspaceindustries.com (the user's data, with the user's session) 
 
 On a new version, change the version in both source code URLs.
 
+## Notes for certification (Edge)
+
+The "Notes for certification" of a submission in Microsoft Partner Center. No test account is
+shared, as for the other stores:
+
+```text
+The extension works on robertsspaceindustries.com and needs a logged-in RSI account with pledges to show anything. RSI accounts are free (robertsspaceindustries.com/enlist); no test account is shared, as sharing RSI accounts is against RSI's ToS. After installing:
+
+1. Log in on robertsspaceindustries.com and open "My Hangar" (https://robertsspaceindustries.com/account/pledges).
+2. Click the new first entry "Hangar Manager" in the account navigation.
+3. Click "Initial Load". The extension reads the hangar, buy back and orders.
+
+Settings → "Hide sensitive information" → "Demo mode" shows an anonymized selection with made-up IDs, as in the screenshots.
+
+The extension never buys, exchanges (melts) or gifts anything on its own: these actions are sent to RSI only when the user confirms them in their dialog.
+
+Requests: robertsspaceindustries.com (the user's data, with the user's session) and api.fleetyards.net (public ship data, only ship model names are sent). No analytics, no tracking.
+
+Source code: https://github.com/exrelax/star-citizen-hangar-manager
+```
+
 ## Source code (Firefox)
 
 Upload the sources zip from `pnpm zip:firefox` (`.output/*-sources.zip`). Build instructions for
