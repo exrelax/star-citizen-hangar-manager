@@ -1,5 +1,7 @@
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { defineConfig, type Plugin } from 'vite';
+import { parsePrivacy, renderPrivacy } from './privacy/privacy.ts';
 import { fetchRoadmap, renderRoadmap } from './roadmap/roadmap.ts';
 
 /*
@@ -16,6 +18,9 @@ import { fetchRoadmap, renderRoadmap } from './roadmap/roadmap.ts';
  * The roadmap is loaded from GitHub's API while building (see `roadmap/roadmap.ts`). Set
  * `GITHUB_TOKEN` to group the issues by the columns of the project board; without it, they are
  * grouped into open and done.
+ *
+ * The privacy page (`privacy.html`) is made from the repository's PRIVACY.md (see
+ * `privacy/privacy.ts`), so the policy has a single source.
  */
 const root = fileURLToPath(new URL('.', import.meta.url));
 const repository = fileURLToPath(new URL('..', import.meta.url));
@@ -71,9 +76,29 @@ function roadmap(): Plugin {
   };
 }
 
+/** PRIVACY.md, the single source of the privacy page. */
+const PRIVACY_FILE = `${repository}PRIVACY.md`;
+const PRIVACY_PLACEHOLDER = '<!-- privacy -->';
+
+/** Renders PRIVACY.md into privacy.html; the dev server reloads the page when the file changes. */
+const privacyPage: Plugin = {
+  name: 'privacy-page',
+  configureServer(server) {
+    server.watcher.add(PRIVACY_FILE);
+    server.watcher.on('change', (file) => {
+      if (file === PRIVACY_FILE) server.ws.send({ type: 'full-reload' });
+    });
+  },
+  transformIndexHtml(page) {
+    if (!page.includes(PRIVACY_PLACEHOLDER)) return page;
+    const rendered = renderPrivacy(parsePrivacy(readFileSync(PRIVACY_FILE, 'utf8')));
+    return page.replace(PRIVACY_PLACEHOLDER, rendered);
+  },
+};
+
 export default defineConfig({
   root,
-  plugins: [serveRepositoryImages, roadmap()],
+  plugins: [serveRepositoryImages, roadmap(), privacyPage],
   // Relative URLs: the site works under any path, e.g. /star-citizen-hangar-manager/ on GitHub
   // Pages, or a custom domain later.
   base: './',
@@ -88,5 +113,8 @@ export default defineConfig({
     emptyOutDir: true,
     // Images stay files (cacheable, lazy-loadable) instead of being inlined into the HTML.
     assetsInlineLimit: 0,
+    rollupOptions: {
+      input: { index: `${root}index.html`, privacy: `${root}privacy.html` },
+    },
   },
 });

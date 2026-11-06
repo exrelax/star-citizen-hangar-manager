@@ -170,6 +170,10 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   `GITHUB_TOKEN` that can read the [project board](https://github.com/users/exrelax/projects/1),
   the issues are grouped by its columns, otherwise into open and done. Locally it works without a
   token (GitHub allows 60 requests an hour without one).
+- **Privacy page**: `site/privacy.html` shows [`PRIVACY.md`](../PRIVACY.md), rendered while
+  building by [`site/privacy/privacy.ts`](../site/privacy/privacy.ts) – change the policy only
+  there. Its `#` heading is the title, the paragraphs before the first `##` section the line below
+  it and the summary, each `##` section gets a link at the top.
 - **Deployment**: the [website workflow](../.github/workflows/site.yml) builds and deploys the site
   to GitHub Pages on every push to `main` that changes it (or the images it shows), when issues or
   milestones change, daily and by hand via "Run workflow". Pages has to use "GitHub Actions" as its source (repository settings → Pages).
