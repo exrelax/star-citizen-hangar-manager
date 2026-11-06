@@ -10,22 +10,23 @@ data stays in your browser.
 
 ## Install
 
+- **Chrome:** [Star Citizen Hangar Manager in the Chrome Web Store](https://chromewebstore.google.com/detail/star-citizen-hangar-manag/nofhjnkljndooegpllppamacogkikdjg)
+
 Submitted on 2026-11-05, currently in review:
 
-- **Chrome:** "Star Citizen Hangar Manager" in the Chrome Web Store, ID
-  `nofhjnkljndooegpllppamacogkikdjg`:
-  <https://chromewebstore.google.com/detail/nofhjnkljndooegpllppamacogkikdjg> (available once the
-  review is done)
 - **Firefox:** "Star Citizen Hangar Manager" on Firefox Add-ons, add-on ID
   `star-citizen-hangar-manager@exrelax`:
   <https://addons.mozilla.org/firefox/addon/star-citizen-hangar-manager/> (available once the
   review is done)
 - **Opera:** "Star Citizen Hangar Manager" on Opera Add-ons, ID `pnlcicdocajlpfaehmgclaonkclfcikm`
   (the link follows once the review is done)
-- **Microsoft Edge:** "Star Citizen Hangar Manager" on Microsoft Edge Add-ons (the link follows
-  once the review is done)
 
-Until then, you can install the extension from a file of the
+Planned:
+
+- **Microsoft Edge:** a listing on Microsoft Edge Add-ons. Until then, Edge can install it from
+  the Chrome Web Store: allow extensions from other stores when Edge asks.
+
+Until the other listings are live, you can install the extension from a file of the
 [latest release on GitHub](https://github.com/exrelax/star-citizen-hangar-manager/releases/latest).
 Installed this way, it doesn't update itself.
 
