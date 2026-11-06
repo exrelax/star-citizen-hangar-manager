@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { describe, expect, it, vi } from 'vitest';
-import { fetchRoadmap, renderRoadmap, type Roadmap } from './roadmap.ts';
+import { fetchRoadmap, renderRoadmap, renderVersion, type Roadmap } from './roadmap.ts';
 
 const REPO = 'https://api.github.com/repos/exrelax/star-citizen-hangar-manager';
 
@@ -63,8 +63,20 @@ const LATER = [
   issue(22, { labels: [{ name: 'enhancement' }, { name: 'website' }] }),
 ];
 
-/** Fake GitHub: REST answers by URL, the GraphQL board by `board`. */
-function github(board?: { status: Record<number, string> } | 'denied') {
+const RELEASE = {
+  tag_name: 'v1.0.0',
+  html_url: 'https://github.com/exrelax/star-citizen-hangar-manager/releases/tag/v1.0.0',
+  published_at: '2026-11-05T00:28:43Z',
+};
+
+/**
+ * Fake GitHub: REST answers by URL, the GraphQL board by `board`, the latest release by `release`
+ * ('none': there is no release yet, 'error': the request fails).
+ */
+function github(
+  board?: { status: Record<number, string> } | 'denied',
+  release: typeof RELEASE | 'none' | 'error' = RELEASE,
+) {
   return vi.fn(async (url: string, init?: RequestInit) => {
     const json = (body: unknown, status = 200) =>
       new Response(JSON.stringify(body), { status, statusText: status === 200 ? 'OK' : 'Error' });
@@ -93,6 +105,11 @@ function github(board?: { status: Record<number, string> } | 'denied') {
       });
     }
     const path = url.replace(REPO, '').replace(/[?&]per_page=100&page=\d+$/, '');
+    if (path === '/releases/latest') {
+      if (release === 'none') return json({ message: 'Not Found' }, 404);
+      if (release === 'error') return json({ message: 'Server Error' }, 500);
+      return json(release);
+    }
     if (path === '/milestones?state=open&sort=due_on') return json(MILESTONES);
     if (path === '/issues?state=open&milestone=none&labels=enhancement') return json(LATER);
     const milestone = /^\/issues\?milestone=(\d+)&state=all$/.exec(path)?.[1];
@@ -104,7 +121,11 @@ function github(board?: { status: Record<number, string> } | 'denied') {
 describe('fetchRoadmap', () => {
   it('groups into open and done without a token, and leaves out what is not planned', async () => {
     const warn = vi.fn();
-    const roadmap = await fetchRoadmap({ fetch: github() as typeof fetch, warn });
+    const roadmap = await fetchRoadmap({
+      fetch: github() as typeof fetch,
+      warn,
+      fallbackVersion: '1.1.0',
+    });
 
     expect(roadmap.fromBoard).toBe(false);
     expect(warn).toHaveBeenCalledOnce();
@@ -125,6 +146,7 @@ describe('fetchRoadmap', () => {
       token: 'token',
       // Closed is done whatever the column says; unknown columns (e.g. Inbox) count as backlog.
       fetch: github({ status: { 1: 'In progress', 3: 'Inbox', 6: 'In review' } }) as typeof fetch,
+      fallbackVersion: '1.1.0',
     });
 
     expect(roadmap.fromBoard).toBe(true);
@@ -146,6 +168,7 @@ describe('fetchRoadmap', () => {
       token: 'token',
       fetch: github('denied') as typeof fetch,
       warn,
+      fallbackVersion: '1.1.0',
     });
 
     expect(roadmap.fromBoard).toBe(false);
@@ -155,12 +178,44 @@ describe('fetchRoadmap', () => {
 
   it('fails if GitHub answers with an error, instead of returning an empty roadmap', async () => {
     const fetchImpl = vi.fn(async () => new Response('{}', { status: 503 }));
-    await expect(fetchRoadmap({ fetch: fetchImpl as typeof fetch })).rejects.toThrow('503');
+    await expect(
+      fetchRoadmap({ fetch: fetchImpl as typeof fetch, fallbackVersion: '1.1.0' }),
+    ).rejects.toThrow('503');
+  });
+
+  it('takes the current version from the latest release', async () => {
+    const roadmap = await fetchRoadmap({
+      fetch: github() as typeof fetch,
+      fallbackVersion: '1.1.0',
+    });
+    expect(roadmap.release).toEqual({
+      version: '1.0.0',
+      url: RELEASE.html_url,
+      publishedOn: '2026-11-05',
+    });
+  });
+
+  it("falls back to package.json's version without a release, or if it can't be read", async () => {
+    const none = await fetchRoadmap({
+      fetch: github(undefined, 'none') as typeof fetch,
+      fallbackVersion: '1.1.0',
+    });
+    expect(none.release).toEqual({ version: '1.1.0' });
+
+    const warn = vi.fn();
+    const failed = await fetchRoadmap({
+      fetch: github(undefined, 'error') as typeof fetch,
+      warn,
+      fallbackVersion: '1.1.0',
+    });
+    expect(failed.release).toEqual({ version: '1.1.0' });
+    expect(warn.mock.calls.some(([message]) => String(message).includes('release'))).toBe(true);
   });
 });
 
 describe('renderRoadmap', () => {
   const roadmap: Roadmap = {
+    release: { version: '1.0.0', url: 'https://github.com/r/1.0.0', publishedOn: '2026-11-05' },
     fromBoard: false,
     milestones: [
       {
@@ -183,8 +238,18 @@ describe('renderRoadmap', () => {
     const html = renderRoadmap(roadmap);
     const page = new DOMParser().parseFromString(html, 'text/html');
 
-    expect(page.querySelector('h3')?.textContent).toBe('Version 1.1.0');
-    expect(page.querySelector('.roadmap-meta')?.textContent).toBe(
+    // The released version first, then the milestones.
+    const [released, next] = page.querySelectorAll('.roadmap-step');
+    expect(released!.classList.contains('is-released')).toBe(true);
+    expect(released!.querySelector('h3')?.textContent).toBe('Version 1.0.0Released');
+    expect(released!.querySelector('.roadmap-meta')?.textContent).toBe(
+      'Released November 5, 2026 · Release notes',
+    );
+    expect(released!.querySelector('.roadmap-meta a')?.getAttribute('href')).toBe(
+      'https://github.com/r/1.0.0',
+    );
+    expect(next!.querySelector('h3')?.textContent).toBe('Version 1.1.0');
+    expect(next!.querySelector('.roadmap-meta')?.textContent).toBe(
       'Due November 12, 2026 · 1 of 4 done',
     );
     expect(page.querySelector('.roadmap-description p')?.textContent).toBe('For the IAE:');
@@ -200,8 +265,32 @@ describe('renderRoadmap', () => {
   });
 
   it('says so when nothing is planned', () => {
-    expect(renderRoadmap({ fromBoard: false, milestones: [], later: [] })).toContain(
-      'Nothing planned',
-    );
+    const html = renderRoadmap({
+      release: { version: '1.0.0' },
+      fromBoard: false,
+      milestones: [],
+      later: [],
+    });
+    expect(html).toContain('Nothing planned');
+    // The fallback from package.json: no date, no link.
+    expect(html).toContain('Version 1.0.0');
+    expect(html).not.toContain('Release notes');
+  });
+});
+
+describe('renderVersion', () => {
+  it('shows the version and date, linked to the release notes', () => {
+    const html = renderVersion({
+      version: '1.0.0',
+      url: 'https://github.com/r/1.0.0',
+      publishedOn: '2026-11-05',
+    });
+    const badge = new DOMParser().parseFromString(html, 'text/html').querySelector('a');
+    expect(badge?.textContent).toBe('v1.0.0 · November 5, 2026');
+    expect(badge?.getAttribute('href')).toBe('https://github.com/r/1.0.0');
+  });
+
+  it('shows only the version for the fallback from package.json', () => {
+    expect(renderVersion({ version: '1.1.0' })).toBe('<span class="version-badge">v1.1.0</span>');
   });
 });

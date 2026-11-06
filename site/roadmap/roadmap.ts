@@ -2,6 +2,8 @@
  * The roadmap of the website, built from the repository's GitHub issues when the site is built
  * (see site/vite.config.ts). Visitors' browsers never contact GitHub: the roadmap is plain HTML.
  *
+ * - Released: the current version, the latest GitHub release (or the version of package.json if
+ *   there is none), above the timeline; the hero shows it, too.
  * - Timeline: the open milestones with a due date and issues, by date, with their issues grouped
  *   by the column of the project board (or into "Open" and "Done" if the board can't be read).
  * - Later: open `enhancement` issues without a milestone, except the website's own (`website`).
@@ -32,7 +34,18 @@ export interface RoadmapMilestone {
   groups: RoadmapGroup[];
 }
 
+/** The current, released version of the extension. */
+export interface RoadmapRelease {
+  /** e.g. "1.0.0", without the tag's "v". */
+  version: string;
+  /** The GitHub release (its notes); missing for the fallback from package.json. */
+  url?: string;
+  /** ISO date (YYYY-MM-DD) of the release; missing for the fallback. */
+  publishedOn?: string;
+}
+
 export interface Roadmap {
+  release: RoadmapRelease;
   milestones: RoadmapMilestone[];
   later: RoadmapIssue[];
   /** Whether the groups come from the project board. */
@@ -73,6 +86,12 @@ interface GitHubMilestone {
   due_on: string | null;
 }
 
+interface GitHubRelease {
+  tag_name: string;
+  html_url: string;
+  published_at: string | null;
+}
+
 type Fetch = typeof fetch;
 
 export interface FetchRoadmapOptions {
@@ -81,11 +100,13 @@ export interface FetchRoadmapOptions {
   fetch?: Fetch;
   /** Called when the board can't be read and the issues are grouped into open and done. */
   warn?: (message: string) => void;
+  /** The version of package.json, shown if there is no GitHub release (or it can't be read). */
+  fallbackVersion: string;
 }
 
 /** Loads milestones, issues and board columns from GitHub. Throws if GitHub can't be reached. */
-export async function fetchRoadmap(options: FetchRoadmapOptions = {}): Promise<Roadmap> {
-  const { token, fetch: fetchImpl = fetch, warn = () => {} } = options;
+export async function fetchRoadmap(options: FetchRoadmapOptions): Promise<Roadmap> {
+  const { token, fetch: fetchImpl = fetch, warn = () => {}, fallbackVersion } = options;
   const headers: Record<string, string> = {
     Accept: 'application/vnd.github+json',
     'X-GitHub-Api-Version': '2022-11-28',
@@ -106,6 +127,24 @@ export async function fetchRoadmap(options: FetchRoadmapOptions = {}): Promise<R
       const items = (await response.json()) as T[];
       all.push(...items);
       if (items.length < 100) return all;
+    }
+  }
+
+  // The latest release, i.e. the newest published one that is no draft and no pre-release.
+  async function getRelease(): Promise<RoadmapRelease> {
+    try {
+      const response = await fetchImpl(`${api}/releases/latest`, { headers });
+      if (response.status === 404) return { version: fallbackVersion };
+      if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+      const release = (await response.json()) as GitHubRelease;
+      return {
+        version: release.tag_name.replace(/^v/, ''),
+        url: release.html_url,
+        publishedOn: release.published_at?.slice(0, 10),
+      };
+    } catch (error) {
+      warn(`The latest release can't be read (${String(error)}): showing ${fallbackVersion}.`);
+      return { version: fallbackVersion };
     }
   }
 
@@ -136,6 +175,7 @@ export async function fetchRoadmap(options: FetchRoadmapOptions = {}): Promise<R
   }
 
   return {
+    release: await getRelease(),
     fromBoard: columns !== undefined,
     milestones: milestones
       .map((milestone, index) =>
@@ -265,6 +305,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 /** The roadmap as HTML, for the `<!-- roadmap -->` placeholder in index.html. */
 export function renderRoadmap(roadmap: Roadmap): string {
+  const released = renderRelease(roadmap.release);
   const milestones = roadmap.milestones.map(renderMilestone).join('');
   const later = roadmap.later.length
     ? `<div class="roadmap-step is-later">
@@ -278,21 +319,52 @@ export function renderRoadmap(roadmap: Roadmap): string {
         </div>
       </div>`
     : '';
-  if (!milestones && !later) {
-    return '<p class="muted">Nothing planned at the moment.</p>';
-  }
-  return `<div class="roadmap-timeline">${milestones}${later}</div>`;
+  const nothingPlanned =
+    milestones || later ? '' : '<p class="muted">Nothing planned at the moment.</p>';
+  return `<div class="roadmap-timeline">${released}${milestones}${later}</div>${nothingPlanned}`;
 }
 
-function renderMilestone(milestone: RoadmapMilestone): string {
-  const total = milestone.open + milestone.done;
-  const percent = total ? Math.round((milestone.done / total) * 100) : 0;
-  const due = new Date(`${milestone.dueOn}T00:00:00Z`).toLocaleDateString('en-US', {
+/** The current version as the first step of the timeline, marked as released. */
+function renderRelease(release: RoadmapRelease): string {
+  const title = `Version ${escape(release.version)}`;
+  const meta = [
+    release.publishedOn && `Released ${escape(formatDate(release.publishedOn))}`,
+    release.url && `<a href="${escape(release.url)}">Release notes</a>`,
+  ].filter(Boolean);
+  return `<div class="roadmap-step is-released">
+    <span class="roadmap-dot" aria-hidden="true"></span>
+    <div class="roadmap-body">
+      <div class="roadmap-heading">
+        <h3>${release.url ? `<a href="${escape(release.url)}">${title}</a>` : title}<span class="roadmap-released">Released</span></h3>
+        ${meta.length ? `<span class="roadmap-meta">${meta.join(' · ')}</span>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+
+/** The current version for the hero, e.g. "v1.0.0", linked to its release notes. */
+export function renderVersion(release: RoadmapRelease): string {
+  const text = `v${escape(release.version)}`;
+  const date = release.publishedOn ? ` · ${escape(formatDate(release.publishedOn))}` : '';
+  return release.url
+    ? `<a class="version-badge" href="${escape(release.url)}" title="Release notes of version ${escape(release.version)}">${text}${date}</a>`
+    : `<span class="version-badge">${text}</span>`;
+}
+
+/** "2026-11-12" → "November 12, 2026". */
+function formatDate(isoDate: string): string {
+  return new Date(`${isoDate}T00:00:00Z`).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
     timeZone: 'UTC',
   });
+}
+
+function renderMilestone(milestone: RoadmapMilestone): string {
+  const total = milestone.open + milestone.done;
+  const percent = total ? Math.round((milestone.done / total) * 100) : 0;
+  const due = formatDate(milestone.dueOn);
   // "v1.1.0" reads "Version 1.1.0"; other titles stay as they are.
   const title = milestone.title.replace(/^v(?=\d)/, 'Version ');
   return `<div class="roadmap-step">

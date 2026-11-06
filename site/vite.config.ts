@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { defineConfig, type Plugin } from 'vite';
 import { parsePrivacy, renderPrivacy } from './privacy/privacy.ts';
-import { fetchRoadmap, renderRoadmap } from './roadmap/roadmap.ts';
+import { fetchRoadmap, renderRoadmap, renderVersion } from './roadmap/roadmap.ts';
 
 /*
  * The project website (GitHub Pages): plain HTML and CSS in `site/`, built by Vite.
@@ -44,16 +44,22 @@ const serveRepositoryImages: Plugin = {
   },
 };
 
-/** The placeholder in index.html that the roadmap replaces. */
+/** The placeholders in index.html: the roadmap and the current version in the hero. */
 const ROADMAP_PLACEHOLDER = '<!-- roadmap -->';
+const VERSION_PLACEHOLDER = '<!-- version -->';
+
+/** The version of package.json: shown if there is no GitHub release yet. */
+const PACKAGE_VERSION = (
+  JSON.parse(readFileSync(`${repository}package.json`, 'utf8')) as { version: string }
+).version;
 
 /**
- * Renders the roadmap into index.html. In a build, a failed request fails the build, so the
- * "Website" workflow never publishes an empty roadmap: the last deployment stays online. The dev
- * server loads it once and shows a note instead if GitHub can't be reached.
+ * Renders the roadmap and the current version into index.html. In a build, a failed request fails
+ * the build, so the "Website" workflow never publishes an empty roadmap: the last deployment stays
+ * online. The dev server loads it once and shows a note instead if GitHub can't be reached.
  */
 function roadmap(): Plugin {
-  let html: Promise<string> | undefined;
+  let rendered: Promise<{ roadmap: string; version: string }> | undefined;
   let isBuild = false;
   const warn = (message: string) =>
     console.warn(process.env.GITHUB_ACTIONS ? `::warning::${message}` : `[roadmap] ${message}`);
@@ -63,15 +69,24 @@ function roadmap(): Plugin {
       isBuild = config.command === 'build';
     },
     transformIndexHtml(page) {
-      if (!page.includes(ROADMAP_PLACEHOLDER)) return page;
-      html ??= fetchRoadmap({ token: process.env.GITHUB_TOKEN, warn })
-        .then(renderRoadmap)
+      if (!page.includes(ROADMAP_PLACEHOLDER) && !page.includes(VERSION_PLACEHOLDER)) return page;
+      rendered ??= fetchRoadmap({
+        token: process.env.GITHUB_TOKEN,
+        warn,
+        fallbackVersion: PACKAGE_VERSION,
+      })
+        .then((data) => ({ roadmap: renderRoadmap(data), version: renderVersion(data.release) }))
         .catch((error: unknown) => {
           if (isBuild) throw error;
           warn(`GitHub can't be reached: ${String(error)}`);
-          return '<p class="muted">The roadmap couldn\'t be loaded from GitHub.</p>';
+          return {
+            roadmap: '<p class="muted">The roadmap couldn\'t be loaded from GitHub.</p>',
+            version: renderVersion({ version: PACKAGE_VERSION }),
+          };
         });
-      return html.then((rendered) => page.replace(ROADMAP_PLACEHOLDER, rendered));
+      return rendered.then(({ roadmap, version }) =>
+        page.replace(ROADMAP_PLACEHOLDER, roadmap).replace(VERSION_PLACEHOLDER, version),
+      );
     },
   };
 }

@@ -1,8 +1,9 @@
 # Builds the project website (`site/`, see site/vite.config.ts) and deploys it to GitHub Pages.
 # Runs on pushes to main that change the site, the images it shows or PRIVACY.md (its privacy
-# page), when issues or milestones change (the roadmap is built from them), daily (for changes of
-# the project board, which trigger no event here) and by hand ("Run workflow"). In the repository
-# settings, Pages → "Build and deployment" → Source has to be set to "GitHub Actions".
+# page), when issues or milestones change (the roadmap is built from them), when a release is
+# published (the current version), daily (for changes of the project board, which trigger no
+# event here) and by hand ("Run workflow"). In the repository settings, Pages → "Build and
+# deployment" → Source has to be set to "GitHub Actions".
 name: Website
 
 on:
@@ -31,6 +32,9 @@ on:
       - demilestoned
   milestone:
     types: [created, edited, opened, closed, deleted]
+  # A new version shows at once (hero and roadmap), not only with the next daily build.
+  release:
+    types: [published]
   schedule:
     - cron: '17 4 * * *'
   workflow_dispatch:

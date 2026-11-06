@@ -164,6 +164,9 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   them into `site/`.
 - **Nothing from other servers**: no web fonts, scripts, analytics or embedded images from
   elsewhere, in line with [`PRIVACY.md`](../PRIVACY.md).
+- **Current version**: the latest GitHub release (`/releases/latest`), loaded with the roadmap and
+  shown in the hero and as the first, "released" step of the roadmap; without a release, the
+  `version` of `package.json`. Publishing a release rebuilds the site.
 - **Roadmap**: built from the repository's open milestones (with a due date) and issues while
   building, by [`site/roadmap/roadmap.ts`](../site/roadmap/roadmap.ts); open `enhancement` issues
   without a milestone are listed under "Later", issues labelled `website` never show. With a
