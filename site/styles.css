@@ -493,6 +493,89 @@ a.install-item:hover .install-name {
     center / contain no-repeat;
 }
 
+/* ---- How it works and feedback ---- */
+
+/* The description on the left, the links for bugs, ideas and contributions on the right. */
+.feedback {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.feedback-text {
+  display: flex;
+  flex: 1 1 380px;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.feedback-text h2 {
+  font-size: clamp(26px, 3.4vw, 32px);
+}
+
+.feedback-text p {
+  color: var(--site-text-muted);
+}
+
+.help-links {
+  display: flex;
+  flex: 1 1 420px;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.help-link {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 44px;
+  padding: 16px 18px;
+  color: var(--site-text);
+  text-decoration: none;
+  background: var(--site-surface);
+  border-radius: 14px;
+}
+
+.help-link:hover {
+  color: var(--site-text);
+  background: #12243a;
+}
+
+.help-icon {
+  flex: none;
+  width: 26px;
+  height: 26px;
+}
+
+.help-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.help-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.help-hint {
+  color: var(--site-text-faint);
+  font-size: 14px;
+}
+
+.help-arrow {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--site-accent);
+}
+
 .site-footer {
   background: var(--site-bg-deep);
   border-top: 1px solid var(--site-border);
@@ -515,6 +598,14 @@ a.install-item:hover .install-name {
 
 .skip-link:focus {
   transform: none;
+}
+
+/* The icon symbols at the top of the page: they only define icons, nothing shows. */
+.icon-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
 }
 
 /* ---- Building blocks ---- */
