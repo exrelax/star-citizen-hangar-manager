@@ -785,6 +785,59 @@ a.install-item:hover .install-name {
   border-top: 1px solid var(--site-border);
 }
 
+.site-footer-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-block: 40px 48px;
+}
+
+/* Name and links in a row; below them, separated by a line, CIG's notices. */
+.site-footer-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--site-border);
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.footer-brand img {
+  flex: none;
+  width: 32px;
+  height: 32px;
+}
+
+.footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  font-size: 14px;
+}
+
+.footer-nav a {
+  text-decoration: none;
+}
+
+.footer-notices {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 860px;
+  color: var(--site-text-faint);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
 /* Visible only while focused: lets keyboard users jump past the header. */
 .skip-link {
   position: absolute;
