@@ -65,8 +65,8 @@ activity. Certify all three:
 - It is not used for purposes unrelated to the single purpose.
 - It is not used to determine creditworthiness or for lending.
 
-Privacy policy URL:
-<https://github.com/exrelax/star-citizen-hangar-manager/blob/main/PRIVACY.md>
+Privacy policy URL (the website's page, made from [PRIVACY.md](../PRIVACY.md)):
+<https://exrelax.github.io/star-citizen-hangar-manager/privacy.html>
 
 ## Data collection (Firefox)
 
