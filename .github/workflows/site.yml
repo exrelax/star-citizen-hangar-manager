@@ -1,0 +1,62 @@
+# Builds the project website (`site/`, see site/vite.config.ts) and deploys it to GitHub Pages.
+# Runs on pushes to main that change the site or the images it shows, and by hand ("Run
+# workflow"). In the repository settings, Pages → "Build and deployment" → Source has to be set
+# to "GitHub Actions".
+name: Website
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - 'store/**'
+      - 'public/icon/**'
+      - 'src/assets/logo/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/site.yml'
+  workflow_dispatch:
+
+# Reads the code, and deploys to Pages with an OIDC token; nothing else.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; a running one is finished, not cancelled halfway.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      # The version comes from `packageManager` in package.json.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm site:build
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: .output/site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

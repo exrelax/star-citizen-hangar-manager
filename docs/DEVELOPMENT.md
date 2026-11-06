@@ -42,6 +42,9 @@ and auto-imports that TypeScript and ESLint rely on.
 | `pnpm test`          | Unit tests with Vitest (`pnpm test:watch` for watch mode)       |
 | `pnpm svg-sprite`    | Builds the icon sprites and icon names (see below)              |
 | `pnpm icons`         | Renders the extension's icons from the logo (see below)         |
+| `pnpm site:dev`      | Dev server of the project website with live reload (see below)  |
+| `pnpm site:build`    | Builds the project website → `.output/site`                     |
+| `pnpm site:preview`  | Serves the built website locally                                |
 
 ## Trying the extension in the browser
 
@@ -150,6 +153,21 @@ it on GitHub, then upload the zips to the stores (texts and images in [`store/`]
 
 `node scripts/release-notes.js 1.0.0` shows locally what the release notes will be.
 
+## Website
+
+The project website lives in [`site/`](../site): one static page in plain HTML and CSS, built by
+Vite ([`site/vite.config.ts`](../site/vite.config.ts)). Its colors and building blocks are CSS
+custom properties and classes in [`site/styles.css`](../site/styles.css).
+
+- **Images** are referenced with relative paths from where they already are – `store/`,
+  `public/icon/`, `src/assets/logo/` – and copied into the build with hashed names. Don't copy
+  them into `site/`.
+- **Nothing from other servers**: no web fonts, scripts, analytics or embedded images from
+  elsewhere, in line with [`PRIVACY.md`](../PRIVACY.md).
+- **Deployment**: the [website workflow](../.github/workflows/site.yml) builds and deploys the site
+  to GitHub Pages on every push to `main` that changes it (or the images it shows), and by hand via
+  "Run workflow". Pages has to use "GitHub Actions" as its source (repository settings → Pages).
+
 ## Configuration
 
 Tunable values – e.g. how often smart updates check the hangar, how many pages they check and
@@ -179,9 +197,10 @@ src/
   shared/                Shared code and styles
   config.ts              Tunable values (intervals, page counts, limits)
 wxt.config.ts            Shared configuration and browser-specific manifest
-.github/workflows/       CI (checks and builds of pushes and pull requests) and releases
+.github/workflows/       CI (checks and builds of pushes and pull requests), releases, website
 public/icon/             Extension icons, rendered from the logo by `pnpm icons`
 store/                   Texts and images for the store pages, the review (see store/README.md)
+site/                    Project website on GitHub Pages (see Website)
 ```
 
 ### Icons
