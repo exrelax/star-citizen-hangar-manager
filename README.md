@@ -61,8 +61,12 @@ RSI's own pages ("My Gear", "Buy Back Pledges") keep working as before. All feat
 ## Getting started
 
 1. Install the extension and log in on [robertsspaceindustries.com](https://robertsspaceindustries.com).
+   The Hangar Manager works with your RSI session, so you need to be logged in to use it.
 2. Open the Hangar Manager: with the new first entry **Hangar Manager** in the navigation of your
-   RSI account, or with the extension's icon in the browser toolbar.
+   RSI account, above "My Gear", or directly at
+   <https://robertsspaceindustries.com/en/account/pledges#hangar-manager>. It also opens from the
+   extension's icon in the browser toolbar (pin it from the extensions menu first) and from the
+   **Open in Hangar Manager** links on [CCU Game](https://ccugame.app).
 3. Click **Initial Load**. The manager reads your hangar, buy back and orders once – about 20
    seconds for 1,000 pledges, about 1.5 minutes for 5,000. From then on it opens instantly and
    keeps itself up to date.
