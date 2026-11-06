@@ -1123,3 +1123,57 @@ a.install-item:hover .install-name {
     0 0 0 1px rgb(98 150 200 / 0.28),
     0 30px 70px rgb(0 0 0 / 0.6);
 }
+
+/*
+ * ---- Motion ----
+ *
+ * Light motion for the screenshots, all in CSS: transforms only, so nothing shifts the layout.
+ * Only for visitors who haven't asked their system for reduced motion.
+ */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Hero: the two screenshots float gently, a few pixels, out of step with each other. */
+  .hero-media .is-front {
+    animation: site-float 9s ease-in-out infinite;
+  }
+
+  .hero-media .is-back {
+    animation: site-float 11s ease-in-out -4s infinite;
+  }
+
+  /*
+   * "What it does": the screenshots move a little slower than the page while it scrolls past
+   * them. Browsers without scroll-driven animations keep them still; so do phones, where the
+   * screenshots take the whole width.
+   */
+  @supports (animation-timeline: view()) {
+    @media (min-width: 561px) {
+      .feature-media .screenshot {
+        animation: site-parallax linear both;
+        animation-timeline: view();
+        animation-range: cover;
+      }
+    }
+  }
+}
+
+@keyframes site-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes site-parallax {
+  from {
+    transform: translateY(28px);
+  }
+
+  to {
+    transform: translateY(-28px);
+  }
+}
