@@ -17,9 +17,29 @@
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
 
-    <!-- Logo, name, section links and the "Made by the Community" badge (#24). -->
     <header class="site-header">
-      <div class="container"></div>
+      <div class="container site-header-inner">
+        <a class="brand" href="./">
+          <img src="../src/assets/logo/logo-full.svg" alt="" width="48" height="48" />
+          <span class="brand-name">Star Citizen<br />Hangar Manager</span>
+        </a>
+        <nav class="site-nav" aria-label="Sections">
+          <a href="#features">Features</a>
+          <a href="#feedback">Feedback</a>
+          <a href="#roadmap">Roadmap</a>
+        </nav>
+        <!--
+          The official badge of CIG's fankit (MadeByTheCommunity_Black.png), scaled down from
+          1418 to 128 px for twice its size here; otherwise unchanged.
+        -->
+        <img
+          class="community-badge"
+          src="./images/MadeByTheCommunity_Black-128.png"
+          alt="Made by the Community"
+          width="64"
+          height="64"
+        />
+      </div>
     </header>
 
     <main id="main">
