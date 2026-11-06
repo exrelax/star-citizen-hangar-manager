@@ -15,6 +15,7 @@ const pledge = (id: number, overrides: Partial<PledgeView> = {}): PledgeView =>
     ships: [],
     items: [],
     isUpgraded: false,
+    protectedGames: [],
     page: 1,
     searchText: `test pledge ${id}`,
     ...overrides,
@@ -53,11 +54,13 @@ describe('demoHangar', () => {
   const upgraded = Array.from({ length: 10 }, (_, index) =>
     pledge(99_998_000 - index, { isUpgraded: true }),
   );
-  const demo = demoHangar([...hangar, polaris, ...upgraded], KEY);
+  const gameAccess = pledge(99_997_000, { protectedGames: ['SC', 'SQ42'] });
+  const demo = demoHangar([...hangar, polaris, ...upgraded, gameAccess], KEY);
 
-  it('shows the configured number of pledges with the Polaris and some upgraded ones', () => {
+  it('shows the configured number of pledges with the Polaris, the game access and upgrades', () => {
     expect(demo).toHaveLength(DEMO.hangarPledges);
     expect(demo.some((entry) => entry.id === polaris.id)).toBe(true);
+    expect(demo.some((entry) => entry.id === gameAccess.id)).toBe(true);
     expect(demo.filter((entry) => entry.isUpgraded).length).toBeGreaterThanOrEqual(
       DEMO.upgradedPledges,
     );

@@ -122,6 +122,22 @@ describe('checkHangar', () => {
     expect(found.added.map((p) => p.id)).toEqual([older.id]);
   });
 
+  it('detects a new game access lock, but not pledges stored before locks were read', async () => {
+    // Stored by a version that didn't read the locks: the field is missing.
+    const stored = ids(30).map((id) => pledge(id));
+    const server = rsi(
+      stored.map((p, index) =>
+        index === 2 ? { ...p, protectedGames: ['SC' as const] } : { ...p, protectedGames: [] },
+      ),
+    );
+    const result = await checkHangar(stored, { fetchPage: server.fetchPage, cursor: 0 });
+
+    expect(result.status).toBe('updated');
+    if (result.status !== 'updated') return;
+    expect(result.changed.map((p) => p.id)).toEqual([stored[2]!.id]);
+    expect(result.pledges[2]!.protectedGames).toEqual(['SC']);
+  });
+
   it('detects changed content of a pledge with the same id', async () => {
     const stored = ids(30).map((id) => pledge(id));
     const server = rsi(stored.map((p, index) => (index === 2 ? { ...p, isGiftable: false } : p)));

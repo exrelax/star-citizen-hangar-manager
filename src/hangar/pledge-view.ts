@@ -1,5 +1,5 @@
 import { HANGAR_PAGE_SIZE } from '@/config';
-import type { Pledge, PledgeItem, PledgeUpgrade } from './pledge';
+import type { Game, Pledge, PledgeItem, PledgeUpgrade } from './pledge';
 import type { PaidOrder } from '@/orders/orders';
 import { rewardKind, type RewardKind } from './rewards';
 import { bestInsurance, type Insurance } from './insurance';
@@ -56,7 +56,11 @@ export interface PledgeView {
   isGamePackage: boolean;
   /** Game package or another pledge that contains the game (e.g. "VIP High Admiral"). */
   hasGameAccess: boolean;
+  /** Games whose access RSI protects with this pledge; empty if none (see `Pledge`). */
+  protectedGames: Game[];
+  /** Never for a protected pledge. */
   isGiftable: boolean;
+  /** Never for a protected pledge. */
   isMeltable: boolean;
   /** RSI: the last pledge of the account with game access ("last alpha"). */
   isLastAlpha: boolean;
@@ -99,6 +103,10 @@ export function toPledgeView(
   const hasGameAccess =
     pledge.category === 'game_package' ||
     pledge.items.some((item) => GAME_DOWNLOAD.test(item.title));
+  const protectedGames = pledge.protectedGames ?? [];
+  // RSI leaves out Exchange and Gift for protected pledges anyway; this also holds for pledges
+  // whose buttons were stored before RSI started protecting them.
+  const isProtected = protectedGames.length > 0;
   return {
     id: pledge.id,
     page: Math.floor(position / HANGAR_PAGE_SIZE) + 1,
@@ -123,8 +131,9 @@ export function toPledgeView(
     isStandaloneShip: pledge.category === 'standalone_ship',
     isGamePackage: pledge.category === 'game_package',
     hasGameAccess,
-    isGiftable: pledge.isGiftable,
-    isMeltable: pledge.isExchangeable,
+    protectedGames,
+    isGiftable: pledge.isGiftable && !isProtected,
+    isMeltable: pledge.isExchangeable && !isProtected,
     isLastAlpha: pledge.isLastAlpha,
     isBuybackable: pledge.isBuybackable,
     isUpgraded: currentShip !== undefined,

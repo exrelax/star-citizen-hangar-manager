@@ -129,6 +129,31 @@ describe('parsePledgePage', () => {
     expect(plain).toMatchObject({ title: 'Package - Test Ship 2', isUpgraded: false });
   });
 
+  it('reads the game access locks next to the title', () => {
+    // As RSI renders a protected pledge since October 2026 (link and tooltip shortened).
+    const lock = (game: string) => `
+      <a class="entitlement-lock" href="/account/settings/games-library" title="Melt &amp; gift are disabled">
+        <span class="entitlement-lock-icon"></span>
+        <span class="entitlement-lock-label">${game} Game Access</span>
+      </a>`;
+    const row = (id: number, locks: string) =>
+      pledgeHtml(id).replace(
+        '<div class="pledge-title-row">',
+        `<div class="pledge-title-row has-entitlement-lock">${locks}`,
+      );
+    const { pledges } = parse(
+      pageHtml(row(1, lock('SQ42') + lock('SC')) + row(2, lock('SQ42')) + pledgeHtml(3), [1]),
+    );
+
+    expect(pledges.map((pledge) => pledge.protectedGames)).toEqual([
+      ['SC', 'SQ42'],
+      ['SQ42'],
+      undefined,
+    ]);
+    // The locks are no part of the title.
+    expect(pledges[0]!.title).toBe('Package - Test Ship 1');
+  });
+
   it('reads the upgrade data of CCU pledges', () => {
     const data = JSON.stringify({
       id: 1,

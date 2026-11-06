@@ -8,8 +8,9 @@ import { localToday } from '@/orders/refund';
 /*
  * Made-up pledges for the styleguide: one of each kind the manager tells apart (upgraded ship,
  * ship, CCU, paint, game package, reward), with the states that change a row (insurance,
- * discount, refund period, giftable, meltable). They go through the same view functions as the
- * stored hangar, so the rows look exactly like in the manager. No ids are real.
+ * discount, refund period, giftable, meltable, protected game access). They go through the same
+ * view functions as the stored hangar, so the rows look exactly like in the manager. No ids are
+ * real.
  */
 
 const priceOf = createPriceLookup([
@@ -111,6 +112,11 @@ const PLEDGES: Pledge[] = [
     createdAt: '2020-11-29',
     category: 'game_package',
     isLastAlpha: true,
+    // RSI's game access lock: no Exchange or Gift, but still upgradeable.
+    protectedGames: ['SC', 'SQ42'],
+    isGiftable: false,
+    isExchangeable: false,
+    isUpgradeable: true,
     items: [
       { title: 'Nomad', kind: 'Ship', manufacturer: 'Consolidated Outland' },
       { title: 'Star Citizen Digital Download', kind: 'Downloadable' },
