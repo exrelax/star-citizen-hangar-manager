@@ -91,6 +91,29 @@ function roadmap(): Plugin {
   };
 }
 
+/** Where the site is published (GitHub Pages); the canonical and preview URLs point here. */
+export const SITE_URL = 'https://exrelax.github.io/star-citizen-hangar-manager/';
+
+/**
+ * Open Graph and X need absolute image URLs. Vite writes the preview image as a relative URL
+ * (`./assets/…`, see `base`) when it finishes the HTML; this turns it into one below SITE_URL
+ * in the built pages.
+ */
+const absolutePreviewImages: Plugin = {
+  name: 'absolute-preview-images',
+  apply: 'build',
+  enforce: 'post',
+  generateBundle(_options, bundle) {
+    for (const file of Object.values(bundle)) {
+      if (file.type !== 'asset' || !file.fileName.endsWith('.html')) continue;
+      file.source = String(file.source).replace(
+        /(<meta (?:property="og:image"|name="twitter:image") content=")\.\/([^"]+)"/g,
+        (_match, start: string, path: string) => `${start}${SITE_URL}${path}"`,
+      );
+    }
+  },
+};
+
 /** PRIVACY.md, the single source of the privacy page. */
 const PRIVACY_FILE = `${repository}PRIVACY.md`;
 const PRIVACY_PLACEHOLDER = '<!-- privacy -->';
@@ -113,7 +136,7 @@ const privacyPage: Plugin = {
 
 export default defineConfig({
   root,
-  plugins: [serveRepositoryImages, roadmap(), privacyPage],
+  plugins: [serveRepositoryImages, roadmap(), privacyPage, absolutePreviewImages],
   // Relative URLs: the site works under any path, e.g. /star-citizen-hangar-manager/ on GitHub
   // Pages, or a custom domain later.
   base: './',

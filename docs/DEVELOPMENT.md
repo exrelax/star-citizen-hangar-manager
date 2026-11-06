@@ -177,6 +177,9 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   building by [`site/privacy/privacy.ts`](../site/privacy/privacy.ts) – change the policy only
   there. Its `#` heading is the title, the paragraphs before the first `##` section the line below
   it and the summary, each `##` section gets a link at the top.
+- **Previews**: both pages have Open Graph and X tags with the same title and description as the
+  page, and `store/social-preview-1280x640.png` as the image. Its URL has to be absolute: the build
+  puts it below the site's address (`SITE_URL` in `site/vite.config.ts`).
 - **Deployment**: the [website workflow](../.github/workflows/site.yml) builds and deploys the site
   to GitHub Pages on every push to `main` that changes it (or the images it shows), when issues or
   milestones change, daily and by hand via "Run workflow". Pages has to use "GitHub Actions" as its source (repository settings → Pages).
