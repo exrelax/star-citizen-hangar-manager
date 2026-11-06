@@ -1,8 +1,8 @@
 # Builds the project website (`site/`, see site/vite.config.ts) and deploys it to GitHub Pages.
-# Runs on pushes to main that change the site or the images it shows, when issues or milestones
-# change (the roadmap is built from them), daily (for changes of the project board, which trigger
-# no event here) and by hand ("Run workflow"). In the repository settings, Pages → "Build and
-# deployment" → Source has to be set to "GitHub Actions".
+# Runs on pushes to main that change the site, the images it shows or PRIVACY.md (its privacy
+# page), when issues or milestones change (the roadmap is built from them), daily (for changes of
+# the project board, which trigger no event here) and by hand ("Run workflow"). In the repository
+# settings, Pages → "Build and deployment" → Source has to be set to "GitHub Actions".
 name: Website
 
 on:
@@ -13,6 +13,7 @@ on:
       - 'store/**'
       - 'public/icon/**'
       - 'src/assets/logo/**'
+      - 'PRIVACY.md'
       - 'package.json'
       - 'pnpm-lock.yaml'
       - '.github/workflows/site.yml'

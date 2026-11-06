@@ -2,7 +2,7 @@
 
 **Star Citizen Hangar Manager** (browser extension for Chrome and Firefox)
 
-Last updated: 4 November 2026
+Last updated: 6 November 2026
 
 The extension is built so that your data stays in your browser. It has no server of its own, no
 user accounts, no analytics and no tracking. This policy explains which data the extension
@@ -81,6 +81,15 @@ contacts nobody.
   showing your hangar to you.
 - Nothing is bought, gifted, melted or submitted without your click.
 
+## This website
+
+The project's website, <https://exrelax.github.io/star-citizen-hangar-manager/>, is hosted on
+GitHub Pages. Like any web host, GitHub may log visitors' IP addresses, e.g. for security; see
+the [GitHub Privacy Statement](https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement).
+The website itself sets no cookies and uses no analytics, tracking, or fonts and scripts from other
+servers. Its roadmap is built from the repository's public issues when the site is published, so
+visiting it doesn't contact GitHub's API.
+
 ## Permissions
 
 - **storage**: keeps the data and settings described above in your browser.
@@ -100,4 +109,6 @@ Nothing is stored anywhere else, so there is nothing else to delete.
 
 ## Changes to this policy
 
-Changes are published in this file in the repository; the date at the top shows the last change.
+Changes are published in the repository's
+[PRIVACY.md](https://github.com/exrelax/star-citizen-hangar-manager/blob/main/PRIVACY.md), which
+is also shown on the website; the date at the top shows the last change.
