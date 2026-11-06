@@ -2,7 +2,7 @@
 import { useDemoContext } from '@/demo/use-demo';
 import { i18n, locale } from '@/i18n';
 import { computed, ref, watch } from 'vue';
-import { REFUND_DAYS, REFUND_URGENT_DAYS } from '@/config';
+import { REFUND_DAYS, REFUND_URGENT_DAYS, RSI_GAMES_LIBRARY_URL } from '@/config';
 import { refundWindow, today } from '@/orders/refund';
 import { formatDiscount } from '../discount-format';
 import { insuranceLabel, supersededInsurances } from '../insurance';
@@ -14,6 +14,7 @@ import SvgIcon from '@/icons/SvgIcon.vue';
 import ExchangeOverlay from './ExchangeOverlay.vue';
 import ExternalLinks from './ExternalLinks.vue';
 import GiftOverlay from './GiftOverlay.vue';
+import ProtectedBadge from './ProtectedBadge.vue';
 import UpgradeLog from './UpgradeLog.vue';
 
 const props = defineProps<{
@@ -124,6 +125,11 @@ const toggle = () => {
       </span>
 
       <span class="shm-badges">
+        <ProtectedBadge
+          v-if="pledge.protectedGames.length"
+          :games="pledge.protectedGames"
+          :has-ship="pledge.items.some((item) => item.kind === 'Ship')"
+        />
         <span
           v-if="refund"
           class="shm-badge is-refund"
@@ -237,6 +243,17 @@ const toggle = () => {
           :pledge-id="pledge.id"
           :created-at="pledge.createdAt"
         />
+        <!-- Every pledge with the game, protected or not: below the upgrades, above the links. -->
+        <a
+          v-if="pledge.hasGameAccess || pledge.protectedGames.length"
+          class="shm-games-library"
+          :href="RSI_GAMES_LIBRARY_URL"
+          target="_blank"
+          rel="noopener noreferrer"
+          :title="i18n.t('pledge.gamesLibraryHint')"
+        >
+          {{ i18n.t('pledge.gamesLibrary') }}<SvgIcon name="square-up-right" />
+        </a>
         <ExternalLinks :ships="linkedShips" />
       </div>
     </div>

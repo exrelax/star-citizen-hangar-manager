@@ -33,6 +33,10 @@ export interface PledgeUpgrade {
 export const PLEDGE_CATEGORIES = ['game_package', 'standalone_ship'] as const;
 export type PledgeCategory = (typeof PLEDGE_CATEGORIES)[number];
 
+/** The games of RSI's game access, as "My Gear" labels them ("SC Game Access"). */
+export const GAMES = ['SC', 'SQ42'] as const;
+export type Game = (typeof GAMES)[number];
+
 /** A pledge from the RSI hangar ("My Gear"), as listed on `/account/pledges`. */
 export interface Pledge {
   id: number;
@@ -64,6 +68,12 @@ export interface Pledge {
   upgrade?: PledgeUpgrade;
   /** RSI product category, if it is one of `PLEDGE_CATEGORIES`. */
   category?: PledgeCategory;
+  /**
+   * Games whose access RSI protects with this pledge (since October 1, 2026; at most one pledge
+   * per game). A protected pledge can't be melted or gifted, but can still be upgraded. Missing
+   * for unprotected pledges and for pledges stored before this was read.
+   */
+  protectedGames?: Game[];
   nameReservations: unknown;
   nameableShips: unknown;
   items: PledgeItem[];

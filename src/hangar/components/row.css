@@ -149,6 +149,30 @@
   text-decoration: line-through;
 }
 
+/* RSI's game access lock (ProtectedBadge.vue): neutral, its tooltip explains it. */
+.shm-badge.is-protected {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--shm-text-strong);
+  border-color: rgb(var(--shm-accent-rgb) / 0.35);
+  background: rgb(var(--shm-accent-rgb) / 0.12);
+  cursor: help;
+}
+
+/* Link to RSI's Games Library in the details of pledges with the game. */
+.shm-games-library {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  color: var(--shm-accent);
+}
+
+.shm-games-library .shm-icon {
+  font-size: 0.85em;
+}
+
 .shm-chevron {
   flex: none;
   width: 28px;

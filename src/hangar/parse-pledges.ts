@@ -1,4 +1,11 @@
-import type { Pledge, PledgeItem, PledgeUpgrade, UpgradeTarget } from './pledge';
+import {
+  GAMES,
+  type Game,
+  type Pledge,
+  type PledgeItem,
+  type PledgeUpgrade,
+  type UpgradeTarget,
+} from './pledge';
 
 const MONTHS = [
   'january',
@@ -61,6 +68,7 @@ function parsePledge(li: HTMLElement): Pledge | undefined {
       heading?.classList.contains('upgraded') === true ||
       li.querySelector('.js-upgrade-log') !== null,
     upgrade: parseUpgrade(li),
+    protectedGames: parseProtectedGames(li),
     nameReservations: jsonScript(li, 'js-pledge-name-reservations'),
     nameableShips: jsonScript(li, 'js-pledge-nameable-ships'),
     items: [...li.querySelectorAll<HTMLElement>('.items .item')].map(parseItem),
@@ -98,6 +106,18 @@ function parseUpgrade(li: HTMLElement): PledgeUpgrade | undefined {
   } catch {
     return undefined;
   }
+}
+
+/**
+ * The game access a pledge is protected for: RSI shows a lock per game next to the title
+ * (`a.entitlement-lock`, labelled "SC Game Access" or "SQ42 Game Access").
+ */
+function parseProtectedGames(li: HTMLElement): Game[] | undefined {
+  const labels = [...li.querySelectorAll('.entitlement-lock')].map((lock) =>
+    text(lock).toUpperCase(),
+  );
+  const games = GAMES.filter((game) => labels.some((label) => label.startsWith(`${game} `)));
+  return games.length ? games : undefined;
 }
 
 function upgradeTargets(value: unknown): UpgradeTarget[] {

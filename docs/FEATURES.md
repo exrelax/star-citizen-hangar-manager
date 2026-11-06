@@ -181,6 +181,9 @@ on its own.
 - **Upgraded ships show what they are now**: after a CCU, the row shows the current ship with its
   image, and the original pledge name below it ("Originally: …").
 - **CCUs show their target ship** as image.
+- **Games Library**: the details of every pledge with the game (game packages, and packages like
+  "VIP High Admiral" that contain it) link to RSI's Games Library, which lists the protected pledge
+  of each game – below the applied upgrades and above the external links.
 
 ### Tags
 
@@ -190,6 +193,13 @@ on its own.
   insurance they bring.
 - **Upgraded**, **Gift** and **Melt** show at a glance whether a CCU was applied and whether the
   pledge can be gifted or melted.
+- **Protected game access**: since October 1, 2026, RSI protects one pledge per game as the
+  account's game access. Such a pledge gets a lock tag with its game – `SC`, `SQ42` or `SC · SQ42`
+  – and a tooltip that explains it. It can't be melted or gifted (no Exchange and Gift, struck
+  through tags, not counted as giftable or meltable in the filters), but if it contains a ship,
+  it can still be upgraded with CCUs (a reward without a ship like "VIP High Admiral" can't). The
+  lock is read during a refresh: after updating the extension, a full refresh shows it on every
+  protected pledge at once.
 - **Refund countdown** (see [Orders](#orders-invoices-and-refunds)).
 
 ---

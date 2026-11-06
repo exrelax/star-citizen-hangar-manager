@@ -101,6 +101,8 @@ export function pledgeFingerprint(pledge: Pledge): string {
     pledge.isBuybackable,
     pledge.items.map((item) => [item.title, item.kind]),
     pledge.upgrade ? [pledge.upgrade.matchItems, pledge.upgrade.targetItems] : null,
+    // Missing in pledges stored before it was read: the same as none, so only real locks count.
+    pledge.protectedGames ?? [],
   ]);
 }
 

@@ -19,6 +19,13 @@ export const AUTO_LANGUAGE_SOURCE: 'ui' | 'preferred' = 'preferred';
 /** RSI's hangar page, which hosts the manager (the popup's links add the tab's hash). */
 export const RSI_HANGAR_URL = 'https://robertsspaceindustries.com/en/account/pledges';
 
+/**
+ * RSI's Games Library: which pledge grants the game access of each game. Linked from protected
+ * pledges (see `Pledge.protectedGames`).
+ */
+export const RSI_GAMES_LIBRARY_URL =
+  'https://robertsspaceindustries.com/account/settings/games-library';
+
 /** The extension's source code, linked from the popup and the settings ("About"). */
 export const REPOSITORY_URL = 'https://github.com/exrelax/star-citizen-hangar-manager';
 

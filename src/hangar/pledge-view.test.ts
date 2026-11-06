@@ -216,6 +216,21 @@ describe('toPledgeView', () => {
     });
   });
 
+  it('never lets a protected pledge be melted or gifted', () => {
+    const locked = pledge({ protectedGames: ['SC', 'SQ42'], isExchangeable: true });
+    expect(toPledgeView(locked)).toMatchObject({
+      protectedGames: ['SC', 'SQ42'],
+      isGiftable: false,
+      isMeltable: false,
+    });
+    // Stored before the locks were read, or not protected.
+    expect(toPledgeView(pledge({ isExchangeable: true }))).toMatchObject({
+      protectedGames: [],
+      isGiftable: true,
+      isMeltable: true,
+    });
+  });
+
   it('does not treat fixed-term insurance as LTI', () => {
     const view = toPledgeView(
       pledge({ items: [{ title: '120 Month Insurance', kind: 'Insurance' }] }),

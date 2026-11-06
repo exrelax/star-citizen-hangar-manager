@@ -94,7 +94,11 @@ export function demoHangar(
     pledges,
     DEMO.hangarPledges,
     key,
-    (pledge) => upgraded.has(pledge) || containsShip(pledge, DEMO.includeShips),
+    // The protected game access pledges (at most two) show the lock tag.
+    (pledge) =>
+      upgraded.has(pledge) ||
+      containsShip(pledge, DEMO.includeShips) ||
+      pledge.protectedGames.length > 0,
   );
   const dates = demoDates(selection, key, today);
   return selection.map((pledge, position) => {
