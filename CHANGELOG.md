@@ -1,5 +1,20 @@
 # Changelog
 
+## [Unreleased]
+
+- **Pledge Store tab** with the current warbond CCUs: price, discount, the ships with the
+  cheapest CCUs to them and your own CCUs that can't be chained with them; opens RSI's upgrade
+  dialog with the warbond preselected
+- **Sorting** of My Hangar and Buy Back: newest or oldest first, by value or by discount
+- **Smarter smart updates**: the pledge log names the pledges that changed, a pledge new in the
+  buy back is checked in the hangar as well; interval and spot checks are settings
+- **Stored data** in the settings: everything that is stored, with size, last read and last
+  check, and each part read again or deleted on its own
+- The status line shows which part a refresh reads and what the last check did
+- The items of the Pledge Store are stored for later features
+- A lock tag for pledges RSI protects as your game access
+- Tooltips in the manager's own style
+
 ## [1.0.0] – 2026-11-05
 
 The first release of Star Citizen Hangar Manager for Chrome and Firefox. All features in detail:

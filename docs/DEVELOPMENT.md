@@ -189,6 +189,34 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
 Tunable values – e.g. how often smart updates check the hangar, how many pages they check and
 when a full refresh is suggested – live in [`src/config.ts`](../src/config.ts).
 
+## Storage
+
+Everything the extension keeps lives in `browser.storage`: the settings in `storage.sync`, all
+data read from RSI in `storage.local` – one key per data set, replaced as a whole, so a reader
+never sees a mix of old and new data.
+
+- **Registry** ([`src/storage/registry.ts`](../src/storage/registry.ts)): every storage with its
+  key, what it holds, where it comes from, what uses it, how to count its entries and whether it
+  is read again on its own after a reset. The settings ("Stored data"), the reset and the
+  migration work from this list – a new storage is one entry there.
+- **Metadata** ([`src/storage/meta.ts`](../src/storage/meta.ts)): next to each data key a small
+  `<key>.meta` key with the last full read, the last change, the last check with its outcome and a
+  fingerprint to compare with on the next check (the newest pledge log entry for the orders, a
+  hash of the answer for the data of the upgrade tool and the Pledge Store items). A check that
+  finds nothing new writes only these few bytes.
+- **Migration** ([`src/storage/migrate.ts`](../src/storage/migrate.ts)): moves data of earlier
+  keys to the current ones before anything reads them (content script start and after an update).
+- **Reading in the UI**: `useStored(item)` ([`src/storage/use-stored.ts`](../src/storage/use-stored.ts))
+  gives all components one shared, reactive copy of a stored value.
+
+## Smart updates
+
+`maybeRunSmartUpdate` ([`src/hangar/sync-state.ts`](../src/hangar/sync-state.ts)) reads the new
+entries of the pledge log first, then checks the buy back and the hangar: first and last page,
+rotating spot checks, and the pages of the pledges the log names and of those just melted
+([`src/hangar/smart-update/check.ts`](../src/hangar/smart-update/check.ts)). How reliable that is
+for which change: [FEATURES.md](FEATURES.md#smart-updates-a-few-pages-instead-of-all).
+
 ## Project structure
 
 ```
@@ -201,7 +229,10 @@ src/
     styleguide/          Styleguide page with all building blocks (dev builds only)
   hangar/                Hangar data and view: sync, smart updates, list, filters, search
   buyback/               Buy back data and view, adding buy back pledges to the RSI cart
-  orders/                Orders of the pledges: invoices, refund periods, refund requests
+  orders/                Orders of the pledges and the pledge log: invoices, refund periods
+  ships/                 RSI's ship upgrade tool: ships, ships on sale, warbond offers
+  store/                 Pledge Store tab (warbond CCUs) and the stored Pledge Store items
+  storage/               Registry of all storages, their metadata and migrations
   ccugame/               Links from CCU Game (ccugame.app) to the manager
   demo/                  Demo mode: an anonymized selection of the pledges for screenshots
   settings/              Extension settings and their tab

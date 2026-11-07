@@ -46,10 +46,12 @@ Installed this way, it doesn't update itself.
 - **Private by design:** no account, no tracking, no server of its own – your hangar, buy back and
   orders are stored only in your browser
 - Filters that include or exclude: ships, CCUs, paints, game access, rewards, LTI, warbond,
-  giftable, meltable, valuable
+  giftable, meltable, valuable – and sorting by date, value or discount
 - Melt values, discounts compared to the original price and the full CCU history of upgraded ships
 - Orders with invoices, refund countdown and a prefilled refund request
 - Buy back pledges with "probably giftable" hints, straight into the RSI cart
+- The current warbond CCUs of the Pledge Store, with the cheapest ships to start from and your own
+  CCUs in their price range
 - Hide IDs, name, address and values for screenshots and streams, or show an anonymized selection
   in the demo mode
 - Two themes ("Modern Hangar" and "Classic RSI") and four languages (English, German, French,

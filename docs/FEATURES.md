@@ -35,6 +35,8 @@ announcements.
   CCUs in the same price range
 - Links from CCU Game (ccugame.app) straight to the pledge in the Hangar Manager
 - An addition to RSI's website: "My Gear" and "Buy Back Pledges" stay untouched and usable
+- Transparent storage: the settings list everything that is stored, with size and the time of the
+  last read and check, and read again or delete each part on its own
 - A demo mode with anonymized data for screenshots
 - English, German, French and Spanish
 
@@ -120,8 +122,10 @@ Your hangar is nobody else's business. The extension is built so that your data 
 
 - **No server of its own, no account, no tracking, no analytics.** There is nothing to sign up for
   and nothing that reports back.
-- **Everything is stored locally** in your browser's extension storage: hangar, buy back, orders
-  and ship data. It never leaves your computer, and removing the extension removes it. The CCU
+- **Everything is stored locally** in your browser's extension storage: hangar, buy back, orders,
+  ship data and the items of the Pledge Store. It never leaves your computer, and removing the
+  extension removes it. The settings show all of it ("Stored data"), and each part can be read
+  again or deleted on its own. The CCU
   history is not even stored – it is loaded from RSI when you open it.
 - **Only RSI, with your own login**: pledges, orders and prices are read from RSI's website with
   the session you are already logged in with. The extension never sees or stores your password.
