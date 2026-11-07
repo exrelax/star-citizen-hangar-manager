@@ -25,7 +25,7 @@ announcements.
   and streams
 - Your whole hangar and buy back on one page, instead of RSI's 10 pledges per page
 - Instant search and filters that include or exclude (ships, CCUs, paints, LTI, warbond, giftable,
-  meltable, valuable, rewards, …)
+  meltable, valuable, rewards, …), sorting by date, value or discount
 - Discounts of ships and CCUs compared to their original price
 - The best insurance of every pledge as a tag (LTI, 10 years, …)
 - The full CCU history of upgraded ships, with the discount of every step
@@ -206,7 +206,7 @@ on its own.
 
 ---
 
-## Search and filters
+## Search, filters and sorting
 
 - **Live search** as you type – by title, ship name, pledge ID or order ID (also of orders paid with
   store credit, which are shown nowhere). Words are matched at their start, so `f8c` finds the
@@ -223,6 +223,9 @@ on its own.
   one click on "Reset filters" turns them all off.
 - **Live counts**: each filter shows how many pledges it would leave in combination with the
   other active filters – a filter showing 0 would empty the list.
+- **Sorting** at the top right of the list: newest or oldest first, highest or lowest value first,
+  or highest discount first. The buy back sorts by date only, as RSI shows no value there. The
+  choice is kept per list.
 - Thousands of pledges stay fast: rows are drawn while scrolling, in small steps between frames.
 
 ---

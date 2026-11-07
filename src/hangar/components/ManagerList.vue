@@ -1,4 +1,8 @@
-<script setup lang="ts" generic="T extends { id: number; searchText: string }, F extends string">
+<script
+  setup
+  lang="ts"
+  generic="T extends { id: number; searchText: string }, F extends string, S extends string"
+>
 import {
   LIST_RENDER_AHEAD,
   LIST_RENDER_BATCH,
@@ -47,7 +51,12 @@ const props = defineProps<{
   filterHint?: (filter: F) => string | undefined;
   /** The list's tab is shown: only then it owns the search parameter of the URL. */
   active: boolean;
+  /** The orders to choose from; `entries` come in the selected one (`sort`). */
+  sortOptions?: readonly { value: S; label: string }[];
+  sort?: S;
 }>();
+
+const emit = defineEmits<{ 'update:sort': [sort: S] }>();
 
 defineSlots<{
   row(props: { entry: T; autoExpand: boolean }): unknown;
@@ -298,10 +307,23 @@ const countLabel = computed(() =>
       </div>
     </div>
 
-    <!-- The count, and on the right what the list adds (the buy back: its tokens). -->
+    <!-- The count, and on the right what the list adds (the buy back: its tokens) and the order. -->
     <div class="shm-count">
       <span aria-live="polite">{{ countLabel }}</span>
-      <slot name="count-side" />
+      <span class="shm-count-side">
+        <slot name="count-side" />
+        <select
+          v-if="sortOptions && sortOptions.length > 1"
+          class="shm-select shm-sort"
+          :value="sort"
+          :aria-label="i18n.t('sort.label')"
+          @change="emit('update:sort', ($event.target as HTMLSelectElement).value as S)"
+        >
+          <option v-for="option in sortOptions" :key="option.value" :value="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </span>
     </div>
 
     <!-- One grouped list (Modern Hangar) or separate rows (Classic RSI). -->
@@ -494,12 +516,44 @@ const countLabel = computed(() =>
 .shm-count {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
   gap: 4px 16px;
   margin: 10px 0;
   color: var(--shm-text-muted);
   font-size: calc(12px * var(--shm-font-scale));
   font-variant-numeric: tabular-nums;
+}
+
+.shm-count-side {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  margin-left: auto;
+}
+
+/* The order: small, like the count line, with the arrow of the settings' selects. */
+.shm-sort {
+  height: 26px;
+  padding: 0 28px 0 8px;
+  color: var(--shm-text);
+  font: inherit;
+  appearance: none;
+  background-color: rgb(var(--shm-surface-rgb) / 0.8);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%238a9ba8' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 10px 7px;
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.35);
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.shm-sort:hover,
+.shm-sort:focus-visible {
+  border-color: var(--shm-accent);
+  outline: none;
 }
 
 .shm-sentinel {

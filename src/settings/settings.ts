@@ -6,6 +6,7 @@ import {
   type FilterGroups,
   type PledgeFilter,
 } from '@/hangar/filters';
+import { BUYBACK_SORTS, HANGAR_SORTS, type BuybackSort, type HangarSort } from '@/hangar/sorting';
 import { isLocale, type Locale } from '@/i18n';
 
 /** `auto`: the browser's language if there is a translation for it, English otherwise. */
@@ -72,6 +73,11 @@ export interface Settings {
     hangar: FilterGroups<PledgeFilter>;
     buyback: FilterGroups<BuybackFilter>;
   };
+  /** Order of both lists (see `hangar/sorting.ts`). */
+  sort: {
+    hangar: HangarSort;
+    buyback: BuybackSort;
+  };
   /** Links shown next to ships. */
   shipLinks: {
     erkul: boolean;
@@ -98,6 +104,7 @@ export const DEFAULT_SETTINGS: Settings = {
     hangar: normalizeFilterGroups(FILTERS.hangar, PLEDGE_FILTER_CATEGORIES, FILTERS.hangar),
     buyback: normalizeFilterGroups(FILTERS.buyback, BUYBACK_FILTER_CATEGORIES, FILTERS.buyback),
   },
+  sort: { hangar: 'newest', buyback: 'newest' },
   shipLinks: { erkul: true, fleetyards: true },
 };
 
@@ -122,6 +129,10 @@ const oneOf =
   <T extends string>(values: readonly T[]) =>
   (value: unknown): value is T =>
     values.includes(value as T);
+
+/** `value` if `isValid` accepts it, `fallback` otherwise. */
+const valid = <T>(value: unknown, isValid: (value: unknown) => value is T, fallback: T): T =>
+  isValid(value) ? value : fallback;
 
 /** Complete settings from stored values, falling back to the defaults for missing or invalid ones. */
 export function withDefaults(stored: Partial<Settings> | null | undefined): Settings {
@@ -160,6 +171,10 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
         BUYBACK_FILTER_CATEGORIES,
         FILTERS.buyback,
       ),
+    },
+    sort: {
+      hangar: valid(stored?.sort?.hangar, oneOf(HANGAR_SORTS), DEFAULT_SETTINGS.sort.hangar),
+      buyback: valid(stored?.sort?.buyback, oneOf(BUYBACK_SORTS), DEFAULT_SETTINGS.sort.buyback),
     },
     shipLinks: {
       erkul: stored?.shipLinks?.erkul ?? DEFAULT_SETTINGS.shipLinks.erkul,

@@ -9,6 +9,8 @@ import { BUYBACK_FILTER_PREDICATES, type BuybackFilter, type BuybackView } from 
 import { giftableHint } from '../giftable-hint';
 import BuybackRow from './BuybackRow.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
+import { BUYBACK_SORTS, sortEntries, type BuybackSort } from '@/hangar/sorting';
+import { useSettings } from '@/settings/use-settings';
 
 const props = defineProps<{
   pledges: BuybackView[];
@@ -32,6 +34,14 @@ const filterGroups = computed(() =>
   })),
 );
 
+// Only by date: RSI's buy back shows neither value nor discount.
+const { update } = useSettings();
+const sorted = computed(() => sortEntries(props.pledges, props.settings.sort.buyback));
+const sortOptions = computed(() =>
+  BUYBACK_SORTS.map((value) => ({ value, label: i18n.t(`sort.${value}`) })),
+);
+const setSort = (buyback: BuybackSort) => update({ sort: { ...props.settings.sort, buyback } });
+
 const filterLabel = (filter: BuybackFilter) => i18n.t(`filter.${filter}`);
 
 /** Filters whose meaning isn't obvious from the label explain it in their tooltip. */
@@ -45,12 +55,15 @@ const filterHint = (filter: BuybackFilter) => {
 <template>
   <ManagerList
     :class="displayClasses"
-    :entries="pledges"
+    :entries="sorted"
     :filter-groups="filterGroups"
     :predicates="BUYBACK_FILTER_PREDICATES"
     :filter-label="filterLabel"
     :filter-hint="filterHint"
     :active="active"
+    :sort-options="sortOptions"
+    :sort="settings.sort.buyback"
+    @update:sort="setSort"
   >
     <template v-if="tokens !== undefined" #count-side>
       <span v-tooltip="i18n.t('buyback.tokensHint')" class="shm-buyback-tokens">

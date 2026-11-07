@@ -23,6 +23,14 @@
     "demoBadgeHint": "Modo demo: una selección de tus pledges con ID inventados. Desactívalo en los ajustes.",
     "clearSearch": "Borrar la búsqueda"
   },
+  "sort": {
+    "label": "Orden",
+    "newest": "Más recientes primero",
+    "oldest": "Más antiguos primero",
+    "valueDesc": "Mayor valor primero",
+    "valueAsc": "Menor valor primero",
+    "discountDesc": "Mayor descuento primero"
+  },
   "pledge": {
     "toggleDetails": "Mostrar u ocultar los elementos incluidos",
     "originalName": "Originalmente: $1",
