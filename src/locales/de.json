@@ -60,7 +60,19 @@
       "paint": "Paint",
       "reward": "Reward",
       "other": "Item"
-    }
+    },
+    "select": "„$1“ auswählen"
+  },
+  "summary": {
+    "title": "Übersicht",
+    "count": "Pledges",
+    "value": "Wert",
+    "discount": "Rabatte",
+    "selected": "Ausgewählt",
+    "clear": "Auswahl aufheben",
+    "hidden": "$1 davon durch Suche oder Filter ausgeblendet",
+    "move": "Ziehen, um die Übersicht zu verschieben (oder Pfeiltasten)",
+    "resetPosition": "Zurück an ihren Platz unter der Navigation"
   },
   "filter": {
     "label": "Pledges filtern",
@@ -163,6 +175,8 @@
     "filterDown": "„$1“ nach unten",
     "hideSupersededInsurances": "Bei geupgradeten Schiffen nur die beste Versicherung anzeigen",
     "hideSupersededInsurancesHint": "Nach Upgrades listet ein Pledge die Versicherung jedes Schritts auf, es gilt aber nur die beste: LTI, falls vorhanden, sonst die mit den meisten Monaten. Die übrigen werden im aufgeklappten Item ausgeblendet.",
+    "summaryTypes": "Pledges in der Übersicht nach Art zählen",
+    "summaryTypesHint": "Die Übersicht von „My Hangar“ zeigt dann auch, wie viele Schiffe, CCUs, Paints, Spielpakete und Rewards angezeigt und ausgewählt sind.",
     "filtersLists": {
       "hangar": "My Hangar",
       "buyback": "Buy Back"

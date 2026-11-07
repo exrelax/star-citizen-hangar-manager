@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { i18n, type MessageKey } from '@/i18n';
 import type { Settings } from '@/settings/settings';
-import { computed } from 'vue';
+import { computed, onUnmounted } from 'vue';
 import {
   PLEDGE_FILTER_PREDICATES,
   shownFilters,
@@ -11,6 +11,7 @@ import {
 import type { PledgeView } from '../pledge-view';
 import { HANGAR_SORTS, sortEntries, type HangarSort } from '../sorting';
 import { useSettings } from '@/settings/use-settings';
+import { visiblePledgeIds } from '../selection';
 import ManagerList from './ManagerList.vue';
 import PledgeRow from './PledgeRow.vue';
 
@@ -40,6 +41,11 @@ const sortOptions = computed(() =>
 );
 const setSort = (hangar: HangarSort) => update({ sort: { ...props.settings.sort, hangar } });
 
+/** For the summary box: it counts the pledges search and filters leave visible. */
+const showVisible = (entries: PledgeView[]) =>
+  (visiblePledgeIds.value = new Set(entries.map((entry) => entry.id)));
+onUnmounted(() => (visiblePledgeIds.value = null));
+
 const filterLabel = (filter: PledgeFilter) => i18n.t(`filter.${filter}`);
 
 /** Filters whose meaning isn't obvious from the label explain it in their tooltip. */
@@ -67,6 +73,7 @@ const filterHint = (filter: PledgeFilter) => {
     :sort-options="sortOptions"
     :sort="settings.sort.hangar"
     @update:sort="setSort"
+    @visible="showVisible"
   >
     <template #row="{ entry, autoExpand }">
       <PledgeRow :pledge="entry" :auto-expand="autoExpand" />

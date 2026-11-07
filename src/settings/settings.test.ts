@@ -23,6 +23,7 @@ describe('withDefaults', () => {
       themedActionDialogs: false,
       translateRsiTexts: false,
       hideSupersededInsurances: true,
+      summaryTypes: false,
       hidePledgeIds: true,
       demoMode: true,
       hideRefund: true,

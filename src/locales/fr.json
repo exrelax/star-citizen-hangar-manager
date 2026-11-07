@@ -60,7 +60,19 @@
       "paint": "Peinture",
       "reward": "Récompense",
       "other": "Objet"
-    }
+    },
+    "select": "Sélectionner « $1 »"
+  },
+  "summary": {
+    "title": "Récapitulatif",
+    "count": "Pledges",
+    "value": "Valeur",
+    "discount": "Remises",
+    "selected": "Sélection",
+    "clear": "Annuler la sélection",
+    "hidden": "$1 masqués par la recherche ou les filtres",
+    "move": "Faire glisser pour déplacer le récapitulatif (ou touches fléchées)",
+    "resetPosition": "Revenir à sa place sous la navigation"
   },
   "filter": {
     "label": "Filtrer les pledges",
@@ -163,6 +175,8 @@
     "filterDown": "Descendre « $1 »",
     "hideSupersededInsurances": "N’afficher que la meilleure assurance des vaisseaux améliorés",
     "hideSupersededInsurancesHint": "Après des améliorations, un pledge liste l’assurance de chaque étape, mais seule la meilleure est conservée : la LTI s’il y en a une, sinon celle avec le plus de mois. Les autres sont masquées dans l’élément ouvert.",
+    "summaryTypes": "Compter les pledges par type dans le récapitulatif",
+    "summaryTypesHint": "Le récapitulatif de « My Hangar » indique alors aussi combien de vaisseaux, CCU, peintures, packs de jeu et récompenses sont affichés et sélectionnés.",
     "filtersLists": {
       "hangar": "My Hangar",
       "buyback": "Buy Back"

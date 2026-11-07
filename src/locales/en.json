@@ -60,7 +60,19 @@
       "paint": "Paint",
       "reward": "Reward",
       "other": "Item"
-    }
+    },
+    "select": "Select “$1”"
+  },
+  "summary": {
+    "title": "Summary",
+    "count": "Pledges",
+    "value": "Value",
+    "discount": "Discounts",
+    "selected": "Selected",
+    "clear": "Clear the selection",
+    "hidden": "$1 of them hidden by search or filters",
+    "move": "Drag to move the summary (or use the arrow keys)",
+    "resetPosition": "Back to its place below the navigation"
   },
   "filter": {
     "label": "Filter pledges",
@@ -163,6 +175,8 @@
     "filterDown": "Move “$1” down",
     "hideSupersededInsurances": "Show only the best insurance of upgraded ships",
     "hideSupersededInsurancesHint": "After upgrades a pledge lists the insurance of every step, but only the best one is kept: LTI if there is one, otherwise the most months. The others are hidden in the opened item.",
+    "summaryTypes": "Count the pledges per type in the summary",
+    "summaryTypesHint": "The summary box of “My Hangar” then also shows how many ships, CCUs, paints, game packages and rewards are shown and selected.",
     "filtersLists": {
       "hangar": "My Hangar",
       "buyback": "Buy Back"

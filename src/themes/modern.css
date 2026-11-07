@@ -698,3 +698,63 @@ html .shm-theme-modern .shm-initial-load-button:not(:disabled):focus-visible {
   font-weight: 600;
   background: var(--shm-accent);
 }
+
+/* ---- Summary box of "My Hangar" (HangarSummary.vue) and the select control of the rows ---- */
+
+html .shm-summary.shm-theme-modern {
+  padding: 12px;
+  background: var(--shm-surface-elevated);
+  border: 0;
+  border-radius: 12px;
+  box-shadow: 0 0 0 1px var(--shm-separator);
+}
+
+html .shm-summary.shm-theme-modern.is-moved {
+  box-shadow:
+    0 0 0 1px var(--shm-separator),
+    0 12px 30px rgb(0 0 0 / 0.45);
+}
+
+html .shm-theme-modern .shm-summary-title {
+  color: var(--shm-text);
+  font-size: calc(13px * var(--shm-font-scale));
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+html .shm-theme-modern .shm-summary-figures dd {
+  font-family: var(--shm-font-mono) !important;
+}
+
+html .shm-theme-modern .shm-summary-icon-button {
+  border-radius: 6px;
+}
+
+html .shm-theme-modern .shm-summary-icon-button:hover {
+  background: var(--shm-fill);
+}
+
+html .shm-theme-modern .shm-summary-selection {
+  border-top-color: var(--shm-separator);
+}
+
+html .shm-theme-modern .shm-select-toggle {
+  background: var(--shm-surface-elevated);
+  border-color: var(--shm-fill-strong);
+}
+
+html .shm-theme-modern .shm-select-toggle:hover,
+html .shm-theme-modern .shm-select-toggle:focus-visible {
+  border-color: var(--shm-accent);
+}
+
+html .shm-theme-modern .shm-select-toggle[aria-checked='true'] {
+  color: #fff;
+  background: var(--shm-accent);
+  border-color: var(--shm-accent);
+}
+
+html .shm-theme-modern .shm-row.is-selected {
+  box-shadow: inset 0 0 0 1px rgb(var(--shm-accent-rgb) / 0.6);
+}

@@ -371,3 +371,55 @@
 .shm-discount.is-surcharge {
   color: var(--shm-warning);
 }
+
+/*
+ * Selecting a pledge (My Hangar, for the summary box): a round control in the row's top right
+ * corner, a check when selected.
+ */
+.shm-select-toggle {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  color: transparent;
+  background: rgb(var(--shm-surface-rgb) / 0.6);
+  border: 1.5px solid rgb(var(--shm-accent-rgb) / 0.5);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.shm-select-toggle svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.shm-select-toggle:hover,
+.shm-select-toggle:focus-visible {
+  border-color: var(--shm-accent);
+  outline: none;
+}
+
+.shm-select-toggle:not([aria-checked='true']):hover {
+  color: rgb(var(--shm-accent-rgb) / 0.5);
+}
+
+.shm-select-toggle[aria-checked='true'] {
+  color: var(--shm-text-on-accent);
+  background: var(--shm-accent);
+  border-color: var(--shm-accent);
+}
+
+.shm-row.is-selected {
+  border-color: rgb(var(--shm-accent-rgb) / 0.6);
+}
