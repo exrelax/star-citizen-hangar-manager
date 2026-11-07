@@ -66,7 +66,7 @@ export const ROADMAP_SOURCE = {
 /** The board's columns in their order; issues in other columns count as "Backlog". */
 const BOARD_COLUMNS = ['Backlog', 'Ready', 'In progress', 'In review', 'Done'];
 /** Done issues listed per milestone, the most recently closed first. */
-const DONE_LISTED = 5;
+const DONE_LISTED = 20;
 
 interface GitHubIssue {
   number: number;
