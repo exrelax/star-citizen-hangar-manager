@@ -336,7 +336,9 @@ Paints, Game access, LTI, Warbond, Probably giftable, Rewards), plus:
 ## Pledge Store: current warbond CCUs
 
 The **Pledge Store** tab lists the warbond CCUs RSI currently offers – read from RSI's own ship
-upgrade tool when the tab is opened, so it always shows today's offers. For each warbond ship:
+upgrade tool and stored in the browser, so the tab shows them at once. With smart updates they are
+read again once they are older than 5 minutes (a setting), and always with the refresh button and
+the initial load; the count line says when they were updated. For each warbond ship:
 
 - **Prices**: the warbond price, the standard price (struck through) and the discount in dollars
   and percent, with the ship's image.
@@ -402,18 +404,22 @@ In the order of the settings tab:
     manager's summary and warnings); an option shows them in the selected theme instead.
 - **Hide sensitive information**: see [Anonymization for content creators](#anonymization-for-content-creators).
 - **General**:
-  - **Smart updates** (on by default) – see [Built for speed](#built-for-speed).
   - **Show only the best insurance of upgraded ships** (on by default): after upgrades a pledge
     lists the insurance of every step; only the one that counts (LTI, otherwise the most months)
     is listed.
   - **"Show in Buy Back" opens**: only the pledge, or the list page with the pledge highlighted.
+- **Smart updates**:
+  - **Check hangar, buy back and orders for changes** (on by default) – see
+    [Built for speed](#built-for-speed).
+  - **Read the warbond CCUs of the Pledge Store again after** 5 minutes (1 to 1440; the default).
+    With smart updates off, they are read only with the refresh button and the initial load.
 - **Filters**: order and selection of the filter buttons, separately for My Hangar and Buy Back
   and for types and features – drag a filter (or use its arrows) to move it within its group,
   uncheck it to hide its button.
 - **Show links for ships**: erkul.games and FleetYards.net, each on or off.
 - **Reset**, each after a confirmation:
   - **Delete local hangar & buy back data**: removes only the extension's copy in this browser
-    (pledges, orders, ship prices, smart update state); nothing changes on RSI's website, and the
+    (pledges, orders, ship prices, Pledge Store offers, smart update state); nothing changes on RSI's website, and the
     lists offer the initial load again. Not possible during a refresh.
   - **Reset settings**: all settings back to their defaults (on all synced devices); the stored
     hangar stays.

@@ -7,6 +7,7 @@ import LanguageSection from './sections/LanguageSection.vue';
 import PrivacySection from './sections/PrivacySection.vue';
 import ResetSection from './sections/ResetSection.vue';
 import ShipLinkSection from './sections/ShipLinkSection.vue';
+import SmartUpdateSection from './sections/SmartUpdateSection.vue';
 import ThemeSection from './sections/ThemeSection.vue';
 import type { Settings } from './settings';
 
@@ -26,6 +27,7 @@ const update = (patch: Partial<Settings>) => emit('update', patch);
     <ThemeSection :settings="settings" @update="update" />
     <PrivacySection :settings="settings" @update="update" />
     <GeneralSection :settings="settings" @update="update" />
+    <SmartUpdateSection :settings="settings" @update="update" />
     <FilterSection :settings="settings" @update="update" />
     <ShipLinkSection :settings="settings" @update="update" />
     <ResetSection />

@@ -3,6 +3,7 @@ import { buybackCheckState } from '@/buyback/buyback-storage';
 import { runBuybackSmartUpdate } from '@/buyback/run';
 import { prepareBuybackSync } from '@/buyback/sync-buyback';
 import { settingsItem, withDefaults } from '@/settings/settings';
+import { maybeRefreshStore, refreshStore } from '@/store/sync-store';
 import { reactive, readonly } from 'vue';
 import { hangarCheckState, type CheckOutcome, type CheckState } from './hangar-storage';
 import { runSmartUpdate } from './smart-update/run';
@@ -51,8 +52,9 @@ export async function startSync(): Promise<void> {
   state.progress = null;
   const startedAt = performance.now();
   try {
-    // Small and optional: loads alongside, a failure keeps the stored prices.
+    // Small and optional: load alongside, a failure keeps the stored prices and offers.
     const shipPrices = refreshShipPrices({ maxAgeMs: 0 });
+    const storeOffers = refreshStore();
     // Reported only once both totals are known; the detail pages of the buy back join later.
     const progress = new SyncProgressTracker();
     const [runHangar, runBuyback, runOrders] = await Promise.all([
@@ -78,6 +80,7 @@ export async function startSync(): Promise<void> {
       return null;
     });
     await shipPrices;
+    await storeOffers;
 
     const seconds = ((performance.now() - startedAt) / 1000).toFixed(1);
     console.info(
@@ -106,6 +109,8 @@ export async function maybeRunSmartUpdate({ force = false } = {}): Promise<void>
   try {
     // Independent of the smart update setting: one small request a day.
     await refreshShipPrices();
+    // The Pledge Store's offers, on their own interval (see the settings).
+    await maybeRefreshStore();
     const settings = withDefaults(await settingsItem.getValue());
     if (!settings.smartUpdates) return;
     const { lastCheckAt } = await hangarCheckState.getValue();

@@ -1,10 +1,12 @@
 import { buybackCheckState, buybackSnapshot } from '@/buyback/buyback-storage';
 import { hangarCheckState, hangarSnapshot, shipPricesItem } from '@/hangar/hangar-storage';
 import { ordersSnapshot } from '@/orders/orders-storage';
+import { storeSnapshot } from '@/store/store-storage';
 
 /**
  * Everything the extension keeps of the hangar and the buy back in the browser: the pledges, their
- * orders, the ship prices and the state of the smart updates. Not the settings.
+ * orders, the ship prices, the offers of the Pledge Store and the state of the smart updates. Not
+ * the settings.
  */
 const CACHE_ITEMS = [
   hangarSnapshot,
@@ -13,6 +15,7 @@ const CACHE_ITEMS = [
   ordersSnapshot,
   buybackSnapshot,
   buybackCheckState,
+  storeSnapshot,
 ];
 
 /**

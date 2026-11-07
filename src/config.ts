@@ -142,6 +142,13 @@ export const SMART_UPDATE = {
 export const PLEDGE_STORE = {
   /** Ships to start from shown per warbond: those with the cheapest CCUs to it. */
   baseShips: 10,
+  /**
+   * Smart updates read the stored offers again once they are older than this many minutes (a
+   * setting; this is its default and its range).
+   */
+  refreshMinutes: { default: 5, min: 1, max: 1440 },
+  /** How often an open Pledge Store tab looks whether its offers are due. */
+  dueCheckMs: 60 * 1000,
 } as const;
 
 /**

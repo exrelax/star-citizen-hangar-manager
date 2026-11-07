@@ -2,7 +2,7 @@
 
 **Star Citizen Hangar Manager** (browser extension for Chrome and Firefox)
 
-Last updated: 6 November 2026
+Last updated: 7 November 2026
 
 The extension is built so that your data stays in your browser. It has no server of its own, no
 user accounts, no analytics and no tracking. This policy explains which data the extension
@@ -33,6 +33,8 @@ sees or stores your RSI login.
 - **Applied upgrades (CCU history)** of a pledge: loaded only when you open it and **not stored**.
 - **Ship data**: RSI's public ship list (images) and the original ship prices of RSI's upgrade
   tool.
+- **Pledge Store offers**: the ships and warbond offers of RSI's upgrade tool (names, prices,
+  images) – the same for every account, nothing about yours.
 
 ## Data you enter
 
@@ -43,8 +45,8 @@ sees or stores your RSI login.
 
 ## Where the data is kept
 
-- **In your browser only.** Hangar, buy back, orders, ship prices, ship links and the state of the
-  smart updates are kept in the extension's local storage (`storage.local`) on your device. They
+- **In your browser only.** Hangar, buy back, orders, ship prices, Pledge Store offers, ship links
+  and the state of the smart updates are kept in the extension's local storage (`storage.local`) on your device. They
   never leave your computer and are not synced.
 - **Settings** (language, theme, display and privacy options, filters) are kept in the browser's
   sync storage (`storage.sync`). If you use a browser account (Google account in Chrome, Firefox
