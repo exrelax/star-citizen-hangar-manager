@@ -165,8 +165,12 @@ export const STORE_ITEMS = {
   pageSize: 100,
   /** Requests at the same time. */
   concurrency: 2,
-  /** Read again by smart updates once the stored items are older than this. */
-  maxAgeMs: 6 * 60 * 60 * 1000,
+  /**
+   * Smart updates read the items again once older than this many minutes (a setting; this is its
+   * default and its range). Without smart updates once a day (`maxAgeWithoutSmartUpdatesMs`).
+   */
+  refreshMinutes: { default: 5, min: 1, max: 1440 },
+  maxAgeWithoutSmartUpdatesMs: 24 * 60 * 60 * 1000,
 } as const;
 
 /** The "Pledge Store" tab: current warbond CCUs from RSI's ship upgrade tool (see `src/store`). */

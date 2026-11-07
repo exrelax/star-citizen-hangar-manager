@@ -1,12 +1,13 @@
 import { STORE_ITEMS } from '@/config';
+import { settingsItem, withDefaults } from '@/settings/settings';
 import { hashOf, recordCheck, recordSync } from '@/storage/meta';
 import { fetchStoreItems, type StoreItemsRead } from './fetch-store-items';
 import { storeItemsItem, storeItemsMeta, STORE_ITEMS_VERSION } from './store-items-storage';
 
 /*
  * Keeps the stored items of the Pledge Store current: read with every full refresh, from the
- * settings, and by smart updates once older than `STORE_ITEMS.maxAgeMs`. An unchanged answer
- * (same fingerprint) is not written again.
+ * settings, and by smart updates once older than the interval of the settings (without smart
+ * updates once a day). An unchanged answer (same fingerprint) is not written again.
  */
 
 let running: Promise<void> | undefined;
@@ -54,5 +55,13 @@ export function refreshStoreItems({
   return running;
 }
 
-/** The automatic refresh of smart updates. */
-export const maybeRefreshStoreItems = () => refreshStoreItems({ maxAgeMs: STORE_ITEMS.maxAgeMs });
+/** The automatic refresh: at the interval of the settings, once a day without smart updates. */
+export async function maybeRefreshStoreItems(
+  options: { fetchItems?: () => Promise<StoreItemsRead>; now?: () => number } = {},
+): Promise<void> {
+  const settings = withDefaults(await settingsItem.getValue());
+  const maxAgeMs = settings.smartUpdates
+    ? settings.storeItemsMinutes * 60_000
+    : STORE_ITEMS.maxAgeWithoutSmartUpdatesMs;
+  await refreshStoreItems({ ...options, maxAgeMs });
+}

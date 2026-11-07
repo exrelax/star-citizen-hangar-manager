@@ -1,5 +1,5 @@
 import { BUYBACK_FILTER_CATEGORIES, type BuybackFilter } from '@/buyback/buyback-view';
-import { FILTERS, FONT_SIZE_SCALES, PLEDGE_STORE, SMART_UPDATE } from '@/config';
+import { FILTERS, FONT_SIZE_SCALES, PLEDGE_STORE, SMART_UPDATE, STORE_ITEMS } from '@/config';
 import {
   normalizeFilterGroups,
   PLEDGE_FILTER_CATEGORIES,
@@ -59,6 +59,8 @@ export interface Settings {
   smartUpdates: boolean;
   /** Smart updates read the warbond CCUs of the Pledge Store again after this many minutes. */
   storeRefreshMinutes: number;
+  /** Smart updates read the items of the Pledge Store again after this many minutes. */
+  storeItemsMinutes: number;
   /** Minimum minutes between two smart updates of hangar, buy back and orders. */
   smartUpdateMinutes: number;
   /** Hangar pages a smart update checks besides the first and the last one. */
@@ -100,6 +102,7 @@ export const DEFAULT_SETTINGS: Settings = {
   hideRefund: false,
   smartUpdates: true,
   storeRefreshMinutes: PLEDGE_STORE.refreshMinutes.default,
+  storeItemsMinutes: STORE_ITEMS.refreshMinutes.default,
   smartUpdateMinutes: SMART_UPDATE.checkMinutes.default,
   spotCheckPages: SMART_UPDATE.spotCheckPages.default,
   buybackLinkMode: 'single',
@@ -132,6 +135,8 @@ export const isWholeNumberIn =
 
 /** Whole minutes in the range of the store's refresh interval. */
 export const isRefreshMinutes = isWholeNumberIn(PLEDGE_STORE.refreshMinutes);
+/** Whole minutes in the range of the interval of the Pledge Store items. */
+export const isStoreItemsMinutes = isWholeNumberIn(STORE_ITEMS.refreshMinutes);
 /** Whole minutes in the range of the smart update interval. */
 export const isSmartUpdateMinutes = isWholeNumberIn(SMART_UPDATE.checkMinutes);
 /** A number of spot check pages in its range. */
@@ -169,6 +174,7 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
     hideRefund: pick('hideRefund', isBoolean),
     smartUpdates: pick('smartUpdates', isBoolean),
     storeRefreshMinutes: pick('storeRefreshMinutes', isRefreshMinutes),
+    storeItemsMinutes: pick('storeItemsMinutes', isStoreItemsMinutes),
     smartUpdateMinutes: pick('smartUpdateMinutes', isSmartUpdateMinutes),
     spotCheckPages: pick('spotCheckPages', isSpotCheckPages),
     buybackLinkMode: pick('buybackLinkMode', oneOf(BUYBACK_LINK_MODES)),

@@ -438,6 +438,9 @@ In the order of the settings tab:
   - **Read the warbond CCUs of the Pledge Store again after** 5 minutes (1 to 1440; the default),
     together with the ships and their prices. With smart updates off, once a day and with the
     refresh button.
+  - **Read the Pledge Store items again after** 5 minutes (1 to 1440; the default): the items of
+    the Pledge Store (about 13 requests each time). With smart updates off, once a day and with
+    the refresh button.
 - **Filters**: order and selection of the filter buttons, separately for My Hangar and Buy Back
   and for types and features – drag a filter (or use its arrows) to move it within its group,
   uncheck it to hide its button.
