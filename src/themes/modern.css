@@ -225,6 +225,19 @@ html .shm-theme-modern .shm-tab.is-active {
   box-shadow: var(--shm-segment-raise);
 }
 
+/* With the sliding highlight (`FEATURES.tabSlideAnimation`): the raised segment moves instead. */
+html .shm-theme-modern .shm-tab-indicator {
+  background: linear-gradient(rgb(255 255 255 / 0.04), transparent), var(--shm-segment);
+  border: 0;
+  border-radius: 7px;
+  box-shadow: var(--shm-segment-raise);
+}
+
+html .shm-theme-modern .shm-tabs.has-indicator .shm-tab.is-active {
+  background: none;
+  box-shadow: none;
+}
+
 html .shm-theme-modern .shm-tab:not(.is-active):hover {
   color: var(--shm-text);
   background: var(--shm-hover);
