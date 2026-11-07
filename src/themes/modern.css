@@ -38,6 +38,13 @@
   --shm-segment: #1d3245;
   --shm-hover: rgb(98 150 200 / 0.06);
   --shm-text-on-warning: #000;
+  /* Neutral tags and the outline of the pledge ID. */
+  --shm-tag: rgb(214 228 242 / 0.08);
+  --shm-tag-text: rgb(214 228 242 / 0.8);
+  --shm-outline: rgb(214 228 242 / 0.16);
+  /* Raised segment of the tabs: a light top edge over a soft shadow. */
+  --shm-segment-raise: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 1px 3px rgb(0 0 0 / 0.25);
+  --shm-font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   --shm-font:
     -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', 'Segoe UI', system-ui,
     sans-serif;
@@ -67,6 +74,10 @@
     --shm-separator: rgb(60 60 67 / 0.18);
     --shm-segment: #fff;
     --shm-hover: rgb(0 0 0 / 0.03);
+    --shm-tag: rgb(60 60 67 / 0.08);
+    --shm-tag-text: rgb(60 60 67 / 0.8);
+    --shm-outline: rgb(60 60 67 / 0.2);
+    --shm-segment-raise: inset 0 -1px 0 rgb(0 0 0 / 0.04), 0 1px 3px rgb(0 0 0 / 0.14);
   }
 }
 
@@ -76,6 +87,13 @@ html .shm-theme-modern,
 html .shm-theme-modern * {
   font-family: var(--shm-font) !important;
   letter-spacing: normal;
+}
+
+/* IDs, prices, dates and counts in a monospace font, with digits of equal width. */
+html .shm-theme-modern :is(.shm-meta, .shm-meta *, .shm-order-id, .shm-filter-count),
+html .shm-theme-modern :is(td.is-amount, td.is-number) {
+  font-family: var(--shm-font-mono) !important;
+  font-variant-numeric: tabular-nums;
 }
 
 html .shm-manager.shm-theme-modern {
@@ -203,8 +221,13 @@ html .shm-theme-modern .shm-tab {
 html .shm-theme-modern .shm-tab.is-active {
   color: var(--shm-text);
   font-weight: 600;
-  background: var(--shm-segment);
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.2);
+  background: linear-gradient(rgb(255 255 255 / 0.04), transparent), var(--shm-segment);
+  box-shadow: var(--shm-segment-raise);
+}
+
+html .shm-theme-modern .shm-tab:not(.is-active):hover {
+  color: var(--shm-text);
+  background: var(--shm-hover);
 }
 
 /* ---- Status, filters, search ---- */
@@ -233,9 +256,12 @@ html .shm-theme-modern .shm-filters {
   row-gap: 12px;
 }
 
+/* In sentence case, like the rest of the theme. */
 html .shm-theme-modern .shm-filter-group-label {
   color: var(--shm-text-secondary);
-  font-weight: 600;
+  font-size: calc(12px * var(--shm-font-scale));
+  font-weight: 500;
+  text-transform: none;
 }
 
 /* A separator between the groups, starting at the chips. */
@@ -317,11 +343,6 @@ html .shm-theme-modern .shm-count {
   padding: 0 12px;
   color: var(--shm-text-secondary);
   font-size: calc(13px * var(--shm-font-scale));
-}
-
-/* The sort menu ends flush with the rows below it. */
-html .shm-theme-modern .shm-count:has(.shm-sort) {
-  padding-right: 0;
 }
 
 /* ---- Rows: cards, or rounded cells of a grouped list in the compact view ---- */
@@ -454,33 +475,50 @@ html .shm-theme-modern .shm-title {
 }
 
 html .shm-theme-modern .shm-meta {
-  font-size: calc(13px * var(--shm-font-scale));
+  font-size: calc(12px * var(--shm-font-scale));
 }
 
+/* The pledge ID in a thin outline, the value brighter than the rest of the line. */
+html .shm-theme-modern .shm-pledge-id {
+  padding: 0 6px;
+  color: var(--shm-tag-text);
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1px var(--shm-outline);
+}
+
+html .shm-theme-modern .shm-meta .shm-value {
+  color: var(--shm-text);
+}
+
+/* Tags: quiet by default; color only where it means something (LTI, upgraded, refund, gift). */
 html .shm-theme-modern .shm-badge {
-  padding: 2px 9px;
-  color: var(--shm-accent);
-  font-size: calc(11px * var(--shm-font-scale));
-  font-weight: 600;
-  background: rgb(var(--shm-accent-rgb) / 0.16);
+  padding: 2px 8px;
+  color: var(--shm-tag-text);
+  font-size: calc(12px * var(--shm-font-scale));
+  font-weight: 500;
+  background: var(--shm-tag);
   border: 0;
-  border-radius: 999px;
+  border-radius: 6px;
 }
 
 html .shm-theme-modern .shm-badge.is-lti {
-  color: var(--shm-text-on-accent);
-  background: var(--shm-accent);
+  color: var(--shm-accent);
+  background: rgb(var(--shm-accent-rgb) / 0.14);
 }
 
 html .shm-theme-modern .shm-badge.is-upgraded {
   color: var(--shm-upgraded);
-  background: rgb(var(--shm-upgraded-rgb) / 0.18);
+  background: rgb(var(--shm-upgraded-rgb) / 0.14);
 }
 
 html .shm-theme-modern .shm-badge.is-giftable,
 html .shm-theme-modern .shm-badge.is-refund {
   color: var(--shm-success);
-  background: rgb(var(--shm-success-rgb) / 0.18);
+  background: rgb(var(--shm-success-rgb) / 0.14);
+}
+
+html .shm-theme-modern .shm-badge.is-off {
+  opacity: 0.4;
 }
 
 html .shm-theme-modern .shm-badge.is-refund.is-urgent {
@@ -571,12 +609,6 @@ html .shm-theme-modern .shm-input {
   background-color: var(--shm-fill);
   border: 0;
   border-radius: 8px;
-}
-
-/* The order of the lists: as small as the count line next to it. */
-html .shm-theme-modern .shm-select.shm-sort {
-  height: 26px;
-  border-radius: 6px;
 }
 
 /* ---- Overlay: blurred backdrop, rounded sheet ---- */
