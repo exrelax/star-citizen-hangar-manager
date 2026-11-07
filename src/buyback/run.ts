@@ -7,6 +7,7 @@ import {
   BUYBACK_SNAPSHOT_VERSION,
   buybackFingerprint,
   withBuybackExtensionData,
+  type BuybackPledge,
   type BuybackSnapshot,
 } from './buyback';
 import { buybackMeta, buybackSnapshot } from './buyback-storage';
@@ -17,9 +18,15 @@ import { enrichBuyback, fetchBuybackPage, type BuybackSyncDeps } from './sync-bu
  * their old id, so they appear anywhere in the list – the binary search finds them.
  */
 export async function runBuybackSmartUpdate(
-  deps: BuybackSyncDeps & { now?: () => number } = {},
+  deps: BuybackSyncDeps & {
+    now?: () => number;
+    /** Ids known to have changed, e.g. from the pledge log (see `CheckOptions.hintIds`). */
+    hintIds?: readonly number[];
+    /** Hears about the stored changes, e.g. to check the melted pledges in the hangar. */
+    onChanges?: (changes: { added: BuybackPledge[]; removed: BuybackPledge[] }) => void;
+  } = {},
 ): Promise<CheckOutcome | null> {
-  const { fetchPage = fetchBuybackPage, now = Date.now } = deps;
+  const { fetchPage = fetchBuybackPage, now = Date.now, hintIds, onChanges } = deps;
 
   const snapshot = await buybackSnapshot.getValue();
   if (snapshot?.version !== BUYBACK_SNAPSHOT_VERSION) return null;
@@ -38,6 +45,7 @@ export async function runBuybackSmartUpdate(
     spotCheckPages: SMART_UPDATE.buybackSpotCheckPages,
     fingerprint: buybackFingerprint,
     merge: withBuybackExtensionData,
+    hintIds,
   });
 
   const save = (outcome: Omit<CheckOutcome, 'at'>) =>
@@ -80,6 +88,7 @@ export async function runBuybackSmartUpdate(
     ...(tokens !== undefined && { tokens }),
     updatedAt: new Date(now()).toISOString(),
   });
+  onChanges?.({ added, removed });
   return save({
     status: 'updated',
     added: added.length,

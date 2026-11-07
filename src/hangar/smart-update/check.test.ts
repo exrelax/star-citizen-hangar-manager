@@ -214,6 +214,47 @@ describe('checkHangar', () => {
   });
 });
 
+describe('checkHangar with hint ids', () => {
+  // Pages of 10: 1 = 500…410, 2 = 400…310, 3 = 300…210, 4 = 200…110, 5 = 100…10.
+  const stored = ids(50).map((id) => pledge(id));
+  // One pledge gone and an old one added on page 4: the number of pledges there stays the same.
+  const current = [...stored.filter((p) => p.id !== 150), pledge(155)];
+
+  it('misses a swap on a page that is not checked', async () => {
+    const server = rsi(current);
+    const result = await checkHangar(stored, { fetchPage: server.fetchPage, cursor: 0 });
+    expect(result.status).toBe('unchanged');
+    expect(server.requested).not.toContain(4);
+  });
+
+  it('finds it with the id from the pledge log', async () => {
+    const server = rsi(current);
+    const result = await checkHangar(stored, {
+      fetchPage: server.fetchPage,
+      cursor: 0,
+      hintIds: [155],
+    });
+    expect(server.requested).toContain(4);
+    expect(result.status).toBe('updated');
+    if (result.status !== 'updated') return;
+    expect(result.added.map((p) => p.id)).toEqual([155]);
+    expect(result.removed.map((p) => p.id)).toEqual([150]);
+  });
+
+  it('suggests a full sync when the hints name too many pages', async () => {
+    const many = ids(500).map((id) => pledge(id));
+    const server = rsi(many);
+    const hintIds = Array.from({ length: 30 }, (_, index) => (index + 1) * 150);
+    const result = await checkHangar(many, {
+      fetchPage: server.fetchPage,
+      cursor: 0,
+      hintIds,
+      maxRepairPages: 15,
+    });
+    expect(result.status).toBe('needsFullSync');
+  });
+});
+
 describe('spotCheckCoverage', () => {
   it('counts the first, the last and the spot check pages', () => {
     expect(spotCheckCoverage(99, 2)).toEqual({

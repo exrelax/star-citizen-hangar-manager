@@ -276,7 +276,8 @@ describe('order sync', () => {
 
   it('reads everything the first time', async () => {
     const rsi = fakeRsi(6);
-    const snapshot = await (await prepareOrderSync(rsi))();
+    const { snapshot, newLogEntries } = await (await prepareOrderSync(rsi))();
+    expect(newLogEntries).toEqual([]);
     expect(rsi.fetchLogPage).toHaveBeenCalledTimes(3);
     expect(rsi.fetchBillingPage).toHaveBeenCalledTimes(6);
     expect(Object.keys(snapshot.pledgeOrders)).toHaveLength(6);
@@ -289,7 +290,9 @@ describe('order sync', () => {
     )();
     // Three new pledges with three new orders since.
     const rsi = fakeRsi(9);
-    const snapshot = await updateOrders(rsi);
+    const result = await updateOrders(rsi);
+    const snapshot = result?.snapshot;
+    expect(result?.newLogEntries).toHaveLength(3);
     // Page 2 holds the newest entries known from last time (#6, #5).
     expect(rsi.fetchLogPage.mock.calls.map(([page]) => page)).toEqual([1, 2]);
     expect(rsi.fetchBillingPage.mock.calls.map(([page]) => page)).toEqual([1, 2, 3, 4]);
