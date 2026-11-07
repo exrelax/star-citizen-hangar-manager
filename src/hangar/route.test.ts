@@ -116,8 +116,10 @@ describe('manager tabs', () => {
   it('maps tabs to hashes and back', () => {
     expect(hashOfTab('hangar')).toBe('#hangar-manager');
     expect(hashOfTab('buyback')).toBe('#hangar-manager-bb');
+    expect(hashOfTab('store')).toBe('#hangar-manager-store');
     expect(hashOfTab('settings')).toBe('#hangar-manager-settings');
     expect(tabFromHash('#hangar-manager-bb')).toBe('buyback');
+    expect(tabFromHash('#hangar-manager-store')).toBe('store');
     expect(tabFromHash('#other')).toBeUndefined();
   });
 });

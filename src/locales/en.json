@@ -85,6 +85,7 @@
   "tabs": {
     "hangar": "My Hangar",
     "buyback": "Buy Back",
+    "store": "Pledge Store",
     "settings": "Settings"
   },
   "settings": {
@@ -195,6 +196,29 @@
     "addToCart": "Add to cart on RSI and open the cart (new tab). RSI empties the cart for buy back pledges.",
     "cartFailed": "Could not add to the RSI cart: $1",
     "cartNotFound": "Not found at its stored position in RSI’s buy back any more – please sync and try again."
+  },
+  "store": {
+    "warbondTitle": "Current warbond CCUs",
+    "warbondIntro": "Warbond upgrades that RSI's ship upgrade tool currently offers: the ship for less than its standard price, paid with new money. The discount is the same whichever ship you start from – the cheapest CCU starts from the most expensive ship below the warbond price.",
+    "loading": "Reading the current offers from RSI …",
+    "failed": "The offers couldn't be read from RSI: $1",
+    "retry": "Try again",
+    "count": "$1 warbond CCUs",
+    "empty": "RSI currently offers no warbond CCUs.",
+    "warbondEdition": "Warbond Edition",
+    "msrpHint": "Standard price of the ship",
+    "openUpgrade": "Ship upgrade",
+    "openUpgradeHint": "Opens RSI's ship upgrade dialog with the $1 (Warbond Edition) as target",
+    "ownedBadge": "$1 in hangar",
+    "ownedBadgeHint": "CCUs of your hangar in the price range of the cheapest warbond CCUs (details when opened)",
+    "cheapestTitle": "Cheapest warbond CCUs",
+    "ccuPrice": "CCU $1",
+    "fromShips": "from $1 ($2)",
+    "moreShips": "+$1 more",
+    "noBases": "No ship costs less than the warbond price, so there is no CCU to it.",
+    "ownedTitle": "Your CCUs between $1 and $2",
+    "ownedHint": "These CCUs overlap the price range of the warbond CCUs above, so they can't be chained with them.",
+    "ownedNone": "None of your CCUs lie in this price range."
   },
   "upgradeLog": {
     "title": "Applied upgrades",

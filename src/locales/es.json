@@ -85,6 +85,7 @@
   "tabs": {
     "hangar": "My Hangar",
     "buyback": "Buy Back",
+    "store": "Pledge Store",
     "settings": "Ajustes"
   },
   "settings": {
@@ -195,6 +196,29 @@
     "addToCart": "Añadir al carrito de RSI y abrir el carrito (nueva pestaña). RSI vacía el carrito para los pledges del buy back.",
     "cartFailed": "No se ha podido añadir al carrito de RSI: $1",
     "cartNotFound": "Ya no se encuentra en su posición guardada en el buy back de RSI. Sincroniza e inténtalo de nuevo."
+  },
+  "store": {
+    "warbondTitle": "CCU warbond actuales",
+    "warbondIntro": "Las mejoras warbond que ofrece ahora la herramienta de mejoras de naves de RSI: la nave por menos de su precio estándar, pagada con dinero real. El descuento es el mismo desde cualquier nave de partida: el CCU más barato parte de la nave más cara por debajo del precio warbond.",
+    "loading": "Leyendo las ofertas actuales de RSI …",
+    "failed": "No se pudieron leer las ofertas de RSI: $1",
+    "retry": "Reintentar",
+    "count": "$1 CCU warbond",
+    "empty": "RSI no ofrece ahora ningún CCU warbond.",
+    "warbondEdition": "Warbond Edition",
+    "msrpHint": "Precio estándar de la nave",
+    "openUpgrade": "Mejora de nave",
+    "openUpgradeHint": "Abre el diálogo de mejoras de RSI con la $1 (Warbond Edition) como destino",
+    "ownedBadge": "$1 en el hangar",
+    "ownedBadgeHint": "CCU de tu hangar en el rango de precios de los CCU warbond más baratos (detalles al desplegar)",
+    "cheapestTitle": "CCU warbond más baratos",
+    "ccuPrice": "CCU $1",
+    "fromShips": "desde $1 ($2)",
+    "moreShips": "+$1 más",
+    "noBases": "Ninguna nave cuesta menos que el precio warbond, así que no hay CCU hacia ella.",
+    "ownedTitle": "Tus CCU entre $1 y $2",
+    "ownedHint": "Estos CCU se solapan con el rango de precios de los CCU warbond de arriba, así que no se pueden encadenar con ellos.",
+    "ownedNone": "Ninguno de tus CCU está en este rango de precios."
   },
   "upgradeLog": {
     "title": "Mejoras aplicadas",

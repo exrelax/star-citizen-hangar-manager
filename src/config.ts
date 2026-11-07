@@ -138,6 +138,14 @@ export const SMART_UPDATE = {
   statusRefreshMs: 30 * 1000,
 } as const;
 
+/** The "Pledge Store" tab: current warbond CCUs from RSI's ship upgrade tool (see `src/store`). */
+export const PLEDGE_STORE = {
+  /** Price levels of ships to start from shown per warbond: the cheapest CCUs to it. */
+  baseLevels: 3,
+  /** Ship names shown per price level; more are summed up ("+4 more"). */
+  shipsPerLevel: 5,
+} as const;
+
 /**
  * Demo mode (a setting) for screenshots: a fixed selection of the stored pledges with made-up
  * pledge ids (see `src/demo`).
