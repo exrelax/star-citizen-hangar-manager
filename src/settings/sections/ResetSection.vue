@@ -23,8 +23,9 @@ async function resetAllSettings() {
 </script>
 
 <template>
-  <fieldset class="shm-setting">
-    <legend class="shm-label">{{ i18n.t('settings.reset') }}</legend>
+  <!-- A part of "Stored data" (StorageSection.vue), below its table. -->
+  <div class="shm-reset" role="group" aria-labelledby="shm-reset-label">
+    <span id="shm-reset-label" class="shm-field-label">{{ i18n.t('settings.reset') }}</span>
     <ul class="shm-reset-actions">
       <li>
         <!-- Not during a refresh: it would store the pledges again right after. -->
@@ -54,10 +55,16 @@ async function resetAllSettings() {
         </p>
       </li>
     </ul>
-  </fieldset>
+  </div>
 </template>
 
 <style scoped>
+.shm-reset {
+  margin-top: 18px;
+  padding-top: 4px;
+  border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.15);
+}
+
 .shm-reset-actions {
   display: flex;
   flex-direction: column;
