@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { syncState } from '@/hangar/sync-state';
+import RefreshIcon from '@/hangar/components/RefreshIcon.vue';
+import { startStorageSync, syncState } from '@/hangar/sync-state';
+import { upgradeToolState } from '@/ships/sync-upgrade-tool';
 import { i18n, locale } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { clearStorage } from '@/shared/local-cache';
@@ -12,7 +14,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 /*
  * What the extension keeps in this browser, one row per storage (see `storage/registry.ts`):
- * entries, size, last full sync and last check – and a reset of each on its own.
+ * entries, size, last full sync and last check – and, for each on its own, a refresh and a reset.
  */
 
 const rows = LOCAL_COPY.map((definition) => ({
@@ -79,6 +81,12 @@ const view = computed(() =>
 
 const name = (id: StorageId) => i18n.t(`storage.${id}.name`);
 
+/** The three storages of the upgrade tool are read together. */
+const isUpgradeTool = (id: string) => id.startsWith('ships');
+const isReading = (id: StorageId) =>
+  syncState.storage === id ||
+  (isUpgradeTool(id) && (upgradeToolState.loading || isUpgradeTool(syncState.storage ?? '')));
+
 /** The storage reset last, shown below the table until the next reset. */
 const resetDone = ref<StorageId>();
 
@@ -135,16 +143,28 @@ async function reset(definition: StorageDefinition) {
               >
             </td>
             <td class="is-action">
-              <!-- Not during a refresh: it would store the data again right after. -->
-              <button
-                v-tooltip="i18n.t('storage.resetOne', [name(row.definition.id)])"
-                type="button"
-                class="shm-button is-danger is-icon"
-                :disabled="row.empty || syncState.running"
-                @click="reset(row.definition)"
-              >
-                <SvgIcon name="trash" />
-              </button>
+              <span class="shm-storage-actions">
+                <button
+                  v-tooltip="i18n.t('storage.refreshOne', [name(row.definition.id)])"
+                  type="button"
+                  class="shm-button is-icon"
+                  :disabled="syncState.running || upgradeToolState.loading"
+                  :aria-busy="isReading(row.definition.id)"
+                  @click="startStorageSync(row.definition.id)"
+                >
+                  <RefreshIcon :spinning="isReading(row.definition.id)" />
+                </button>
+                <!-- Not during a refresh: it would store the data again right after. -->
+                <button
+                  v-tooltip="i18n.t('storage.resetOne', [name(row.definition.id)])"
+                  type="button"
+                  class="shm-button is-danger is-icon"
+                  :disabled="row.empty || syncState.running"
+                  @click="reset(row.definition)"
+                >
+                  <SvgIcon name="trash" />
+                </button>
+              </span>
             </td>
           </tr>
         </tbody>
@@ -200,6 +220,11 @@ async function reset(definition: StorageDefinition) {
   width: 1%;
   padding-right: 0;
   vertical-align: middle;
+}
+
+.shm-storage-actions {
+  display: inline-flex;
+  gap: 6px;
 }
 
 .shm-storage-table .is-failed {

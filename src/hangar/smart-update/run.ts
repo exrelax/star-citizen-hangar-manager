@@ -36,15 +36,15 @@ export async function runSmartUpdate(deps: SmartUpdateDeps = {}): Promise<CheckO
   if (snapshot?.version !== HANGAR_SNAPSHOT_VERSION) return null;
   const meta = await hangarMeta.getValue();
 
-  const saveOutcome = (outcome: Omit<CheckOutcome, 'at'>, cursor = meta.cursor ?? 0) =>
-    recordCheck(hangarMeta, outcome, { at: now(), cursor });
-
   const result = await checkHangar(snapshot.pledges, {
     fetchPage: (page) => fetchPage(page),
     cursor: meta.cursor ?? 0,
     spotCheckPages,
     hintIds,
   });
+  // With the pages read by the check, for the status line.
+  const saveOutcome = (outcome: Omit<CheckOutcome, 'at'>, cursor = meta.cursor ?? 0) =>
+    recordCheck(hangarMeta, { ...outcome, pages: result.requests }, { at: now(), cursor });
   const none = { added: 0, removed: 0, changed: 0 };
   if (result.status !== 'updated') {
     return saveOutcome({ status: result.status, ...none }, result.nextCursor);

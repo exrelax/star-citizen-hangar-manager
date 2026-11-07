@@ -19,6 +19,7 @@
     "searchPlaceholder": "Search titles, ships, pledge and order IDs …",
     "noResults": "No pledges match your search.",
     "syncProgress": "Reading RSI pages: $1 of $2 ($3)",
+    "syncProgressSection": "Reading $1: page $2 of $3 ($4 of everything)",
     "demoBadge": "Demo",
     "demoBadgeHint": "Demo mode: a selection of your pledges with made-up pledge IDs. Turn it off in the settings.",
     "clearSearch": "Clear search"
@@ -196,6 +197,7 @@
     "colSynced": "Last full read",
     "colChecked": "Last check",
     "colReset": "Delete",
+    "refreshOne": "Read “$1” again from RSI",
     "resetOne": "Delete “$1” in this browser",
     "resetConfirm": "Delete “$1” stored in this browser?\n\n$2\n\n$3",
     "readAgainRefresh": "The next refresh reads it again from RSI. Your hangar on RSI's website stays as it is.",
@@ -247,7 +249,15 @@
     "needsFullSync": "Too many changes for a quick update.",
     "fullSyncOld": "Last full refresh $1.",
     "lastFullSync": "Last full refresh $1",
-    "fullRefresh": "Full refresh"
+    "fullRefresh": "Full refresh",
+    "refreshingSection": "Refreshing $1: page $2 of $3 …",
+    "stepsTitle": "Last check",
+    "stepUnchanged": "no changes",
+    "stepUpdated": "$1 new, $2 removed, $3 changed",
+    "stepNewLogEntries": "$1 new log entries",
+    "stepFailed": "failed",
+    "stepNeedsFullSync": "too many changes",
+    "stepPages": "$1 pages read"
   },
   "ccugame": {
     "openInManager": "Open in Hangar Manager (#$1)",

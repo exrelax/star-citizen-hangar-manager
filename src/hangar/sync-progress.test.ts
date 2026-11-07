@@ -36,3 +36,21 @@ describe('SyncProgressTracker', () => {
     expect(tracker.progress).toMatchObject({ done: 8, total: 8 });
   });
 });
+
+describe('SyncProgressTracker sections', () => {
+  it('counts the pages of each storage and names the one read last', () => {
+    const tracker = new SyncProgressTracker();
+    const hangar = tracker.section('hangar');
+    const buyback = tracker.section('buyback');
+    hangar.expect(10, 10);
+    buyback.expect(4, 4);
+    hangar.complete(3, 3);
+    expect(tracker.progress).toMatchObject({
+      done: 3,
+      total: 14,
+      section: { id: 'hangar', done: 3, total: 10 },
+    });
+    buyback.complete(1, 1);
+    expect(tracker.progress.section).toEqual({ id: 'buyback', done: 1, total: 4 });
+  });
+});

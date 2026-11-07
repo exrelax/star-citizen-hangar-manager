@@ -92,7 +92,8 @@ Each check works in three steps:
 Smart updates and refreshes run in the background. While they read RSI's pages you can search,
 filter, open pledges and switch tabs as usual; the list updates itself when new data arrives. A
 status line tells you what happened ("Up to date · checked 2 min ago", "Updated 1 min ago: 1 new,
-0 removed, 0 changed").
+0 removed, 0 changed"); its tooltip lists the steps of the last check – pledge log, buy back,
+hangar – with the pages each read and what it found.
 
 ### Fast with thousands of pledges
 
@@ -395,7 +396,8 @@ the initial load; the count line says when they were updated. For each warbond s
   `src/config.ts`). The extension never reads the hangar on its own; after the click the refresh
   button shows the progress and the lists appear when it is done.
 - **Refresh** reads hangar, buy back and orders from RSI. Large hangars take a moment; a progress
-  bar shows pages and percentage, weighted by how long each kind of page takes.
+  bar shows pages and percentage, weighted by how long each kind of page takes, and the status line
+  which part is being read ("Refreshing Buy Back: page 3 of 16 …").
 - **Smart updates** (on by default): check a few RSI pages for changes and update the list
   without a full refresh – see [Built for speed](#built-for-speed).
 - Requests are gentle on RSI's servers – see [Gentle on RSI](#gentle-on-rsi).
@@ -442,7 +444,9 @@ In the order of the settings tab:
 - **Show links for ships**: erkul.games and FleetYards.net, each on or off.
 - **Stored data**: a table of everything the extension keeps in this browser – My Hangar, Buy
   Back, order history, ships, ships on sale and warbond offers – with the number of entries, the
-  size, the last full read and the last check. Each can be deleted on its own; the confirmation
+  size, the last full read and the last check. Each can be read again from RSI on its own (the
+  refresh icon; ships, ships on sale and warbond offers are one read) and deleted on its own; the
+  confirmation
   says what is missing until it is read again (by the next refresh, or on its own for the small
   data of the upgrade tool). Not possible during a refresh.
 - **Reset**, each after a confirmation:

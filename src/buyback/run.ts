@@ -49,7 +49,11 @@ export async function runBuybackSmartUpdate(
   });
 
   const save = (outcome: Omit<CheckOutcome, 'at'>) =>
-    recordCheck(buybackMeta, outcome, { at: now(), cursor: result.nextCursor });
+    recordCheck(
+      buybackMeta,
+      { ...outcome, pages: result.requests },
+      { at: now(), cursor: result.nextCursor },
+    );
   if (result.status !== 'updated') {
     // No changes to the pledges, but the tokens may have changed (e.g. by a buy back elsewhere).
     if (tokens !== snapshot.tokens && (await unchangedSince(snapshot))) {

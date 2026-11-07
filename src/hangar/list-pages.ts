@@ -2,7 +2,7 @@ import { SYNC_CONCURRENCY } from '@/config';
 import { mapWithConcurrency } from '@/shared/lib/pool';
 import { PLEDGE_CATEGORIES, type PledgeCategory } from './pledge';
 import type { ListEntry, ListPage } from './smart-update/check';
-import { listPageWork, type SyncProgressTracker } from './sync-progress';
+import { listPageWork, type ProgressSink } from './sync-progress';
 
 /** All pages of RSI's full list (`undefined`) or of one of its category lists. */
 export type ListPagesOf<T extends ListEntry> = (category?: PledgeCategory) => ListPage<T>[];
@@ -11,7 +11,7 @@ export interface ListPagesOptions<T extends ListEntry> {
   fetchPage: (page: number, category?: PledgeCategory) => Promise<ListPage<T>>;
   /** Entries per full page, to estimate the work of the pages not read yet. */
   pageSize: number;
-  progress?: SyncProgressTracker;
+  progress?: ProgressSink;
   concurrency?: number;
 }
 

@@ -3,6 +3,7 @@ import { runBuybackSmartUpdate } from '@/buyback/run';
 import { prepareBuybackSync } from '@/buyback/sync-buyback';
 import { settingsItem, withDefaults } from '@/settings/settings';
 import { maybeRefreshUpgradeTool, refreshUpgradeTool } from '@/ships/sync-upgrade-tool';
+import type { StorageId } from '@/storage/registry';
 import { reactive, readonly } from 'vue';
 import { recordCheck, recordSync, type CheckOutcome, type MetaItem } from '@/storage/meta';
 import { hangarMeta } from './hangar-storage';
@@ -13,8 +14,10 @@ import { prepareHangarSync } from './sync';
 import { SyncProgressTracker, type SyncProgress } from './sync-progress';
 
 const state = reactive({
-  /** A full sync is running. */
+  /** A full sync is running (of everything, or of `storage`). */
   running: false,
+  /** The storage a sync of a single storage reads (see `startStorageSync`); unset for all. */
+  storage: undefined as StorageId | undefined,
   progress: null as SyncProgress | null,
   /** A smart update check is running. */
   checking: false,
@@ -42,10 +45,10 @@ export async function startSync(): Promise<void> {
     // Reported only once both totals are known; the detail pages of the buy back join later.
     const progress = new SyncProgressTracker();
     const [runHangar, runBuyback, runOrders] = await Promise.all([
-      prepareHangarSync({ progress }),
-      prepareBuybackSync({ progress }),
+      prepareHangarSync({ progress: progress.section('hangar') }),
+      prepareBuybackSync({ progress: progress.section('buyback') }),
       // An extra as well: without the orders, hangar and buy back are still stored.
-      prepareOrderSync({ progress }).catch((error: unknown) => {
+      prepareOrderSync({ progress: progress.section('orders') }).catch((error: unknown) => {
         console.warn('[star-citizen-hangar-manager] Orders unavailable', error);
         return null;
       }),
@@ -75,6 +78,45 @@ export async function startSync(): Promise<void> {
     console.error('[star-citizen-hangar-manager] Sync failed', error);
   } finally {
     state.running = false;
+    state.progress = null;
+  }
+}
+
+/**
+ * Reads a single storage again completely (from the settings): the hangar, the buy back, the
+ * whole order history, or the data of the upgrade tool (ships, ships on sale and warbond offers
+ * are one read). Not while another sync runs.
+ */
+export async function startStorageSync(id: StorageId): Promise<void> {
+  if (state.running || id === 'settings') return;
+  state.running = true;
+  state.storage = id;
+  state.progress = null;
+  try {
+    const progress = new SyncProgressTracker((value) => (state.progress = value));
+    const section = progress.section(id);
+    if (id === 'hangar' || id === 'buyback') {
+      const run = await (id === 'hangar' ? prepareHangarSync : prepareBuybackSync)({
+        progress: section,
+      });
+      progress.start();
+      await run();
+      await recordSync(id === 'hangar' ? hangarMeta : buybackMeta);
+    } else if (id === 'orders') {
+      const run = await prepareOrderSync({ progress: section, full: true });
+      progress.start();
+      await run();
+    } else {
+      section.expect(1, 1);
+      progress.start();
+      await refreshUpgradeTool();
+      section.complete(1, 1);
+    }
+  } catch (error) {
+    console.error(`[star-citizen-hangar-manager] Reading ${id} failed`, error);
+  } finally {
+    state.running = false;
+    state.storage = undefined;
     state.progress = null;
   }
 }
