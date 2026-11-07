@@ -5,6 +5,7 @@ import { i18n } from '@/i18n';
 import { computed } from 'vue';
 import type { ShipRef } from '../pledge-view';
 import { erkulUrl, fleetyardsUrl } from '../ship-links';
+import { vTooltip } from '@/shared/tooltip/tooltip';
 
 const props = defineProps<{ ships: readonly ShipRef[] }>();
 
@@ -24,21 +25,21 @@ const linked = computed(() => props.ships.filter((ship) => ship.link));
       <span v-if="linked.length > 1" class="shm-external-ship-name">{{ ship.name }}</span>
       <a
         v-if="ship.link!.erkul"
+        v-tooltip="i18n.t('pledge.openOn', [ship.name, 'erkul.games'])"
         class="shm-button shm-link-button is-erkul"
         :href="erkulUrl(ship.link!.erkul)"
         target="_blank"
         rel="noopener noreferrer"
-        :title="i18n.t('pledge.openOn', [ship.name, 'erkul.games'])"
         @click.stop
       >
         <img :src="erkulIcon" alt="" width="14" height="14" />erkul.games
       </a>
       <a
+        v-tooltip="i18n.t('pledge.openOn', [ship.name, 'FleetYards.net'])"
         class="shm-button shm-link-button is-fleetyards"
         :href="fleetyardsUrl(ship.link!.fleetyards)"
         target="_blank"
         rel="noopener noreferrer"
-        :title="i18n.t('pledge.openOn', [ship.name, 'FleetYards.net'])"
         @click.stop
       >
         <img :src="fleetyardsIcon" alt="" width="14" height="14" />FleetYards.net

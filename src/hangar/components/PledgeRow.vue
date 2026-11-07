@@ -16,6 +16,7 @@ import ExternalLinks from './ExternalLinks.vue';
 import GiftOverlay from './GiftOverlay.vue';
 import ProtectedBadge from './ProtectedBadge.vue';
 import UpgradeLog from './UpgradeLog.vue';
+import { vTooltip } from '@/shared/tooltip/tooltip';
 
 const props = defineProps<{
   pledge: PledgeView;
@@ -114,9 +115,9 @@ const toggle = () => {
           <span class="shm-value">{{ pledge.value }}</span>
           <span
             v-if="discount"
+            v-tooltip="discount.title"
             class="shm-discount"
             :class="{ 'is-surcharge': discount.isSurcharge }"
-            :title="discount.title"
           >
             {{ discount.text }}
           </span>
@@ -132,9 +133,9 @@ const toggle = () => {
         />
         <span
           v-if="refund"
+          v-tooltip="i18n.t('refund.hint', [pledge.order!.placedAt!, REFUND_DAYS, refund.until])"
           class="shm-badge is-refund"
           :class="{ 'is-urgent': refund.daysLeft < REFUND_URGENT_DAYS }"
-          :title="i18n.t('refund.hint', [pledge.order!.placedAt!, REFUND_DAYS, refund.until])"
         >
           {{
             refund.daysLeft === 0
@@ -144,9 +145,9 @@ const toggle = () => {
         </span>
         <span
           v-if="pledge.insurance"
+          v-tooltip="i18n.t('insurance.badgeTitle')"
           class="shm-badge"
           :class="{ 'is-lti': pledge.insurance.lifetime }"
-          :title="i18n.t('insurance.badgeTitle')"
         >
           {{ insuranceLabel(pledge.insurance) }}
         </span>
@@ -154,27 +155,27 @@ const toggle = () => {
           {{ i18n.t('pledge.upgraded') }}
         </span>
         <span
+          v-tooltip="i18n.t(pledge.isGiftable ? 'pledge.giftable' : 'pledge.notGiftable')"
           class="shm-badge"
           :class="{ 'is-off': !pledge.isGiftable }"
-          :title="i18n.t(pledge.isGiftable ? 'pledge.giftable' : 'pledge.notGiftable')"
         >
           Gift
         </span>
         <span
+          v-tooltip="i18n.t(pledge.isMeltable ? 'pledge.meltable' : 'pledge.notMeltable')"
           class="shm-badge"
           :class="{ 'is-off': !pledge.isMeltable }"
-          :title="i18n.t(pledge.isMeltable ? 'pledge.meltable' : 'pledge.notMeltable')"
         >
           Melt
         </span>
       </span>
 
       <button
+        v-tooltip="i18n.t('pledge.toggleDetails')"
         type="button"
         class="shm-chevron"
         :aria-expanded="expanded"
         :aria-label="i18n.t('pledge.toggleDetails')"
-        :title="i18n.t('pledge.toggleDetails')"
         @click.stop="toggle"
       >
         <SvgIcon name="chevron-right" />
@@ -195,10 +196,10 @@ const toggle = () => {
         <!-- Disabled in the demo: its pledge id is made up. -->
         <button
           v-if="pledge.isMeltable"
+          v-tooltip="demo ? i18n.t('exchange.demo') : i18n.t('exchange.buttonHint')"
           type="button"
           class="shm-button shm-origin-button shm-exchange-button is-danger"
           :disabled="!!demo"
-          :title="demo ? i18n.t('exchange.demo') : i18n.t('exchange.buttonHint')"
           @click="exchanging = true"
         >
           <SvgIcon name="triangle-exclamation" />
@@ -207,10 +208,10 @@ const toggle = () => {
         <ExchangeOverlay v-if="exchanging" :pledge="pledge" @close="exchanging = false" />
         <button
           v-if="pledge.isGiftable"
+          v-tooltip="demo ? i18n.t('gift.demo') : i18n.t('gift.buttonHint')"
           type="button"
           class="shm-button shm-origin-button shm-gift-button"
           :disabled="!!demo"
-          :title="demo ? i18n.t('gift.demo') : i18n.t('gift.buttonHint')"
           @click="gifting = true"
         >
           <SvgIcon name="gift" />
@@ -246,11 +247,11 @@ const toggle = () => {
         <!-- Every pledge with the game, protected or not: below the upgrades, above the links. -->
         <a
           v-if="pledge.hasGameAccess || pledge.protectedGames.length"
+          v-tooltip="i18n.t('pledge.gamesLibraryHint')"
           class="shm-games-library"
           :href="RSI_GAMES_LIBRARY_URL"
           target="_blank"
           rel="noopener noreferrer"
-          :title="i18n.t('pledge.gamesLibraryHint')"
         >
           {{ i18n.t('pledge.gamesLibrary') }}<SvgIcon name="square-up-right" />
         </a>

@@ -14,6 +14,7 @@ import type { BuybackView } from '../buyback-view';
 import { addBuybackToCart, CartError, RSI_CART_PATH } from '../cart';
 import { giftableHint } from '../giftable-hint';
 import { GIFTING_FAQ_URL } from '@/config';
+import { vTooltip } from '@/shared/tooltip/tooltip';
 
 const props = defineProps<{
   pledge: BuybackView;
@@ -129,23 +130,27 @@ const kind = computed(() =>
       <span class="shm-badges">
         <span
           v-if="pledge.insurance"
+          v-tooltip="i18n.t('insurance.badgeTitle')"
           class="shm-badge"
           :class="{ 'is-lti': pledge.insurance.lifetime }"
-          :title="i18n.t('insurance.badgeTitle')"
         >
           {{ insuranceLabel(pledge.insurance) }}
         </span>
-        <span v-if="pledge.isProbablyGiftable" class="shm-badge is-giftable" :title="giftableHint">
+        <span
+          v-if="pledge.isProbablyGiftable"
+          v-tooltip="giftableHint"
+          class="shm-badge is-giftable"
+        >
           {{ i18n.t('filter.probablyGiftable') }}
         </span>
       </span>
 
       <button
+        v-tooltip="i18n.t('pledge.toggleDetails')"
         type="button"
         class="shm-chevron"
         :aria-expanded="expanded"
         :aria-label="i18n.t('pledge.toggleDetails')"
-        :title="i18n.t('pledge.toggleDetails')"
         @click.stop="toggle"
       >
         <SvgIcon name="chevron-right" />
@@ -164,11 +169,11 @@ const kind = computed(() =>
           {{ buybackLink.text }}
         </a>
         <button
+          v-tooltip="i18n.t('buyback.addToCart')"
           type="button"
           class="shm-button shm-origin-button shm-cart-button"
           :class="{ 'is-busy': addingToCart }"
           :disabled="addingToCart"
-          :title="i18n.t('buyback.addToCart')"
           @click="addToCart"
         >
           <SvgIcon name="basket-shopping" />

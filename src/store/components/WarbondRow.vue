@@ -4,6 +4,7 @@ import SvgIcon from '@/icons/SvgIcon.vue';
 import { i18n, locale } from '@/i18n';
 import { computed, ref } from 'vue';
 import { ownedCounts, type WarbondOffer } from '../warbond';
+import { vTooltip } from '@/shared/tooltip/tooltip';
 
 const props = defineProps<{ offer: WarbondOffer }>();
 
@@ -56,7 +57,7 @@ const count = (value: number) => (value ? String(value) : '–');
         <span class="shm-original">{{ i18n.t('store.warbondEdition') }}</span>
         <span class="shm-meta">
           <span class="shm-warbond-price">{{ usd(offer.target.price) }}</span>
-          <s class="shm-warbond-msrp" :title="i18n.t('store.msrpHint')">
+          <s v-tooltip="i18n.t('store.msrpHint')" class="shm-warbond-msrp">
             {{ usd(offer.target.ship.msrp) }}
           </s>
           <span class="shm-discount">{{ discountText }}</span>
@@ -68,15 +69,15 @@ const count = (value: number) => (value ? String(value) : '–');
         <span class="shm-warbond-badges-label">{{ i18n.t('store.inHangar') }}</span>
         <span
           v-if="counts.sameShip"
+          v-tooltip="i18n.t('store.sameShipBadgeHint', [offer.target.ship.name])"
           class="shm-badge shm-warbond-owned"
-          :title="i18n.t('store.sameShipBadgeHint', [offer.target.ship.name])"
         >
           {{ i18n.t('store.sameShipBadge', [counts.sameShip, offer.target.ship.name]) }}
         </span>
         <span
           v-if="counts.others"
+          v-tooltip="i18n.t('store.collidingBadgeHint')"
           class="shm-badge shm-warbond-owned"
-          :title="i18n.t('store.collidingBadgeHint')"
         >
           {{ i18n.t('store.collidingBadge', [counts.others]) }}
         </span>
@@ -84,12 +85,12 @@ const count = (value: number) => (value ? String(value) : '–');
 
       <!-- RSI's own opener (a click handler on the page): its overlay, with this warbond as target. -->
       <a
+        v-tooltip="i18n.t('store.openUpgradeHint', [offer.target.ship.name])"
         href="#"
         class="shm-button shm-warbond-upgrade js-open-ship-upgrades"
         data-apiurl="/pledge-store/api/upgrade/v2"
         :data-toshipid="offer.target.ship.id"
         :data-toskuid="offer.target.skuId"
-        :title="i18n.t('store.openUpgradeHint', [offer.target.ship.name])"
         @click.prevent
       >
         <SvgIcon name="basket-shopping" />
@@ -97,11 +98,11 @@ const count = (value: number) => (value ? String(value) : '–');
       </a>
 
       <button
+        v-tooltip="i18n.t('pledge.toggleDetails')"
         type="button"
         class="shm-chevron"
         :aria-expanded="expanded"
         :aria-label="i18n.t('pledge.toggleDetails')"
-        :title="i18n.t('pledge.toggleDetails')"
         @click.stop="expanded = !expanded"
       >
         <SvgIcon name="chevron-right" />
@@ -178,9 +179,9 @@ const count = (value: number) => (value ? String(value) : '–');
               <td class="is-number shm-value">
                 <span
                   v-if="ccu.shown"
+                  v-tooltip="ccu.shown.title"
                   class="shm-discount"
                   :class="{ 'is-surcharge': ccu.shown.isSurcharge }"
-                  :title="ccu.shown.title"
                 >
                   {{ ccu.shown.text }}
                 </span>

@@ -15,6 +15,7 @@ import {
 import { REFUND_URGENT_DAYS } from '@/config';
 import { refundRequestUrl, refundWindow, today } from './refund';
 import { fetchOrderDetails } from './sync-orders';
+import { vTooltip } from '@/shared/tooltip/tooltip';
 
 /** `refundable`: offer a refund request while the refund period lasts (see OrderInfo.vue). */
 const props = defineProps<{ order: Order; refundable?: boolean }>();
@@ -120,9 +121,9 @@ function openInvoice() {
         <header class="shm-overlay-header">
           <h3>{{ i18n.t('order.title', [titleId]) }}</h3>
           <button
+            v-tooltip="i18n.t('order.close')"
             type="button"
             class="shm-overlay-close"
-            :title="i18n.t('order.close')"
             :aria-label="i18n.t('order.close')"
             @click="emit('close')"
           >
@@ -153,29 +154,29 @@ function openInvoice() {
               <!-- Disabled in the demo: its order id is made up. -->
               <button
                 v-if="refund && demo"
+                v-tooltip="i18n.t('refund.requestDemo')"
                 type="button"
                 class="shm-button"
                 disabled
-                :title="i18n.t('refund.requestDemo')"
               >
                 {{ i18n.t('refund.request') }}
               </button>
               <a
                 v-else-if="refund"
+                v-tooltip="i18n.t('refund.requestHint', [titleId])"
                 class="shm-button"
                 :href="refundRequestUrl(order.id)"
                 target="_blank"
                 rel="noopener"
-                :title="i18n.t('refund.requestHint', [titleId])"
               >
                 {{ i18n.t('refund.request') }}
               </a>
               <!-- Disabled in the demo: RSI's invoice shows the real order. -->
               <button
+                v-tooltip="demo ? i18n.t('order.invoiceDemo') : undefined"
                 type="button"
                 class="shm-button"
                 :disabled="!!demo"
-                :title="demo ? i18n.t('order.invoiceDemo') : undefined"
                 @click="openInvoice"
               >
                 {{ i18n.t('order.invoice') }}

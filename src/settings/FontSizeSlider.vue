@@ -2,6 +2,7 @@
 import { i18n } from '@/i18n';
 import { computed, ref, useTemplateRef } from 'vue';
 import { FONT_SIZES, type FontSize } from './settings';
+import { vTooltip } from '@/shared/tooltip/tooltip';
 
 /*
  * The font size setting as a slider: a stop per size on a track, each with an "A" in its size
@@ -88,9 +89,9 @@ function stopDrag() {
     <label
       v-for="size in FONT_SIZES"
       :key="size"
+      v-tooltip="i18n.t(`settings.fontSizeOptions.${size}`)"
       class="shm-font-size-stop"
       :class="{ 'is-selected': shownSize === size }"
-      :title="i18n.t(`settings.fontSizeOptions.${size}`)"
     >
       <span class="shm-font-size-letter" :class="`is-${size}`" aria-hidden="true">A</span>
       <input

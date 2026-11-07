@@ -10,6 +10,7 @@ import type { PledgeView } from '../pledge-view';
 import { useRsiText } from '../rsi-text';
 import { maybeRunSmartUpdate } from '../sync-state';
 import PledgeActionSummary from './PledgeActionSummary.vue';
+import { vTooltip } from '@/shared/tooltip/tooltip';
 
 /*
  * RSI's "Gift your pledge" dialog of "My Gear" with its texts, password and recipient, plus the
@@ -110,9 +111,9 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
         <header class="shm-overlay-header">
           <h3>{{ i18n.t('gift.title') }}</h3>
           <button
+            v-tooltip="i18n.t('order.close')"
             type="button"
             class="shm-overlay-close"
-            :title="i18n.t('order.close')"
             :aria-label="i18n.t('order.close')"
             :disabled="submitting"
             @click="close"

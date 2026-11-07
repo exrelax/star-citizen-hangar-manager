@@ -17,6 +17,7 @@ import type { PledgeView } from '../pledge-view';
 import { useRsiText } from '../rsi-text';
 import PledgeActionSummary from './PledgeActionSummary.vue';
 import { maybeRunSmartUpdate } from '../sync-state';
+import { vTooltip } from '@/shared/tooltip/tooltip';
 
 /*
  * RSI's "Exchange pledge" dialog of "My Gear" with its texts, acknowledgements and password, plus
@@ -175,9 +176,9 @@ onUnmounted(() => {
         <header class="shm-overlay-header">
           <h3>{{ i18n.t('exchange.title') }}</h3>
           <button
+            v-tooltip="i18n.t('order.close')"
             type="button"
             class="shm-overlay-close"
-            :title="i18n.t('order.close')"
             :aria-label="i18n.t('order.close')"
             :disabled="submitting"
             @click="close"
