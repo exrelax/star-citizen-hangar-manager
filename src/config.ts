@@ -16,6 +16,14 @@ import type { FilterGroups, PledgeFilter } from '@/hangar/filters';
  */
 export const AUTO_LANGUAGE_SOURCE: 'ui' | 'preferred' = 'preferred';
 
+/**
+ * Features that can be switched on or off before they are settled (not settings: for testing).
+ */
+export const FEATURES = {
+  /** The active tab's highlight slides over to the tab clicked (see `TabBar.vue`). */
+  tabSlideAnimation: true,
+} as const;
+
 /** RSI's hangar page, which hosts the manager (the popup's links add the tab's hash). */
 export const RSI_HANGAR_URL = 'https://robertsspaceindustries.com/en/account/pledges';
 
