@@ -11,6 +11,11 @@ import {
   warbondsMeta,
 } from '@/ships/ships-storage';
 import type { MetaItem } from './meta';
+import {
+  storeItemsItem,
+  storeItemsMeta,
+  type StoreItemsSnapshot,
+} from '@/store/items/store-items-storage';
 import type { BuybackSnapshot } from '@/buyback/buyback';
 import type { HangarSnapshot } from '@/hangar/pledge';
 import type { OrdersSnapshot } from '@/orders/orders';
@@ -35,7 +40,14 @@ interface StorageItem {
 }
 
 export type StorageId =
-  'hangar' | 'buyback' | 'orders' | 'ships' | 'shipsBuyable' | 'shipsWarbonds' | 'settings';
+  | 'hangar'
+  | 'buyback'
+  | 'orders'
+  | 'ships'
+  | 'shipsBuyable'
+  | 'shipsWarbonds'
+  | 'storeItems'
+  | 'settings';
 
 export interface StorageDefinition {
   /** Short name; also the key of its texts in the settings (`storage.<id>…`). */
@@ -141,6 +153,17 @@ export const STORAGES: readonly StorageDefinition[] = [
     readAgain: 'auto',
     // The Pledge Store offers of earlier versions (another format).
     obsoleteKeys: ['local:store.snapshot'],
+  },
+  {
+    id: 'storeItems',
+    meta: storeItemsMeta,
+    item: storeItemsItem,
+    content: 'Items of the Pledge Store: name, category, price, image, link, warbond, in stock',
+    source: 'Search of the Pledge Store of RSI (/graphql)',
+    usedBy: [],
+    kind: 'data',
+    count: (value: StoreItemsSnapshot | null) => value?.items.length ?? 0,
+    readAgain: 'auto',
   },
   {
     id: 'settings',

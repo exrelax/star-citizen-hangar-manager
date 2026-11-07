@@ -234,6 +234,11 @@
       "content": "Ships currently offered as warbond edition",
       "missing": "Until then the Pledge Store shows no offers."
     },
+    "storeItems": {
+      "name": "Pledge Store items",
+      "content": "Ships, gear, packs, paints and more with category, price, image and link",
+      "missing": "Nothing uses them yet."
+    },
     "settings": {
       "name": "Settings",
       "content": "Language, theme, display and privacy options, filters, sorting",

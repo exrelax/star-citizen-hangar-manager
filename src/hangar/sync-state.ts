@@ -3,6 +3,7 @@ import { runBuybackSmartUpdate } from '@/buyback/run';
 import { prepareBuybackSync } from '@/buyback/sync-buyback';
 import { settingsItem, withDefaults } from '@/settings/settings';
 import { maybeRefreshUpgradeTool, refreshUpgradeTool } from '@/ships/sync-upgrade-tool';
+import { maybeRefreshStoreItems, refreshStoreItems } from '@/store/items/sync-store-items';
 import type { StorageId } from '@/storage/registry';
 import { reactive, readonly } from 'vue';
 import { recordCheck, recordSync, type CheckOutcome, type MetaItem } from '@/storage/meta';
@@ -40,8 +41,9 @@ export async function startSync(): Promise<void> {
   state.progress = null;
   const startedAt = performance.now();
   try {
-    // Small and optional: load alongside, a failure keeps the stored ships and offers.
+    // Small and optional: load alongside, a failure keeps the stored ships, offers and items.
     const upgradeTool = refreshUpgradeTool();
+    const storeItems = refreshStoreItems();
     // Reported only once both totals are known; the detail pages of the buy back join later.
     const progress = new SyncProgressTracker();
     const [runHangar, runBuyback, runOrders] = await Promise.all([
@@ -66,6 +68,7 @@ export async function startSync(): Promise<void> {
       return null;
     });
     await upgradeTool;
+    await storeItems;
 
     const seconds = ((performance.now() - startedAt) / 1000).toFixed(1);
     console.info(
@@ -109,7 +112,7 @@ export async function startStorageSync(id: StorageId): Promise<void> {
     } else {
       section.expect(1, 1);
       progress.start();
-      await refreshUpgradeTool();
+      await (id === 'storeItems' ? refreshStoreItems() : refreshUpgradeTool());
       section.complete(1, 1);
     }
   } catch (error) {
@@ -135,6 +138,8 @@ export async function maybeRunSmartUpdate({ force = false } = {}): Promise<void>
     // Ships, ships on sale and warbond offers: on their own interval (see the settings), once a
     // day with smart updates off.
     await maybeRefreshUpgradeTool();
+    // The items of the Pledge Store: a few times a day.
+    await maybeRefreshStoreItems();
     const settings = withDefaults(await settingsItem.getValue());
     if (!settings.smartUpdates) return;
     const { checkedAt } = await hangarMeta.getValue();

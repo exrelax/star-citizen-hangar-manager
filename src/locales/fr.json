@@ -234,6 +234,11 @@
       "content": "Vaisseaux actuellement proposés en édition warbond",
       "missing": "D’ici là, le Pledge Store n’affiche aucune offre."
     },
+    "storeItems": {
+      "name": "Articles du Pledge Store",
+      "content": "Vaisseaux, équipement, packs, peintures et plus avec catégorie, prix, image et lien",
+      "missing": "Rien ne les utilise encore."
+    },
     "settings": {
       "name": "Paramètres",
       "content": "Langue, thème, options d’affichage et de confidentialité, filtres, tri",
