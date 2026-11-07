@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { BuybackView } from '@/buyback/buyback-view';
 import type { PledgeView } from '@/hangar/pledge-view';
 import { i18n } from '@/i18n';
 import type { Settings } from '@/settings/settings';
@@ -9,13 +10,15 @@ import WarbondRow from './WarbondRow.vue';
 
 /*
  * The "Pledge Store" tab: the warbond CCUs RSI currently offers, each with the cheapest ships to
- * start from and the hangar's CCUs in the same price range. The offers are read from RSI when the
+ * start from and the hangar's CCUs that can't be chained with it. The offers are read from RSI when the
  * tab is first opened.
  */
 
 const props = defineProps<{
   /** The hangar's pledges (in the demo mode the demo selection), for the CCUs it already has. */
   pledges: PledgeView[];
+  /** The buy back's pledges (in the demo mode the demo selection), for the ships it has. */
+  buyback: BuybackView[];
   settings: Settings;
   active: boolean;
 }>();
@@ -29,7 +32,9 @@ watch(
   { immediate: true },
 );
 
-const offers = computed(() => (data.value ? buildWarbondOffers(data.value, props.pledges) : []));
+const offers = computed(() =>
+  data.value ? buildWarbondOffers(data.value, props.pledges, props.buyback) : [],
+);
 
 const displayClasses = computed(() => ({
   'shm-hide-ids': props.settings.hidePledgeIds,
@@ -51,7 +56,10 @@ const displayClasses = computed(() => ({
     </div>
     <template v-else-if="data">
       <p class="shm-count">{{ i18n.t('store.count', [offers.length]) }}</p>
-      <WarbondRow v-for="offer in offers" :key="offer.target.skuId" :offer="offer" />
+      <!-- The container of the manager's lists: their gaps and compact view (row.css, modern.css). -->
+      <div v-if="offers.length" class="shm-rows">
+        <WarbondRow v-for="offer in offers" :key="offer.target.skuId" :offer="offer" />
+      </div>
       <p v-if="!offers.length" class="shm-store-state">{{ i18n.t('store.empty') }}</p>
     </template>
   </section>

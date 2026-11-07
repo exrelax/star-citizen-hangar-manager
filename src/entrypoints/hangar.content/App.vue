@@ -187,6 +187,7 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
     <StoreTab
       v-if="listsReady"
       :pledges="pledges"
+      :buyback="buybackPledges"
       :settings="settings"
       :active="activeTab === 'store'"
     />
