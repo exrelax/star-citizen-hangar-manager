@@ -452,11 +452,11 @@ In the order of the settings tab:
   confirmation
   says what is missing until it is read again (by the next refresh, or on its own for the small
   data of the upgrade tool). Not possible during a refresh.
-- **Reset**, each after a confirmation:
-  - **Delete all local data**: removes the whole copy listed under "Stored data"; nothing changes
-    on RSI's website, and the lists offer the initial load again. Not possible during a refresh.
-  - **Reset settings**: all settings back to their defaults (on all synced devices); the stored
-    hangar stays.
+  - **Reset**, below the table, each after a confirmation:
+    - **Delete all local data**: removes the whole copy listed in the table; nothing changes on
+      RSI's website, and the lists offer the initial load again. Not possible during a refresh.
+    - **Reset settings**: all settings back to their defaults (on all synced devices); the stored
+      hangar stays.
 - **About**: the extension's version, and links to the source code, the issue forms (bug
   reports; ideas link to GitHub Discussions), the privacy policy, the changelog and the license. The popup of the
   toolbar icon shows the version, too.

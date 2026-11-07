@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import RefreshIcon from '@/hangar/components/RefreshIcon.vue';
+import ResetSection from './ResetSection.vue';
 import { startStorageSync, syncState } from '@/hangar/sync-state';
 import { upgradeToolState } from '@/ships/sync-upgrade-tool';
 import { i18n, locale } from '@/i18n';
@@ -173,6 +174,7 @@ async function reset(definition: StorageDefinition) {
     <p v-if="resetDone" class="shm-hint is-done" role="status">
       {{ i18n.t('storage.resetDone', [name(resetDone)]) }}
     </p>
+    <ResetSection />
   </fieldset>
 </template>
 
