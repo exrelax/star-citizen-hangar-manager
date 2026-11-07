@@ -406,6 +406,22 @@ html .shm-theme-modern .shm-warbond .shm-row-summary {
   grid-template-columns: 128px minmax(0, 1fr) auto auto;
 }
 
+/* Pledge Store: headings in sentence case and weight instead of capitals, like the rows. */
+html .shm-theme-modern .shm-store-title {
+  color: var(--shm-text);
+  font-size: calc(20px * var(--shm-font-scale));
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+html .shm-theme-modern .shm-warbond-heading {
+  color: var(--shm-text-secondary);
+  font-size: calc(13px * var(--shm-font-scale));
+  font-weight: 600;
+  text-transform: none;
+}
+
 /* Below the title here: the tags of the warbond rows start on the left and use the full width. */
 html .shm-theme-modern .shm-warbond-badges {
   justify-content: flex-start;
