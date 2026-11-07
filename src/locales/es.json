@@ -60,7 +60,19 @@
       "paint": "Pintura",
       "reward": "Recompensa",
       "other": "Objeto"
-    }
+    },
+    "select": "Seleccionar «$1»"
+  },
+  "summary": {
+    "title": "Resumen",
+    "count": "Pledges",
+    "value": "Valor",
+    "discount": "Descuentos",
+    "selected": "Seleccionados",
+    "clear": "Quitar la selección",
+    "hidden": "$1 ocultos por la búsqueda o los filtros",
+    "move": "Arrastra para mover el resumen (o usa las flechas)",
+    "resetPosition": "Volver a su sitio bajo la navegación"
   },
   "filter": {
     "label": "Filtrar pledges",
@@ -163,6 +175,8 @@
     "filterDown": "Bajar «$1»",
     "hideSupersededInsurances": "Mostrar solo el mejor seguro de las naves mejoradas",
     "hideSupersededInsurancesHint": "Tras las mejoras, un pledge lista el seguro de cada paso, pero solo se conserva el mejor: el LTI si lo hay; si no, el de más meses. Los demás se ocultan en el elemento abierto.",
+    "summaryTypes": "Contar los pledges por tipo en el resumen",
+    "summaryTypesHint": "El resumen de «My Hangar» muestra entonces también cuántas naves, CCU, pinturas, paquetes de juego y recompensas se muestran y están seleccionados.",
     "filtersLists": {
       "hangar": "My Hangar",
       "buyback": "Buy Back"

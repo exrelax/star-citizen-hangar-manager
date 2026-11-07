@@ -17,6 +17,7 @@ import GiftOverlay from './GiftOverlay.vue';
 import ProtectedBadge from './ProtectedBadge.vue';
 import UpgradeLog from './UpgradeLog.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
+import { selection } from '../selection';
 
 const props = defineProps<{
   pledge: PledgeView;
@@ -74,6 +75,8 @@ watch(
 // The manager lives on the hangar page, so this is its path including the locale prefix.
 const pathname = location.pathname;
 const demo = useDemoContext();
+const selected = computed(() => selection.ids.value.has(props.pledge.id));
+
 const toggle = () => {
   expanded.value = !expanded.value;
   openedAutomatically = false;
@@ -81,7 +84,20 @@ const toggle = () => {
 </script>
 
 <template>
-  <div class="shm-row" :class="{ 'is-expanded': expanded }">
+  <div class="shm-row" :class="{ 'is-expanded': expanded, 'is-selected': selected }">
+    <!-- Selects the pledge for the summary box; outside the summary, so it doesn't open the row. -->
+    <button
+      type="button"
+      role="checkbox"
+      class="shm-select-toggle"
+      :aria-checked="selected"
+      :aria-label="i18n.t('pledge.select', [pledge.title])"
+      @click="selection.toggle(pledge.id)"
+    >
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M4.5 8.2l2.3 2.3 4.7-4.9" />
+      </svg>
+    </button>
     <!-- Clicking anywhere toggles the details; the chevron button makes it keyboard accessible. -->
     <div class="shm-row-summary" @click="toggle">
       <span class="shm-thumb">

@@ -17,6 +17,13 @@ const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
     >
       {{ i18n.t('settings.hideSupersededInsurances') }}
     </SettingCheck>
+    <SettingCheck
+      :checked="settings.summaryTypes"
+      :hint="i18n.t('settings.summaryTypesHint')"
+      @change="(summaryTypes) => emit('update', { summaryTypes })"
+    >
+      {{ i18n.t('settings.summaryTypes') }}
+    </SettingCheck>
 
     <label class="shm-field-label" for="shm-buyback-link">
       {{ i18n.t('settings.buybackLink') }}

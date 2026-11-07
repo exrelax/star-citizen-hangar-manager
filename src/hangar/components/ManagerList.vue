@@ -57,7 +57,11 @@ const props = defineProps<{
   sort?: S;
 }>();
 
-const emit = defineEmits<{ 'update:sort': [sort: S] }>();
+const emit = defineEmits<{
+  'update:sort': [sort: S];
+  /** The entries search and filters leave visible, whenever they change. */
+  visible: [entries: T[]];
+}>();
 
 defineSlots<{
   row(props: { entry: T; autoExpand: boolean }): unknown;
@@ -166,6 +170,8 @@ const matching = computed(() =>
     ? props.entries.filter((entry) => visibleIds.value!.has(entry.id))
     : props.entries,
 );
+
+watch(matching, (entries) => emit('visible', entries), { immediate: true });
 
 /** Id of the only entry shown, which then opens on its own; undefined for more or none. */
 const onlyVisibleId = computed(() =>

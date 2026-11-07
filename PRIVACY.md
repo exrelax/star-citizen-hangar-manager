@@ -55,6 +55,8 @@ sees or stores your RSI login.
   sync storage (`storage.sync`). If you use a browser account (Google account in Chrome, Firefox
   account in Firefox), your browser syncs them to your other devices; this is your browser's own
   sync, the extension has no server for it. The settings contain no hangar data.
+- **Position of the summary box**, if you moved it: kept in the extension's session storage
+  (`storage.session`) and gone when the browser session ends.
 - **Demo mode**: a random key, kept in the local storage, makes up the pledge IDs and dates of the
   demo. It never leaves your browser.
 - The **search term** is put into the page's address (`?search=…`) so searches can be bookmarked;

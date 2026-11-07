@@ -2,6 +2,9 @@
 import BuybackList from '@/buyback/components/BuybackList.vue';
 import { useBuybackPledges } from '@/buyback/use-buyback-pledges';
 import HangarStatus from '@/hangar/components/HangarStatus.vue';
+import HangarSummary from '@/hangar/components/HangarSummary.vue';
+import { findAccountNav } from '@/hangar/account-nav';
+import { selection } from '@/hangar/selection';
 import PledgeList from '@/hangar/components/PledgeList.vue';
 import InitialLoad from '@/hangar/components/InitialLoad.vue';
 import RefreshButton from '@/hangar/components/RefreshButton.vue';
@@ -16,7 +19,7 @@ import SettingsPanel from '@/settings/SettingsPanel.vue';
 import StoreTab from '@/store/components/StoreTab.vue';
 import { useSettings } from '@/settings/use-settings';
 import { MANAGER_CONTAINER, useThemeClass } from '@/themes/theme';
-import { computed, inject, onMounted, onUnmounted, provide, reactive, ref } from 'vue';
+import { computed, inject, onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 
 /** Icon of each tab, before its label. */
@@ -94,6 +97,26 @@ const followHash = () => {
 };
 onMounted(() => addEventListener('hashchange', followHash));
 onUnmounted(() => removeEventListener('hashchange', followHash));
+
+/*
+ * The summary box of "My Hangar" lives below RSI's page navigation on the left, outside the
+ * manager: an element of its own after the navigation's list, where it sticks while scrolling.
+ */
+const summaryAnchor = ref<HTMLElement>();
+onMounted(() => {
+  const nav = findAccountNav(document);
+  if (!nav) return;
+  const anchor = document.createElement('div');
+  anchor.className = 'shm-summary-anchor';
+  nav.after(anchor);
+  summaryAnchor.value = anchor;
+});
+onUnmounted(() => summaryAnchor.value?.remove());
+const showSummary = computed(
+  () => activeTab.value === 'hangar' && listsReady.value && pledges.value.length > 0,
+);
+// Pledges gone from the hangar (melted, gifted, …) leave the selection.
+watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => pledge.id))));
 </script>
 
 <!-- Reuses the markup classes of the original hangar page so the view inherits the site's look. -->
@@ -126,6 +149,10 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
     <div class="separator"></div>
     <div class="cboth"></div>
   </div>
+
+  <Teleport v-if="summaryAnchor" :to="summaryAnchor">
+    <HangarSummary v-if="showSummary" :pledges="pledges" :settings="settings" />
+  </Teleport>
 
   <TabBar
     class="shm-manager-tabs"

@@ -224,6 +224,19 @@ on its own.
 
 ---
 
+## Selection and summary
+
+- **Select pledges** in "My Hangar" with the round control in the top right corner of each row.
+- **Summary box** below RSI's page navigation on the left: the number, value and discounts of the
+  pledges shown (after search and filters). Discounts sum only real ones – a pledge that cost more
+  than the original price doesn't reduce them.
+- With a selection, the box adds the number, value and discounts of the selected pledges, says how
+  many of them search or filters hide, and clears the selection with one click.
+- It sticks while scrolling and can be dragged anywhere (or moved with the arrow keys from its
+  handle). The position lasts for the browser session only; a button puts it back.
+- A setting adds the number of pledges per type (ships, CCUs, paints, …).
+- Values and discounts are left out when "Hide melt value" is on.
+
 ## Search, filters and sorting
 
 - **Live search** as you type – by title, ship name, pledge ID or order ID (also of orders paid with
@@ -429,6 +442,7 @@ In the order of the settings tab:
   - **Show only the best insurance of upgraded ships** (on by default): after upgrades a pledge
     lists the insurance of every step; only the one that counts (LTI, otherwise the most months)
     is listed.
+  - **Count the pledges per type in the summary** (off by default).
   - **"Show in Buy Back" opens**: only the pledge, or the list page with the pledge highlighted.
 - **Smart updates**:
   - **Check hangar, buy back and orders for changes** (on by default) – see

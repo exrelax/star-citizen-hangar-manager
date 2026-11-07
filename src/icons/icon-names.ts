@@ -29,6 +29,7 @@ export const ICON_NAMES = {
     'gift',
     'github',
     'globe-pointer',
+    'grip-vertical',
     'lock-open',
     'lock',
     'magnifying-glass',
@@ -43,6 +44,7 @@ export const ICON_NAMES = {
     'trash',
     'triangle-exclamation',
     'xmark-large',
+    'xmark',
   ],
 } as const;
 

@@ -29,3 +29,18 @@ ul.pledges > li.shm-highlight {
   width: 100%;
   min-width: 0;
 }
+
+/*
+ * The summary box of "My Hangar" (HangarSummary.vue), below RSI's page navigation: it sticks below
+ * RSI's fixed top bar while the page scrolls.
+ */
+.shm-summary-anchor {
+  position: sticky;
+  top: 72px;
+  z-index: 2;
+  margin-top: 24px;
+}
+
+html:not(.shm-manager-active) .shm-summary-anchor {
+  display: none;
+}
