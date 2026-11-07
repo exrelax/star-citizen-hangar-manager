@@ -138,7 +138,7 @@ export async function maybeRunSmartUpdate({ force = false } = {}): Promise<void>
     // Ships, ships on sale and warbond offers: on their own interval (see the settings), once a
     // day with smart updates off.
     await maybeRefreshUpgradeTool();
-    // The items of the Pledge Store: a few times a day.
+    // The items of the Pledge Store, on their own interval (see the settings).
     await maybeRefreshStoreItems();
     const settings = withDefaults(await settingsItem.getValue());
     if (!settings.smartUpdates) return;

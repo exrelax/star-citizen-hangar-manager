@@ -4,7 +4,8 @@ import { STORE_ITEMS } from '@/config';
 import { fetchStoreItems, parseSearchAnswer } from './fetch-store-items';
 import { toStoreItem, type ApiStoreSku } from './store-items';
 import { storeItemsItem, storeItemsMeta } from './store-items-storage';
-import { refreshStoreItems } from './sync-store-items';
+import { settingsItem } from '@/settings/settings';
+import { maybeRefreshStoreItems, refreshStoreItems } from './sync-store-items';
 
 const sku = (id: number, overrides: Partial<ApiStoreSku> = {}): ApiStoreSku => ({
   id: String(id),
@@ -116,5 +117,35 @@ describe('refreshStoreItems', () => {
     expect(fetchItems).toHaveBeenCalledTimes(1);
     await refreshStoreItems({ fetchItems, maxAgeMs: 5000, now: () => 7000 });
     expect(fetchItems).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('maybeRefreshStoreItems', () => {
+  beforeEach(() => fakeBrowser.reset());
+  const MINUTE = 60_000;
+  const fetchItems = () =>
+    vi.fn(async () => ({ items: [toStoreItem(sku(1), 'Gear')!], requests: 1 }));
+
+  it('follows the interval of the settings', async () => {
+    const read = fetchItems();
+    await settingsItem.setValue({ storeItemsMinutes: 10 });
+    await maybeRefreshStoreItems({ fetchItems: read, now: () => 0 });
+    await maybeRefreshStoreItems({ fetchItems: read, now: () => 9 * MINUTE });
+    expect(read).toHaveBeenCalledTimes(1);
+    await maybeRefreshStoreItems({ fetchItems: read, now: () => 10 * MINUTE });
+    expect(read).toHaveBeenCalledTimes(2);
+  });
+
+  it('reads once a day with smart updates off', async () => {
+    const read = fetchItems();
+    await settingsItem.setValue({ smartUpdates: false });
+    await maybeRefreshStoreItems({ fetchItems: read, now: () => 0 });
+    await maybeRefreshStoreItems({ fetchItems: read, now: () => 60 * MINUTE });
+    expect(read).toHaveBeenCalledTimes(1);
+    await maybeRefreshStoreItems({
+      fetchItems: read,
+      now: () => STORE_ITEMS.maxAgeWithoutSmartUpdatesMs,
+    });
+    expect(read).toHaveBeenCalledTimes(2);
   });
 });

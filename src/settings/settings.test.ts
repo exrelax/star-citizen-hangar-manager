@@ -28,6 +28,7 @@ describe('withDefaults', () => {
       hideRefund: true,
       smartUpdates: true,
       storeRefreshMinutes: 5,
+      storeItemsMinutes: 5,
       smartUpdateMinutes: 5,
       spotCheckPages: 2,
       buybackLinkMode: 'single',
@@ -60,6 +61,10 @@ describe('withDefaults', () => {
   it('accepts whole minutes in range for the store refresh only', () => {
     expect(withDefaults({ storeRefreshMinutes: 30 }).storeRefreshMinutes).toBe(30);
     expect(withDefaults({ smartUpdateMinutes: 15 }).smartUpdateMinutes).toBe(15);
+    expect(withDefaults({ storeItemsMinutes: 60 }).storeItemsMinutes).toBe(60);
+    for (const storeItemsMinutes of [0, 1441, 2.5]) {
+      expect(withDefaults({ storeItemsMinutes }).storeItemsMinutes).toBe(5);
+    }
     expect(withDefaults({ spotCheckPages: 10 }).spotCheckPages).toBe(10);
     for (const spotCheckPages of [0, 11, 1.5, '3']) {
       expect(withDefaults({ spotCheckPages } as never).spotCheckPages).toBe(2);

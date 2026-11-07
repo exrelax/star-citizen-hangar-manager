@@ -120,6 +120,8 @@
     "storeRefresh": "Volver a leer los CCU warbond de la Pledge Store tras",
     "minutes": "minutos",
     "storeRefreshHint": "Las ofertas se guardan y se vuelven a leer de RSI en cuanto son más antiguas, mientras el Hangar Manager está abierto ($1 a $2 minutos). El botón de actualizar y la carga inicial siempre las leen. Con las actualizaciones inteligentes desactivadas, solo ellos.",
+    "storeItemsRefresh": "Volver a leer los artículos de la Pledge Store tras",
+    "storeItemsRefreshHint": "Los artículos de la Pledge Store (naves, equipo, pinturas, …) se guardan y se vuelven a leer de RSI en cuanto son más antiguos, mientras el Hangar Manager está abierto ($1 a $2 minutos; unas 13 solicitudes cada vez). El botón de actualizar siempre los lee; sin actualizaciones inteligentes, una vez al día.",
     "shipLinks": "Mostrar enlaces para naves",
     "shipLinkErkul": "erkul.games",
     "shipLinkFleetyards": "FleetYards.net",
