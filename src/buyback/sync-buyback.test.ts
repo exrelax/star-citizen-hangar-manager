@@ -5,7 +5,7 @@ import { BUYBACK_SNAPSHOT_VERSION, type BuybackPledge } from './buyback';
 import { SyncProgressTracker } from '@/hangar/sync-progress';
 import { buybackSnapshot } from './buyback-storage';
 import { runBuybackSmartUpdate } from './run';
-import { buybackCheckState } from './buyback-storage';
+import { buybackMeta } from './buyback-storage';
 import { syncBuyback, type FetchBuybackPage } from './sync-buyback';
 
 const pledge = (id: number, contained = `Item ${id}`): BuybackPledge => ({
@@ -86,6 +86,6 @@ describe('buy back tokens', () => {
     const after = await buybackSnapshot.getValue();
     expect(after?.tokens).toBe(1);
     expect(after?.pledges).toEqual(before?.pledges);
-    expect((await buybackCheckState.getValue()).lastOutcome?.status).toBe(outcome?.status);
+    expect((await buybackMeta.getValue()).lastOutcome?.status).toBe(outcome?.status);
   });
 });

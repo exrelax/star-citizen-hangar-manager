@@ -1,6 +1,7 @@
 import { BUYBACK_PAGE_SIZE, SMART_UPDATE } from '@/config';
 import { PLEDGE_CATEGORIES } from '@/hangar/pledge';
-import { hangarSnapshot, type CheckOutcome } from '@/hangar/hangar-storage';
+import { hangarSnapshot } from '@/hangar/hangar-storage';
+import { recordCheck, type CheckOutcome } from '@/storage/meta';
 import { checkList } from '@/hangar/smart-update/check';
 import {
   BUYBACK_SNAPSHOT_VERSION,
@@ -8,7 +9,7 @@ import {
   withBuybackExtensionData,
   type BuybackSnapshot,
 } from './buyback';
-import { buybackCheckState, buybackSnapshot } from './buyback-storage';
+import { buybackMeta, buybackSnapshot } from './buyback-storage';
 import { enrichBuyback, fetchBuybackPage, type BuybackSyncDeps } from './sync-buyback';
 
 /**
@@ -22,7 +23,7 @@ export async function runBuybackSmartUpdate(
 
   const snapshot = await buybackSnapshot.getValue();
   if (snapshot?.version !== BUYBACK_SNAPSHOT_VERSION) return null;
-  const checkState = await buybackCheckState.getValue();
+  const meta = await buybackMeta.getValue();
 
   // The first page is always checked; it shows the current buy back tokens, too.
   let tokens = snapshot.tokens;
@@ -32,19 +33,15 @@ export async function runBuybackSmartUpdate(
       if (page === 1 && listPage.tokens !== undefined) tokens = listPage.tokens;
       return listPage;
     },
-    cursor: checkState.cursor,
+    cursor: meta.cursor ?? 0,
     pageSize: BUYBACK_PAGE_SIZE,
     spotCheckPages: SMART_UPDATE.buybackSpotCheckPages,
     fingerprint: buybackFingerprint,
     merge: withBuybackExtensionData,
   });
 
-  const save = async (outcome: Omit<CheckOutcome, 'at'>) => {
-    const at = now();
-    const lastOutcome = { ...outcome, at };
-    await buybackCheckState.setValue({ lastCheckAt: at, cursor: result.nextCursor, lastOutcome });
-    return lastOutcome;
-  };
+  const save = (outcome: Omit<CheckOutcome, 'at'>) =>
+    recordCheck(buybackMeta, outcome, { at: now(), cursor: result.nextCursor });
   if (result.status !== 'updated') {
     // No changes to the pledges, but the tokens may have changed (e.g. by a buy back elsewhere).
     if (tokens !== snapshot.tokens && (await unchangedSince(snapshot))) {

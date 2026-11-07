@@ -1,14 +1,24 @@
 import { UPGRADE_TOOL } from '@/config';
 import { settingsItem, withDefaults } from '@/settings/settings';
+import { hashOf, recordCheck, recordSync, type MetaItem } from '@/storage/meta';
 import { reactive, readonly } from 'vue';
 import { fetchUpgradeTool } from './fetch-upgrade-tool';
 import type { UpgradeToolData } from './ships';
-import { buyableShipsItem, shipsItem, SHIPS_VERSION, warbondsItem } from './ships-storage';
+import {
+  buyableShipsItem,
+  buyableShipsMeta,
+  shipsItem,
+  shipsMeta,
+  SHIPS_VERSION,
+  warbondsItem,
+  warbondsMeta,
+} from './ships-storage';
 
 /*
  * Keeps the data of the upgrade tool current: ships, ships on sale and warbond editions, read
  * with one request and stored in three storages. They are read again once older than the interval
- * of the settings (smart updates; otherwise once a day), and always with a full refresh.
+ * of the settings (smart updates; otherwise once a day), and always with a full refresh. A part
+ * whose answer is unchanged (same fingerprint) is not written again, only its check is recorded.
  */
 
 const state = reactive({
@@ -21,16 +31,43 @@ const state = reactive({
 /** Shared by all mounts, like the sync state of hangar and buy back. */
 export const upgradeToolState = readonly(state);
 
-/** Whether the stored data is missing, of an older format or older than `maxAgeMs`. */
+interface Part {
+  item: { getValue(): Promise<{ version: number } | null> };
+  meta: MetaItem;
+}
+
+const PARTS: Part[] = [
+  { item: shipsItem, meta: shipsMeta },
+  { item: buyableShipsItem, meta: buyableShipsMeta },
+  { item: warbondsItem, meta: warbondsMeta },
+];
+
+/** Whether a part is missing, of an older format or last read longer than `maxAgeMs` ago. */
 export async function isUpgradeToolDue(maxAgeMs: number, now = Date.now()): Promise<boolean> {
-  const stored = await Promise.all([
-    shipsItem.getValue(),
-    buyableShipsItem.getValue(),
-    warbondsItem.getValue(),
-  ]);
-  return stored.some(
-    (value) => value?.version !== SHIPS_VERSION || now - Date.parse(value.fetchedAt) >= maxAgeMs,
+  const parts = await Promise.all(
+    PARTS.map(async ({ item, meta }) => [await item.getValue(), await meta.getValue()] as const),
   );
+  return parts.some(
+    ([value, meta]) => value?.version !== SHIPS_VERSION || now - meta.checkedAt >= maxAgeMs,
+  );
+}
+
+/** Stores a part if its answer changed; records the read either way. */
+async function storePart<T extends { version: number }>(
+  item: { getValue(): Promise<T | null>; setValue(value: T | null): Promise<void> },
+  meta: MetaItem,
+  value: NoInfer<T>,
+  at: number,
+) {
+  const fingerprint = hashOf(value);
+  const [stored, previous] = await Promise.all([item.getValue(), meta.getValue()]);
+  if (stored?.version === SHIPS_VERSION && previous.fingerprint === fingerprint) {
+    await recordCheck(meta, { status: 'unchanged' }, { at, fingerprint });
+    return;
+  }
+  await item.setValue(value);
+  // Every read of the upgrade tool reads everything: it counts as a full sync.
+  await recordSync(meta, { at, fingerprint });
 }
 
 let running: Promise<void> | undefined;
@@ -53,16 +90,20 @@ export function refreshUpgradeTool({
     state.loading = true;
     try {
       const { ships, buyable, warbonds } = await fetchData();
-      const meta = { version: SHIPS_VERSION, fetchedAt: new Date(now()).toISOString() };
+      const at = now();
+      const version = SHIPS_VERSION;
       await Promise.all([
-        shipsItem.setValue({ ...meta, ships }),
-        buyableShipsItem.setValue({ ...meta, skus: buyable }),
-        warbondsItem.setValue({ ...meta, warbonds }),
+        storePart(shipsItem, shipsMeta, { version, ships }, at),
+        storePart(buyableShipsItem, buyableShipsMeta, { version, skus: buyable }, at),
+        storePart(warbondsItem, warbondsMeta, { version, warbonds }, at),
       ]);
       state.error = undefined;
     } catch (cause) {
       console.warn('[star-citizen-hangar-manager] Ship upgrade tool unavailable', cause);
       state.error = cause instanceof Error ? cause.message : String(cause);
+      await Promise.all(
+        PARTS.map(({ meta }) => recordCheck(meta, { status: 'failed' }, { at: now() })),
+      );
     } finally {
       state.loading = false;
     }

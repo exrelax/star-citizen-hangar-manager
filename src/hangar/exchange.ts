@@ -1,6 +1,7 @@
 import { refundWindow, type RefundWindow } from '@/orders/refund';
 import { postRsiJson } from '@/shared/rsi-api';
-import { hangarSnapshot } from './hangar-storage';
+import { recordUpdate } from '@/storage/meta';
+import { hangarMeta, hangarSnapshot } from './hangar-storage';
 import type { PledgeView } from './pledge-view';
 import type { PledgeDiscount } from './ship-prices';
 
@@ -65,4 +66,5 @@ export async function removeFromStoredHangar(pledgeId: number): Promise<void> {
     pledges: snapshot.pledges.filter((pledge) => pledge.id !== pledgeId),
     updatedAt: new Date().toISOString(),
   });
+  await recordUpdate(hangarMeta);
 }

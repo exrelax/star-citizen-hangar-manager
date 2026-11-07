@@ -13,7 +13,8 @@ import {
   type OrderDetails,
   type OrdersSnapshot,
 } from './orders';
-import { ordersSnapshot } from './orders-storage';
+import { ordersMeta, ordersSnapshot } from './orders-storage';
+import { recordCheck, recordSync } from '@/storage/meta';
 
 export interface LogPage {
   entries: string[];
@@ -86,6 +87,15 @@ export async function prepareOrderSync(
       concurrency,
     });
 
+    // The newest log entry tells whether anything happened on the account since the last read.
+    const fingerprint = firstLog.entries[0] ?? '';
+    const newEntries = logEntries.filter((entry) => !knownEntries.has(entry)).length;
+    const newOrders = orders.filter((order) => !previous?.orders[order.id]).length;
+    if (previous && newEntries === 0 && newOrders === 0) {
+      await recordCheck(ordersMeta, { status: 'unchanged' }, { fingerprint });
+      return previous;
+    }
+
     const snapshot: OrdersSnapshot = {
       version: ORDERS_SNAPSHOT_VERSION,
       syncedAt: new Date().toISOString(),
@@ -103,12 +113,16 @@ export async function prepareOrderSync(
     }
     // The pages read are the newest, from page 1 on: their orders' index is their position.
     // Orders not read again moved down by the number of new ones.
-    const newOrders = orders.filter((order) => !previous?.orders[order.id]).length;
     for (const order of Object.values(snapshot.orders)) {
       if (order.position !== undefined) order.position += newOrders;
     }
     orders.forEach((order, position) => (snapshot.orders[order.id] = { ...order, position }));
     await ordersSnapshot.setValue(snapshot);
+    if (previous) {
+      await recordCheck(ordersMeta, { status: 'updated', added: newEntries }, { fingerprint });
+    } else {
+      await recordSync(ordersMeta, { fingerprint });
+    }
     return snapshot;
   };
 }

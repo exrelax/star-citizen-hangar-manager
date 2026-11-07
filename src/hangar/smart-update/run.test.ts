@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
-import { hangarCheckState, hangarSnapshot } from '../hangar-storage';
+import { hangarMeta, hangarSnapshot } from '../hangar-storage';
 import type { PledgePage } from '../parse-pledges';
 import { HANGAR_SNAPSHOT_VERSION, type Pledge, type PledgeCategory } from '../pledge';
 import type { FetchPledgePage } from '../sync';
@@ -52,8 +52,8 @@ describe('runSmartUpdate', () => {
 
     expect(outcome).toMatchObject({ status: 'unchanged', added: 0, removed: 0, changed: 0 });
     expect(await hangarSnapshot.getValue()).toEqual(before);
-    expect(await hangarCheckState.getValue()).toMatchObject({
-      lastCheckAt: Date.parse('2026-11-01T12:00:00Z'),
+    expect(await hangarMeta.getValue()).toMatchObject({
+      checkedAt: Date.parse('2026-11-01T12:00:00Z'),
       lastOutcome: { status: 'unchanged' },
     });
   });

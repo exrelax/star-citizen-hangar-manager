@@ -1,4 +1,5 @@
-import { hangarCheckState, hangarSnapshot, type CheckOutcome } from '../hangar-storage';
+import { recordCheck, type CheckOutcome } from '@/storage/meta';
+import { hangarMeta, hangarSnapshot } from '../hangar-storage';
 import { HANGAR_SNAPSHOT_VERSION, PLEDGE_CATEGORIES, type Pledge } from '../pledge';
 import { fetchShipMatrixImages, resolveUpgradeImages, type ShipImages } from '../ship-images';
 import { resolveShipLinks, type ShipLinks } from '../ship-links';
@@ -30,17 +31,14 @@ export async function runSmartUpdate(deps: SmartUpdateDeps = {}): Promise<CheckO
 
   const snapshot = await hangarSnapshot.getValue();
   if (snapshot?.version !== HANGAR_SNAPSHOT_VERSION) return null;
-  const checkState = await hangarCheckState.getValue();
+  const meta = await hangarMeta.getValue();
 
-  const saveOutcome = async (outcome: Omit<CheckOutcome, 'at'>, cursor = checkState.cursor) => {
-    const result = { ...outcome, at: now() };
-    await hangarCheckState.setValue({ lastCheckAt: result.at, cursor, lastOutcome: result });
-    return result;
-  };
+  const saveOutcome = (outcome: Omit<CheckOutcome, 'at'>, cursor = meta.cursor ?? 0) =>
+    recordCheck(hangarMeta, outcome, { at: now(), cursor });
 
   const result = await checkHangar(snapshot.pledges, {
     fetchPage: (page) => fetchPage(page),
-    cursor: checkState.cursor,
+    cursor: meta.cursor ?? 0,
     spotCheckPages,
   });
   const none = { added: 0, removed: 0, changed: 0 };
