@@ -1,3 +1,4 @@
+import { postRsiJson } from '@/shared/rsi-api';
 import type { StoreData, StoreShip, WarbondTarget } from './warbond';
 
 /*
@@ -33,14 +34,13 @@ export interface StoreResponse {
 }
 
 export async function fetchStoreData(): Promise<StoreData> {
-  const response = await fetch(UPGRADE_GRAPHQL, {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify([{ operationName: 'pledgeStore', variables: {}, query: QUERY }]),
-  });
-  if (!response.ok) throw new Error(`Loading the pledge store failed: HTTP ${response.status}`);
-  const [result] = (await response.json()) as [StoreResponse | undefined];
+  // Same order as RSI's upgrade dialog: the session, then the context of the upgrade API (none
+  // here). Without them the API can't tell the account and fails for the targets ("to").
+  await postRsiJson('/api/account/v2/setAuthToken');
+  await postRsiJson('/api/ship-upgrades/setContextToken', {});
+  const [result] = await postRsiJson<[StoreResponse | undefined]>(UPGRADE_GRAPHQL, [
+    { operationName: 'pledgeStore', variables: {}, query: QUERY },
+  ]);
   return parseStoreResponse(result);
 }
 
