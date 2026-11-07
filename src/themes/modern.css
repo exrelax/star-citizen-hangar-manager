@@ -319,6 +319,11 @@ html .shm-theme-modern .shm-count {
   font-size: calc(13px * var(--shm-font-scale));
 }
 
+/* The sort menu ends flush with the rows below it. */
+html .shm-theme-modern .shm-count:has(.shm-sort) {
+  padding-right: 0;
+}
+
 /* ---- Rows: cards, or rounded cells of a grouped list in the compact view ---- */
 
 /* Each row as a card of its own, with a gap between them (setting "Compact view" off). */
@@ -566,6 +571,12 @@ html .shm-theme-modern .shm-input {
   background-color: var(--shm-fill);
   border: 0;
   border-radius: 8px;
+}
+
+/* The order of the lists: as small as the count line next to it. */
+html .shm-theme-modern .shm-select.shm-sort {
+  height: 26px;
+  border-radius: 6px;
 }
 
 /* ---- Overlay: blurred backdrop, rounded sheet ---- */

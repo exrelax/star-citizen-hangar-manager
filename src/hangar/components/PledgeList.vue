@@ -9,6 +9,8 @@ import {
   type PledgeFilter,
 } from '../filters';
 import type { PledgeView } from '../pledge-view';
+import { HANGAR_SORTS, sortEntries, type HangarSort } from '../sorting';
+import { useSettings } from '@/settings/use-settings';
 import ManagerList from './ManagerList.vue';
 import PledgeRow from './PledgeRow.vue';
 
@@ -31,6 +33,13 @@ const filterGroups = computed(() =>
   })),
 );
 
+const { update } = useSettings();
+const sorted = computed(() => sortEntries(props.pledges, props.settings.sort.hangar));
+const sortOptions = computed(() =>
+  HANGAR_SORTS.map((value) => ({ value, label: i18n.t(`sort.${value}`) })),
+);
+const setSort = (hangar: HangarSort) => update({ sort: { ...props.settings.sort, hangar } });
+
 const filterLabel = (filter: PledgeFilter) => i18n.t(`filter.${filter}`);
 
 /** Filters whose meaning isn't obvious from the label explain it in their tooltip. */
@@ -49,12 +58,15 @@ const filterHint = (filter: PledgeFilter) => {
 <template>
   <ManagerList
     :class="displayClasses"
-    :entries="pledges"
+    :entries="sorted"
     :filter-groups="filterGroups"
     :predicates="PLEDGE_FILTER_PREDICATES"
     :filter-label="filterLabel"
     :filter-hint="filterHint"
     :active="active"
+    :sort-options="sortOptions"
+    :sort="settings.sort.hangar"
+    @update:sort="setSort"
   >
     <template #row="{ entry, autoExpand }">
       <PledgeRow :pledge="entry" :auto-expand="autoExpand" />

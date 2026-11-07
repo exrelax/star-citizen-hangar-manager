@@ -14,6 +14,7 @@ describe('withDefaults', () => {
         hidePledgeIds: true,
         demoMode: true,
         hideRefund: true,
+        sort: { hangar: 'valueDesc', buyback: 'valueDesc' as never },
         shipLinks: { erkul: false, fleetyards: true },
       }),
     ).toEqual({
@@ -32,6 +33,8 @@ describe('withDefaults', () => {
       fontSize: 'medium',
       compactView: false,
       filters: DEFAULT_SETTINGS.filters,
+      // The buy back can't sort by value: back to the default.
+      sort: { hangar: 'valueDesc', buyback: 'newest' },
       shipLinks: { erkul: false, fleetyards: true },
     });
   });
