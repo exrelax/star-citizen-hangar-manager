@@ -52,6 +52,19 @@ describe('runMigration', () => {
   });
 });
 
+describe('runMigration with metadata of a check only', () => {
+  it('fills in the times of the last full sync from the data', async () => {
+    await storage.setItem('local:hangar.items', { syncedAt: SYNCED, updatedAt: UPDATED });
+    await hangarMeta.setValue({ syncedAt: 0, updatedAt: 0, checkedAt: 9, lastOutcome: null });
+    await runMigration();
+    expect(await hangarMeta.getValue()).toMatchObject({
+      syncedAt: Date.parse(SYNCED),
+      updatedAt: Date.parse(UPDATED),
+      checkedAt: 9,
+    });
+  });
+});
+
 describe('STORAGES', () => {
   it('lists every key once, old ones and metadata included', () => {
     const keys = STORAGES.flatMap((entry) => [

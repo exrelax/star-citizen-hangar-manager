@@ -426,10 +426,14 @@ In the order of the settings tab:
   and for types and features – drag a filter (or use its arrows) to move it within its group,
   uncheck it to hide its button.
 - **Show links for ships**: erkul.games and FleetYards.net, each on or off.
+- **Stored data**: a table of everything the extension keeps in this browser – My Hangar, Buy
+  Back, order history, ships, ships on sale and warbond offers – with the number of entries, the
+  size, the last full read and the last check. Each can be deleted on its own; the confirmation
+  says what is missing until it is read again (by the next refresh, or on its own for the small
+  data of the upgrade tool). Not possible during a refresh.
 - **Reset**, each after a confirmation:
-  - **Delete local hangar & buy back data**: removes only the extension's copy in this browser
-    (pledges, orders, ship data and warbond offers, smart update state); nothing changes on RSI's website, and the
-    lists offer the initial load again. Not possible during a refresh.
+  - **Delete all local data**: removes the whole copy listed under "Stored data"; nothing changes
+    on RSI's website, and the lists offer the initial load again. Not possible during a refresh.
   - **Reset settings**: all settings back to their defaults (on all synced devices); the stored
     hangar stays.
 - **About**: the extension's version, and links to the source code, the issue forms (bug

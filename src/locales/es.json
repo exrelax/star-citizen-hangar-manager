@@ -165,9 +165,9 @@
       "buyback": "Buy Back"
     },
     "reset": "Restablecer",
-    "clearCache": "Borrar los datos locales del hangar y la recompra",
-    "clearCacheHint": "Borra solo la copia que la extensión guarda en este navegador: pledges, pedidos, precios de naves y el estado de las actualizaciones inteligentes. No se cambia nada en tu hangar en la web de RSI; la próxima actualización vuelve a leerlo todo.",
-    "clearCacheConfirm": "¿Borrar los datos del hangar y la recompra que la extensión guarda en este navegador?\n\nTu hangar en la web de RSI no cambia.",
+    "clearCache": "Borrar todos los datos locales",
+    "clearCacheHint": "Borra todo lo que aparece en «Datos guardados», toda la copia que la extensión guarda en este navegador. No se cambia nada en tu hangar en la web de RSI; la próxima actualización vuelve a leerlo todo.",
+    "clearCacheConfirm": "¿Borrar todos los datos que la extensión guarda en este navegador?\n\nTu hangar en la web de RSI no cambia.",
     "clearCacheDone": "Borrado. «$1» en «My Hangar» vuelve a leer tu hangar, la recompra y los pedidos.",
     "resetSettings": "Restablecer ajustes",
     "resetSettingsHint": "Devuelve todos los ajustes a sus valores predeterminados, también en todos los dispositivos sincronizados. El hangar guardado se mantiene.",
@@ -186,6 +186,57 @@
     "license": "Licencia MIT",
     "licenseHint": "Código abierto, tal cual, sin garantía.",
     "disclaimer": "Un proyecto no oficial de fans, sin relación con Cloud Imperium Games ni Roberts Space Industries ni respaldado por ellas."
+  },
+  "storage": {
+    "title": "Datos guardados",
+    "intro": "Lo que la extensión guarda de los datos de RSI en este navegador. Cada parte se puede borrar por separado; en la web de RSI no cambia nada.",
+    "colData": "Datos",
+    "colEntries": "Entradas",
+    "colSize": "Tamaño",
+    "colSynced": "Última lectura completa",
+    "colChecked": "Última comprobación",
+    "colReset": "Borrar",
+    "resetOne": "Borrar «$1» en este navegador",
+    "resetConfirm": "¿Borrar «$1» guardado en este navegador?\n\n$2\n\n$3",
+    "readAgainRefresh": "La próxima actualización lo vuelve a leer de RSI. Tu hangar en la web de RSI no cambia.",
+    "readAgainAuto": "Se vuelve a leer de RSI por sí solo en cuanto el Hangar Manager está abierto.",
+    "resetDone": "«$1» borrado.",
+    "checkFailed": "La última comprobación falló.",
+    "hangar": {
+      "name": "My Hangar",
+      "content": "Pledges con sus objetos, enlaces de naves e imágenes",
+      "missing": "Hasta entonces «My Hangar» ofrece la carga inicial, y a la Pledge Store y a la recompra les falta tu hangar."
+    },
+    "buyback": {
+      "name": "Recompra",
+      "content": "Pledges fundidos y fichas de recompra",
+      "missing": "Hasta entonces la recompra está vacía y la Pledge Store no puede contar tu recompra."
+    },
+    "orders": {
+      "name": "Historial de pedidos",
+      "content": "El pedido de cada pledge, del registro de pledges y la lista de facturación",
+      "missing": "Hasta entonces faltan las etiquetas de reembolso, los detalles de pedido, el filtro warbond y la búsqueda por número de pedido. Volver a leerlo es lo que más tarda: cientos de páginas en cuentas grandes."
+    },
+    "ships": {
+      "name": "Naves",
+      "content": "Todas las naves con precio estándar, imagen y enlace a la Pledge Store",
+      "missing": "Hasta entonces faltan los descuentos y los precios de naves de las mejoras aplicadas."
+    },
+    "shipsBuyable": {
+      "name": "Naves a la venta",
+      "content": "SKU y precios de las naves a la venta",
+      "missing": "Aún no lo usa nada."
+    },
+    "shipsWarbonds": {
+      "name": "Ofertas warbond",
+      "content": "Naves ofrecidas ahora como edición warbond",
+      "missing": "Hasta entonces la Pledge Store no muestra ofertas."
+    },
+    "settings": {
+      "name": "Ajustes",
+      "content": "Idioma, tema, opciones de visualización y privacidad, filtros, orden",
+      "missing": "Todos los ajustes vuelven a sus valores predeterminados."
+    }
   },
   "status": {
     "refreshing": "Actualizando …",

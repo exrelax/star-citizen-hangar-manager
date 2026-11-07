@@ -48,19 +48,23 @@ export async function runMigration(): Promise<void> {
       await storage.removeItem(legacyKey);
     }
     // Metadata of data stored before it existed: from the data's own timestamps and the old
-    // smart update state.
-    if ((await storage.getItem(meta.key)) !== null) continue;
+    // smart update state. Times a check recorded without them are filled in from the data.
     const data = await storage.getItem<LegacyStamps>(key);
     if (!data) continue;
+    const existing = await storage.getItem<StorageMeta>(meta.key);
+    if (existing?.syncedAt) continue;
     const time = (iso?: string) => (iso ? Date.parse(iso) || 0 : 0);
     const seeded: StorageMeta = {
       ...EMPTY_META,
-      syncedAt: time(data.syncedAt),
-      updatedAt: time(data.updatedAt ?? data.syncedAt),
       checkedAt: check?.lastCheckAt ?? time(data.syncedAt),
       lastOutcome: check?.lastOutcome ?? null,
+      ...existing,
+      syncedAt: time(data.syncedAt),
+      updatedAt: existing?.updatedAt || time(data.updatedAt ?? data.syncedAt),
     };
-    if (check?.cursor !== undefined) seeded.cursor = check.cursor;
+    if (check?.cursor !== undefined && existing?.cursor === undefined) seeded.cursor = check.cursor;
+    // Nothing to fill in: no write on every start.
+    if (existing && !seeded.syncedAt) continue;
     await meta.setValue(seeded);
   }
 }

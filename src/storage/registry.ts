@@ -11,6 +11,10 @@ import {
   warbondsMeta,
 } from '@/ships/ships-storage';
 import type { MetaItem } from './meta';
+import type { BuybackSnapshot } from '@/buyback/buyback';
+import type { HangarSnapshot } from '@/hangar/pledge';
+import type { OrdersSnapshot } from '@/orders/orders';
+import type { BuyableShipsSnapshot, ShipsSnapshot, WarbondsSnapshot } from '@/ships/ships-storage';
 
 /*
  * All storages of the extension in one list: what each holds, where it comes from and what uses
@@ -25,12 +29,17 @@ import type { MetaItem } from './meta';
 
 interface StorageItem {
   key: string;
+  getValue(): Promise<unknown>;
+  watch(callback: (value: unknown) => void): () => void;
   removeValue(): Promise<void>;
 }
 
+export type StorageId =
+  'hangar' | 'buyback' | 'orders' | 'ships' | 'shipsBuyable' | 'shipsWarbonds' | 'settings';
+
 export interface StorageDefinition {
-  /** Short name, e.g. for the settings (#64). */
-  id: string;
+  /** Short name; also the key of its texts in the settings (`storage.<id>…`). */
+  id: StorageId;
   item: StorageItem;
   /** Last full sync, last check and fingerprint (see `meta.ts`); not for the settings. */
   meta?: MetaItem;
@@ -42,6 +51,13 @@ export interface StorageDefinition {
   usedBy: string[];
   /** Data read from RSI (removed by "Reset" in the settings), or the settings. */
   kind: 'data' | 'settings';
+  /** Number of entries of a stored value, shown in the settings. */
+  count?: (value: never) => number;
+  /**
+   * After a reset: read again by the next refresh, or on its own as soon as the manager is open
+   * (the small data of the upgrade tool).
+   */
+  readAgain?: 'refresh' | 'auto';
   /** Keys of earlier versions with the same format, moved to this one by `migrateStorage`. */
   legacyKeys?: `local:${string}`[];
   /** Keys of earlier versions in another format: removed, the data is read again. */
@@ -59,6 +75,8 @@ export const STORAGES: readonly StorageDefinition[] = [
     source: 'Hangar pages of RSI ("My Gear")',
     usedBy: ['My Hangar', 'buy back (giftable hint)', 'Pledge Store (holdings)'],
     kind: 'data',
+    count: (value: HangarSnapshot | null) => value?.pledges.length ?? 0,
+    readAgain: 'refresh',
     legacyKeys: ['local:hangar.snapshot'],
     legacyCheckKeys: ['local:hangar.checkState', 'local:hangar.check'],
   },
@@ -70,6 +88,8 @@ export const STORAGES: readonly StorageDefinition[] = [
     source: 'Buy back pages of RSI',
     usedBy: ['Buy Back', 'Pledge Store (holdings)'],
     kind: 'data',
+    count: (value: BuybackSnapshot | null) => value?.pledges.length ?? 0,
+    readAgain: 'refresh',
     legacyKeys: ['local:buyback.snapshot'],
     legacyCheckKeys: ['local:buyback.checkState', 'local:buyback.check'],
   },
@@ -81,6 +101,8 @@ export const STORAGES: readonly StorageDefinition[] = [
     source: 'Pledge log (/api/account/pledgeLog) and billing list of RSI',
     usedBy: ['Refund tags', 'order details', 'warbond filter', 'search by order id'],
     kind: 'data',
+    count: (value: OrdersSnapshot | null) => Object.keys(value?.orders ?? {}).length,
+    readAgain: 'refresh',
     legacyKeys: ['local:orders.snapshot'],
   },
   {
@@ -91,26 +113,32 @@ export const STORAGES: readonly StorageDefinition[] = [
     source: 'Ship upgrade tool of RSI',
     usedBy: ['Discounts', 'upgrade log prices', 'Pledge Store'],
     kind: 'data',
+    count: (value: ShipsSnapshot | null) => value?.ships.length ?? 0,
+    readAgain: 'auto',
     // Ship prices of earlier versions (another format).
     obsoleteKeys: ['local:hangar.shipPrices'],
   },
   {
-    id: 'ships.buyable',
+    id: 'shipsBuyable',
     meta: buyableShipsMeta,
     item: buyableShipsItem,
     content: 'Ships currently on sale: their SKUs and prices',
     source: 'Ship upgrade tool of RSI',
     usedBy: [],
     kind: 'data',
+    count: (value: BuyableShipsSnapshot | null) => value?.skus.length ?? 0,
+    readAgain: 'auto',
   },
   {
-    id: 'ships.warbonds',
+    id: 'shipsWarbonds',
     meta: warbondsMeta,
     item: warbondsItem,
     content: 'Ships currently offered as warbond edition, with their price',
     source: 'Ship upgrade tool of RSI',
     usedBy: ['Pledge Store'],
     kind: 'data',
+    count: (value: WarbondsSnapshot | null) => value?.warbonds.length ?? 0,
+    readAgain: 'auto',
     // The Pledge Store offers of earlier versions (another format).
     obsoleteKeys: ['local:store.snapshot'],
   },

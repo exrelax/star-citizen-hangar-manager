@@ -165,9 +165,9 @@
       "buyback": "Buy Back"
     },
     "reset": "Reset",
-    "clearCache": "Delete local hangar & buy back data",
-    "clearCacheHint": "Deletes only the copy the extension keeps in this browser: pledges, orders, ship prices and the state of the smart updates. Nothing is changed in your hangar on RSI's website; the next refresh reads everything again.",
-    "clearCacheConfirm": "Delete the hangar and buy back data stored by the extension in this browser?\n\nYour hangar on RSI's website stays as it is.",
+    "clearCache": "Delete all local data",
+    "clearCacheHint": "Deletes everything listed under “Stored data”, the whole copy the extension keeps in this browser. Nothing is changed in your hangar on RSI's website; the next refresh reads everything again.",
+    "clearCacheConfirm": "Delete all data stored by the extension in this browser?\n\nYour hangar on RSI's website stays as it is.",
     "clearCacheDone": "Deleted. “$1” in “My Hangar” reads your hangar, buy back and orders again.",
     "resetSettings": "Reset settings",
     "resetSettingsHint": "Sets all settings back to their defaults, on all devices they are synced to. The stored hangar stays.",
@@ -186,6 +186,57 @@
     "license": "MIT License",
     "licenseHint": "Open source, provided as is, without warranty.",
     "disclaimer": "An unofficial fan project, not affiliated with or endorsed by Cloud Imperium Games or Roberts Space Industries."
+  },
+  "storage": {
+    "title": "Stored data",
+    "intro": "What the extension keeps of RSI's data in this browser. Each can be deleted on its own; nothing changes on RSI's website.",
+    "colData": "Data",
+    "colEntries": "Entries",
+    "colSize": "Size",
+    "colSynced": "Last full read",
+    "colChecked": "Last check",
+    "colReset": "Delete",
+    "resetOne": "Delete “$1” in this browser",
+    "resetConfirm": "Delete “$1” stored in this browser?\n\n$2\n\n$3",
+    "readAgainRefresh": "The next refresh reads it again from RSI. Your hangar on RSI's website stays as it is.",
+    "readAgainAuto": "It is read again from RSI on its own as soon as the Hangar Manager is open.",
+    "resetDone": "“$1” deleted.",
+    "checkFailed": "The last check failed.",
+    "hangar": {
+      "name": "My Hangar",
+      "content": "Pledges with their items, ship links and images",
+      "missing": "Until then “My Hangar” offers the initial load, and the Pledge Store and the buy back miss your hangar."
+    },
+    "buyback": {
+      "name": "Buy Back",
+      "content": "Melted pledges and buy back tokens",
+      "missing": "Until then the buy back is empty, and the Pledge Store can't count your buy back."
+    },
+    "orders": {
+      "name": "Order history",
+      "content": "The order of every pledge, from the pledge log and the billing list",
+      "missing": "Until then refund tags, order details, the warbond filter and the search by order ID are missing. Reading it again takes the longest: hundreds of pages for large accounts."
+    },
+    "ships": {
+      "name": "Ships",
+      "content": "All ships with standard price, image and Pledge Store link",
+      "missing": "Until then the discounts and the ship prices of applied upgrades are missing."
+    },
+    "shipsBuyable": {
+      "name": "Ships on sale",
+      "content": "SKUs and prices of the ships currently on sale",
+      "missing": "Nothing uses them yet."
+    },
+    "shipsWarbonds": {
+      "name": "Warbond offers",
+      "content": "Ships currently offered as warbond edition",
+      "missing": "Until then the Pledge Store shows no offers."
+    },
+    "settings": {
+      "name": "Settings",
+      "content": "Language, theme, display and privacy options, filters, sorting",
+      "missing": "All settings go back to their defaults."
+    }
   },
   "status": {
     "refreshing": "Refreshing …",

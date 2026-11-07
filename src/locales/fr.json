@@ -165,9 +165,9 @@
       "buyback": "Buy Back"
     },
     "reset": "Réinitialiser",
-    "clearCache": "Supprimer les données locales du hangar et du rachat",
-    "clearCacheHint": "Supprime seulement la copie que l’extension garde dans ce navigateur : pledges, commandes, prix des vaisseaux et état des mises à jour intelligentes. Rien n’est modifié dans ton hangar sur le site de RSI ; la prochaine actualisation relit tout.",
-    "clearCacheConfirm": "Supprimer les données du hangar et du rachat enregistrées par l’extension dans ce navigateur ?\n\nTon hangar sur le site de RSI reste inchangé.",
+    "clearCache": "Supprimer toutes les données locales",
+    "clearCacheHint": "Supprime tout ce qui figure sous « Données enregistrées », toute la copie que l’extension garde dans ce navigateur. Rien n’est modifié dans ton hangar sur le site de RSI ; la prochaine actualisation relit tout.",
+    "clearCacheConfirm": "Supprimer toutes les données enregistrées par l’extension dans ce navigateur ?\n\nTon hangar sur le site de RSI reste inchangé.",
     "clearCacheDone": "Supprimé. « $1 » dans « My Hangar » relit ton hangar, tes rachats et tes commandes.",
     "resetSettings": "Réinitialiser les paramètres",
     "resetSettingsHint": "Remet tous les paramètres à leurs valeurs par défaut, aussi sur tous les appareils synchronisés. Le hangar enregistré est conservé.",
@@ -186,6 +186,57 @@
     "license": "Licence MIT",
     "licenseHint": "Open source, fourni tel quel, sans garantie.",
     "disclaimer": "Un projet de fan non officiel, ni affilié à ni approuvé par Cloud Imperium Games ou Roberts Space Industries."
+  },
+  "storage": {
+    "title": "Données enregistrées",
+    "intro": "Ce que l’extension garde des données de RSI dans ce navigateur. Chaque partie peut être supprimée seule ; rien ne change sur le site de RSI.",
+    "colData": "Données",
+    "colEntries": "Entrées",
+    "colSize": "Taille",
+    "colSynced": "Dernière lecture complète",
+    "colChecked": "Dernière vérification",
+    "colReset": "Supprimer",
+    "resetOne": "Supprimer « $1 » dans ce navigateur",
+    "resetConfirm": "Supprimer « $1 » enregistré dans ce navigateur ?\n\n$2\n\n$3",
+    "readAgainRefresh": "La prochaine actualisation le relit depuis RSI. Ton hangar sur le site de RSI reste inchangé.",
+    "readAgainAuto": "Il est relu depuis RSI tout seul dès que le Hangar Manager est ouvert.",
+    "resetDone": "« $1 » supprimé.",
+    "checkFailed": "La dernière vérification a échoué.",
+    "hangar": {
+      "name": "My Hangar",
+      "content": "Pledges avec leurs objets, liens de vaisseaux et images",
+      "missing": "D’ici là, « My Hangar » propose le chargement initial, et le Pledge Store et le rachat ne connaissent pas ton hangar."
+    },
+    "buyback": {
+      "name": "Rachat",
+      "content": "Pledges fondus et jetons de rachat",
+      "missing": "D’ici là, le rachat est vide et le Pledge Store ne peut pas compter ton rachat."
+    },
+    "orders": {
+      "name": "Historique des commandes",
+      "content": "La commande de chaque pledge, d’après le journal des pledges et la liste de facturation",
+      "missing": "D’ici là, les tags de remboursement, les détails de commande, le filtre warbond et la recherche par numéro de commande manquent. Le relire prend le plus de temps : des centaines de pages pour les grands comptes."
+    },
+    "ships": {
+      "name": "Vaisseaux",
+      "content": "Tous les vaisseaux avec prix standard, image et lien vers le Pledge Store",
+      "missing": "D’ici là, les remises et les prix des vaisseaux des améliorations appliquées manquent."
+    },
+    "shipsBuyable": {
+      "name": "Vaisseaux en vente",
+      "content": "SKU et prix des vaisseaux actuellement en vente",
+      "missing": "Rien ne les utilise encore."
+    },
+    "shipsWarbonds": {
+      "name": "Offres warbond",
+      "content": "Vaisseaux actuellement proposés en édition warbond",
+      "missing": "D’ici là, le Pledge Store n’affiche aucune offre."
+    },
+    "settings": {
+      "name": "Paramètres",
+      "content": "Langue, thème, options d’affichage et de confidentialité, filtres, tri",
+      "missing": "Tous les paramètres reviennent à leurs valeurs par défaut."
+    }
   },
   "status": {
     "refreshing": "Actualisation …",
