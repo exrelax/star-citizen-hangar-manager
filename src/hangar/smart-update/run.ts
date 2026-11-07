@@ -13,6 +13,8 @@ export interface SmartUpdateDeps {
   now?: () => number;
   /** Pages checked besides the first and the last one (the setting). */
   spotCheckPages?: number;
+  /** Ids known to have changed, e.g. from the pledge log (see `CheckOptions.hintIds`). */
+  hintIds?: readonly number[];
 }
 
 /**
@@ -27,6 +29,7 @@ export async function runSmartUpdate(deps: SmartUpdateDeps = {}): Promise<CheckO
     fetchShipLinks = resolveShipLinks,
     now = Date.now,
     spotCheckPages,
+    hintIds,
   } = deps;
 
   const snapshot = await hangarSnapshot.getValue();
@@ -40,6 +43,7 @@ export async function runSmartUpdate(deps: SmartUpdateDeps = {}): Promise<CheckO
     fetchPage: (page) => fetchPage(page),
     cursor: meta.cursor ?? 0,
     spotCheckPages,
+    hintIds,
   });
   const none = { added: 0, removed: 0, changed: 0 };
   if (result.status !== 'updated') {

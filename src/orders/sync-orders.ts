@@ -36,6 +36,12 @@ export interface OrderSyncDeps {
 const LOG_PAGE_WORK = listPageWork(25);
 const BILLING_PAGE_WORK = listPageWork(ORDERS.billingPageSize);
 
+export interface OrderSyncResult {
+  snapshot: OrdersSnapshot;
+  /** Pledge log entries new since the last read; none on the first read. */
+  newLogEntries: string[];
+}
+
 /**
  * First step of the order sync: reads the first page of the pledge log and of the billing list.
  * Without a stored snapshot everything is read; otherwise only the pages up to the first known
@@ -44,7 +50,7 @@ const BILLING_PAGE_WORK = listPageWork(ORDERS.billingPageSize);
  */
 export async function prepareOrderSync(
   deps: OrderSyncDeps = {},
-): Promise<() => Promise<OrdersSnapshot>> {
+): Promise<() => Promise<OrderSyncResult>> {
   const {
     fetchLogPage = fetchPledgeLogPage,
     fetchBillingPage = fetchBillingListPage,
@@ -89,11 +95,13 @@ export async function prepareOrderSync(
 
     // The newest log entry tells whether anything happened on the account since the last read.
     const fingerprint = firstLog.entries[0] ?? '';
-    const newEntries = logEntries.filter((entry) => !knownEntries.has(entry)).length;
+    // New log entries: what happened on the account since the last read (all of it without one).
+    const newLogEntries = previous ? logEntries.filter((entry) => !knownEntries.has(entry)) : [];
+    const newEntries = newLogEntries.length;
     const newOrders = orders.filter((order) => !previous?.orders[order.id]).length;
     if (previous && newEntries === 0 && newOrders === 0) {
       await recordCheck(ordersMeta, { status: 'unchanged' }, { fingerprint });
-      return previous;
+      return { snapshot: previous, newLogEntries };
     }
 
     const snapshot: OrdersSnapshot = {
@@ -123,7 +131,7 @@ export async function prepareOrderSync(
     } else {
       await recordSync(ordersMeta, { fingerprint });
     }
-    return snapshot;
+    return { snapshot, newLogEntries };
   };
 }
 
@@ -131,7 +139,7 @@ export async function prepareOrderSync(
  * Reads the new orders for smart updates: usually just the first pages. Without stored orders it
  * does nothing – reading everything (hundreds of pages) is left to the full refresh.
  */
-export async function updateOrders(deps: OrderSyncDeps = {}): Promise<OrdersSnapshot | null> {
+export async function updateOrders(deps: OrderSyncDeps = {}): Promise<OrderSyncResult | null> {
   const stored = await ordersSnapshot.getValue();
   if (stored?.version !== ORDERS_SNAPSHOT_VERSION) return null;
   const run = await prepareOrderSync(deps);

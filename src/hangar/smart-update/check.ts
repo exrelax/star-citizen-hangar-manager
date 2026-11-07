@@ -35,6 +35,11 @@ export interface CheckOptions<T extends ListEntry = Pledge> {
   cursor: number;
   spotCheckPages?: number;
   maxRepairPages?: number;
+  /**
+   * Ids known to have changed, e.g. from new pledge log entries (see `pledge-log.ts`): their
+   * pages are checked as well – where they are stored, or where a new one would be listed.
+   */
+  hintIds?: readonly number[];
 }
 
 export interface ListCheckOptions<T extends ListEntry> extends CheckOptions<T> {
@@ -174,6 +179,7 @@ export async function checkList<T extends ListEntry>(
     fingerprint,
     followUpPages,
     merge = (fresh) => fresh,
+    hintIds = [],
   } = options;
 
   const storedIds = stored.map((pledge) => pledge.id).sort((a, b) => b - a);
@@ -198,7 +204,16 @@ export async function checkList<T extends ListEntry>(
     nextCursor: spot.nextCursor,
   });
 
-  await load([1, storedLastPage, ...spot.pages]);
+  // The page an id is on (or, if it isn't stored, would be on): ids are listed newest first.
+  const storedPageOf = (id: number) =>
+    Math.floor(storedIds.filter((stored) => stored > id).length / pageSize) + 1;
+  const hintPages = [...new Set(hintIds.map(storedPageOf))].filter(
+    (page) => page > 1 && page < storedLastPage && !spot.pages.includes(page),
+  );
+  // More hints than a check may load: a full sync is the better way.
+  if (hintPages.length > maxRepairPages) return done('needsFullSync');
+
+  await load([1, storedLastPage, ...spot.pages, ...hintPages]);
   const lastPage = pages.get(1)!.lastPage;
   await load([lastPage]);
   for (const page of [...pages.keys()]) if (page > lastPage) pages.delete(page);

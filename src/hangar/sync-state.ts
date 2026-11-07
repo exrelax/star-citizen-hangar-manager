@@ -7,6 +7,7 @@ import { reactive, readonly } from 'vue';
 import { recordCheck, recordSync, type CheckOutcome, type MetaItem } from '@/storage/meta';
 import { hangarMeta } from './hangar-storage';
 import { runSmartUpdate } from './smart-update/run';
+import { pledgeIdsOfLogEntries } from '@/orders/pledge-log';
 import { prepareOrderSync, updateOrders } from '@/orders/sync-orders';
 import { prepareHangarSync } from './sync';
 import { SyncProgressTracker, type SyncProgress } from './sync-progress';
@@ -67,7 +68,7 @@ export async function startSync(): Promise<void> {
     console.info(
       `[star-citizen-hangar-manager] Synced ${hangar.pledges.length} hangar and ` +
         `${buyback.pledges.length} buy back pledges` +
-        (orders ? ` and ${Object.keys(orders.orders).length} orders` : '') +
+        (orders ? ` and ${Object.keys(orders.snapshot.orders).length} orders` : '') +
         ` in ${seconds} s`,
     );
   } catch (error) {
@@ -79,9 +80,10 @@ export async function startSync(): Promise<void> {
 }
 
 /**
- * Runs a smart update of hangar and buy back if it is enabled and due (see
- * `smartUpdateMinutes` in the settings). Both run together: pledges melted in the hangar show up in
- * the buy back. `force` skips the interval, e.g. when returning from "My Gear".
+ * Runs a smart update of orders, buy back and hangar if it is enabled and due (see
+ * `smartUpdateMinutes` in the settings). Three checks work together: the new pledge log entries
+ * name changed pledges, a pledge new in the buy back must be gone from the hangar, and first,
+ * last and spot check pages find the rest (see `smart-update/check.ts`). `force` skips the interval, e.g. when returning from "My Gear".
  */
 export async function maybeRunSmartUpdate({ force = false } = {}): Promise<void> {
   if (state.running || state.checking) return;
@@ -96,13 +98,28 @@ export async function maybeRunSmartUpdate({ force = false } = {}): Promise<void>
     const { checkedAt } = await hangarMeta.getValue();
     if (!force && Date.now() - checkedAt < settings.smartUpdateMinutes * 60_000) return;
 
-    const { spotCheckPages } = settings;
-    await runLogged('Smart update', hangarMeta, () => runSmartUpdate({ spotCheckPages }));
-    await runLogged('Buy back smart update', buybackMeta, () => runBuybackSmartUpdate());
-    // New orders: usually only the first page of the pledge log and of the billing list.
-    await updateOrders().catch((error: unknown) =>
-      console.warn('[star-citizen-hangar-manager] Order update failed', error),
+    // 1. The pledge log: every action on the account is on its first page, also on old pledges.
+    //    The pledges it names are checked in the buy back and the hangar (see `pledge-log.ts`).
+    //    Usually one page of the log and of the billing list.
+    const orders = await updateOrders().catch((error: unknown) => {
+      console.warn('[star-citizen-hangar-manager] Order update failed', error);
+      return null;
+    });
+    const logIds = pledgeIdsOfLogEntries(orders?.newLogEntries ?? []);
+
+    // 2. The buy back first: a pledge new there was melted, so it has to be gone from the hangar.
+    const melted: number[] = [];
+    await runLogged('Buy back smart update', buybackMeta, () =>
+      runBuybackSmartUpdate({
+        hintIds: logIds,
+        onChanges: ({ added }) => melted.push(...added.map((pledge) => pledge.id)),
+      }),
     );
+
+    // 3. The hangar: first and last page, spot checks, and the pages of the pledges above.
+    const { spotCheckPages } = settings;
+    const hintIds = [...new Set([...logIds, ...melted])];
+    await runLogged('Smart update', hangarMeta, () => runSmartUpdate({ spotCheckPages, hintIds }));
   } finally {
     state.checking = false;
   }
