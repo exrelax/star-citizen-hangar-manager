@@ -29,6 +29,7 @@ import {
   type FilterState,
 } from '../filters';
 import SvgIcon from '@/icons/SvgIcon.vue';
+import SelectMenu from '@/shared/components/SelectMenu.vue';
 import { searchFromUrl, urlWithSearch } from '../route';
 import { matchesSearch, parseSearchQuery } from '../search';
 import { vTooltip } from '@/shared/tooltip/tooltip';
@@ -312,17 +313,15 @@ const countLabel = computed(() =>
       <span aria-live="polite">{{ countLabel }}</span>
       <span class="shm-count-side">
         <slot name="count-side" />
-        <select
-          v-if="sortOptions && sortOptions.length > 1"
-          class="shm-select shm-sort"
-          :value="sort"
-          :aria-label="i18n.t('sort.label')"
-          @change="emit('update:sort', ($event.target as HTMLSelectElement).value as S)"
-        >
-          <option v-for="option in sortOptions" :key="option.value" :value="option.value">
-            {{ option.label }}
-          </option>
-        </select>
+        <SelectMenu
+          v-if="sortOptions && sortOptions.length > 1 && sort"
+          class="shm-sort"
+          :options="sortOptions"
+          :model-value="sort"
+          :label="i18n.t('sort.label')"
+          icon="arrow-down-short-wide"
+          @update:model-value="emit('update:sort', $event)"
+        />
       </span>
     </div>
 
@@ -531,29 +530,6 @@ const countLabel = computed(() =>
   align-items: center;
   gap: 4px 16px;
   margin-left: auto;
-}
-
-/* The order: small, like the count line, with the arrow of the settings' selects. */
-.shm-sort {
-  height: 26px;
-  padding: 0 28px 0 8px;
-  color: var(--shm-text);
-  font: inherit;
-  appearance: none;
-  background-color: rgb(var(--shm-surface-rgb) / 0.8);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%238a9ba8' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 10px 7px;
-  border: 1px solid rgb(var(--shm-accent-rgb) / 0.35);
-  border-radius: 0;
-  cursor: pointer;
-}
-
-.shm-sort:hover,
-.shm-sort:focus-visible {
-  border-color: var(--shm-accent);
-  outline: none;
 }
 
 .shm-sentinel {
