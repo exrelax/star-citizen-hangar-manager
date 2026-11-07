@@ -59,8 +59,8 @@ back together; the times the manager shows before the first load). Smart updates
 a fraction of that:
 
 - **A handful of pages per check**: the first page (new purchases), the last page – together they
-  show whether pledges were added or removed anywhere – and two rotating spot-check pages (one in
-  the much larger buy back), which cover the whole hangar over time.
+  show whether pledges were added or removed anywhere – and two rotating spot-check pages (a
+  setting, up to 10; one in the much larger buy back), which cover the whole hangar over time.
 - **Exact, not guessed**: RSI lists pledges strictly by ID, newest first. So every page covers a
   closed range of pledge IDs, and comparing it with the stored pledges of that range shows exactly
   what was added, removed or changed. If the number of pledges between two checked pages differs,
@@ -70,7 +70,7 @@ a fraction of that:
   pledge log and billing history.
 - **Measured**: an unchanged hangar of ~1,000 pledges is checked in 0.4–0.7 seconds, the buy back of
   ~4,000 pledges in 1–3 seconds.
-- **Only when useful**: at most every 5 minutes, and right away when you come back from RSI's "My
+- **Only when useful**: at most every 5 minutes (a setting), and right away when you come back from RSI's "My
   Gear" page, where you may just have melted or gifted something. If too much changed, it suggests
   a full refresh instead of loading page after page.
 
@@ -414,6 +414,12 @@ In the order of the settings tab:
 - **Smart updates**:
   - **Check hangar, buy back and orders for changes** (on by default) – see
     [Built for speed](#built-for-speed).
+  - **Check for changes at most every** 5 minutes (1 to 1440; the default).
+  - **Spot checks per check (only for changes within an existing pledge)**: 2 hangar pages (1 to 10; the default) besides the first and the
+    last one. Added or removed pledges are found by every check anyway; the spot checks find
+    changes within a pledge (new items, gift status, …). The hint below shows, for your number of
+    hangar pages, how likely such a change shows in the next check and after how many checks every
+    page was checked.
   - **Read the warbond CCUs of the Pledge Store again after** 5 minutes (1 to 1440; the default).
     With smart updates off, they are read only with the refresh button and the initial load.
 - **Filters**: order and selection of the filter buttons, separately for My Hangar and Buy Back

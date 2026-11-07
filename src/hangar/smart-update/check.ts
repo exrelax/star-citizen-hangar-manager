@@ -84,6 +84,23 @@ export function pickSpotPages(cursor: number, lastPage: number, count: number) {
   return { pages, nextCursor: (cursor + take) % middle };
 }
 
+/**
+ * How much of a list one check covers: the first, the last and `count` spot check pages of
+ * `lastPage` pages. `share` is the chance that a change on a random page shows in the next check;
+ * after `checksToCoverAll` checks every page was checked once (the spot checks rotate).
+ */
+export function spotCheckCoverage(lastPage: number, count: number) {
+  const pages = Math.max(1, lastPage);
+  const spot = Math.min(Math.max(0, count), Math.max(0, pages - 2));
+  const checked = Math.min(pages, 2 + spot);
+  return {
+    pages,
+    checked,
+    share: checked / pages,
+    checksToCoverAll: spot ? Math.ceil((pages - 2) / spot) : 1,
+  };
+}
+
 /** Content of a pledge as RSI shows it; data added by the extension (category, images) is left out. */
 export function pledgeFingerprint(pledge: Pledge): string {
   return JSON.stringify([
@@ -151,7 +168,7 @@ export async function checkList<T extends ListEntry>(
   const {
     fetchPage,
     cursor,
-    spotCheckPages = SMART_UPDATE.spotCheckPages,
+    spotCheckPages = SMART_UPDATE.spotCheckPages.default,
     maxRepairPages = SMART_UPDATE.maxRepairPages,
     pageSize,
     fingerprint,

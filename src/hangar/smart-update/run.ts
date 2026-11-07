@@ -10,6 +10,8 @@ export interface SmartUpdateDeps {
   fetchShipImages?: () => Promise<ShipImages>;
   fetchShipLinks?: (pledges: Pledge[], previous: ShipLinks | undefined) => Promise<ShipLinks>;
   now?: () => number;
+  /** Pages checked besides the first and the last one (the setting). */
+  spotCheckPages?: number;
 }
 
 /**
@@ -23,6 +25,7 @@ export async function runSmartUpdate(deps: SmartUpdateDeps = {}): Promise<CheckO
     fetchShipImages = fetchShipMatrixImages,
     fetchShipLinks = resolveShipLinks,
     now = Date.now,
+    spotCheckPages,
   } = deps;
 
   const snapshot = await hangarSnapshot.getValue();
@@ -38,6 +41,7 @@ export async function runSmartUpdate(deps: SmartUpdateDeps = {}): Promise<CheckO
   const result = await checkHangar(snapshot.pledges, {
     fetchPage: (page) => fetchPage(page),
     cursor: checkState.cursor,
+    spotCheckPages,
   });
   const none = { added: 0, removed: 0, changed: 0 };
   if (result.status !== 'updated') {

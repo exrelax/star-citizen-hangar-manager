@@ -1,4 +1,3 @@
-import { SMART_UPDATE } from '@/config';
 import { buybackCheckState } from '@/buyback/buyback-storage';
 import { runBuybackSmartUpdate } from '@/buyback/run';
 import { prepareBuybackSync } from '@/buyback/sync-buyback';
@@ -99,7 +98,7 @@ export async function startSync(): Promise<void> {
 
 /**
  * Runs a smart update of hangar and buy back if it is enabled and due (see
- * `SMART_UPDATE.checkIntervalMs`). Both run together: pledges melted in the hangar show up in
+ * `smartUpdateMinutes` in the settings). Both run together: pledges melted in the hangar show up in
  * the buy back. `force` skips the interval, e.g. when returning from "My Gear".
  */
 export async function maybeRunSmartUpdate({ force = false } = {}): Promise<void> {
@@ -114,9 +113,10 @@ export async function maybeRunSmartUpdate({ force = false } = {}): Promise<void>
     const settings = withDefaults(await settingsItem.getValue());
     if (!settings.smartUpdates) return;
     const { lastCheckAt } = await hangarCheckState.getValue();
-    if (!force && Date.now() - lastCheckAt < SMART_UPDATE.checkIntervalMs) return;
+    if (!force && Date.now() - lastCheckAt < settings.smartUpdateMinutes * 60_000) return;
 
-    await runLogged('Smart update', hangarCheckState, () => runSmartUpdate());
+    const { spotCheckPages } = settings;
+    await runLogged('Smart update', hangarCheckState, () => runSmartUpdate({ spotCheckPages }));
     await runLogged('Buy back smart update', buybackCheckState, () => runBuybackSmartUpdate());
     // New orders: usually only the first page of the pledge log and of the billing list.
     await updateOrders().catch((error: unknown) =>
