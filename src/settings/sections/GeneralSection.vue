@@ -1,25 +1,15 @@
 <script setup lang="ts">
-import { SMART_UPDATE } from '@/config';
 import { i18n } from '@/i18n';
 import SettingCheck from '../SettingCheck.vue';
 import { BUYBACK_LINK_MODES, type BuybackLinkMode, type Settings } from '../settings';
 
 defineProps<{ settings: Settings }>();
 const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
-
-const checkIntervalMinutes = SMART_UPDATE.checkIntervalMs / 60_000;
 </script>
 
 <template>
   <fieldset class="shm-setting">
     <legend class="shm-label">{{ i18n.t('settings.general') }}</legend>
-    <SettingCheck
-      :checked="settings.smartUpdates"
-      :hint="i18n.t('settings.smartUpdatesHint', [checkIntervalMinutes])"
-      @change="(smartUpdates) => emit('update', { smartUpdates })"
-    >
-      {{ i18n.t('settings.smartUpdates') }}
-    </SettingCheck>
     <SettingCheck
       :checked="settings.hideSupersededInsurances"
       :hint="i18n.t('settings.hideSupersededInsurancesHint')"

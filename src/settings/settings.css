@@ -84,6 +84,29 @@
   cursor: pointer;
 }
 
+/* A number with its unit after it, e.g. "5 minutes". */
+.shm-settings .shm-number-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shm-settings .shm-input {
+  width: 80px;
+  height: 32px;
+  padding: 0 10px;
+  color: var(--shm-text);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  background-color: rgb(var(--shm-surface-rgb) / 0.9);
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.35);
+}
+
+.shm-settings .shm-input:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .shm-settings .shm-hint {
   margin: 6px 0 0;
   color: var(--shm-text-muted);

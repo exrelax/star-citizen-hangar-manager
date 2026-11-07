@@ -543,7 +543,8 @@ html .shm-theme-modern .shm-settings {
   font-size: calc(14px * var(--shm-font-scale));
 }
 
-html .shm-theme-modern .shm-select {
+html .shm-theme-modern .shm-select,
+html .shm-theme-modern .shm-input {
   height: 32px;
   color: var(--shm-text);
   background-color: var(--shm-fill);

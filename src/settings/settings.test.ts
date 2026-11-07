@@ -26,6 +26,7 @@ describe('withDefaults', () => {
       demoMode: true,
       hideRefund: true,
       smartUpdates: true,
+      storeRefreshMinutes: 5,
       buybackLinkMode: 'single',
       theme: 'modern',
       fontSize: 'medium',
@@ -45,8 +46,16 @@ describe('withDefaults', () => {
         theme: 'neon',
         fontSize: 'huge',
         compactView: 'no',
+        storeRefreshMinutes: 2.5,
         filters: { hangar: 'all', buyback: { order: 5 } },
       } as never),
     ).toEqual(DEFAULT_SETTINGS);
+  });
+
+  it('accepts whole minutes in range for the store refresh only', () => {
+    expect(withDefaults({ storeRefreshMinutes: 30 }).storeRefreshMinutes).toBe(30);
+    for (const storeRefreshMinutes of [0, -5, 1441, 2.5, '10']) {
+      expect(withDefaults({ storeRefreshMinutes } as never).storeRefreshMinutes).toBe(5);
+    }
   });
 });

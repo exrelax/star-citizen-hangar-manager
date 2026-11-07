@@ -1,35 +1,26 @@
-import { ref, shallowRef } from 'vue';
-import { fetchStoreData } from './fetch-store';
-import type { StoreData } from './warbond';
+import { computed, onMounted, onUnmounted, ref, shallowRef } from 'vue';
+import { STORE_SNAPSHOT_VERSION, storeSnapshot, type StoreSnapshot } from './store-storage';
 
-/*
- * The pledge store's offers, read from RSI when the tab is opened. They change with RSI's sales,
- * so they aren't stored: one read per page view, shared by every use of this composable.
- */
-
-const data = shallowRef<StoreData>();
-const error = ref<string>();
-const loading = ref(false);
-let request: Promise<void> | undefined;
-
-/** Reads the offers once per page view (again after a failure). */
-function load(fetchData = fetchStoreData): Promise<void> {
-  request ??= (async () => {
-    loading.value = true;
-    error.value = undefined;
-    try {
-      data.value = await fetchData();
-    } catch (cause) {
-      console.error('[star-citizen-hangar-manager] Pledge store unavailable', cause);
-      error.value = cause instanceof Error ? cause.message : String(cause);
-      request = undefined;
-    } finally {
-      loading.value = false;
-    }
-  })();
-  return request;
-}
-
+/** The stored offers of the pledge store, kept up to date after each refresh (see sync-store.ts). */
 export function useStoreData() {
-  return { data, error, loading, load };
+  const snapshot = shallowRef<StoreSnapshot | null>(null);
+  /** Set once the stored offers were read (there may be none). */
+  const loaded = ref(false);
+
+  const unwatch = storeSnapshot.watch((value) => (snapshot.value = value));
+  onMounted(async () => {
+    snapshot.value = await storeSnapshot.getValue();
+    loaded.value = true;
+  });
+  onUnmounted(unwatch);
+
+  const current = computed(() =>
+    snapshot.value?.version === STORE_SNAPSHOT_VERSION ? snapshot.value : undefined,
+  );
+  return {
+    data: computed(() => current.value?.data),
+    /** Epoch milliseconds of the read. */
+    fetchedAt: computed(() => current.value && Date.parse(current.value.fetchedAt)),
+    loaded,
+  };
 }

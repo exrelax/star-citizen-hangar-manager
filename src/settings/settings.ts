@@ -1,5 +1,5 @@
 import { BUYBACK_FILTER_CATEGORIES, type BuybackFilter } from '@/buyback/buyback-view';
-import { FILTERS, FONT_SIZE_SCALES } from '@/config';
+import { FILTERS, FONT_SIZE_SCALES, PLEDGE_STORE } from '@/config';
 import {
   normalizeFilterGroups,
   PLEDGE_FILTER_CATEGORIES,
@@ -56,6 +56,8 @@ export interface Settings {
   hideRefund: boolean;
   /** Keeps hangar, buy back and orders current by checking a few of their pages now and then. */
   smartUpdates: boolean;
+  /** Smart updates read the warbond CCUs of the Pledge Store again after this many minutes. */
+  storeRefreshMinutes: number;
   buybackLinkMode: BuybackLinkMode;
   theme: Theme;
   /** Text size of the manager and its dialogs, the same for both themes. */
@@ -87,6 +89,7 @@ export const DEFAULT_SETTINGS: Settings = {
   demoMode: false,
   hideRefund: false,
   smartUpdates: true,
+  storeRefreshMinutes: PLEDGE_STORE.refreshMinutes.default,
   buybackLinkMode: 'single',
   theme: 'modern',
   fontSize: 'medium',
@@ -107,6 +110,12 @@ export const settingsItem = storage.defineItem<Partial<Settings> | null>('sync:s
 });
 
 const isBoolean = (value: unknown): value is boolean => typeof value === 'boolean';
+
+/** Whole minutes in the range of the store's refresh interval. */
+export const isRefreshMinutes = (value: unknown): value is number =>
+  Number.isInteger(value) &&
+  (value as number) >= PLEDGE_STORE.refreshMinutes.min &&
+  (value as number) <= PLEDGE_STORE.refreshMinutes.max;
 
 /** A check that accepts only the given values, e.g. the themes. */
 const oneOf =
@@ -135,6 +144,7 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
     demoMode: pick('demoMode', isBoolean),
     hideRefund: pick('hideRefund', isBoolean),
     smartUpdates: pick('smartUpdates', isBoolean),
+    storeRefreshMinutes: pick('storeRefreshMinutes', isRefreshMinutes),
     buybackLinkMode: pick('buybackLinkMode', oneOf(BUYBACK_LINK_MODES)),
     theme: pick('theme', oneOf(THEMES)),
     fontSize: pick('fontSize', oneOf(FONT_SIZES)),
