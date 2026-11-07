@@ -1,4 +1,4 @@
-import { LOCAL_COPY } from '@/storage/registry';
+import { LOCAL_COPY, type StorageDefinition } from '@/storage/registry';
 
 /**
  * Deletes the extension's local copy of RSI's data – hangar, buy back, orders, ships, warbond
@@ -10,4 +10,9 @@ export async function clearLocalCache(): Promise<void> {
   await Promise.all(
     LOCAL_COPY.flatMap(({ item, meta }) => [item.removeValue(), meta?.removeValue()]),
   );
+}
+
+/** Deletes one storage of the local copy with its metadata, e.g. only the buy back. */
+export async function clearStorage(definition: StorageDefinition): Promise<void> {
+  await Promise.all([definition.item.removeValue(), definition.meta?.removeValue()]);
 }

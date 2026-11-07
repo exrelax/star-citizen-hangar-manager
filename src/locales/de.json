@@ -165,9 +165,9 @@
       "buyback": "Buy Back"
     },
     "reset": "Zurücksetzen",
-    "clearCache": "Lokale Hangar- & Buy-Back-Daten löschen",
-    "clearCacheHint": "Löscht nur die Kopie, die die Extension in diesem Browser speichert: Pledges, Bestellungen, Schiffspreise und den Stand der Smart Updates. Am Hangar auf der RSI-Website ändert sich nichts; die nächste Aktualisierung liest alles neu ein.",
-    "clearCacheConfirm": "Die von der Extension in diesem Browser gespeicherten Hangar- und Buy-Back-Daten löschen?\n\nDein Hangar auf der RSI-Website bleibt unverändert.",
+    "clearCache": "Alle lokalen Daten löschen",
+    "clearCacheHint": "Löscht alles unter „Gespeicherte Daten“, also die ganze Kopie, die die Extension in diesem Browser speichert. Am Hangar auf der RSI-Website ändert sich nichts; die nächste Aktualisierung liest alles neu ein.",
+    "clearCacheConfirm": "Alle von der Extension in diesem Browser gespeicherten Daten löschen?\n\nDein Hangar auf der RSI-Website bleibt unverändert.",
     "clearCacheDone": "Gelöscht. „$1“ in „My Hangar“ liest Hangar, Buy Back und Bestellungen neu ein.",
     "resetSettings": "Settings zurücksetzen",
     "resetSettingsHint": "Setzt alle Einstellungen auf die Standardwerte zurück, auch auf allen Geräten, mit denen sie synchronisiert werden. Der gespeicherte Hangar bleibt erhalten.",
@@ -186,6 +186,57 @@
     "license": "MIT-Lizenz",
     "licenseHint": "Open Source, ohne Gewähr.",
     "disclaimer": "Ein inoffizielles Fanprojekt, nicht verbunden mit oder unterstützt von Cloud Imperium Games oder Roberts Space Industries."
+  },
+  "storage": {
+    "title": "Gespeicherte Daten",
+    "intro": "Was die Extension von RSIs Daten in diesem Browser speichert. Jeder Teil lässt sich einzeln löschen; auf der RSI-Website ändert sich nichts.",
+    "colData": "Daten",
+    "colEntries": "Einträge",
+    "colSize": "Größe",
+    "colSynced": "Zuletzt vollständig gelesen",
+    "colChecked": "Zuletzt geprüft",
+    "colReset": "Löschen",
+    "resetOne": "„$1“ in diesem Browser löschen",
+    "resetConfirm": "„$1“ in diesem Browser löschen?\n\n$2\n\n$3",
+    "readAgainRefresh": "Die nächste Aktualisierung liest es neu von RSI. Dein Hangar auf der RSI-Website bleibt unverändert.",
+    "readAgainAuto": "Es wird von selbst neu von RSI gelesen, sobald der Hangar Manager offen ist.",
+    "resetDone": "„$1“ gelöscht.",
+    "checkFailed": "Die letzte Prüfung ist fehlgeschlagen.",
+    "hangar": {
+      "name": "My Hangar",
+      "content": "Pledges mit Items, Schiffslinks und Bildern",
+      "missing": "Bis dahin bietet „My Hangar“ den Initial Load an, und Pledge Store und Buy Back fehlt dein Hangar."
+    },
+    "buyback": {
+      "name": "Buy Back",
+      "content": "Eingeschmolzene Pledges und Buy-Back-Tokens",
+      "missing": "Bis dahin ist das Buy Back leer, und der Pledge Store kann dein Buy Back nicht mitzählen."
+    },
+    "orders": {
+      "name": "Bestellhistorie",
+      "content": "Die Bestellung jedes Pledges, aus Pledge Log und Rechnungsliste",
+      "missing": "Bis dahin fehlen Refund-Tags, Bestelldetails, der Warbond-Filter und die Suche nach Bestellnummern. Das Neueinlesen dauert am längsten: bei großen Accounts Hunderte Seiten."
+    },
+    "ships": {
+      "name": "Schiffe",
+      "content": "Alle Schiffe mit Standardpreis, Bild und Pledge-Store-Link",
+      "missing": "Bis dahin fehlen die Rabatte und die Schiffspreise angewendeter Upgrades."
+    },
+    "shipsBuyable": {
+      "name": "Kaufbare Schiffe",
+      "content": "SKUs und Preise der aktuell angebotenen Schiffe",
+      "missing": "Wird noch nirgends genutzt."
+    },
+    "shipsWarbonds": {
+      "name": "Warbond-Angebote",
+      "content": "Aktuell als Warbond-Edition angebotene Schiffe",
+      "missing": "Bis dahin zeigt der Pledge Store keine Angebote."
+    },
+    "settings": {
+      "name": "Einstellungen",
+      "content": "Sprache, Theme, Anzeige- und Datenschutzoptionen, Filter, Sortierung",
+      "missing": "Alle Einstellungen gehen auf ihre Standardwerte zurück."
+    }
   },
   "status": {
     "refreshing": "Wird aktualisiert …",
