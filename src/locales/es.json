@@ -234,6 +234,11 @@
       "content": "Naves ofrecidas ahora como edición warbond",
       "missing": "Hasta entonces la Pledge Store no muestra ofertas."
     },
+    "storeItems": {
+      "name": "Artículos de la Pledge Store",
+      "content": "Naves, equipo, packs, pinturas y más con categoría, precio, imagen y enlace",
+      "missing": "Aún no lo usa nada."
+    },
     "settings": {
       "name": "Ajustes",
       "content": "Idioma, tema, opciones de visualización y privacidad, filtros, orden",

@@ -234,6 +234,11 @@
       "content": "Aktuell als Warbond-Edition angebotene Schiffe",
       "missing": "Bis dahin zeigt der Pledge Store keine Angebote."
     },
+    "storeItems": {
+      "name": "Pledge-Store-Artikel",
+      "content": "Schiffe, Gear, Packs, Paints und mehr mit Kategorie, Preis, Bild und Link",
+      "missing": "Wird noch nirgends genutzt."
+    },
     "settings": {
       "name": "Einstellungen",
       "content": "Sprache, Theme, Anzeige- und Datenschutzoptionen, Filter, Sortierung",

@@ -443,7 +443,7 @@ In the order of the settings tab:
   uncheck it to hide its button.
 - **Show links for ships**: erkul.games and FleetYards.net, each on or off.
 - **Stored data**: a table of everything the extension keeps in this browser – My Hangar, Buy
-  Back, order history, ships, ships on sale and warbond offers – with the number of entries, the
+  Back, order history, ships, ships on sale, warbond offers and Pledge Store items – with the number of entries, the
   size, the last full read and the last check. Each can be read again from RSI on its own (the
   refresh icon; ships, ships on sale and warbond offers are one read) and deleted on its own; the
   confirmation

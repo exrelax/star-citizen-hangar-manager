@@ -145,6 +145,30 @@ export const SMART_UPDATE = {
   statusRefreshMs: 30 * 1000,
 } as const;
 
+/**
+ * The items of RSI's Pledge Store (see `src/store/items`), read with the store's own search: all
+ * items of these products, 100 per request – 13 requests, ~2 s for ~680 items (November 2026).
+ * Physical merchandise and CCUs (from the ship upgrade tool) are left out.
+ */
+export const STORE_ITEMS = {
+  /** RSI's product ids: standalone ships, gear, packs, add-ons, game packages, paints, … */
+  products: [
+    { id: 72, name: 'Standalone Ships' },
+    { id: 289, name: 'Gear' },
+    { id: 270, name: 'Packs' },
+    { id: 3, name: 'Add-Ons' },
+    { id: 45, name: 'Package' },
+    { id: 268, name: 'Paints' },
+    { id: 65, name: 'Subscribers Store' },
+    { id: 60, name: 'Gift Cards' },
+  ],
+  pageSize: 100,
+  /** Requests at the same time. */
+  concurrency: 2,
+  /** Read again by smart updates once the stored items are older than this. */
+  maxAgeMs: 6 * 60 * 60 * 1000,
+} as const;
+
 /** The "Pledge Store" tab: current warbond CCUs from RSI's ship upgrade tool (see `src/store`). */
 export const PLEDGE_STORE = {
   /** Ships to start from shown per warbond: those with the cheapest CCUs to it. */
