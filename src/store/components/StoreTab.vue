@@ -6,7 +6,11 @@ import { i18n, locale } from '@/i18n';
 import type { Settings } from '@/settings/settings';
 import { formatRelativeTime } from '@/shared/lib/relative-time';
 import { computed, onUnmounted, ref, watch } from 'vue';
-import { maybeRefreshStore, refreshStore, storeSyncState } from '../sync-store';
+import {
+  maybeRefreshUpgradeTool,
+  refreshUpgradeTool,
+  upgradeToolState,
+} from '@/ships/sync-upgrade-tool';
 import { useStoreData } from '../use-store-data';
 import { buildWarbondOffers } from '../warbond';
 import RefreshIcon from '@/hangar/components/RefreshIcon.vue';
@@ -16,7 +20,7 @@ import { vTooltip } from '@/shared/tooltip/tooltip';
 /*
  * The "Pledge Store" tab: the warbond CCUs RSI currently offers, each with the cheapest ships to
  * start from and the hangar's CCUs that can't be chained with it. The offers are stored; while the
- * tab is shown they are read again once due (see sync-store.ts and the smart update settings).
+ * tab is shown they are read again once due (see ships/sync-upgrade-tool.ts and the smart update settings).
  */
 
 const props = defineProps<{
@@ -39,10 +43,10 @@ watch(
   (active) => {
     stopTimer();
     if (!active) return;
-    void maybeRefreshStore();
+    void maybeRefreshUpgradeTool();
     timer = setInterval(() => {
       now.value = Date.now();
-      if (document.visibilityState === 'visible') void maybeRefreshStore();
+      if (document.visibilityState === 'visible') void maybeRefreshUpgradeTool();
     }, PLEDGE_STORE.dueCheckMs);
   },
   { immediate: true },
@@ -70,16 +74,16 @@ const displayClasses = computed(() => ({
     <h3 id="shm-store-title" class="shm-store-title">{{ i18n.t('store.warbondTitle') }}</h3>
     <p class="shm-store-intro">{{ i18n.t('store.warbondIntro') }}</p>
 
-    <p v-if="!data && (!loaded || storeSyncState.loading)" class="shm-store-state" role="status">
+    <p v-if="!data && (!loaded || upgradeToolState.loading)" class="shm-store-state" role="status">
       {{ i18n.t('store.loading') }}
     </p>
-    <div v-else-if="storeSyncState.error" class="shm-store-state is-error" role="alert">
-      <p>{{ i18n.t('store.failed', [storeSyncState.error]) }}</p>
+    <div v-else-if="upgradeToolState.error" class="shm-store-state is-error" role="alert">
+      <p>{{ i18n.t('store.failed', [upgradeToolState.error]) }}</p>
       <button
         type="button"
         class="shm-button"
-        :disabled="storeSyncState.loading"
-        @click="refreshStore()"
+        :disabled="upgradeToolState.loading"
+        @click="refreshUpgradeTool()"
       >
         {{ i18n.t('store.retry') }}
       </button>
@@ -88,18 +92,18 @@ const displayClasses = computed(() => ({
       <p class="shm-count">
         <span>{{ i18n.t('store.count', [offers.length]) }}</span>
         <span class="shm-store-updated">
-          <span v-if="storeSyncState.loading">{{ i18n.t('store.updating') }}</span>
+          <span v-if="upgradeToolState.loading">{{ i18n.t('store.updating') }}</span>
           <span v-else-if="updated">{{ updated }}</span>
           <!-- Reads only the Pledge Store again, not hangar and buy back. -->
           <button
             v-tooltip="i18n.t('store.refresh')"
             type="button"
             class="shm-store-refresh"
-            :disabled="storeSyncState.loading"
+            :disabled="upgradeToolState.loading"
             :aria-label="i18n.t('store.refresh')"
-            @click="refreshStore()"
+            @click="refreshUpgradeTool()"
           >
-            <RefreshIcon :spinning="storeSyncState.loading" />
+            <RefreshIcon :spinning="upgradeToolState.loading" />
           </button>
         </span>
       </p>

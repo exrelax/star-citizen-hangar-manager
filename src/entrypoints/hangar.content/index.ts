@@ -12,6 +12,7 @@ import {
   managerHref,
 } from '@/hangar/route';
 import { maybeRunSmartUpdate } from '@/hangar/sync-state';
+import { migrateStorage } from '@/storage/migrate';
 import { isPlainLeftClick } from '@/shared/dom';
 import { MANAGER_CONTAINER } from '@/themes/theme';
 import App from './App.vue';
@@ -28,6 +29,8 @@ export default defineContentScript({
     const hangarLink = nav && findHangarLink(nav);
     if (!nav || !hangarLink) return;
 
+    // Data of earlier versions moves to its current keys before anything reads it.
+    await migrateStorage();
     // Applied before anything is rendered, so the nav entry and view start in the right language.
     ctx.onInvalidated(await followLanguageSetting());
 

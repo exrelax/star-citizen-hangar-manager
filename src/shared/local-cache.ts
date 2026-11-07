@@ -1,28 +1,11 @@
-import { buybackCheckState, buybackSnapshot } from '@/buyback/buyback-storage';
-import { hangarCheckState, hangarSnapshot, shipPricesItem } from '@/hangar/hangar-storage';
-import { ordersSnapshot } from '@/orders/orders-storage';
-import { storeSnapshot } from '@/store/store-storage';
+import { LOCAL_COPY } from '@/storage/registry';
 
 /**
- * Everything the extension keeps of the hangar and the buy back in the browser: the pledges, their
- * orders, the ship prices, the offers of the Pledge Store and the state of the smart updates. Not
- * the settings.
- */
-const CACHE_ITEMS = [
-  hangarSnapshot,
-  hangarCheckState,
-  shipPricesItem,
-  ordersSnapshot,
-  buybackSnapshot,
-  buybackCheckState,
-  storeSnapshot,
-];
-
-/**
- * Deletes the stored hangar and buy back. Only the extension's copy: nothing is changed on RSI's
- * website, and the next refresh reads everything again. The open lists empty at once, as they
- * follow the stored items.
+ * Deletes the extension's local copy of RSI's data – hangar, buy back, orders, ships, warbond
+ * offers – and the state of the smart updates (see `storage/registry.ts`); not the settings. Only
+ * the extension's copy: nothing is changed on RSI's website, and the next refresh reads
+ * everything again. The open lists empty at once, as they follow the stored items.
  */
 export async function clearLocalCache(): Promise<void> {
-  await storage.removeItems(CACHE_ITEMS);
+  await Promise.all(LOCAL_COPY.map((storage) => storage.item.removeValue()));
 }

@@ -2,6 +2,7 @@ import { PLEDGE_STORE } from '@/config';
 import type { BuybackView } from '@/buyback/buyback-view';
 import type { PledgeView } from '@/hangar/pledge-view';
 import { createPriceLookup, type PledgeDiscount, type ShipPrice } from '@/hangar/ship-prices';
+import type { Ship } from '@/ships/ships';
 
 /*
  * Warbond CCUs of the pledge store. RSI's ship upgrade tool lists a "Warbond Edition" SKU for some
@@ -15,28 +16,18 @@ import { createPriceLookup, type PledgeDiscount, type ShipPrice } from '@/hangar
  * at or below the warbond price can (e.g. one to the ship the warbond CCU starts from).
  */
 
-/** A ship of RSI's upgrade tool; prices in USD. */
-export interface StoreShip {
-  /** The upgrade tool's ship id (not the hangar's). */
-  id: number;
-  name: string;
-  /** Standard price. */
-  msrp: number;
-  image?: string;
-}
-
 /** A ship currently offered as warbond edition. */
 export interface WarbondTarget {
-  ship: StoreShip;
+  ship: Ship;
   /** The upgrade tool's id of the warbond SKU. */
   skuId: number;
   /** Warbond price in USD. */
   price: number;
 }
 
-/** What the upgrade tool offers: all ships (to start from) and the warbond targets. */
+/** What the offers are built from: all ships (to start from) and the warbond targets. */
 export interface StoreData {
-  ships: StoreShip[];
+  ships: Ship[];
   warbonds: WarbondTarget[];
 }
 
@@ -50,7 +41,7 @@ export interface Holdings {
 
 /** A ship to start a warbond CCU from. */
 export interface BaseShip {
-  ship: StoreShip;
+  ship: Ship;
   /** Price of the CCU from this ship to the warbond. */
   ccuPrice: number;
   holdings: Holdings;
@@ -83,7 +74,7 @@ const NO_HOLDINGS: Holdings = { hangarShips: 0, hangarCcus: 0, buybackShips: 0, 
 
 /** The ships with the cheapest CCUs to the warbond: the most expensive ones below its price. */
 export function cheapestBases(
-  ships: readonly StoreShip[],
+  ships: readonly Ship[],
   target: WarbondTarget,
   holdings: ReadonlyMap<number, Holdings> = new Map(),
   count: number = PLEDGE_STORE.baseShips,
@@ -100,7 +91,7 @@ export function cheapestBases(
 }
 
 /** Finds the upgrade tool's ship for a ship name of the hangar or the buy back. */
-export function createShipLookup(ships: readonly StoreShip[]) {
+export function createShipLookup(ships: readonly Ship[]) {
   const prices = ships.map(({ name, msrp }) => ({ name, price: msrp }));
   const shipOf = new Map(prices.map((price, index) => [price, ships[index]!]));
   const priceOf = createPriceLookup(prices);

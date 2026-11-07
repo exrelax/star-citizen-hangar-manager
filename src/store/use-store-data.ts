@@ -1,26 +1,51 @@
+import { current, shipsItem, warbondsItem } from '@/ships/ships-storage';
+import type { ShipsSnapshot, WarbondsSnapshot } from '@/ships/ships-storage';
 import { computed, onMounted, onUnmounted, ref, shallowRef } from 'vue';
-import { STORE_SNAPSHOT_VERSION, storeSnapshot, type StoreSnapshot } from './store-storage';
+import type { StoreData, WarbondTarget } from './warbond';
 
-/** The stored offers of the pledge store, kept up to date after each refresh (see sync-store.ts). */
+/**
+ * The stored ships and warbond editions of the upgrade tool (see `src/ships`), as the Pledge
+ * Store tab uses them, kept up to date after each refresh.
+ */
 export function useStoreData() {
-  const snapshot = shallowRef<StoreSnapshot | null>(null);
-  /** Set once the stored offers were read (there may be none). */
+  const ships = shallowRef<ShipsSnapshot | null>(null);
+  const warbonds = shallowRef<WarbondsSnapshot | null>(null);
+  /** Set once the stored data was read (there may be none). */
   const loaded = ref(false);
 
-  const unwatch = storeSnapshot.watch((value) => (snapshot.value = value));
+  const unwatchShips = shipsItem.watch((value) => (ships.value = value));
+  const unwatchWarbonds = warbondsItem.watch((value) => (warbonds.value = value));
   onMounted(async () => {
-    snapshot.value = await storeSnapshot.getValue();
+    [ships.value, warbonds.value] = await Promise.all([
+      shipsItem.getValue(),
+      warbondsItem.getValue(),
+    ]);
     loaded.value = true;
   });
-  onUnmounted(unwatch);
+  onUnmounted(() => {
+    unwatchShips();
+    unwatchWarbonds();
+  });
 
-  const current = computed(() =>
-    snapshot.value?.version === STORE_SNAPSHOT_VERSION ? snapshot.value : undefined,
-  );
+  const data = computed((): StoreData | undefined => {
+    const shipList = current(ships.value);
+    const offers = current(warbonds.value);
+    if (!shipList || !offers) return undefined;
+    const byId = new Map(shipList.ships.map((ship) => [ship.id, ship]));
+    const targets = offers.warbonds.flatMap(({ shipId, skuId, price }): WarbondTarget[] => {
+      const ship = byId.get(shipId);
+      return ship ? [{ ship, skuId, price }] : [];
+    });
+    return { ships: shipList.ships, warbonds: targets };
+  });
+
   return {
-    data: computed(() => current.value?.data),
+    data,
     /** Epoch milliseconds of the read. */
-    fetchedAt: computed(() => current.value && Date.parse(current.value.fetchedAt)),
+    fetchedAt: computed(() => {
+      const offers = current(warbonds.value);
+      return offers && Date.parse(offers.fetchedAt);
+    }),
     loaded,
   };
 }

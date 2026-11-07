@@ -1,8 +1,7 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { fakeBrowser } from 'wxt/testing/fake-browser';
-import { shipPricesItem } from './hangar-storage';
+import { describe, expect, it } from 'vitest';
+import { SHIPS_VERSION } from '@/ships/ships-storage';
 import type { Pledge } from './pledge';
-import { createPriceLookup, pledgeDiscount, refreshShipPrices } from './ship-prices';
+import { createPriceLookup, pledgeDiscount, shipPricesOf } from './ship-prices';
 
 // Names and prices as listed by RSI's upgrade tool.
 const priceOf = createPriceLookup([
@@ -98,17 +97,14 @@ describe('pledgeDiscount', () => {
   });
 });
 
-describe('refreshShipPrices', () => {
-  beforeEach(() => fakeBrowser.reset());
-
-  it('loads prices only when missing or outdated, and keeps them on errors', async () => {
-    const fetchPrices = vi.fn(async () => [{ name: 'Mercury', price: 260 }]);
-    await refreshShipPrices({ fetchPrices });
-    await refreshShipPrices({ fetchPrices });
-    expect(fetchPrices).toHaveBeenCalledTimes(1);
-
-    const failing = vi.fn(async () => Promise.reject(new Error('offline')));
-    await refreshShipPrices({ fetchPrices: failing, maxAgeMs: 0 });
-    expect((await shipPricesItem.getValue())?.ships).toEqual([{ name: 'Mercury', price: 260 }]);
+describe('shipPricesOf', () => {
+  it('takes the standard prices of the stored ships of the current format', () => {
+    const ships = [{ id: 1, name: 'Mercury', msrp: 260 }];
+    const fetchedAt = '2026-11-07T12:00:00Z';
+    expect(shipPricesOf({ version: SHIPS_VERSION, fetchedAt, ships })).toEqual([
+      { name: 'Mercury', price: 260 },
+    ]);
+    expect(shipPricesOf({ version: 0, fetchedAt, ships })).toEqual([]);
+    expect(shipPricesOf(null)).toEqual([]);
   });
 });

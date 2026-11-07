@@ -2,12 +2,11 @@ import { buybackCheckState } from '@/buyback/buyback-storage';
 import { runBuybackSmartUpdate } from '@/buyback/run';
 import { prepareBuybackSync } from '@/buyback/sync-buyback';
 import { settingsItem, withDefaults } from '@/settings/settings';
-import { maybeRefreshStore, refreshStore } from '@/store/sync-store';
+import { maybeRefreshUpgradeTool, refreshUpgradeTool } from '@/ships/sync-upgrade-tool';
 import { reactive, readonly } from 'vue';
 import { hangarCheckState, type CheckOutcome, type CheckState } from './hangar-storage';
 import { runSmartUpdate } from './smart-update/run';
 import { prepareOrderSync, updateOrders } from '@/orders/sync-orders';
-import { refreshShipPrices } from './ship-prices';
 import { prepareHangarSync } from './sync';
 import { SyncProgressTracker, type SyncProgress } from './sync-progress';
 
@@ -51,9 +50,8 @@ export async function startSync(): Promise<void> {
   state.progress = null;
   const startedAt = performance.now();
   try {
-    // Small and optional: load alongside, a failure keeps the stored prices and offers.
-    const shipPrices = refreshShipPrices({ maxAgeMs: 0 });
-    const storeOffers = refreshStore();
+    // Small and optional: load alongside, a failure keeps the stored ships and offers.
+    const upgradeTool = refreshUpgradeTool();
     // Reported only once both totals are known; the detail pages of the buy back join later.
     const progress = new SyncProgressTracker();
     const [runHangar, runBuyback, runOrders] = await Promise.all([
@@ -78,8 +76,7 @@ export async function startSync(): Promise<void> {
       console.warn('[star-citizen-hangar-manager] Order sync failed', error);
       return null;
     });
-    await shipPrices;
-    await storeOffers;
+    await upgradeTool;
 
     const seconds = ((performance.now() - startedAt) / 1000).toFixed(1);
     console.info(
@@ -106,10 +103,9 @@ export async function maybeRunSmartUpdate({ force = false } = {}): Promise<void>
   // Claimed right away, so triggers firing at the same time don't start two checks.
   state.checking = true;
   try {
-    // Independent of the smart update setting: one small request a day.
-    await refreshShipPrices();
-    // The Pledge Store's offers, on their own interval (see the settings).
-    await maybeRefreshStore();
+    // Ships, ships on sale and warbond offers: on their own interval (see the settings), once a
+    // day with smart updates off.
+    await maybeRefreshUpgradeTool();
     const settings = withDefaults(await settingsItem.getValue());
     if (!settings.smartUpdates) return;
     const { lastCheckAt } = await hangarCheckState.getValue();

@@ -3,8 +3,8 @@ import { useDemoContext } from '@/demo/use-demo';
 import { i18n, locale } from '@/i18n';
 import { ref } from 'vue';
 import { formatUsd } from '../discount-format';
-import { shipPricesItem } from '../hangar-storage';
-import { createPriceLookup } from '../ship-prices';
+import { shipsItem } from '@/ships/ships-storage';
+import { createPriceLookup, shipPricesOf } from '../ship-prices';
 import { loadUpgradeLog, withPrices, type PricedUpgradeLogEntry } from '../upgrade-log';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 
@@ -26,12 +26,9 @@ async function toggle() {
   if (!open.value || entries.value) return;
   error.value = undefined;
   try {
-    const [log, prices] = await Promise.all([
-      loadUpgradeLog(props.pledgeId),
-      shipPricesItem.getValue(),
-    ]);
+    const [log, ships] = await Promise.all([loadUpgradeLog(props.pledgeId), shipsItem.getValue()]);
     const shown = demo.value ? demo.value.upgradeLog(props.pledgeId, props.createdAt, log) : log;
-    entries.value = withPrices(shown, createPriceLookup(prices?.ships ?? []));
+    entries.value = withPrices(shown, createPriceLookup(shipPricesOf(ships)));
   } catch (failure) {
     console.error('[star-citizen-hangar-manager] Loading the upgrade log failed', failure);
     error.value = i18n.t('upgradeLog.failed', [

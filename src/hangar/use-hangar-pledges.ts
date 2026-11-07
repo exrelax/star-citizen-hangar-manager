@@ -1,8 +1,9 @@
 import { onMounted, onUnmounted, ref, shallowRef } from 'vue';
-import { hangarSnapshot, shipPricesItem } from './hangar-storage';
+import { hangarSnapshot } from './hangar-storage';
+import { shipsItem, type ShipsSnapshot } from '@/ships/ships-storage';
 import { HANGAR_SNAPSHOT_VERSION, type HangarSnapshot } from './pledge';
 import { toPledgeView, type PledgeView } from './pledge-view';
-import { createPriceLookup, type ShipPrices } from './ship-prices';
+import { createPriceLookup, shipPricesOf } from './ship-prices';
 import { ordersSnapshot } from '@/orders/orders-storage';
 import { withOrder, type OrdersSnapshot } from '@/orders/orders';
 
@@ -17,13 +18,14 @@ export function useHangarPledges() {
   /** ISO timestamp of the last full sync. */
   const syncedAt = ref<string>();
 
-  // Ship prices and orders are stored separately and arrive on their own schedule.
+  // Ships (their prices) and orders are stored separately and arrive on their own schedule.
   let snapshot: HangarSnapshot | null = null;
-  let prices: ShipPrices | null = null;
+  let ships: ShipsSnapshot | null = null;
   let orders: OrdersSnapshot | null = null;
   const apply = () => {
     const current = snapshot?.version === HANGAR_SNAPSHOT_VERSION ? snapshot : null;
-    const priceOf = prices ? createPriceLookup(prices.ships) : undefined;
+    const prices = shipPricesOf(ships);
+    const priceOf = prices.length ? createPriceLookup(prices) : undefined;
     pledges.value = current
       ? current.pledges.map((pledge, index) =>
           withOrder(toPledgeView(pledge, current.shipLinks, index, priceOf), orders),
@@ -37,8 +39,8 @@ export function useHangarPledges() {
     snapshot = value;
     apply();
   });
-  const unwatchPrices = shipPricesItem.watch((value) => {
-    prices = value;
+  const unwatchPrices = shipsItem.watch((value) => {
+    ships = value;
     apply();
   });
   const unwatchOrders = ordersSnapshot.watch((value) => {
@@ -46,9 +48,9 @@ export function useHangarPledges() {
     apply();
   });
   onMounted(async () => {
-    [snapshot, prices, orders] = await Promise.all([
+    [snapshot, ships, orders] = await Promise.all([
       hangarSnapshot.getValue(),
-      shipPricesItem.getValue(),
+      shipsItem.getValue(),
       ordersSnapshot.getValue(),
     ]);
     apply();
