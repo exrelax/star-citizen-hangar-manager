@@ -124,10 +124,13 @@ export const FLEETYARDS_DETAILS_BATCH_SIZE = 20;
 
 /** Smart updates: keep the stored hangar current by checking a few pages instead of all. */
 export const SMART_UPDATE = {
-  /** Minimum time between two automatic checks. */
-  checkIntervalMs: 5 * 60 * 1000,
-  /** Pages checked per run in addition to the first and the last page (rotating through all). */
-  spotCheckPages: 2,
+  /** Minimum minutes between two automatic checks (a setting; its default and range). */
+  checkMinutes: { default: 5, min: 1, max: 1440 },
+  /**
+   * Hangar pages checked per run in addition to the first and the last page, rotating through
+   * all (a setting; its default and range).
+   */
+  spotCheckPages: { default: 2, min: 1, max: 10 },
   /** The same for the buy back, whose pages are much larger (250 pledges, ~1 MB each). */
   buybackSpotCheckPages: 1,
   /** Extra pages a check may load to locate changes; beyond that a full refresh is suggested. */

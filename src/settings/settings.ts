@@ -1,5 +1,5 @@
 import { BUYBACK_FILTER_CATEGORIES, type BuybackFilter } from '@/buyback/buyback-view';
-import { FILTERS, FONT_SIZE_SCALES, PLEDGE_STORE } from '@/config';
+import { FILTERS, FONT_SIZE_SCALES, PLEDGE_STORE, SMART_UPDATE } from '@/config';
 import {
   normalizeFilterGroups,
   PLEDGE_FILTER_CATEGORIES,
@@ -59,6 +59,10 @@ export interface Settings {
   smartUpdates: boolean;
   /** Smart updates read the warbond CCUs of the Pledge Store again after this many minutes. */
   storeRefreshMinutes: number;
+  /** Minimum minutes between two smart updates of hangar, buy back and orders. */
+  smartUpdateMinutes: number;
+  /** Hangar pages a smart update checks besides the first and the last one. */
+  spotCheckPages: number;
   buybackLinkMode: BuybackLinkMode;
   theme: Theme;
   /** Text size of the manager and its dialogs, the same for both themes. */
@@ -96,6 +100,8 @@ export const DEFAULT_SETTINGS: Settings = {
   hideRefund: false,
   smartUpdates: true,
   storeRefreshMinutes: PLEDGE_STORE.refreshMinutes.default,
+  smartUpdateMinutes: SMART_UPDATE.checkMinutes.default,
+  spotCheckPages: SMART_UPDATE.spotCheckPages.default,
   buybackLinkMode: 'single',
   theme: 'modern',
   fontSize: 'medium',
@@ -118,11 +124,18 @@ export const settingsItem = storage.defineItem<Partial<Settings> | null>('sync:s
 
 const isBoolean = (value: unknown): value is boolean => typeof value === 'boolean';
 
+/** A check for whole numbers in a range, e.g. minutes of an interval. */
+export const isWholeNumberIn =
+  ({ min, max }: { min: number; max: number }) =>
+  (value: unknown): value is number =>
+    Number.isInteger(value) && (value as number) >= min && (value as number) <= max;
+
 /** Whole minutes in the range of the store's refresh interval. */
-export const isRefreshMinutes = (value: unknown): value is number =>
-  Number.isInteger(value) &&
-  (value as number) >= PLEDGE_STORE.refreshMinutes.min &&
-  (value as number) <= PLEDGE_STORE.refreshMinutes.max;
+export const isRefreshMinutes = isWholeNumberIn(PLEDGE_STORE.refreshMinutes);
+/** Whole minutes in the range of the smart update interval. */
+export const isSmartUpdateMinutes = isWholeNumberIn(SMART_UPDATE.checkMinutes);
+/** A number of spot check pages in its range. */
+export const isSpotCheckPages = isWholeNumberIn(SMART_UPDATE.spotCheckPages);
 
 /** A check that accepts only the given values, e.g. the themes. */
 const oneOf =
@@ -156,6 +169,8 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
     hideRefund: pick('hideRefund', isBoolean),
     smartUpdates: pick('smartUpdates', isBoolean),
     storeRefreshMinutes: pick('storeRefreshMinutes', isRefreshMinutes),
+    smartUpdateMinutes: pick('smartUpdateMinutes', isSmartUpdateMinutes),
+    spotCheckPages: pick('spotCheckPages', isSpotCheckPages),
     buybackLinkMode: pick('buybackLinkMode', oneOf(BUYBACK_LINK_MODES)),
     theme: pick('theme', oneOf(THEMES)),
     fontSize: pick('fontSize', oneOf(FONT_SIZES)),

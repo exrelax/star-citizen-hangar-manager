@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { PledgePage } from '../parse-pledges';
 import type { Pledge, PledgeItem } from '../pledge';
-import { checkHangar, pickSpotPages } from './check';
+import { checkHangar, pickSpotPages, spotCheckCoverage } from './check';
 
 const pledge = (id: number, overrides: Partial<Pledge> = {}): Pledge => ({
   id,
@@ -211,5 +211,22 @@ describe('checkHangar', () => {
     expect(result.status).toBe('updated');
     if (result.status !== 'updated') return;
     expect(result.removed.map((p) => p.id)).toEqual([stored[0]!.id]);
+  });
+});
+
+describe('spotCheckCoverage', () => {
+  it('counts the first, the last and the spot check pages', () => {
+    expect(spotCheckCoverage(99, 2)).toEqual({
+      pages: 99,
+      checked: 4,
+      share: 4 / 99,
+      checksToCoverAll: 49,
+    });
+    expect(spotCheckCoverage(99, 10).checksToCoverAll).toBe(10);
+  });
+
+  it('covers small lists in one check', () => {
+    expect(spotCheckCoverage(1, 2)).toMatchObject({ checked: 1, share: 1, checksToCoverAll: 1 });
+    expect(spotCheckCoverage(4, 10)).toMatchObject({ checked: 4, share: 1, checksToCoverAll: 1 });
   });
 });
