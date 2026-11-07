@@ -47,9 +47,11 @@ sees or stores your RSI login.
 ## Where the data is kept
 
 - **In your browser only.** Hangar, buy back, orders, ship data (ships, ships on sale, warbond
-  offers), Pledge Store items, ship links and the state of the smart updates are kept in the extension's local storage (`storage.local`) on your device. They
-  never leave your computer and are not synced.
-- **Settings** (language, theme, display and privacy options, filters) are kept in the browser's
+  offers), Pledge Store items, ship links and the state of the smart updates are kept in the
+  extension's local storage (`storage.local`) on your device. They never leave your computer and
+  are not synced. Settings → Stored data lists all of it, with the number of entries, the size and
+  when it was last read.
+- **Settings** (language, theme, display and privacy options, filters, sorting, intervals) are kept in the browser's
   sync storage (`storage.sync`). If you use a browser account (Google account in Chrome, Firefox
   account in Firefox), your browser syncs them to your other devices; this is your browser's own
   sync, the extension has no server for it. The settings contain no hangar data.
@@ -103,9 +105,13 @@ visiting it doesn't contact GitHub's API.
 
 ## Deleting your data
 
-- **Settings → Reset → "Delete local hangar & buy back data"** removes everything the extension
-  stored about your hangar, buy back and orders in this browser.
-- **Settings → Reset → "Reset settings"** removes your stored settings (on all synced devices).
+- **Settings → Stored data**: the delete icon of a row removes that data set only, e.g. only the
+  buy back or only the order history.
+- **Settings → Stored data → Reset → "Delete all local data"** removes everything the extension
+  stored in this browser: hangar, buy back, orders, ship data, Pledge Store items and the state of
+  the smart updates.
+- **Settings → Stored data → Reset → "Reset settings"** removes your stored settings (on all
+  synced devices).
 - **Removing the extension** removes all of its data from the browser.
 
 Nothing is stored anywhere else, so there is nothing else to delete.
