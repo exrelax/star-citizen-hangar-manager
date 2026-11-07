@@ -58,21 +58,34 @@ about **20 seconds for 1,000 pledges** and about **1.5 minutes for 5,000 pledges
 back together; the times the manager shows before the first load). Smart updates find changes with
 a fraction of that:
 
-- **A handful of pages per check**: the first page (new purchases), the last page – together they
-  show whether pledges were added or removed anywhere – and two rotating spot-check pages (a
-  setting, up to 10; one in the much larger buy back), which cover the whole hangar over time.
+Each check works in three steps:
+
+1. **The pledge log first**: RSI lists every action on your account in its pledge log – newest
+   first, by the time of the action, also for old pledges. Its first page shows whether anything
+   happened since the last check and which pledges it was about (bought, melted, bought back,
+   upgraded, gift claimed, …). It also brings in new orders and their refund periods.
+2. **Then the buy back**: its first and last page, one rotating spot-check page (its pages are
+   much larger) and the pages of the pledges named by the log. A pledge new in the buy back was
+   melted, so it has to be gone from the hangar.
+3. **Then the hangar**: its first and last page, two rotating spot-check pages (a setting, up to 10) and the pages of the pledges named by the log and of those just melted.
+
 - **Exact, not guessed**: RSI lists pledges strictly by ID, newest first. So every page covers a
   closed range of pledge IDs, and comparing it with the stored pledges of that range shows exactly
   what was added, removed or changed. If the number of pledges between two checked pages differs,
   the page in the middle is checked next (binary search) until the change is found.
+- **How reliable**: added or removed pledges – a purchase, a melt, a buy back, a gift sent or
+  claimed, an applied CCU – are found by the next check, by the pledge log and by the number of
+  pledges. A change within a pledge that RSI makes without a log entry (new items, gift status, a
+  ship's name) is found by the spot checks only: with 2 of ~100 hangar pages in about 4 % of the
+  checks, and for sure once they have gone through all pages (the settings show how long that
+  takes for your hangar). The refresh button always reads everything.
 - **Follows the consequences**: an applied CCU disappears and changes another pledge, which is
-  refreshed as well; new orders and their refund periods are picked up from the first page of the
-  pledge log and billing history.
+  refreshed as well.
 - **Measured**: an unchanged hangar of ~1,000 pledges is checked in 0.4–0.7 seconds, the buy back of
   ~4,000 pledges in 1–3 seconds.
-- **Only when useful**: at most every 5 minutes (a setting), and right away when you come back from RSI's "My
-  Gear" page, where you may just have melted or gifted something. If too much changed, it suggests
-  a full refresh instead of loading page after page.
+- **Only when useful**: at most every 5 minutes (a setting), and right away when you come back from
+  RSI's "My Gear" page, where you may just have melted or gifted something. If too much changed, it
+  suggests a full refresh instead of loading page after page.
 
 ### Never in your way
 
@@ -420,8 +433,9 @@ In the order of the settings tab:
     changes within a pledge (new items, gift status, …). The hint below shows, for your number of
     hangar pages, how likely such a change shows in the next check and after how many checks every
     page was checked.
-  - **Read the warbond CCUs of the Pledge Store again after** 5 minutes (1 to 1440; the default).
-    With smart updates off, they are read only with the refresh button and the initial load.
+  - **Read the warbond CCUs of the Pledge Store again after** 5 minutes (1 to 1440; the default),
+    together with the ships and their prices. With smart updates off, once a day and with the
+    refresh button.
 - **Filters**: order and selection of the filter buttons, separately for My Hangar and Buy Back
   and for types and features – drag a filter (or use its arrows) to move it within its group,
   uncheck it to hide its button.
