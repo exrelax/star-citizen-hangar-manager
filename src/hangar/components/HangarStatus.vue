@@ -5,6 +5,12 @@ import { formatRelativeTime } from '@/shared/lib/relative-time';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { startSync, syncState } from '../sync-state';
 import { useCheckState } from '../use-check-state';
+import { buybackMeta } from '@/buyback/buyback-storage';
+import { ordersMeta } from '@/orders/orders-storage';
+import { vTooltip } from '@/shared/tooltip/tooltip';
+import type { CheckOutcome } from '@/storage/meta';
+import { useStored } from '@/storage/use-stored';
+import { hangarMeta } from '../hangar-storage';
 import RefreshIcon from './RefreshIcon.vue';
 
 const props = defineProps<{
@@ -36,7 +42,18 @@ const fullSyncIsOld = computed(() => {
 const status = computed((): { text: string; warn?: boolean } | null => {
   const outcome = checkState.value?.lastOutcome;
   // Until the refresh is done, the last update and its outcome are about to change.
-  if (syncState.running) return { text: i18n.t('status.refreshing') };
+  if (syncState.running) {
+    const section = syncState.progress?.section;
+    return {
+      text: section
+        ? i18n.t('status.refreshingSection', [
+            i18n.t(`storage.${section.id}.name`),
+            section.done,
+            section.total,
+          ])
+        : i18n.t('status.refreshing'),
+    };
+  }
   if (syncState.checking) return { text: i18n.t('status.checking') };
   if (outcome?.status === 'needsFullSync')
     return { text: i18n.t('status.needsFullSync'), warn: true };
@@ -64,11 +81,47 @@ const status = computed((): { text: string; warn?: boolean } | null => {
       return { text: i18n.t('status.upToDate', [ago(outcome.at)]) };
   }
 });
+
+// What the last smart update did, step by step (see `maybeRunSmartUpdate`), for the tooltip.
+const steps = [
+  { id: 'orders', meta: useStored(ordersMeta) },
+  { id: 'buyback', meta: useStored(buybackMeta) },
+  { id: 'hangar', meta: useStored(hangarMeta) },
+] as const;
+
+function stepResult(id: (typeof steps)[number]['id'], outcome: CheckOutcome) {
+  switch (outcome.status) {
+    case 'failed':
+      return i18n.t('status.stepFailed');
+    case 'needsFullSync':
+      return i18n.t('status.stepNeedsFullSync');
+    case 'updated':
+      return id === 'orders'
+        ? i18n.t('status.stepNewLogEntries', [outcome.added])
+        : i18n.t('status.stepUpdated', [outcome.added, outcome.removed, outcome.changed]);
+    default:
+      return i18n.t('status.stepUnchanged');
+  }
+}
+
+const details = computed(() => {
+  if (syncState.running || !props.smartUpdates) return undefined;
+  const lines = steps.flatMap(({ id, meta }) => {
+    const outcome = meta.value?.lastOutcome;
+    if (!outcome) return [];
+    const pages =
+      outcome.pages === undefined ? '' : ` · ${i18n.t('status.stepPages', [outcome.pages])}`;
+    return [
+      `${i18n.t(`storage.${id}.name`)}: ${stepResult(id, outcome)}${pages} (${ago(outcome.at)})`,
+    ];
+  });
+  return lines.length ? { title: i18n.t('status.stepsTitle'), text: lines.join('\n') } : undefined;
+});
 </script>
 
 <template>
   <p v-if="status" class="shm-status" :class="{ 'is-warn': status.warn }" aria-live="polite">
-    <span>{{ status.text }}</span>
+    <span v-tooltip="details" :tabindex="details ? 0 : undefined">{{ status.text }}</span>
     <button
       v-if="status.warn"
       type="button"

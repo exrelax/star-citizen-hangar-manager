@@ -304,6 +304,18 @@ describe('order sync', () => {
     expect(snapshot!.orders['O1']!.position).toBe(8);
   });
 
+  it('reads the whole history again when asked to', async () => {
+    await (
+      await prepareOrderSync(fakeRsi(6))
+    )();
+    const rsi = fakeRsi(6);
+    await (
+      await prepareOrderSync({ ...rsi, full: true })
+    )();
+    expect(rsi.fetchLogPage).toHaveBeenCalledTimes(3);
+    expect(rsi.fetchBillingPage).toHaveBeenCalledTimes(6);
+  });
+
   it('leaves the first full read to the full refresh', async () => {
     const rsi = fakeRsi(6);
     expect(await updateOrders(rsi)).toBeNull();

@@ -16,6 +16,8 @@ export interface CheckOutcome {
   added: number;
   removed: number;
   changed: number;
+  /** Pages the check read from RSI, if known. */
+  pages?: number;
 }
 
 export interface StorageMeta {
@@ -54,12 +56,16 @@ const NO_CHANGES = { added: 0, removed: 0, changed: 0 };
 /** After a full sync: everything was read, which is the most thorough check there is. */
 export async function recordSync(
   item: MetaItem,
-  { at = Date.now(), fingerprint }: { at?: number; fingerprint?: string } = {},
+  {
+    at = Date.now(),
+    fingerprint,
+    updatedAt = at,
+  }: { at?: number; fingerprint?: string; updatedAt?: number } = {},
 ): Promise<StorageMeta> {
   const meta: StorageMeta = {
     ...(await item.getValue()),
     syncedAt: at,
-    updatedAt: at,
+    updatedAt,
     checkedAt: at,
     lastOutcome: { at, status: 'unchanged', ...NO_CHANGES },
   };

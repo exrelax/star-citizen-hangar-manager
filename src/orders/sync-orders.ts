@@ -1,5 +1,5 @@
 import { ORDERS } from '@/config';
-import { listPageWork, type SyncProgressTracker } from '@/hangar/sync-progress';
+import { listPageWork, type ProgressSink } from '@/hangar/sync-progress';
 import { mapWithConcurrency } from '@/shared/lib/pool';
 import { isThrottled, withRetry } from '@/shared/lib/retry';
 import { postRsiJson } from '@/shared/rsi-api';
@@ -29,8 +29,10 @@ export interface OrderSyncDeps {
   fetchLogPage?: (page: number) => Promise<LogPage>;
   fetchBillingPage?: (page: number) => Promise<BillingPage>;
   /** Hears about the pages; for later syncs only known once they reach known entries. */
-  progress?: SyncProgressTracker;
+  progress?: ProgressSink;
   concurrency?: number;
+  /** Reads the whole history again, even with stored orders (from the settings). */
+  full?: boolean;
 }
 
 const LOG_PAGE_WORK = listPageWork(25);
@@ -51,15 +53,20 @@ export interface OrderSyncResult {
 export async function prepareOrderSync(
   deps: OrderSyncDeps = {},
 ): Promise<() => Promise<OrderSyncResult>> {
-  const {
-    fetchLogPage = fetchPledgeLogPage,
-    fetchBillingPage = fetchBillingListPage,
-    progress,
-    concurrency = ORDERS.concurrency,
-  } = deps;
+  const { progress, concurrency = ORDERS.concurrency, full = false } = deps;
+  // Counted for the status line: what a check read.
+  let pagesRead = 0;
+  const count =
+    <T>(fetch: (page: number) => Promise<T>) =>
+    (page: number) => {
+      pagesRead++;
+      return fetch(page);
+    };
+  const fetchLogPage = count(deps.fetchLogPage ?? fetchPledgeLogPage);
+  const fetchBillingPage = count(deps.fetchBillingPage ?? fetchBillingListPage);
 
   const stored = await ordersSnapshot.getValue();
-  const previous = stored?.version === ORDERS_SNAPSHOT_VERSION ? stored : null;
+  const previous = !full && stored?.version === ORDERS_SNAPSHOT_VERSION ? stored : null;
   const knownEntries = new Set(previous?.recentLogEntries);
   const [firstLog, firstBilling] = await Promise.all([fetchLogPage(1), fetchBillingPage(1)]);
 
@@ -100,7 +107,7 @@ export async function prepareOrderSync(
     const newEntries = newLogEntries.length;
     const newOrders = orders.filter((order) => !previous?.orders[order.id]).length;
     if (previous && newEntries === 0 && newOrders === 0) {
-      await recordCheck(ordersMeta, { status: 'unchanged' }, { fingerprint });
+      await recordCheck(ordersMeta, { status: 'unchanged', pages: pagesRead }, { fingerprint });
       return { snapshot: previous, newLogEntries };
     }
 
@@ -127,7 +134,11 @@ export async function prepareOrderSync(
     orders.forEach((order, position) => (snapshot.orders[order.id] = { ...order, position }));
     await ordersSnapshot.setValue(snapshot);
     if (previous) {
-      await recordCheck(ordersMeta, { status: 'updated', added: newEntries }, { fingerprint });
+      await recordCheck(
+        ordersMeta,
+        { status: 'updated', added: newEntries, pages: pagesRead },
+        { fingerprint },
+      );
     } else {
       await recordSync(ordersMeta, { fingerprint });
     }
@@ -153,7 +164,7 @@ interface ReadPagesOptions<T> {
   /** Set for later syncs: pages are read one by one until one has known entries. */
   isKnown?: (page: T[]) => boolean;
   work: number;
-  progress?: SyncProgressTracker;
+  progress?: ProgressSink;
   concurrency: number;
 }
 

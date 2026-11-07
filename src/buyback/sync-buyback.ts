@@ -2,7 +2,7 @@ import { BUYBACK_PAGE_SIZE, SYNC_CONCURRENCY, SYNC_WORK } from '@/config';
 import { prepareListPages, type ListPagesOf } from '@/hangar/list-pages';
 import { PLEDGE_CATEGORIES, type Pledge, type PledgeCategory } from '@/hangar/pledge';
 import { resolveShipLinks, type ShipLinks } from '@/hangar/ship-links';
-import type { SyncProgressTracker } from '@/hangar/sync-progress';
+import type { ProgressSink } from '@/hangar/sync-progress';
 import { mapWithConcurrency } from '@/shared/lib/pool';
 import {
   BUYBACK_SNAPSHOT_VERSION,
@@ -25,7 +25,7 @@ export interface BuybackSyncDeps {
   fetchDetails?: (id: number) => Promise<string[]>;
   fetchShipLinks?: (pledges: Pledge[], previous: ShipLinks | undefined) => Promise<ShipLinks>;
   /** Hears about the list pages and – once known – the detail pages to read. */
-  progress?: SyncProgressTracker;
+  progress?: ProgressSink;
   concurrency?: number;
 }
 

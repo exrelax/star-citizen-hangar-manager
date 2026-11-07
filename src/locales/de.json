@@ -19,6 +19,7 @@
     "searchPlaceholder": "Titel, Schiffe, Pledge- und Order-IDs durchsuchen …",
     "noResults": "Keine Pledges passen zu deiner Suche.",
     "syncProgress": "Lese RSI-Seiten: $1 von $2 ($3)",
+    "syncProgressSection": "Lese $1: Seite $2 von $3 ($4 von allem)",
     "demoBadge": "Demo",
     "demoBadgeHint": "Demo-Modus: eine Auswahl deiner Pledges mit erfundenen Pledge-IDs. Abschalten in den Einstellungen.",
     "clearSearch": "Suche leeren"
@@ -196,6 +197,7 @@
     "colSynced": "Zuletzt vollständig gelesen",
     "colChecked": "Zuletzt geprüft",
     "colReset": "Löschen",
+    "refreshOne": "„$1“ neu von RSI lesen",
     "resetOne": "„$1“ in diesem Browser löschen",
     "resetConfirm": "„$1“ in diesem Browser löschen?\n\n$2\n\n$3",
     "readAgainRefresh": "Die nächste Aktualisierung liest es neu von RSI. Dein Hangar auf der RSI-Website bleibt unverändert.",
@@ -247,7 +249,15 @@
     "needsFullSync": "Zu viele Änderungen für ein schnelles Update.",
     "fullSyncOld": "Letzter vollständiger Abgleich $1.",
     "lastFullSync": "Letzter vollständiger Abgleich $1",
-    "fullRefresh": "Vollständig aktualisieren"
+    "fullRefresh": "Vollständig aktualisieren",
+    "refreshingSection": "Aktualisiere $1: Seite $2 von $3 …",
+    "stepsTitle": "Letzte Prüfung",
+    "stepUnchanged": "keine Änderungen",
+    "stepUpdated": "$1 neu, $2 entfernt, $3 geändert",
+    "stepNewLogEntries": "$1 neue Log-Einträge",
+    "stepFailed": "fehlgeschlagen",
+    "stepNeedsFullSync": "zu viele Änderungen",
+    "stepPages": "$1 Seiten gelesen"
   },
   "ccugame": {
     "openInManager": "Im Hangar Manager öffnen (#$1)",

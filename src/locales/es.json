@@ -19,6 +19,7 @@
     "searchPlaceholder": "Buscar títulos, naves, ID de pledge y de pedido…",
     "noResults": "Ningún pledge coincide con tu búsqueda.",
     "syncProgress": "Leyendo páginas de RSI: $1 de $2 ($3)",
+    "syncProgressSection": "Leyendo $1: página $2 de $3 ($4 del total)",
     "demoBadge": "Demo",
     "demoBadgeHint": "Modo demo: una selección de tus pledges con ID inventados. Desactívalo en los ajustes.",
     "clearSearch": "Borrar la búsqueda"
@@ -196,6 +197,7 @@
     "colSynced": "Última lectura completa",
     "colChecked": "Última comprobación",
     "colReset": "Borrar",
+    "refreshOne": "Volver a leer «$1» de RSI",
     "resetOne": "Borrar «$1» en este navegador",
     "resetConfirm": "¿Borrar «$1» guardado en este navegador?\n\n$2\n\n$3",
     "readAgainRefresh": "La próxima actualización lo vuelve a leer de RSI. Tu hangar en la web de RSI no cambia.",
@@ -247,7 +249,15 @@
     "needsFullSync": "Demasiados cambios para una actualización rápida.",
     "fullSyncOld": "Última actualización completa $1.",
     "lastFullSync": "Última actualización completa $1",
-    "fullRefresh": "Actualización completa"
+    "fullRefresh": "Actualización completa",
+    "refreshingSection": "Actualizando $1: página $2 de $3 …",
+    "stepsTitle": "Última comprobación",
+    "stepUnchanged": "sin cambios",
+    "stepUpdated": "$1 nuevos, $2 eliminados, $3 cambiados",
+    "stepNewLogEntries": "$1 entradas nuevas en el registro",
+    "stepFailed": "falló",
+    "stepNeedsFullSync": "demasiados cambios",
+    "stepPages": "$1 páginas leídas"
   },
   "ccugame": {
     "openInManager": "Abrir en el Hangar Manager (#$1)",

@@ -32,7 +32,14 @@ const progress = computed(() => {
     ...current,
     fraction,
     percent,
-    text: i18n.t('manager.syncProgress', [current.done, current.total, percent]),
+    text: current.section
+      ? i18n.t('manager.syncProgressSection', [
+          i18n.t(`storage.${current.section.id}.name`),
+          current.section.done,
+          current.section.total,
+          percent,
+        ])
+      : i18n.t('manager.syncProgress', [current.done, current.total, percent]),
   };
 });
 

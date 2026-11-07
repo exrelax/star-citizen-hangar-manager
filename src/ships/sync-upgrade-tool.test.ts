@@ -69,8 +69,9 @@ describe('refreshUpgradeTool', () => {
     const later = START + 10 * MINUTE;
     const changed = { ...DATA, warbonds: [] };
     await refreshUpgradeTool({ fetchData: async () => changed, now: () => later });
+    // Read in full again, but unchanged: the time of the last change stays.
     expect(await shipsMeta.getValue()).toMatchObject({
-      syncedAt: START,
+      syncedAt: later,
       updatedAt: START,
       checkedAt: later,
       lastOutcome: { status: 'unchanged' },

@@ -11,7 +11,7 @@ import {
 } from './pledge';
 import { fetchShipMatrixImages, resolveUpgradeImages, type ShipImages } from './ship-images';
 import { resolveShipLinks, type ShipLinks } from './ship-links';
-import type { SyncProgressTracker } from './sync-progress';
+import type { ProgressSink } from './sync-progress';
 
 /** Fetches one page of the hangar, optionally limited to an RSI product category. */
 export type FetchPledgePage = (page: number, category?: PledgeCategory) => Promise<PledgePage>;
@@ -21,7 +21,7 @@ export interface SyncOptions {
   fetchShipImages?: () => Promise<ShipImages>;
   fetchShipLinks?: (pledges: Pledge[], previous: ShipLinks | undefined) => Promise<ShipLinks>;
   /** Hears about the pages, announced as soon as their number is known. */
-  progress?: SyncProgressTracker;
+  progress?: ProgressSink;
   concurrency?: number;
 }
 

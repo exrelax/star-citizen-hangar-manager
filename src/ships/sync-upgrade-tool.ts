@@ -59,15 +59,13 @@ async function storePart<T extends { version: number }>(
   value: NoInfer<T>,
   at: number,
 ) {
+  // Every read of the upgrade tool reads everything: it counts as a full sync. An unchanged
+  // answer is not written again and keeps the time of the last change.
   const fingerprint = hashOf(value);
   const [stored, previous] = await Promise.all([item.getValue(), meta.getValue()]);
-  if (stored?.version === SHIPS_VERSION && previous.fingerprint === fingerprint) {
-    await recordCheck(meta, { status: 'unchanged' }, { at, fingerprint });
-    return;
-  }
-  await item.setValue(value);
-  // Every read of the upgrade tool reads everything: it counts as a full sync.
-  await recordSync(meta, { at, fingerprint });
+  const unchanged = stored?.version === SHIPS_VERSION && previous.fingerprint === fingerprint;
+  if (!unchanged) await item.setValue(value);
+  await recordSync(meta, { at, fingerprint, ...(unchanged && { updatedAt: previous.updatedAt }) });
 }
 
 let running: Promise<void> | undefined;

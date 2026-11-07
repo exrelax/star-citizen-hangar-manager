@@ -1,4 +1,5 @@
 import { SYNC_WORK } from '@/config';
+import type { StorageId } from '@/storage/registry';
 
 /** Progress of a full sync: pages for the counter, estimated work for the progress bar. */
 export interface SyncProgress {
@@ -8,6 +9,14 @@ export interface SyncProgress {
   total: number;
   /** Share of the estimated work that is done, from 0 to 1 (see `SYNC_WORK`). */
   fraction: number;
+  /** The storage read last, with its own pages (see `SyncProgressTracker.section`). */
+  section?: { id: StorageId; done: number; total: number };
+}
+
+/** Where a sync announces and completes its pages (a tracker, or one section of it). */
+export interface ProgressSink {
+  expect(pages: number, work: number): void;
+  complete(pages: number, work: number): void;
 }
 
 /** Estimated work of reading a list page with this many entries (see `SYNC_WORK`). */
@@ -28,6 +37,9 @@ export class SyncProgressTracker {
   private started = false;
   /** Fraction shown when work was last announced after `start`, and the work done by then. */
   private base = { fraction: 0, work: 0 };
+  private sections = new Map<StorageId, { done: number; total: number }>();
+  /** The section that completed pages last: the storage being read. */
+  private active: StorageId | undefined;
 
   constructor(public onChange?: (progress: SyncProgress) => void) {}
 
@@ -38,6 +50,24 @@ export class SyncProgressTracker {
       done: this.pages.done,
       total: this.pages.total,
       fraction: this.work.total ? this.base.fraction + (1 - this.base.fraction) * share : 0,
+      ...(this.active && { section: { id: this.active, ...this.sections.get(this.active)! } }),
+    };
+  }
+
+  /** The part of the sync that reads one storage: its pages count for it and for the whole. */
+  section(id: StorageId): ProgressSink {
+    const pages = { done: 0, total: 0 };
+    this.sections.set(id, pages);
+    return {
+      expect: (count, work) => {
+        pages.total += count;
+        this.expect(count, work);
+      },
+      complete: (count, work) => {
+        pages.done += count;
+        this.active = id;
+        this.complete(count, work);
+      },
     };
   }
 
