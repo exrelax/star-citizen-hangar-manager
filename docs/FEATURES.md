@@ -31,6 +31,8 @@ announcements.
 - The full CCU history of upgraded ships, with the discount of every step
 - Orders of your purchases with invoices, refund countdown and a prefilled refund request
 - Buy back pledges straight into the RSI cart
+- The current warbond CCUs of the pledge store, with the cheapest ships to start from and your own
+  CCUs in the same price range
 - Links from CCU Game (ccugame.app) straight to the pledge in the Hangar Manager
 - An addition to RSI's website: "My Gear" and "Buy Back Pledges" stay untouched and usable
 - A demo mode with anonymized data for screenshots
@@ -328,6 +330,26 @@ Paints, Game access, LTI, Warbond, Probably giftable, Rewards), plus:
 - **Show in Buy Back**: opens the pledge on RSI's own buy back page (only this pledge, or the list
   page with the pledge highlighted).
 - Insurances, ships and orders as in "My Hangar".
+
+---
+
+## Pledge Store: current warbond CCUs
+
+The **Pledge Store** tab lists the warbond CCUs RSI currently offers – read from RSI's own ship
+upgrade tool when the tab is opened, so it always shows today's offers. For each warbond ship:
+
+- **Prices**: the warbond price, the standard price (struck through) and the discount in dollars
+  and percent, with the ship's image.
+- **Ship upgrade**: opens RSI's own ship upgrade dialog with the warbond edition of the ship
+  already chosen as target – only the ship to start from is left to pick.
+- **Cheapest warbond CCUs** (in the opened item): the discount is the same whichever ship you start
+  from, so the cheapest CCU starts from the most expensive ship below the warbond price. The three
+  cheapest price levels are listed with their ships, e.g. "CCU $10 – from Mercury, Vanguard
+  Warden, … ($260)".
+- **Your CCUs in this price range**: the CCUs of your hangar that overlap the price range of these
+  warbond CCUs, small, with their value and discount. They can't be chained with the warbond CCU,
+  so you see at a glance how many discounted CCUs you already have there. The count is also a tag
+  on the item.
 
 ---
 

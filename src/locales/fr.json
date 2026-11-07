@@ -85,6 +85,7 @@
   "tabs": {
     "hangar": "My Hangar",
     "buyback": "Buy Back",
+    "store": "Pledge Store",
     "settings": "Paramètres"
   },
   "settings": {
@@ -195,6 +196,29 @@
     "addToCart": "Ajouter au panier RSI et ouvrir le panier (nouvel onglet). RSI vide le panier pour les pledges du buy back.",
     "cartFailed": "Impossible d’ajouter au panier RSI : $1",
     "cartNotFound": "Introuvable à sa position enregistrée dans le buy back de RSI – synchronise puis réessaie."
+  },
+  "store": {
+    "warbondTitle": "CCU warbond actuels",
+    "warbondIntro": "Les améliorations warbond actuellement proposées par l'outil d'amélioration de vaisseaux de RSI : le vaisseau moins cher que son prix standard, payé avec de l'argent réel. La remise est la même quel que soit le vaisseau de départ – le CCU le moins cher part du vaisseau le plus cher sous le prix warbond.",
+    "loading": "Lecture des offres actuelles sur RSI …",
+    "failed": "Impossible de lire les offres sur RSI : $1",
+    "retry": "Réessayer",
+    "count": "$1 CCU warbond",
+    "empty": "RSI ne propose actuellement aucun CCU warbond.",
+    "warbondEdition": "Warbond Edition",
+    "msrpHint": "Prix standard du vaisseau",
+    "openUpgrade": "Amélioration",
+    "openUpgradeHint": "Ouvre la fenêtre d'amélioration de RSI avec le $1 (Warbond Edition) comme cible",
+    "ownedBadge": "$1 au hangar",
+    "ownedBadgeHint": "CCU de ton hangar dans la fourchette de prix des CCU warbond les moins chers (détails en dépliant)",
+    "cheapestTitle": "CCU warbond les moins chers",
+    "ccuPrice": "CCU $1",
+    "fromShips": "depuis $1 ($2)",
+    "moreShips": "+$1 autres",
+    "noBases": "Aucun vaisseau ne coûte moins que le prix warbond, il n'y a donc pas de CCU vers celui-ci.",
+    "ownedTitle": "Tes CCU entre $1 et $2",
+    "ownedHint": "Ces CCU chevauchent la fourchette de prix des CCU warbond ci-dessus et ne peuvent donc pas être enchaînés avec eux.",
+    "ownedNone": "Aucun de tes CCU ne se situe dans cette fourchette de prix."
   },
   "upgradeLog": {
     "title": "Améliorations appliquées",

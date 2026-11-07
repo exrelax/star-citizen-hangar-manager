@@ -398,6 +398,19 @@ html .shm-theme-modern .shm-chevron {
   grid-area: chevron;
 }
 
+/* Warbond rows of the Pledge Store: the upgrade button between the text and the chevron. */
+html .shm-theme-modern .shm-warbond .shm-row-summary {
+  grid-template-areas:
+    'thumb main upgrade chevron'
+    'thumb badges upgrade chevron';
+  grid-template-columns: 128px minmax(0, 1fr) auto auto;
+}
+
+html .shm-theme-modern .shm-warbond-upgrade {
+  grid-area: upgrade;
+  align-self: center;
+}
+
 html .shm-theme-modern .shm-row-summary:hover {
   background: var(--shm-hover);
 }

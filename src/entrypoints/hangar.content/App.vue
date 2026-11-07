@@ -13,6 +13,7 @@ import type { IconName, IconSet } from '@/icons/icon-names';
 import TabBar from '@/shared/components/TabBar.vue';
 import { i18n } from '@/i18n';
 import SettingsPanel from '@/settings/SettingsPanel.vue';
+import StoreTab from '@/store/components/StoreTab.vue';
 import { useSettings } from '@/settings/use-settings';
 import { MANAGER_CONTAINER, useThemeClass } from '@/themes/theme';
 import { computed, inject, onMounted, onUnmounted, provide, reactive, ref } from 'vue';
@@ -21,6 +22,7 @@ import { computed, inject, onMounted, onUnmounted, provide, reactive, ref } from
 const TAB_ICONS: Record<ManagerTab, { icon: IconName; iconSet?: IconSet }> = {
   hangar: { icon: 'hangar', iconSet: 'custom' },
   buyback: { icon: 'recycle' },
+  store: { icon: 'basket-shopping' },
   settings: { icon: 'gear' },
 };
 
@@ -70,8 +72,8 @@ const status = computed(() => {
   return undefined;
 });
 
-// The tab is part of the URL (`#hangar-manager`, `#hangar-manager-bb`, `#hangar-manager-settings`),
-// so it can be linked to and survives a reload.
+// The tab is part of the URL (`#hangar-manager`, `#hangar-manager-bb`, `#hangar-manager-store`,
+// `#hangar-manager-settings`), so it can be linked to and survives a reload.
 const activeTab = ref<ManagerTab>(tabFromHash(location.hash) ?? 'hangar');
 /** Tabs opened so far: the big lists are built on first use and then kept. */
 const opened = reactive(new Set<ManagerTab>([activeTab.value]));
@@ -174,6 +176,20 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
       </template>
       <p v-else-if="!syncState.running" class="shm-empty">{{ i18n.t('buyback.empty') }}</p>
     </template>
+  </div>
+  <div
+    v-if="opened.has('store')"
+    v-show="activeTab === 'store'"
+    id="shm-panel-store"
+    role="tabpanel"
+    aria-labelledby="shm-tab-store"
+  >
+    <StoreTab
+      v-if="listsReady"
+      :pledges="pledges"
+      :settings="settings"
+      :active="activeTab === 'store'"
+    />
   </div>
   <div
     v-if="activeTab === 'settings'"

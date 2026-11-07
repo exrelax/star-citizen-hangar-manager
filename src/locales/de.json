@@ -85,6 +85,7 @@
   "tabs": {
     "hangar": "My Hangar",
     "buyback": "Buy Back",
+    "store": "Pledge Store",
     "settings": "Einstellungen"
   },
   "settings": {
@@ -195,6 +196,29 @@
     "addToCart": "In den RSI-Warenkorb legen und ihn öffnen (neuer Tab). Für Buy-Back-Pledges leert RSI den Warenkorb.",
     "cartFailed": "Konnte nicht in den RSI-Warenkorb gelegt werden: $1",
     "cartNotFound": "Nicht mehr an der gespeicherten Stelle in RSIs Buy Back – bitte synchronisieren und erneut versuchen."
+  },
+  "store": {
+    "warbondTitle": "Aktuelle Warbond CCUs",
+    "warbondIntro": "Warbond-Upgrades, die RSIs Ship-Upgrade-Tool gerade anbietet: das Schiff unter seinem Standardpreis, bezahlt mit echtem Geld. Der Rabatt ist von jedem Ausgangsschiff gleich – das günstigste CCU startet beim teuersten Schiff unter dem Warbond-Preis.",
+    "loading": "Aktuelle Angebote werden von RSI gelesen …",
+    "failed": "Die Angebote konnten nicht von RSI gelesen werden: $1",
+    "retry": "Erneut versuchen",
+    "count": "$1 Warbond CCUs",
+    "empty": "RSI bietet gerade keine Warbond CCUs an.",
+    "warbondEdition": "Warbond Edition",
+    "msrpHint": "Standardpreis des Schiffs",
+    "openUpgrade": "Ship Upgrade",
+    "openUpgradeHint": "Öffnet RSIs Ship-Upgrade-Dialog mit der $1 (Warbond Edition) als Ziel",
+    "ownedBadge": "$1 im Hangar",
+    "ownedBadgeHint": "CCUs deines Hangars im Preisbereich der günstigsten Warbond CCUs (Details beim Aufklappen)",
+    "cheapestTitle": "Günstigste Warbond CCUs",
+    "ccuPrice": "CCU $1",
+    "fromShips": "von $1 ($2)",
+    "moreShips": "+$1 weitere",
+    "noBases": "Kein Schiff kostet weniger als der Warbond-Preis, daher gibt es kein CCU dorthin.",
+    "ownedTitle": "Deine CCUs zwischen $1 und $2",
+    "ownedHint": "Diese CCUs überschneiden sich mit dem Preisbereich der Warbond CCUs oben und lassen sich daher nicht mit ihnen verketten.",
+    "ownedNone": "Keines deiner CCUs liegt in diesem Preisbereich."
   },
   "upgradeLog": {
     "title": "Angewendete Upgrades",
