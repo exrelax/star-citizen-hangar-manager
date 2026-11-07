@@ -1,16 +1,10 @@
 import type { HangarSnapshot } from './pledge';
-import type { ShipPrices } from './ship-prices';
 
 /**
  * The whole snapshot lives in a single key, so a sync replaces it atomically and readers never
  * see a mix of old and new pledges.
  */
-export const hangarSnapshot = storage.defineItem<HangarSnapshot | null>('local:hangar.snapshot', {
-  fallback: null,
-});
-
-/** Original ship prices from RSI's upgrade tool (see `ship-prices.ts`). */
-export const shipPricesItem = storage.defineItem<ShipPrices | null>('local:hangar.shipPrices', {
+export const hangarSnapshot = storage.defineItem<HangarSnapshot | null>('local:hangar.items', {
   fallback: null,
 });
 
@@ -33,6 +27,6 @@ export interface CheckState {
 }
 
 /** Small and separate from the snapshot, so a check without changes doesn't rewrite all pledges. */
-export const hangarCheckState = storage.defineItem<CheckState>('local:hangar.checkState', {
+export const hangarCheckState = storage.defineItem<CheckState>('local:hangar.check', {
   fallback: { lastCheckAt: 0, cursor: 0, lastOutcome: null },
 });

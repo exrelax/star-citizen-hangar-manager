@@ -107,7 +107,7 @@ Your hangar is nobody else's business. The extension is built so that your data 
 - **No server of its own, no account, no tracking, no analytics.** There is nothing to sign up for
   and nothing that reports back.
 - **Everything is stored locally** in your browser's extension storage: hangar, buy back, orders
-  and ship prices. It never leaves your computer, and removing the extension removes it. The CCU
+  and ship data. It never leaves your computer, and removing the extension removes it. The CCU
   history is not even stored – it is loaded from RSI when you open it.
 - **Only RSI, with your own login**: pledges, orders and prices are read from RSI's website with
   the session you are already logged in with. The extension never sees or stores your password.
@@ -428,7 +428,7 @@ In the order of the settings tab:
 - **Show links for ships**: erkul.games and FleetYards.net, each on or off.
 - **Reset**, each after a confirmation:
   - **Delete local hangar & buy back data**: removes only the extension's copy in this browser
-    (pledges, orders, ship prices, Pledge Store offers, smart update state); nothing changes on RSI's website, and the
+    (pledges, orders, ship data and warbond offers, smart update state); nothing changes on RSI's website, and the
     lists offer the initial load again. Not possible during a refresh.
   - **Reset settings**: all settings back to their defaults (on all synced devices); the stored
     hangar stays.

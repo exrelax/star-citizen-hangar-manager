@@ -1,5 +1,4 @@
-import { SHIP_PRICES_MAX_AGE_MS } from '@/config';
-import { shipPricesItem } from './hangar-storage';
+import { current, type ShipsSnapshot } from '@/ships/ships-storage';
 import type { Pledge } from './pledge';
 
 /*
@@ -12,13 +11,6 @@ import type { Pledge } from './pledge';
 export interface ShipPrice {
   name: string;
   price: number;
-}
-
-/** Locally stored prices of the last download. */
-export interface ShipPrices {
-  /** ISO timestamp of the download. */
-  fetchedAt: string;
-  ships: ShipPrice[];
 }
 
 /** Discount of a pledge compared to the original price of its ship (or CCU). */
@@ -35,50 +27,9 @@ export interface PledgeDiscount {
   ships: ShipPrice[];
 }
 
-const UPGRADE_GRAPHQL = '/pledge-store/api/upgrade/v2/graphql';
-
-/** Loads the ships of the upgrade tool. Works with the session of the RSI page. */
-export async function fetchShipPrices(): Promise<ShipPrice[]> {
-  const response = await fetch(UPGRADE_GRAPHQL, {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify([
-      {
-        operationName: 'filterShips',
-        variables: { fromFilters: [] },
-        query:
-          'query filterShips($toId: Int, $fromFilters: [FilterConstraintValues]) {' +
-          ' from(to: $toId, filters: $fromFilters) { ships { name msrp } } }',
-      },
-    ]),
-  });
-  if (!response.ok) throw new Error(`Loading ship prices failed: HTTP ${response.status}`);
-  const [result] = (await response.json()) as [
-    { data?: { from?: { ships?: { name: string; msrp: number }[] } } } | undefined,
-  ];
-  const ships = result?.data?.from?.ships ?? [];
-  if (!ships.length) throw new Error('Loading ship prices failed: no ships in the answer');
-  // RSI's prices are in cents.
-  return ships.map(({ name, msrp }) => ({ name, price: msrp / 100 }));
-}
-
-/**
- * Downloads the prices again if they are older than `maxAgeMs` (or missing). A failure keeps
- * the stored prices – they are an extra and must not break a sync.
- */
-export async function refreshShipPrices({
-  maxAgeMs = SHIP_PRICES_MAX_AGE_MS,
-  fetchPrices = fetchShipPrices,
-} = {}): Promise<void> {
-  const stored = await shipPricesItem.getValue();
-  if (stored && Date.now() - Date.parse(stored.fetchedAt) < maxAgeMs) return;
-  try {
-    const ships = await fetchPrices();
-    await shipPricesItem.setValue({ fetchedAt: new Date().toISOString(), ships });
-  } catch (error) {
-    console.warn('[star-citizen-hangar-manager] Ship prices unavailable', error);
-  }
+/** The standard prices of the stored ships of the upgrade tool (see `src/ships`). */
+export function shipPricesOf(snapshot: ShipsSnapshot | null | undefined): ShipPrice[] {
+  return (current(snapshot ?? null)?.ships ?? []).map(({ name, msrp }) => ({ name, price: msrp }));
 }
 
 const words = (name: string) =>

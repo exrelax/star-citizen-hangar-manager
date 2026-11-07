@@ -9,11 +9,11 @@ import {
   holdingsByShip,
   ownedCcusInRange,
   ownedCounts,
-  type StoreShip,
   type WarbondTarget,
 } from './warbond';
+import type { Ship } from '@/ships/ships';
 
-const ship = (id: number, name: string, msrp: number): StoreShip => ({ id, name, msrp });
+const ship = (id: number, name: string, msrp: number): Ship => ({ id, name, msrp });
 
 const SHIPS = [
   ship(1, 'Aurora Mk I ES', 20),

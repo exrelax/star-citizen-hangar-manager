@@ -114,10 +114,14 @@ export const SYNC_CONCURRENCY = 3;
 export const SYNC_WORK = { requestOverhead: 40, detailPage: 70, finish: 150 };
 
 /**
- * The original ship prices (RSI's ship upgrade tool) are reloaded with every full refresh, and
- * by the smart update once they are older than this. They change rarely.
+ * RSI's ship upgrade tool (see `src/ships`): ships with their standard prices, ships on sale and
+ * warbond editions, read with one request. Read again with every full refresh and, with smart
+ * updates, at the interval of the settings (`PLEDGE_STORE.refreshMinutes`).
  */
-export const SHIP_PRICES_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+export const UPGRADE_TOOL = {
+  /** With smart updates off: read again once the stored data is older than this. */
+  maxAgeWithoutSmartUpdatesMs: 24 * 60 * 60 * 1000,
+} as const;
 
 /** Fleetyards models per request when looking up erkul ids (~60 KB each). */
 export const FLEETYARDS_DETAILS_BATCH_SIZE = 20;
