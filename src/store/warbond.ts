@@ -1,4 +1,5 @@
 import { PLEDGE_STORE } from '@/config';
+import type { BuybackView } from '@/buyback/buyback-view';
 import type { PledgeView } from '@/hangar/pledge-view';
 import { createPriceLookup, type PledgeDiscount, type ShipPrice } from '@/hangar/ship-prices';
 
@@ -8,6 +9,10 @@ import { createPriceLookup, type PledgeDiscount, type ShipPrice } from '@/hangar
  * the warbond price minus the msrp of the ship it starts from, and RSI offers it from every ship
  * whose msrp is below the warbond price. The discount is the same from every ship, so the cheapest
  * CCU – from the most expensive of these ships – gets it for the least money.
+ *
+ * Whatever ship it starts from, a warbond CCU always spans the prices from the warbond price to the
+ * msrp. A CCU of the hangar that overlaps this span can't be chained with any of them; CCUs ending
+ * at or below the warbond price can (e.g. one to the ship the warbond CCU starts from).
  */
 
 /** A ship of RSI's upgrade tool; prices in USD. */
@@ -35,22 +40,30 @@ export interface StoreData {
   warbonds: WarbondTarget[];
 }
 
-/** Ships to start from that cost the same: their CCUs to the warbond have the same price. */
-export interface BaseLevel {
-  /** Price of the CCU from one of these ships. */
-  ccuPrice: number;
-  msrp: number;
-  ships: StoreShip[];
+/** How often a ship is in the hangar and the buy back: as ship, and as target of a CCU. */
+export interface Holdings {
+  hangarShips: number;
+  hangarCcus: number;
+  buybackShips: number;
+  buybackCcus: number;
 }
 
-/** CCUs of the hangar with the same ships (several pledges of the same CCU form one entry). */
+/** A ship to start a warbond CCU from. */
+export interface BaseShip {
+  ship: StoreShip;
+  /** Price of the CCU from this ship to the warbond. */
+  ccuPrice: number;
+  holdings: Holdings;
+}
+
+/** CCUs of the hangar with the same ships and value (several pledges form one entry). */
 export interface OwnedCcu {
   title: string;
   from: ShipPrice;
   to: ShipPrice;
   /** Pledge ids, newest first. */
   ids: number[];
-  value: string;
+  valueUsd: number;
   discount?: PledgeDiscount;
 }
 
@@ -60,41 +73,93 @@ export interface WarbondOffer {
   discount: number;
   /** `discount` in percent of the msrp. */
   percent: number;
-  /** The cheapest CCUs to the warbond, cheapest first. */
-  bases: BaseLevel[];
-  /**
-   * The price range the CCUs shown cover: from the cheapest ship they start from to the target's
-   * msrp. Unset if no ship is cheap enough.
-   */
-  range?: { low: number; high: number };
-  /** CCUs of the hangar overlapping `range`: they can't be chained with the warbond CCUs shown. */
+  /** The ships with the cheapest CCUs to the warbond, cheapest CCU first. */
+  bases: BaseShip[];
+  /** CCUs of the hangar overlapping the span of every warbond CCU (warbond price to msrp). */
   owned: OwnedCcu[];
 }
 
-/** The levels of ships to start from, cheapest CCU first. */
+const NO_HOLDINGS: Holdings = { hangarShips: 0, hangarCcus: 0, buybackShips: 0, buybackCcus: 0 };
+
+/** The ships with the cheapest CCUs to the warbond: the most expensive ones below its price. */
 export function cheapestBases(
   ships: readonly StoreShip[],
   target: WarbondTarget,
-  levels: number = PLEDGE_STORE.baseLevels,
-): BaseLevel[] {
-  const byMsrp = new Map<number, StoreShip[]>();
-  for (const ship of ships) {
-    if (ship.id === target.ship.id || !(ship.msrp > 0) || ship.msrp >= target.price) continue;
-    byMsrp.set(ship.msrp, [...(byMsrp.get(ship.msrp) ?? []), ship]);
-  }
-  return [...byMsrp.entries()]
-    .sort(([a], [b]) => b - a)
-    .slice(0, levels)
-    .map(([msrp, level]) => ({
-      ccuPrice: round(target.price - msrp),
-      msrp,
-      ships: level.sort((a, b) => a.name.localeCompare(b.name)),
+  holdings: ReadonlyMap<number, Holdings> = new Map(),
+  count: number = PLEDGE_STORE.baseShips,
+): BaseShip[] {
+  return ships
+    .filter((ship) => ship.id !== target.ship.id && ship.msrp > 0 && ship.msrp < target.price)
+    .sort((a, b) => b.msrp - a.msrp || a.name.localeCompare(b.name))
+    .slice(0, count)
+    .map((ship) => ({
+      ship,
+      ccuPrice: round(target.price - ship.msrp),
+      holdings: holdings.get(ship.id) ?? NO_HOLDINGS,
     }));
 }
 
+/** Finds the upgrade tool's ship for a ship name of the hangar or the buy back. */
+export function createShipLookup(ships: readonly StoreShip[]) {
+  const prices = ships.map(({ name, msrp }) => ({ name, price: msrp }));
+  const shipOf = new Map(prices.map((price, index) => [price, ships[index]!]));
+  const priceOf = createPriceLookup(prices);
+  return {
+    priceOf,
+    shipOf: (name: string) => {
+      const price = priceOf(name);
+      return price && shipOf.get(price);
+    },
+  };
+}
+
+type ShipLookup = ReturnType<typeof createShipLookup>;
+
+/** "Upgrade - Mercury to Eclipse Warbond Edition" → "Eclipse". */
+const CCU_TARGET = /\bto\s+(.+?)(?:\s+(?:warbond|standard)\s+edition)?\s*$/i;
+
+/** How often each ship (by the upgrade tool's id) is in the hangar and the buy back. */
+export function holdingsByShip(
+  lookup: ShipLookup,
+  hangar: readonly PledgeView[],
+  buyback: readonly BuybackView[],
+): Map<number, Holdings> {
+  const holdings = new Map<number, Holdings>();
+  const add = (id: number | undefined, key: keyof Holdings) => {
+    if (id === undefined) return;
+    const entry = holdings.get(id) ?? { ...NO_HOLDINGS };
+    entry[key]++;
+    holdings.set(id, entry);
+  };
+
+  for (const pledge of hangar) {
+    if (pledge.isCcu) {
+      const target = pledge.upgrade?.targetItems[0]?.name;
+      add(target ? lookup.shipOf(target)?.id : undefined, 'hangarCcus');
+      continue;
+    }
+    // Each ship once per pledge; an upgraded pledge lists its current ship.
+    const names = pledge.items.filter((item) => item.kind === 'Ship').map((item) => item.title);
+    const ids = new Set(names.map((name) => lookup.shipOf(name)?.id));
+    for (const id of ids) add(id, 'hangarShips');
+  }
+
+  for (const pledge of buyback) {
+    if (pledge.isCcu) {
+      // The buy back button names the upgrade tool's ship; without it, the title does.
+      const name = CCU_TARGET.exec(pledge.title)?.[1];
+      add(pledge.upgrade?.toShipId ?? (name ? lookup.shipOf(name)?.id : undefined), 'buybackCcus');
+      continue;
+    }
+    const ids = new Set(pledge.ships.map((ship) => lookup.shipOf(ship.name)?.id));
+    for (const id of ids) add(id, 'buybackShips');
+  }
+  return holdings;
+}
+
 /**
- * CCUs of the hangar whose price range overlaps the given one, grouped by their ships, in order
- * of their target's price. Their ships are matched by name with the upgrade tool's prices.
+ * CCUs of the hangar whose price span overlaps the given one, grouped by their title and value,
+ * in order of their target's price. Their ships are matched by name with the upgrade tool's prices.
  */
 export function ownedCcusInRange(
   pledges: readonly PledgeView[],
@@ -110,7 +175,7 @@ export function ownedCcusInRange(
     const to = toName ? priceOf(toName) : undefined;
     if (!from || !to || !(from.price < range.high && to.price > range.low)) continue;
 
-    const key = `${pledge.title}|${pledge.value}`;
+    const key = `${pledge.title}|${pledge.valueUsd}`;
     const group = groups.get(key);
     if (group) group.ids.push(pledge.id);
     else {
@@ -119,35 +184,36 @@ export function ownedCcusInRange(
         from,
         to,
         ids: [pledge.id],
-        value: pledge.value,
+        valueUsd: pledge.valueUsd,
         discount: pledge.discount,
       });
     }
   }
   return [...groups.values()].sort(
-    (a, b) => a.to.price - b.to.price || a.from.price - b.from.price,
+    (a, b) => a.to.price - b.to.price || a.from.price - b.from.price || a.valueUsd - b.valueUsd,
   );
 }
 
-/** The warbond offers with their cheapest CCUs and the hangar's CCUs in their price range. */
+/** The warbond offers with their cheapest CCUs and the hangar's CCUs that collide with them. */
 export function buildWarbondOffers(
   data: StoreData,
-  pledges: readonly PledgeView[],
+  hangar: readonly PledgeView[],
+  buyback: readonly BuybackView[] = [],
 ): WarbondOffer[] {
-  const priceOf = createPriceLookup(data.ships.map(({ name, msrp }) => ({ name, price: msrp })));
+  const lookup = createShipLookup(data.ships);
+  const holdings = holdingsByShip(lookup, hangar, buyback);
   return data.warbonds
     .map((target): WarbondOffer => {
       const discount = round(target.ship.msrp - target.price);
-      const bases = cheapestBases(data.ships, target);
-      const low = bases.at(-1)?.msrp;
-      const range = low === undefined ? undefined : { low, high: target.ship.msrp };
       return {
         target,
         discount,
         percent: (discount / target.ship.msrp) * 100,
-        bases,
-        range,
-        owned: range ? ownedCcusInRange(pledges, priceOf, range) : [],
+        bases: cheapestBases(data.ships, target, holdings),
+        owned: ownedCcusInRange(hangar, lookup.priceOf, {
+          low: target.price,
+          high: target.ship.msrp,
+        }),
       };
     })
     .sort(

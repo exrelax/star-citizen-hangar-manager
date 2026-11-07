@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { PLEDGE_STORE } from '@/config';
 import { formatDiscount, formatPercent, formatUsd } from '@/hangar/discount-format';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { i18n, locale } from '@/i18n';
 import { computed, ref } from 'vue';
-import type { BaseLevel, OwnedCcu, WarbondOffer } from '../warbond';
+import type { WarbondOffer } from '../warbond';
 
 const props = defineProps<{ offer: WarbondOffer }>();
 
@@ -22,18 +21,20 @@ const discountText = computed(
   () => `−${usd(props.offer.discount)} (${formatPercent(props.offer.percent, locale.value)})`,
 );
 
-/** The first ship names of a level; the others are summed up. */
-const levelShips = (level: BaseLevel) => {
-  const shown = level.ships.slice(0, PLEDGE_STORE.shipsPerLevel).map((ship) => ship.name);
-  const more = level.ships.length - shown.length;
-  return more > 0 ? [...shown, i18n.t('store.moreShips', [more])].join(', ') : shown.join(', ');
-};
+/** The hangar's colliding CCUs with their discount formatted once. */
+const owned = computed(() =>
+  props.offer.owned.map((ccu) => ({
+    ...ccu,
+    shown: ccu.discount && formatDiscount(ccu.discount, locale.value),
+  })),
+);
 
 const ownedCount = computed(() =>
   props.offer.owned.reduce((count, ccu) => count + ccu.ids.length, 0),
 );
 
-const ownedDiscount = (ccu: OwnedCcu) => ccu.discount && formatDiscount(ccu.discount, locale.value);
+/** A count of the tables; nothing for none, so the counts that matter stand out. */
+const count = (value: number) => (value ? String(value) : '–');
 </script>
 
 <template>
@@ -103,44 +104,82 @@ const ownedDiscount = (ccu: OwnedCcu) => ccu.discount && formatDiscount(ccu.disc
       <div class="shm-details-main">
         <h4 class="shm-warbond-heading">{{ i18n.t('store.cheapestTitle') }}</h4>
         <p v-if="!offer.bases.length" class="shm-hint">{{ i18n.t('store.noBases') }}</p>
-        <ul v-else class="shm-items">
-          <li v-for="level in offer.bases" :key="level.msrp">
-            <span class="shm-warbond-ccu-price">{{
-              i18n.t('store.ccuPrice', [usd(level.ccuPrice)])
-            }}</span>
-            <span class="shm-item-title">
-              {{ i18n.t('store.fromShips', [levelShips(level), usd(level.msrp)]) }}
-            </span>
-          </li>
-        </ul>
-
-        <template v-if="offer.range">
-          <h4 class="shm-warbond-heading">
-            {{ i18n.t('store.ownedTitle', [usd(offer.range.low), usd(offer.range.high)]) }}
-          </h4>
-          <p class="shm-hint">{{ i18n.t('store.ownedHint') }}</p>
-          <p v-if="!offer.owned.length" class="shm-hint">{{ i18n.t('store.ownedNone') }}</p>
-          <ul v-else class="shm-items shm-warbond-owned-list">
-            <li v-for="ccu in offer.owned" :key="ccu.ids[0]">
-              <span class="shm-item-title">
-                {{ ccu.from.name }} → {{ ccu.to.name }}
-                <span class="shm-item-kind">
-                  ({{ usd(ccu.from.price) }} → {{ usd(ccu.to.price) }})
-                </span>
-                <template v-if="ccu.ids.length > 1"> × {{ ccu.ids.length }}</template>
-              </span>
-              <span class="shm-value">{{ ccu.value }}</span>
-              <span
-                v-if="ownedDiscount(ccu)"
-                class="shm-discount"
-                :class="{ 'is-surcharge': ownedDiscount(ccu)!.isSurcharge }"
-                :title="ownedDiscount(ccu)!.title"
-              >
-                {{ ownedDiscount(ccu)!.text }}
-              </span>
-            </li>
-          </ul>
+        <template v-else>
+          <p class="shm-hint">{{ i18n.t('store.cheapestHint') }}</p>
+          <table class="shm-warbond-table">
+            <thead>
+              <tr>
+                <th scope="col" class="is-number">{{ i18n.t('store.colCcu') }}</th>
+                <th scope="col">{{ i18n.t('store.colFrom') }}</th>
+                <th scope="col" class="is-number">{{ i18n.t('store.colShipPrice') }}</th>
+                <th scope="col" class="is-number is-group">
+                  {{ i18n.t('store.colHangarShips') }}
+                </th>
+                <th scope="col" class="is-number">{{ i18n.t('store.colHangarCcus') }}</th>
+                <th scope="col" class="is-number is-group">
+                  {{ i18n.t('store.colBuybackShips') }}
+                </th>
+                <th scope="col" class="is-number">{{ i18n.t('store.colBuybackCcus') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="base in offer.bases" :key="base.ship.id">
+                <td class="is-number is-strong">{{ usd(base.ccuPrice) }}</td>
+                <td>{{ base.ship.name }}</td>
+                <td class="is-number">{{ usd(base.ship.msrp) }}</td>
+                <td class="is-number is-group" :class="{ 'is-none': !base.holdings.hangarShips }">
+                  {{ count(base.holdings.hangarShips) }}
+                </td>
+                <td class="is-number" :class="{ 'is-none': !base.holdings.hangarCcus }">
+                  {{ count(base.holdings.hangarCcus) }}
+                </td>
+                <td class="is-number is-group" :class="{ 'is-none': !base.holdings.buybackShips }">
+                  {{ count(base.holdings.buybackShips) }}
+                </td>
+                <td class="is-number" :class="{ 'is-none': !base.holdings.buybackCcus }">
+                  {{ count(base.holdings.buybackCcus) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </template>
+
+        <h4 class="shm-warbond-heading">
+          {{ i18n.t('store.ownedTitle', [usd(offer.target.price), usd(offer.target.ship.msrp)]) }}
+        </h4>
+        <p class="shm-hint">{{ i18n.t('store.ownedHint') }}</p>
+        <p v-if="!owned.length" class="shm-hint">{{ i18n.t('store.ownedNone') }}</p>
+        <table v-else class="shm-warbond-table is-small">
+          <thead>
+            <tr>
+              <th scope="col">{{ i18n.t('store.colCcu') }}</th>
+              <th scope="col" class="is-number">{{ i18n.t('store.colShipPrices') }}</th>
+              <th scope="col" class="is-number">{{ i18n.t('store.colCount') }}</th>
+              <th scope="col" class="is-number shm-value">{{ i18n.t('store.colValue') }}</th>
+              <th scope="col" class="is-number shm-value">{{ i18n.t('store.colDiscount') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="ccu in owned" :key="ccu.ids[0]">
+              <td>{{ ccu.from.name }} → {{ ccu.to.name }}</td>
+              <td class="is-number is-muted">
+                {{ usd(ccu.from.price) }} → {{ usd(ccu.to.price) }}
+              </td>
+              <td class="is-number">{{ ccu.ids.length }}×</td>
+              <td class="is-number shm-value">{{ usd(ccu.valueUsd) }}</td>
+              <td class="is-number shm-value">
+                <span
+                  v-if="ccu.shown"
+                  class="shm-discount"
+                  :class="{ 'is-surcharge': ccu.shown.isSurcharge }"
+                  :title="ccu.shown.title"
+                >
+                  {{ ccu.shown.text }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -161,8 +200,8 @@ const ownedDiscount = (ccu: OwnedCcu) => ccu.discount && formatDiscount(ccu.disc
   cursor: help;
 }
 
-/* The upgrade button keeps its label on one line, next to the chevron. */
-.shm-warbond .shm-row-summary > .shm-button {
+/* The upgrade button on the right, next to the chevron, its label on one line. */
+.shm-warbond-upgrade {
   flex: none;
   white-space: nowrap;
 }
@@ -173,28 +212,60 @@ const ownedDiscount = (ccu: OwnedCcu) => ccu.discount && formatDiscount(ccu.disc
 }
 
 .shm-warbond-heading {
-  margin: 8px 0 4px;
+  margin: 10px 0 4px;
   color: var(--shm-accent);
   font-size: calc(12px * var(--shm-font-scale));
   font-weight: normal;
   text-transform: uppercase;
 }
 
-.shm-warbond-ccu-price {
-  flex: none;
-  min-width: 90px;
-  color: var(--shm-text-strong);
+/* Tables like the CCU history's (UpgradeLog.vue): numbers right-aligned, so they line up. */
+.shm-warbond-table {
+  width: 100%;
+  margin: 0 0 6px;
+  border-collapse: collapse;
+}
+
+.shm-warbond-table th,
+.shm-warbond-table td {
+  padding: 3px 0 3px 12px;
+  text-align: left;
+  vertical-align: top;
+  border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.08);
+}
+
+.shm-warbond-table :is(th, td):first-child {
+  padding-left: 0;
+}
+
+.shm-warbond-table th {
+  color: var(--shm-text-muted);
+  font-weight: normal;
+  border-top: 0;
+}
+
+.shm-warbond-table .is-number {
+  text-align: right;
+  white-space: nowrap;
   font-variant-numeric: tabular-nums;
+}
+
+/* Space before each pair of count columns (hangar, buy back). */
+.shm-warbond-table .is-group {
+  padding-left: 24px;
+}
+
+.shm-warbond-table .is-strong {
+  color: var(--shm-text-strong);
+}
+
+.shm-warbond-table .is-muted,
+.shm-warbond-table .is-none {
+  color: var(--shm-text-muted);
 }
 
 /* The hangar's CCUs: small, they are a reference. */
-.shm-warbond-owned-list {
+.shm-warbond-table.is-small {
   font-size: calc(11px * var(--shm-font-scale));
-}
-
-.shm-warbond-owned-list .shm-value,
-.shm-warbond-owned-list .shm-discount {
-  flex: none;
-  font-variant-numeric: tabular-nums;
 }
 </style>
