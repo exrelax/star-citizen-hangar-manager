@@ -4,6 +4,7 @@ import { useSettings } from '@/settings/use-settings';
 import { ref } from 'vue';
 import OrderOverlay from './OrderOverlay.vue';
 import { HIDDEN, type PaidOrder } from './orders';
+import { vTooltip } from '@/shared/tooltip/tooltip';
 
 /**
  * `base`: the pledge's ship was upgraded since – the order is the one of its base pledge.
@@ -26,9 +27,9 @@ const { settings } = useSettings();
   <p class="shm-order">
     {{ i18n.t(base ? 'order.baseLabel' : 'order.label') }}
     <a
+      v-tooltip="i18n.t('order.open')"
       class="shm-order-id is-link"
       href="#"
-      :title="i18n.t('order.open')"
       @click.prevent="open = true"
     >
       #{{ settings.hidePledgeIds ? HIDDEN : order.id }}

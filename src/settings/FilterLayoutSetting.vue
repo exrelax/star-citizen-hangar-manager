@@ -2,6 +2,7 @@
 import type { FilterLayout } from '@/hangar/filters';
 import { i18n } from '@/i18n';
 import { ref } from 'vue';
+import { vTooltip } from '@/shared/tooltip/tooltip';
 
 /*
  * Order and selection of one list's filter buttons: drag a filter (or use its arrows) to move
@@ -101,19 +102,19 @@ function onDrop(index: number) {
         </label>
         <span class="shm-move">
           <button
+            v-tooltip="i18n.t('settings.filterUp', [filterLabel(filter)])"
             type="button"
             :disabled="index === 0"
             :aria-label="i18n.t('settings.filterUp', [filterLabel(filter)])"
-            :title="i18n.t('settings.filterUp', [filterLabel(filter)])"
             @click="move(index, index - 1)"
           >
             ↑
           </button>
           <button
+            v-tooltip="i18n.t('settings.filterDown', [filterLabel(filter)])"
             type="button"
             :disabled="index === layout.order.length - 1"
             :aria-label="i18n.t('settings.filterDown', [filterLabel(filter)])"
-            :title="i18n.t('settings.filterDown', [filterLabel(filter)])"
             @click="move(index, index + 1)"
           >
             ↓

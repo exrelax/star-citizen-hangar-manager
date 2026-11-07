@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it } from 'vitest';
-import { createApp, h, nextTick, type App } from 'vue';
+import { createApp, h, type App } from 'vue';
 import { RSI_GAMES_LIBRARY_URL } from '@/config';
 import type { Pledge } from '../pledge';
 import { toPledgeView } from '../pledge-view';
@@ -37,7 +37,7 @@ const badges = (root: HTMLElement) =>
   ]);
 
 describe('PledgeRow', () => {
-  it('marks a protected pledge with a lock tag and links the Games Library', async () => {
+  it('marks a protected pledge with a lock tag and links the Games Library', () => {
     const root = render({
       protectedGames: ['SC', 'SQ42'],
       isGiftable: false,
@@ -48,20 +48,11 @@ describe('PledgeRow', () => {
     const lock = root.querySelector('.shm-badge.is-protected');
     expect(lock?.textContent?.trim()).toBe('SC · SQ42');
     expect(lock?.querySelector('.shm-icon')).not.toBeNull();
-    // The tooltip is teleported out of the row (which clips it) and opens on hover and focus.
-    const tooltip = document.getElementById(lock!.getAttribute('aria-describedby')!)!;
-    expect(tooltip.getAttribute('role')).toBe('tooltip');
-    expect(tooltip.hidden).toBe(true);
-    expect(tooltip.textContent?.replace(/\s+/g, ' ').trim()).toBe(
-      'Protected game access RSI protects this pledge as your game access for Star Citizen and ' +
+    // The shared tooltip shows it (see tooltip.test.ts); screen readers get it as description.
+    expect(lock?.getAttribute('aria-description')).toBe(
+      'Protected game access – RSI protects this pledge as your game access for Star Citizen and ' +
         "Squadron 42. It can't be melted or gifted, but you can still upgrade it with CCUs.",
     );
-    lock!.dispatchEvent(new Event('mouseenter'));
-    await nextTick();
-    expect(tooltip.hidden).toBe(false);
-    lock!.dispatchEvent(new Event('mouseleave'));
-    await nextTick();
-    expect(tooltip.hidden).toBe(true);
     // Gift and Melt are struck through, and their buttons are gone.
     expect(badges(root).slice(1)).toEqual([
       ['Gift', true],
@@ -83,8 +74,8 @@ describe('PledgeRow', () => {
     });
     const lock = root.querySelector('.shm-badge.is-protected');
     expect(lock?.textContent?.trim()).toBe('SQ42');
-    const tooltip = document.getElementById(lock!.getAttribute('aria-describedby')!);
-    expect(tooltip?.textContent?.replace(/\s+/g, ' ')).toContain(
+    const tooltip = lock?.getAttribute('aria-description');
+    expect(tooltip).toContain(
       "for Squadron 42. It can't be melted or gifted, and as it contains no ship, it can't be " +
         'upgraded with CCUs either.',
     );
@@ -94,9 +85,9 @@ describe('PledgeRow', () => {
     const root = render({ protectedGames: ['SC'], items: [{ title: 'Aurora MR', kind: 'Ship' }] });
     const lock = root.querySelector('.shm-badge.is-protected');
     expect(lock?.textContent?.trim()).toBe('SC');
-    const tooltip = document.getElementById(lock!.getAttribute('aria-describedby')!);
-    expect(tooltip?.textContent).toContain('for Star Citizen.');
-    expect(tooltip?.textContent).not.toContain('Squadron 42');
+    const tooltip = lock?.getAttribute('aria-description');
+    expect(tooltip).toContain('for Star Citizen.');
+    expect(tooltip).not.toContain('Squadron 42');
   });
 
   it('names only the game of a pledge that protects Squadron 42 alone', () => {
@@ -106,9 +97,9 @@ describe('PledgeRow', () => {
     });
     const lock = root.querySelector('.shm-badge.is-protected');
     expect(lock?.textContent?.trim()).toBe('SQ42');
-    const tooltip = document.getElementById(lock!.getAttribute('aria-describedby')!);
-    expect(tooltip?.textContent).toContain('for Squadron 42.');
-    expect(tooltip?.textContent).not.toContain('Star Citizen');
+    const tooltip = lock?.getAttribute('aria-description');
+    expect(tooltip).toContain('for Squadron 42.');
+    expect(tooltip).not.toContain('Star Citizen');
   });
 
   it('links the Games Library for every pledge with the game, protected or not', () => {

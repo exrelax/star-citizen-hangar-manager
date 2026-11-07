@@ -11,6 +11,7 @@ import { useStoreData } from '../use-store-data';
 import { buildWarbondOffers } from '../warbond';
 import RefreshIcon from '@/hangar/components/RefreshIcon.vue';
 import WarbondRow from './WarbondRow.vue';
+import { vTooltip } from '@/shared/tooltip/tooltip';
 
 /*
  * The "Pledge Store" tab: the warbond CCUs RSI currently offers, each with the cheapest ships to
@@ -91,10 +92,10 @@ const displayClasses = computed(() => ({
           <span v-else-if="updated">{{ updated }}</span>
           <!-- Reads only the Pledge Store again, not hangar and buy back. -->
           <button
+            v-tooltip="i18n.t('store.refresh')"
             type="button"
             class="shm-store-refresh"
             :disabled="storeSyncState.loading"
-            :title="i18n.t('store.refresh')"
             :aria-label="i18n.t('store.refresh')"
             @click="refreshStore()"
           >

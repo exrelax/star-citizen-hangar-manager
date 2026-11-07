@@ -3,6 +3,7 @@ import { i18n, locale } from '@/i18n';
 import { computed, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 import { startSync, syncState } from '../sync-state';
 import RefreshIcon from './RefreshIcon.vue';
+import { vTooltip } from '@/shared/tooltip/tooltip';
 
 /*
  * The manager's refresh button: one icon and a text beside it. A refresh plays in steps of
@@ -111,11 +112,11 @@ const spinning = computed(() => phase.value !== 'idle' && phase.value !== 'shrin
 
 <template>
   <button
+    v-tooltip="progress?.text ?? i18n.t('manager.refresh')"
     type="button"
     class="shadow-button trans-02s trans-color shm-refresh"
     :class="`is-${phase}`"
     :disabled="syncState.running"
-    :title="progress?.text ?? i18n.t('manager.refresh')"
     :aria-label="i18n.t('manager.refresh')"
     :aria-busy="syncState.running"
     @click="startSync"

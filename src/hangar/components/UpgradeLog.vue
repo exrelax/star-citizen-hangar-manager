@@ -6,6 +6,7 @@ import { formatUsd } from '../discount-format';
 import { shipPricesItem } from '../hangar-storage';
 import { createPriceLookup } from '../ship-prices';
 import { loadUpgradeLog, withPrices, type PricedUpgradeLogEntry } from '../upgrade-log';
+import { vTooltip } from '@/shared/tooltip/tooltip';
 
 const props = defineProps<{
   pledgeId: number;
@@ -66,16 +67,16 @@ const shortName = (name: string) => name.replace(/^upgrade\s*-\s*/i, '');
           <tr>
             <th>{{ i18n.t('upgradeLog.date') }}</th>
             <th>{{ i18n.t('upgradeLog.upgrade') }}</th>
-            <th class="is-amount" :title="i18n.t('upgradeLog.targetPriceHint')">
+            <th v-tooltip="i18n.t('upgradeLog.targetPriceHint')" class="is-amount">
               {{ i18n.t('upgradeLog.targetPrice') }}
             </th>
-            <th class="is-amount shm-value" :title="i18n.t('upgradeLog.valueAfterHint')">
+            <th v-tooltip="i18n.t('upgradeLog.valueAfterHint')" class="is-amount shm-value">
               {{ i18n.t('upgradeLog.valueAfter') }}
             </th>
-            <th class="is-amount shm-value" :title="i18n.t('upgradeLog.paidHint')">
+            <th v-tooltip="i18n.t('upgradeLog.paidHint')" class="is-amount shm-value">
               {{ i18n.t('upgradeLog.paid') }}
             </th>
-            <th class="is-amount shm-value" :title="i18n.t('upgradeLog.discountHint')">
+            <th v-tooltip="i18n.t('upgradeLog.discountHint')" class="is-amount shm-value">
               {{ i18n.t('upgradeLog.discount') }}
             </th>
           </tr>

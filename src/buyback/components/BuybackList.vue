@@ -8,6 +8,7 @@ import { computed } from 'vue';
 import { BUYBACK_FILTER_PREDICATES, type BuybackFilter, type BuybackView } from '../buyback-view';
 import { giftableHint } from '../giftable-hint';
 import BuybackRow from './BuybackRow.vue';
+import { vTooltip } from '@/shared/tooltip/tooltip';
 
 const props = defineProps<{
   pledges: BuybackView[];
@@ -52,7 +53,7 @@ const filterHint = (filter: BuybackFilter) => {
     :active="active"
   >
     <template v-if="tokens !== undefined" #count-side>
-      <span class="shm-buyback-tokens" :title="i18n.t('buyback.tokensHint')">
+      <span v-tooltip="i18n.t('buyback.tokensHint')" class="shm-buyback-tokens">
         <SvgIcon name="buyback-token" set="custom" />
         {{ i18n.t('buyback.tokens', [tokens]) }}
       </span>

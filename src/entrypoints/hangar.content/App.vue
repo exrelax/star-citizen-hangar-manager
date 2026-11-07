@@ -17,6 +17,7 @@ import StoreTab from '@/store/components/StoreTab.vue';
 import { useSettings } from '@/settings/use-settings';
 import { MANAGER_CONTAINER, useThemeClass } from '@/themes/theme';
 import { computed, inject, onMounted, onUnmounted, provide, reactive, ref } from 'vue';
+import { vTooltip } from '@/shared/tooltip/tooltip';
 
 /** Icon of each tab, before its label. */
 const TAB_ICONS: Record<ManagerTab, { icon: IconName; iconSet?: IconSet }> = {
@@ -117,7 +118,7 @@ onUnmounted(() => removeEventListener('hashchange', followHash));
     <h2 class="title">
       {{ i18n.t('manager.title') }}
       <!-- In the header, so every tab shows that the lists are a demo selection. -->
-      <span v-if="demo" class="shm-demo-badge" :title="i18n.t('manager.demoBadgeHint')">
+      <span v-if="demo" v-tooltip="i18n.t('manager.demoBadgeHint')" class="shm-demo-badge">
         {{ i18n.t('manager.demoBadge') }}
       </span>
     </h2>

@@ -27,6 +27,7 @@ import {
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { searchFromUrl, urlWithSearch } from '../route';
 import { matchesSearch, parseSearchQuery } from '../search';
+import { vTooltip } from '@/shared/tooltip/tooltip';
 
 /*
  * The list part shared by the manager's tabs: filter buttons, live search, counts, rows. Rows are
@@ -229,9 +230,9 @@ const countLabel = computed(() =>
         />
         <button
           v-if="query"
+          v-tooltip="i18n.t('manager.clearSearch')"
           type="button"
           class="shm-search-clear"
-          :title="i18n.t('manager.clearSearch')"
           :aria-label="i18n.t('manager.clearSearch')"
           @click="clearSearch"
         >
@@ -258,6 +259,7 @@ const countLabel = computed(() =>
             <button
               v-for="filter in group.filters"
               :key="filter"
+              v-tooltip="filterTitle(filter)"
               type="button"
               class="shm-filter"
               :class="{
@@ -271,7 +273,6 @@ const countLabel = computed(() =>
                     ? 'mixed'
                     : 'false'
               "
-              :title="filterTitle(filter)"
               @click="cycleFilter(filter)"
             >
               <span
