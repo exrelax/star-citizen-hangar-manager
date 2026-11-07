@@ -1,4 +1,4 @@
-import type { CheckState } from '@/hangar/hangar-storage';
+import { defineMeta } from '@/storage/meta';
 import type { BuybackSnapshot } from './buyback';
 
 /** The whole buy back in a single key, replaced atomically like the hangar snapshot. */
@@ -6,7 +6,5 @@ export const buybackSnapshot = storage.defineItem<BuybackSnapshot | null>('local
   fallback: null,
 });
 
-/** Smart update state of the buy back, separate from the hangar's. */
-export const buybackCheckState = storage.defineItem<CheckState>('local:buyback.check', {
-  fallback: { lastCheckAt: 0, cursor: 0, lastOutcome: null },
-});
+/** When the buy back was last read, changed and checked (see `storage/meta.ts`). */
+export const buybackMeta = defineMeta('local:buyback.items');

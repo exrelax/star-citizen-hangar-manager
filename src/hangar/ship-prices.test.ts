@@ -100,11 +100,10 @@ describe('pledgeDiscount', () => {
 describe('shipPricesOf', () => {
   it('takes the standard prices of the stored ships of the current format', () => {
     const ships = [{ id: 1, name: 'Mercury', msrp: 260 }];
-    const fetchedAt = '2026-11-07T12:00:00Z';
-    expect(shipPricesOf({ version: SHIPS_VERSION, fetchedAt, ships })).toEqual([
+    expect(shipPricesOf({ version: SHIPS_VERSION, ships })).toEqual([
       { name: 'Mercury', price: 260 },
     ]);
-    expect(shipPricesOf({ version: 0, fetchedAt, ships })).toEqual([]);
+    expect(shipPricesOf({ version: 0, ships })).toEqual([]);
     expect(shipPricesOf(null)).toEqual([]);
   });
 });

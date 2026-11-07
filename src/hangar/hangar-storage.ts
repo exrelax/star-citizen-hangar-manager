@@ -1,3 +1,4 @@
+import { defineMeta } from '@/storage/meta';
 import type { HangarSnapshot } from './pledge';
 
 /**
@@ -8,25 +9,5 @@ export const hangarSnapshot = storage.defineItem<HangarSnapshot | null>('local:h
   fallback: null,
 });
 
-/** Outcome of the last smart update check, shown in the status line. */
-export interface CheckOutcome {
-  /** Epoch milliseconds. */
-  at: number;
-  status: 'unchanged' | 'updated' | 'needsFullSync' | 'failed';
-  added: number;
-  removed: number;
-  changed: number;
-}
-
-export interface CheckState {
-  /** Epoch milliseconds of the last check (or full sync); 0 if there was none. */
-  lastCheckAt: number;
-  /** Rotation of the spot check pages. */
-  cursor: number;
-  lastOutcome: CheckOutcome | null;
-}
-
-/** Small and separate from the snapshot, so a check without changes doesn't rewrite all pledges. */
-export const hangarCheckState = storage.defineItem<CheckState>('local:hangar.check', {
-  fallback: { lastCheckAt: 0, cursor: 0, lastOutcome: null },
-});
+/** When the hangar was last read, changed and checked (see `storage/meta.ts`). */
+export const hangarMeta = defineMeta('local:hangar.items');

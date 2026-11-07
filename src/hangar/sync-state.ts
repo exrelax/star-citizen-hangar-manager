@@ -1,10 +1,11 @@
-import { buybackCheckState } from '@/buyback/buyback-storage';
+import { buybackMeta } from '@/buyback/buyback-storage';
 import { runBuybackSmartUpdate } from '@/buyback/run';
 import { prepareBuybackSync } from '@/buyback/sync-buyback';
 import { settingsItem, withDefaults } from '@/settings/settings';
 import { maybeRefreshUpgradeTool, refreshUpgradeTool } from '@/ships/sync-upgrade-tool';
 import { reactive, readonly } from 'vue';
-import { hangarCheckState, type CheckOutcome, type CheckState } from './hangar-storage';
+import { recordCheck, recordSync, type CheckOutcome, type MetaItem } from '@/storage/meta';
+import { hangarMeta } from './hangar-storage';
 import { runSmartUpdate } from './smart-update/run';
 import { prepareOrderSync, updateOrders } from '@/orders/sync-orders';
 import { prepareHangarSync } from './sync';
@@ -23,21 +24,6 @@ const state = reactive({
  * neither aborts nor duplicates a running sync.
  */
 export const syncState = readonly(state);
-
-type CheckStateItem = {
-  getValue(): Promise<CheckState>;
-  setValue(value: CheckState): Promise<void>;
-};
-
-async function recordOutcome(item: CheckStateItem, status: CheckOutcome['status']) {
-  const current = await item.getValue();
-  const at = Date.now();
-  await item.setValue({
-    ...current,
-    lastCheckAt: at,
-    lastOutcome: { at, status, added: 0, removed: 0, changed: 0 },
-  });
-}
 
 /**
  * Starts a full sync of the hangar, the buy back and then the orders, unless one is already
@@ -68,10 +54,9 @@ export async function startSync(): Promise<void> {
     state.progress = progress.progress;
 
     const hangar = await runHangar();
-    // A full sync is the most thorough check there is.
-    await recordOutcome(hangarCheckState, 'unchanged');
+    await recordSync(hangarMeta);
     const buyback = await runBuyback();
-    await recordOutcome(buybackCheckState, 'unchanged');
+    await recordSync(buybackMeta);
     const orders = await runOrders?.().catch((error: unknown) => {
       console.warn('[star-citizen-hangar-manager] Order sync failed', error);
       return null;
@@ -108,12 +93,12 @@ export async function maybeRunSmartUpdate({ force = false } = {}): Promise<void>
     await maybeRefreshUpgradeTool();
     const settings = withDefaults(await settingsItem.getValue());
     if (!settings.smartUpdates) return;
-    const { lastCheckAt } = await hangarCheckState.getValue();
-    if (!force && Date.now() - lastCheckAt < settings.smartUpdateMinutes * 60_000) return;
+    const { checkedAt } = await hangarMeta.getValue();
+    if (!force && Date.now() - checkedAt < settings.smartUpdateMinutes * 60_000) return;
 
     const { spotCheckPages } = settings;
-    await runLogged('Smart update', hangarCheckState, () => runSmartUpdate({ spotCheckPages }));
-    await runLogged('Buy back smart update', buybackCheckState, () => runBuybackSmartUpdate());
+    await runLogged('Smart update', hangarMeta, () => runSmartUpdate({ spotCheckPages }));
+    await runLogged('Buy back smart update', buybackMeta, () => runBuybackSmartUpdate());
     // New orders: usually only the first page of the pledge log and of the billing list.
     await updateOrders().catch((error: unknown) =>
       console.warn('[star-citizen-hangar-manager] Order update failed', error),
@@ -123,11 +108,7 @@ export async function maybeRunSmartUpdate({ force = false } = {}): Promise<void>
   }
 }
 
-async function runLogged(
-  label: string,
-  checkState: CheckStateItem,
-  run: () => Promise<CheckOutcome | null>,
-) {
+async function runLogged(label: string, meta: MetaItem, run: () => Promise<CheckOutcome | null>) {
   const startedAt = performance.now();
   try {
     const outcome = await run();
@@ -140,6 +121,6 @@ async function runLogged(
   } catch (error) {
     console.error(`[star-citizen-hangar-manager] ${label} failed`, error);
     // Counts as a check, so a broken connection isn't retried on every trigger.
-    await recordOutcome(checkState, 'failed');
+    await recordCheck(meta, { status: 'failed' });
   }
 }

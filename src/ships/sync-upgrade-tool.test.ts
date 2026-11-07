@@ -3,7 +3,14 @@ import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { UPGRADE_TOOL } from '@/config';
 import { settingsItem } from '@/settings/settings';
 import type { UpgradeToolData } from './ships';
-import { buyableShipsItem, shipsItem, SHIPS_VERSION, warbondsItem } from './ships-storage';
+import {
+  buyableShipsItem,
+  shipsItem,
+  shipsMeta,
+  SHIPS_VERSION,
+  warbondsItem,
+  warbondsMeta,
+} from './ships-storage';
 import {
   isUpgradeToolDue,
   maybeRefreshUpgradeTool,
@@ -26,10 +33,11 @@ describe('refreshUpgradeTool', () => {
     const fetchData = vi.fn(async () => DATA);
     let now = START;
     await refreshUpgradeTool({ fetchData, now: () => now });
-    const meta = { version: SHIPS_VERSION, fetchedAt: new Date(START).toISOString() };
-    expect(await shipsItem.getValue()).toEqual({ ...meta, ships: DATA.ships });
-    expect(await buyableShipsItem.getValue()).toEqual({ ...meta, skus: DATA.buyable });
-    expect(await warbondsItem.getValue()).toEqual({ ...meta, warbonds: DATA.warbonds });
+    const version = SHIPS_VERSION;
+    expect(await shipsItem.getValue()).toEqual({ version, ships: DATA.ships });
+    expect(await buyableShipsItem.getValue()).toEqual({ version, skus: DATA.buyable });
+    expect(await warbondsItem.getValue()).toEqual({ version, warbonds: DATA.warbonds });
+    expect(await warbondsMeta.getValue()).toMatchObject({ syncedAt: START, checkedAt: START });
 
     now += 3 * MINUTE;
     await refreshUpgradeTool({ fetchData, maxAgeMs: 5 * MINUTE, now: () => now });
@@ -54,6 +62,21 @@ describe('refreshUpgradeTool', () => {
 
     await refreshUpgradeTool({ fetchData: async () => DATA });
     expect(upgradeToolState.error).toBeUndefined();
+  });
+
+  it('rewrites only parts whose answer changed', async () => {
+    await refreshUpgradeTool({ fetchData: async () => DATA, now: () => START });
+    const later = START + 10 * MINUTE;
+    const changed = { ...DATA, warbonds: [] };
+    await refreshUpgradeTool({ fetchData: async () => changed, now: () => later });
+    expect(await shipsMeta.getValue()).toMatchObject({
+      syncedAt: START,
+      updatedAt: START,
+      checkedAt: later,
+      lastOutcome: { status: 'unchanged' },
+    });
+    expect(await warbondsMeta.getValue()).toMatchObject({ updatedAt: later, checkedAt: later });
+    expect((await warbondsItem.getValue())?.warbonds).toEqual([]);
   });
 
   it('reads only once for calls during a read', async () => {

@@ -1,4 +1,5 @@
-import { current, shipsItem, warbondsItem } from '@/ships/ships-storage';
+import { current, shipsItem, warbondsItem, warbondsMeta } from '@/ships/ships-storage';
+import { useStored } from '@/storage/use-stored';
 import type { ShipsSnapshot, WarbondsSnapshot } from '@/ships/ships-storage';
 import { computed, onMounted, onUnmounted, ref, shallowRef } from 'vue';
 import type { StoreData, WarbondTarget } from './warbond';
@@ -10,6 +11,7 @@ import type { StoreData, WarbondTarget } from './warbond';
 export function useStoreData() {
   const ships = shallowRef<ShipsSnapshot | null>(null);
   const warbonds = shallowRef<WarbondsSnapshot | null>(null);
+  const meta = useStored(warbondsMeta);
   /** Set once the stored data was read (there may be none). */
   const loaded = ref(false);
 
@@ -42,10 +44,7 @@ export function useStoreData() {
   return {
     data,
     /** Epoch milliseconds of the read. */
-    fetchedAt: computed(() => {
-      const offers = current(warbonds.value);
-      return offers && Date.parse(offers.fetchedAt);
-    }),
+    fetchedAt: computed(() => meta.value?.checkedAt || undefined),
     loaded,
   };
 }

@@ -7,5 +7,7 @@ import { LOCAL_COPY } from '@/storage/registry';
  * everything again. The open lists empty at once, as they follow the stored items.
  */
 export async function clearLocalCache(): Promise<void> {
-  await Promise.all(LOCAL_COPY.map((storage) => storage.item.removeValue()));
+  await Promise.all(
+    LOCAL_COPY.flatMap(({ item, meta }) => [item.removeValue(), meta?.removeValue()]),
+  );
 }
