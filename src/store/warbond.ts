@@ -194,6 +194,20 @@ export function ownedCcusInRange(
   );
 }
 
+/**
+ * How many of the hangar's colliding CCUs end at the warbond ship itself, and how many end at
+ * other ships (counting every pledge).
+ */
+export function ownedCounts(offer: Pick<WarbondOffer, 'target' | 'owned'>) {
+  let sameShip = 0;
+  let others = 0;
+  for (const ccu of offer.owned) {
+    if (ccu.to.name === offer.target.ship.name) sameShip += ccu.ids.length;
+    else others += ccu.ids.length;
+  }
+  return { sameShip, others };
+}
+
 /** The warbond offers with their cheapest CCUs and the hangar's CCUs that collide with them. */
 export function buildWarbondOffers(
   data: StoreData,

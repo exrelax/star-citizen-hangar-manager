@@ -3,7 +3,7 @@ import { formatDiscount, formatPercent, formatUsd } from '@/hangar/discount-form
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { i18n, locale } from '@/i18n';
 import { computed, ref } from 'vue';
-import type { WarbondOffer } from '../warbond';
+import { ownedCounts, type WarbondOffer } from '../warbond';
 
 const props = defineProps<{ offer: WarbondOffer }>();
 
@@ -29,9 +29,8 @@ const owned = computed(() =>
   })),
 );
 
-const ownedCount = computed(() =>
-  props.offer.owned.reduce((count, ccu) => count + ccu.ids.length, 0),
-);
+/** The hangar's CCUs to this very ship, and its other CCUs that can't be chained with it. */
+const counts = computed(() => ownedCounts(props.offer));
 
 /** A count of the tables; nothing for none, so the counts that matter stand out. */
 const count = (value: number) => (value ? String(value) : '–');
@@ -64,13 +63,22 @@ const count = (value: number) => (value ? String(value) : '–');
         </span>
       </span>
 
-      <span class="shm-badges">
+      <!-- Only with at least one tag: "In hangar:", then the tags. -->
+      <span v-if="counts.sameShip || counts.others" class="shm-badges shm-warbond-badges">
+        <span class="shm-warbond-badges-label">{{ i18n.t('store.inHangar') }}</span>
         <span
-          v-if="ownedCount"
+          v-if="counts.sameShip"
           class="shm-badge shm-warbond-owned"
-          :title="i18n.t('store.ownedBadgeHint')"
+          :title="i18n.t('store.sameShipBadgeHint', [offer.target.ship.name])"
         >
-          {{ i18n.t('store.ownedBadge', [ownedCount]) }}
+          {{ i18n.t('store.sameShipBadge', [counts.sameShip, offer.target.ship.name]) }}
+        </span>
+        <span
+          v-if="counts.others"
+          class="shm-badge shm-warbond-owned"
+          :title="i18n.t('store.collidingBadgeHint')"
+        >
+          {{ i18n.t('store.collidingBadge', [counts.others]) }}
         </span>
       </span>
 
@@ -196,8 +204,35 @@ const count = (value: number) => (value ? String(value) : '–');
   color: var(--shm-text-muted);
 }
 
+/* One line each; a tag too long for the row ends with "…" (the tooltip explains it). */
 .shm-warbond-owned {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   cursor: help;
+}
+
+/* "In hangar:" before the tags, in the type of the meta line. */
+.shm-warbond-badges {
+  flex: 0 1 auto;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/*
+ * Beside the title (RSI theme) the tags wrap instead of squeezing the ship's name, e.g. next to
+ * "2 to Constellation Mk V Centaurus".
+ */
+.shm-warbond .shm-main {
+  min-width: 40%;
+}
+
+.shm-warbond-badges-label {
+  color: var(--shm-text-muted);
+  font-size: calc(11px * var(--shm-font-scale));
 }
 
 /* The upgrade button on the right, next to the chevron, its label on one line. */

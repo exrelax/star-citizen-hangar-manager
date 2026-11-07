@@ -8,6 +8,7 @@ import {
   createShipLookup,
   holdingsByShip,
   ownedCcusInRange,
+  ownedCounts,
   type StoreShip,
   type WarbondTarget,
 } from './warbond';
@@ -24,6 +25,7 @@ const SHIPS = [
   ship(7, 'Apollo Triage', 260),
   ship(8, 'Eclipse', 300),
   ship(9, 'Mercury', 260),
+  ship(10, 'Redeemer', 330),
 ];
 
 const vulture: WarbondTarget = { ship: SHIPS[5]!, skuId: 16688, price: 165 };
@@ -176,5 +178,20 @@ describe('buildWarbondOffers', () => {
     expect(first!.owned.map((entry) => entry.ids)).toEqual([[21]]);
     // From $110 to $260, it overlaps the Vulture's span from $165 to $175.
     expect(second!.owned.map((entry) => entry.ids)).toEqual([[20]]);
+  });
+});
+
+describe('ownedCounts', () => {
+  it('counts the CCUs to the warbond ship apart from the other colliding ones', () => {
+    const [offer] = buildWarbondOffers({ ships: SHIPS, warbonds: [eclipse] }, [
+      ccu(30, 'Mercury Star Runner', 'Eclipse', 15),
+      ccu(31, 'Mercury Star Runner', 'Eclipse', 15),
+      ccu(32, 'Vulture', 'Eclipse', 20),
+      // Overlaps the span from $270 to $300, but ends at another ship.
+      ccu(33, 'Apollo Triage', 'Redeemer', 15),
+      // Ends below the warbond price: it can be chained, so it isn't counted.
+      ccu(34, 'Vulture', 'Mercury Star Runner', 5),
+    ]);
+    expect(ownedCounts(offer!)).toEqual({ sameShip: 3, others: 1 });
   });
 });
