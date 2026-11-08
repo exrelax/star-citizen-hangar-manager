@@ -85,9 +85,12 @@ Each check works in three steps:
   refreshed as well.
 - **Measured**: an unchanged hangar of ~1,000 pledges is checked in 0.4–0.7 seconds, the buy back of
   ~4,000 pledges in 1–3 seconds.
-- **Only when useful**: at most every 5 minutes (a setting), and right away when you come back from
-  RSI's "My Gear" page, where you may just have melted or gifted something. If too much changed, it
-  suggests a full refresh instead of loading page after page.
+- **Regular, but only when useful**: every 5 minutes (a setting) while the manager is open in a
+  visible tab – it looks every minute whether the interval has passed – and right away when you
+  come back from RSI's "My Gear" page, where you may just have melted or gifted something. A hidden
+  tab sends no requests and checks when it is shown again. Several open tabs check only once per
+  interval together. If too much changed, it suggests a full refresh instead of loading page after
+  page.
 
 ### Never in your way
 
@@ -474,7 +477,8 @@ In the order of the settings tab:
 - **Smart updates**:
   - **Check hangar, buy back and orders for changes** (on by default) – see
     [Built for speed](#built-for-speed).
-  - **Check for changes at most every** 5 minutes (1 to 1440; the default).
+  - **Check for changes every** 5 minutes (1 to 1440; the default) while the manager is open in a
+    visible tab.
   - **Spot checks per check (only for changes within an existing pledge)**: 2 hangar pages (1 to 10; the default) besides the first and the
     last one. Added or removed pledges are found by every check anyway; the spot checks find
     changes within a pledge (new items, gift status, …). The hint below shows, for your number of

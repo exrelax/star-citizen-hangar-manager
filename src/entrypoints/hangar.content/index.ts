@@ -11,6 +11,7 @@ import {
   MANAGER_HASH,
   managerHref,
 } from '@/hangar/route';
+import { isTimerActive, startSmartUpdateTimer } from '@/hangar/smart-update/schedule';
 import { maybeRunSmartUpdate } from '@/hangar/sync-state';
 import { migrateStorage } from '@/storage/migrate';
 import { isPlainLeftClick } from '@/shared/dom';
@@ -124,6 +125,13 @@ export default defineContentScript({
     ctx.addEventListener(document, 'visibilitychange', () => {
       if (document.visibilityState === 'visible' && managerVisible) void maybeRunSmartUpdate();
     });
+    // While it stays open and visible: a check whenever the interval has passed.
+    const timerActive = () =>
+      isTimerActive({
+        managerShown: managerVisible,
+        hidden: document.visibilityState === 'hidden',
+      });
+    startSmartUpdateTimer(ctx, timerActive, () => maybeRunSmartUpdate());
     render();
   },
 });

@@ -14,6 +14,7 @@ import { pledgeIdsOfLogEntries } from '@/orders/pledge-log';
 import { prepareOrderSync, updateOrders } from '@/orders/sync-orders';
 import { prepareHangarSync } from './sync';
 import { SyncProgressTracker, type SyncProgress } from './sync-progress';
+import { isCheckDue, withSmartUpdateLock } from './smart-update/schedule';
 
 const state = reactive({
   /** A full sync is running (of everything, or of `storage`). */
@@ -135,51 +136,62 @@ export async function startStorageSync(id: StorageId): Promise<void> {
  * Runs a smart update of orders, buy back and hangar if it is enabled and due (see
  * `smartUpdateMinutes` in the settings). Three checks work together: the new pledge log entries
  * name changed pledges, a pledge new in the buy back must be gone from the hangar, and first,
- * last and spot check pages find the rest (see `smart-update/check.ts`). `force` skips the interval, e.g. when returning from "My Gear".
+ * last and spot check pages find the rest (see `smart-update/check.ts`). `force` skips the
+ * interval, e.g. when returning from "My Gear".
+ *
+ * Called when the manager is shown, every minute while it stays visible (see
+ * `smart-update/schedule.ts`) and after exchanges and gifts. Only one tab checks at a time: the
+ * others skip, and as `checkedAt` is read inside the lock, they find the check done afterwards.
  */
 export async function maybeRunSmartUpdate({ force = false } = {}): Promise<void> {
   if (state.running || state.checking) return;
   // Claimed right away, so triggers firing at the same time don't start two checks.
   state.checking = true;
   try {
-    // Ships, ships on sale and warbond offers: on their own interval (see the settings), once a
-    // day with smart updates off.
-    await maybeRefreshUpgradeTool();
-    // The items of the Pledge Store, on their own interval (see the settings).
-    await maybeRefreshStoreItems();
-    const settings = withDefaults(await settingsItem.getValue());
-    if (!settings.smartUpdates) return;
-    const { checkedAt } = await hangarMeta.getValue();
-    if (!force && Date.now() - checkedAt < settings.smartUpdateMinutes * 60_000) return;
-
-    // The store credit: one small request, it changes with exchanges and store credit purchases.
-    await refreshStoreCredit();
-
-    // 1. The pledge log: every action on the account is on its first page, also on old pledges.
-    //    The pledges it names are checked in the buy back and the hangar (see `pledge-log.ts`).
-    //    Usually one page of the log and of the billing list.
-    const orders = await updateOrders().catch((error: unknown) => {
-      console.warn('[star-citizen-hangar-manager] Order update failed', error);
-      return null;
-    });
-    const logIds = pledgeIdsOfLogEntries(orders?.newLogEntries ?? []);
-
-    // 2. The buy back first: a pledge new there was melted, so it has to be gone from the hangar.
-    const melted: number[] = [];
-    await runLogged('Buy back smart update', buybackMeta, () =>
-      runBuybackSmartUpdate({
-        hintIds: logIds,
-        onChanges: ({ added }) => melted.push(...added.map((pledge) => pledge.id)),
-      }),
-    );
-
-    // 3. The hangar: first and last page, spot checks, and the pages of the pledges above.
-    const { spotCheckPages } = settings;
-    const hintIds = [...new Set([...logIds, ...melted])];
-    await runLogged('Smart update', hangarMeta, () => runSmartUpdate({ spotCheckPages, hintIds }));
+    await withSmartUpdateLock(() => runSmartUpdateIfDue(force));
   } finally {
     state.checking = false;
   }
+}
+
+/** The checks themselves, inside the lock: the interval is measured here, after the lock. */
+async function runSmartUpdateIfDue(force: boolean): Promise<void> {
+  // Ships, ships on sale and warbond offers: on their own interval (see the settings), once a
+  // day with smart updates off.
+  await maybeRefreshUpgradeTool();
+  // The items of the Pledge Store, on their own interval (see the settings).
+  await maybeRefreshStoreItems();
+  const settings = withDefaults(await settingsItem.getValue());
+  if (!settings.smartUpdates) return;
+  const { checkedAt } = await hangarMeta.getValue();
+  const intervalMinutes = settings.smartUpdateMinutes;
+  if (!force && !isCheckDue({ checkedAt, intervalMinutes, now: Date.now() })) return;
+
+  // The store credit: one small request, it changes with exchanges and store credit purchases.
+  await refreshStoreCredit();
+
+  // 1. The pledge log: every action on the account is on its first page, also on old pledges.
+  //    The pledges it names are checked in the buy back and the hangar (see `pledge-log.ts`).
+  //    Usually one page of the log and of the billing list.
+  const orders = await updateOrders().catch((error: unknown) => {
+    console.warn('[star-citizen-hangar-manager] Order update failed', error);
+    return null;
+  });
+  const logIds = pledgeIdsOfLogEntries(orders?.newLogEntries ?? []);
+
+  // 2. The buy back first: a pledge new there was melted, so it has to be gone from the hangar.
+  const melted: number[] = [];
+  await runLogged('Buy back smart update', buybackMeta, () =>
+    runBuybackSmartUpdate({
+      hintIds: logIds,
+      onChanges: ({ added }) => melted.push(...added.map((pledge) => pledge.id)),
+    }),
+  );
+
+  // 3. The hangar: first and last page, spot checks, and the pages of the pledges above.
+  const { spotCheckPages } = settings;
+  const hintIds = [...new Set([...logIds, ...melted])];
+  await runLogged('Smart update', hangarMeta, () => runSmartUpdate({ spotCheckPages, hintIds }));
 }
 
 async function runLogged(label: string, meta: MetaItem, run: () => Promise<CheckOutcome | null>) {
