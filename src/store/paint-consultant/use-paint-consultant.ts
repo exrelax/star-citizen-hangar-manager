@@ -132,11 +132,25 @@ export function maybePaintConsultant(): PaintConsultantState | undefined {
 export function openPaintConsultant(): void {
   location.hash = hashOfTab('store');
   // The tab may be built on first use: wait for the consultant to be there.
-  let tries = 0;
-  const scroll = () => {
+  let frames = 0;
+  const find = () => {
     const title = document.getElementById('shm-consultant-title');
-    if (title) title.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    else if (++tries < 30) requestAnimationFrame(scroll);
+    if (title) settle(title);
+    else if (++frames < 30) requestAnimationFrame(find);
   };
-  requestAnimationFrame(scroll);
+  requestAnimationFrame(find);
+}
+
+/**
+ * Scrolls `title` to the top, and again while the tab above it still grows (its list being
+ * built): a smooth scroll alone would stop at the place the title had when it started.
+ */
+function settle(title: HTMLElement, attempt = 0) {
+  const margin = parseFloat(getComputedStyle(title).scrollMarginTop) || 0;
+  const atBottom = scrollY >= document.documentElement.scrollHeight - innerHeight - 1;
+  if (attempt > 0 && (Math.abs(title.getBoundingClientRect().top - margin) < 4 || atBottom)) {
+    return;
+  }
+  title.scrollIntoView({ behavior: attempt === 0 ? 'smooth' : 'auto', block: 'start' });
+  if (attempt < 5) setTimeout(() => settle(title, attempt + 1), 400);
 }
