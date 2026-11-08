@@ -17,6 +17,10 @@ const issue = (number: number, overrides: Record<string, unknown> = {}) => ({
 const closed = (number: number, closedAt: string) =>
   issue(number, { state: 'closed', closed_at: closedAt });
 
+/** A sub-issue of `parent`, as GitHub's API names its parent. */
+const sub = (number: number, parent: number, overrides: Record<string, unknown> = {}) =>
+  issue(number, { parent_issue_url: `${REPO}/issues/${parent}`, ...overrides });
+
 const MILESTONES = [
   {
     number: 2,
@@ -52,14 +56,19 @@ const ISSUES: Record<number, unknown[]> = {
     // Pull requests and the website's own issues never show.
     issue(40, { pull_request: {} }),
     issue(25, { labels: [{ name: 'website' }] }),
+    // Sub-issues of an issue of the same milestone: only their parent shows.
+    sub(30, 3),
+    sub(31, 6, { state: 'closed', closed_at: '2026-11-07T10:00:00Z' }),
   ],
-  2: [issue(20)],
+  // A sub-issue whose parent is elsewhere (another milestone) shows on its own.
+  2: [issue(20), sub(21, 1)],
   4: [issue(26, { labels: [{ name: 'website' }] })],
 };
 
 const LATER = [
   issue(11),
   issue(5),
+  sub(12, 11),
   issue(22, { labels: [{ name: 'enhancement' }, { name: 'website' }] }),
 ];
 
@@ -139,6 +148,7 @@ describe('fetchRoadmap', () => {
       ['Done', [13, 6]],
     ]);
     expect(roadmap.later.map((entry) => entry.number)).toEqual([5, 11]);
+    expect(roadmap.milestones[1]!.groups[0]!.issues.map((i) => i.number)).toEqual([20, 21]);
   });
 
   it('groups by the columns of the project board when the token can read it', async () => {
