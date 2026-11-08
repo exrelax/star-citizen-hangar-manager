@@ -48,6 +48,13 @@ const money = (amount: number) => (hideValue.value ? HIDDEN : formatUsd(amount, 
 const pledgeId = (pledge: PledgeView) => (settings.value.hidePledgeIds ? HIDDEN : pledge.id);
 
 const total = computed(() => summarize(props.pledges));
+/** The pledges per type, always shown (unlike the sidebar, where it is a setting). */
+const types = computed(() => {
+  const number = new Intl.NumberFormat(locale.value);
+  return total.value.types
+    .map(({ type, count }) => `${number.format(count)} ${i18n.t(`filter.${type}`)}`)
+    .join(' · ');
+});
 const losesGameAccess = computed(() => losesAllGameAccess(props.pledges, props.hangar));
 const allBuybackable = computed(() => props.pledges.every((pledge) => pledge.isBuybackable));
 
@@ -240,6 +247,8 @@ onUnmounted(() => {
             <strong class="shm-action-title">
               {{ i18n.t('bulkExchange.count', [pledges.length]) }}
             </strong>
+            <!-- What kind of pledges they are, e.g. "2 Ships · 1 CCU · 1 Paint". -->
+            <span v-if="types" class="shm-bulk-types">{{ types }}</span>
             <span v-if="skipped" class="shm-action-id">
               {{ i18n.t('bulkExchange.skipped', [skipped]) }}
             </span>
@@ -427,39 +436,49 @@ onUnmounted(() => {
 }
 
 /*
- * The pledges to exchange: rows of a fixed height (the image's plus padding and separator), up to
- * three in view; more scroll within the list, so the dialog doesn't grow too tall.
+ * The pledges to exchange: rows of a fixed height, up to three in view; more scroll within the
+ * list, so the dialog doesn't grow too tall. Each look sets the height of a row and the gap
+ * between two (`--shm-bulk-row`, `--shm-bulk-gap`): the list is as high as three rows.
+ *
+ * The look follows the dialog's: in the selected theme like its rows in "My Hangar" (Classic RSI
+ * below, Modern Hangar and RSI's own dialog further down).
  */
 .shm-bulk-list {
-  --shm-bulk-row: calc(54px + 2 * 8px + 1px);
+  --shm-bulk-row: calc(54px + 2 * 6px + 2px);
+  --shm-bulk-gap: 6px;
 
-  max-height: calc(3 * var(--shm-bulk-row));
+  display: flex;
+  flex-direction: column;
+  gap: var(--shm-bulk-gap);
+  max-height: calc(3 * var(--shm-bulk-row) + 2 * var(--shm-bulk-gap));
   margin: 0;
   padding: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
   list-style: none;
-  border: 1px solid var(--shm-separator);
 }
 
+/* Classic RSI: framed rows like the manager's list. */
 .shm-bulk-list li {
   display: grid;
+  flex: none;
   grid-template-columns: 96px minmax(0, 1fr) auto;
   grid-template-rows: 1fr 1fr;
-  column-gap: 10px;
+  column-gap: 12px;
   box-sizing: border-box;
   height: var(--shm-bulk-row);
-  padding: 8px 10px 8px 8px;
-  border-bottom: 1px solid var(--shm-separator);
+  padding: 6px 10px 6px 6px;
+  background: rgb(var(--shm-surface-rgb) / 0.6);
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.15);
 }
 
 .shm-bulk-thumb {
   grid-row: 1 / -1;
+  align-self: center;
   width: 96px;
   height: 54px;
   overflow: hidden;
   background: rgb(var(--shm-accent-rgb) / 0.08);
-  border-radius: var(--shm-radius-small);
 }
 
 .shm-bulk-thumb img {
@@ -478,38 +497,21 @@ onUnmounted(() => {
   min-width: 0;
 }
 
-.shm-bulk-head .shm-action-kind {
+.shm-bulk-head .shm-action-kind,
+.shm-bulk-head .shm-action-id {
   flex: none;
 }
 
 .shm-bulk-title {
   overflow: hidden;
+  color: var(--shm-text-strong);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.shm-bulk-head .shm-action-id {
-  flex: none;
-}
-
-.shm-bulk-list li:last-child {
-  border-bottom: 0;
-}
-
-.shm-bulk-list li.is-done {
-  opacity: 0.55;
-}
-
-.shm-bulk-list li.is-done .shm-bulk-title {
-  text-decoration: line-through;
-}
-
-.shm-bulk-list li.is-failed {
-  background: color-mix(in srgb, var(--shm-danger) 12%, transparent);
-}
-
 .shm-bulk-value {
   align-self: end;
+  color: var(--shm-text-strong);
   font-variant-numeric: tabular-nums;
 }
 
@@ -519,7 +521,7 @@ onUnmounted(() => {
   grid-column: 2 / -1;
   align-self: start;
   gap: 4px;
-  margin-top: 4px;
+  margin-top: 5px;
   overflow: hidden;
   white-space: nowrap;
 }
@@ -537,5 +539,126 @@ onUnmounted(() => {
 
 .shm-bulk-tag.is-notice {
   color: var(--shm-warning);
+}
+
+.shm-bulk-types {
+  color: var(--shm-text-secondary);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+.shm-bulk-list li.is-done {
+  opacity: 0.55;
+}
+
+.shm-bulk-list li.is-done .shm-bulk-title {
+  text-decoration: line-through;
+}
+
+.shm-bulk-list li.is-failed {
+  background: color-mix(in srgb, var(--shm-danger) 14%, transparent);
+}
+
+/* Modern Hangar: cards with rounded corners like its rows, the images with small corners. */
+.shm-theme-modern .shm-bulk-list {
+  --shm-bulk-row: calc(54px + 2 * 10px);
+  --shm-bulk-gap: 8px;
+}
+
+.shm-theme-modern .shm-bulk-list li {
+  padding: 10px 12px;
+  /* A grouped cell on the dialog's sheet, like the rows on the page. */
+  background: var(--shm-fill);
+  border: 0;
+  border-radius: var(--shm-radius-cell);
+}
+
+.shm-theme-modern .shm-bulk-thumb {
+  border-radius: var(--shm-radius-small);
+}
+
+.shm-theme-modern .shm-bulk-title {
+  color: var(--shm-text);
+  font-weight: 600;
+}
+
+/*
+ * RSI's own dialog (the default): the boxes of "My Gear" – a dark translucent panel, the image in
+ * a thin frame with cyan corner marks, the title in Electrolize capitals over a line. The values
+ * are RSI's.
+ */
+.shm-rsi-dialog .shm-bulk-list {
+  --shm-bulk-row: calc(54px + 2 * 4px + 2px + 2 * 10px);
+  --shm-bulk-gap: 8px;
+  --rsi-corner: #29d4f0;
+}
+
+.shm-rsi-dialog .shm-bulk-list li {
+  grid-template-columns: calc(96px + 2 * 4px + 2px) minmax(0, 1fr) auto;
+  column-gap: 14px;
+  padding: 10px 12px 10px 10px;
+  background: rgb(23 29 37 / 0.5);
+  border: 0;
+  border-radius: 0;
+}
+
+.shm-rsi-dialog .shm-bulk-thumb {
+  box-sizing: content-box;
+  padding: 4px;
+  background:
+    linear-gradient(var(--rsi-corner), var(--rsi-corner)) top left / 7px 2px no-repeat,
+    linear-gradient(var(--rsi-corner), var(--rsi-corner)) top left / 2px 7px no-repeat,
+    linear-gradient(var(--rsi-corner), var(--rsi-corner)) top right / 7px 2px no-repeat,
+    linear-gradient(var(--rsi-corner), var(--rsi-corner)) top right / 2px 7px no-repeat,
+    linear-gradient(var(--rsi-corner), var(--rsi-corner)) bottom left / 7px 2px no-repeat,
+    linear-gradient(var(--rsi-corner), var(--rsi-corner)) bottom left / 2px 7px no-repeat,
+    linear-gradient(var(--rsi-corner), var(--rsi-corner)) bottom right / 7px 2px no-repeat,
+    linear-gradient(var(--rsi-corner), var(--rsi-corner)) bottom right / 2px 7px no-repeat;
+  background-origin: border-box;
+  border: 1px solid #1e2f41;
+}
+
+.shm-rsi-dialog .shm-bulk-thumb img {
+  background: rgb(0 0 0 / 0.4);
+}
+
+.shm-rsi-dialog .shm-bulk-head {
+  padding-bottom: 4px;
+  border-bottom: 1px solid #294961;
+}
+
+.shm-rsi-dialog .shm-bulk-title {
+  color: #61d8fd;
+  font-family: Electrolize, sans-serif;
+  font-size: calc(13px * var(--shm-font-scale));
+  text-transform: uppercase;
+}
+
+/* Fills the first line's height, so its line under the value meets the title's in one. */
+.shm-rsi-dialog .shm-bulk-value {
+  display: flex;
+  align-items: flex-end;
+  align-self: stretch;
+  margin-left: -14px;
+  padding: 0 0 4px 14px;
+  color: var(--rsi-strong);
+  font-family: Electrolize, sans-serif;
+  border-bottom: 1px solid #294961;
+}
+
+.shm-rsi-dialog .shm-bulk-types {
+  color: var(--rsi-label);
+}
+
+.shm-rsi-dialog .shm-bulk-tag {
+  font-family: Electrolize, sans-serif;
+  border-radius: 0;
+}
+
+.shm-rsi-dialog .shm-bulk-tag.is-danger {
+  color: var(--rsi-alert);
+}
+
+.shm-rsi-dialog .shm-bulk-list li.is-failed {
+  background: rgb(255 116 116 / 0.12);
 }
 </style>

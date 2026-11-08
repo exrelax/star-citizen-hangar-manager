@@ -347,7 +347,8 @@ async function move(box: Box, step: -1 | 1) {
               </div>
             </template>
           </dl>
-          <p v-if="settings.summaryTypes && chosen.types.length" class="shm-sidebar-note">
+          <!-- Always per type here; only the "Summary" box makes it a setting. -->
+          <p v-if="chosen.types.length" class="shm-sidebar-note">
             {{ types(chosen) }}
           </p>
           <p v-if="hiddenSelected" class="shm-sidebar-note is-warning" role="status">
