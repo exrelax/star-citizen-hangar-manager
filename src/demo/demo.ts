@@ -1,3 +1,4 @@
+import type { StoreCredit } from '@/account/store-credit';
 import type { BuybackView } from '@/buyback/buyback-view';
 import { BUYBACK_PAGE_SIZE, DEMO, HANGAR_PAGE_SIZE, REFUND_DAYS } from '@/config';
 import { localToday } from '@/orders/refund';
@@ -195,6 +196,15 @@ export function demoUpgradeLog(
     ...entry,
     appliedAt: new Date(from + times[index]! * 60_000).toISOString().slice(0, 16).replace('T', ' '),
   }));
+}
+
+/**
+ * The store credit of the demo instead of the account's: random between 0 and
+ * `DEMO.storeCreditMax` US dollars, fixed by `key` like the rest of the demo.
+ */
+export function demoStoreCredit(key: string): StoreCredit {
+  const cents = Math.floor(fraction(`store-credit:${key}`) * (DEMO.storeCreditMax * 100 + 1));
+  return { amount: cents / 100, currency: 'USD' };
 }
 
 /** A number in [0, 1), fixed for `text`. */

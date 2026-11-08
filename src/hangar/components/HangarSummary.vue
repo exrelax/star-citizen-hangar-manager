@@ -11,6 +11,7 @@ import { summaryPosition, type SummaryPosition } from '../summary-position';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { storeCreditItem, STORE_CREDIT_VERSION } from '@/account/store-credit-storage';
 import { useStored } from '@/storage/use-stored';
+import { useDemoContext } from '@/demo/use-demo';
 
 /*
  * The summary box, below RSI's page navigation on the left on every tab (App.vue teleports it
@@ -38,15 +39,20 @@ const hiddenSelected = computed(() => {
 const shown = computed(() => summarize(visible.value));
 const chosen = computed(() => (selected.value.length ? summarize(selected.value) : undefined));
 
-// The store credit, first in the box (the account's, not depending on search or selection).
+// The store credit, first in the box (the account's, not depending on search or selection). The
+// demo mode shows a made-up one instead.
 const storedCredit = useStored(storeCreditItem);
+const demo = useDemoContext();
 const credit = computed(() => {
   const stored = storedCredit.value;
-  if (stored?.version !== STORE_CREDIT_VERSION) return undefined;
+  const value =
+    demo.value?.storeCredit ??
+    (stored?.version === STORE_CREDIT_VERSION ? stored.credit : undefined);
+  if (!value) return undefined;
   return new Intl.NumberFormat(locale.value, {
     style: 'currency',
-    currency: stored.credit.currency,
-  }).format(stored.credit.amount);
+    currency: value.currency,
+  }).format(value.amount);
 });
 
 const money = computed(
