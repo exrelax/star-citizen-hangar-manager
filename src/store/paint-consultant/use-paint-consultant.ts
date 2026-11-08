@@ -118,9 +118,14 @@ export function providePaintConsultant({
 
 /** The result provided by `providePaintConsultant`. */
 export function usePaintConsultant(): PaintConsultantState {
-  const state = inject(KEY);
+  const state = maybePaintConsultant();
   if (!state) throw new Error('The Paint Discount Consultant is not provided');
   return state;
+}
+
+/** The provided result, if any (e.g. not in component tests of other parts). */
+export function maybePaintConsultant(): PaintConsultantState | undefined {
+  return inject(KEY, undefined);
 }
 
 /** Shows the consultant: switches to the Pledge Store tab and scrolls to it. */

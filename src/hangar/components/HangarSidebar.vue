@@ -14,6 +14,11 @@ import { storeCreditItem, STORE_CREDIT_VERSION } from '@/account/store-credit-st
 import { useStored } from '@/storage/use-stored';
 import { useDemoContext } from '@/demo/use-demo';
 import SidebarBox from './SidebarBox.vue';
+import {
+  maybePaintConsultant,
+  openPaintConsultant,
+} from '@/store/paint-consultant/use-paint-consultant';
+import { formatPercent } from '../discount-format';
 
 /*
  * The sidebar below RSI's page navigation on the left on every tab (App.vue teleports it there),
@@ -72,7 +77,18 @@ const TITLES = {
   storeCredit: 'summary.storeCredit',
   summary: 'summary.title',
   selection: 'summary.selected',
+  paintConsultant: 'consultant.title',
 } as const;
+
+// The Paint Discount Consultant at first glance (worked out once in App.vue).
+const consultant = maybePaintConsultant();
+const rebuyPlan = computed(() => consultant?.result.value?.plan);
+const rebuyShare = computed(() => {
+  const plan = rebuyPlan.value;
+  return plan && plan.meltValue > 0
+    ? formatPercent((plan.storeCreditFreed / plan.meltValue) * 100, locale.value)
+    : undefined;
+});
 
 // ---- Order and collapsed boxes ----
 
@@ -100,8 +116,8 @@ const isShown = (box: Box) =>
   !props.settings.sidebarHidden.includes(box) &&
   (box === 'selection'
     ? !!chosen.value
-    : box === 'storeCredit'
-      ? !props.settings.hideMeltValue
+    : box === 'storeCredit' || box === 'paintConsultant'
+      ? !props.settings.hideMeltValue && (box !== 'paintConsultant' || !!consultant)
       : true);
 const boxes = computed(() => order.value.filter(isShown));
 
@@ -334,6 +350,34 @@ async function move(box: Box, step: -1 | 1) {
           </p>
         </template>
 
+        <template v-else-if="box === 'paintConsultant'">
+          <template v-if="rebuyPlan">
+            <dl class="shm-sidebar-figures">
+              <div>
+                <dt>{{ i18n.t('consultant.boxPaints') }}</dt>
+                <dd>{{ number.format(rebuyPlan.own.length) }}</dd>
+              </div>
+              <div>
+                <dt v-tooltip="i18n.t('consultant.freedHint')">
+                  {{ i18n.t('consultant.freed') }}
+                </dt>
+                <dd class="is-discount">{{ money.format(rebuyPlan.storeCreditFreed) }}</dd>
+              </div>
+            </dl>
+            <p v-if="rebuyShare" class="shm-sidebar-note">
+              {{ i18n.t('consultant.boxShare', [rebuyShare, rebuyPlan.tier.paints]) }}
+            </p>
+          </template>
+          <p v-else class="shm-sidebar-note">
+            {{
+              i18n.t(consultant?.storeItems.value ? 'consultant.boxNothing' : 'consultant.noItems')
+            }}
+          </p>
+          <button type="button" class="shm-sidebar-link" @click="openPaintConsultant">
+            {{ i18n.t('consultant.boxOpen') }}
+          </button>
+        </template>
+
         <template v-if="box === 'selection'" #actions>
           <button
             v-tooltip="i18n.t('summary.clear')"
@@ -521,6 +565,26 @@ async function move(box: Box, step: -1 | 1) {
   margin: 8px 0 0;
   color: var(--shm-text-muted);
   font-size: calc(11px * var(--shm-font-scale));
+}
+
+/* A link-like button below a box's figures, e.g. to the Paint Discount Consultant. */
+.shm-sidebar-link {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 0;
+  color: var(--shm-accent);
+  font: inherit;
+  font-size: calc(12px * var(--shm-font-scale));
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.shm-sidebar-link:hover,
+.shm-sidebar-link:focus-visible {
+  color: var(--shm-text-strong);
+  text-decoration: underline;
+  outline: none;
 }
 
 .shm-sidebar-note.is-warning {

@@ -6,7 +6,7 @@
  */
 
 /** The boxes, in their default order. */
-export const SIDEBAR_BOXES = ['storeCredit', 'summary', 'selection'] as const;
+export const SIDEBAR_BOXES = ['storeCredit', 'summary', 'selection', 'paintConsultant'] as const;
 export type SidebarBox = (typeof SIDEBAR_BOXES)[number];
 
 const isSidebarBox = (value: unknown): value is SidebarBox =>
