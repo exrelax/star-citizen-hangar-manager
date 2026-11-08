@@ -169,9 +169,11 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   `version` of `package.json`. Publishing a release rebuilds the site.
 - **Roadmap**: built from the repository's open milestones (with a due date) and issues while
   building, by [`site/roadmap/roadmap.ts`](../site/roadmap/roadmap.ts); open `enhancement` issues
-  without a milestone are listed under "Later", issues labelled `website` never show. With a
-  `GITHUB_TOKEN` that can read the [project board](https://github.com/users/exrelax/projects/1),
-  the issues are grouped by its columns, otherwise into open and done. Locally it works without a
+  without a milestone are listed under "Later", issues labelled `website` never show. Sub-issues
+  are left out where their parent issue is listed (same milestone or "Later"); the parent stands
+  for them, also in the progress. With a `GITHUB_TOKEN` that can read the
+  [project board](https://github.com/users/exrelax/projects/1), the issues are grouped by its
+  columns, otherwise into open and done. Locally it works without a
   token (GitHub allows 60 requests an hour without one).
 - **Privacy page**: `site/privacy.html` shows [`PRIVACY.md`](../PRIVACY.md), rendered while
   building by [`site/privacy/privacy.ts`](../site/privacy/privacy.ts) – change the policy only

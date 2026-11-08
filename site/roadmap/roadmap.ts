@@ -7,6 +7,9 @@
  * - Timeline: the open milestones with a due date and issues, by date, with their issues grouped
  *   by the column of the project board (or into "Open" and "Done" if the board can't be read).
  * - Later: open `enhancement` issues without a milestone, except the website's own (`website`).
+ *
+ * Only the main features show: a sub-issue is left out when its parent issue is listed in the same
+ * place (the same milestone, or "Later"), and doesn't count for the milestone's progress either.
  */
 
 export interface RoadmapIssue {
@@ -76,6 +79,8 @@ interface GitHubIssue {
   closed_at: string | null;
   labels: { name?: string }[];
   pull_request?: unknown;
+  /** API URL of the parent issue, for a sub-issue. */
+  parent_issue_url?: string | null;
 }
 
 interface GitHubMilestone {
@@ -152,6 +157,12 @@ export async function fetchRoadmap(options: FetchRoadmapOptions): Promise<Roadma
     !issue.pull_request &&
     !issue.labels.some((label) => label.name === ROADMAP_SOURCE.excludedLabel);
 
+  /** Without the sub-issues whose parent is among `issues`: the parent stands for them. */
+  const mainIssues = (issues: GitHubIssue[]) => {
+    const listed = new Set(issues.map((issue) => `${api}/issues/${issue.number}`));
+    return issues.filter((issue) => !issue.parent_issue_url || !listed.has(issue.parent_issue_url));
+  };
+
   const milestones = (await getAll<GitHubMilestone>('/milestones?state=open&sort=due_on'))
     .filter((milestone) => milestone.due_on)
     .sort((a, b) => a.due_on!.localeCompare(b.due_on!));
@@ -179,10 +190,12 @@ export async function fetchRoadmap(options: FetchRoadmapOptions): Promise<Roadma
     fromBoard: columns !== undefined,
     milestones: milestones
       .map((milestone, index) =>
-        toMilestone(milestone, issuesByMilestone[index]!.filter(visible), columns),
+        toMilestone(milestone, mainIssues(issuesByMilestone[index]!.filter(visible)), columns),
       )
       .filter((milestone) => milestone.open + milestone.done > 0),
-    later: later.sort((a, b) => a.number - b.number).map(toIssue),
+    later: mainIssues(later)
+      .sort((a, b) => a.number - b.number)
+      .map(toIssue),
   };
 }
 
