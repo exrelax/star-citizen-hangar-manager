@@ -166,7 +166,8 @@ information (for screenshots or content creators)** keeps private details off sc
   provider instead of the real ones; links to RSI, the cart, invoices and refund requests are
   disabled. A **Demo** badge shows on every tab. Purchase dates are made up as well (newest first,
   two of them recent enough for the refund tags), and the dates of applied upgrades follow them:
-  after the purchase, in their real order. The made-up IDs and dates are derived from a random key
+  after the purchase, in their real order. The summary shows a made-up store credit between $0
+  and $100 instead of the account's. The made-up IDs, dates and store credit are derived from a random key
   that exists only in your browser, so they can't be traced back to the real ones.
 
 ---

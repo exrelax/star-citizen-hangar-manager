@@ -2,7 +2,8 @@ import type { BuybackView } from '@/buyback/buyback-view';
 import type { PledgeView } from '@/hangar/pledge-view';
 import type { Order } from '@/orders/orders';
 import { computed, inject, onMounted, shallowRef, type InjectionKey, type Ref } from 'vue';
-import { createFakeIds, demoBuyback, demoHangar, demoUpgradeLog } from './demo';
+import type { StoreCredit } from '@/account/store-credit';
+import { createFakeIds, demoBuyback, demoHangar, demoStoreCredit, demoUpgradeLog } from './demo';
 import type { UpgradeLogEntry } from '@/hangar/upgrade-log';
 
 /** Random key of the demo, created on first use and kept only in this browser. */
@@ -33,6 +34,8 @@ export interface DemoContext {
     createdAt: string | undefined,
     entries: readonly UpgradeLogEntry[],
   ) => UpgradeLogEntry[];
+  /** The store credit shown instead of the account's. */
+  storeCredit: StoreCredit;
 }
 
 export const DEMO_CONTEXT: InjectionKey<Ref<DemoContext | null>> = Symbol('shm-demo');
@@ -71,7 +74,7 @@ export function useDemo(
     const demoKey = key.value;
     const upgradeLog: DemoContext['upgradeLog'] = (pledgeId, createdAt, entries) =>
       demoUpgradeLog(entries, pledgeId, createdAt, demoKey);
-    return { fakeId, realOrder, upgradeLog };
+    return { fakeId, realOrder, upgradeLog, storeCredit: demoStoreCredit(demoKey) };
   });
   const demoPledges = computed(() => (key.value ? demoHangar(pledges.value, key.value) : []));
   const demoBuybackPledges = computed(() =>

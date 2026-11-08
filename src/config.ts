@@ -213,6 +213,8 @@ export const DEMO = {
   refundDaysLeft: [20, 3],
   /** Earliest made-up purchase date (the other dates are random, up to today). */
   earliestDate: '2013-01-01',
+  /** The store credit of the demo: random between 0 and this many US dollars. */
+  storeCreditMax: 100,
 } as const;
 
 /**
