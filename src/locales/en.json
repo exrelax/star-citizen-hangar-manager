@@ -192,6 +192,11 @@
     "sidebarBoxes": "Boxes",
     "sidebarStoreCreditHint": "Hidden while “Hide melt value” is on.",
     "sidebarSelectionHint": "Shown while pledges are selected. Without it, the rows have no select control.",
+    "paintConsultant": "Paint Discount Consultant",
+    "paintConsultantStoreCredit": "Include my store credit",
+    "paintConsultantStoreCreditHint": "The cart may also be paid with your current store credit. Off: only with what melting your own paints gives. The consultant always buys with store credit, never with new money.",
+    "paintConsultantFillers": "Use filler paints",
+    "paintConsultantFillersHint": "Buys cheap extra paints to reach a higher volume discount and melts them again after RSI's 24-hour cooldown. Off: only your own paints count toward the discount.",
     "filtersLists": {
       "hangar": "My Hangar",
       "buyback": "Buy Back"

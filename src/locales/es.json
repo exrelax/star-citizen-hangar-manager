@@ -192,6 +192,11 @@
     "sidebarBoxes": "Cuadros",
     "sidebarStoreCreditHint": "Oculto mientras «Ocultar el valor de fusión» esté activado.",
     "sidebarSelectionHint": "Se muestra mientras haya pledges seleccionados. Sin él, las filas no tienen control de selección.",
+    "paintConsultant": "Asesor de descuentos de pinturas",
+    "paintConsultantStoreCredit": "Incluir mi crédito de tienda",
+    "paintConsultantStoreCreditHint": "El carrito también puede pagarse con tu crédito de tienda actual. Desactivado: solo con lo que da fundir tus propias pinturas. El asesor siempre compra con crédito de tienda, nunca con dinero nuevo.",
+    "paintConsultantFillers": "Usar pinturas de relleno",
+    "paintConsultantFillersHint": "Compra pinturas baratas adicionales para alcanzar un descuento por volumen mayor y las vuelve a fundir tras el bloqueo de 24 horas de RSI. Desactivado: solo tus propias pinturas cuentan para el descuento.",
     "filtersLists": {
       "hangar": "My Hangar",
       "buyback": "Buy Back"

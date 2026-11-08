@@ -100,6 +100,13 @@ export interface Settings {
     hangar: HangarSort;
     buyback: BuybackSort;
   };
+  /** The Paint Discount Consultant (see `store/paint-consultant`); it only uses store credit. */
+  paintConsultant: {
+    /** The cart may also be paid with the current store credit, not only with the melt values. */
+    useStoreCredit: boolean;
+    /** Cheap filler paints may be bought to reach a higher volume discount. */
+    useFillers: boolean;
+  };
   /** Links shown next to ships. */
   shipLinks: {
     erkul: boolean;
@@ -135,6 +142,7 @@ export const DEFAULT_SETTINGS: Settings = {
     buyback: normalizeFilterGroups(FILTERS.buyback, BUYBACK_FILTER_CATEGORIES, FILTERS.buyback),
   },
   sort: { hangar: 'newest', buyback: 'newest' },
+  paintConsultant: { useStoreCredit: true, useFillers: true },
   shipLinks: { erkul: true, fleetyards: true },
 };
 
@@ -222,6 +230,18 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
     sort: {
       hangar: valid(stored?.sort?.hangar, oneOf(HANGAR_SORTS), DEFAULT_SETTINGS.sort.hangar),
       buyback: valid(stored?.sort?.buyback, oneOf(BUYBACK_SORTS), DEFAULT_SETTINGS.sort.buyback),
+    },
+    paintConsultant: {
+      useStoreCredit: valid(
+        stored?.paintConsultant?.useStoreCredit,
+        isBoolean,
+        DEFAULT_SETTINGS.paintConsultant.useStoreCredit,
+      ),
+      useFillers: valid(
+        stored?.paintConsultant?.useFillers,
+        isBoolean,
+        DEFAULT_SETTINGS.paintConsultant.useFillers,
+      ),
     },
     shipLinks: {
       erkul: stored?.shipLinks?.erkul ?? DEFAULT_SETTINGS.shipLinks.erkul,

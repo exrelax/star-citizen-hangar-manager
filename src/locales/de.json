@@ -192,6 +192,11 @@
     "sidebarBoxes": "Boxen",
     "sidebarStoreCreditHint": "Ausgeblendet, solange „Schmelzwert ausblenden“ an ist.",
     "sidebarSelectionHint": "Erscheint, solange Pledges ausgewählt sind. Ohne sie haben die Zeilen keine Auswahl.",
+    "paintConsultant": "Paint-Rabatt-Berater",
+    "paintConsultantStoreCredit": "Meinen Store Credit einbeziehen",
+    "paintConsultantStoreCreditHint": "Der Warenkorb darf auch mit deinem aktuellen Store Credit bezahlt werden. Aus: nur mit dem, was das Einschmelzen deiner eigenen Paints ergibt. Der Berater kauft immer mit Store Credit, nie mit neuem Geld.",
+    "paintConsultantFillers": "Füll-Paints verwenden",
+    "paintConsultantFillersHint": "Kauft günstige zusätzliche Paints, um einen höheren Mengenrabatt zu erreichen, und schmilzt sie nach RSIs 24-Stunden-Sperre wieder ein. Aus: nur deine eigenen Paints zählen für den Rabatt.",
     "filtersLists": {
       "hangar": "My Hangar",
       "buyback": "Buy Back"

@@ -18,6 +18,7 @@ describe('withDefaults', () => {
         sidebarHidden: ['selection', 'events' as never],
         sort: { hangar: 'valueDesc', buyback: 'valueDesc' as never },
         shipLinks: { erkul: false, fleetyards: true },
+        paintConsultant: { useStoreCredit: false } as never,
       }),
     ).toEqual({
       language: 'de',
@@ -45,6 +46,7 @@ describe('withDefaults', () => {
       filters: DEFAULT_SETTINGS.filters,
       // The buy back can't sort by value: back to the default.
       sort: { hangar: 'valueDesc', buyback: 'newest' },
+      paintConsultant: { useStoreCredit: false, useFillers: true },
       shipLinks: { erkul: false, fleetyards: true },
     });
   });
@@ -61,6 +63,7 @@ describe('withDefaults', () => {
         compactView: 'no',
         storeRefreshMinutes: 2.5,
         filters: { hangar: 'all', buyback: { order: 5 } },
+        paintConsultant: { useStoreCredit: 'yes', useFillers: 0 },
         sidebarOrder: 'summary',
         sidebarCollapsed: ['events'],
         sidebar: 'no',
