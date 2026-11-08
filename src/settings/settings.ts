@@ -50,6 +50,11 @@ export interface Settings {
    * whose wording counts (see `hangar/rsi-text.ts`).
    */
   translateRsiTexts: boolean;
+  /**
+   * Experimental: exchanges (melts) all selected pledges of "My Hangar" at once, from the
+   * sidebar's selection box (see `hangar/components/BulkExchangeOverlay.vue`).
+   */
+  bulkMelting: boolean;
   /** Lists only the best insurance in the items of upgraded ships, the one that counts. */
   hideSupersededInsurances: boolean;
   /** The sidebar's summaries also count the pledges per type (ships, CCUs, …). */
@@ -121,6 +126,7 @@ export const DEFAULT_SETTINGS: Settings = {
   hideMeltValue: false,
   themedActionDialogs: false,
   translateRsiTexts: false,
+  bulkMelting: false,
   hideSupersededInsurances: true,
   summaryTypes: false,
   sidebar: true,
@@ -199,6 +205,7 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
     hideMeltValue: pick('hideMeltValue', isBoolean),
     themedActionDialogs: pick('themedActionDialogs', isBoolean),
     translateRsiTexts: pick('translateRsiTexts', isBoolean),
+    bulkMelting: pick('bulkMelting', isBoolean),
     hideSupersededInsurances: pick('hideSupersededInsurances', isBoolean),
     summaryTypes: pick('summaryTypes', isBoolean),
     sidebar: pick('sidebar', isBoolean),

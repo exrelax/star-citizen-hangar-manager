@@ -360,6 +360,15 @@ only. On top, the dialog makes clear what you are about to give up:
 - With any of these warnings, an **extra acknowledgement** is needed before the button
   "Exchange for $…" is enabled.
 
+**Bulk melting** (an experimental setting, off by default): with it on, the "Selected" box of the
+sidebar gets a button that exchanges all selected pledges at once. Its dialog lists the pledges
+with their warnings, sums the warnings up (e.g. the discounts you give up, how many can't be
+bought back), warns when the selection takes every pledge with game access, and asks for RSI's
+acknowledgements, an extra one for the experimental feature and your password, entered once.
+The pledges are exchanged one after the other, a second apart; the first one RSI refuses (e.g. a
+wrong password) stops the rest, and the dialog says what was exchanged and what wasn't. Pledges
+that can't be melted are left out; in the demo mode the button is disabled.
+
 ## Gift
 
 **Gift** under "Exchange" (for giftable pledges) opens RSI's gift dialog of "My Gear" in the
@@ -499,7 +508,7 @@ In the order of the settings tab:
 
 - **Language**: automatic, English, German, French or Spanish. The exchange and gift dialogs
   show RSI's own texts in RSI's English by default, as its wording counts; translating them too
-  is an experimental option, as RSI's changes reach the translations only later.
+  is an experimental option (see below).
 - **Theme**: Modern Hangar (the default) or Classic RSI.
   - **Font size** (the same for both themes): small, medium (the default) or large – for the
     lists, the settings and the dialogs (the factors are in `FONT_SIZE_SCALES` in
@@ -548,6 +557,12 @@ In the order of the settings tab:
   and for types and features – drag a filter (or use its arrows) to move it within its group,
   uncheck it to hide its button.
 - **Show links for ships**: erkul.games and FleetYards.net, each on or off.
+- **Experimental** (all off by default), with a clear warning: these features may not work as
+  intended, and using them is at your own risk – the developer accepts no liability.
+  - **Bulk melting**: exchange all selected pledges at once – see
+    [Exchange (melt) with a safety net](#exchange-melt-with-a-safety-net).
+  - **Translate RSI's texts in the exchange and gift dialogs**: RSI's changes to its texts reach
+    the translations only later.
 - **Stored data**: a table of everything the extension keeps in this browser – My Hangar, Buy
   Back, order history, ships, ships on sale, warbond offers, Pledge Store items and the store
   credit – with the number of entries, the

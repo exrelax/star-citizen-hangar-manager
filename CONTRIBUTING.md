@@ -65,7 +65,7 @@ manager and made-up pledges – the quickest way to check a visual change.
   that all locales have the same keys and placeholders. If you can't translate a text, add the
   English text and mention it in the pull request.
 - **RSI's own texts** in the exchange and gift dialogs stay in RSI's English wording by default;
-  translations of them are optional (see the setting "Translate RSI's texts").
+  translations of them are optional (see the setting "Translate RSI's texts" under "Experimental").
 - **Icons** – add an SVG to `src/assets/svg-sprites/<set>/` and run `pnpm svg-sprite`; for the
   extension icon change the logo in `src/assets/logo/` and run `pnpm icons`
   (see [Icons](docs/DEVELOPMENT.md#icons)). Commit the generated files together with their sources.

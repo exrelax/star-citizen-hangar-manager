@@ -127,6 +127,9 @@
     "translateRsiTexts": "Translate RSI's texts in the exchange and gift dialogs",
     "experimental": "Experimental",
     "translateRsiTextsHint": "By default these dialogs show RSI's own texts – introductions, acknowledgements, confirmations – in RSI's English, whose wording counts. Their translations are the Hangar Manager's own: changes RSI makes to its texts only reach them later, so they may not always be up to date.",
+    "experimentalWarning": "These features may not work as intended and can have consequences that can't be undone. Turning them on and using them is entirely at your own risk: the developer of the Hangar Manager accepts no liability for them.",
+    "bulkMelting": "Bulk melting",
+    "bulkMeltingHint": "Exchanges all selected pledges of “My Hangar” at once, from the selection box of the sidebar, with your password entered once. Stops at the first pledge RSI refuses.",
     "hideMeltValue": "Hide melt value",
     "hideMeltValueHint": "Hides all $$ amounts: pledge values, discounts, the costs of applied upgrades, the amounts of the orders and the values in the exchange and gift dialogs.",
     "general": "General",
@@ -522,6 +525,39 @@
     "failed": "The exchange failed: $1",
     "success": "Your ledger was credited with $1.",
     "successNote": "The pledge leaves the list when you close this dialog; the buy back shows it after the next update."
+  },
+  "bulkExchange": {
+    "button": "Exchange $1 selected",
+    "buttonHint": "Exchange the selected pledges for store credit (melt them) at once. Opens a dialog first.",
+    "title": "Exchange $1 pledges",
+    "count": "$1 pledges",
+    "skipped": "$1 selected can't be exchanged and are left out",
+    "listLabel": "Pledges to exchange",
+    "intro": "You are about to exchange $1 pledges. This will remove them, including any upgrades (such as customizations or CCUs), from your account, awarding $2 in store credit. They are exchanged one after the other; the first one RSI refuses stops the rest.",
+    "lastGameAccessText": "The selection contains every pledge on your account that gives access to Star Citizen. Without them you can no longer play.",
+    "warnings": {
+      "lastGameAccess": "The selection takes all your game access",
+      "notBuybackable": "$1 pledges can't be bought back: their exchange is permanent",
+      "upgraded": "$1 pledges with applied upgrades: the CCUs are exchanged with them",
+      "discount": "You give up discounts of $2 on $1 pledges",
+      "giftable": "$1 pledges are giftable now, bought back they no longer are",
+      "refundable": "$1 pledges can still be refunded for money"
+    },
+    "tags": {
+      "lastGameAccess": "Last game access",
+      "notBuybackable": "No buy back",
+      "upgraded": "Upgraded",
+      "discount": "Discount",
+      "giftable": "Giftable",
+      "refundable": "Refundable"
+    },
+    "consentWarnings": "I have read the warnings above and still want to exchange these pledges.",
+    "consentExperimental": "I exchange these pledges with an experimental feature, at my own risk.",
+    "submit": "Exchange $1 pledges for $2",
+    "submitting": "Exchanging $1 of $2 …",
+    "success": "$1 pledges exchanged, your ledger was credited with $2.",
+    "successNote": "They leave the list when you close this dialog; the buy back shows them after the next update.",
+    "failed": "RSI refused “$1”: $2. $3 more pledges were not sent and stay in your hangar."
   },
   "gift": {
     "button": "Gift",

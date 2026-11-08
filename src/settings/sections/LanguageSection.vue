@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import SvgIcon from '@/icons/SvgIcon.vue';
 import { browserLocale, i18n, LOCALES, type Locale } from '@/i18n';
-import SettingCheck from '../SettingCheck.vue';
 import type { LanguageSetting, Settings } from '../settings';
 
 defineProps<{ settings: Settings }>();
@@ -31,31 +29,5 @@ function languageName(code: Locale) {
       <option v-for="code in LOCALES" :key="code" :value="code">{{ languageName(code) }}</option>
     </select>
     <p class="shm-hint">{{ i18n.t('settings.languageHint') }}</p>
-    <SettingCheck
-      class="is-spaced"
-      :checked="settings.translateRsiTexts"
-      :hint="i18n.t('settings.translateRsiTextsHint')"
-      @change="(translateRsiTexts) => emit('update', { translateRsiTexts })"
-    >
-      {{ i18n.t('settings.translateRsiTexts') }}
-      <span class="shm-experimental">
-        <SvgIcon name="triangle-exclamation" />
-        {{ i18n.t('settings.experimental') }}
-      </span>
-    </SettingCheck>
   </section>
 </template>
-
-<style scoped>
-/* Marks a setting whose result may not always be right (here: translations that lag behind). */
-.shm-experimental {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 1px 7px;
-  color: var(--shm-warning);
-  font-size: calc(11px * var(--shm-font-scale));
-  border: 1px solid currentColor;
-  border-radius: var(--shm-radius-pill);
-}
-</style>
