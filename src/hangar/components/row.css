@@ -144,6 +144,22 @@
   border-color: rgb(var(--shm-upgraded-rgb) / 0.7);
 }
 
+/* A paint the Paint Discount Consultant would buy again: a button to it. */
+.shm-badge.is-rebuy {
+  margin: 0;
+  color: var(--shm-success);
+  font-family: inherit;
+  background: none;
+  border-color: rgb(var(--shm-success-rgb) / 0.6);
+  cursor: pointer;
+}
+
+.shm-badge.is-rebuy:hover,
+.shm-badge.is-rebuy:focus-visible {
+  background: rgb(var(--shm-success-rgb) / 0.14);
+  outline: none;
+}
+
 .shm-badge.is-off {
   opacity: 0.35;
   text-decoration: line-through;

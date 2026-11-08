@@ -94,6 +94,7 @@
     "warbond": "Warbond",
     "valuable": "Mit Wert",
     "discount": "Rabatt",
+    "paintRebuy": "Paint-Rückkauf",
     "rewards": "Rewards",
     "reset": "Filter zurücksetzen",
     "stateOff": "Klick: nur Items mit „$1“ anzeigen.",
@@ -105,7 +106,8 @@
       "valuable": "Pledges mit einem Wert über $$0.",
       "rewards": "Rewards mit einem Wert von $$0: Event-, Referral-, Concierge- und andere Rewards.",
       "rewardsByName": "Rewards, am Namen erkannt: Event-, Referral-, Concierge- und andere Rewards.",
-      "discount": "Günstiger als der Originalpreis gekauft: Schiffe und CCUs verglichen mit RSIs Schiffspreisen, Paints, Gear und mehr mit dem Pledge Store. Pledges ohne bekannten Originalpreis oder mit Aufpreis zählen nicht."
+      "discount": "Günstiger als der Originalpreis gekauft: Schiffe und CCUs verglichen mit RSIs Schiffspreisen, Paints, Gear und mehr mit dem Pledge Store. Pledges ohne bekannten Originalpreis oder mit Aufpreis zählen nicht.",
+      "paintRebuy": "Paints, die der Paint-Rabatt-Berater mit höherem Mengenrabatt einschmelzen und zurückkaufen würde (siehe Tab Pledge Store)."
     },
     "categories": {
       "types": "Typen",
@@ -407,7 +409,9 @@
     "skipGiftableHint": "Mit Store Credit zurückgekauft, wären sie nicht mehr verschenkbar.",
     "giftableSkipped": "$1 verschenkbare Paints, die profitieren würden, sind ausgelassen.",
     "giftableTag": "Verschenkbar",
-    "giftableTagHint": "Jetzt verschenkbar; mit Store Credit zurückgekauft, nicht mehr."
+    "giftableTagHint": "Jetzt verschenkbar; mit Store Credit zurückgekauft, nicht mehr.",
+    "mark": "Rückkauf $1 → $2",
+    "markHint": "Einschmelzen und mit dem Mengenrabatt zurückkaufen ($1 → $2): $3 Store Credit werden frei. Öffnet den Paint-Rabatt-Berater."
   },
   "upgradeLog": {
     "title": "Angewendete Upgrades",

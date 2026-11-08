@@ -546,6 +546,16 @@ html .shm-theme-modern .shm-badge.is-upgraded {
 }
 
 html .shm-theme-modern .shm-badge.is-giftable,
+html .shm-theme-modern .shm-badge.is-rebuy {
+  color: var(--shm-success);
+  background: rgb(var(--shm-success-rgb) / 0.14);
+}
+
+html .shm-theme-modern .shm-badge.is-rebuy:hover,
+html .shm-theme-modern .shm-badge.is-rebuy:focus-visible {
+  background: rgb(var(--shm-success-rgb) / 0.24);
+}
+
 html .shm-theme-modern .shm-badge.is-refund {
   color: var(--shm-success);
   background: rgb(var(--shm-success-rgb) / 0.14);

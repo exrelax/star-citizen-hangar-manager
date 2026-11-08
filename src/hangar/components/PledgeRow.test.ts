@@ -4,10 +4,14 @@ import { createApp, h, type App } from 'vue';
 import { RSI_GAMES_LIBRARY_URL } from '@/config';
 import type { Pledge } from '../pledge';
 import { toPledgeView } from '../pledge-view';
+import { paintRebuys } from '@/store/paint-consultant/use-paint-consultant';
 import PledgeRow from './PledgeRow.vue';
 
 let app: App | undefined;
-afterEach(() => app?.unmount());
+afterEach(() => {
+  app?.unmount();
+  paintRebuys.value = new Map();
+});
 
 function render(overrides: Partial<Pledge>, discountAmount?: number) {
   const pledge = {
@@ -145,5 +149,18 @@ describe('PledgeRow', () => {
     expect(render({}, 10).querySelector('.shm-discount')?.textContent).toContain('$10');
     app?.unmount();
     expect(render({}, 0).querySelector('.shm-discount')).toBeNull();
+  });
+
+  it('marks a paint the Paint Discount Consultant would buy again', () => {
+    paintRebuys.value = new Map([[7, { from: 0, to: 35, freed: 1.75 }]]);
+    const paint = { id: 7, items: [{ title: 'Lynx - Moonrise Paint', kind: 'Skin' }] };
+
+    const marked = render(paint);
+    const badge = marked.querySelector('.shm-badge.is-rebuy');
+    expect(badge?.tagName).toBe('BUTTON');
+    expect(badge?.textContent?.trim()).toBe('Rebuy 0% → 35%');
+
+    app?.unmount();
+    expect(render({ ...paint, id: 8 }).querySelector('.shm-badge.is-rebuy')).toBeNull();
   });
 });

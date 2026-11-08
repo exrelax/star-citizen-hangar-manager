@@ -8,6 +8,7 @@ import { toPledgeView } from '@/hangar/pledge-view';
 import { DEFAULT_SETTINGS, type Settings } from '@/settings/settings';
 import { storeItemsItem, STORE_ITEMS_VERSION } from '../items/store-items-storage';
 import type { StoreItem } from '../items/store-items';
+import { providePaintConsultant } from '../paint-consultant/use-paint-consultant';
 import PaintConsultant from './PaintConsultant.vue';
 
 let app: App | undefined;
@@ -50,8 +51,17 @@ async function storeExample(credit = 1) {
 
 async function render(pledges: ReturnType<typeof paint>[], settings: Partial<Settings> = {}) {
   const root = document.createElement('div');
+  const all = { ...DEFAULT_SETTINGS, ...settings };
+  // As App.vue does: the result is provided to the consultant.
   app = createApp({
-    render: () => h(PaintConsultant, { pledges, settings: { ...DEFAULT_SETTINGS, ...settings } }),
+    setup() {
+      providePaintConsultant({
+        pledges: () => pledges,
+        settings: () => all,
+        demoStoreCredit: () => undefined,
+      });
+      return () => h(PaintConsultant, { settings: all });
+    },
   });
   app.mount(root);
   // The stored values are read asynchronously.

@@ -4,7 +4,8 @@ import { i18n, locale } from '@/i18n';
 import { computed, ref, watch } from 'vue';
 import { REFUND_DAYS, REFUND_URGENT_DAYS, RSI_GAMES_LIBRARY_URL } from '@/config';
 import { refundWindow, today } from '@/orders/refund';
-import { formatDiscount } from '../discount-format';
+import { formatDiscount, formatPercent, formatUsd } from '../discount-format';
+import { openPaintConsultant, paintRebuys } from '@/store/paint-consultant/use-paint-consultant';
 import { insuranceLabel, supersededInsurances } from '../insurance';
 import { kindIcon } from '../pledge-kind';
 import type { PledgeView } from '../pledge-view';
@@ -45,6 +46,19 @@ const superseded = computed(() =>
 );
 
 /** The discount, unless there is none: exactly the original price ("$0 (0%)" says nothing). */
+/** The Paint Discount Consultant would melt this paint and buy it again (see `paintRebuys`). */
+const rebuy = computed(() => paintRebuys.value.get(props.pledge.id));
+const rebuyText = computed(() => {
+  const value = rebuy.value;
+  if (!value) return undefined;
+  const from = formatPercent(value.from, locale.value);
+  const to = formatPercent(value.to, locale.value);
+  return {
+    label: i18n.t('consultant.mark', [from, to]),
+    hint: i18n.t('consultant.markHint', [from, to, formatUsd(value.freed, locale.value)]),
+  };
+});
+
 const discount = computed(() =>
   props.pledge.discount && props.pledge.discount.amount !== 0
     ? formatDiscount(props.pledge.discount, locale.value)
@@ -145,6 +159,16 @@ const toggle = () => {
       </span>
 
       <span class="shm-badges">
+        <!-- Opens the Paint Discount Consultant in the Pledge Store tab. -->
+        <button
+          v-if="rebuyText"
+          v-tooltip="rebuyText.hint"
+          type="button"
+          class="shm-badge is-rebuy"
+          @click.stop="openPaintConsultant"
+        >
+          {{ rebuyText.label }}
+        </button>
         <ProtectedBadge
           v-if="pledge.protectedGames.length"
           :games="pledge.protectedGames"

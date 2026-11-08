@@ -94,6 +94,7 @@
     "warbond": "Warbond",
     "valuable": "Valuable",
     "discount": "Discount",
+    "paintRebuy": "Paint rebuy",
     "rewards": "Rewards",
     "reset": "Reset filters",
     "stateOff": "Click: show only items with “$1”.",
@@ -105,7 +106,8 @@
       "valuable": "Pledges with a value above $$0.",
       "rewards": "Rewards with a value of $$0: event, referral, Concierge and other rewards.",
       "rewardsByName": "Rewards, recognized by their names: event, referral, Concierge and other rewards.",
-      "discount": "Bought for less than the original price: ships and CCUs compared with RSI's ship prices, paints, gear and more with the Pledge Store. Pledges whose original price isn't known, or that cost more, don't count."
+      "discount": "Bought for less than the original price: ships and CCUs compared with RSI's ship prices, paints, gear and more with the Pledge Store. Pledges whose original price isn't known, or that cost more, don't count.",
+      "paintRebuy": "Paints the Paint Discount Consultant would melt and buy again with a higher volume discount (see the Pledge Store tab)."
     },
     "categories": {
       "types": "Types",
@@ -407,7 +409,9 @@
     "skipGiftableHint": "Bought again with store credit, they would no longer be giftable.",
     "giftableSkipped": "$1 giftable paints that would gain are left out.",
     "giftableTag": "Giftable",
-    "giftableTagHint": "Giftable now; bought again with store credit, it no longer is."
+    "giftableTagHint": "Giftable now; bought again with store credit, it no longer is.",
+    "mark": "Rebuy $1 → $2",
+    "markHint": "Melt it and buy it again with the volume discount ($1 → $2): $3 of store credit freed. Opens the Paint Discount Consultant."
   },
   "upgradeLog": {
     "title": "Applied upgrades",

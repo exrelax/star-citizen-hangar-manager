@@ -1,17 +1,12 @@
 <script setup lang="ts">
-import { storeCreditItem, STORE_CREDIT_VERSION } from '@/account/store-credit-storage';
-import { useDemoContext } from '@/demo/use-demo';
 import { formatPercent, formatUsd } from '@/hangar/discount-format';
-import type { PledgeView } from '@/hangar/pledge-view';
 import { i18n, locale } from '@/i18n';
 import type { Settings } from '@/settings/settings';
 import { vTooltip } from '@/shared/tooltip/tooltip';
-import { useStored } from '@/storage/use-stored';
 import { useSettings } from '@/settings/use-settings';
 import { computed, ref } from 'vue';
-import { storeItemsItem, STORE_ITEMS_VERSION } from '../items/store-items-storage';
 import { refreshStoreItems } from '../items/sync-store-items';
-import { planPaintRebuy } from '../paint-consultant/calculation';
+import { usePaintConsultant } from '../paint-consultant/use-paint-consultant';
 
 /*
  * The Paint Discount Consultant (#95) in the Pledge Store tab: which own paints to melt and buy
@@ -20,51 +15,21 @@ import { planPaintRebuy } from '../paint-consultant/calculation';
  * with the real values and says honestly that melt value turns into store credit.
  */
 
-const props = defineProps<{
-  /** The hangar's pledges (in the demo mode the demo selection). */
-  pledges: readonly PledgeView[];
-  settings: Settings;
-}>();
+const props = defineProps<{ settings: Settings }>();
 
 /** RSI's article on the 24-hour cooldown before a pledge can be melted. */
 const COOLDOWN_SOURCE =
   'https://support.robertsspaceindustries.com/hc/en-us/articles/115013193627-Reclaim-a-Pledge';
 
-const storedItems = useStored(storeItemsItem);
-const storeItems = computed(() =>
-  storedItems.value?.version === STORE_ITEMS_VERSION ? storedItems.value.items : undefined,
-);
-
-// The account's store credit (in the demo mode a made-up one), in USD only.
-const storedCredit = useStored(storeCreditItem);
-const demo = useDemoContext();
-const credit = computed(() => {
-  const stored = storedCredit.value;
-  const value =
-    demo.value?.storeCredit ??
-    (stored?.version === STORE_CREDIT_VERSION ? stored.credit : undefined);
-  return value?.currency === 'USD' ? value.amount : undefined;
-});
+// Worked out once for the manager (App.vue), also for the marks in My Hangar.
+const { storeItems, creditUnknown, result } = usePaintConsultant();
 
 const options = computed(() => props.settings.paintConsultant);
 const { update } = useSettings();
 /** The option is also in the settings (`PaintConsultantSection.vue`); both change the same value. */
 const setSkipGiftable = (skipGiftable: boolean) =>
   update({ paintConsultant: { ...options.value, skipGiftable } });
-/** The store credit is to be used, but isn't known (yet): it counts as $0. */
-const creditUnknown = computed(() => options.value.useStoreCredit && credit.value === undefined);
 
-const result = computed(() =>
-  storeItems.value
-    ? planPaintRebuy({
-        pledges: props.pledges,
-        storeItems: storeItems.value,
-        storeCredit: options.value.useStoreCredit ? (credit.value ?? 0) : 0,
-        useFillers: options.value.useFillers,
-        skipGiftable: options.value.skipGiftable,
-      })
-    : undefined,
-);
 const plan = computed(() => result.value?.plan);
 
 const reading = ref(false);
@@ -333,6 +298,8 @@ const fillerCount = computed(
 }
 
 .shm-consultant-title {
+  /* Below RSI's fixed top bar when scrolled to from My Hangar. */
+  scroll-margin-top: 90px;
   margin: 0 0 4px;
   color: var(--shm-text-strong);
   font-size: calc(16px * var(--shm-font-scale));

@@ -94,6 +94,7 @@
     "warbond": "Warbond",
     "valuable": "Avec valeur",
     "discount": "Remise",
+    "paintRebuy": "Rachat de peinture",
     "rewards": "Récompenses",
     "reset": "Réinitialiser les filtres",
     "stateOff": "Clic : n’afficher que les éléments avec « $1 ».",
@@ -105,7 +106,8 @@
       "valuable": "Pledges d’une valeur supérieure à 0 $$.",
       "rewards": "Récompenses d’une valeur de 0 $$ : événements, parrainage, Concierge et autres récompenses.",
       "rewardsByName": "Récompenses, reconnues à leur nom : événements, parrainage, Concierge et autres récompenses.",
-      "discount": "Acheté moins cher que le prix d’origine : vaisseaux et CCU comparés aux prix des vaisseaux de RSI, peintures, équipement et autres au Pledge Store. Les pledges sans prix d’origine connu ou plus chers ne comptent pas."
+      "discount": "Acheté moins cher que le prix d’origine : vaisseaux et CCU comparés aux prix des vaisseaux de RSI, peintures, équipement et autres au Pledge Store. Les pledges sans prix d’origine connu ou plus chers ne comptent pas.",
+      "paintRebuy": "Peintures que le conseiller de remises fondrait et rachèterait avec une remise sur volume plus élevée (voir l’onglet Pledge Store)."
     },
     "categories": {
       "types": "Types",
@@ -407,7 +409,9 @@
     "skipGiftableHint": "Rachetées en crédit boutique, elles ne pourraient plus être offertes.",
     "giftableSkipped": "$1 peintures offrables qui y gagneraient sont ignorées.",
     "giftableTag": "Offrable",
-    "giftableTagHint": "Offrable maintenant ; rachetée en crédit boutique, elle ne l’est plus."
+    "giftableTagHint": "Offrable maintenant ; rachetée en crédit boutique, elle ne l’est plus.",
+    "mark": "Rachat $1 → $2",
+    "markHint": "La fondre et la racheter avec la remise sur volume ($1 → $2) : $3 de crédit boutique libérés. Ouvre le conseiller de remises sur les peintures."
   },
   "upgradeLog": {
     "title": "Améliorations appliquées",
