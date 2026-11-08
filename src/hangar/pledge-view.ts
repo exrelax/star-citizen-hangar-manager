@@ -164,7 +164,8 @@ function pledgeImage(pledge: Pledge, currentShip: PledgeItem | undefined): strin
   return pledge.items.find((item) => isRealImage(item.image))?.image;
 }
 
-function isPaintItem(item: PledgeItem): boolean {
+/** Whether an item of a pledge is a paint. */
+export function isPaintItem(item: PledgeItem): boolean {
   // RSI occasionally lists a paint without a kind, e.g. "400i - Meridian Paint".
   return item.kind === 'Skin' || (!item.kind && /\b(paint|livery)\b/i.test(item.title));
 }

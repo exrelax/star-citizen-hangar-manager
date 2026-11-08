@@ -184,10 +184,14 @@ function discountOf(
  * miss the tier slightly. Only the percent changes, the amount in dollars stays what was paid.
  */
 export function roundPaintDiscount(discount: PledgeDiscount): PledgeDiscount {
-  const { percents, tolerance } = PAINT_DISCOUNT_TIERS;
+  const percent = roundToPaintTier(discount.percent);
+  return percent === discount.percent ? discount : { ...discount, percent };
+}
+
+/** `percent`, or the volume discount tier it is within the tolerance of (see `PAINT_DISCOUNT_TIERS`). */
+export function roundToPaintTier(percent: number): number {
+  const { tiers, tolerance } = PAINT_DISCOUNT_TIERS;
   // A little room for floating point errors, so exactly 0.2 points still count.
-  const tier = percents.find((tier) => Math.abs(discount.percent - tier) <= tolerance + 1e-9);
-  return tier === undefined || tier === discount.percent
-    ? discount
-    : { ...discount, percent: tier };
+  const tier = tiers.find((tier) => Math.abs(percent - tier.percent) <= tolerance + 1e-9);
+  return tier?.percent ?? percent;
 }
