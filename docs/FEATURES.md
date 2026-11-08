@@ -228,16 +228,20 @@ on its own.
 ## Selection and summary
 
 - **Select pledges** in "My Hangar" with the round control in the top right corner of each row.
-- **Summary box** below RSI's page navigation on the left: first the account's **store credit**
-  (as RSI's account menu shows it, read with every refresh and smart update), then the number,
-  value and discounts of the pledges shown in "My Hangar" (after search and filters). Discounts
-  sum only real ones – a pledge that cost more than the original price doesn't reduce them.
-- The box stays on every tab of the manager (Buy Back, Pledge Store, Settings) and keeps showing
-  the hangar's figures and its place there.
-- With a selection, the box adds the number, value and discounts of the selected pledges, says how
-  many of them search or filters hide, and clears the selection with one click.
-- It sticks while scrolling and can be dragged anywhere (or moved with the arrow keys from its
-  handle). The position lasts for the browser session only; a button puts it back.
+- **Sidebar** below RSI's page navigation on the left, a column of boxes:
+  - **Store credit** of the account (as RSI's account menu shows it, read with every refresh and
+    smart update).
+  - **Summary**: number, value and discounts of the pledges shown in "My Hangar" (after search and
+    filters). Discounts sum only real ones – a pledge that cost more than the original price
+    doesn't reduce them.
+  - **Selected** (with a selection): number, value and discounts of the selected pledges, how many
+    of them search or filters hide, and a button that clears the selection.
+- The sidebar stays on every tab of the manager (Buy Back, Pledge Store, Settings) and keeps
+  showing the hangar's figures.
+- **Reorder the boxes** by dragging their title, or focus a title and use the arrow keys up and
+  down. The order is kept in the settings.
+- It sticks while scrolling as long as it fits into the window; a higher sidebar scrolls with the
+  page, so its lower boxes stay reachable.
 - A setting adds the number of pledges per type (ships, CCUs, paints, …).
 - Values and discounts are left out when "Hide melt value" is on.
 

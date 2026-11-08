@@ -71,9 +71,13 @@
     "discount": "Discounts",
     "selected": "Selected",
     "clear": "Clear the selection",
-    "hidden": "$1 of them hidden by search or filters",
-    "move": "Drag to move the summary (or use the arrow keys)",
-    "resetPosition": "Back to its place below the navigation"
+    "hidden": "$1 of them hidden by search or filters"
+  },
+  "sidebar": {
+    "label": "Sidebar",
+    "move": "Drag to move the box (or use the arrow keys up and down)",
+    "moved": "Moved to position $1 of $2",
+    "available": "Available"
   },
   "filter": {
     "label": "Filter pledges",

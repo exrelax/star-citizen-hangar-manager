@@ -71,9 +71,13 @@
     "discount": "Rabatte",
     "selected": "Ausgewählt",
     "clear": "Auswahl aufheben",
-    "hidden": "$1 davon durch Suche oder Filter ausgeblendet",
-    "move": "Ziehen, um die Übersicht zu verschieben (oder Pfeiltasten)",
-    "resetPosition": "Zurück an ihren Platz unter der Navigation"
+    "hidden": "$1 davon durch Suche oder Filter ausgeblendet"
+  },
+  "sidebar": {
+    "label": "Seitenleiste",
+    "move": "Ziehen, um die Box zu verschieben (oder Pfeiltasten hoch und runter)",
+    "moved": "An Position $1 von $2 verschoben",
+    "available": "Verfügbar"
   },
   "filter": {
     "label": "Pledges filtern",

@@ -2,12 +2,6 @@ import { OPEN_STYLEGUIDE } from '@/shared/messages';
 import { migrateStorage } from '@/storage/migrate';
 
 export default defineBackground(() => {
-  // The session storage is for the extension's own pages unless allowed for content scripts too
-  // (Chrome): the manager keeps the position of its summary box there (hangar/summary-position.ts).
-  void browser.storage.session
-    ?.setAccessLevel?.({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' })
-    .catch(() => undefined);
-
   // After an update: data of earlier versions moves to its current keys (see storage/migrate.ts).
   browser.runtime.onInstalled.addListener(() => void migrateStorage());
 
