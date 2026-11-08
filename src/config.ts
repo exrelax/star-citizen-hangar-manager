@@ -152,10 +152,12 @@ export const SMART_UPDATE = {
   /** How often relative times in the status line ("2 min ago") are refreshed. */
   statusRefreshMs: 30 * 1000,
   /**
-   * While the manager is shown in a visible tab, it looks this often whether a check is due (see
-   * `smart-update/schedule.ts`): the status never gets much older than the interval plus this.
+   * While the manager is shown in a visible tab, it looks this long after its last look (and the
+   * check it started) whether a check is due (see `smart-update/schedule.ts`): the status never
+   * gets much older than the interval plus this. A look without a due check only reads the
+   * extension's storage, no request goes to RSI.
    */
-  timerStepMs: 60 * 1000,
+  timerStepMs: 10 * 1000,
 } as const;
 
 /**

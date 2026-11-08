@@ -86,11 +86,12 @@ Each check works in three steps:
 - **Measured**: an unchanged hangar of ~1,000 pledges is checked in 0.4–0.7 seconds, the buy back of
   ~4,000 pledges in 1–3 seconds.
 - **Regular, but only when useful**: every 5 minutes (a setting) while the manager is open in a
-  visible tab – it looks every minute whether the interval has passed – and right away when you
-  come back from RSI's "My Gear" page, where you may just have melted or gifted something. A hidden
-  tab sends no requests and checks when it is shown again. Several open tabs check only once per
-  interval together. If too much changed, it suggests a full refresh instead of loading page after
-  page.
+  visible tab – it looks 10 seconds after its last look, once any check is done, whether the
+  interval has passed (only a look into the stored data, no request to RSI) – and right away when
+  you come back from RSI's "My Gear" page, where you may just have melted or gifted something. A
+  hidden tab sends no requests and checks when it is shown again. Several open tabs check only
+  once per interval together. If too much changed, it suggests a full refresh instead of loading
+  page after page.
 
 ### Never in your way
 
