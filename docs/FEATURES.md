@@ -229,8 +229,10 @@ on its own.
 - **Select pledges** in "My Hangar" with the round control in the top right corner of each row.
 - **Summary box** below RSI's page navigation on the left: first the account's **store credit**
   (as RSI's account menu shows it, read with every refresh and smart update), then the number,
-  value and discounts of the pledges shown (after search and filters). Discounts sum only real ones – a pledge that cost more
-  than the original price doesn't reduce them.
+  value and discounts of the pledges shown in "My Hangar" (after search and filters). Discounts
+  sum only real ones – a pledge that cost more than the original price doesn't reduce them.
+- The box stays on every tab of the manager (Buy Back, Pledge Store, Settings) and keeps showing
+  the hangar's figures and its place there.
 - With a selection, the box adds the number, value and discounts of the selected pledges, says how
   many of them search or filters hide, and clears the selection with one click.
 - It sticks while scrolling and can be dragged anywhere (or moved with the arrow keys from its
