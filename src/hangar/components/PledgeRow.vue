@@ -44,8 +44,11 @@ const superseded = computed(() =>
     : new Set<number>(),
 );
 
-const discount = computed(
-  () => props.pledge.discount && formatDiscount(props.pledge.discount, locale.value),
+/** The discount, unless there is none: exactly the original price ("$0 (0%)" says nothing). */
+const discount = computed(() =>
+  props.pledge.discount && props.pledge.discount.amount !== 0
+    ? formatDiscount(props.pledge.discount, locale.value)
+    : undefined,
 );
 
 /** The icon of the pledge's kind, on the row's image. */

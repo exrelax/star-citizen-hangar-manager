@@ -9,7 +9,7 @@ import PledgeRow from './PledgeRow.vue';
 let app: App | undefined;
 afterEach(() => app?.unmount());
 
-function render(overrides: Partial<Pledge>) {
+function render(overrides: Partial<Pledge>, discountAmount?: number) {
   const pledge = {
     id: 1,
     name: 'Package - Nomad Star Citizen + Squadron 42 Combo',
@@ -24,7 +24,22 @@ function render(overrides: Partial<Pledge>) {
   } as Pledge;
   const root = document.createElement('div');
   app = createApp({
-    render: () => h(PledgeRow, { pledge: toPledgeView(pledge), autoExpand: true }),
+    render: () =>
+      h(PledgeRow, {
+        pledge: {
+          ...toPledgeView(pledge),
+          ...(discountAmount !== undefined && {
+            discount: {
+              original: 115 + discountAmount,
+              paid: 115,
+              amount: discountAmount,
+              percent: 0,
+              ships: [{ name: 'Nomad', price: 115 + discountAmount }],
+            },
+          }),
+        },
+        autoExpand: true,
+      }),
   });
   app.mount(root);
   return root;
@@ -124,5 +139,11 @@ describe('PledgeRow', () => {
       ['Gift', false],
       ['Melt', false],
     ]);
+  });
+
+  it('shows a discount, but none for exactly the original price', () => {
+    expect(render({}, 10).querySelector('.shm-discount')?.textContent).toContain('$10');
+    app?.unmount();
+    expect(render({}, 0).querySelector('.shm-discount')).toBeNull();
   });
 });
