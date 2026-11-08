@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AboutSection from './sections/AboutSection.vue';
 import DevelopmentSection from './sections/DevelopmentSection.vue';
+import ExperimentalSection from './sections/ExperimentalSection.vue';
 import FilterSection from './sections/FilterSection.vue';
 import GeneralSection from './sections/GeneralSection.vue';
 import LanguageSection from './sections/LanguageSection.vue';
@@ -34,6 +35,7 @@ const update = (patch: Partial<Settings>) => emit('update', patch);
     <SmartUpdateSection :settings="settings" @update="update" />
     <FilterSection :settings="settings" @update="update" />
     <ShipLinkSection :settings="settings" @update="update" />
+    <ExperimentalSection :settings="settings" @update="update" />
     <StorageSection />
     <AboutSection />
     <DevelopmentSection />

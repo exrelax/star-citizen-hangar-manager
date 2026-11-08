@@ -127,6 +127,9 @@
     "translateRsiTexts": "Traducir los textos de RSI en los diálogos de cambio y regalo",
     "experimental": "Experimental",
     "translateRsiTextsHint": "Por defecto, estos diálogos muestran los textos de RSI (introducciones, confirmaciones, mensajes) en el inglés de RSI, cuya redacción es la que vale. Sus traducciones son del Hangar Manager: los cambios que RSI hace en sus textos solo llegan a ellas más tarde, por lo que no siempre están al día.",
+    "experimentalWarning": "Estas funciones pueden no funcionar como se espera y tener consecuencias que no se pueden deshacer. Activarlas y usarlas es por tu cuenta y riesgo: el desarrollador del Hangar Manager no asume ninguna responsabilidad por ellas.",
+    "bulkMelting": "Fundir varios pledges a la vez",
+    "bulkMeltingHint": "Funde todos los pledges seleccionados de «My Hangar» a la vez, desde la caja de selección de la barra lateral, introduciendo la contraseña una sola vez. Se detiene en el primer pledge que RSI rechace.",
     "hideMeltValue": "Ocultar el valor de fusión",
     "hideMeltValueHint": "Oculta todos los importes en $$: valores de los pledges, descuentos, costes de las mejoras aplicadas, importes de los pedidos y valores en los diálogos de canje y regalo.",
     "general": "General",
@@ -522,6 +525,39 @@
     "failed": "El cambio ha fallado: $1",
     "success": "Se han abonado $1 en tu cuenta.",
     "successNote": "El pledge desaparece de la lista al cerrar este diálogo; el buy back lo muestra tras la próxima actualización."
+  },
+  "bulkExchange": {
+    "button": "Fundir $1 seleccionados",
+    "buttonHint": "Cambia los pledges seleccionados por crédito de tienda (fundirlos) a la vez. Abre primero un diálogo.",
+    "title": "Fundir $1 pledges",
+    "count": "$1 pledges",
+    "skipped": "$1 seleccionados no se pueden fundir y se omiten",
+    "listLabel": "Pledges a fundir",
+    "intro": "Estás a punto de fundir $1 pledges. Se eliminarán de tu cuenta, incluidas sus mejoras (como personalizaciones o CCU), y recibirás $2 en crédito de tienda. Se funden uno tras otro; el primero que RSI rechace detiene el resto.",
+    "lastGameAccessText": "La selección contiene todos los pledges de tu cuenta que dan acceso a Star Citizen. Sin ellos ya no podrás jugar.",
+    "warnings": {
+      "lastGameAccess": "La selección te quita todo acceso al juego",
+      "notBuybackable": "$1 pledges no se pueden recomprar: su fundición es permanente",
+      "upgraded": "$1 pledges con mejoras aplicadas: los CCU se funden con ellos",
+      "discount": "Renuncias a descuentos de $2 en $1 pledges",
+      "giftable": "$1 pledges se pueden regalar ahora, recomprados ya no",
+      "refundable": "$1 pledges aún se pueden reembolsar en dinero"
+    },
+    "tags": {
+      "lastGameAccess": "Último acceso al juego",
+      "notBuybackable": "Sin recompra",
+      "upgraded": "Mejorado",
+      "discount": "Descuento",
+      "giftable": "Regalable",
+      "refundable": "Reembolsable"
+    },
+    "consentWarnings": "He leído las advertencias anteriores y aun así quiero fundir estos pledges.",
+    "consentExperimental": "Fundo estos pledges con una función experimental, por mi cuenta y riesgo.",
+    "submit": "Fundir $1 pledges por $2",
+    "submitting": "Fundiendo $1 de $2 …",
+    "success": "$1 pledges fundidos, se abonaron $2 a tu cuenta.",
+    "successNote": "Desaparecen de la lista al cerrar este diálogo; la recompra los muestra tras la próxima actualización.",
+    "failed": "RSI rechazó «$1»: $2. Otros $3 pledges no se enviaron y siguen en tu hangar."
   },
   "gift": {
     "button": "Gift",

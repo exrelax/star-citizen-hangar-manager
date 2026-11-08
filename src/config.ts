@@ -271,6 +271,12 @@ export const ORDERS = {
  */
 export const EXCHANGE_ATTENTION_DELAY_MS = 5_000;
 
+/**
+ * Bulk melting (an experimental setting) exchanges the selected pledges one after the other, with
+ * this pause between two of RSI's requests, so they don't come in a burst.
+ */
+export const BULK_EXCHANGE_DELAY_MS = 1_000;
+
 /** CIG refunds purchases paid with money within this many days (shown in "My Hangar"). */
 export const REFUND_DAYS = 30;
 /** From this many days left on, the refund tag is highlighted. */

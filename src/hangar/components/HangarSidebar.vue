@@ -14,6 +14,7 @@ import { storeCreditItem, STORE_CREDIT_VERSION } from '@/account/store-credit-st
 import { useStored } from '@/storage/use-stored';
 import { useDemoContext } from '@/demo/use-demo';
 import SidebarBox from './SidebarBox.vue';
+import BulkExchangeOverlay from './BulkExchangeOverlay.vue';
 import {
   maybePaintConsultant,
   openPaintConsultant,
@@ -46,6 +47,10 @@ const hiddenSelected = computed(() => {
 });
 
 const shown = computed(() => summarize(visible.value));
+
+// Bulk melting (an experimental setting): the selected pledges that can be exchanged.
+const meltable = computed(() => selected.value.filter((pledge) => pledge.isMeltable));
+const bulkExchanging = ref(false);
 const chosen = computed(() => (selected.value.length ? summarize(selected.value) : undefined));
 
 // The account's store credit, not depending on search or selection. The demo mode shows a
@@ -348,6 +353,25 @@ async function move(box: Box, step: -1 | 1) {
           <p v-if="hiddenSelected" class="shm-sidebar-note is-warning" role="status">
             {{ i18n.t('summary.hidden', [hiddenSelected]) }}
           </p>
+          <!-- Disabled in the demo: its pledge ids are made up. -->
+          <button
+            v-if="settings.bulkMelting && meltable.length"
+            v-tooltip="demo ? i18n.t('exchange.demo') : i18n.t('bulkExchange.buttonHint')"
+            type="button"
+            class="shm-button is-danger shm-sidebar-action"
+            :disabled="!!demo"
+            @click="bulkExchanging = true"
+          >
+            <SvgIcon name="triangle-exclamation" />
+            {{ i18n.t('bulkExchange.button', [meltable.length]) }}
+          </button>
+          <BulkExchangeOverlay
+            v-if="bulkExchanging"
+            :pledges="meltable"
+            :hangar="pledges"
+            :skipped="selected.length - meltable.length"
+            @close="bulkExchanging = false"
+          />
         </template>
 
         <template v-else-if="box === 'paintConsultant'">
@@ -565,6 +589,14 @@ async function move(box: Box, step: -1 | 1) {
   margin: 8px 0 0;
   color: var(--shm-text-muted);
   font-size: calc(11px * var(--shm-font-scale));
+}
+
+/* An action on a box's pledges, e.g. bulk melting the selection. */
+.shm-sidebar-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
 }
 
 /* A link-like button below a box's figures, e.g. to the Paint Discount Consultant. */

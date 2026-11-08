@@ -127,6 +127,9 @@
     "translateRsiTexts": "RSIs Texte in den Dialogen zum Einschmelzen und Verschenken übersetzen",
     "experimental": "Experimentell",
     "translateRsiTextsHint": "Standardmäßig zeigen diese Dialoge RSIs eigene Texte – Einleitungen, Bestätigungen, Meldungen – in RSIs Englisch, dessen Wortlaut maßgeblich ist. Die Übersetzungen stammen vom Hangar Manager: Ändert RSI seine Texte, fließt das erst später ein, daher sind sie nicht immer aktuell.",
+    "experimentalWarning": "Diese Funktionen arbeiten womöglich nicht immer wie gedacht und können Folgen haben, die sich nicht rückgängig machen lassen. Einschalten und Nutzung erfolgen ausdrücklich auf eigene Gefahr: Der Entwickler des Hangar Managers übernimmt dafür keine Haftung.",
+    "bulkMelting": "Mehrere Pledges auf einmal einschmelzen",
+    "bulkMeltingHint": "Schmilzt alle ausgewählten Pledges von „My Hangar“ auf einmal ein, über die Auswahl-Box der Sidebar, mit einmal eingegebenem Passwort. Stoppt beim ersten Pledge, das RSI ablehnt.",
     "hideMeltValue": "Schmelzwert ausblenden",
     "hideMeltValueHint": "Blendet alle $$-Beträge aus: Pledge-Werte, Rabatte, die Kosten angewendeter Upgrades, die Beträge der Bestellungen und die Werte in den Dialogen zum Eintauschen und Verschenken.",
     "general": "Allgemein",
@@ -522,6 +525,39 @@
     "failed": "Das Einschmelzen ist fehlgeschlagen: $1",
     "success": "Deinem Konto wurden $1 gutgeschrieben.",
     "successNote": "Das Pledge verschwindet aus der Liste, sobald du diesen Dialog schließt; im Buy Back erscheint es nach dem nächsten Update."
+  },
+  "bulkExchange": {
+    "button": "$1 ausgewählte einschmelzen",
+    "buttonHint": "Die ausgewählten Pledges auf einmal gegen Store Credit tauschen (einschmelzen). Öffnet zuerst einen Dialog.",
+    "title": "$1 Pledges einschmelzen",
+    "count": "$1 Pledges",
+    "skipped": "$1 ausgewählte lassen sich nicht einschmelzen und bleiben außen vor",
+    "listLabel": "Einzuschmelzende Pledges",
+    "intro": "Du bist dabei, $1 Pledges einzuschmelzen. Dadurch werden sie einschließlich aller Upgrades (z. B. Anpassungen oder CCUs) von deinem Konto entfernt, und du erhältst $2 als Store Credit. Sie werden nacheinander eingeschmolzen; lehnt RSI eines ab, stoppen die übrigen.",
+    "lastGameAccessText": "Die Auswahl enthält alle Pledges deines Kontos, die Zugang zu Star Citizen geben. Ohne sie kannst du nicht mehr spielen.",
+    "warnings": {
+      "lastGameAccess": "Die Auswahl nimmt dir jeden Spielzugang",
+      "notBuybackable": "$1 Pledges lassen sich nicht zurückkaufen: Ihr Einschmelzen ist endgültig",
+      "upgraded": "$1 Pledges mit angewendeten Upgrades: Die CCUs werden mit eingeschmolzen",
+      "discount": "Du gibst Rabatte von $2 auf $1 Pledges auf",
+      "giftable": "$1 Pledges sind jetzt verschenkbar, zurückgekauft nicht mehr",
+      "refundable": "$1 Pledges lassen sich noch gegen Geld erstatten"
+    },
+    "tags": {
+      "lastGameAccess": "Letzter Spielzugang",
+      "notBuybackable": "Kein Buy Back",
+      "upgraded": "Mit Upgrades",
+      "discount": "Rabatt",
+      "giftable": "Verschenkbar",
+      "refundable": "Erstattbar"
+    },
+    "consentWarnings": "Ich habe die Warnungen oben gelesen und möchte diese Pledges trotzdem einschmelzen.",
+    "consentExperimental": "Ich schmelze diese Pledges mit einer experimentellen Funktion ein, auf eigene Gefahr.",
+    "submit": "$1 Pledges für $2 einschmelzen",
+    "submitting": "Schmelze $1 von $2 ein …",
+    "success": "$1 Pledges eingeschmolzen, deinem Konto wurden $2 gutgeschrieben.",
+    "successNote": "Sie verschwinden aus der Liste, wenn du diesen Dialog schließt; das Buy Back zeigt sie nach dem nächsten Update.",
+    "failed": "RSI hat „$1“ abgelehnt: $2. $3 weitere Pledges wurden nicht gesendet und bleiben in deinem Hangar."
   },
   "gift": {
     "button": "Gift",
