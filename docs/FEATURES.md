@@ -26,7 +26,7 @@ announcements.
 - Your whole hangar and buy back on one page, instead of RSI's 10 pledges per page
 - Instant search and filters that include or exclude (ships, CCUs, paints, LTI, warbond, giftable,
   meltable, valuable, rewards, …), sorting by date, value or discount
-- Discounts of ships and CCUs compared to their original price
+- Discounts compared to the original price: ships and CCUs, paints, gear, packs and more
 - The best insurance of every pledge as a tag (LTI, 10 years, …)
 - The full CCU history of upgraded ships, with the discount of every step
 - Orders of your purchases with invoices, refund countdown and a prefilled refund request
@@ -263,12 +263,17 @@ on its own.
 
 ## Discounts
 
-For ships and CCUs, the row shows the **discount compared to the original price** – in dollars and
-percent, e.g. `−$25 (62.5%)` – right next to the pledge value. The original prices come from RSI's
-own ship upgrade tool ("All ships"):
+The row shows the **discount compared to the original price** – in dollars and percent, e.g.
+`−$25 (62.5%)` – right next to the pledge value:
 
-- **CCUs** are compared with the price difference of their two ships.
-- **Ship pledges** are compared with the price of the ship.
+- **CCUs** are compared with the price difference of their two ships (RSI's ship upgrade tool).
+- **Ship pledges** are compared with the price of the ship (packages with the game are left out
+  there: their value also pays for the game).
+- **Everything else** – paints, gear, add-ons, packs, game packages, … – is compared with the item
+  of the same name in the Pledge Store (its standard price, not a warbond or sale price). Only items
+  the store sells now have a price.
+- **Bundles of several ships** the store doesn't sell are compared with the sum of their ships'
+  prices (without the game, and only if every ship's price is known).
 - A tooltip explains the calculation, e.g. "Constellation Mk V Centaurus $300 − Guardian QI
   $260 = $40".
 - If a pledge cost more than the original price, the difference is shown in orange.

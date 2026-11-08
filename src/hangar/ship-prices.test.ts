@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { SHIPS_VERSION } from '@/ships/ships-storage';
 import type { Pledge } from './pledge';
+import { createItemPriceLookup } from '@/store/items/item-prices';
 import { createPriceLookup, pledgeDiscount, shipPricesOf } from './ship-prices';
 
 // Names and prices as listed by RSI's upgrade tool.
@@ -89,11 +90,83 @@ describe('pledgeDiscount', () => {
     expect(pledgeDiscount(ship, priceOf, false)).toMatchObject({ amount: -15, percent: -25 });
   });
 
-  it('leaves out packages with the game and pledges with several ships', () => {
+  it('leaves out packages with the game, and bundles with a ship of unknown price', () => {
     const items = [{ title: 'Mercury Star Runner', kind: 'Ship' }];
     expect(pledgeDiscount(pledge({ items }), priceOf, true)).toBeUndefined();
-    const fleet = [...items, { title: 'Guardian', kind: 'Ship' }];
+    const fleet = [...items, { title: 'Unknown Ship', kind: 'Ship' }];
     expect(pledgeDiscount(pledge({ items: fleet }), priceOf, false)).toBeUndefined();
+  });
+});
+
+describe('pledgeDiscount with the items of the Pledge Store', () => {
+  const itemPriceOf = createItemPriceLookup([
+    {
+      id: 1,
+      name: 'Paladin - Shadowfall Paint',
+      category: 'Paints',
+      price: 10,
+      isWarbond: false,
+      available: true,
+    },
+    {
+      id: 2,
+      name: 'Industrial Pack',
+      category: 'Package',
+      price: 85,
+      isWarbond: false,
+      available: true,
+    },
+  ]);
+
+  it('compares a paint with its item in the store', () => {
+    const paint = pledge({ title: 'Paints - Paladin - Shadowfall Paint', valueUsd: 7.5 });
+    expect(pledgeDiscount(paint, priceOf, false, itemPriceOf)).toMatchObject({
+      original: 10,
+      amount: 2.5,
+      percent: 25,
+      ships: [{ name: 'Paladin - Shadowfall Paint', price: 10 }],
+    });
+  });
+
+  it('compares a game package with its package in the store', () => {
+    const pack = pledge({
+      title: 'Package - Industrial Pack',
+      valueUsd: 85,
+      items: [{ title: 'Drake Cutter', kind: 'Ship' }],
+    });
+    expect(pledgeDiscount(pack, priceOf, true, itemPriceOf)).toMatchObject({ amount: 0 });
+  });
+
+  it('compares a bundle of ships the store does not sell with the sum of their prices', () => {
+    const bundle = pledge({
+      title: 'Standalone Ships - Mercury and Guardian Bundle',
+      valueUsd: 450,
+      items: [
+        { title: 'Mercury', kind: 'Ship' },
+        { title: 'Guardian', kind: 'Ship' },
+      ],
+    });
+    expect(pledgeDiscount(bundle, priceOf, false, itemPriceOf)).toMatchObject({
+      original: 510,
+      amount: 60,
+      ships: [{ name: 'Mercury + Guardian', price: 510 }],
+    });
+    // With the game, the ships' prices don't tell the original price.
+    expect(pledgeDiscount(bundle, priceOf, true, itemPriceOf)).toBeUndefined();
+  });
+
+  it('keeps the ship prices first and never compares a CCU with an item', () => {
+    const ship = pledge({ valueUsd: 75, items: [{ title: 'Aurora Mk I SE', kind: 'Ship' }] });
+    expect(pledgeDiscount(ship, priceOf, false, itemPriceOf)?.original).toBe(60);
+    const unknownCcu = pledge({
+      title: 'Industrial Pack',
+      upgrade: {
+        type: 'R',
+        matchItems: [{ id: 1, name: 'X' }],
+        targetItems: [{ id: 2, name: 'Y' }],
+      },
+    });
+    expect(pledgeDiscount(unknownCcu, priceOf, false, itemPriceOf)).toBeUndefined();
   });
 });
 
