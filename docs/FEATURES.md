@@ -242,11 +242,12 @@ on its own.
 - **Select pledges** in "My Hangar" with the round control in the top right corner of each row.
 - **Sidebar** below RSI's page navigation on the left, a column of boxes:
   - **Notifications** (only while there is one):
-    - When pledges [marked to melt](#mark-to-melt-later) can be melted now: how many, with
-      **Show** (only them in "My Hangar", without a filter button of its own: "Reset filters"
-      shows all again, and once none is left the list shows all on its own) and **Select**
-      (selects them, so the "Selected" box offers to melt them all at once with bulk melting on).
-      It stays while there are any and can't be checked off.
+    - When pledges [marked to melt](#mark-to-melt-later) can be melted now: how many, with two
+      buttons. **Show** lists only them in "My Hangar" (without a filter button there); while it
+      is on, it turns into **Show all** with a crossed-out filter icon and shows all again, like
+      "Reset filters" – and the list shows all on its own once none is left. **Select** selects
+      them, so the "Selected" box offers to melt them all at once with bulk melting on. It stays
+      while there are any and can't be checked off.
     - Other notifications, newest first, each checked off with its checkbox or all at once;
       checked-off ones don't come back.
     - Below them, the marked pledges still waiting, with the time left.

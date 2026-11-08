@@ -22,6 +22,7 @@ import { clearHangarFilter, hangarViewFilter, showHangarFilter } from '../view-f
 import { formatTimeLeft } from '../melt-marks';
 import { myGearHref } from '../route';
 import { useNow } from '@/shared/use-now';
+import { vMarkWrapped } from '@/shared/mark-wrapped';
 import {
   maybePaintConsultant,
   openPaintConsultant,
@@ -113,8 +114,12 @@ function noteHref(note: AppNotification) {
   return pledge && myGearHref(location.pathname, pledge.page, pledge.id);
 }
 
-/** Shows only the marked pledges that can be melted now in "My Hangar". */
-const showReady = () => showHangarFilter('meltReady');
+/** Shows only the marked pledges that can be melted now in "My Hangar", and again all (#147). */
+const readyFiltered = computed(() => hangarViewFilter.value?.id === 'meltReady');
+function toggleReadyFilter() {
+  if (readyFiltered.value) clearHangarFilter('meltReady');
+  else showHangarFilter('meltReady');
+}
 
 /** The paints the consultant would buy again are filtered in "My Hangar" (#146). */
 const rebuyFiltered = computed(() => hangarViewFilter.value?.id === 'paintRebuy');
@@ -364,33 +369,38 @@ async function move(box: Box, step: -1 | 1) {
           <!-- Only shown with at least one notification (see `isShown`). -->
           <div v-if="readyCount" class="shm-sidebar-melt-ready" role="status">
             <SvgIcon name="recycle" />
-            <div>
-              <p>
-                {{
+            <p>
+              {{
+                i18n.t(
+                  readyCount === 1 ? 'notifications.meltReadyOne' : 'notifications.meltReady',
+                  [number.format(readyCount)],
+                )
+              }}
+            </p>
+            <div v-mark-wrapped class="shm-sidebar-actions">
+              <button
+                v-tooltip="
                   i18n.t(
-                    readyCount === 1 ? 'notifications.meltReadyOne' : 'notifications.meltReady',
-                    [number.format(readyCount)],
+                    readyFiltered ? 'notifications.showAllHint' : 'notifications.showReadyHint',
                   )
-                }}
-              </p>
-              <div class="shm-sidebar-melt-ready-actions">
-                <button
-                  v-tooltip="i18n.t('notifications.showReadyHint')"
-                  type="button"
-                  class="shm-sidebar-link"
-                  @click="showReady"
-                >
-                  {{ i18n.t('notifications.showReady') }}
-                </button>
-                <button
-                  v-tooltip="i18n.t('notifications.selectReadyHint')"
-                  type="button"
-                  class="shm-sidebar-link"
-                  @click="selectReady"
-                >
-                  {{ i18n.t('notifications.selectReady') }}
-                </button>
-              </div>
+                "
+                type="button"
+                class="shm-button shm-sidebar-button"
+                :aria-pressed="readyFiltered"
+                @click="toggleReadyFilter"
+              >
+                <SvgIcon :name="readyFiltered ? 'filter-circle-xmark' : 'filter'" />
+                {{ i18n.t(readyFiltered ? 'notifications.showAll' : 'notifications.showReady') }}
+              </button>
+              <button
+                v-tooltip="i18n.t('notifications.selectReadyHint')"
+                type="button"
+                class="shm-button shm-sidebar-button"
+                @click="selectReady"
+              >
+                <SvgIcon name="circle-check" />
+                {{ i18n.t('notifications.selectReady') }}
+              </button>
             </div>
           </div>
           <ul v-if="notes.length" class="shm-sidebar-notes">
@@ -779,18 +789,21 @@ async function move(box: Box, step: -1 | 1) {
 
 /*
  * Marked pledges that can be melted now: one notification for all, laid out like the others – an
- * icon in place of the checkbox (it can't be checked off), the text, then its actions as links.
+ * icon in place of the checkbox (it can't be checked off) and the text, then its actions as buttons
+ * like those of the Paint Discount box (`.shm-sidebar-actions`). Side by side they take the full
+ * width, so they fit more often (measured on RSI's page: English in Modern Hangar); stacked, they
+ * are indented like the text above them (`is-wrapped`, see `v-mark-wrapped`).
  */
 .shm-sidebar-melt-ready {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  column-gap: 8px;
   color: var(--shm-text);
   font-size: calc(12px * var(--shm-font-scale));
 }
 
 .shm-sidebar-melt-ready > .shm-icon {
-  flex: none;
   margin-top: 2px;
   color: var(--shm-text-secondary);
 }
@@ -799,14 +812,13 @@ async function move(box: Box, step: -1 | 1) {
   margin: 0;
 }
 
-.shm-sidebar-melt-ready-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2px 14px;
+.shm-sidebar-melt-ready .shm-sidebar-actions {
+  grid-column: 1 / -1;
+  margin-top: 8px;
 }
 
-.shm-sidebar-melt-ready-actions .shm-sidebar-link {
-  margin-top: 4px;
+.shm-sidebar-melt-ready .shm-sidebar-actions.is-wrapped {
+  grid-column: 2;
 }
 
 .shm-sidebar-melt-ready + .shm-sidebar-notes {
