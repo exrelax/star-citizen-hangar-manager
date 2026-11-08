@@ -45,6 +45,25 @@ export function placeBox(
 }
 
 /**
+ * `order` with the dragged `box` placed by the pointer at `y`: before the first other box whose
+ * middle is below it, otherwise after the last one. The pointer counts, not the dragged box's
+ * middle: the box stays within the sidebar, so a box higher than the one above it could never get
+ * its middle past that one's middle. `others` are the shown boxes but the dragged one, top to
+ * bottom, measured as if the dragged box weren't there.
+ */
+export function placeAt(
+  order: readonly SidebarBox[],
+  box: SidebarBox,
+  others: readonly { box: SidebarBox; middle: number }[],
+  y: number,
+): SidebarBox[] {
+  const below = others.find((other) => y < other.middle);
+  const last = others.at(-1);
+  if (below) return placeBox(order, box, below.box, false);
+  return last ? placeBox(order, box, last.box, true) : [...order];
+}
+
+/**
  * `order` with `box` moved one place up (`-1`) or down (`1`) among the boxes `shown`; unchanged at
  * the top or bottom.
  */
