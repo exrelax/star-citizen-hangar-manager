@@ -92,6 +92,11 @@ Each check works in three steps:
   hidden tab sends no requests and checks when it is shown again. Several open tabs check only
   once per interval together. If too much changed, it suggests a full refresh instead of loading
   page after page.
+- **Also from RSI's own pages**: opening "My Gear" or "Buy Back Pledges" – in any tab, without the
+  Hangar Manager – starts a check too when one is due (paging through them doesn't check on every
+  page). What it finds shows in every tab with the Hangar Manager open within seconds, without
+  reloading it, including the time of the check below the refresh button; while it runs, those
+  tabs show "Checking …" as well.
 
 ### Never in your way
 

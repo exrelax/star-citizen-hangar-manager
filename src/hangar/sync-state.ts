@@ -15,6 +15,8 @@ import { prepareOrderSync, updateOrders } from '@/orders/sync-orders';
 import { prepareHangarSync } from './sync';
 import { SyncProgressTracker, type SyncProgress } from './sync-progress';
 import { isCheckDue, withSmartUpdateLock } from './smart-update/schedule';
+import { announceCheck } from './smart-update/broadcast';
+import { SMART_UPDATE } from '@/config';
 
 const state = reactive({
   /** A full sync is running (of everything, or of `storage`). */
@@ -22,9 +24,17 @@ const state = reactive({
   /** The storage a sync of a single storage reads (see `startStorageSync`); unset for all. */
   storage: undefined as StorageId | undefined,
   progress: null as SyncProgress | null,
-  /** A smart update check is running. */
+  /** A smart update check is running in this tab. */
   checking: false,
+  /** A smart update check is running in another tab (see `smart-update/broadcast.ts`). */
+  checkingElsewhere: false,
 });
+
+/**
+ * Taken by `maybeRunSmartUpdate` from the first trigger on, also while it only looks whether a
+ * check is due – unlike `checking`, which is shown and so is set only for a real check.
+ */
+let claimed = false;
 
 /**
  * Sync state shared by all mounts of the manager view, so switching to "My Gear" and back
@@ -144,17 +154,34 @@ export async function startStorageSync(id: StorageId): Promise<void> {
  * others skip, and as `checkedAt` is read inside the lock, they find the check done afterwards.
  */
 export async function maybeRunSmartUpdate({ force = false } = {}): Promise<void> {
-  if (state.running || state.checking) return;
+  if (state.running || claimed) return;
   // Claimed right away, so triggers firing at the same time don't start two checks.
-  state.checking = true;
+  claimed = true;
   try {
     await withSmartUpdateLock(() => runSmartUpdateIfDue(force));
   } finally {
-    state.checking = false;
+    claimed = false;
   }
 }
 
-/** The checks themselves, inside the lock: the interval is measured here, after the lock. */
+let elsewhereTimeout: ReturnType<typeof setTimeout> | undefined;
+
+/**
+ * A check started (`true`) or ended in another tab. If its end never arrives (the tab was closed
+ * meanwhile), it counts as ended after `SMART_UPDATE.checkingElsewhereMaxMs`.
+ */
+export function setCheckingElsewhere(checking: boolean): void {
+  clearTimeout(elsewhereTimeout);
+  state.checkingElsewhere = checking;
+  if (checking) {
+    elsewhereTimeout = setTimeout(
+      () => (state.checkingElsewhere = false),
+      SMART_UPDATE.checkingElsewhereMaxMs,
+    );
+  }
+}
+
+/** Inside the lock: whether a check is due is decided here, after the lock. */
 async function runSmartUpdateIfDue(force: boolean): Promise<void> {
   // Ships, ships on sale and warbond offers: on their own interval (see the settings), once a
   // day with smart updates off.
@@ -167,6 +194,18 @@ async function runSmartUpdateIfDue(force: boolean): Promise<void> {
   const intervalMinutes = settings.smartUpdateMinutes;
   if (!force && !isCheckDue({ checkedAt, intervalMinutes, now: Date.now() })) return;
 
+  // Shown as "Checking …", here and in the other tabs.
+  state.checking = true;
+  announceCheck(true);
+  try {
+    await runChecks(settings.spotCheckPages);
+  } finally {
+    state.checking = false;
+    announceCheck(false);
+  }
+}
+
+async function runChecks(spotCheckPages: number): Promise<void> {
   // The store credit: one small request, it changes with exchanges and store credit purchases.
   await refreshStoreCredit();
 
@@ -189,7 +228,6 @@ async function runSmartUpdateIfDue(force: boolean): Promise<void> {
   );
 
   // 3. The hangar: first and last page, spot checks, and the pages of the pledges above.
-  const { spotCheckPages } = settings;
   const hintIds = [...new Set([...logIds, ...melted])];
   await runLogged('Smart update', hangarMeta, () => runSmartUpdate({ spotCheckPages, hintIds }));
 }
