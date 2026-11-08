@@ -480,6 +480,11 @@ In the order of the settings tab:
   - **Boxes** (all on by default, only while the sidebar is shown): store credit, summary and
     selected. Without the "Selected" box, the rows have no select control.
   - **Count the pledges per type in the summary** (off by default).
+- **Paint Discount Consultant** (it always buys with store credit, never with new money):
+  - **Include my store credit** (on by default): the cart may also be paid with the current store
+    credit; off, only with the melt value of the own paints.
+  - **Use filler paints** (on by default): cheap extra paints reach a higher volume discount and
+    are melted again after RSI's 24-hour cooldown; off, only the own paints count.
 - **Smart updates**:
   - **Check hangar, buy back and orders for changes** (on by default) – see
     [Built for speed](#built-for-speed).
