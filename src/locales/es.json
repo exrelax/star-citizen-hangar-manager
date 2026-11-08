@@ -194,6 +194,7 @@
     "sidebarBoxes": "Cuadros",
     "sidebarStoreCreditHint": "Oculto mientras «Ocultar el valor de fusión» esté activado.",
     "sidebarSelectionHint": "Se muestra mientras haya pledges seleccionados. Sin él, las filas no tienen control de selección.",
+    "sidebarPaintConsultantHint": "Cuántas pinturas se pueden recomprar con un descuento por volumen mayor y el crédito de tienda que libera. Oculto mientras «Ocultar el valor de fusión» esté activado.",
     "paintConsultant": "Asesor de descuentos de pinturas",
     "paintConsultantStoreCredit": "Incluir mi crédito de tienda",
     "paintConsultantStoreCreditHint": "El carrito también puede pagarse con tu crédito de tienda actual. Desactivado: solo con lo que da fundir tus propias pinturas. El asesor siempre compra con crédito de tienda, nunca con dinero nuevo.",
@@ -411,7 +412,11 @@
     "giftableTag": "Regalable",
     "giftableTagHint": "Regalable ahora; recomprada con crédito de tienda, ya no lo es.",
     "mark": "Recompra $1 → $2",
-    "markHint": "Fúndela y vuelve a comprarla con el descuento por volumen ($1 → $2): se liberan $3 de crédito de tienda. Abre el asesor de descuentos de pinturas."
+    "markHint": "Fúndela y vuelve a comprarla con el descuento por volumen ($1 → $2): se liberan $3 de crédito de tienda. Abre el asesor de descuentos de pinturas.",
+    "boxPaints": "Pinturas para recomprar",
+    "boxShare": "$1 de su valor de fusión, con $2 pinturas en el carrito",
+    "boxNothing": "Ahora ninguna pintura gana con un descuento por volumen mayor.",
+    "boxOpen": "Abrir el asesor"
   },
   "upgradeLog": {
     "title": "Mejoras aplicadas",

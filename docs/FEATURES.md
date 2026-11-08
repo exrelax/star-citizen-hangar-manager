@@ -246,6 +246,9 @@ on its own.
     doesn't reduce them.
   - **Selected** (with a selection): number, value and discounts of the selected pledges, how many
     of them search or filters hide, and a button that clears the selection.
+  - **Paint Discount Consultant**: how many paints can be bought again with a higher volume
+    discount and the store credit it frees, with a link to the
+    [consultant](#paint-discount-consultant).
 - The sidebar stays on every tab of the manager (Buy Back, Pledge Store, Settings) and keeps
   showing the hangar's figures.
 - **Reorder the boxes** by dragging their title: the dragged box follows the pointer, the places
@@ -514,8 +517,9 @@ In the order of the settings tab:
   - **"Show in Buy Back" opens**: only the pledge, or the list page with the pledge highlighted.
 - **Sidebar**:
   - **Show the sidebar** (on by default) – see [Selection and summary](#selection-and-summary).
-  - **Boxes** (all on by default, only while the sidebar is shown): store credit, summary and
-    selected. Without the "Selected" box, the rows have no select control.
+  - **Boxes** (all on by default, only while the sidebar is shown): store credit, summary,
+    selected and Paint Discount Consultant. Without the "Selected" box, the rows have no select
+    control.
   - **Count the pledges per type in the summary** (off by default).
 - **Paint Discount Consultant** (it always buys with store credit, never with new money):
   - **Include my store credit** (on by default): the cart may also be paid with the current store

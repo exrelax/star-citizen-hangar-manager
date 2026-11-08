@@ -194,6 +194,7 @@
     "sidebarBoxes": "Cadres",
     "sidebarStoreCreditHint": "Masqué tant que « Masquer la valeur de fusion » est activé.",
     "sidebarSelectionHint": "Affiché tant que des pledges sont sélectionnés. Sans lui, les lignes n'ont pas de case de sélection.",
+    "sidebarPaintConsultantHint": "Combien de peintures peuvent être rachetées avec une remise sur volume plus élevée, et le crédit boutique libéré. Masqué tant que « Masquer la valeur de fusion » est activé.",
     "paintConsultant": "Conseiller de remises sur les peintures",
     "paintConsultantStoreCredit": "Inclure mon crédit boutique",
     "paintConsultantStoreCreditHint": "Le panier peut aussi être payé avec votre crédit boutique actuel. Désactivé : uniquement avec ce que rapporte la fonte de vos propres peintures. Le conseiller achète toujours avec du crédit boutique, jamais avec de l’argent neuf.",
@@ -411,7 +412,11 @@
     "giftableTag": "Offrable",
     "giftableTagHint": "Offrable maintenant ; rachetée en crédit boutique, elle ne l’est plus.",
     "mark": "Rachat $1 → $2",
-    "markHint": "La fondre et la racheter avec la remise sur volume ($1 → $2) : $3 de crédit boutique libérés. Ouvre le conseiller de remises sur les peintures."
+    "markHint": "La fondre et la racheter avec la remise sur volume ($1 → $2) : $3 de crédit boutique libérés. Ouvre le conseiller de remises sur les peintures.",
+    "boxPaints": "Peintures à racheter",
+    "boxShare": "$1 de leur valeur de fusion, avec $2 peintures dans le panier",
+    "boxNothing": "Aucune peinture ne profite actuellement d’une remise sur volume plus élevée.",
+    "boxOpen": "Ouvrir le conseiller"
   },
   "upgradeLog": {
     "title": "Améliorations appliquées",

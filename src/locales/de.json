@@ -194,6 +194,7 @@
     "sidebarBoxes": "Boxen",
     "sidebarStoreCreditHint": "Ausgeblendet, solange „Schmelzwert ausblenden“ an ist.",
     "sidebarSelectionHint": "Erscheint, solange Pledges ausgewählt sind. Ohne sie haben die Zeilen keine Auswahl.",
+    "sidebarPaintConsultantHint": "Wie viele Paints sich mit höherem Mengenrabatt zurückkaufen lassen und wie viel Store Credit dabei frei wird. Ausgeblendet, solange „Schmelzwert ausblenden“ an ist.",
     "paintConsultant": "Paint-Rabatt-Berater",
     "paintConsultantStoreCredit": "Meinen Store Credit einbeziehen",
     "paintConsultantStoreCreditHint": "Der Warenkorb darf auch mit deinem aktuellen Store Credit bezahlt werden. Aus: nur mit dem, was das Einschmelzen deiner eigenen Paints ergibt. Der Berater kauft immer mit Store Credit, nie mit neuem Geld.",
@@ -411,7 +412,11 @@
     "giftableTag": "Verschenkbar",
     "giftableTagHint": "Jetzt verschenkbar; mit Store Credit zurückgekauft, nicht mehr.",
     "mark": "Rückkauf $1 → $2",
-    "markHint": "Einschmelzen und mit dem Mengenrabatt zurückkaufen ($1 → $2): $3 Store Credit werden frei. Öffnet den Paint-Rabatt-Berater."
+    "markHint": "Einschmelzen und mit dem Mengenrabatt zurückkaufen ($1 → $2): $3 Store Credit werden frei. Öffnet den Paint-Rabatt-Berater.",
+    "boxPaints": "Paints zum Rückkauf",
+    "boxShare": "$1 ihres Schmelzwerts, mit $2 Paints im Warenkorb",
+    "boxNothing": "Gerade profitiert kein Paint von einem höheren Mengenrabatt.",
+    "boxOpen": "Berater öffnen"
   },
   "upgradeLog": {
     "title": "Angewendete Upgrades",

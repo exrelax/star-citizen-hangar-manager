@@ -16,10 +16,12 @@ const LABELS: Record<SidebarBox, MessageKey> = {
   storeCredit: 'summary.storeCredit',
   summary: 'summary.title',
   selection: 'summary.selected',
+  paintConsultant: 'consultant.title',
 };
 const HINTS: Partial<Record<SidebarBox, MessageKey>> = {
   storeCredit: 'settings.sidebarStoreCreditHint',
   selection: 'settings.sidebarSelectionHint',
+  paintConsultant: 'settings.sidebarPaintConsultantHint',
 };
 const hint = (box: SidebarBox) => {
   const key = HINTS[box];
