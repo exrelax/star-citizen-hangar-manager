@@ -23,6 +23,7 @@ const paintPledge = (
   title: `Paints - ${name}`,
   valueUsd,
   isMeltable: true,
+  isGiftable: false,
   items: [{ title: name, kind: 'Skin' }],
   ...overrides,
 });
@@ -108,6 +109,7 @@ describe('planPaintRebuy', () => {
       storeItems,
       storeCredit: 1,
       useFillers: true,
+      skipGiftable: false,
     });
 
     expect(plan).toMatchObject({
@@ -135,7 +137,13 @@ describe('planPaintRebuy', () => {
     ];
     const pledges = [paintPledge('Own Paint', 5)];
 
-    const { plan } = planPaintRebuy({ pledges, storeItems, storeCredit: 100, useFillers: true });
+    const { plan } = planPaintRebuy({
+      pledges,
+      storeItems,
+      storeCredit: 100,
+      useFillers: true,
+      skipGiftable: false,
+    });
 
     expect(plan!.tier.percent).toBe(35);
     expect(plan!.fillers.map((f) => [f.paint.name, f.quantity])).toEqual([
@@ -158,6 +166,7 @@ describe('planPaintRebuy', () => {
       storeItems,
       storeCredit: 0,
       useFillers: true,
+      skipGiftable: false,
     });
 
     // 30 %: 5 own + 2 fillers, (25 + 6) × 0.7 = $21.70, paid by the $25 of melt value.
@@ -170,7 +179,13 @@ describe('planPaintRebuy', () => {
     const storeItems = [storeItem('A Paint', 10), storeItem('B Paint', 10), ...cheapPaints(10)];
     const pledges = [paintPledge('A Paint', 10), paintPledge('B Paint', 10)];
 
-    const { plan } = planPaintRebuy({ pledges, storeItems, storeCredit: 0, useFillers: false });
+    const { plan } = planPaintRebuy({
+      pledges,
+      storeItems,
+      storeCredit: 0,
+      useFillers: false,
+      skipGiftable: false,
+    });
 
     expect(plan).toMatchObject({ tier: { paints: 2, percent: 15 }, fillers: [] });
     expect(plan!.storeCreditFreed).toBe(3);
@@ -181,10 +196,22 @@ describe('planPaintRebuy', () => {
     const storeItems = [storeItem('Discounted Paint', 6), ...cheapPaints(10)];
     const pledges = [paintPledge('Discounted Paint', 4.5)];
 
-    const atBest = planPaintRebuy({ pledges, storeItems, storeCredit: 100, useFillers: true });
+    const atBest = planPaintRebuy({
+      pledges,
+      storeItems,
+      storeCredit: 100,
+      useFillers: true,
+      skipGiftable: false,
+    });
     expect(atBest.plan).toMatchObject({ tier: { percent: 35 }, storeCreditFreed: 0.6 });
 
-    const without = planPaintRebuy({ pledges, storeItems, storeCredit: 100, useFillers: false });
+    const without = planPaintRebuy({
+      pledges,
+      storeItems,
+      storeCredit: 100,
+      useFillers: false,
+      skipGiftable: false,
+    });
     expect(without.plan).toBeUndefined();
   });
 
@@ -192,17 +219,28 @@ describe('planPaintRebuy', () => {
     // 34.83 % counts as 35 %: nothing to gain.
     const storeItems = [storeItem('Almost Paint', 6), ...cheapPaints(10)];
     const pledges = [paintPledge('Almost Paint', 3.91)];
-    expect(planPaintRebuy({ pledges, storeItems, storeCredit: 100, useFillers: true })).toEqual({
-      plan: undefined,
-      next: undefined,
-    });
+    expect(
+      planPaintRebuy({
+        pledges,
+        storeItems,
+        storeCredit: 100,
+        useFillers: true,
+        skipGiftable: false,
+      }),
+    ).toEqual({ giftableSkipped: 0, plan: undefined, next: undefined });
   });
 
   it('puts at most 5 of the same paint into the cart', () => {
     const storeItems = [storeItem('Same Paint', 5), ...cheapPaints(10)];
     const pledges = Array.from({ length: 6 }, () => paintPledge('Same Paint', 5));
 
-    const { plan } = planPaintRebuy({ pledges, storeItems, storeCredit: 100, useFillers: true });
+    const { plan } = planPaintRebuy({
+      pledges,
+      storeItems,
+      storeCredit: 100,
+      useFillers: true,
+      skipGiftable: false,
+    });
 
     expect(plan!.own).toHaveLength(5);
     expect(plan!.fillers.reduce((sum, filler) => sum + filler.quantity, 0)).toBe(5);
@@ -214,7 +252,13 @@ describe('planPaintRebuy', () => {
     const storeItems = [storeItem('Cheap Own Paint', 3), ...others];
     const pledges = [paintPledge('Cheap Own Paint', 3)];
 
-    const { plan } = planPaintRebuy({ pledges, storeItems, storeCredit: 100, useFillers: true });
+    const { plan } = planPaintRebuy({
+      pledges,
+      storeItems,
+      storeCredit: 100,
+      useFillers: true,
+      skipGiftable: false,
+    });
 
     const sameAsOwn = plan!.fillers.find((f) => f.paint.name === 'Cheap Own Paint');
     expect(sameAsOwn?.quantity).toBe(4);
@@ -225,7 +269,13 @@ describe('planPaintRebuy', () => {
     const storeItems = names.map((name) => storeItem(name, 5));
     const pledges = names.map((name) => paintPledge(name, 5));
 
-    const { plan } = planPaintRebuy({ pledges, storeItems, storeCredit: 0, useFillers: true });
+    const { plan } = planPaintRebuy({
+      pledges,
+      storeItems,
+      storeCredit: 0,
+      useFillers: true,
+      skipGiftable: false,
+    });
 
     expect(plan).toMatchObject({ tier: { percent: 35 }, fillers: [], storeCreditFreed: 21 });
     expect(plan!.own).toHaveLength(12);
@@ -241,10 +291,35 @@ describe('planPaintRebuy', () => {
       storeItems,
       storeCredit: 0,
       useFillers: true,
+      skipGiftable: false,
     });
 
     expect(plan).toBeUndefined();
     // 15 % needs the least: one filler, ($3 + $3) × 0.85 − $3 of melt value = $2.10.
     expect(next).toEqual({ tier: { paints: 2, percent: 15 }, missing: 2.1 });
+  });
+
+  it('leaves out giftable paints if asked to', () => {
+    const storeItems = [
+      storeItem('Gift Paint', 5),
+      storeItem('Bound Paint', 5),
+      ...cheapPaints(10),
+    ];
+    const pledges = [
+      paintPledge('Gift Paint', 5, { isGiftable: true }),
+      paintPledge('Bound Paint', 5),
+    ];
+    const input = { pledges, storeItems, storeCredit: 100, useFillers: true };
+
+    const withGifts = planPaintRebuy({ ...input, skipGiftable: false });
+    expect(withGifts.plan!.own.map((paint) => [paint.storePaint.name, paint.giftable])).toEqual([
+      ['Gift Paint', true],
+      ['Bound Paint', false],
+    ]);
+    expect(withGifts.giftableSkipped).toBe(0);
+
+    const without = planPaintRebuy({ ...input, skipGiftable: true });
+    expect(without.plan!.own.map((paint) => paint.storePaint.name)).toEqual(['Bound Paint']);
+    expect(without.giftableSkipped).toBe(1);
   });
 });

@@ -197,6 +197,8 @@
     "paintConsultantStoreCreditHint": "Der Warenkorb darf auch mit deinem aktuellen Store Credit bezahlt werden. Aus: nur mit dem, was das Einschmelzen deiner eigenen Paints ergibt. Der Berater kauft immer mit Store Credit, nie mit neuem Geld.",
     "paintConsultantFillers": "Füll-Paints verwenden",
     "paintConsultantFillersHint": "Kauft günstige zusätzliche Paints, um einen höheren Mengenrabatt zu erreichen, und schmilzt sie nach RSIs 24-Stunden-Sperre wieder ein. Aus: nur deine eigenen Paints zählen für den Rabatt.",
+    "paintConsultantGiftable": "Verschenkbare Paints auslassen",
+    "paintConsultantGiftableHint": "Paints, die jetzt verschenkbar sind, werden nicht eingeschmolzen und zurückgekauft: mit Store Credit gekauft, wären sie nicht mehr verschenkbar. Auch direkt im Berater.",
     "filtersLists": {
       "hangar": "My Hangar",
       "buyback": "Buy Back"
@@ -400,7 +402,12 @@
     "stepCredit": "Bezahl nur mit Store Credit. Mit Geld gekaufte Paints sind verschenkbar; mit Store Credit zurückgekauft, sind sie an dein Konto gebunden und nicht mehr verschenkbar (und verlieren einen Warbond-Status).",
     "stepCooldown": "RSI erlaubt das Einschmelzen eines Pledges erst 24 Stunden nach dem Kauf, die Füll-Paints also am nächsten Tag.",
     "cooldownSource": "RSI-Support: Reclaim a Pledge",
-    "stepPacks": "Paint-Pakete und Pledges mit einem Paint neben anderen Items sind noch nicht enthalten."
+    "stepPacks": "Paint-Pakete und Pledges mit einem Paint neben anderen Items sind noch nicht enthalten.",
+    "skipGiftable": "Verschenkbare Paints auslassen",
+    "skipGiftableHint": "Mit Store Credit zurückgekauft, wären sie nicht mehr verschenkbar.",
+    "giftableSkipped": "$1 verschenkbare Paints, die profitieren würden, sind ausgelassen.",
+    "giftableTag": "Verschenkbar",
+    "giftableTagHint": "Jetzt verschenkbar; mit Store Credit zurückgekauft, nicht mehr."
   },
   "upgradeLog": {
     "title": "Angewendete Upgrades",

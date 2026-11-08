@@ -447,6 +447,9 @@ it into store credit with the paints you already own:
 - **Honest about the result**: the melt value of the own paints drops by the store credit freed –
   the account's total value stays the same. Paints bought again with store credit are no longer
   giftable.
+- **Giftable paints are left out** by default, as they would lose that status; the consultant says
+  how many. Turned off (in the consultant or the settings), they are included and marked
+  "Giftable".
 - **Order**: fill the cart and check it first, melt only after that.
 - Only pledges with exactly one paint that can be melted, and single paints of the Pledge Store;
   paint packs come later. Hidden while "Hide melt value" is on.
@@ -515,6 +518,8 @@ In the order of the settings tab:
     credit; off, only with the melt value of the own paints.
   - **Use filler paints** (on by default): cheap extra paints reach a higher volume discount and
     are melted again after RSI's 24-hour cooldown; off, only the own paints count.
+  - **Leave out giftable paints** (on by default): bought again with store credit, they would no
+    longer be giftable. Also right in the consultant.
 - **Smart updates**:
   - **Check hangar, buy back and orders for changes** (on by default) – see
     [Built for speed](#built-for-speed).

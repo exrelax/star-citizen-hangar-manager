@@ -197,6 +197,8 @@
     "paintConsultantStoreCreditHint": "Le panier peut aussi être payé avec votre crédit boutique actuel. Désactivé : uniquement avec ce que rapporte la fonte de vos propres peintures. Le conseiller achète toujours avec du crédit boutique, jamais avec de l’argent neuf.",
     "paintConsultantFillers": "Utiliser des peintures de remplissage",
     "paintConsultantFillersHint": "Achète des peintures bon marché supplémentaires pour atteindre une remise sur volume plus élevée et les refond après le délai de 24 heures de RSI. Désactivé : seules vos propres peintures comptent pour la remise.",
+    "paintConsultantGiftable": "Ignorer les peintures offrables",
+    "paintConsultantGiftableHint": "Les peintures qui peuvent être offertes maintenant ne sont pas fondues ni rachetées : achetées en crédit boutique, elles ne pourraient plus être offertes. Aussi dans le conseiller lui-même.",
     "filtersLists": {
       "hangar": "My Hangar",
       "buyback": "Buy Back"
@@ -400,7 +402,12 @@
     "stepCredit": "Payez uniquement en crédit boutique. Les peintures achetées avec de l’argent peuvent être offertes ; rachetées en crédit boutique, elles sont liées à votre compte et ne peuvent plus être offertes (et perdent un statut warbond).",
     "stepCooldown": "RSI ne permet de fondre un pledge que 24 heures après son achat, les peintures de remplissage se fondent donc le lendemain.",
     "cooldownSource": "Support RSI : Reclaim a Pledge",
-    "stepPacks": "Les packs de peintures et les pledges contenant une peinture avec d’autres objets ne sont pas encore pris en compte."
+    "stepPacks": "Les packs de peintures et les pledges contenant une peinture avec d’autres objets ne sont pas encore pris en compte.",
+    "skipGiftable": "Ignorer les peintures offrables",
+    "skipGiftableHint": "Rachetées en crédit boutique, elles ne pourraient plus être offertes.",
+    "giftableSkipped": "$1 peintures offrables qui y gagneraient sont ignorées.",
+    "giftableTag": "Offrable",
+    "giftableTagHint": "Offrable maintenant ; rachetée en crédit boutique, elle ne l’est plus."
   },
   "upgradeLog": {
     "title": "Améliorations appliquées",

@@ -197,6 +197,8 @@
     "paintConsultantStoreCreditHint": "El carrito también puede pagarse con tu crédito de tienda actual. Desactivado: solo con lo que da fundir tus propias pinturas. El asesor siempre compra con crédito de tienda, nunca con dinero nuevo.",
     "paintConsultantFillers": "Usar pinturas de relleno",
     "paintConsultantFillersHint": "Compra pinturas baratas adicionales para alcanzar un descuento por volumen mayor y las vuelve a fundir tras el bloqueo de 24 horas de RSI. Desactivado: solo tus propias pinturas cuentan para el descuento.",
+    "paintConsultantGiftable": "Omitir pinturas regalables",
+    "paintConsultantGiftableHint": "Las pinturas que ahora se pueden regalar no se funden ni se recompran: compradas con crédito de tienda, ya no se podrían regalar. También en el propio asesor.",
     "filtersLists": {
       "hangar": "My Hangar",
       "buyback": "Buy Back"
@@ -400,7 +402,12 @@
     "stepCredit": "Paga solo con crédito de tienda. Las pinturas compradas con dinero se pueden regalar; recompradas con crédito de tienda quedan ligadas a tu cuenta y ya no se pueden regalar (y pierden un estado warbond).",
     "stepCooldown": "RSI solo permite fundir un pledge 24 horas después de comprarlo, así que las pinturas de relleno se funden al día siguiente.",
     "cooldownSource": "Soporte de RSI: Reclaim a Pledge",
-    "stepPacks": "Los packs de pinturas y los pledges con una pintura junto a otros objetos aún no se incluyen."
+    "stepPacks": "Los packs de pinturas y los pledges con una pintura junto a otros objetos aún no se incluyen.",
+    "skipGiftable": "Omitir pinturas regalables",
+    "skipGiftableHint": "Recompradas con crédito de tienda, ya no se podrían regalar.",
+    "giftableSkipped": "Se omiten $1 pinturas regalables que ganarían.",
+    "giftableTag": "Regalable",
+    "giftableTagHint": "Regalable ahora; recomprada con crédito de tienda, ya no lo es."
   },
   "upgradeLog": {
     "title": "Mejoras aplicadas",

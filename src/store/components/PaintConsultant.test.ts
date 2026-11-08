@@ -23,7 +23,7 @@ const item = (id: number, name: string, price: number): StoreItem => ({
   available: true,
 });
 
-const paint = (id: number, name: string, valueUsd: number) =>
+const paint = (id: number, name: string, valueUsd: number, isGiftable = false) =>
   toPledgeView({
     id,
     name: `Paints - ${name}`,
@@ -31,7 +31,7 @@ const paint = (id: number, name: string, valueUsd: number) =>
     value: `$${valueUsd} USD`,
     valueUsd,
     isExchangeable: true,
-    isGiftable: true,
+    isGiftable,
     isUpgraded: false,
     items: [{ title: name, kind: 'Skin' }],
   } as unknown as Pledge);
@@ -78,7 +78,7 @@ describe('PaintConsultant', () => {
   it('counts only the own paints without filler paints', async () => {
     const pledges = await storeExample();
     const root = await render(pledges, {
-      paintConsultant: { useStoreCredit: true, useFillers: false },
+      paintConsultant: { useStoreCredit: true, useFillers: false, skipGiftable: true },
     });
     // Without fillers, 5 own paints reach 25 % and the melt value pays for it.
     expect(text(root)).toContain('25% for 5 paints');
@@ -93,5 +93,19 @@ describe('PaintConsultant', () => {
   it('offers to read the Pledge Store when its paints are missing', async () => {
     const root = await render([paint(1, 'Own Paint', 5)]);
     expect(root.querySelector('.shm-consultant-state button')).not.toBeNull();
+  });
+
+  it('leaves out giftable paints by default, or marks them', async () => {
+    const pledges = (await storeExample()).map((view, i) => ({ ...view, isGiftable: i < 2 }));
+
+    const skipped = await render(pledges);
+    expect(text(skipped)).toContain('2 giftable paints that would gain are left out');
+    expect(skipped.querySelector('.shm-consultant-tag')).toBeNull();
+    app?.unmount();
+
+    const marked = await render(pledges, {
+      paintConsultant: { useStoreCredit: true, useFillers: true, skipGiftable: false },
+    });
+    expect(marked.querySelectorAll('.shm-consultant-tag')).toHaveLength(2);
   });
 });

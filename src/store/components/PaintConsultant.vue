@@ -7,6 +7,7 @@ import { i18n, locale } from '@/i18n';
 import type { Settings } from '@/settings/settings';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { useStored } from '@/storage/use-stored';
+import { useSettings } from '@/settings/use-settings';
 import { computed, ref } from 'vue';
 import { storeItemsItem, STORE_ITEMS_VERSION } from '../items/store-items-storage';
 import { refreshStoreItems } from '../items/sync-store-items';
@@ -46,6 +47,10 @@ const credit = computed(() => {
 });
 
 const options = computed(() => props.settings.paintConsultant);
+const { update } = useSettings();
+/** The option is also in the settings (`PaintConsultantSection.vue`); both change the same value. */
+const setSkipGiftable = (skipGiftable: boolean) =>
+  update({ paintConsultant: { ...options.value, skipGiftable } });
 /** The store credit is to be used, but isn't known (yet): it counts as $0. */
 const creditUnknown = computed(() => options.value.useStoreCredit && credit.value === undefined);
 
@@ -56,6 +61,7 @@ const result = computed(() =>
         storeItems: storeItems.value,
         storeCredit: options.value.useStoreCredit ? (credit.value ?? 0) : 0,
         useFillers: options.value.useFillers,
+        skipGiftable: options.value.skipGiftable,
       })
     : undefined,
 );
@@ -105,7 +111,8 @@ const fillerCount = computed(
 
 <template>
   <section class="shm-consultant" aria-labelledby="shm-consultant-title">
-    <h3 id="shm-consultant-title" class="shm-consultant-title">
+    <!-- Styled like the warbond title above (`shm-store-title`, modern.css). -->
+    <h3 id="shm-consultant-title" class="shm-store-title shm-consultant-title">
       {{ i18n.t('consultant.title') }}
     </h3>
     <p class="shm-consultant-intro">{{ i18n.t('consultant.intro') }}</p>
@@ -120,6 +127,22 @@ const fillerCount = computed(
       </button>
     </div>
     <template v-else>
+      <label class="shm-consultant-option">
+        <input
+          type="checkbox"
+          :checked="options.skipGiftable"
+          @change="setSkipGiftable(($event.target as HTMLInputElement).checked)"
+        />
+        <span>
+          {{ i18n.t('consultant.skipGiftable') }}
+          <span class="shm-consultant-option-hint">{{
+            i18n.t('consultant.skipGiftableHint')
+          }}</span>
+        </span>
+      </label>
+      <p v-if="result?.giftableSkipped" class="shm-consultant-note is-info">
+        {{ i18n.t('consultant.giftableSkipped', [result.giftableSkipped]) }}
+      </p>
       <p v-if="creditUnknown" class="shm-consultant-note">{{ i18n.t('consultant.noCredit') }}</p>
 
       <p v-if="!plan && !result?.next" class="shm-consultant-state">
@@ -233,7 +256,16 @@ const fillerCount = computed(
             </thead>
             <tbody>
               <tr v-for="paint in plan.own" :key="paint.pledgeId">
-                <th scope="row">{{ paint.storePaint.name }}</th>
+                <th scope="row">
+                  {{ paint.storePaint.name }}
+                  <span
+                    v-if="paint.giftable"
+                    v-tooltip="i18n.t('consultant.giftableTagHint')"
+                    class="shm-consultant-tag"
+                  >
+                    {{ i18n.t('consultant.giftableTag') }}
+                  </span>
+                </th>
                 <td class="is-number">{{ usd(paint.storePaint.price) }}</td>
                 <td class="is-number">{{ usd(paint.meltValue) }}</td>
                 <td class="is-number">{{ usd(inCart(paint.storePaint.price)) }}</td>
@@ -319,6 +351,43 @@ const fillerCount = computed(
 .shm-consultant-note {
   margin-top: 8px;
   color: var(--shm-warning);
+}
+
+.shm-consultant-note.is-info {
+  color: var(--shm-text-muted);
+}
+
+/* The option to leave out giftable paints, right below the intro. */
+.shm-consultant-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 12px;
+  color: var(--shm-text);
+  font-size: calc(13px * var(--shm-font-scale));
+  cursor: pointer;
+}
+
+.shm-consultant-option input {
+  margin: 3px 0 0;
+  accent-color: var(--shm-accent);
+}
+
+.shm-consultant-option-hint {
+  display: block;
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+/* Marks an own paint that would lose its gift status. */
+.shm-consultant-tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  color: var(--shm-warning);
+  font-size: calc(11px * var(--shm-font-scale));
+  border: 1px solid currentColor;
+  border-radius: var(--shm-radius-tag);
 }
 
 .shm-consultant-state {
