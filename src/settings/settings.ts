@@ -54,6 +54,10 @@ export interface Settings {
   hideSupersededInsurances: boolean;
   /** The sidebar's summaries also count the pledges per type (ships, CCUs, …). */
   summaryTypes: boolean;
+  /** Shows the sidebar below RSI's navigation (see `hangar/components/HangarSidebar.vue`). */
+  sidebar: boolean;
+  /** Boxes of the sidebar switched off; boxes added later are shown. */
+  sidebarHidden: SidebarBox[];
   /** Order of the boxes of the sidebar below RSI's navigation (see `hangar/sidebar.ts`). */
   sidebarOrder: SidebarBox[];
   /** Boxes of the sidebar collapsed to their title. */
@@ -110,6 +114,8 @@ export const DEFAULT_SETTINGS: Settings = {
   translateRsiTexts: false,
   hideSupersededInsurances: true,
   summaryTypes: false,
+  sidebar: true,
+  sidebarHidden: [],
   sidebarOrder: [...SIDEBAR_BOXES],
   sidebarCollapsed: [],
   hidePledgeIds: false,
@@ -185,6 +191,8 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
     translateRsiTexts: pick('translateRsiTexts', isBoolean),
     hideSupersededInsurances: pick('hideSupersededInsurances', isBoolean),
     summaryTypes: pick('summaryTypes', isBoolean),
+    sidebar: pick('sidebar', isBoolean),
+    sidebarHidden: sidebarBoxesOf(stored?.sidebarHidden),
     sidebarOrder: normalizeSidebarOrder(stored?.sidebarOrder),
     sidebarCollapsed: sidebarBoxesOf(stored?.sidebarCollapsed),
     hidePledgeIds: pick('hidePledgeIds', isBoolean),

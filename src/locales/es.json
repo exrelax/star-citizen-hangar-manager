@@ -185,7 +185,13 @@
     "hideSupersededInsurances": "Mostrar solo el mejor seguro de las naves mejoradas",
     "hideSupersededInsurancesHint": "Tras las mejoras, un pledge lista el seguro de cada paso, pero solo se conserva el mejor: el LTI si lo hay; si no, el de más meses. Los demás se ocultan en el elemento abierto.",
     "summaryTypes": "Contar los pledges por tipo en el resumen",
-    "summaryTypesHint": "El resumen de «My Hangar» muestra entonces también cuántas naves, CCU, pinturas, paquetes de juego y recompensas se muestran y están seleccionados.",
+    "summaryTypesHint": "Los resúmenes de la barra lateral muestran entonces también cuántas naves, CCU, pinturas, paquetes de juego y recompensas se muestran y están seleccionados.",
+    "sidebar": "Barra lateral",
+    "sidebarShow": "Mostrar la barra lateral",
+    "sidebarShowHint": "Cuadros bajo la navegación de RSI a la izquierda, en cada pestaña del gestor.",
+    "sidebarBoxes": "Cuadros",
+    "sidebarStoreCreditHint": "Oculto mientras «Ocultar el valor de fusión» esté activado.",
+    "sidebarSelectionHint": "Se muestra mientras haya pledges seleccionados. Sin él, las filas no tienen control de selección.",
     "filtersLists": {
       "hangar": "My Hangar",
       "buyback": "Buy Back"

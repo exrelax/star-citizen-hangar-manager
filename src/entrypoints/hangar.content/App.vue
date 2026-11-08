@@ -3,6 +3,7 @@ import BuybackList from '@/buyback/components/BuybackList.vue';
 import { useBuybackPledges } from '@/buyback/use-buyback-pledges';
 import HangarStatus from '@/hangar/components/HangarStatus.vue';
 import HangarSidebar from '@/hangar/components/HangarSidebar.vue';
+import { canSelectPledges } from '@/hangar/sidebar';
 import { stickWhileFits } from '@/hangar/stick-while-fits';
 import { findAccountNav } from '@/hangar/account-nav';
 import { selection } from '@/hangar/selection';
@@ -121,7 +122,14 @@ onUnmounted(() => {
   stopSticking?.();
   summaryAnchor.value?.remove();
 });
-const showSummary = computed(() => listsReady.value && pledges.value.length > 0);
+const showSummary = computed(
+  () => settings.value.sidebar && listsReady.value && pledges.value.length > 0,
+);
+// Without the "Selected" box, a selection would be invisible.
+watch(
+  () => canSelectPledges(settings.value),
+  (can) => can || selection.clear(),
+);
 // Pledges gone from the hangar (melted, gifted, …) leave the selection.
 watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => pledge.id))));
 </script>

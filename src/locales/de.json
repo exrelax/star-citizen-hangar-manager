@@ -185,7 +185,13 @@
     "hideSupersededInsurances": "Bei geupgradeten Schiffen nur die beste Versicherung anzeigen",
     "hideSupersededInsurancesHint": "Nach Upgrades listet ein Pledge die Versicherung jedes Schritts auf, es gilt aber nur die beste: LTI, falls vorhanden, sonst die mit den meisten Monaten. Die übrigen werden im aufgeklappten Item ausgeblendet.",
     "summaryTypes": "Pledges in der Übersicht nach Art zählen",
-    "summaryTypesHint": "Die Übersicht von „My Hangar“ zeigt dann auch, wie viele Schiffe, CCUs, Paints, Spielpakete und Rewards angezeigt und ausgewählt sind.",
+    "summaryTypesHint": "Die Übersichten der Seitenleiste zeigen dann auch, wie viele Schiffe, CCUs, Paints, Spielpakete und Rewards angezeigt und ausgewählt sind.",
+    "sidebar": "Seitenleiste",
+    "sidebarShow": "Seitenleiste anzeigen",
+    "sidebarShowHint": "Boxen unter RSIs Navigation links, auf jedem Tab des Managers.",
+    "sidebarBoxes": "Boxen",
+    "sidebarStoreCreditHint": "Ausgeblendet, solange „Schmelzwert ausblenden“ an ist.",
+    "sidebarSelectionHint": "Erscheint, solange Pledges ausgewählt sind. Ohne sie haben die Zeilen keine Auswahl.",
     "filtersLists": {
       "hangar": "My Hangar",
       "buyback": "Buy Back"

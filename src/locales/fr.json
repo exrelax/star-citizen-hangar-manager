@@ -185,7 +185,13 @@
     "hideSupersededInsurances": "N’afficher que la meilleure assurance des vaisseaux améliorés",
     "hideSupersededInsurancesHint": "Après des améliorations, un pledge liste l’assurance de chaque étape, mais seule la meilleure est conservée : la LTI s’il y en a une, sinon celle avec le plus de mois. Les autres sont masquées dans l’élément ouvert.",
     "summaryTypes": "Compter les pledges par type dans le récapitulatif",
-    "summaryTypesHint": "Le récapitulatif de « My Hangar » indique alors aussi combien de vaisseaux, CCU, peintures, packs de jeu et récompenses sont affichés et sélectionnés.",
+    "summaryTypesHint": "Les récapitulatifs de la barre latérale indiquent alors aussi combien de vaisseaux, CCU, peintures, packs de jeu et récompenses sont affichés et sélectionnés.",
+    "sidebar": "Barre latérale",
+    "sidebarShow": "Afficher la barre latérale",
+    "sidebarShowHint": "Des cadres sous la navigation de RSI à gauche, sur chaque onglet du gestionnaire.",
+    "sidebarBoxes": "Cadres",
+    "sidebarStoreCreditHint": "Masqué tant que « Masquer la valeur de fusion » est activé.",
+    "sidebarSelectionHint": "Affiché tant que des pledges sont sélectionnés. Sans lui, les lignes n'ont pas de case de sélection.",
     "filtersLists": {
       "hangar": "My Hangar",
       "buyback": "Buy Back"

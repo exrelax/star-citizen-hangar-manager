@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  canSelectPledges,
   moveBox,
   normalizeSidebarOrder,
   placeAt,
@@ -124,5 +125,14 @@ describe('placeAt', () => {
 
   it('keeps the order without other boxes', () => {
     expect(placeAt(order, 'summary', [], 0)).toEqual([...order]);
+  });
+});
+
+describe('canSelectPledges', () => {
+  it('needs the sidebar and its "Selected" box', () => {
+    expect(canSelectPledges({ sidebar: true, sidebarHidden: [] })).toBe(true);
+    expect(canSelectPledges({ sidebar: true, sidebarHidden: ['storeCredit'] })).toBe(true);
+    expect(canSelectPledges({ sidebar: false, sidebarHidden: [] })).toBe(false);
+    expect(canSelectPledges({ sidebar: true, sidebarHidden: ['selection'] })).toBe(false);
   });
 });

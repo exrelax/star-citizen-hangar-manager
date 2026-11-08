@@ -60,6 +60,24 @@
   accent-color: var(--shm-accent);
 }
 
+/* A checkbox whose setting depends on another one that is off. */
+.shm-settings .shm-check-setting.is-disabled {
+  opacity: 0.5;
+}
+
+.shm-settings .shm-check-setting.is-disabled .shm-check {
+  cursor: default;
+}
+
+/* Settings that depend on the checkbox above them, indented below it. */
+.shm-settings .shm-setting-subgroup {
+  margin-left: 21px;
+}
+
+.shm-settings .shm-setting-subgroup > .shm-field-label {
+  margin-top: 8px;
+}
+
 /* A checkbox set apart from the field above it (see SettingCheck.vue). */
 .shm-settings .shm-check-setting.is-spaced {
   margin-top: 14px;

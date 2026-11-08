@@ -394,6 +394,11 @@
   cursor: pointer;
 }
 
+/* Without the sidebar's "Selected" box (see `canSelectPledges`). */
+.shm-hide-select .shm-select-toggle {
+  display: none;
+}
+
 .shm-select-toggle svg {
   width: 14px;
   height: 14px;
