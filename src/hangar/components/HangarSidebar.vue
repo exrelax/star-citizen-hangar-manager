@@ -7,7 +7,7 @@ import { fontScaleStyle, themeClasses } from '@/themes/theme';
 import { computed, nextTick, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 import type { PledgeView } from '../pledge-view';
 import { selection, visiblePledgeIds } from '../selection';
-import { moveBox, placeBox, type SidebarBox as Box } from '../sidebar';
+import { moveBox, placeAt, type SidebarBox as Box } from '../sidebar';
 import { summarize, type PledgeSummary } from '../summary';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { storeCreditItem, STORE_CREDIT_VERSION } from '@/account/store-credit-storage';
@@ -182,9 +182,9 @@ function follow() {
 }
 
 /**
- * Moves the dragged box's place before the first other box whose middle is below the dragged
- * box's middle. The others are measured as if the dragged box weren't there, so the order doesn't
- * flip back and forth when boxes have different heights.
+ * Moves the dragged box's place by the pointer (see `placeAt`). The others are measured as if the
+ * dragged box weren't there, so the order doesn't flip back and forth when boxes have different
+ * heights.
  */
 async function drag(event: PointerEvent) {
   const box = dragged.value;
@@ -196,20 +196,14 @@ async function drag(event: PointerEvent) {
   const gap = parseFloat(getComputedStyle(root.value).rowGap) || 0;
   const shift = slot.offsetHeight + gap;
   const index = preview.value.indexOf(box);
-  const middle = slot.getBoundingClientRect().top + offset + slot.offsetHeight / 2;
   const others = boxes.value.filter((other) => other !== box);
-  const below = others.find((other) => {
+  const middles = others.flatMap((other) => {
     const rect = slotOf(other)?.getBoundingClientRect();
-    if (!rect) return false;
+    if (!rect) return [];
     const top = rect.top - (preview.value!.indexOf(other) > index ? shift : 0);
-    return middle < top + rect.height / 2;
+    return [{ box: other, middle: top + rect.height / 2 }];
   });
-  const last = others.at(-1);
-  const next = below
-    ? placeBox(preview.value, box, below, false)
-    : last
-      ? placeBox(preview.value, box, last, true)
-      : preview.value;
+  const next = placeAt(preview.value, box, middles, pointerY);
   if (next.join() === preview.value.join()) return;
 
   // The other boxes glide to their new places (FLIP: measure, reorder, measure, animate).

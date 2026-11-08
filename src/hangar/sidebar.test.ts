@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { moveBox, normalizeSidebarOrder, placeBox, SIDEBAR_BOXES, sidebarBoxesOf } from './sidebar';
+import {
+  moveBox,
+  normalizeSidebarOrder,
+  placeAt,
+  placeBox,
+  SIDEBAR_BOXES,
+  sidebarBoxesOf,
+} from './sidebar';
 
 describe('sidebarBoxesOf', () => {
   it('keeps known boxes once', () => {
@@ -91,5 +98,31 @@ describe('moveBox', () => {
       'selection',
     ]);
     expect(moveBox(order, 'summary', 1, ['storeCredit', 'summary'])).toEqual([...order]);
+  });
+});
+
+describe('placeAt', () => {
+  // Store credit (60 px) at 0, the dragged summary (100 px) below it, selection below that.
+  const order = ['storeCredit', 'summary', 'selection'] as const;
+  const others = [
+    { box: 'storeCredit', middle: 30 },
+    { box: 'selection', middle: 110 },
+  ] as const;
+
+  it('moves a box above the one whose middle the pointer passes', () => {
+    // A box higher than the one above can't get its middle past that one's: the pointer can.
+    expect(placeAt(order, 'summary', others, 20)).toEqual(['summary', 'storeCredit', 'selection']);
+  });
+
+  it('keeps the place between the middles', () => {
+    expect(placeAt(order, 'summary', others, 70)).toEqual([...order]);
+  });
+
+  it('moves a box below the last one once the pointer passes its middle', () => {
+    expect(placeAt(order, 'summary', others, 140)).toEqual(['storeCredit', 'selection', 'summary']);
+  });
+
+  it('keeps the order without other boxes', () => {
+    expect(placeAt(order, 'summary', [], 0)).toEqual([...order]);
   });
 });
