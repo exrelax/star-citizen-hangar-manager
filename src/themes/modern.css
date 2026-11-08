@@ -202,7 +202,7 @@ html .shm-theme-modern .shm-tabs {
   padding: 2px;
   background: var(--shm-fill);
   border: 0;
-  border-radius: 9px;
+  border-radius: 10px;
 }
 
 html .shm-theme-modern .shm-tab {
@@ -215,7 +215,7 @@ html .shm-theme-modern .shm-tab {
   font-weight: 500;
   text-transform: none;
   border: 0;
-  border-radius: 7px;
+  border-radius: 8px;
 }
 
 html .shm-theme-modern .shm-tab.is-active {
@@ -229,7 +229,7 @@ html .shm-theme-modern .shm-tab.is-active {
 html .shm-theme-modern .shm-tab-indicator {
   background: linear-gradient(rgb(255 255 255 / 0.04), transparent), var(--shm-segment);
   border: 0;
-  border-radius: 7px;
+  border-radius: 8px;
   box-shadow: var(--shm-segment-raise);
 }
 
@@ -344,7 +344,7 @@ html .shm-theme-modern .shm-search {
   font-size: calc(15px * var(--shm-font-scale));
   background: var(--shm-fill);
   border: 0;
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 html .shm-theme-modern .shm-search:focus {
@@ -475,9 +475,14 @@ html .shm-theme-modern .shm-row-summary:hover {
   background: var(--shm-hover);
 }
 
+/* Images with small corners, so the picture keeps its shape; the kind badge on it matches. */
 html .shm-theme-modern .shm-thumb {
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 4px;
+}
+
+html .shm-theme-modern .shm-row-kind {
+  border-radius: 4px;
 }
 
 html .shm-theme-modern .shm-title {
