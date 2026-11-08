@@ -193,6 +193,8 @@
     "sidebarShow": "Show the sidebar",
     "sidebarShowHint": "Boxes below RSI's navigation on the left, on every tab of the manager.",
     "sidebarBoxes": "Boxes",
+    "sidebarOrderReset": "Reset order",
+    "sidebarOrderResetHint": "Puts the boxes of the sidebar back into their default order. Which boxes are shown and which are collapsed stays as it is.",
     "sidebarNotificationsHint": "Shown while there is a notification: when pledges marked to melt can be melted now – with buttons to show or select them – and the marked ones still waiting. Notifications that can be checked off: one by one or all at once. No browser permission needed.",
     "sidebarSelectionHint": "Shown while pledges are selected. Without it, the rows have no select control.",
     "sidebarPaintConsultantHint": "Shown while paints can be bought again with a higher volume discount: how many, and the store credit it frees. Hidden while “Hide melt value” is on.",

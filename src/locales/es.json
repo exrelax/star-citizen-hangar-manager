@@ -193,6 +193,8 @@
     "sidebarShow": "Mostrar la barra lateral",
     "sidebarShowHint": "Cuadros bajo la navegación de RSI a la izquierda, en cada pestaña del gestor.",
     "sidebarBoxes": "Cuadros",
+    "sidebarOrderReset": "Restablecer el orden",
+    "sidebarOrderResetHint": "Devuelve los cuadros de la barra lateral a su orden predeterminado. Qué cuadros se muestran y cuáles están plegados no cambia.",
     "sidebarNotificationsHint": "Aparece mientras haya una notificación: cuando los pledges marcados para fundir ya se pueden fundir, con botones para mostrarlos o seleccionarlos, y los marcados que aún esperan. Las notificaciones que se pueden marcar como hechas: una a una o todas a la vez. Sin permiso del navegador.",
     "sidebarSelectionHint": "Se muestra mientras haya pledges seleccionados. Sin él, las filas no tienen control de selección.",
     "sidebarPaintConsultantHint": "Aparece mientras haya pinturas que se puedan recomprar con un descuento por volumen mayor: cuántas, y el crédito de tienda que libera. Oculto mientras «Ocultar el valor de fusión» esté activado.",
