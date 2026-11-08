@@ -1,4 +1,5 @@
 import { current, type ShipsSnapshot } from '@/ships/ships-storage';
+import type { ItemPriceLookup } from '@/store/items/item-prices';
 import type { Pledge } from './pledge';
 
 /*
@@ -23,7 +24,10 @@ export interface PledgeDiscount {
   amount: number;
   /** `amount` in percent of `original`. */
   percent: number;
-  /** Ships the original price comes from: the ship, or "from" and "to" of a CCU. */
+  /**
+   * What the original price comes from: the ship, "from" and "to" of a CCU, or the item of the
+   * Pledge Store.
+   */
   ships: ShipPrice[];
 }
 
@@ -99,10 +103,46 @@ export type PriceLookup = ReturnType<typeof createPriceLookup>;
 
 /**
  * Discount of a CCU (compared to the price difference of its ships) or of a pledge with exactly
- * one ship (compared to the ship's price). Packages with the game are left out: their value also
- * pays for the game, so a comparison with the ship's price would be misleading.
+ * one ship (compared to the ship's price). Packages with the game are left out there: their value
+ * also pays for the game, so a comparison with the ship's price would be misleading. Every other
+ * pledge – paints, gear, add-ons, packs, game packages, … – is compared with the item of the same
+ * name in the Pledge Store, if `itemPriceOf` knows it (see `store/items/item-prices.ts`); a bundle
+ * of several ships the store doesn't sell with the sum of its ships' prices.
  */
 export function pledgeDiscount(
+  pledge: Pledge,
+  priceOf: PriceLookup | undefined,
+  hasGameAccess: boolean,
+  itemPriceOf?: ItemPriceLookup,
+): PledgeDiscount | undefined {
+  const shipDiscount = priceOf && shipBasedDiscount(pledge, priceOf, hasGameAccess);
+  if (shipDiscount || pledge.upgrade) return shipDiscount;
+  const item = itemPriceOf?.(pledge.title);
+  if (item) return discountOf(pledge, item.price, [item]);
+  return priceOf && bundleDiscount(pledge, priceOf, hasGameAccess);
+}
+
+/**
+ * A bundle of several ships the store doesn't sell (anymore): compared with the sum of its ships'
+ * prices. Only without the game, and only if every ship's price is known.
+ */
+function bundleDiscount(
+  pledge: Pledge,
+  priceOf: PriceLookup,
+  hasGameAccess: boolean,
+): PledgeDiscount | undefined {
+  const shipItems = pledge.items.filter((item) => item.kind === 'Ship');
+  if (shipItems.length < 2 || hasGameAccess) return undefined;
+  const ships = shipItems.map((item) => priceOf(item.title));
+  if (ships.some((ship) => !ship)) return undefined;
+  const known = ships as ShipPrice[];
+  const original = Math.round(known.reduce((sum, ship) => sum + ship.price, 0) * 100) / 100;
+  return discountOf(pledge, original, [
+    { name: known.map((ship) => ship.name).join(' + '), price: original },
+  ]);
+}
+
+function shipBasedDiscount(
   pledge: Pledge,
   priceOf: PriceLookup,
   hasGameAccess: boolean,
@@ -123,8 +163,15 @@ export function pledgeDiscount(
     ships = [ship];
     original = ship.price;
   }
-  if (!(original > 0) || !Number.isFinite(pledge.valueUsd)) return undefined;
+  return discountOf(pledge, original, ships);
+}
 
+function discountOf(
+  pledge: Pledge,
+  original: number,
+  ships: ShipPrice[],
+): PledgeDiscount | undefined {
+  if (!(original > 0) || !Number.isFinite(pledge.valueUsd)) return undefined;
   const amount = Math.round((original - pledge.valueUsd) * 100) / 100;
   return { original, paid: pledge.valueUsd, amount, percent: (amount / original) * 100, ships };
 }

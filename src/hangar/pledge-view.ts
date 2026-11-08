@@ -6,6 +6,7 @@ import { bestInsurance, type Insurance } from './insurance';
 import { normalizeSearchText } from './search';
 import type { ShipLink, ShipLinks } from './ship-links';
 import { pledgeDiscount, type PledgeDiscount, type PriceLookup } from './ship-prices';
+import type { ItemPriceLookup } from '@/store/items/item-prices';
 
 /** A ship with its links to other platforms (if known). */
 export interface ShipRef {
@@ -80,13 +81,15 @@ const PLACEHOLDER_IMAGE = '/static/images/Temp/default-image';
 
 /**
  * `position`: index of the pledge in the stored hangar, which has RSI's order (newest first).
- * `priceOf`: original ship prices, for the discount.
+ * `priceOf`, `itemPriceOf`: original prices of ships and of the Pledge Store's items, for the
+ * discount.
  */
 export function toPledgeView(
   pledge: Pledge,
   shipLinks: ShipLinks = {},
   position = 0,
   priceOf?: PriceLookup,
+  itemPriceOf?: ItemPriceLookup,
 ): PledgeView {
   // After a CCU the pledge keeps its original name and image, but the contained ship is current.
   const currentShip = pledge.isUpgraded
@@ -117,7 +120,10 @@ export function toPledgeView(
     image: pledgeImage(pledge, currentShip),
     value: pledge.value,
     valueUsd: pledge.valueUsd,
-    discount: priceOf && pledgeDiscount(pledge, priceOf, hasGameAccess),
+    discount:
+      priceOf || itemPriceOf
+        ? pledgeDiscount(pledge, priceOf, hasGameAccess, itemPriceOf)
+        : undefined,
     createdAt: pledge.createdAt,
     reward: rewardKind(pledge),
     hasLti: pledge.items.some((item) => item.kind === 'Insurance' && /lifetime/i.test(item.title)),
