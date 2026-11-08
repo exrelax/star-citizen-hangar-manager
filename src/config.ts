@@ -194,12 +194,27 @@ export const STORE_ITEMS = {
 } as const;
 
 /**
- * RSI's volume discount tiers for paints (November 2026): 2 paints 15 %, 3 paints 20 %, 5 paints
- * 25 %, 7 paints 30 %, 10 or more 35 %. A paint pledge's discount within `tolerance` percentage
- * points of a tier is rounded to it (see `roundPaintDiscount`); older paint packages with other
- * discounts keep theirs.
+ * RSI's volume discount tiers for paints (November 2026), taken off in the cart: 2 paints 15 %,
+ * 3 paints 20 %, 5 paints 25 %, 7 paints 30 %, 10 or more 35 %. A paint pledge's discount within
+ * `tolerance` percentage points of a tier is rounded to it (see `roundToPaintTier`); older paint
+ * packages with other discounts keep theirs.
  */
-export const PAINT_DISCOUNT_TIERS = { percents: [15, 20, 25, 30, 35], tolerance: 0.2 } as const;
+export const PAINT_DISCOUNT_TIERS = {
+  tiers: [
+    { paints: 2, percent: 15 },
+    { paints: 3, percent: 20 },
+    { paints: 5, percent: 25 },
+    { paints: 7, percent: 30 },
+    { paints: 10, percent: 35 },
+  ],
+  tolerance: 0.2,
+} as const;
+
+/**
+ * The Paint Discount Consultant (see `src/store/paint-consultant`): RSI's cart takes this many of
+ * the same item.
+ */
+export const PAINT_CONSULTANT = { maxPerItem: 5 } as const;
 
 /** The "Pledge Store" tab: current warbond CCUs from RSI's ship upgrade tool (see `src/store`). */
 export const PLEDGE_STORE = {
