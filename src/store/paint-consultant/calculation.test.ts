@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { Pledge } from '@/hangar/pledge';
 import type { StoreItem } from '../items/store-items';
-import { ownPaintsOf, planPaintRebuy, storePaintsOf } from './calculation';
+import { ownPaintsOf, planPaintRebuy, storePaintsOf, type PaintPledge } from './calculation';
 
 let nextId = 1;
 
@@ -15,19 +14,18 @@ const storeItem = (name: string, price: number, overrides: Partial<StoreItem> = 
   ...overrides,
 });
 
-const paintPledge = (name: string, valueUsd: number, overrides: Partial<Pledge> = {}): Pledge =>
-  ({
-    id: nextId++,
-    name: `Paints - ${name}`,
-    title: `Paints - ${name}`,
-    value: `$${valueUsd.toFixed(2)} USD`,
-    valueUsd,
-    isExchangeable: true,
-    isGiftable: true,
-    isUpgraded: false,
-    items: [{ title: name, kind: 'Skin' }],
-    ...overrides,
-  }) as Pledge;
+const paintPledge = (
+  name: string,
+  valueUsd: number,
+  overrides: Partial<PaintPledge> = {},
+): PaintPledge => ({
+  id: nextId++,
+  title: `Paints - ${name}`,
+  valueUsd,
+  isMeltable: true,
+  items: [{ title: name, kind: 'Skin' }],
+  ...overrides,
+});
 
 /** Cheap paints of the Pledge Store, $3 each, as many as needed. */
 const cheapPaints = (count: number) =>
@@ -75,8 +73,8 @@ describe('ownPaintsOf', () => {
 
   it('leaves out what can’t be melted and bought again on its own', () => {
     const pledges = [
-      paintPledge('Paladin - Shadowfall Paint', 10, { isExchangeable: false }),
-      paintPledge('Paladin - Shadowfall Paint', 10, { protectedGames: ['SC'] }),
+      // Not meltable (not exchangeable, or protected by the game access).
+      paintPledge('Paladin - Shadowfall Paint', 10, { isMeltable: false }),
       paintPledge('Paladin - Shadowfall Paint', 0),
       // A paint next to other items, and a pack of two paints.
       paintPledge('Paladin - Shadowfall Paint', 10, {
