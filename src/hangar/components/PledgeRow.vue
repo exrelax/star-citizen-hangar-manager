@@ -88,7 +88,7 @@ const toggle = () => {
 
 <template>
   <div class="shm-row" :class="{ 'is-expanded': expanded, 'is-selected': selected }">
-    <!-- Selects the pledge for the summary box; outside the summary, so it doesn't open the row. -->
+    <!-- Selects the pledge for the sidebar; outside the summary, so it doesn't open the row. -->
     <button
       type="button"
       role="checkbox"

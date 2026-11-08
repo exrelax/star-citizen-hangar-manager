@@ -2,7 +2,8 @@
 import BuybackList from '@/buyback/components/BuybackList.vue';
 import { useBuybackPledges } from '@/buyback/use-buyback-pledges';
 import HangarStatus from '@/hangar/components/HangarStatus.vue';
-import HangarSummary from '@/hangar/components/HangarSummary.vue';
+import HangarSidebar from '@/hangar/components/HangarSidebar.vue';
+import { stickWhileFits } from '@/hangar/stick-while-fits';
 import { findAccountNav } from '@/hangar/account-nav';
 import { selection } from '@/hangar/selection';
 import PledgeList from '@/hangar/components/PledgeList.vue';
@@ -99,12 +100,14 @@ onMounted(() => addEventListener('hashchange', followHash));
 onUnmounted(() => removeEventListener('hashchange', followHash));
 
 /*
- * The summary box lives below RSI's page navigation on the left, outside the manager: an element
- * of its own after the navigation's list, where it sticks while scrolling. It stays on every tab
- * and keeps showing the hangar's figures (its search and filters too), so it neither jumps nor
- * loses its place when the tab changes.
+ * The sidebar lives below RSI's page navigation on the left, outside the manager: an element of
+ * its own after the navigation's list, where it sticks while scrolling as long as it fits into
+ * the window (otherwise its lower boxes couldn't be reached). It stays on every tab and keeps
+ * showing the hangar's figures (its search and filters too), so it neither jumps nor loses its
+ * place when the tab changes.
  */
 const summaryAnchor = ref<HTMLElement>();
+let stopSticking: (() => void) | undefined;
 onMounted(() => {
   const nav = findAccountNav(document);
   if (!nav) return;
@@ -112,8 +115,12 @@ onMounted(() => {
   anchor.className = 'shm-summary-anchor';
   nav.after(anchor);
   summaryAnchor.value = anchor;
+  stopSticking = stickWhileFits(anchor);
 });
-onUnmounted(() => summaryAnchor.value?.remove());
+onUnmounted(() => {
+  stopSticking?.();
+  summaryAnchor.value?.remove();
+});
 const showSummary = computed(() => listsReady.value && pledges.value.length > 0);
 // Pledges gone from the hangar (melted, gifted, …) leave the selection.
 watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => pledge.id))));
@@ -151,7 +158,7 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
   </div>
 
   <Teleport v-if="summaryAnchor" :to="summaryAnchor">
-    <HangarSummary v-if="showSummary" :pledges="pledges" :settings="settings" />
+    <HangarSidebar v-if="showSummary" :pledges="pledges" :settings="settings" />
   </Teleport>
 
   <TabBar

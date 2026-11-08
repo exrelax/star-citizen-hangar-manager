@@ -1,7 +1,7 @@
 import { computed, shallowRef } from 'vue';
 
 /*
- * The pledges selected in "My Hangar" (by their id), for the summary box and later bulk actions.
+ * The pledges selected in "My Hangar" (by their id), for the sidebar and later bulk actions.
  * Kept for the page only: a reload starts without a selection.
  */
 
@@ -28,6 +28,6 @@ export const selection = {
 
 /**
  * The pledges of "My Hangar" that search and filters leave visible, set by the list (see
- * `PledgeList.vue`): the summary box counts these.
+ * `PledgeList.vue`): the sidebar counts these.
  */
 export const visiblePledgeIds = shallowRef<ReadonlySet<number> | null>(null);

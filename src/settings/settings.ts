@@ -6,6 +6,7 @@ import {
   type FilterGroups,
   type PledgeFilter,
 } from '@/hangar/filters';
+import { normalizeSidebarOrder, SIDEBAR_BOXES, type SidebarBox } from '@/hangar/sidebar';
 import { BUYBACK_SORTS, HANGAR_SORTS, type BuybackSort, type HangarSort } from '@/hangar/sorting';
 import { isLocale, type Locale } from '@/i18n';
 
@@ -46,8 +47,10 @@ export interface Settings {
   translateRsiTexts: boolean;
   /** Lists only the best insurance in the items of upgraded ships, the one that counts. */
   hideSupersededInsurances: boolean;
-  /** The summary box of "My Hangar" also counts the pledges per type (ships, CCUs, …). */
+  /** The sidebar's summaries also count the pledges per type (ships, CCUs, …). */
   summaryTypes: boolean;
+  /** Order of the boxes of the sidebar below RSI's navigation (see `hangar/sidebar.ts`). */
+  sidebarOrder: SidebarBox[];
   /** Hides the pledge ids (also those of applied CCUs). */
   hidePledgeIds: boolean;
   /** Shows a selection of the pledges with made-up ids instead of all (see `src/demo`). */
@@ -100,6 +103,7 @@ export const DEFAULT_SETTINGS: Settings = {
   translateRsiTexts: false,
   hideSupersededInsurances: true,
   summaryTypes: false,
+  sidebarOrder: [...SIDEBAR_BOXES],
   hidePledgeIds: false,
   demoMode: false,
   hideRefund: false,
@@ -173,6 +177,7 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
     translateRsiTexts: pick('translateRsiTexts', isBoolean),
     hideSupersededInsurances: pick('hideSupersededInsurances', isBoolean),
     summaryTypes: pick('summaryTypes', isBoolean),
+    sidebarOrder: normalizeSidebarOrder(stored?.sidebarOrder),
     hidePledgeIds: pick('hidePledgeIds', isBoolean),
     demoMode: pick('demoMode', isBoolean),
     hideRefund: pick('hideRefund', isBoolean),

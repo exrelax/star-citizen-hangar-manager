@@ -71,9 +71,13 @@
     "discount": "Descuentos",
     "selected": "Seleccionados",
     "clear": "Quitar la selección",
-    "hidden": "$1 ocultos por la búsqueda o los filtros",
-    "move": "Arrastra para mover el resumen (o usa las flechas)",
-    "resetPosition": "Volver a su sitio bajo la navegación"
+    "hidden": "$1 ocultos por la búsqueda o los filtros"
+  },
+  "sidebar": {
+    "label": "Barra lateral",
+    "move": "Arrastra para mover el cuadro (o usa las flechas arriba y abajo)",
+    "moved": "Movido a la posición $1 de $2",
+    "available": "Disponible"
   },
   "filter": {
     "label": "Filtrar pledges",

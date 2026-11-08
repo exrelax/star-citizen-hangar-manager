@@ -177,7 +177,7 @@ export const STORAGES: readonly StorageDefinition[] = [
     item: storeCreditItem,
     content: "The account's store credit",
     source: 'Credit ledger of the RSI account (/graphql), as in its account menu',
-    usedBy: ['Summary box'],
+    usedBy: ['Sidebar'],
     kind: 'data',
     count: (value: StoreCreditSnapshot | null) => (value ? 1 : 0),
     readAgain: 'auto',

@@ -41,7 +41,7 @@ const sortOptions = computed(() =>
 );
 const setSort = (hangar: HangarSort) => update({ sort: { ...props.settings.sort, hangar } });
 
-/** For the summary box: it counts the pledges search and filters leave visible. */
+/** For the sidebar: it counts the pledges search and filters leave visible. */
 const showVisible = (entries: PledgeView[]) =>
   (visiblePledgeIds.value = new Set(entries.map((entry) => entry.id)));
 onUnmounted(() => (visiblePledgeIds.value = null));

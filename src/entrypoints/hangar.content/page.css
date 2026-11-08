@@ -31,14 +31,19 @@ ul.pledges > li.shm-highlight {
 }
 
 /*
- * The summary box (HangarSummary.vue), below RSI's page navigation on every tab of the manager: it
- * sticks below RSI's fixed top bar while the page scrolls.
+ * The sidebar (HangarSidebar.vue), below RSI's page navigation on every tab of the manager: it
+ * sticks below RSI's fixed top bar while the page scrolls – unless it is higher than the window
+ * (`is-unstuck`, see `stick-while-fits.ts`), then it scrolls with the page.
  */
 .shm-summary-anchor {
   position: sticky;
   top: 72px;
   z-index: 2;
   margin-top: 24px;
+}
+
+.shm-summary-anchor.is-unstuck {
+  position: static;
 }
 
 html:not(.shm-manager-active) .shm-summary-anchor {

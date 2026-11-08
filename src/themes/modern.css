@@ -699,9 +699,9 @@ html .shm-theme-modern .shm-initial-load-button:not(:disabled):focus-visible {
   background: var(--shm-accent);
 }
 
-/* ---- Summary box of "My Hangar" (HangarSummary.vue) and the select control of the rows ---- */
+/* ---- Sidebar of the manager (HangarSidebar.vue) and the select control of the rows ---- */
 
-html .shm-summary.shm-theme-modern {
+html .shm-theme-modern .shm-sidebar-box {
   padding: 12px;
   background: var(--shm-surface-elevated);
   border: 0;
@@ -709,13 +709,7 @@ html .shm-summary.shm-theme-modern {
   box-shadow: 0 0 0 1px var(--shm-separator);
 }
 
-html .shm-summary.shm-theme-modern.is-moved {
-  box-shadow:
-    0 0 0 1px var(--shm-separator),
-    0 12px 30px rgb(0 0 0 / 0.45);
-}
-
-html .shm-theme-modern .shm-summary-title {
+html .shm-theme-modern .shm-sidebar-title {
   color: var(--shm-text);
   font-size: calc(13px * var(--shm-font-scale));
   font-weight: 600;
@@ -723,20 +717,16 @@ html .shm-theme-modern .shm-summary-title {
   text-transform: none;
 }
 
-html .shm-theme-modern .shm-summary-figures dd {
+html .shm-theme-modern .shm-sidebar-figures dd {
   font-family: var(--shm-font-mono) !important;
 }
 
-html .shm-theme-modern .shm-summary-icon-button {
+html .shm-theme-modern .shm-sidebar-icon-button {
   border-radius: 6px;
 }
 
-html .shm-theme-modern .shm-summary-icon-button:hover {
+html .shm-theme-modern .shm-sidebar-icon-button:hover {
   background: var(--shm-fill);
-}
-
-html .shm-theme-modern .shm-summary-selection {
-  border-top-color: var(--shm-separator);
 }
 
 html .shm-theme-modern .shm-select-toggle {

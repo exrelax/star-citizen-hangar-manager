@@ -2,7 +2,7 @@ import { PLEDGE_FILTER_CATEGORIES, PLEDGE_FILTER_PREDICATES, type PledgeFilter }
 import type { PledgeView } from './pledge-view';
 
 /*
- * The totals of the summary box (see `HangarSummary.vue`): of the visible pledges, and of the
+ * The totals of the sidebar's summary boxes (see `HangarSidebar.vue`): of the visible pledges, and of the
  * selected ones.
  */
 

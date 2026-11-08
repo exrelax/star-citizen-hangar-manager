@@ -24,6 +24,7 @@ describe('withDefaults', () => {
       translateRsiTexts: false,
       hideSupersededInsurances: true,
       summaryTypes: false,
+      sidebarOrder: ['storeCredit', 'summary', 'selection'],
       hidePledgeIds: true,
       demoMode: true,
       hideRefund: true,
@@ -55,6 +56,7 @@ describe('withDefaults', () => {
         compactView: 'no',
         storeRefreshMinutes: 2.5,
         filters: { hangar: 'all', buyback: { order: 5 } },
+        sidebarOrder: 'summary',
       } as never),
     ).toEqual(DEFAULT_SETTINGS);
   });

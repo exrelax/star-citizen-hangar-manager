@@ -71,9 +71,13 @@
     "discount": "Remises",
     "selected": "Sélection",
     "clear": "Annuler la sélection",
-    "hidden": "$1 masqués par la recherche ou les filtres",
-    "move": "Faire glisser pour déplacer le récapitulatif (ou touches fléchées)",
-    "resetPosition": "Revenir à sa place sous la navigation"
+    "hidden": "$1 masqués par la recherche ou les filtres"
+  },
+  "sidebar": {
+    "label": "Barre latérale",
+    "move": "Faire glisser pour déplacer le cadre (ou touches fléchées haut et bas)",
+    "moved": "Déplacé en position $1 sur $2",
+    "available": "Disponible"
   },
   "filter": {
     "label": "Filtrer les pledges",
