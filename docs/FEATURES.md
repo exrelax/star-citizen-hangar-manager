@@ -31,6 +31,7 @@ announcements.
 - The full CCU history of upgraded ships, with the discount of every step
 - Orders of your purchases with invoices, refund countdown and a prefilled refund request
 - Buy back pledges straight into the RSI cart
+- A Paint Discount Consultant: more store credit from your paints with RSI's volume discount
 - The current warbond CCUs of the pledge store, with the cheapest ships to start from and your own
   CCUs in the same price range
 - Links from CCU Game (ccugame.app) straight to the pledge in the Hangar Manager
@@ -420,6 +421,35 @@ the initial load; the count line says when they were updated. For each warbond s
   table with their ship prices, count, value and discount. CCUs ending at or below the warbond
   price (e.g. to a ship listed above) are left out: they can be chained. The count is also a tag on
   the item.
+
+## Paint Discount Consultant
+
+RSI gives a volume discount on paints in the cart: 15 % from 2 paints, 20 % from 3, 25 % from 5,
+30 % from 7 and 35 % from 10. Below the warbond CCUs, the **Pledge Store** tab shows how to turn
+it into store credit with the paints you already own:
+
+- **The idea**: melt own paints that were bought with less discount than reachable now, buy them
+  again together with cheap filler paints at the higher discount, and melt the fillers again after
+  RSI's 24-hour cooldown – RSI lets a pledge be melted only 24 hours after it was bought
+  ([RSI Support: Reclaim a Pledge](https://support.robertsspaceindustries.com/hc/en-us/articles/115013193627-Reclaim-a-Pledge)).
+  The fillers melt for what they cost, so the own paints free the difference between their melt
+  value and their new, discounted price as store credit.
+- **Store credit only**: the cart is paid with the melt value of the own paints and, if the
+  setting allows, the current store credit – never with new money, so warbond paints are left out.
+  No taxes are counted: there are none on store credit.
+- **The best tier**: the tiers are tried from 35 % down, and the first one the store credit pays
+  is taken. Own paints count when their discount, rounded to the tiers, is below it. Fillers are the
+  cheapest paints, up to 5 of the same (RSI's limit per item in the cart).
+- **Shown with the real values**: the tier, the store credit freed (also in % of the melt value),
+  the store credit needed and what is missing for the next tier; the cart broken down, e.g.
+  `(5 × $5 + 5 × $3) × 0.65 = $26`; the own paints with price, melt value, price in the cart and
+  their discount now and then; the filler paints with their count.
+- **Honest about the result**: the melt value of the own paints drops by the store credit freed –
+  the account's total value stays the same. Paints bought again with store credit are no longer
+  giftable.
+- **Order**: fill the cart and check it first, melt only after that.
+- Only pledges with exactly one paint that can be melted, and single paints of the Pledge Store;
+  paint packs come later. Hidden while "Hide melt value" is on.
 
 ---
 

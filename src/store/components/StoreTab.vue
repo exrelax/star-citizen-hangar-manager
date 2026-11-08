@@ -15,6 +15,7 @@ import { useStoreData } from '../use-store-data';
 import { buildWarbondOffers } from '../warbond';
 import RefreshIcon from '@/hangar/components/RefreshIcon.vue';
 import WarbondRow from './WarbondRow.vue';
+import PaintConsultant from './PaintConsultant.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 
 /*
@@ -113,6 +114,8 @@ const displayClasses = computed(() => ({
       </div>
       <p v-if="!offers.length" class="shm-store-state">{{ i18n.t('store.empty') }}</p>
     </template>
+
+    <PaintConsultant :pledges="pledges" :settings="settings" />
   </section>
 </template>
 

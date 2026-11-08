@@ -1,5 +1,5 @@
 import { PAINT_CONSULTANT, PAINT_DISCOUNT_TIERS } from '@/config';
-import type { Pledge } from '@/hangar/pledge';
+import type { PledgeItem } from '@/hangar/pledge';
 import { isPaintItem } from '@/hangar/pledge-view';
 import { roundToPaintTier } from '@/hangar/ship-prices';
 import { storeNameOf } from '../items/item-prices';
@@ -21,6 +21,19 @@ import type { StoreItem } from '../items/store-items';
  * Paint packs are left out (#134). All amounts in USD without taxes (there are none on store
  * credit); computed in cents.
  */
+
+/** What the consultant needs of an own pledge; a `PledgeView` fits. */
+export interface PaintPledge {
+  id: number;
+  title: string;
+  /** What melting it gives, in USD. */
+  valueUsd: number;
+  items: readonly PledgeItem[];
+  /** Set for CCUs. */
+  upgrade?: unknown;
+  /** Can be melted (exchanged): not protected by RSI's game access either. */
+  isMeltable: boolean;
+}
 
 /** A paint of the Pledge Store that can be bought on its own with store credit. */
 export interface StorePaint {
@@ -92,7 +105,7 @@ export interface PaintConsultantResult {
 }
 
 export interface PaintConsultantInput {
-  pledges: readonly Pledge[];
+  pledges: readonly PaintPledge[];
   storeItems: readonly StoreItem[];
   /** Store credit that may be used (0 if the setting leaves it out). */
   storeCredit: number;
@@ -130,14 +143,15 @@ export function storePaintsOf(items: readonly StoreItem[]): StorePaint[] {
  * on their own, with their discount compared to the current price.
  */
 export function ownPaintsOf(
-  pledges: readonly Pledge[],
+  pledges: readonly PaintPledge[],
   storePaints: readonly StorePaint[],
 ): OwnPaint[] {
   const byName = new Map(storePaints.map((paint) => [storeNameOf(paint.name), paint]));
   return pledges.flatMap((pledge) => {
     const [item, ...others] = pledge.items;
-    const meltable = pledge.isExchangeable && !pledge.protectedGames?.length;
-    if (!item || others.length || pledge.upgrade || !isPaintItem(item) || !meltable) return [];
+    if (!item || others.length || pledge.upgrade || !isPaintItem(item) || !pledge.isMeltable) {
+      return [];
+    }
     if (!(pledge.valueUsd > 0)) return [];
     const storePaint = byName.get(storeNameOf(pledge.title)) ?? byName.get(storeNameOf(item.title));
     if (!storePaint) return [];
