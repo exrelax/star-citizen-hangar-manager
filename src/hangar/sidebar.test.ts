@@ -1,5 +1,19 @@
 import { describe, expect, it } from 'vitest';
-import { moveBox, normalizeSidebarOrder, placeBox, SIDEBAR_BOXES } from './sidebar';
+import { moveBox, normalizeSidebarOrder, placeBox, SIDEBAR_BOXES, sidebarBoxesOf } from './sidebar';
+
+describe('sidebarBoxesOf', () => {
+  it('keeps known boxes once', () => {
+    expect(sidebarBoxesOf(['summary', 'events', 'summary', 'selection'])).toEqual([
+      'summary',
+      'selection',
+    ]);
+  });
+
+  it('gives no boxes without a list', () => {
+    expect(sidebarBoxesOf(undefined)).toEqual([]);
+    expect(sidebarBoxesOf('summary')).toEqual([]);
+  });
+});
 
 describe('normalizeSidebarOrder', () => {
   it('keeps a complete stored order', () => {

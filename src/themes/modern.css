@@ -709,6 +709,16 @@ html .shm-theme-modern .shm-sidebar-box {
   box-shadow: 0 0 0 1px var(--shm-separator);
 }
 
+html .shm-theme-modern .shm-sidebar-slot {
+  border-radius: 12px;
+}
+
+html .shm-theme-modern .shm-sidebar-box.is-dragging {
+  box-shadow:
+    0 0 0 1px var(--shm-separator),
+    0 12px 30px rgb(0 0 0 / 0.45);
+}
+
 html .shm-theme-modern .shm-sidebar-title {
   color: var(--shm-text);
   font-size: calc(13px * var(--shm-font-scale));

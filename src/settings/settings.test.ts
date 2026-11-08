@@ -25,6 +25,7 @@ describe('withDefaults', () => {
       hideSupersededInsurances: true,
       summaryTypes: false,
       sidebarOrder: ['storeCredit', 'summary', 'selection'],
+      sidebarCollapsed: [],
       hidePledgeIds: true,
       demoMode: true,
       hideRefund: true,
@@ -57,6 +58,7 @@ describe('withDefaults', () => {
         storeRefreshMinutes: 2.5,
         filters: { hangar: 'all', buyback: { order: 5 } },
         sidebarOrder: 'summary',
+        sidebarCollapsed: ['events'],
       } as never),
     ).toEqual(DEFAULT_SETTINGS);
   });

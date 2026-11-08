@@ -77,7 +77,9 @@
     "label": "Barra lateral",
     "move": "Arrastra para mover el cuadro (o usa las flechas arriba y abajo)",
     "moved": "Movido a la posición $1 de $2",
-    "available": "Disponible"
+    "available": "Disponible",
+    "collapse": "Contraer",
+    "expand": "Expandir"
   },
   "filter": {
     "label": "Filtrar pledges",
