@@ -16,7 +16,8 @@ describe('withDefaults', () => {
         hideRefund: true,
         bulkMelting: true,
         sidebar: false,
-        sidebarHidden: ['selection', 'events' as never],
+        // `storeCredit`: a box of older versions (#156).
+        sidebarHidden: ['selection', 'storeCredit' as never, 'events' as never],
         sort: { hangar: 'valueDesc', buyback: 'valueDesc' as never },
         shipLinks: { erkul: false, fleetyards: true },
         paintConsultant: { useStoreCredit: false } as never,
@@ -31,7 +32,7 @@ describe('withDefaults', () => {
       summaryTypes: false,
       sidebar: false,
       sidebarHidden: ['selection'],
-      sidebarOrder: ['notifications', 'storeCredit', 'summary', 'selection', 'paintConsultant'],
+      sidebarOrder: ['notifications', 'summary', 'selection', 'paintConsultant'],
       sidebarCollapsed: [],
       hidePledgeIds: true,
       demoMode: true,

@@ -178,7 +178,7 @@ information (for screenshots or content creators)** keeps private details off sc
   two of them recent enough for the refund tags), and the dates of applied upgrades follow them:
   after the purchase, in their real order. The newest meltable pledge bought with store credit was
   bought a few hours ago, so marking it to melt shows the countdown; marks set in the demo are kept
-  apart from the real ones. The summary shows a made-up store credit between $0
+  apart from the real ones. The top right shows a made-up store credit between $0
   and $100 instead of the account's. The made-up IDs, dates and store credit are derived from a random key
   that exists only in your browser, so they can't be traced back to the real ones.
 
@@ -193,6 +193,14 @@ has three tabs, each with its own link to bookmark or share:
 - **My Hangar** – all pledges of your hangar
 - **Buy Back** – all pledges you melted and can buy back
 - **Settings**
+
+At the top right, above the refresh button, every tab shows the account's figures, each with an
+icon and a tooltip that names and explains it:
+
+- **Store credit**, as RSI's account menu shows it, read with every refresh and smart update.
+  Hidden with "Hide melt value"; the demo mode shows its made-up one.
+- **Buy back tokens**: how many pledges can still be bought back with store credit, as RSI shows
+  it above its buy back list, read with every refresh and smart update.
 
 ### An addition, not a replacement
 
@@ -252,8 +260,6 @@ on its own.
       checked-off ones don't come back.
     - Below them, the marked pledges still waiting, with the time left.
     - Works without the browser's notification permission.
-  - **Store credit** of the account (as RSI's account menu shows it, read with every refresh and
-    smart update).
   - **Summary**: number, value and discounts of the pledges shown in "My Hangar" (after search and
     filters). Discounts sum only real ones – a pledge that cost more than the original price
     doesn't reduce them.
@@ -429,8 +435,8 @@ Paints, Game access, LTI, Warbond, Probably giftable, Rewards), plus:
   "probably", as the extension can't tell whether a pledge was giftable when it was melted (e.g.
   bought with store credit, or already gifted once).
 - **Buy back tokens**: how many pledges can still be bought back with store credit, as RSI shows
-  it above its buy back list – next to the number of pledges, read with every refresh and smart
-  update.
+  it above its buy back list – at the top right of the manager, on every tab (see
+  [The Hangar Manager page](#the-hangar-manager-page)).
 - **To Cart**: a button in the opened item, under "Show in Buy Back": one click puts a buy back
   pledge – or a buy back CCU – into the RSI cart and opens it, without going through RSI's pages.
 - **Show in Buy Back**: opens the pledge on RSI's own buy back page (only this pledge, or the list
@@ -552,7 +558,7 @@ In the order of the settings tab:
   - **"Show in Buy Back" opens**: only the pledge, or the list page with the pledge highlighted.
 - **Sidebar**:
   - **Show the sidebar** (on by default) – see [Selection and summary](#selection-and-summary).
-  - **Boxes** (all on by default, only while the sidebar is shown): store credit, summary,
+  - **Boxes** (all on by default, only while the sidebar is shown): notifications, summary,
     selected and Paint Discount Consultant. Without the "Selected" box, the rows have no select
     control.
   - **Count the pledges per type in the summary** (off by default): only for the "Summary" box;

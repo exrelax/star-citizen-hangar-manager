@@ -22,6 +22,7 @@
     "syncProgressSection": "Lecture de $1 : page $2 sur $3 ($4 du total)",
     "demoBadge": "Démo",
     "demoBadgeHint": "Mode démo : une sélection de tes pledges avec des ID inventés. Désactive-le dans les paramètres.",
+    "storeCreditHint": "Le crédit boutique du compte, tel que RSI l’affiche lors de la dernière actualisation ou vérification. Masqué tant que « Masquer la valeur de fusion » est activé.",
     "clearSearch": "Effacer la recherche"
   },
   "sort": {
@@ -77,7 +78,6 @@
     "label": "Barre latérale",
     "move": "Faire glisser pour déplacer le cadre (ou touches fléchées haut et bas)",
     "moved": "Déplacé en position $1 sur $2",
-    "available": "Disponible",
     "collapse": "Replier",
     "expand": "Déplier"
   },
@@ -194,7 +194,6 @@
     "sidebarShowHint": "Des cadres sous la navigation de RSI à gauche, sur chaque onglet du gestionnaire.",
     "sidebarBoxes": "Cadres",
     "sidebarNotificationsHint": "Affiché tant qu’il y a une notification : quand des pledges marqués pour fondre peuvent être fondus maintenant – avec des boutons pour les afficher ou les sélectionner – et les pledges marqués qui attendent encore. Les notifications à cocher : une par une ou toutes à la fois. Sans autorisation du navigateur.",
-    "sidebarStoreCreditHint": "Masqué tant que « Masquer la valeur de fusion » est activé.",
     "sidebarSelectionHint": "Affiché tant que des pledges sont sélectionnés. Sans lui, les lignes n'ont pas de case de sélection.",
     "sidebarPaintConsultantHint": "Affiché tant que des peintures peuvent être rachetées avec une remise sur volume plus élevée : combien, et le crédit boutique libéré. Masqué tant que « Masquer la valeur de fusion » est activé.",
     "paintConsultant": "Conseiller de remises sur les peintures",
@@ -285,7 +284,7 @@
     "storeCredit": {
       "name": "Crédit boutique",
       "content": "Le crédit boutique du compte, comme son menu de compte l’affiche",
-      "missing": "D’ici là, le récapitulatif n’affiche pas de crédit boutique."
+      "missing": "D’ici là, le gestionnaire n’affiche pas de crédit boutique en haut à droite."
     },
     "settings": {
       "name": "Paramètres",
@@ -324,6 +323,7 @@
     "probablyGiftableHint": "Racheté en argent réel (warbond), cet élément est probablement offrable, car il a été acheté à l’origine avant le $1.",
     "showSingleInBuyback": "Afficher dans Buy Back",
     "tokens": "Jetons de rachat : $1",
+    "tokensLabel": "Jetons de rachat",
     "tokensHint": "Nombre de pledges que tu peux encore racheter avec du crédit boutique (un jeton par pledge), tel que RSI l’affichait sur « Buy Back Pledges » lors de la dernière actualisation ou vérification. Un rachat avec de l’argent ne nécessite pas de jeton.",
     "toCart": "Au panier",
     "addToCart": "Ajouter au panier RSI et ouvrir le panier (nouvel onglet). RSI vide le panier pour les pledges du buy back.",

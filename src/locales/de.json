@@ -22,6 +22,7 @@
     "syncProgressSection": "Lese $1: Seite $2 von $3 ($4 von allem)",
     "demoBadge": "Demo",
     "demoBadgeHint": "Demo-Modus: eine Auswahl deiner Pledges mit erfundenen Pledge-IDs. Abschalten in den Einstellungen.",
+    "storeCreditHint": "Das Store-Guthaben des Accounts, wie RSI es beim letzten Neueinlesen oder Check zeigt. Ausgeblendet, solange „Schmelzwert ausblenden“ an ist.",
     "clearSearch": "Suche leeren"
   },
   "sort": {
@@ -77,7 +78,6 @@
     "label": "Seitenleiste",
     "move": "Ziehen, um die Box zu verschieben (oder Pfeiltasten hoch und runter)",
     "moved": "An Position $1 von $2 verschoben",
-    "available": "Verfügbar",
     "collapse": "Zuklappen",
     "expand": "Aufklappen"
   },
@@ -194,7 +194,6 @@
     "sidebarShowHint": "Boxen unter RSIs Navigation links, auf jedem Tab des Managers.",
     "sidebarBoxes": "Boxen",
     "sidebarNotificationsHint": "Erscheint, solange es eine Benachrichtigung gibt: wenn zum Einschmelzen gemerkte Pledges jetzt eingeschmolzen werden können – mit Buttons, um sie anzuzeigen oder auszuwählen – und die gemerkten, die noch warten. Abhakbare Benachrichtigungen: einzeln oder alle auf einmal. Ohne Berechtigung des Browsers.",
-    "sidebarStoreCreditHint": "Ausgeblendet, solange „Schmelzwert ausblenden“ an ist.",
     "sidebarSelectionHint": "Erscheint, solange Pledges ausgewählt sind. Ohne sie haben die Zeilen keine Auswahl.",
     "sidebarPaintConsultantHint": "Erscheint, solange sich Paints mit höherem Mengenrabatt zurückkaufen lassen: wie viele, und wie viele Store Credits dabei frei werden. Ausgeblendet, solange „Schmelzwert ausblenden“ an ist.",
     "paintConsultant": "Paint-Rabatt-Berater",
@@ -285,7 +284,7 @@
     "storeCredit": {
       "name": "Store Credit",
       "content": "Das Store-Guthaben des Accounts, wie sein Account-Menü es zeigt",
-      "missing": "Bis dahin zeigt die Übersicht kein Store-Guthaben."
+      "missing": "Bis dahin zeigt der Manager oben rechts kein Store-Guthaben."
     },
     "settings": {
       "name": "Einstellungen",
@@ -324,6 +323,7 @@
     "probablyGiftableHint": "Bei einem Rückkauf mit echtem Geld (Warbond) ist dieses Item vermutlich verschenkbar, da es ursprünglich vor dem $1 gekauft wurde.",
     "showSingleInBuyback": "Im Buy Back anzeigen",
     "tokens": "Buy-Back-Tokens: $1",
+    "tokensLabel": "Buy-Back-Tokens",
     "tokensHint": "So viele Pledges kannst du noch mit Store Credit zurückkaufen (ein Token pro Pledge), wie RSI es bei „Buy Back Pledges“ beim letzten Refresh oder Check anzeigte. Ein Rückkauf mit Geld braucht kein Token.",
     "toCart": "In den Warenkorb",
     "addToCart": "In den RSI-Warenkorb legen und ihn öffnen (neuer Tab). Für Buy-Back-Pledges leert RSI den Warenkorb.",

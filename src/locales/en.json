@@ -22,6 +22,7 @@
     "syncProgressSection": "Reading $1: page $2 of $3 ($4 of everything)",
     "demoBadge": "Demo",
     "demoBadgeHint": "Demo mode: a selection of your pledges with made-up pledge IDs. Turn it off in the settings.",
+    "storeCreditHint": "The account's store credit, as RSI shows it at the last refresh or check. Hidden while “Hide melt value” is on.",
     "clearSearch": "Clear search"
   },
   "sort": {
@@ -77,7 +78,6 @@
     "label": "Sidebar",
     "move": "Drag to move the box (or use the arrow keys up and down)",
     "moved": "Moved to position $1 of $2",
-    "available": "Available",
     "collapse": "Collapse",
     "expand": "Expand"
   },
@@ -194,7 +194,6 @@
     "sidebarShowHint": "Boxes below RSI's navigation on the left, on every tab of the manager.",
     "sidebarBoxes": "Boxes",
     "sidebarNotificationsHint": "Shown while there is a notification: when pledges marked to melt can be melted now – with buttons to show or select them – and the marked ones still waiting. Notifications that can be checked off: one by one or all at once. No browser permission needed.",
-    "sidebarStoreCreditHint": "Hidden while “Hide melt value” is on.",
     "sidebarSelectionHint": "Shown while pledges are selected. Without it, the rows have no select control.",
     "sidebarPaintConsultantHint": "Shown while paints can be bought again with a higher volume discount: how many, and the store credit it frees. Hidden while “Hide melt value” is on.",
     "paintConsultant": "Paint Discount Consultant",
@@ -285,7 +284,7 @@
     "storeCredit": {
       "name": "Store credit",
       "content": "The account's store credit, as its account menu shows it",
-      "missing": "Until then the summary shows no store credit."
+      "missing": "Until then the top right of the manager shows no store credit."
     },
     "settings": {
       "name": "Settings",
@@ -324,6 +323,7 @@
     "probablyGiftableHint": "When bought back with real money (warbond), this item is probably giftable, as it was originally bought before $1.",
     "showSingleInBuyback": "Show in Buy Back",
     "tokens": "Buy back tokens: $1",
+    "tokensLabel": "Buy back tokens",
     "tokensHint": "Pledges you can still buy back with store credit (one token per pledge), as RSI shows them on “Buy Back Pledges” at the last refresh or check. Buying back with money needs no token.",
     "toCart": "To Cart",
     "addToCart": "Add to cart on RSI and open the cart (new tab). RSI empties the cart for buy back pledges.",

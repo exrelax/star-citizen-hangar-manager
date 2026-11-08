@@ -10,8 +10,6 @@ import { selection, visiblePledgeIds } from '../selection';
 import { moveBox, placeAt, type SidebarBox as Box } from '../sidebar';
 import { summarize, type PledgeSummary } from '../summary';
 import { vTooltip } from '@/shared/tooltip/tooltip';
-import { storeCreditItem, STORE_CREDIT_VERSION } from '@/account/store-credit-storage';
-import { useStored } from '@/storage/use-stored';
 import { useDemoContext } from '@/demo/use-demo';
 import SidebarBox from './SidebarBox.vue';
 import BulkExchangeOverlay from './BulkExchangeOverlay.vue';
@@ -30,7 +28,7 @@ import {
 
 /*
  * The sidebar below RSI's page navigation on the left on every tab (App.vue teleports it there),
- * a column of boxes: the store credit, the summary of the hangar's visible pledges (value,
+ * a column of boxes: the notifications, the summary of the hangar's visible pledges (value,
  * discounts, number) and – with a selection – the same of the selected ones. The boxes can be
  * moved up and down by their title, with the mouse or the arrow keys, and collapsed to their title;
  * the order and the collapsed boxes are kept in the settings (see `sidebar.ts`).
@@ -60,21 +58,8 @@ const meltable = computed(() => selected.value.filter((pledge) => pledge.isMelta
 const bulkExchanging = ref(false);
 const chosen = computed(() => (selected.value.length ? summarize(selected.value) : undefined));
 
-// The account's store credit, not depending on search or selection. The demo mode shows a
-// made-up one instead.
-const storedCredit = useStored(storeCreditItem);
+// The demo mode: its pledge ids are made up, so nothing links to RSI or melts.
 const demo = useDemoContext();
-const credit = computed(() => {
-  const stored = storedCredit.value;
-  const value =
-    demo.value?.storeCredit ??
-    (stored?.version === STORE_CREDIT_VERSION ? stored.credit : undefined);
-  if (!value) return undefined;
-  return new Intl.NumberFormat(locale.value, {
-    style: 'currency',
-    currency: value.currency,
-  }).format(value.amount);
-});
 
 const money = computed(
   () => new Intl.NumberFormat(locale.value, { style: 'currency', currency: 'USD' }),
@@ -135,7 +120,6 @@ function selectReady() {
 
 const TITLES = {
   notifications: 'notifications.title',
-  storeCredit: 'summary.storeCredit',
   summary: 'summary.title',
   selection: 'summary.selected',
   paintConsultant: 'consultant.boxTitle',
@@ -177,8 +161,8 @@ const isShown = (box: Box) =>
     ? !!chosen.value
     : box === 'notifications'
       ? noteCount.value > 0
-      : box === 'storeCredit' || box === 'paintConsultant'
-        ? !props.settings.hideMeltValue && (box !== 'paintConsultant' || !!rebuyPlan.value)
+      : box === 'paintConsultant'
+        ? !props.settings.hideMeltValue && !!rebuyPlan.value
         : true);
 const boxes = computed(() => order.value.filter(isShown));
 
@@ -439,13 +423,6 @@ async function move(box: Box, step: -1 | 1) {
             </ul>
           </template>
         </template>
-
-        <dl v-else-if="box === 'storeCredit'" class="shm-sidebar-figures">
-          <div>
-            <dt>{{ i18n.t('sidebar.available') }}</dt>
-            <dd>{{ credit ?? '–' }}</dd>
-          </div>
-        </dl>
 
         <template v-else-if="box === 'summary'">
           <dl class="shm-sidebar-figures">

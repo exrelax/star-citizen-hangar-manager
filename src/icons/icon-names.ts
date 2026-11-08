@@ -36,6 +36,7 @@ export const ICON_NAMES = {
     'lock-open',
     'lock',
     'magnifying-glass',
+    'money-check-dollar',
     'paintbrush',
     'palette',
     'recycle',

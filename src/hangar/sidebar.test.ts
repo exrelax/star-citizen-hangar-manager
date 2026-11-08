@@ -25,7 +25,7 @@ describe('sidebarBoxesOf', () => {
 
 describe('normalizeSidebarOrder', () => {
   it('keeps a complete stored order', () => {
-    const order = ['paintConsultant', 'selection', 'notifications', 'storeCredit', 'summary'];
+    const order = ['paintConsultant', 'selection', 'notifications', 'summary'];
     expect(normalizeSidebarOrder(order)).toEqual(order);
   });
 
@@ -35,22 +35,36 @@ describe('normalizeSidebarOrder', () => {
   });
 
   it('drops unknown and repeated boxes', () => {
+    expect(normalizeSidebarOrder(['summary', 'events', 'summary', 'selection'])).toEqual([
+      'notifications',
+      'summary',
+      'selection',
+      'paintConsultant',
+    ]);
+  });
+
+  it('drops the store credit box of older versions (#156)', () => {
     expect(
-      normalizeSidebarOrder(['summary', 'events', 'summary', 'storeCredit', 'selection']),
-    ).toEqual(['notifications', 'summary', 'storeCredit', 'selection', 'paintConsultant']);
+      normalizeSidebarOrder([
+        'notifications',
+        'storeCredit',
+        'summary',
+        'selection',
+        'paintConsultant',
+      ]),
+    ).toEqual(['notifications', 'summary', 'selection', 'paintConsultant']);
+    expect(sidebarBoxesOf(['storeCredit', 'selection'])).toEqual(['selection']);
   });
 
   it('adds missing boxes after the box before them in the default order', () => {
-    expect(normalizeSidebarOrder(['selection', 'storeCredit'])).toEqual([
-      'notifications',
+    expect(normalizeSidebarOrder(['selection', 'notifications'])).toEqual([
       'selection',
       'paintConsultant',
-      'storeCredit',
+      'notifications',
       'summary',
     ]);
     expect(normalizeSidebarOrder(['summary', 'selection'])).toEqual([
       'notifications',
-      'storeCredit',
       'summary',
       'selection',
       'paintConsultant',
@@ -59,34 +73,33 @@ describe('normalizeSidebarOrder', () => {
 
   it('adds a box new in an update after the box before it', () => {
     // An order stored before the Paint Discount Consultant's box: it follows "Selected".
-    expect(normalizeSidebarOrder(['selection', 'summary', 'storeCredit'])).toEqual([
+    expect(normalizeSidebarOrder(['notifications', 'selection', 'summary'])).toEqual([
       'notifications',
       'selection',
       'paintConsultant',
       'summary',
-      'storeCredit',
     ]);
   });
 
   it('puts the notifications on top of an order stored before them', () => {
-    const before = ['paintConsultant', 'storeCredit', 'summary', 'selection'];
+    const before = ['paintConsultant', 'summary', 'selection'];
     expect(normalizeSidebarOrder(before)).toEqual(['notifications', ...before]);
   });
 });
 
 describe('placeBox', () => {
-  const order = ['storeCredit', 'summary', 'selection'] as const;
+  const order = ['notifications', 'summary', 'selection'] as const;
 
   it('places a box before or after another', () => {
-    expect(placeBox(order, 'selection', 'storeCredit', false)).toEqual([
+    expect(placeBox(order, 'selection', 'notifications', false)).toEqual([
       'selection',
-      'storeCredit',
+      'notifications',
       'summary',
     ]);
-    expect(placeBox(order, 'storeCredit', 'selection', true)).toEqual([
+    expect(placeBox(order, 'notifications', 'selection', true)).toEqual([
       'summary',
       'selection',
-      'storeCredit',
+      'notifications',
     ]);
   });
 
@@ -96,40 +109,44 @@ describe('placeBox', () => {
 });
 
 describe('moveBox', () => {
-  const order = ['storeCredit', 'summary', 'selection'] as const;
+  const order = ['notifications', 'summary', 'selection'] as const;
 
   it('moves a box one place up or down', () => {
-    expect(moveBox(order, 'summary', -1, order)).toEqual(['summary', 'storeCredit', 'selection']);
-    expect(moveBox(order, 'summary', 1, order)).toEqual(['storeCredit', 'selection', 'summary']);
+    expect(moveBox(order, 'summary', -1, order)).toEqual(['summary', 'notifications', 'selection']);
+    expect(moveBox(order, 'summary', 1, order)).toEqual(['notifications', 'selection', 'summary']);
   });
 
   it('keeps the order at the top and the bottom', () => {
-    expect(moveBox(order, 'storeCredit', -1, order)).toEqual([...order]);
+    expect(moveBox(order, 'notifications', -1, order)).toEqual([...order]);
     expect(moveBox(order, 'selection', 1, order)).toEqual([...order]);
   });
 
   it('skips hidden boxes, which keep their place', () => {
     // Without a selection, the summary moves past the hidden selection box to the bottom.
-    expect(moveBox(order, 'storeCredit', 1, ['storeCredit', 'summary'])).toEqual([
+    expect(moveBox(order, 'notifications', 1, ['notifications', 'summary'])).toEqual([
       'summary',
-      'storeCredit',
+      'notifications',
       'selection',
     ]);
-    expect(moveBox(order, 'summary', 1, ['storeCredit', 'summary'])).toEqual([...order]);
+    expect(moveBox(order, 'summary', 1, ['notifications', 'summary'])).toEqual([...order]);
   });
 });
 
 describe('placeAt', () => {
-  // Store credit (60 px) at 0, the dragged summary (100 px) below it, selection below that.
-  const order = ['storeCredit', 'summary', 'selection'] as const;
+  // Notifications (60 px) at 0, the dragged summary (100 px) below it, selection below that.
+  const order = ['notifications', 'summary', 'selection'] as const;
   const others = [
-    { box: 'storeCredit', middle: 30 },
+    { box: 'notifications', middle: 30 },
     { box: 'selection', middle: 110 },
   ] as const;
 
   it('moves a box above the one whose middle the pointer passes', () => {
     // A box higher than the one above can't get its middle past that one's: the pointer can.
-    expect(placeAt(order, 'summary', others, 20)).toEqual(['summary', 'storeCredit', 'selection']);
+    expect(placeAt(order, 'summary', others, 20)).toEqual([
+      'summary',
+      'notifications',
+      'selection',
+    ]);
   });
 
   it('keeps the place between the middles', () => {
@@ -137,7 +154,11 @@ describe('placeAt', () => {
   });
 
   it('moves a box below the last one once the pointer passes its middle', () => {
-    expect(placeAt(order, 'summary', others, 140)).toEqual(['storeCredit', 'selection', 'summary']);
+    expect(placeAt(order, 'summary', others, 140)).toEqual([
+      'notifications',
+      'selection',
+      'summary',
+    ]);
   });
 
   it('keeps the order without other boxes', () => {
@@ -148,7 +169,7 @@ describe('placeAt', () => {
 describe('canSelectPledges', () => {
   it('needs the sidebar and its "Selected" box', () => {
     expect(canSelectPledges({ sidebar: true, sidebarHidden: [] })).toBe(true);
-    expect(canSelectPledges({ sidebar: true, sidebarHidden: ['storeCredit'] })).toBe(true);
+    expect(canSelectPledges({ sidebar: true, sidebarHidden: ['summary'] })).toBe(true);
     expect(canSelectPledges({ sidebar: false, sidebarHidden: [] })).toBe(false);
     expect(canSelectPledges({ sidebar: true, sidebarHidden: ['selection'] })).toBe(false);
   });
