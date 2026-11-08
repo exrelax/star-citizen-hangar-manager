@@ -190,7 +190,7 @@
     "hideSupersededInsurances": "N’afficher que la meilleure assurance des vaisseaux améliorés",
     "hideSupersededInsurancesHint": "Après des améliorations, un pledge liste l’assurance de chaque étape, mais seule la meilleure est conservée : la LTI s’il y en a une, sinon celle avec le plus de mois. Les autres sont masquées dans l’élément ouvert.",
     "summaryTypes": "Compter les pledges par type dans le récapitulatif",
-    "summaryTypesHint": "Les récapitulatifs de la barre latérale indiquent alors aussi combien de vaisseaux, CCU, peintures, packs de jeu et récompenses sont affichés et sélectionnés.",
+    "summaryTypesHint": "L’encadré « Récapitulatif » indique alors aussi combien de vaisseaux, CCU, peintures, packs de jeu et récompenses sont affichés. L’encadré « Sélection » l’indique toujours pour les pledges sélectionnés.",
     "sidebar": "Barre latérale",
     "sidebarShow": "Afficher la barre latérale",
     "sidebarShowHint": "Des cadres sous la navigation de RSI à gauche, sur chaque onglet du gestionnaire.",
