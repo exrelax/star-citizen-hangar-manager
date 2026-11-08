@@ -16,6 +16,7 @@ import { syncState } from '@/hangar/sync-state';
 import { useHangarPledges } from '@/hangar/use-hangar-pledges';
 import { pruneMeltMarks } from '@/hangar/melt-marks';
 import { MELT_MARKS, useMeltMarks } from '@/hangar/use-melt-marks';
+import { NOTIFICATIONS, useNotifications } from '@/notifications/use-notifications';
 import type { IconName, IconSet } from '@/icons/icon-names';
 import TabBar from '@/shared/components/TabBar.vue';
 import { i18n } from '@/i18n';
@@ -68,7 +69,10 @@ const buybackPledges = demoView.buyback;
 const meltMarks = useMeltMarks(
   () => new Map(hangar.pledges.value.map((pledge) => [pledge.id, pledge.createdAt])),
 );
-provide(MELT_MARKS, meltMarks);
+provide(MELT_MARKS, meltMarks.pledges);
+// The notifications (#96), in the sidebar box (#142): for now when marked pledges can be melted.
+const notifications = useNotifications(meltMarks.pledges, meltMarks.ready);
+provide(NOTIFICATIONS, notifications);
 // A mark goes once its pledge is gone from the stored hangar (melted, gifted, …).
 watch(
   () => (syncedAt.value ? hangar.pledges.value : undefined),

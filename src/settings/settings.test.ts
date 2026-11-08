@@ -31,7 +31,7 @@ describe('withDefaults', () => {
       summaryTypes: false,
       sidebar: false,
       sidebarHidden: ['selection'],
-      sidebarOrder: ['storeCredit', 'summary', 'selection', 'paintConsultant'],
+      sidebarOrder: ['notifications', 'storeCredit', 'summary', 'selection', 'paintConsultant'],
       sidebarCollapsed: [],
       hidePledgeIds: true,
       demoMode: true,

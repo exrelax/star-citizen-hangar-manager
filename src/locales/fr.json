@@ -195,6 +195,7 @@
     "sidebarShow": "Afficher la barre latérale",
     "sidebarShowHint": "Des cadres sous la navigation de RSI à gauche, sur chaque onglet du gestionnaire.",
     "sidebarBoxes": "Cadres",
+    "sidebarNotificationsHint": "Affiché tant qu’il y a une notification, p. ex. qu’un pledge marqué pour fondre peut être fondu maintenant ; liste aussi les pledges marqués avec le temps restant. Chaque notification peut être cochée, ou toutes à la fois ; sans autorisation du navigateur.",
     "sidebarStoreCreditHint": "Masqué tant que « Masquer la valeur de fusion » est activé.",
     "sidebarSelectionHint": "Affiché tant que des pledges sont sélectionnés. Sans lui, les lignes n'ont pas de case de sélection.",
     "sidebarPaintConsultantHint": "Combien de peintures peuvent être rachetées avec une remise sur volume plus élevée, et le crédit boutique libéré. Masqué tant que « Masquer la valeur de fusion » est activé.",
@@ -567,6 +568,13 @@
     "waiting": "Fondre dans $1",
     "ready": "Fondre maintenant",
     "hint": "Marqué pour fondre. RSI permet de fondre un pledge 24 heures après son achat : à partir du $1."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "checkOff": "Terminé",
+    "checkOffAll": "Tout marquer comme terminé",
+    "pending": "À venir",
+    "meltable": "« $1 » peut être fondu maintenant"
   },
   "gift": {
     "button": "Gift",
