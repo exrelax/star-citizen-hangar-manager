@@ -10,7 +10,17 @@ import { useId } from 'vue';
  * collapses it to its title.
  */
 
-defineProps<{ title: string; dragging?: boolean; collapsed?: boolean }>();
+defineProps<{
+  title: string;
+  dragging?: boolean;
+  collapsed?: boolean;
+  /**
+   * A count in a round badge on the box's top right corner, like apps show unread messages; also
+   * while collapsed. `badgeLabel` says what it counts, for screen readers.
+   */
+  badge?: string;
+  badgeLabel?: string;
+}>();
 const emit = defineEmits<{
   /** The pointer went down on the handle; the sidebar follows it from there on. */
   grab: [event: PointerEvent];
@@ -38,8 +48,9 @@ function key(event: KeyboardEvent) {
   <section
     class="shm-sidebar-box"
     :class="{ 'is-dragging': dragging, 'is-collapsed': collapsed }"
-    :aria-label="title"
+    :aria-label="badgeLabel ? `${title}, ${badgeLabel}` : title"
   >
+    <span v-if="badge" class="shm-sidebar-badge" aria-hidden="true">{{ badge }}</span>
     <header class="shm-sidebar-box-head">
       <span
         v-tooltip="i18n.t('sidebar.move')"

@@ -246,6 +246,11 @@ export const DEMO = {
    * set accordingly, so the demo always shows the refund tag – normal and in its last week.
    */
   refundDaysLeft: [20, 3],
+  /**
+   * Hours before the start of the current hour that the newest meltable pledge bought with store
+   * credit was bought in the demo, so marking it to melt shows the countdown to RSI's 24 hours.
+   */
+  justBoughtHoursAgo: 3,
   /** Earliest made-up purchase date (the other dates are random, up to today). */
   earliestDate: '2013-01-01',
   /** The store credit of the demo: random between 0 and this many US dollars. */

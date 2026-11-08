@@ -15,8 +15,16 @@ import { hashOfTab, MANAGER_TABS, tabFromHash, type ManagerTab } from '@/hangar/
 import { syncState } from '@/hangar/sync-state';
 import { useHangarPledges } from '@/hangar/use-hangar-pledges';
 import { pruneMeltMarks } from '@/hangar/melt-marks';
-import { MELT_MARKS, useMeltMarks } from '@/hangar/use-melt-marks';
-import { NOTIFICATIONS, useNotifications } from '@/notifications/use-notifications';
+import {
+  hangarPurchases,
+  MELT_MARKS,
+  meltReadyIds,
+  readyToMelt,
+  useMeltMarks,
+} from '@/hangar/use-melt-marks';
+import { ordersSnapshot } from '@/orders/orders-storage';
+import { useStored } from '@/storage/use-stored';
+import { useNow } from '@/shared/use-now';
 import type { IconName, IconSet } from '@/icons/icon-names';
 import TabBar from '@/shared/components/TabBar.vue';
 import { i18n } from '@/i18n';
@@ -25,7 +33,17 @@ import StoreTab from '@/store/components/StoreTab.vue';
 import { providePaintConsultant } from '@/store/paint-consultant/use-paint-consultant';
 import { useSettings } from '@/settings/use-settings';
 import { MANAGER_CONTAINER, useThemeClass } from '@/themes/theme';
-import { computed, inject, onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue';
+import {
+  computed,
+  inject,
+  onMounted,
+  onUnmounted,
+  provide,
+  reactive,
+  ref,
+  watch,
+  watchEffect,
+} from 'vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 
 /** Icon of each tab, before its label. */
@@ -64,19 +82,40 @@ const listsReady = computed(() => settingsLoaded.value && demoView.ready.value);
 provide(DEMO_CONTEXT, demoView.context);
 const pledges = demoView.pledges;
 const buybackPledges = demoView.buyback;
-// Pledges marked to melt (#97): when each can be melted, for the rows and the sidebar. From the
-// real hangar, also in the demo.
+// Pledges marked to melt (#97): when each can be melted, for the rows and the sidebar. The demo
+// has marks of its own, with its made-up purchases (one of them a few hours ago).
+const orders = useStored(ordersSnapshot);
 const meltMarks = useMeltMarks(
-  () => new Map(hangar.pledges.value.map((pledge) => [pledge.id, pledge.createdAt])),
+  () => demo.value,
+  () => {
+    if (!demo.value) return hangarPurchases(hangar.pledges.value, orders.value);
+    const justBought = demoView.context.value?.justBought;
+    return new Map(
+      pledges.value.map((pledge) => [
+        pledge.id,
+        {
+          on: pledge.createdAt,
+          at: justBought?.pledgeId === pledge.id ? justBought.at : undefined,
+        },
+      ]),
+    );
+  },
 );
-provide(MELT_MARKS, meltMarks.pledges);
-// The notifications (#96), in the sidebar box (#142): for now when marked pledges can be melted.
-const notifications = useNotifications(meltMarks.pledges, meltMarks.ready);
-provide(NOTIFICATIONS, notifications);
+provide(MELT_MARKS, meltMarks);
+// The ones that can be melted now, for the sidebar's notification and its "Show" and "Select".
+const now = useNow();
+watchEffect(() => {
+  const ids = new Set(pledges.value.map((pledge) => pledge.id));
+  const ready = readyToMelt(meltMarks.value, ids, now.value);
+  const current = meltReadyIds.value;
+  if (ready.size !== current.size || [...ready].some((id) => !current.has(id))) {
+    meltReadyIds.value = ready;
+  }
+});
 // A mark goes once its pledge is gone from the stored hangar (melted, gifted, …).
 watch(
   () => (syncedAt.value ? hangar.pledges.value : undefined),
-  (current) => current && void pruneMeltMarks(new Set(current.map((pledge) => pledge.id))),
+  (current) => current && void pruneMeltMarks(),
 );
 
 // The Paint Discount Consultant: in the Pledge Store tab and as marks in My Hangar.

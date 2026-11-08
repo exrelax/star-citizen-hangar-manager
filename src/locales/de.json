@@ -195,7 +195,7 @@
     "sidebarShow": "Seitenleiste anzeigen",
     "sidebarShowHint": "Boxen unter RSIs Navigation links, auf jedem Tab des Managers.",
     "sidebarBoxes": "Boxen",
-    "sidebarNotificationsHint": "Erscheint, solange es eine Benachrichtigung gibt, z. B. dass ein zum Einschmelzen gemerktes Pledge jetzt eingeschmolzen werden kann; listet dazu die gemerkten mit der verbleibenden Zeit. Jede Benachrichtigung lässt sich abhaken, oder alle auf einmal; ohne Berechtigung des Browsers.",
+    "sidebarNotificationsHint": "Erscheint, solange es eine Benachrichtigung gibt: wenn zum Einschmelzen gemerkte Pledges jetzt eingeschmolzen werden können – mit Buttons, um sie anzuzeigen oder auszuwählen – und die gemerkten, die noch warten. Abhakbare Benachrichtigungen: einzeln oder alle auf einmal. Ohne Berechtigung des Browsers.",
     "sidebarStoreCreditHint": "Ausgeblendet, solange „Schmelzwert ausblenden“ an ist.",
     "sidebarSelectionHint": "Erscheint, solange Pledges ausgewählt sind. Ohne sie haben die Zeilen keine Auswahl.",
     "sidebarPaintConsultantHint": "Wie viele Paints sich mit höherem Mengenrabatt zurückkaufen lassen und wie viele Store Credits dabei frei werden. Ausgeblendet, solange „Schmelzwert ausblenden“ an ist.",
@@ -564,7 +564,6 @@
     "mark": "Zum Einschmelzen merken",
     "unmark": "Nicht mehr merken",
     "buttonHint": "Merkt dieses Pledge zum späteren Einschmelzen vor: Der Hangar Manager sagt dir, wann RSI das Einschmelzen erlaubt – 24 Stunden nach dem Kauf.",
-    "demo": "Im Demo-Modus nicht verfügbar.",
     "waiting": "Einschmelzen in $1",
     "ready": "Jetzt einschmelzen",
     "hint": "Zum Einschmelzen gemerkt. RSI erlaubt das Einschmelzen 24 Stunden nach dem Kauf: ab $1."
@@ -574,7 +573,14 @@
     "checkOff": "Erledigt",
     "checkOffAll": "Alle als erledigt markieren",
     "pending": "Demnächst",
-    "meltable": "„$1“ lässt sich jetzt einschmelzen"
+    "meltReady": "$1 gemerkte Pledges lassen sich jetzt einschmelzen",
+    "meltReadyOne": "1 gemerktes Pledge lässt sich jetzt einschmelzen",
+    "showReady": "Anzeigen",
+    "showReadyHint": "Zeigt in „My Hangar“ nur diese Pledges; „Filter zurücksetzen“ zeigt wieder alle.",
+    "selectReady": "Auswählen",
+    "selectReadyHint": "Wählt diese Pledges aus: Die Box „Ausgewählt“ bietet dann an, alle auf einmal einzuschmelzen (wenn „Mehrere Pledges auf einmal einschmelzen“ an ist).",
+    "count": "$1 Benachrichtigungen",
+    "countOne": "1 Benachrichtigung"
   },
   "gift": {
     "button": "Gift",

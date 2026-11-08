@@ -9,7 +9,9 @@ import {
   demoBuyback,
   demoHangar,
   demoStoreCredit,
+  demoPurchaseTime,
   demoUpgradeLog,
+  justBoughtOf,
   pickDemo,
 } from './demo';
 
@@ -197,5 +199,36 @@ describe('demoStoreCredit', () => {
     }
     expect(new Set(credits.map((credit) => credit.amount)).size).toBeGreaterThan(150);
     expect(demoStoreCredit(KEY)).toEqual(demoStoreCredit(KEY));
+  });
+});
+
+describe('pledge bought a few hours ago', () => {
+  const order = { id: 'A', amount: '$10.00 USD', placedAt: '2020-01-01', buyback: false };
+
+  it('is the first meltable pledge bought with store credit, before any paid with money', () => {
+    expect(justBoughtOf([pledge(3), pledge(2, { isMeltable: true }), pledge(1)])).toBe(2);
+    expect(justBoughtOf([pledge(3, { order }), pledge(2, { isMeltable: true })])).toBeUndefined();
+    expect(justBoughtOf([pledge(3), pledge(2)])).toBeUndefined();
+  });
+
+  it('was bought hours before the start of the current hour, in local time', () => {
+    const now = new Date(2026, 10, 8, 14, 37).getTime();
+    expect(demoPurchaseTime(now)).toBe(
+      `2026-11-08T${String(14 - DEMO.justBoughtHoursAgo).padStart(2, '0')}:00`,
+    );
+    // Shortly after midnight it was bought the day before.
+    expect(demoPurchaseTime(new Date(2026, 10, 8, 1, 5).getTime()).startsWith('2026-11-07T')).toBe(
+      true,
+    );
+  });
+
+  it('is dated on its purchase day, ahead of the others', () => {
+    const now = new Date(2026, 10, 8, 14, 37).getTime();
+    const real = hangar.map((entry) => ({ ...entry, isMeltable: true }));
+    const demo = demoHangar(real, KEY, '2026-11-08', now);
+    const bought = demo.find((entry) => entry.id === justBoughtOf(demo));
+    expect(bought?.createdAt).toBe('2026-11-08');
+    const dates = demo.map((entry) => entry.createdAt!);
+    expect(dates).toEqual([...dates].sort().reverse());
   });
 });

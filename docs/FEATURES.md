@@ -176,7 +176,9 @@ information (for screenshots or content creators)** keeps private details off sc
   provider instead of the real ones; links to RSI, the cart, invoices and refund requests are
   disabled. A **Demo** badge shows on every tab. Purchase dates are made up as well (newest first,
   two of them recent enough for the refund tags), and the dates of applied upgrades follow them:
-  after the purchase, in their real order. The summary shows a made-up store credit between $0
+  after the purchase, in their real order. The newest meltable pledge bought with store credit was
+  bought a few hours ago, so marking it to melt shows the countdown; marks set in the demo are kept
+  apart from the real ones. The summary shows a made-up store credit between $0
   and $100 instead of the account's. The made-up IDs, dates and store credit are derived from a random key
   that exists only in your browser, so they can't be traced back to the real ones.
 
@@ -239,12 +241,16 @@ on its own.
 
 - **Select pledges** in "My Hangar" with the round control in the top right corner of each row.
 - **Sidebar** below RSI's page navigation on the left, a column of boxes:
-  - **Notifications** (only while there is one): what the Hangar Manager has to tell you, newest
-    first – for now when a pledge [marked to melt](#mark-to-melt-later) can be melted, with a link
-    to it in "My Gear".
-    Check each one off with its checkbox, or all at once; checked-off ones don't come back. Below
-    them, the marked pledges still waiting, with the time left. Works without the browser's
-    notification permission; kept in this browser only.
+  - **Notifications** (only while there is one):
+    - When pledges [marked to melt](#mark-to-melt-later) can be melted now: how many, with
+      **Show** (only them in "My Hangar", without a filter button of its own: "Reset filters"
+      shows all again, and once none is left the list shows all on its own) and **Select**
+      (selects them, so the "Selected" box offers to melt them all at once with bulk melting on).
+      It stays while there are any and can't be checked off.
+    - Other notifications, newest first, each checked off with its checkbox or all at once;
+      checked-off ones don't come back.
+    - Below them, the marked pledges still waiting, with the time left.
+    - Works without the browser's notification permission.
   - **Store credit** of the account (as RSI's account menu shows it, read with every refresh and
     smart update).
   - **Summary**: number, value and discounts of the pledges shown in "My Hangar" (after search and
@@ -382,9 +388,10 @@ to melt** under the image of a meltable pledge keeps it in mind: a badge in its 
 ("Melt in 5 hr 12 min") and turns into **Melt now** once RSI allows it; its tooltip gives the exact
 time. The purchase time comes from the pledge log; with only the purchase date, the end of that
 day counts, and as RSI doesn't say which time zone it uses, the later reading counts – the badge
-may turn a little late, never too early. The mark goes once the pledge is gone from the hangar;
-the marks are kept in this browser only. Not available in the demo mode. Once a marked pledge
-can be melted, the sidebar's **Notifications** box says so.
+may turn a little late, never too early. The mark goes once the pledge is gone from the hangar.
+The marks are kept in the browser's sync storage, so they follow your browser profile to your
+other devices; in the demo mode the marks are the demo's own. Once marked pledges can be melted, the sidebar's
+**Notifications** box says how many, with **Show** to list just them.
 
 ## Gift
 

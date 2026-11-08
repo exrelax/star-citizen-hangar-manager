@@ -32,27 +32,28 @@ describe('meltableAt', () => {
 });
 
 describe('toggledMarks', () => {
-  const pledge = { id: 7, title: 'Paint' };
-
-  it('marks a pledge with the time and its title', () => {
-    expect(toggledMarks({}, pledge, 5)).toEqual({ 7: { markedAt: 5, title: 'Paint' } });
+  it('marks a pledge with the time', () => {
+    expect(toggledMarks({}, 7, 5)).toEqual({ 7: 5 });
   });
 
   it('unmarks a marked pledge and keeps the others', () => {
-    const marks = { 7: { markedAt: 5, title: 'Paint' }, 8: { markedAt: 6, title: 'Ship' } };
-    expect(toggledMarks(marks, pledge, 9)).toEqual({ 8: { markedAt: 6, title: 'Ship' } });
+    expect(toggledMarks({ 7: 5, 8: 6 }, 7, 9)).toEqual({ 8: 6 });
   });
 });
 
 describe('marksInHangar', () => {
-  const marks = { 7: { markedAt: 5, title: 'Paint' }, 8: { markedAt: 6, title: 'Ship' } };
+  const marks = { 7: 5, 8: 6, 9: 50 };
 
-  it('drops the marks of pledges gone from the hangar', () => {
-    expect(marksInHangar(marks, new Set([8, 9]))).toEqual({ 8: { markedAt: 6, title: 'Ship' } });
+  it('drops the marks of pledges gone since they were marked', () => {
+    expect(marksInHangar(marks, new Set([8]), 40)).toEqual({ 8: 6, 9: 50 });
+  });
+
+  it('keeps marks newer than the hangar: another device may know the pledge already', () => {
+    expect(marksInHangar({ 9: 50 }, new Set(), 40)).toEqual({ 9: 50 });
   });
 
   it('keeps the same object when nothing is gone', () => {
-    expect(marksInHangar(marks, new Set([7, 8]))).toBe(marks);
+    expect(marksInHangar(marks, new Set([7, 8, 9]), 40)).toBe(marks);
   });
 });
 

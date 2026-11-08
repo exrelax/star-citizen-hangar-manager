@@ -81,6 +81,7 @@ export function demoHangar(
   pledges: readonly PledgeView[],
   key: string,
   today = localToday(),
+  now = Date.now(),
 ): PledgeView[] {
   const fakeId = createFakeIds(key);
   // Some upgraded pledges for their "Applied upgrades", in the same fixed random order.
@@ -101,7 +102,15 @@ export function demoHangar(
       containsShip(pledge, DEMO.includeShips) ||
       pledge.protectedGames.length > 0,
   );
-  const dates = demoDates(selection, key, today);
+  const justBought = justBoughtOf(selection);
+  const dates = demoDates(
+    selection,
+    key,
+    today,
+    justBought === undefined
+      ? undefined
+      : { id: justBought, on: demoPurchaseTime(now).slice(0, 10) },
+  );
   return selection.map((pledge, position) => {
     const demo = anonymized(pledge, fakeId);
     const createdAt = dates[position]!;
@@ -116,19 +125,51 @@ export function demoHangar(
 }
 
 /**
+ * The pledge the demo shows as bought a few hours ago, to try marking it to melt (#97): the first
+ * meltable one bought with store credit, before the first one paid with money – so its date stays
+ * the newest of the list, ahead of the refund pledges. None if the list starts with a money-paid
+ * pledge.
+ */
+export function justBoughtOf(
+  pledges: readonly { id: number; order?: object; isMeltable: boolean }[],
+): number | undefined {
+  for (const pledge of pledges) {
+    if (pledge.order) return undefined;
+    if (pledge.isMeltable) return pledge.id;
+  }
+  return undefined;
+}
+
+/**
+ * The made-up purchase time of that pledge: `DEMO.justBoughtHoursAgo` hours before the start of the
+ * current hour, in local time and written like the pledge log's times ("2026-11-08T15:00").
+ */
+export function demoPurchaseTime(now = Date.now()): string {
+  const time = new Date(now);
+  time.setMinutes(0, 0, 0);
+  time.setHours(time.getHours() - DEMO.justBoughtHoursAgo);
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return `${time.getFullYear()}-${pad(time.getMonth() + 1)}-${pad(time.getDate())}T${pad(time.getHours())}:00`;
+}
+
+/**
  * Made-up purchase dates for the demo selection, newest first like RSI's list (which is sorted by
  * pledge id, so by purchase): random between `DEMO.earliestDate` and `today`, nothing of the real
  * dates. The first pledges with a money-paid order are dated for the refund tags (see
- * `DEMO.refundDaysLeft`); all other money-paid pledges are older than the refund period, so they
- * show no tag.
+ * `DEMO.refundDaysLeft`), and the pledge bought a few hours ago (`justBought`) on its day; all
+ * other money-paid pledges are older than the refund period, so they show no tag.
  */
 export function demoDates(
   pledges: readonly { id: number; order?: object }[],
   key: string,
   today: string,
+  /** The pledge bought a few hours ago (see `justBoughtOf`), on this day. */
+  justBought?: { id: number; on: string },
 ): string[] {
-  // Fixed dates, newest first: the refund pledges, then the end of the refund period.
+  // Fixed dates, newest first: the pledge just bought, the refund pledges, then the end of the
+  // refund period.
   const anchors = new Map<number, string>();
+  if (justBought) anchors.set(justBought.id, justBought.on);
   pledges
     .filter((pledge) => pledge.order)
     .slice(0, DEMO.refundDaysLeft.length)

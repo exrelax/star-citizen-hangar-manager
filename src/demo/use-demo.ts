@@ -3,7 +3,15 @@ import type { PledgeView } from '@/hangar/pledge-view';
 import type { Order } from '@/orders/orders';
 import { computed, inject, onMounted, shallowRef, type InjectionKey, type Ref } from 'vue';
 import type { StoreCredit } from '@/account/store-credit';
-import { createFakeIds, demoBuyback, demoHangar, demoStoreCredit, demoUpgradeLog } from './demo';
+import {
+  createFakeIds,
+  demoBuyback,
+  demoHangar,
+  demoPurchaseTime,
+  demoStoreCredit,
+  demoUpgradeLog,
+  justBoughtOf,
+} from './demo';
 import type { UpgradeLogEntry } from '@/hangar/upgrade-log';
 
 /** Random key of the demo, created on first use and kept only in this browser. */
@@ -36,6 +44,11 @@ export interface DemoContext {
   ) => UpgradeLogEntry[];
   /** The store credit shown instead of the account's. */
   storeCredit: StoreCredit;
+  /**
+   * The pledge shown as bought a few hours ago (see `justBoughtOf`) and its made-up purchase time
+   * ("2026-11-08T15:00"), for the countdown of a mark to melt.
+   */
+  justBought?: { pledgeId: number; at: string };
 }
 
 export const DEMO_CONTEXT: InjectionKey<Ref<DemoContext | null>> = Symbol('shm-demo');
@@ -58,6 +71,7 @@ export function useDemo(
   onMounted(async () => (key.value = await demoKey()));
 
   const ready = computed(() => !active.value || key.value !== undefined);
+  const demoPledges = computed(() => (key.value ? demoHangar(pledges.value, key.value) : []));
   const context = computed<DemoContext | null>(() => {
     if (!active.value || !key.value) return null;
     const fakeId = createFakeIds(key.value);
@@ -74,9 +88,11 @@ export function useDemo(
     const demoKey = key.value;
     const upgradeLog: DemoContext['upgradeLog'] = (pledgeId, createdAt, entries) =>
       demoUpgradeLog(entries, pledgeId, createdAt, demoKey);
-    return { fakeId, realOrder, upgradeLog, storeCredit: demoStoreCredit(demoKey) };
+    const justBoughtId = justBoughtOf(demoPledges.value);
+    const justBought =
+      justBoughtId === undefined ? undefined : { pledgeId: justBoughtId, at: demoPurchaseTime() };
+    return { fakeId, realOrder, upgradeLog, storeCredit: demoStoreCredit(demoKey), justBought };
   });
-  const demoPledges = computed(() => (key.value ? demoHangar(pledges.value, key.value) : []));
   const demoBuybackPledges = computed(() =>
     key.value ? demoBuyback(buyback.value, key.value) : [],
   );

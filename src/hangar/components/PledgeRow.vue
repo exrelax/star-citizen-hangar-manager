@@ -281,14 +281,14 @@ const toggle = () => {
         </button>
         <ExchangeOverlay v-if="exchanging" :pledge="pledge" @close="exchanging = false" />
         <!-- Marks it to melt later: tells when RSI lets it be melted (#97). -->
+        <!-- In the demo it marks in the demo's own marks (see `demoMeltMarksItem`). -->
         <button
           v-if="pledge.isMeltable"
-          v-tooltip="demo ? i18n.t('meltMark.demo') : i18n.t('meltMark.buttonHint')"
+          v-tooltip="i18n.t('meltMark.buttonHint')"
           type="button"
           class="shm-button shm-origin-button shm-melt-mark-button"
           :aria-pressed="!!mark"
-          :disabled="!!demo"
-          @click="toggleMeltMark(pledge)"
+          @click="toggleMeltMark(pledge.id, !!demo)"
         >
           <SvgIcon name="recycle" />
           {{ i18n.t(mark ? 'meltMark.unmark' : 'meltMark.mark') }}
