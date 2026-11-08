@@ -60,6 +60,8 @@ sees or stores your RSI login.
   (`storage.session`) and gone when the browser session ends.
 - **Demo mode**: a random key, kept in the local storage, makes up the pledge IDs and dates of the
   demo. It never leaves your browser.
+- **Pledges marked to melt**: their IDs, titles and when they were marked, kept in the local
+  storage until the pledge is gone from your hangar. They never leave your browser.
 - The **search term** is put into the page's address (`?search=…`) so searches can be bookmarked;
   it is part of your browser history like any other address.
 

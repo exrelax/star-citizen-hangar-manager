@@ -19,6 +19,9 @@ import ProtectedBadge from './ProtectedBadge.vue';
 import UpgradeLog from './UpgradeLog.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { selection } from '../selection';
+import { formatTimeLeft, toggleMeltMark } from '../melt-marks';
+import { useMarkedPledges } from '../use-melt-marks';
+import { useNow } from '@/shared/use-now';
 
 const props = defineProps<{
   pledge: PledgeView;
@@ -67,6 +70,25 @@ const discount = computed(() =>
 
 /** The icon of the pledge's kind, on the row's image. */
 const kind = computed(() => kindIcon({ ...props.pledge, isReward: !!props.pledge.reward }));
+
+/** Marked to melt (#97): when it can be melted, counted down in the badge. */
+const marked = useMarkedPledges();
+const mark = computed(() => marked.value.get(props.pledge.id));
+const now = useNow();
+const meltMark = computed(() => {
+  const value = mark.value;
+  if (!value) return undefined;
+  const left = value.meltableAt - now.value;
+  const at = new Intl.DateTimeFormat(locale.value, { dateStyle: 'medium', timeStyle: 'short' });
+  return {
+    ready: left <= 0,
+    label:
+      left <= 0
+        ? i18n.t('meltMark.ready')
+        : i18n.t('meltMark.waiting', [formatTimeLeft(left, locale.value)]),
+    hint: i18n.t('meltMark.hint', [at.format(value.meltableAt)]),
+  };
+});
 
 /** RSI's exchange (melt) dialog, in the manager's design. */
 const exchanging = ref(false);
@@ -159,6 +181,15 @@ const toggle = () => {
       </span>
 
       <span class="shm-badges">
+        <span
+          v-if="meltMark"
+          v-tooltip="meltMark.hint"
+          class="shm-badge is-melt-mark"
+          :class="{ 'is-ready': meltMark.ready }"
+        >
+          <SvgIcon name="recycle" />
+          {{ meltMark.label }}
+        </span>
         <!-- Opens the Paint Discount Consultant in the Pledge Store tab. -->
         <button
           v-if="rebuyText"
@@ -249,6 +280,19 @@ const toggle = () => {
           {{ i18n.t('exchange.button') }}
         </button>
         <ExchangeOverlay v-if="exchanging" :pledge="pledge" @close="exchanging = false" />
+        <!-- Marks it to melt later: tells when RSI lets it be melted (#97). -->
+        <button
+          v-if="pledge.isMeltable"
+          v-tooltip="demo ? i18n.t('meltMark.demo') : i18n.t('meltMark.buttonHint')"
+          type="button"
+          class="shm-button shm-origin-button shm-melt-mark-button"
+          :aria-pressed="!!mark"
+          :disabled="!!demo"
+          @click="toggleMeltMark(pledge)"
+        >
+          <SvgIcon name="recycle" />
+          {{ i18n.t(mark ? 'meltMark.unmark' : 'meltMark.mark') }}
+        </button>
         <button
           v-if="pledge.isGiftable"
           v-tooltip="demo ? i18n.t('gift.demo') : i18n.t('gift.buttonHint')"

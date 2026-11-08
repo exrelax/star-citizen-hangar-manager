@@ -124,7 +124,11 @@ export async function prepareOrderSync(
     for (const entry of logEntries) {
       const link = parseLogEntry(entry);
       if (link)
-        snapshot.pledgeOrders[link.pledgeId] = { orderId: link.orderId, buyback: link.buyback };
+        snapshot.pledgeOrders[link.pledgeId] = {
+          orderId: link.orderId,
+          buyback: link.buyback,
+          ...(link.createdAt && { createdAt: link.createdAt }),
+        };
     }
     // The pages read are the newest, from page 1 on: their orders' index is their position.
     // Orders not read again moved down by the number of new ones.

@@ -344,6 +344,27 @@
   cursor: help;
 }
 
+/* Marked to melt (#97): waiting for RSI's 24 hours, then ready to melt. */
+.shm-badge.is-melt-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--shm-warning);
+  border-color: color-mix(in srgb, var(--shm-warning) 60%, transparent);
+  cursor: help;
+}
+
+.shm-badge.is-melt-mark.is-ready {
+  color: var(--shm-text-on-warning);
+  background: var(--shm-warning);
+  border-color: var(--shm-warning);
+}
+
+.shm-melt-mark-button[aria-pressed='true'] {
+  color: var(--shm-warning);
+  border-color: var(--shm-warning);
+}
+
 /* The last days of the refund window. */
 .shm-badge.is-refund.is-urgent {
   color: var(--shm-text-on-accent);

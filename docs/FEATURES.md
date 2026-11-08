@@ -369,6 +369,16 @@ The pledges are exchanged one after the other, a second apart; the first one RSI
 wrong password) stops the rest, and the dialog says what was exchanged and what wasn't. Pledges
 that can't be melted are left out; in the demo mode the button is disabled.
 
+## Mark to melt later
+
+RSI lets a pledge be melted only 24 hours after it was bought (with store credit or money). **Mark
+to melt** under the image of a meltable pledge keeps it in mind: a badge in its row counts down
+("Melt in 5 hr 12 min") and turns into **Melt now** once RSI allows it; its tooltip gives the exact
+time. The purchase time comes from the pledge log; with only the purchase date, the end of that
+day counts, and as RSI doesn't say which time zone it uses, the later reading counts – the badge
+may turn a little late, never too early. The mark goes once the pledge is gone from the hangar;
+the marks are kept in this browser only. Not available in the demo mode.
+
 ## Gift
 
 **Gift** under "Exchange" (for giftable pledges) opens RSI's gift dialog of "My Gear" in the

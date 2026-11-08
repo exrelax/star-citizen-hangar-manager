@@ -559,6 +559,15 @@
     "successNote": "They leave the list when you close this dialog; the buy back shows them after the next update.",
     "failed": "RSI refused “$1”: $2. $3 more pledges were not sent and stay in your hangar."
   },
+  "meltMark": {
+    "mark": "Mark to melt",
+    "unmark": "Unmark",
+    "buttonHint": "Mark this pledge to melt it later: the Hangar Manager tells you when RSI lets you melt it – 24 hours after buying it.",
+    "demo": "Not available in demo mode.",
+    "waiting": "Melt in $1",
+    "ready": "Melt now",
+    "hint": "Marked to melt. RSI lets you melt a pledge 24 hours after buying it: from $1."
+  },
   "gift": {
     "button": "Gift",
     "buttonHint": "Gift this pledge to another citizen by email, as in “My Gear”. Opens a dialog first.",
