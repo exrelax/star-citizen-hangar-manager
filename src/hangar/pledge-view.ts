@@ -5,7 +5,12 @@ import { rewardKind, type RewardKind } from './rewards';
 import { bestInsurance, type Insurance } from './insurance';
 import { normalizeSearchText } from './search';
 import type { ShipLink, ShipLinks } from './ship-links';
-import { pledgeDiscount, type PledgeDiscount, type PriceLookup } from './ship-prices';
+import {
+  pledgeDiscount,
+  roundPaintDiscount,
+  type PledgeDiscount,
+  type PriceLookup,
+} from './ship-prices';
 import type { ItemPriceLookup } from '@/store/items/item-prices';
 
 /** A ship with its links to other platforms (if known). */
@@ -110,6 +115,11 @@ export function toPledgeView(
   // RSI leaves out Exchange and Gift for protected pledges anyway; this also holds for pledges
   // whose buttons were stored before RSI started protecting them.
   const isProtected = protectedGames.length > 0;
+  const isPaint = !pledge.upgrade && pledge.items.length > 0 && pledge.items.every(isPaintItem);
+  const discount =
+    priceOf || itemPriceOf
+      ? pledgeDiscount(pledge, priceOf, hasGameAccess, itemPriceOf)
+      : undefined;
   return {
     id: pledge.id,
     page: Math.floor(position / HANGAR_PAGE_SIZE) + 1,
@@ -120,10 +130,8 @@ export function toPledgeView(
     image: pledgeImage(pledge, currentShip),
     value: pledge.value,
     valueUsd: pledge.valueUsd,
-    discount:
-      priceOf || itemPriceOf
-        ? pledgeDiscount(pledge, priceOf, hasGameAccess, itemPriceOf)
-        : undefined,
+    // Paints are rounded to RSI's volume discount tiers.
+    discount: discount && isPaint ? roundPaintDiscount(discount) : discount,
     createdAt: pledge.createdAt,
     reward: rewardKind(pledge),
     hasLti: pledge.items.some((item) => item.kind === 'Insurance' && /lifetime/i.test(item.title)),
@@ -132,7 +140,7 @@ export function toPledgeView(
         ? pledge.upgrade.targetItems.map((item) => item.name)
         : pledge.items.filter((item) => item.kind === 'Insurance').map((item) => item.title),
     ),
-    isPaint: !pledge.upgrade && pledge.items.length > 0 && pledge.items.every(isPaintItem),
+    isPaint,
     isCcu: pledge.upgrade !== undefined,
     isStandaloneShip: pledge.category === 'standalone_ship',
     isGamePackage: pledge.category === 'game_package',
