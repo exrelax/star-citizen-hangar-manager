@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   canSelectPledges,
+  isDefaultSidebarOrder,
   moveBox,
   normalizeSidebarOrder,
   placeAt,
@@ -84,6 +85,14 @@ describe('normalizeSidebarOrder', () => {
   it('puts the notifications on top of an order stored before them', () => {
     const before = ['paintConsultant', 'summary', 'selection'];
     expect(normalizeSidebarOrder(before)).toEqual(['notifications', ...before]);
+  });
+});
+
+describe('isDefaultSidebarOrder', () => {
+  it('tells the default order from a changed one', () => {
+    expect(isDefaultSidebarOrder([...SIDEBAR_BOXES])).toBe(true);
+    expect(isDefaultSidebarOrder([...SIDEBAR_BOXES].reverse())).toBe(false);
+    expect(isDefaultSidebarOrder(SIDEBAR_BOXES.slice(1))).toBe(false);
   });
 });
 

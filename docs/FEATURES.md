@@ -274,7 +274,7 @@ on its own.
   showing the hangar's figures.
 - **Reorder the boxes** by dragging their title: the dragged box follows the pointer, the places
   of the boxes show as the sidebar's grid, and the other boxes glide out of the way. Or focus a
-  title and use the arrow keys up and down. The order is kept in the settings.
+  title and use the arrow keys up and down. The order is kept in the settings, which can reset it.
 - **Collapse a box** to its title with the arrow in its top right corner; it stays collapsed
   (also kept in the settings).
 - It sticks while scrolling as long as it fits into the window; a higher sidebar scrolls with the
@@ -561,6 +561,8 @@ In the order of the settings tab:
   - **Boxes** (all on by default, only while the sidebar is shown): notifications, summary,
     selected and Paint Discount Consultant. Without the "Selected" box, the rows have no select
     control.
+  - **Reset order** (only while the boxes aren't in their default order): puts the boxes back
+    into their default order; which boxes are shown and which are collapsed stays as it is.
   - **Count the pledges per type in the summary** (off by default): only for the "Summary" box;
     the "Selected" box always counts the selected pledges per type.
 - **Paint Discount Consultant** (it always buys with store credit, never with new money):

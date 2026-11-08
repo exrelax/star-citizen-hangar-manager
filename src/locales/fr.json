@@ -193,6 +193,8 @@
     "sidebarShow": "Afficher la barre latérale",
     "sidebarShowHint": "Des cadres sous la navigation de RSI à gauche, sur chaque onglet du gestionnaire.",
     "sidebarBoxes": "Cadres",
+    "sidebarOrderReset": "Réinitialiser l’ordre",
+    "sidebarOrderResetHint": "Remet les cadres de la barre latérale dans leur ordre par défaut. Les cadres affichés et ceux qui sont repliés restent tels quels.",
     "sidebarNotificationsHint": "Affiché tant qu’il y a une notification : quand des pledges marqués pour fondre peuvent être fondus maintenant – avec des boutons pour les afficher ou les sélectionner – et les pledges marqués qui attendent encore. Les notifications à cocher : une par une ou toutes à la fois. Sans autorisation du navigateur.",
     "sidebarSelectionHint": "Affiché tant que des pledges sont sélectionnés. Sans lui, les lignes n'ont pas de case de sélection.",
     "sidebarPaintConsultantHint": "Affiché tant que des peintures peuvent être rachetées avec une remise sur volume plus élevée : combien, et le crédit boutique libéré. Masqué tant que « Masquer la valeur de fusion » est activé.",

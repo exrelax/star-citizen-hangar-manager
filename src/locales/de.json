@@ -193,6 +193,8 @@
     "sidebarShow": "Seitenleiste anzeigen",
     "sidebarShowHint": "Boxen unter RSIs Navigation links, auf jedem Tab des Managers.",
     "sidebarBoxes": "Boxen",
+    "sidebarOrderReset": "Reihenfolge zurücksetzen",
+    "sidebarOrderResetHint": "Stellt die Boxen der Sidebar wieder in ihre Standard-Reihenfolge. Welche Boxen angezeigt und welche zugeklappt sind, bleibt, wie es ist.",
     "sidebarNotificationsHint": "Erscheint, solange es eine Benachrichtigung gibt: wenn zum Einschmelzen gemerkte Pledges jetzt eingeschmolzen werden können – mit Buttons, um sie anzuzeigen oder auszuwählen – und die gemerkten, die noch warten. Abhakbare Benachrichtigungen: einzeln oder alle auf einmal. Ohne Berechtigung des Browsers.",
     "sidebarSelectionHint": "Erscheint, solange Pledges ausgewählt sind. Ohne sie haben die Zeilen keine Auswahl.",
     "sidebarPaintConsultantHint": "Erscheint, solange sich Paints mit höherem Mengenrabatt zurückkaufen lassen: wie viele, und wie viele Store Credits dabei frei werden. Ausgeblendet, solange „Schmelzwert ausblenden“ an ist.",

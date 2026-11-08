@@ -31,6 +31,11 @@ export function normalizeSidebarOrder(stored: unknown): SidebarBox[] {
   return order;
 }
 
+/** Whether `order` is the default order of the boxes. */
+export const isDefaultSidebarOrder = (order: readonly SidebarBox[]) =>
+  order.length === SIDEBAR_BOXES.length &&
+  order.every((box, index) => box === SIDEBAR_BOXES[index]);
+
 /** `order` with `box` placed right before or after `target`. */
 export function placeBox(
   order: readonly SidebarBox[],
