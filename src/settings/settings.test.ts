@@ -14,6 +14,8 @@ describe('withDefaults', () => {
         hidePledgeIds: true,
         demoMode: true,
         hideRefund: true,
+        sidebar: false,
+        sidebarHidden: ['selection', 'events' as never],
         sort: { hangar: 'valueDesc', buyback: 'valueDesc' as never },
         shipLinks: { erkul: false, fleetyards: true },
       }),
@@ -24,6 +26,8 @@ describe('withDefaults', () => {
       translateRsiTexts: false,
       hideSupersededInsurances: true,
       summaryTypes: false,
+      sidebar: false,
+      sidebarHidden: ['selection'],
       sidebarOrder: ['storeCredit', 'summary', 'selection'],
       sidebarCollapsed: [],
       hidePledgeIds: true,
@@ -59,6 +63,8 @@ describe('withDefaults', () => {
         filters: { hangar: 'all', buyback: { order: 5 } },
         sidebarOrder: 'summary',
         sidebarCollapsed: ['events'],
+        sidebar: 'no',
+        sidebarHidden: 'summary',
       } as never),
     ).toEqual(DEFAULT_SETTINGS);
   });

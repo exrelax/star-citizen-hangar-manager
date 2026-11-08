@@ -97,11 +97,12 @@ const current = savedOrder.value;
 const preview = ref<Box[]>();
 const order = computed(() => preview.value ?? current.value);
 const isShown = (box: Box) =>
-  box === 'selection'
+  !props.settings.sidebarHidden.includes(box) &&
+  (box === 'selection'
     ? !!chosen.value
     : box === 'storeCredit'
       ? !props.settings.hideMeltValue
-      : true;
+      : true);
 const boxes = computed(() => order.value.filter(isShown));
 
 const isCollapsed = (box: Box) => savedCollapsed.value.value.includes(box);
@@ -262,6 +263,7 @@ async function move(box: Box, step: -1 | 1) {
 
 <template>
   <div
+    v-if="boxes.length"
     ref="root"
     class="shm-sidebar"
     :class="[themeClasses(settings), { 'is-sorting': dragged }]"

@@ -46,6 +46,11 @@ ul.pledges > li.shm-highlight {
   position: static;
 }
 
+/* The sidebar is switched off, or all its boxes. */
+.shm-summary-anchor:empty {
+  display: none;
+}
+
 html:not(.shm-manager-active) .shm-summary-anchor {
   display: none;
 }

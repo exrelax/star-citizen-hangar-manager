@@ -12,6 +12,7 @@ import type { PledgeView } from '../pledge-view';
 import { HANGAR_SORTS, sortEntries, type HangarSort } from '../sorting';
 import { useSettings } from '@/settings/use-settings';
 import { visiblePledgeIds } from '../selection';
+import { canSelectPledges } from '../sidebar';
 import ManagerList from './ManagerList.vue';
 import PledgeRow from './PledgeRow.vue';
 
@@ -25,6 +26,7 @@ const displayClasses = computed(() => ({
   'shm-hide-superseded-insurances': props.settings.hideSupersededInsurances,
   'shm-hide-erkul': !props.settings.shipLinks.erkul,
   'shm-hide-fleetyards': !props.settings.shipLinks.fleetyards,
+  'shm-hide-select': !canSelectPledges(props.settings),
 }));
 
 const filterGroups = computed(() =>

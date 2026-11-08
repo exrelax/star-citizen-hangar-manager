@@ -185,7 +185,13 @@
     "hideSupersededInsurances": "Show only the best insurance of upgraded ships",
     "hideSupersededInsurancesHint": "After upgrades a pledge lists the insurance of every step, but only the best one is kept: LTI if there is one, otherwise the most months. The others are hidden in the opened item.",
     "summaryTypes": "Count the pledges per type in the summary",
-    "summaryTypesHint": "The summary box of “My Hangar” then also shows how many ships, CCUs, paints, game packages and rewards are shown and selected.",
+    "summaryTypesHint": "The sidebar's summaries then also show how many ships, CCUs, paints, game packages and rewards are shown and selected.",
+    "sidebar": "Sidebar",
+    "sidebarShow": "Show the sidebar",
+    "sidebarShowHint": "Boxes below RSI's navigation on the left, on every tab of the manager.",
+    "sidebarBoxes": "Boxes",
+    "sidebarStoreCreditHint": "Hidden while “Hide melt value” is on.",
+    "sidebarSelectionHint": "Shown while pledges are selected. Without it, the rows have no select control.",
     "filtersLists": {
       "hangar": "My Hangar",
       "buyback": "Buy Back"

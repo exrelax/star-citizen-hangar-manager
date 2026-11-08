@@ -77,3 +77,12 @@ export function moveBox(
   const target = visible[visible.indexOf(box) + step];
   return target ? placeBox(order, box, target, step > 0) : [...order];
 }
+
+/**
+ * Whether pledges can be selected: only for the sidebar's "Selected" box, so the rows show their
+ * select control only while it is switched on (see the settings).
+ */
+export const canSelectPledges = (settings: {
+  sidebar: boolean;
+  sidebarHidden: readonly SidebarBox[];
+}) => settings.sidebar && !settings.sidebarHidden.includes('selection');

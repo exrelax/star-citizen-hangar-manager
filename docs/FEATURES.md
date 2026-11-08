@@ -245,7 +245,8 @@ on its own.
   (also kept in the settings).
 - It sticks while scrolling as long as it fits into the window; a higher sidebar scrolls with the
   page, so its lower boxes stay reachable.
-- A setting adds the number of pledges per type (ships, CCUs, paints, …).
+- Settings switch the sidebar or single boxes off and add the number of pledges per type (ships,
+  CCUs, paints, …).
 - Values and discounts are left out when "Hide melt value" is on.
 
 ## Search, filters and sorting
@@ -464,8 +465,12 @@ In the order of the settings tab:
   - **Show only the best insurance of upgraded ships** (on by default): after upgrades a pledge
     lists the insurance of every step; only the one that counts (LTI, otherwise the most months)
     is listed.
-  - **Count the pledges per type in the summary** (off by default).
   - **"Show in Buy Back" opens**: only the pledge, or the list page with the pledge highlighted.
+- **Sidebar**:
+  - **Show the sidebar** (on by default) – see [Selection and summary](#selection-and-summary).
+  - **Boxes** (all on by default, only while the sidebar is shown): store credit, summary and
+    selected. Without the "Selected" box, the rows have no select control.
+  - **Count the pledges per type in the summary** (off by default).
 - **Smart updates**:
   - **Check hangar, buy back and orders for changes** (on by default) – see
     [Built for speed](#built-for-speed).
