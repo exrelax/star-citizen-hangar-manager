@@ -11,13 +11,10 @@ data stays in your browser.
 ## Install
 
 - **Chrome:** [Star Citizen Hangar Manager in the Chrome Web Store](https://chromewebstore.google.com/detail/star-citizen-hangar-manag/nofhjnkljndooegpllppamacogkikdjg)
+- **Firefox:** [Star Citizen Hangar Manager on Firefox Add-ons](https://addons.mozilla.org/firefox/addon/star-citizen-hangar-manager/)
 
 Submitted on 2026-11-05, currently in review:
 
-- **Firefox:** "Star Citizen Hangar Manager" on Firefox Add-ons, add-on ID
-  `star-citizen-hangar-manager@exrelax`:
-  <https://addons.mozilla.org/firefox/addon/star-citizen-hangar-manager/> (available once the
-  review is done)
 - **Opera:** "Star Citizen Hangar Manager" on Opera Add-ons, ID `pnlcicdocajlpfaehmgclaonkclfcikm`
   (the link follows once the review is done)
 
@@ -26,17 +23,12 @@ Planned:
 - **Microsoft Edge:** a listing on Microsoft Edge Add-ons. Until then, Edge can install it from
   the Chrome Web Store: allow extensions from other stores when Edge asks.
 
-Until the other listings are live, you can install the extension from a file of the
-[latest release on GitHub](https://github.com/exrelax/star-citizen-hangar-manager/releases/latest).
-Installed this way, it doesn't update itself.
-
-- **Chrome:** download `star-citizen-hangar-manager-1.0.0-chrome.zip` and unzip it into a
-  folder. Open `chrome://extensions`, switch on **Developer mode** in the top right corner, click
-  **Load unpacked** and select the folder. Opera and Edge take the same folder under
-  `opera://extensions` and `edge://extensions`.
-- **Firefox:** download `star-citizen-hangar-manager-1.0.0-firefox.zip`. Open
-  `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on…** and select the zip.
-  Firefox removes the extension again when it is closed.
+Until the Opera listing is live, you can install the extension in Opera (and Edge) from a file of
+the [latest release on GitHub](https://github.com/exrelax/star-citizen-hangar-manager/releases/latest).
+Installed this way, it doesn't update itself: download
+`star-citizen-hangar-manager-1.0.0-chrome.zip` and unzip it into a folder. Open
+`opera://extensions` (or `edge://extensions`), switch on **Developer mode**, click **Load
+unpacked** and select the folder.
 
 ## What it does
 
