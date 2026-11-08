@@ -139,7 +139,7 @@ export async function startStorageSync(id: StorageId): Promise<void> {
  * last and spot check pages find the rest (see `smart-update/check.ts`). `force` skips the
  * interval, e.g. when returning from "My Gear".
  *
- * Called when the manager is shown, every minute while it stays visible (see
+ * Called when the manager is shown, every 10 seconds while it stays visible (see
  * `smart-update/schedule.ts`) and after exchanges and gifts. Only one tab checks at a time: the
  * others skip, and as `checkedAt` is read inside the lock, they find the check done afterwards.
  */

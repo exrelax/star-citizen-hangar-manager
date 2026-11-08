@@ -131,7 +131,7 @@ export default defineContentScript({
         managerShown: managerVisible,
         hidden: document.visibilityState === 'hidden',
       });
-    startSmartUpdateTimer(ctx, timerActive, () => maybeRunSmartUpdate());
+    startSmartUpdateTimer(ctx.signal, timerActive, () => maybeRunSmartUpdate());
     render();
   },
 });

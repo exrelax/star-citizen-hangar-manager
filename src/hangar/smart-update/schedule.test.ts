@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { isCheckDue, isTimerActive, startSmartUpdateTimer, withSmartUpdateLock } from './schedule';
 
 describe('isTimerActive', () => {
@@ -23,23 +23,66 @@ describe('isCheckDue', () => {
 });
 
 describe('startSmartUpdateTimer', () => {
-  it('checks on every step while active, and not while inactive', () => {
-    let tick = () => {};
-    const timers = { setInterval: vi.fn((handler: () => void) => (tick = handler)) };
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  it('looks a step after the last look, only while active', async () => {
     let active = true;
-    const check = vi.fn();
+    const check = vi.fn(async () => {});
+    startSmartUpdateTimer(new AbortController().signal, () => active, check, 1000);
 
-    startSmartUpdateTimer(timers, () => active, check, 1000);
-    expect(timers.setInterval).toHaveBeenCalledWith(expect.any(Function), 1000);
-
-    tick();
-    tick();
+    expect(check).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(check).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(1000);
     expect(check).toHaveBeenCalledTimes(2);
 
-    // Tab hidden or another view shown: no checks.
+    // Tab hidden or another view shown: no checks, but it keeps looking.
     active = false;
-    tick();
+    await vi.advanceTimersByTimeAsync(3000);
     expect(check).toHaveBeenCalledTimes(2);
+    active = true;
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(check).toHaveBeenCalledTimes(3);
+  });
+
+  it('plans the next look only once a check is done', async () => {
+    let finish = () => {};
+    const check = vi.fn(() => new Promise<void>((resolve) => (finish = resolve)));
+    startSmartUpdateTimer(new AbortController().signal, () => true, check, 1000);
+
+    await vi.advanceTimersByTimeAsync(1000);
+    // A check taking longer than several steps: no second one meanwhile.
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(check).toHaveBeenCalledTimes(1);
+
+    finish();
+    await vi.advanceTimersByTimeAsync(999);
+    expect(check).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(check).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps looking after a failed check', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const check = vi.fn(async () => {
+      throw new Error('offline');
+    });
+    startSmartUpdateTimer(new AbortController().signal, () => true, check, 1000);
+
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(check).toHaveBeenCalledTimes(2);
+  });
+
+  it('stops once the content script is invalidated', async () => {
+    const controller = new AbortController();
+    const check = vi.fn(async () => {});
+    startSmartUpdateTimer(controller.signal, () => true, check, 1000);
+
+    await vi.advanceTimersByTimeAsync(1000);
+    controller.abort();
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(check).toHaveBeenCalledTimes(1);
   });
 });
 

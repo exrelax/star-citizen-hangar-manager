@@ -1,8 +1,8 @@
 import { SMART_UPDATE } from '@/config';
 
 /*
- * When smart updates run (see `maybeRunSmartUpdate` in `../sync-state.ts`): a timer looks every
- * minute whether a check is due while the manager is shown in a visible tab, and a lock across
+ * When smart updates run (see `maybeRunSmartUpdate` in `../sync-state.ts`): a timer looks 10
+ * seconds after the last look whether a check is due while the manager is shown in a visible tab, and a lock across
  * the tabs lets only one of them check at a time.
  */
 
@@ -30,19 +30,34 @@ export const isCheckDue = ({
 }) => now - checkedAt >= intervalMinutes * 60_000;
 
 /**
- * Looks every `stepMs` whether to `check` – only while `isActive()`. `check` decides itself
- * whether a check is due. `timers.setInterval` is the content script's (`ctx`), which stops the
- * timer when the script is invalidated (extension reloaded or updated).
+ * Looks `stepMs` after the last look whether to `check` – only while `isActive()`; `check`
+ * decides itself whether a check is due. The next look is planned only once `check` is done (also
+ * when it failed), so looks never overlap and the step counts from the end of a check.
+ *
+ * `signal` (the content script's `ctx.signal`) stops it when the script is invalidated (extension
+ * reloaded or updated). Not `ctx.setTimeout`: it adds a listener for that on every call.
  */
 export function startSmartUpdateTimer(
-  timers: { setInterval: (handler: () => void, timeout: number) => unknown },
+  signal: AbortSignal,
   isActive: () => boolean,
-  check: () => unknown,
+  check: () => Promise<unknown>,
   stepMs: number = SMART_UPDATE.timerStepMs,
 ): void {
-  timers.setInterval(() => {
-    if (isActive()) void check();
-  }, stepMs);
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const plan = () => {
+    if (!signal.aborted) timer = setTimeout(look, stepMs);
+  };
+  const look = async () => {
+    try {
+      if (isActive()) await check();
+    } catch (error) {
+      console.warn('[star-citizen-hangar-manager] Smart update check failed', error);
+    } finally {
+      plan();
+    }
+  };
+  signal.addEventListener('abort', () => clearTimeout(timer), { once: true });
+  plan();
 }
 
 const LOCK_NAME = 'star-citizen-hangar-manager:smart-update';
