@@ -25,7 +25,7 @@ announcements.
   and streams
 - Your whole hangar and buy back on one page, instead of RSI's 10 pledges per page
 - Instant search and filters that include or exclude (ships, CCUs, paints, LTI, warbond, giftable,
-  meltable, valuable, rewards, …), sorting by date, value or discount
+  meltable, valuable, discount, rewards, …), sorting by date, value or discount
 - Discounts compared to the original price: ships and CCUs, paints, gear, packs and more
 - The best insurance of every pledge as a tag (LTI, 10 years, …)
 - The full CCU history of upgraded ships, with the discount of every step
@@ -248,7 +248,9 @@ on its own.
   - **Types** – what a pledge is: Ships, CCUs, Paints, Game access (game packages and other
     pledges that contain the game) and Rewards (Concierge, event and referral rewards).
   - **Features** – what it has: LTI, Warbond (bought with money, i.e. with an order ID),
-    Giftable, Meltable and Valuable (worth more than $0).
+    Giftable, Meltable, Valuable (worth more than $0) and Discount (bought for less than the
+    original price, see [Discounts](#discounts); pledges whose original price isn't known, or
+    that cost more, don't count).
 - **Include or exclude**: each click on a filter cycles through off → only pledges with it →
   only pledges without it ("−Rewards" hides all rewards). All active filters combine with "and";
   one click on "Reset filters" turns them all off.

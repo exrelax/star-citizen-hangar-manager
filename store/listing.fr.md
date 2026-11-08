@@ -37,7 +37,7 @@ PRIVÉ PAR CONCEPTION
 • Masque les ID de pledges et de commandes, ton nom et ton adresse, les montants et les délais de remboursement pour les captures d’écran et les streams – ou affiche une sélection anonymisée en mode démo
 
 TOUT TON HANGAR ET TES RACHATS
-• Des filtres pour inclure ou exclure : vaisseaux, CCU, peintures, accès au jeu, récompenses, LTI, warbond, offrables, fusionnables, avec valeur
+• Des filtres pour inclure ou exclure : vaisseaux, CCU, peintures, accès au jeu, récompenses, LTI, warbond, offrables, fusionnables, avec valeur, avec remise
 • La meilleure assurance de chaque pledge en étiquette (LTI, 10 ans, …)
 • Les remises des vaisseaux et des CCU par rapport au prix d’origine
 • L’historique complet des CCU des vaisseaux améliorés, avec la remise de chaque étape

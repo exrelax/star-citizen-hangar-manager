@@ -86,6 +86,7 @@
     "ships": "Schiffe",
     "warbond": "Warbond",
     "valuable": "Mit Wert",
+    "discount": "Rabatt",
     "rewards": "Rewards",
     "reset": "Filter zurücksetzen",
     "stateOff": "Klick: nur Items mit „$1“ anzeigen.",
@@ -96,7 +97,8 @@
       "warbond": "Mit Geld gekauft: Der Pledge hat eine mit Geld bezahlte Order (nicht mit Store Credit).",
       "valuable": "Pledges mit einem Wert über $$0.",
       "rewards": "Rewards mit einem Wert von $$0: Event-, Referral-, Concierge- und andere Rewards.",
-      "rewardsByName": "Rewards, am Namen erkannt: Event-, Referral-, Concierge- und andere Rewards."
+      "rewardsByName": "Rewards, am Namen erkannt: Event-, Referral-, Concierge- und andere Rewards.",
+      "discount": "Günstiger als der Originalpreis gekauft: Schiffe und CCUs verglichen mit RSIs Schiffspreisen, Paints, Gear und mehr mit dem Pledge Store. Pledges ohne bekannten Originalpreis oder mit Aufpreis zählen nicht."
     },
     "categories": {
       "types": "Typen",

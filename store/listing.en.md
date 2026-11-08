@@ -37,7 +37,7 @@ PRIVATE BY DESIGN
 • Hide pledge and order IDs, your name and address, values and refund periods for screenshots and streams – or show an anonymized selection in the demo mode
 
 YOUR WHOLE HANGAR AND BUY BACK
-• Filters that include or exclude: ships, CCUs, paints, game access, rewards, LTI, warbond, giftable, meltable, valuable
+• Filters that include or exclude: ships, CCUs, paints, game access, rewards, LTI, warbond, giftable, meltable, valuable, discount
 • The best insurance of every pledge as a tag (LTI, 10 years, …)
 • Discounts of ships and CCUs compared to their original price
 • The full CCU history of upgraded ships, with the discount of every step
