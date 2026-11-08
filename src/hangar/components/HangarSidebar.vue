@@ -17,9 +17,9 @@ import SidebarBox from './SidebarBox.vue';
 import BulkExchangeOverlay from './BulkExchangeOverlay.vue';
 import { checkOff, type AppNotification } from '@/notifications/notifications';
 import { useOpenNotifications } from '@/notifications/use-notifications';
-import { useMarkedPledges } from '../use-melt-marks';
+import { meltReadyIds, showMeltReady, useMarkedPledges } from '../use-melt-marks';
 import { formatTimeLeft } from '../melt-marks';
-import { myGearHref } from '../route';
+import { hashOfTab, myGearHref } from '../route';
 import { useNow } from '@/shared/use-now';
 import {
   maybePaintConsultant,
@@ -89,21 +89,39 @@ const types = (summary: PledgeSummary) =>
 const notes = useOpenNotifications();
 const marked = useMarkedPledges();
 const now = useNow();
-/** Marked pledges that can't be melted yet, the soonest first. */
+const titleOf = computed(() => new Map(props.pledges.map((pledge) => [pledge.id, pledge.title])));
+/** Marked pledges of the hangar that can't be melted yet, the soonest first. */
 const pending = computed(() =>
   [...marked.value.values()]
-    .filter((mark) => mark.meltableAt > now.value)
+    .filter((mark) => mark.meltableAt > now.value && titleOf.value.has(mark.pledgeId))
     .sort((a, b) => a.meltableAt - b.meltableAt),
 );
+/**
+ * Marked pledges that can be melted now: one notification for all of them, which stays while
+ * there are any – it can't be checked off.
+ */
+const readyCount = computed(() => meltReadyIds.value.size);
+/** All notifications: the one about the marked pledges, and the stored ones. */
+const noteCount = computed(() => notes.value.length + (readyCount.value ? 1 : 0));
 const noteTime = computed(
   () => new Intl.DateTimeFormat(locale.value, { dateStyle: 'medium', timeStyle: 'short' }),
 );
-const noteText = (note: AppNotification) => i18n.t('notifications.meltable', [note.title]);
 /** The pledge in RSI's "My Gear", if it is still in the hangar; not in the demo. */
 function noteHref(note: AppNotification) {
-  if (demo.value) return undefined;
+  if (demo.value || note.pledgeId === undefined) return undefined;
   const pledge = props.pledges.find((candidate) => candidate.id === note.pledgeId);
   return pledge && myGearHref(location.pathname, pledge.page, pledge.id);
+}
+
+/** Shows only the marked pledges that can be melted now in "My Hangar". */
+function showReady() {
+  showMeltReady.value = { at: Date.now() };
+  location.hash = hashOfTab('hangar');
+}
+
+/** Selects them, so the "Selected" box offers to melt them all at once. */
+function selectReady() {
+  selection.replace(meltReadyIds.value);
 }
 
 const TITLES = {
@@ -151,7 +169,7 @@ const isShown = (box: Box) =>
   (box === 'selection'
     ? !!chosen.value
     : box === 'notifications'
-      ? notes.value.length > 0
+      ? noteCount.value > 0
       : box === 'storeCredit' || box === 'paintConsultant'
         ? !props.settings.hideMeltValue && (box !== 'paintConsultant' || !!consultant)
         : true);
@@ -325,10 +343,14 @@ async function move(box: Box, step: -1 | 1) {
   >
     <div v-for="box in boxes" :key="box" class="shm-sidebar-slot" :data-box="box">
       <SidebarBox
-        :title="
-          box === 'notifications' && notes.length
-            ? `${i18n.t(TITLES[box])} (${number.format(notes.length)})`
-            : i18n.t(TITLES[box])
+        :title="i18n.t(TITLES[box])"
+        :badge="box === 'notifications' && noteCount ? number.format(noteCount) : undefined"
+        :badge-label="
+          box === 'notifications' && noteCount
+            ? i18n.t(noteCount === 1 ? 'notifications.countOne' : 'notifications.count', [
+                number.format(noteCount),
+              ])
+            : undefined
         "
         :dragging="box === dragged"
         :collapsed="isCollapsed(box)"
@@ -337,18 +359,49 @@ async function move(box: Box, step: -1 | 1) {
         @toggle="toggle(box)"
       >
         <template v-if="box === 'notifications'">
-          <!-- Only shown with at least one open notification (see `isShown`). -->
-          <ul class="shm-sidebar-notes">
+          <!-- Only shown with at least one notification (see `isShown`). -->
+          <div v-if="readyCount" class="shm-sidebar-melt-ready" role="status">
+            <SvgIcon name="recycle" />
+            <div>
+              <p>
+                {{
+                  i18n.t(
+                    readyCount === 1 ? 'notifications.meltReadyOne' : 'notifications.meltReady',
+                    [number.format(readyCount)],
+                  )
+                }}
+              </p>
+              <div class="shm-sidebar-melt-ready-actions">
+                <button
+                  v-tooltip="i18n.t('notifications.showReadyHint')"
+                  type="button"
+                  class="shm-sidebar-link"
+                  @click="showReady"
+                >
+                  {{ i18n.t('notifications.showReady') }}
+                </button>
+                <button
+                  v-tooltip="i18n.t('notifications.selectReadyHint')"
+                  type="button"
+                  class="shm-sidebar-link"
+                  @click="selectReady"
+                >
+                  {{ i18n.t('notifications.selectReady') }}
+                </button>
+              </div>
+            </div>
+          </div>
+          <ul v-if="notes.length" class="shm-sidebar-notes">
             <li v-for="note in notes" :key="note.id">
               <input
                 type="checkbox"
                 class="shm-sidebar-note-check"
-                :aria-label="`${i18n.t('notifications.checkOff')}: ${noteText(note)}`"
+                :aria-label="`${i18n.t('notifications.checkOff')}: ${note.text}`"
                 @change="checkOff([note.id])"
               />
               <span class="shm-sidebar-note-text">
-                <a v-if="noteHref(note)" :href="noteHref(note)">{{ noteText(note) }}</a>
-                <template v-else>{{ noteText(note) }}</template>
+                <a v-if="noteHref(note)" :href="noteHref(note)">{{ note.text }}</a>
+                <template v-else>{{ note.text }}</template>
                 <time class="shm-sidebar-note">{{ noteTime.format(note.at) }}</time>
               </span>
             </li>
@@ -366,7 +419,7 @@ async function move(box: Box, step: -1 | 1) {
             <p class="shm-sidebar-subtitle">{{ i18n.t('notifications.pending') }}</p>
             <ul class="shm-sidebar-pending">
               <li v-for="mark in pending" :key="mark.pledgeId">
-                <span class="shm-sidebar-pending-title">{{ mark.title }}</span>
+                <span class="shm-sidebar-pending-title">{{ titleOf.get(mark.pledgeId) }}</span>
                 <span class="shm-sidebar-note">
                   {{ i18n.t('meltMark.waiting', [formatTimeLeft(mark.meltableAt - now, locale)]) }}
                 </span>
@@ -517,10 +570,35 @@ async function move(box: Box, step: -1 | 1) {
 
 /* Classic RSI: square, outlined like RSI's own boxes. "Modern Hangar": modern.css. */
 .shm-sidebar-box {
+  position: relative;
   box-sizing: border-box;
   padding: 12px 14px;
   background: rgb(var(--shm-surface-rgb) / 0.92);
   border: 1px solid rgb(var(--shm-accent-rgb) / 0.3);
+}
+
+/*
+ * A count on the box's top right corner, reaching a little over its edge, like apps show unread
+ * messages (e.g. the notifications); also while the box is collapsed.
+ */
+.shm-sidebar-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  z-index: 1;
+  box-sizing: border-box;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  color: #fff;
+  font-size: calc(11px * var(--shm-font-scale));
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center;
+  background: var(--shm-danger);
+  border-radius: var(--shm-radius-pill);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
+  pointer-events: none;
 }
 
 /* While a box is dragged, the places of the boxes show as the sidebar's grid. */
@@ -664,6 +742,62 @@ async function move(box: Box, step: -1 | 1) {
   margin: 8px 0 0;
   color: var(--shm-text-muted);
   font-size: calc(11px * var(--shm-font-scale));
+}
+
+/*
+ * Each notification in a light frame of its own, so several stand apart (Modern Hangar: a filled
+ * cell, see modern.css).
+ */
+.shm-sidebar-melt-ready,
+.shm-sidebar-notes li {
+  padding: 8px;
+  background: rgb(var(--shm-accent-rgb) / 0.06);
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.18);
+}
+
+/*
+ * Space below the title like the other boxes' figures (10 px), a little more for the frames, so the
+ * first notification doesn't sit right under it.
+ */
+.shm-sidebar-box-content > .shm-sidebar-melt-ready:first-child,
+.shm-sidebar-box-content > .shm-sidebar-notes:first-child {
+  margin-top: 12px;
+}
+
+/*
+ * Marked pledges that can be melted now: one notification for all, laid out like the others – an
+ * icon in place of the checkbox (it can't be checked off), the text, then its actions as links.
+ */
+.shm-sidebar-melt-ready {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--shm-text);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+.shm-sidebar-melt-ready > .shm-icon {
+  flex: none;
+  margin-top: 2px;
+  color: var(--shm-text-secondary);
+}
+
+.shm-sidebar-melt-ready p {
+  margin: 0;
+}
+
+.shm-sidebar-melt-ready-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 14px;
+}
+
+.shm-sidebar-melt-ready-actions .shm-sidebar-link {
+  margin-top: 4px;
+}
+
+.shm-sidebar-melt-ready + .shm-sidebar-notes {
+  margin-top: 8px;
 }
 
 /* Notifications (#142): each with a checkbox to check it off, newest first. */

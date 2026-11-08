@@ -750,6 +750,14 @@ html .shm-theme-modern .shm-sidebar-box {
   box-shadow: 0 0 0 1px var(--shm-separator);
 }
 
+/* Notifications as filled cells with small corners. */
+html .shm-theme-modern .shm-sidebar-melt-ready,
+html .shm-theme-modern .shm-sidebar-notes li {
+  background: var(--shm-fill);
+  border: 0;
+  border-radius: var(--shm-radius-small);
+}
+
 html .shm-theme-modern .shm-sidebar-slot {
   border-radius: var(--shm-radius-cell);
 }

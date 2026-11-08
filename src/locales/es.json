@@ -195,7 +195,7 @@
     "sidebarShow": "Mostrar la barra lateral",
     "sidebarShowHint": "Cuadros bajo la navegación de RSI a la izquierda, en cada pestaña del gestor.",
     "sidebarBoxes": "Cuadros",
-    "sidebarNotificationsHint": "Aparece mientras haya una notificación, p. ej. que un pledge marcado para fundir ya se puede fundir; también lista los marcados con el tiempo restante. Cada notificación se puede marcar como hecha, o todas a la vez; sin permiso del navegador.",
+    "sidebarNotificationsHint": "Aparece mientras haya una notificación: cuando los pledges marcados para fundir ya se pueden fundir, con botones para mostrarlos o seleccionarlos, y los marcados que aún esperan. Las notificaciones que se pueden marcar como hechas: una a una o todas a la vez. Sin permiso del navegador.",
     "sidebarStoreCreditHint": "Oculto mientras «Ocultar el valor de fusión» esté activado.",
     "sidebarSelectionHint": "Se muestra mientras haya pledges seleccionados. Sin él, las filas no tienen control de selección.",
     "sidebarPaintConsultantHint": "Cuántas pinturas se pueden recomprar con un descuento por volumen mayor y el crédito de tienda que libera. Oculto mientras «Ocultar el valor de fusión» esté activado.",
@@ -564,7 +564,6 @@
     "mark": "Marcar para fundir",
     "unmark": "Desmarcar",
     "buttonHint": "Marca este pledge para fundirlo más tarde: el Hangar Manager te avisa cuando RSI lo permite, 24 horas después de comprarlo.",
-    "demo": "No disponible en el modo demo.",
     "waiting": "Fundir en $1",
     "ready": "Fundir ahora",
     "hint": "Marcado para fundir. RSI permite fundir un pledge 24 horas después de comprarlo: desde el $1."
@@ -574,7 +573,14 @@
     "checkOff": "Hecho",
     "checkOffAll": "Marcar todas como hechas",
     "pending": "Próximamente",
-    "meltable": "«$1» ya se puede fundir"
+    "meltReady": "$1 pledges marcados ya se pueden fundir",
+    "meltReadyOne": "1 pledge marcado ya se puede fundir",
+    "showReady": "Mostrar",
+    "showReadyHint": "Muestra solo estos pledges en «My Hangar»; «Restablecer filtros» vuelve a mostrar todos.",
+    "selectReady": "Seleccionar",
+    "selectReadyHint": "Selecciona estos pledges: la caja «Seleccionados» ofrece entonces fundirlos todos a la vez (con «Fundir varios pledges a la vez» activado).",
+    "count": "$1 notificaciones",
+    "countOne": "1 notificación"
   },
   "gift": {
     "button": "Gift",

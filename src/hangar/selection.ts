@@ -16,6 +16,10 @@ export const selection = {
     if (!next.delete(id)) next.add(id);
     ids.value = next;
   },
+  /** Selects exactly these pledges, e.g. all marked ones that can be melted now. */
+  replace(next: Iterable<number>) {
+    ids.value = new Set(next);
+  },
   clear() {
     if (ids.value.size) ids.value = new Set();
   },

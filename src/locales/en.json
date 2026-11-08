@@ -195,7 +195,7 @@
     "sidebarShow": "Show the sidebar",
     "sidebarShowHint": "Boxes below RSI's navigation on the left, on every tab of the manager.",
     "sidebarBoxes": "Boxes",
-    "sidebarNotificationsHint": "Shown while there is a notification, e.g. that a pledge marked to melt can be melted now; it also lists the marked ones with the time left. Each notification can be checked off, or all at once; no browser permission needed.",
+    "sidebarNotificationsHint": "Shown while there is a notification: when pledges marked to melt can be melted now – with buttons to show or select them – and the marked ones still waiting. Notifications that can be checked off: one by one or all at once. No browser permission needed.",
     "sidebarStoreCreditHint": "Hidden while “Hide melt value” is on.",
     "sidebarSelectionHint": "Shown while pledges are selected. Without it, the rows have no select control.",
     "sidebarPaintConsultantHint": "How many paints can be bought again with a higher volume discount, and the store credit it frees. Hidden while “Hide melt value” is on.",
@@ -564,7 +564,6 @@
     "mark": "Mark to melt",
     "unmark": "Unmark",
     "buttonHint": "Mark this pledge to melt it later: the Hangar Manager tells you when RSI lets you melt it – 24 hours after buying it.",
-    "demo": "Not available in demo mode.",
     "waiting": "Melt in $1",
     "ready": "Melt now",
     "hint": "Marked to melt. RSI lets you melt a pledge 24 hours after buying it: from $1."
@@ -574,7 +573,14 @@
     "checkOff": "Done",
     "checkOffAll": "Mark all as done",
     "pending": "Coming up",
-    "meltable": "“$1” can be melted now"
+    "meltReady": "$1 marked pledges can be melted now",
+    "meltReadyOne": "1 marked pledge can be melted now",
+    "showReady": "Show",
+    "showReadyHint": "Shows only these pledges in “My Hangar”; “Reset filters” shows all again.",
+    "selectReady": "Select",
+    "selectReadyHint": "Selects these pledges: the “Selected” box then offers to melt them all at once (with “Bulk melting” on).",
+    "count": "$1 notifications",
+    "countOne": "1 notification"
   },
   "gift": {
     "button": "Gift",

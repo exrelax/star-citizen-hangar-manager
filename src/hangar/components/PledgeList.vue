@@ -13,6 +13,7 @@ import { HANGAR_SORTS, sortEntries, type HangarSort } from '../sorting';
 import { useSettings } from '@/settings/use-settings';
 import { visiblePledgeIds } from '../selection';
 import { canSelectPledges } from '../sidebar';
+import { meltReadyIds, showMeltReady } from '../use-melt-marks';
 import ManagerList from './ManagerList.vue';
 import PledgeRow from './PledgeRow.vue';
 
@@ -50,6 +51,17 @@ onUnmounted(() => (visiblePledgeIds.value = null));
 
 const filterLabel = (filter: PledgeFilter) => i18n.t(`filter.${filter}`);
 
+/** "Show" of the sidebar's notification: only the marked pledges that can be melted now. */
+const meltReadyRequest = computed(() => {
+  const request = showMeltReady.value;
+  return (
+    request && {
+      at: request.at,
+      matches: (pledge: PledgeView) => meltReadyIds.value.has(pledge.id),
+    }
+  );
+});
+
 /** Filters whose meaning isn't obvious from the label explain it in their tooltip. */
 const HINTS: Partial<Record<PledgeFilter, MessageKey>> = {
   ships: 'filter.hints.ships',
@@ -76,6 +88,7 @@ const filterHint = (filter: PledgeFilter) => {
     :active="active"
     :sort-options="sortOptions"
     :sort="settings.sort.hangar"
+    :filter-request="meltReadyRequest"
     @update:sort="setSort"
     @visible="showVisible"
   >

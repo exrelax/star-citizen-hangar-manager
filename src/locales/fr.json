@@ -195,7 +195,7 @@
     "sidebarShow": "Afficher la barre latérale",
     "sidebarShowHint": "Des cadres sous la navigation de RSI à gauche, sur chaque onglet du gestionnaire.",
     "sidebarBoxes": "Cadres",
-    "sidebarNotificationsHint": "Affiché tant qu’il y a une notification, p. ex. qu’un pledge marqué pour fondre peut être fondu maintenant ; liste aussi les pledges marqués avec le temps restant. Chaque notification peut être cochée, ou toutes à la fois ; sans autorisation du navigateur.",
+    "sidebarNotificationsHint": "Affiché tant qu’il y a une notification : quand des pledges marqués pour fondre peuvent être fondus maintenant – avec des boutons pour les afficher ou les sélectionner – et les pledges marqués qui attendent encore. Les notifications à cocher : une par une ou toutes à la fois. Sans autorisation du navigateur.",
     "sidebarStoreCreditHint": "Masqué tant que « Masquer la valeur de fusion » est activé.",
     "sidebarSelectionHint": "Affiché tant que des pledges sont sélectionnés. Sans lui, les lignes n'ont pas de case de sélection.",
     "sidebarPaintConsultantHint": "Combien de peintures peuvent être rachetées avec une remise sur volume plus élevée, et le crédit boutique libéré. Masqué tant que « Masquer la valeur de fusion » est activé.",
@@ -564,7 +564,6 @@
     "mark": "Marquer pour fondre",
     "unmark": "Retirer la marque",
     "buttonHint": "Marque ce pledge pour le fondre plus tard : le Hangar Manager vous indique quand RSI le permet, 24 heures après l’achat.",
-    "demo": "Indisponible en mode démo.",
     "waiting": "Fondre dans $1",
     "ready": "Fondre maintenant",
     "hint": "Marqué pour fondre. RSI permet de fondre un pledge 24 heures après son achat : à partir du $1."
@@ -574,7 +573,14 @@
     "checkOff": "Terminé",
     "checkOffAll": "Tout marquer comme terminé",
     "pending": "À venir",
-    "meltable": "« $1 » peut être fondu maintenant"
+    "meltReady": "$1 pledges marqués peuvent être fondus maintenant",
+    "meltReadyOne": "1 pledge marqué peut être fondu maintenant",
+    "showReady": "Afficher",
+    "showReadyHint": "N’affiche que ces pledges dans « My Hangar » ; « Réinitialiser les filtres » les affiche tous à nouveau.",
+    "selectReady": "Sélectionner",
+    "selectReadyHint": "Sélectionne ces pledges : l’encadré « Sélection » propose alors de tous les fondre à la fois (avec « Fondre plusieurs pledges à la fois » activé).",
+    "count": "$1 notifications",
+    "countOne": "1 notification"
   },
   "gift": {
     "button": "Gift",

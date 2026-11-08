@@ -1,23 +1,24 @@
 /*
  * The notifications of the Hangar Manager (#96), shown in the sidebar box "Notifications" (#142):
  * there they can be checked off one by one or all at once, without the browser's notification
- * permission. Each has an id per source and subject (e.g. `meltable:<pledge id>`), so a source
+ * permission. Each has an id per source and subject (e.g. `fillers:<order id>`, #105), so a source
  * adds it only once and a checked-off one doesn't come back. Kept in this browser only; checked-off
  * ones are removed after `NOTIFICATIONS_KEEP_DONE_MS`.
+ *
+ * Not stored here: what is worked out from the current state and can't be checked off, e.g. that
+ * marked pledges can be melted now (see the sidebar).
  */
 
 export const NOTIFICATIONS_KEEP_DONE_MS = 30 * 24 * 60 * 60 * 1000;
 
 export interface AppNotification {
-  /** Source and subject, e.g. `meltable:114816820`. */
+  /** Source and subject, e.g. `fillers:4OLB2S5WUG6PX`. */
   id: string;
-  /** What it is about; the sidebar words it after this. */
-  kind: 'meltable';
-  /** The pledge it is about. */
-  pledgeId: number;
-  /** The pledge's title, kept for when the pledge is gone. */
-  title: string;
-  /** When it happened (e.g. since when the pledge can be melted), in ms. */
+  /** The text shown, already in the user's language. */
+  text: string;
+  /** The pledge it is about, if any: the sidebar links to it. */
+  pledgeId?: number;
+  /** When it happened, in ms. */
   at: number;
   /** When it was checked off, in ms. */
   doneAt?: number;
@@ -78,36 +79,4 @@ export function checkOff(ids?: readonly string[]): Promise<void> {
   return updateNotifications((list) =>
     withDone(list, new Set(ids ?? openNotifications(list).map((note) => note.id)), Date.now()),
   );
-}
-
-/** The notifications about marked pledges that can be melted now (#97). */
-export function meltableNotifications(
-  marks: Iterable<{ pledgeId: number; title: string; meltableAt: number }>,
-  now: number,
-): AppNotification[] {
-  return [...marks]
-    .filter((mark) => mark.meltableAt <= now)
-    .map((mark) => ({
-      id: `meltable:${mark.pledgeId}`,
-      kind: 'meltable',
-      pledgeId: mark.pledgeId,
-      title: mark.title,
-      at: mark.meltableAt,
-    }));
-}
-
-/**
- * The notifications for the marked pledges: one for each that can be melted now, and the open
- * ones about pledges no longer marked (melted, unmarked) checked off – they say nothing anymore.
- */
-export function syncMeltable(
-  list: readonly AppNotification[],
-  marks: ReadonlyMap<number, { pledgeId: number; title: string; meltableAt: number }>,
-  now: number,
-): readonly AppNotification[] {
-  const added = withAdded(list, meltableNotifications(marks.values(), now));
-  const gone = added
-    .filter((note) => note.kind === 'meltable' && !marks.has(note.pledgeId))
-    .map((note) => note.id);
-  return withoutOld(withDone(added, new Set(gone), now), now);
 }

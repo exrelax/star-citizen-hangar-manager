@@ -55,6 +55,12 @@ const props = defineProps<{
   /** The orders to choose from; `entries` come in the selected one (`sort`). */
   sortOptions?: readonly { value: S; label: string }[];
   sort?: S;
+  /**
+   * A filter without a button, turned on from outside (e.g. "Show" in the sidebar's
+   * notifications): each new request (`at`) shows only the entries it `matches`, without search
+   * and other filters. "Reset filter" turns it off, and it goes on its own once no entry matches.
+   */
+  filterRequest?: { matches: (entry: T) => boolean; at: number } | null;
 }>();
 
 const emit = defineEmits<{
@@ -116,7 +122,30 @@ function cycleFilter(filter: F) {
   filterStates.value = next;
 }
 
-const resetFilters = () => (filterStates.value = new Map());
+/** The filter requested from outside while it is on (see `filterRequest`). */
+const requested = shallowRef<((entry: T) => boolean) | null>(null);
+
+const resetFilters = () => {
+  filterStates.value = new Map();
+  requested.value = null;
+};
+
+watch(
+  () => props.filterRequest,
+  (request) => {
+    if (!request) return;
+    query.value = '';
+    filterStates.value = new Map();
+    requested.value = request.matches;
+  },
+  { immediate: true },
+);
+
+// Off once nothing matches it any more (e.g. all marked pledges melted).
+watch(
+  () => !!requested.value && !props.entries.some(requested.value),
+  (empty) => empty && (requested.value = null),
+);
 
 // A filter turned off in the settings no longer filters the list, either.
 watch(filters, (filters) => {
@@ -124,11 +153,15 @@ watch(filters, (filters) => {
   if (kept.length !== filterStates.value.size) filterStates.value = new Map(kept);
 });
 
-/** Entries matching the search; the filters and their counts work on these. */
+/** Entries matching the search and a requested filter; the filters and their counts work on these. */
 const searched = computed(() => {
   const terms = parseSearchQuery(query.value);
-  return terms.length
-    ? props.entries.filter((entry) => matchesSearch(entry.searchText, terms))
+  const matches = requested.value;
+  return terms.length || matches
+    ? props.entries.filter(
+        (entry) =>
+          (!terms.length || matchesSearch(entry.searchText, terms)) && (!matches || matches(entry)),
+      )
     : props.entries;
 });
 
@@ -302,7 +335,7 @@ const countLabel = computed(() =>
             </button>
             <!-- After the last group's buttons, so it doesn't add a line when it appears. -->
             <button
-              v-if="filterStates.size && index === shownGroups.length - 1"
+              v-if="(filterStates.size || requested) && index === shownGroups.length - 1"
               type="button"
               class="shm-filter-reset"
               @click="resetFilters"
