@@ -171,7 +171,8 @@ function discountOf(
   original: number,
   ships: ShipPrice[],
 ): PledgeDiscount | undefined {
-  if (!(original > 0) || !Number.isFinite(pledge.valueUsd)) return undefined;
+  // Free pledges (rewards, referral bonuses): "100 % off" says nothing and would swell the sums.
+  if (!(original > 0) || !(pledge.valueUsd > 0)) return undefined;
   const amount = Math.round((original - pledge.valueUsd) * 100) / 100;
   return { original, paid: pledge.valueUsd, amount, percent: (amount / original) * 100, ships };
 }
