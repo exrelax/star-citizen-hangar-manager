@@ -65,6 +65,7 @@
   },
   "summary": {
     "title": "Übersicht",
+    "storeCredit": "Store Credit",
     "count": "Pledges",
     "value": "Wert",
     "discount": "Rabatte",
@@ -256,6 +257,11 @@
       "name": "Pledge-Store-Artikel",
       "content": "Schiffe, Gear, Packs, Paints und mehr mit Kategorie, Preis, Bild und Link",
       "missing": "Wird noch nirgends genutzt."
+    },
+    "storeCredit": {
+      "name": "Store Credit",
+      "content": "Das Store-Guthaben des Accounts, wie sein Account-Menü es zeigt",
+      "missing": "Bis dahin zeigt die Übersicht kein Store-Guthaben."
     },
     "settings": {
       "name": "Einstellungen",

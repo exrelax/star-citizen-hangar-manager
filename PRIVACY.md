@@ -34,6 +34,7 @@ sees or stores your RSI login.
 - **Ship data**: RSI's public ship list (images) and, from RSI's upgrade tool, all ships with
   their standard prices, images and Pledge Store links, the ships currently on sale and the
   warbond offers – the same for every account, nothing about yours.
+- **Store credit**: the amount of your account's store credit, as RSI's account menu shows it.
 - **Pledge Store items**: the items of RSI's Pledge Store (name, category, price without taxes,
   image, link, warbond, in stock) – the same for every account, nothing about yours.
 
@@ -47,7 +48,7 @@ sees or stores your RSI login.
 ## Where the data is kept
 
 - **In your browser only.** Hangar, buy back, orders, ship data (ships, ships on sale, warbond
-  offers), Pledge Store items, ship links and the state of the smart updates are kept in the
+  offers), Pledge Store items, your store credit, ship links and the state of the smart updates are kept in the
   extension's local storage (`storage.local`) on your device. They never leave your computer and
   are not synced. Settings → Stored data lists all of it, with the number of entries, the size and
   when it was last read.

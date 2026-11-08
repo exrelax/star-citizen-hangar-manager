@@ -65,6 +65,7 @@
   },
   "summary": {
     "title": "Récapitulatif",
+    "storeCredit": "Crédit boutique",
     "count": "Pledges",
     "value": "Valeur",
     "discount": "Remises",
@@ -256,6 +257,11 @@
       "name": "Articles du Pledge Store",
       "content": "Vaisseaux, équipement, packs, peintures et plus avec catégorie, prix, image et lien",
       "missing": "Rien ne les utilise encore."
+    },
+    "storeCredit": {
+      "name": "Crédit boutique",
+      "content": "Le crédit boutique du compte, comme son menu de compte l’affiche",
+      "missing": "D’ici là, le récapitulatif n’affiche pas de crédit boutique."
     },
     "settings": {
       "name": "Paramètres",

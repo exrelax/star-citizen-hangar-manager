@@ -4,6 +4,7 @@ import { prepareBuybackSync } from '@/buyback/sync-buyback';
 import { settingsItem, withDefaults } from '@/settings/settings';
 import { maybeRefreshUpgradeTool, refreshUpgradeTool } from '@/ships/sync-upgrade-tool';
 import { maybeRefreshStoreItems, refreshStoreItems } from '@/store/items/sync-store-items';
+import { refreshStoreCredit } from '@/account/sync-store-credit';
 import type { StorageId } from '@/storage/registry';
 import { reactive, readonly } from 'vue';
 import { recordCheck, recordSync, type CheckOutcome, type MetaItem } from '@/storage/meta';
@@ -44,6 +45,7 @@ export async function startSync(): Promise<void> {
     // Small and optional: load alongside, a failure keeps the stored ships, offers and items.
     const upgradeTool = refreshUpgradeTool();
     const storeItems = refreshStoreItems();
+    const storeCredit = refreshStoreCredit();
     // Reported only once both totals are known; the detail pages of the buy back join later.
     const progress = new SyncProgressTracker();
     const [runHangar, runBuyback, runOrders] = await Promise.all([
@@ -69,6 +71,7 @@ export async function startSync(): Promise<void> {
     });
     await upgradeTool;
     await storeItems;
+    await storeCredit;
 
     const seconds = ((performance.now() - startedAt) / 1000).toFixed(1);
     console.info(
@@ -112,7 +115,11 @@ export async function startStorageSync(id: StorageId): Promise<void> {
     } else {
       section.expect(1, 1);
       progress.start();
-      await (id === 'storeItems' ? refreshStoreItems() : refreshUpgradeTool());
+      await (id === 'storeItems'
+        ? refreshStoreItems()
+        : id === 'storeCredit'
+          ? refreshStoreCredit()
+          : refreshUpgradeTool());
       section.complete(1, 1);
     }
   } catch (error) {
@@ -144,6 +151,9 @@ export async function maybeRunSmartUpdate({ force = false } = {}): Promise<void>
     if (!settings.smartUpdates) return;
     const { checkedAt } = await hangarMeta.getValue();
     if (!force && Date.now() - checkedAt < settings.smartUpdateMinutes * 60_000) return;
+
+    // The store credit: one small request, it changes with exchanges and store credit purchases.
+    await refreshStoreCredit();
 
     // 1. The pledge log: every action on the account is on its first page, also on old pledges.
     //    The pledges it names are checked in the buy back and the hangar (see `pledge-log.ts`).

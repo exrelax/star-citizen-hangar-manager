@@ -65,6 +65,7 @@
   },
   "summary": {
     "title": "Summary",
+    "storeCredit": "Store credit",
     "count": "Pledges",
     "value": "Value",
     "discount": "Discounts",
@@ -256,6 +257,11 @@
       "name": "Pledge Store items",
       "content": "Ships, gear, packs, paints and more with category, price, image and link",
       "missing": "Nothing uses them yet."
+    },
+    "storeCredit": {
+      "name": "Store credit",
+      "content": "The account's store credit, as its account menu shows it",
+      "missing": "Until then the summary shows no store credit."
     },
     "settings": {
       "name": "Settings",
