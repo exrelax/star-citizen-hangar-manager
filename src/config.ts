@@ -158,6 +158,11 @@ export const SMART_UPDATE = {
    * extension's storage, no request goes to RSI.
    */
   timerStepMs: 10 * 1000,
+  /**
+   * A check another tab announced counts as ended after this long, in case its end never arrives
+   * (the tab was closed meanwhile). Checks take seconds; a large buy back up to a minute.
+   */
+  checkingElsewhereMaxMs: 2 * 60 * 1000,
 } as const;
 
 /**

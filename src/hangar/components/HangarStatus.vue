@@ -54,7 +54,8 @@ const status = computed((): { text: string; warn?: boolean } | null => {
         : i18n.t('status.refreshing'),
     };
   }
-  if (syncState.checking) return { text: i18n.t('status.checking') };
+  // Also while another tab checks: its findings arrive here through the storage.
+  if (syncState.checking || syncState.checkingElsewhere) return { text: i18n.t('status.checking') };
   if (outcome?.status === 'needsFullSync')
     return { text: i18n.t('status.needsFullSync'), warn: true };
   if (fullSyncIsOld.value && props.syncedAt) {

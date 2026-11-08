@@ -12,7 +12,8 @@ import {
   managerHref,
 } from '@/hangar/route';
 import { isTimerActive, startSmartUpdateTimer } from '@/hangar/smart-update/schedule';
-import { maybeRunSmartUpdate } from '@/hangar/sync-state';
+import { listenForChecksElsewhere } from '@/hangar/smart-update/broadcast';
+import { maybeRunSmartUpdate, setCheckingElsewhere } from '@/hangar/sync-state';
 import { migrateStorage } from '@/storage/migrate';
 import { isPlainLeftClick } from '@/shared/dom';
 import { MANAGER_CONTAINER } from '@/themes/theme';
@@ -49,8 +50,11 @@ export default defineContentScript({
       }),
     );
 
-    // Opened via "Show in Buy Back" from the manager: scroll to the pledge and highlight it.
+    // "Buy Back Pledges": melting or buying back may start here, maybe without the manager ever
+    // being opened in this tab. A check when one is due; the tabs with the manager follow.
     if (isBuybackPath(location.pathname)) {
+      void maybeRunSmartUpdate();
+      // Opened via "Show in Buy Back" from the manager: scroll to the pledge and highlight it.
       const buybackHighlight = highlightFromUrl(location.search);
       if (buybackHighlight) void revealPledge(buybackHighlight, BUYBACK_LIST);
       return;
@@ -82,12 +86,18 @@ export default defineContentScript({
       },
     });
 
+    // A check running in another tab shows here as "Checking …" too.
+    ctx.onInvalidated(listenForChecksElsewhere(setCheckingElsewhere));
+
     let managerVisible = false;
     let initialRender = true;
     const render = () => {
       const showManager = isManagerRoute(location.hash);
       const firstRender = initialRender;
       initialRender = false;
+      // "My Gear": melting, gifting and exchanging happen here. A check when one is due (paging
+      // through it doesn't check on every page); the tabs with the manager follow.
+      if (!showManager && (firstRender || managerVisible)) void maybeRunSmartUpdate();
       if (showManager === managerVisible) return;
       managerVisible = showManager;
 
