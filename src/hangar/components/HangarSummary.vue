@@ -9,6 +9,8 @@ import { selection, visiblePledgeIds } from '../selection';
 import { summarize, type PledgeSummary } from '../summary';
 import { summaryPosition, type SummaryPosition } from '../summary-position';
 import { vTooltip } from '@/shared/tooltip/tooltip';
+import { storeCreditItem, STORE_CREDIT_VERSION } from '@/account/store-credit-storage';
+import { useStored } from '@/storage/use-stored';
 
 /*
  * The summary box of "My Hangar", below RSI's page navigation on the left (App.vue teleports it
@@ -35,6 +37,17 @@ const hiddenSelected = computed(() => {
 
 const shown = computed(() => summarize(visible.value));
 const chosen = computed(() => (selected.value.length ? summarize(selected.value) : undefined));
+
+// The store credit, first in the box (the account's, not depending on search or selection).
+const storedCredit = useStored(storeCreditItem);
+const credit = computed(() => {
+  const stored = storedCredit.value;
+  if (stored?.version !== STORE_CREDIT_VERSION) return undefined;
+  return new Intl.NumberFormat(locale.value, {
+    style: 'currency',
+    currency: stored.credit.currency,
+  }).format(stored.credit.amount);
+});
 
 const money = computed(
   () => new Intl.NumberFormat(locale.value, { style: 'currency', currency: 'USD' }),
@@ -148,6 +161,13 @@ onUnmounted(() => removeEventListener('resize', keepInside));
         <SvgIcon name="rotate-left" />
       </button>
     </header>
+
+    <dl v-if="!settings.hideMeltValue" class="shm-summary-figures is-credit">
+      <div>
+        <dt>{{ i18n.t('summary.storeCredit') }}</dt>
+        <dd>{{ credit ?? '–' }}</dd>
+      </div>
+    </dl>
 
     <dl class="shm-summary-figures">
       <div>
@@ -315,6 +335,15 @@ onUnmounted(() => removeEventListener('resize', keepInside));
 .shm-summary-figures dd {
   margin: 0;
   font-variant-numeric: tabular-nums;
+}
+
+.shm-summary-figures.is-credit {
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgb(var(--shm-accent-rgb) / 0.2);
+}
+
+.shm-summary-figures.is-credit + .shm-summary-figures {
+  margin-top: 8px;
 }
 
 .shm-summary-figures dd.is-discount {

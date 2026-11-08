@@ -227,8 +227,9 @@ on its own.
 ## Selection and summary
 
 - **Select pledges** in "My Hangar" with the round control in the top right corner of each row.
-- **Summary box** below RSI's page navigation on the left: the number, value and discounts of the
-  pledges shown (after search and filters). Discounts sum only real ones – a pledge that cost more
+- **Summary box** below RSI's page navigation on the left: first the account's **store credit**
+  (as RSI's account menu shows it, read with every refresh and smart update), then the number,
+  value and discounts of the pledges shown (after search and filters). Discounts sum only real ones – a pledge that cost more
   than the original price doesn't reduce them.
 - With a selection, the box adds the number, value and discounts of the selected pledges, says how
   many of them search or filters hide, and clears the selection with one click.
@@ -472,7 +473,8 @@ In the order of the settings tab:
   uncheck it to hide its button.
 - **Show links for ships**: erkul.games and FleetYards.net, each on or off.
 - **Stored data**: a table of everything the extension keeps in this browser – My Hangar, Buy
-  Back, order history, ships, ships on sale, warbond offers and Pledge Store items – with the number of entries, the
+  Back, order history, ships, ships on sale, warbond offers, Pledge Store items and the store
+  credit – with the number of entries, the
   size, the last full read and the last check. Each can be read again from RSI on its own (the
   refresh icon; ships, ships on sale and warbond offers are one read) and deleted on its own; the
   confirmation

@@ -12,6 +12,11 @@ import {
 } from '@/ships/ships-storage';
 import type { MetaItem } from './meta';
 import {
+  storeCreditItem,
+  storeCreditMeta,
+  type StoreCreditSnapshot,
+} from '@/account/store-credit-storage';
+import {
   storeItemsItem,
   storeItemsMeta,
   type StoreItemsSnapshot,
@@ -47,6 +52,7 @@ export type StorageId =
   | 'shipsBuyable'
   | 'shipsWarbonds'
   | 'storeItems'
+  | 'storeCredit'
   | 'settings';
 
 export interface StorageDefinition {
@@ -163,6 +169,17 @@ export const STORAGES: readonly StorageDefinition[] = [
     usedBy: [],
     kind: 'data',
     count: (value: StoreItemsSnapshot | null) => value?.items.length ?? 0,
+    readAgain: 'auto',
+  },
+  {
+    id: 'storeCredit',
+    meta: storeCreditMeta,
+    item: storeCreditItem,
+    content: "The account's store credit",
+    source: 'Credit ledger of the RSI account (/graphql), as in its account menu',
+    usedBy: ['Summary box'],
+    kind: 'data',
+    count: (value: StoreCreditSnapshot | null) => (value ? 1 : 0),
     readAgain: 'auto',
   },
   {

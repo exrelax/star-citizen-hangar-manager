@@ -65,6 +65,7 @@
   },
   "summary": {
     "title": "Resumen",
+    "storeCredit": "Crédito de tienda",
     "count": "Pledges",
     "value": "Valor",
     "discount": "Descuentos",
@@ -256,6 +257,11 @@
       "name": "Artículos de la Pledge Store",
       "content": "Naves, equipo, packs, pinturas y más con categoría, precio, imagen y enlace",
       "missing": "Aún no lo usa nada."
+    },
+    "storeCredit": {
+      "name": "Crédito de tienda",
+      "content": "El crédito de tienda de la cuenta, como lo muestra su menú de cuenta",
+      "missing": "Hasta entonces el resumen no muestra crédito de tienda."
     },
     "settings": {
       "name": "Ajustes",
