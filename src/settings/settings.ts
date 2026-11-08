@@ -6,7 +6,12 @@ import {
   type FilterGroups,
   type PledgeFilter,
 } from '@/hangar/filters';
-import { normalizeSidebarOrder, SIDEBAR_BOXES, type SidebarBox } from '@/hangar/sidebar';
+import {
+  normalizeSidebarOrder,
+  SIDEBAR_BOXES,
+  sidebarBoxesOf,
+  type SidebarBox,
+} from '@/hangar/sidebar';
 import { BUYBACK_SORTS, HANGAR_SORTS, type BuybackSort, type HangarSort } from '@/hangar/sorting';
 import { isLocale, type Locale } from '@/i18n';
 
@@ -51,6 +56,8 @@ export interface Settings {
   summaryTypes: boolean;
   /** Order of the boxes of the sidebar below RSI's navigation (see `hangar/sidebar.ts`). */
   sidebarOrder: SidebarBox[];
+  /** Boxes of the sidebar collapsed to their title. */
+  sidebarCollapsed: SidebarBox[];
   /** Hides the pledge ids (also those of applied CCUs). */
   hidePledgeIds: boolean;
   /** Shows a selection of the pledges with made-up ids instead of all (see `src/demo`). */
@@ -104,6 +111,7 @@ export const DEFAULT_SETTINGS: Settings = {
   hideSupersededInsurances: true,
   summaryTypes: false,
   sidebarOrder: [...SIDEBAR_BOXES],
+  sidebarCollapsed: [],
   hidePledgeIds: false,
   demoMode: false,
   hideRefund: false,
@@ -178,6 +186,7 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
     hideSupersededInsurances: pick('hideSupersededInsurances', isBoolean),
     summaryTypes: pick('summaryTypes', isBoolean),
     sidebarOrder: normalizeSidebarOrder(stored?.sidebarOrder),
+    sidebarCollapsed: sidebarBoxesOf(stored?.sidebarCollapsed),
     hidePledgeIds: pick('hidePledgeIds', isBoolean),
     demoMode: pick('demoMode', isBoolean),
     hideRefund: pick('hideRefund', isBoolean),

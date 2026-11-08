@@ -19,8 +19,8 @@ import SidebarBox from './SidebarBox.vue';
  * The sidebar below RSI's page navigation on the left on every tab (App.vue teleports it there),
  * a column of boxes: the store credit, the summary of the hangar's visible pledges (value,
  * discounts, number) and – with a selection – the same of the selected ones. The boxes can be
- * moved up and down by their title, with the mouse or the arrow keys; the order is kept in the
- * settings (see `sidebar.ts`).
+ * moved up and down by their title, with the mouse or the arrow keys, and collapsed to their title;
+ * the order and the collapsed boxes are kept in the settings (see `sidebar.ts`).
  */
 
 const props = defineProps<{ pledges: readonly PledgeView[]; settings: Settings }>();
@@ -74,20 +74,27 @@ const TITLES = {
   selection: 'summary.selected',
 } as const;
 
-// ---- Order ----
+// ---- Order and collapsed boxes ----
+
+/**
+ * A setting changed here until the settings have it: they are passed in from the manager and
+ * change only once the stored settings did, so the boxes would jump back in between.
+ */
+function usePending(source: () => Box[]) {
+  const pending = ref<Box[]>();
+  watch(source, () => (pending.value = undefined));
+  return {
+    value: computed(() => pending.value ?? source()),
+    set: (value: Box[]) => (pending.value = value),
+  };
+}
+
+const savedOrder = usePending(() => props.settings.sidebarOrder);
+const savedCollapsed = usePending(() => props.settings.sidebarCollapsed);
+const current = savedOrder.value;
 
 /** While dragging: the order the boxes would get when dropped there. */
 const preview = ref<Box[]>();
-/**
- * A new order until the settings have it: they are passed in from the manager and change only once
- * the stored settings did, so the boxes would jump back in between.
- */
-const saved = ref<Box[]>();
-watch(
-  () => props.settings.sidebarOrder,
-  () => (saved.value = undefined),
-);
-const current = computed(() => saved.value ?? props.settings.sidebarOrder);
 const order = computed(() => preview.value ?? current.value);
 const isShown = (box: Box) =>
   box === 'selection'
@@ -97,65 +104,164 @@ const isShown = (box: Box) =>
       : true;
 const boxes = computed(() => order.value.filter(isShown));
 
-const root = useTemplateRef('root');
-const boxElement = (box: Box) => root.value?.querySelector<HTMLElement>(`[data-box="${box}"]`);
+const isCollapsed = (box: Box) => savedCollapsed.value.value.includes(box);
+function toggle(box: Box) {
+  const collapsed = savedCollapsed.value.value;
+  const next = isCollapsed(box) ? collapsed.filter((other) => other !== box) : [...collapsed, box];
+  savedCollapsed.set(next);
+  void update({ sidebarCollapsed: next });
+}
 
 function save(next: Box[]) {
   if (next.join() === current.value.join()) return false;
-  saved.value = next;
-  void update({ sidebarOrder: next });
+  // A plain array: the browser would store Vue's reactive one as an object.
+  const plain = [...next];
+  savedOrder.set(plain);
+  void update({ sidebarOrder: plain });
   return true;
 }
 
+const root = useTemplateRef('root');
+/** The place of a box in the sidebar; the box in it moves away from it while dragged or animated. */
+const slotOf = (box: Box) => root.value?.querySelector<HTMLElement>(`[data-box="${box}"]`);
+const boxOf = (box: Box) => slotOf(box)?.firstElementChild as HTMLElement | null | undefined;
+
+const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/** Lets a box glide from `offset` pixels above or below to its place. */
+function glide(element: HTMLElement | null | undefined, offset: number) {
+  if (!element || Math.abs(offset) < 1 || reducedMotion()) return;
+  element.animate([{ transform: `translateY(${offset}px)` }, { transform: 'none' }], {
+    duration: 200,
+    easing: 'cubic-bezier(0.2, 0, 0, 1)',
+  });
+}
+
+// ---- Dragging ----
+
 const dragged = ref<Box>();
+/** Where the pointer is, and where in the dragged box it took hold of it. */
+let pointerY = 0;
+let holdY = 0;
+/** How far the dragged box is moved away from its place. */
+let offset = 0;
+/** The pointer that holds the box; others (a second finger) don't move it. */
+let pointerId: number | undefined;
 
 /*
  * While dragging, the window follows the pointer: the boxes move in the page meanwhile, and an
  * element that is moved loses the pointer.
  */
-function grab(box: Box) {
+function grab(box: Box, event: PointerEvent) {
+  const element = boxOf(box);
+  if (!element) return;
   dragged.value = box;
   preview.value = [...current.value];
+  pointerId = event.pointerId;
+  pointerY = event.clientY;
+  holdY = event.clientY - element.getBoundingClientRect().top;
+  offset = 0;
   addEventListener('pointermove', drag);
   addEventListener('pointerup', drop);
   addEventListener('pointercancel', drop);
 }
 
-/** Puts the dragged box before the first other box whose middle is below the pointer. */
-function drag(event: PointerEvent) {
+/** Keeps the dragged box under the pointer, within the sidebar. */
+function follow() {
   const box = dragged.value;
-  if (!box || !preview.value) return;
-  const others = boxes.value.filter((other) => other !== box);
-  const below = others.find((other) => {
-    const rect = boxElement(other)?.getBoundingClientRect();
-    return rect && event.clientY < rect.top + rect.height / 2;
-  });
-  const last = others.at(-1);
-  if (below) preview.value = placeBox(preview.value, box, below, false);
-  else if (last) preview.value = placeBox(preview.value, box, last, true);
+  const slot = box && slotOf(box);
+  const element = box && boxOf(box);
+  const sidebar = root.value?.getBoundingClientRect();
+  if (!slot || !element || !sidebar) return;
+  const top = Math.min(
+    Math.max(pointerY - holdY, sidebar.top),
+    sidebar.bottom - element.offsetHeight,
+  );
+  offset = top - slot.getBoundingClientRect().top;
+  element.style.transform = `translateY(${offset}px)`;
 }
 
-function drop() {
+/**
+ * Moves the dragged box's place before the first other box whose middle is below the dragged
+ * box's middle. The others are measured as if the dragged box weren't there, so the order doesn't
+ * flip back and forth when boxes have different heights.
+ */
+async function drag(event: PointerEvent) {
+  const box = dragged.value;
+  const slot = box && slotOf(box);
+  if (!box || !slot || !preview.value || !root.value || event.pointerId !== pointerId) return;
+  pointerY = event.clientY;
+  follow();
+
+  const gap = parseFloat(getComputedStyle(root.value).rowGap) || 0;
+  const shift = slot.offsetHeight + gap;
+  const index = preview.value.indexOf(box);
+  const middle = slot.getBoundingClientRect().top + offset + slot.offsetHeight / 2;
+  const others = boxes.value.filter((other) => other !== box);
+  const below = others.find((other) => {
+    const rect = slotOf(other)?.getBoundingClientRect();
+    if (!rect) return false;
+    const top = rect.top - (preview.value!.indexOf(other) > index ? shift : 0);
+    return middle < top + rect.height / 2;
+  });
+  const last = others.at(-1);
+  const next = below
+    ? placeBox(preview.value, box, below, false)
+    : last
+      ? placeBox(preview.value, box, last, true)
+      : preview.value;
+  if (next.join() === preview.value.join()) return;
+
+  // The other boxes glide to their new places (FLIP: measure, reorder, measure, animate).
+  const before = new Map(others.map((other) => [other, boxOf(other)?.getBoundingClientRect().top]));
+  preview.value = next;
+  await nextTick();
+  follow();
+  for (const other of others) {
+    const element = boxOf(other);
+    const old = before.get(other);
+    if (element && old !== undefined) glide(element, old - element.getBoundingClientRect().top);
+  }
+}
+
+/** The dragged box glides into its place. */
+function drop(event?: PointerEvent) {
+  if (event && event.pointerId !== pointerId) return;
   removeEventListener('pointermove', drag);
   removeEventListener('pointerup', drop);
   removeEventListener('pointercancel', drop);
-  if (!dragged.value) return;
+  const box = dragged.value;
+  if (!box) return;
+  const element = boxOf(box);
+  if (element) {
+    element.style.transform = '';
+    glide(element, offset);
+  }
   const next = preview.value;
   dragged.value = undefined;
   preview.value = undefined;
   if (next) save(next);
 }
 
-onUnmounted(drop);
+onUnmounted(() => drop());
 
 /** For screen readers: where a box moved with the keyboard is now. */
 const announcement = ref('');
 
 async function move(box: Box, step: -1 | 1) {
+  const others = boxes.value.filter((other) => other !== box);
+  const before = new Map(
+    boxes.value.map((other) => [other, boxOf(other)?.getBoundingClientRect().top]),
+  );
   if (!save(moveBox(current.value, box, step, boxes.value))) return;
   await nextTick();
+  for (const other of [box, ...others]) {
+    const element = boxOf(other);
+    const old = before.get(other);
+    if (element && old !== undefined) glide(element, old - element.getBoundingClientRect().top);
+  }
   // Moving the element in the page can take the focus away from its handle.
-  boxElement(box)?.querySelector<HTMLElement>('.shm-sidebar-handle')?.focus();
+  boxOf(box)?.querySelector<HTMLElement>('.shm-sidebar-handle')?.focus();
   announcement.value = i18n.t('sidebar.moved', [boxes.value.indexOf(box) + 1, boxes.value.length]);
 }
 </script>
@@ -164,18 +270,19 @@ async function move(box: Box, step: -1 | 1) {
   <div
     ref="root"
     class="shm-sidebar"
-    :class="themeClasses(settings)"
+    :class="[themeClasses(settings), { 'is-sorting': dragged }]"
     :style="fontScaleStyle(settings)"
     role="region"
     :aria-label="i18n.t('sidebar.label')"
   >
-    <template v-for="box in boxes" :key="box">
+    <div v-for="box in boxes" :key="box" class="shm-sidebar-slot" :data-box="box">
       <SidebarBox
-        :data-box="box"
         :title="i18n.t(TITLES[box])"
         :dragging="box === dragged"
-        @grab="grab(box)"
+        :collapsed="isCollapsed(box)"
+        @grab="(event) => grab(box, event)"
         @move="(step) => move(box, step)"
+        @toggle="toggle(box)"
       >
         <dl v-if="box === 'storeCredit'" class="shm-sidebar-figures">
           <div>
@@ -243,7 +350,7 @@ async function move(box: Box, step: -1 | 1) {
           </button>
         </template>
       </SidebarBox>
-    </template>
+    </div>
     <p class="shm-sidebar-status" aria-live="polite">{{ announcement }}</p>
   </div>
 </template>
@@ -277,10 +384,58 @@ async function move(box: Box, step: -1 | 1) {
   border: 1px solid rgb(var(--shm-accent-rgb) / 0.3);
 }
 
+/* While a box is dragged, the places of the boxes show as the sidebar's grid. */
+.shm-sidebar-slot {
+  position: relative;
+}
+
+.shm-sidebar.is-sorting .shm-sidebar-slot {
+  background: rgb(var(--shm-accent-rgb) / 0.06);
+  outline: 1px dashed rgb(var(--shm-accent-rgb) / 0.45);
+}
+
+.shm-sidebar.is-sorting,
+.shm-sidebar.is-sorting .shm-sidebar-handle {
+  cursor: grabbing;
+  user-select: none;
+}
+
+/* The dragged box follows the pointer above the others (its transform is set while dragging). */
 .shm-sidebar-box.is-dragging {
-  opacity: 0.7;
-  outline: 1px dashed var(--shm-accent);
-  outline-offset: 2px;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 12px 30px rgb(0 0 0 / 0.45);
+}
+
+.shm-sidebar-toggle .shm-icon {
+  transition: transform 0.2s ease;
+}
+
+.shm-sidebar-box.is-collapsed .shm-sidebar-toggle .shm-icon {
+  transform: rotate(180deg);
+}
+
+/* Collapsing animates the height: the body's only grid row shrinks from its content to nothing. */
+.shm-sidebar-box-body {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.2s ease;
+}
+
+.shm-sidebar-box.is-collapsed .shm-sidebar-box-body {
+  grid-template-rows: 0fr;
+}
+
+.shm-sidebar-box-content {
+  min-height: 0;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shm-sidebar-toggle .shm-icon,
+  .shm-sidebar-box-body {
+    transition: none;
+  }
 }
 
 .shm-sidebar-box-head {

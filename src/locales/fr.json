@@ -77,7 +77,9 @@
     "label": "Barre latérale",
     "move": "Faire glisser pour déplacer le cadre (ou touches fléchées haut et bas)",
     "moved": "Déplacé en position $1 sur $2",
-    "available": "Disponible"
+    "available": "Disponible",
+    "collapse": "Replier",
+    "expand": "Déplier"
   },
   "filter": {
     "label": "Filtrer les pledges",

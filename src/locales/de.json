@@ -77,7 +77,9 @@
     "label": "Seitenleiste",
     "move": "Ziehen, um die Box zu verschieben (oder Pfeiltasten hoch und runter)",
     "moved": "An Position $1 von $2 verschoben",
-    "available": "Verfügbar"
+    "available": "Verfügbar",
+    "collapse": "Zuklappen",
+    "expand": "Aufklappen"
   },
   "filter": {
     "label": "Pledges filtern",

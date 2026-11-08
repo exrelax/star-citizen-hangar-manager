@@ -1,6 +1,7 @@
 /*
  * The boxes of the sidebar below RSI's page navigation (see `HangarSidebar.vue`) and their order,
- * which the user changes by drag and drop or with the arrow keys and which is kept in the settings.
+ * which the user changes by drag and drop or with the arrow keys and which is kept in the settings,
+ * like the boxes collapsed to their title.
  * Boxes that are hidden at the moment (no selection, "Hide melt value") keep their place.
  */
 
@@ -11,12 +12,17 @@ export type SidebarBox = (typeof SIDEBAR_BOXES)[number];
 const isSidebarBox = (value: unknown): value is SidebarBox =>
   SIDEBAR_BOXES.includes(value as SidebarBox);
 
+/** The known boxes of a stored list, each once (e.g. the collapsed boxes). */
+export const sidebarBoxesOf = (stored: unknown): SidebarBox[] => [
+  ...new Set(Array.isArray(stored) ? stored.filter(isSidebarBox) : []),
+];
+
 /**
  * A complete order from a stored one: unknown and repeated boxes are dropped, missing ones (e.g.
  * new in an update) are added where the default order has them – after the box before them there.
  */
 export function normalizeSidebarOrder(stored: unknown): SidebarBox[] {
-  const order = [...new Set(Array.isArray(stored) ? stored.filter(isSidebarBox) : [])];
+  const order = sidebarBoxesOf(stored);
   SIDEBAR_BOXES.forEach((box, index) => {
     if (order.includes(box)) return;
     const before = SIDEBAR_BOXES.slice(0, index).findLast((other) => order.includes(other));

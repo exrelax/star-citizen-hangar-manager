@@ -77,7 +77,9 @@
     "label": "Sidebar",
     "move": "Drag to move the box (or use the arrow keys up and down)",
     "moved": "Moved to position $1 of $2",
-    "available": "Available"
+    "available": "Available",
+    "collapse": "Collapse",
+    "expand": "Expand"
   },
   "filter": {
     "label": "Filter pledges",

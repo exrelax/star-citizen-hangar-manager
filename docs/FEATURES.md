@@ -238,8 +238,11 @@ on its own.
     of them search or filters hide, and a button that clears the selection.
 - The sidebar stays on every tab of the manager (Buy Back, Pledge Store, Settings) and keeps
   showing the hangar's figures.
-- **Reorder the boxes** by dragging their title, or focus a title and use the arrow keys up and
-  down. The order is kept in the settings.
+- **Reorder the boxes** by dragging their title: the dragged box follows the pointer, the places
+  of the boxes show as the sidebar's grid, and the other boxes glide out of the way. Or focus a
+  title and use the arrow keys up and down. The order is kept in the settings.
+- **Collapse a box** to its title with the arrow in its top right corner; it stays collapsed
+  (also kept in the settings).
 - It sticks while scrolling as long as it fits into the window; a higher sidebar scrolls with the
   page, so its lower boxes stay reachable.
 - A setting adds the number of pledges per type (ships, CCUs, paints, …).
