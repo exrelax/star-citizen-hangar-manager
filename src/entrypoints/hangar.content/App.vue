@@ -14,6 +14,8 @@ import { DEMO_CONTEXT, useDemo } from '@/demo/use-demo';
 import { hashOfTab, MANAGER_TABS, tabFromHash, type ManagerTab } from '@/hangar/route';
 import { syncState } from '@/hangar/sync-state';
 import { useHangarPledges } from '@/hangar/use-hangar-pledges';
+import { pruneMeltMarks } from '@/hangar/melt-marks';
+import { MELT_MARKS, useMeltMarks } from '@/hangar/use-melt-marks';
 import type { IconName, IconSet } from '@/icons/icon-names';
 import TabBar from '@/shared/components/TabBar.vue';
 import { i18n } from '@/i18n';
@@ -61,6 +63,18 @@ const listsReady = computed(() => settingsLoaded.value && demoView.ready.value);
 provide(DEMO_CONTEXT, demoView.context);
 const pledges = demoView.pledges;
 const buybackPledges = demoView.buyback;
+// Pledges marked to melt (#97): when each can be melted, for the rows and the sidebar. From the
+// real hangar, also in the demo.
+const meltMarks = useMeltMarks(
+  () => new Map(hangar.pledges.value.map((pledge) => [pledge.id, pledge.createdAt])),
+);
+provide(MELT_MARKS, meltMarks);
+// A mark goes once its pledge is gone from the stored hangar (melted, gifted, …).
+watch(
+  () => (syncedAt.value ? hangar.pledges.value : undefined),
+  (current) => current && void pruneMeltMarks(new Set(current.map((pledge) => pledge.id))),
+);
+
 // The Paint Discount Consultant: in the Pledge Store tab and as marks in My Hangar.
 providePaintConsultant({
   pledges: () => pledges.value,

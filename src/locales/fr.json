@@ -559,6 +559,15 @@
     "successNote": "Ils quittent la liste à la fermeture de cette boîte de dialogue ; le rachat les affiche après la prochaine mise à jour.",
     "failed": "RSI a refusé « $1 » : $2. $3 autres pledges n’ont pas été envoyés et restent dans votre hangar."
   },
+  "meltMark": {
+    "mark": "Marquer pour fondre",
+    "unmark": "Retirer la marque",
+    "buttonHint": "Marque ce pledge pour le fondre plus tard : le Hangar Manager vous indique quand RSI le permet, 24 heures après l’achat.",
+    "demo": "Indisponible en mode démo.",
+    "waiting": "Fondre dans $1",
+    "ready": "Fondre maintenant",
+    "hint": "Marqué pour fondre. RSI permet de fondre un pledge 24 heures après son achat : à partir du $1."
+  },
   "gift": {
     "button": "Gift",
     "buttonHint": "Offre ce pledge à un autre citoyen par e-mail, comme dans « My Gear ». Ouvre d’abord une fenêtre de dialogue.",

@@ -28,6 +28,11 @@ export interface PledgeOrder {
   orderId: string;
   /** Created by buying a melted pledge back. */
   buyback: boolean;
+  /**
+   * When the pledge was created, as the pledge log shows it ("2026-10-30T19:55", no time zone):
+   * RSI's lists only give the date. Missing in entries stored before it was read.
+   */
+  createdAt?: string;
 }
 
 /** Locally stored result of the last order sync. */
@@ -74,9 +79,49 @@ const CREATED = /#(\d+) - Created by .+? - (Buy-Back )?order #([A-Z0-9]+)/i;
 /** The pledge and order of a "Created" entry of the pledge log; other entries give nothing. */
 export function parseLogEntry(text: string): ({ pledgeId: number } & PledgeOrder) | undefined {
   const match = CREATED.exec(text);
-  return match
-    ? { pledgeId: Number(match[1]), orderId: match[3]!.toUpperCase(), buyback: !!match[2] }
-    : undefined;
+  if (!match) return undefined;
+  const createdAt = parseLogTime(text);
+  return {
+    pledgeId: Number(match[1]),
+    orderId: match[3]!.toUpperCase(),
+    buyback: !!match[2],
+    ...(createdAt && { createdAt }),
+  };
+}
+
+const SHORT_MONTHS = [
+  'jan',
+  'feb',
+  'mar',
+  'apr',
+  'may',
+  'jun',
+  'jul',
+  'aug',
+  'sep',
+  'oct',
+  'nov',
+  'dec',
+];
+
+// "Oct 30 2026, 7:55 pm - …" at the start of every entry.
+const LOG_TIME = /^([a-z]{3})[a-z]*\.? (\d{1,2}),? (\d{4}),? (\d{1,2}):(\d{2}) ?(am|pm)\b/i;
+
+/**
+ * The time at the start of a pledge log entry as `YYYY-MM-DDTHH:mm`, without a time zone: RSI
+ * doesn't say which one it uses.
+ */
+export function parseLogTime(text: string): string | undefined {
+  const match = LOG_TIME.exec(text.trim());
+  if (!match) return undefined;
+  const month = SHORT_MONTHS.indexOf(match[1]!.toLowerCase()) + 1;
+  let hours = Number(match[4]);
+  if (month === 0 || hours < 1 || hours > 12) return undefined;
+  const pm = match[6]!.toLowerCase() === 'pm';
+  if (hours === 12) hours = pm ? 12 : 0;
+  else if (pm) hours += 12;
+  const pad = (value: number | string) => String(value).padStart(2, '0');
+  return `${match[3]}-${pad(month)}-${pad(match[2]!)}T${pad(hours)}:${match[5]}`;
 }
 
 /** The entries of a page of the pledge log as RSI renders it (`<div class="pledge-log-entry">`). */

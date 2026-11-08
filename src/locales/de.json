@@ -559,6 +559,15 @@
     "successNote": "Sie verschwinden aus der Liste, wenn du diesen Dialog schließt; das Buy Back zeigt sie nach dem nächsten Update.",
     "failed": "RSI hat „$1“ abgelehnt: $2. $3 weitere Pledges wurden nicht gesendet und bleiben in deinem Hangar."
   },
+  "meltMark": {
+    "mark": "Zum Einschmelzen merken",
+    "unmark": "Nicht mehr merken",
+    "buttonHint": "Merkt dieses Pledge zum späteren Einschmelzen vor: Der Hangar Manager sagt dir, wann RSI das Einschmelzen erlaubt – 24 Stunden nach dem Kauf.",
+    "demo": "Im Demo-Modus nicht verfügbar.",
+    "waiting": "Einschmelzen in $1",
+    "ready": "Jetzt einschmelzen",
+    "hint": "Zum Einschmelzen gemerkt. RSI erlaubt das Einschmelzen 24 Stunden nach dem Kauf: ab $1."
+  },
   "gift": {
     "button": "Gift",
     "buttonHint": "Verschenkt dieses Pledge per E-Mail an einen anderen Citizen, wie in „My Gear“. Öffnet zuerst einen Dialog.",

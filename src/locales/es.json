@@ -559,6 +559,15 @@
     "successNote": "Desaparecen de la lista al cerrar este diálogo; la recompra los muestra tras la próxima actualización.",
     "failed": "RSI rechazó «$1»: $2. Otros $3 pledges no se enviaron y siguen en tu hangar."
   },
+  "meltMark": {
+    "mark": "Marcar para fundir",
+    "unmark": "Desmarcar",
+    "buttonHint": "Marca este pledge para fundirlo más tarde: el Hangar Manager te avisa cuando RSI lo permite, 24 horas después de comprarlo.",
+    "demo": "No disponible en el modo demo.",
+    "waiting": "Fundir en $1",
+    "ready": "Fundir ahora",
+    "hint": "Marcado para fundir. RSI permite fundir un pledge 24 horas después de comprarlo: desde el $1."
+  },
   "gift": {
     "button": "Gift",
     "buttonHint": "Regala este pledge a otro ciudadano por correo electrónico, como en «My Gear». Primero abre un diálogo.",

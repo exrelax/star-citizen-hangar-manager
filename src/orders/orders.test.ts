@@ -13,6 +13,7 @@ import {
   parseBillingPage,
   parseLogEntry,
   parseLogPage,
+  parseLogTime,
   parseOrderDetails,
   withOrder,
   type OrdersSnapshot,
@@ -26,12 +27,22 @@ describe('parseLogEntry', () => {
       parseLogEntry(
         'Jan 18 2020, 1:22 am - Package - Cutlass Black #21040666 - Created by name - order #J4SHJM5S2GUF5, value: $115.00 USD',
       ),
-    ).toEqual({ pledgeId: 21040666, orderId: 'J4SHJM5S2GUF5', buyback: false });
+    ).toEqual({
+      pledgeId: 21040666,
+      orderId: 'J4SHJM5S2GUF5',
+      buyback: false,
+      createdAt: '2020-01-18T01:22',
+    });
     expect(
       parseLogEntry(
         'Oct 30 2026, 7:55 pm - Paints - Paladin - Shadowfall Paint #114816820 - Created by name - Buy-Back order #4OLB2S5WUG6PX',
       ),
-    ).toEqual({ pledgeId: 114816820, orderId: '4OLB2S5WUG6PX', buyback: true });
+    ).toEqual({
+      pledgeId: 114816820,
+      orderId: '4OLB2S5WUG6PX',
+      buyback: true,
+      createdAt: '2026-10-30T19:55',
+    });
   });
 
   it('ignores entries without a created order', () => {
@@ -45,6 +56,17 @@ describe('parseLogEntry', () => {
       parseLogEntry('Oct 10 2020, 2:25 am - 300 Million Reward #25517346 - pistol'),
     ).toBeUndefined();
     expect(parseLogEntry('Package - Aurora #1 - Claimed as a gift by name')).toBeUndefined();
+  });
+
+  it('reads the time of an entry, also around noon and midnight', () => {
+    expect(parseLogTime('Oct 30 2026, 12:05 am - Paint #1 - Created by a')).toBe(
+      '2026-10-30T00:05',
+    );
+    expect(parseLogTime('Oct 30 2026, 12:05 pm - Paint #1')).toBe('2026-10-30T12:05');
+    expect(parseLogTime('Sep 3 2026, 9:07 PM - Paint #1')).toBe('2026-09-03T21:07');
+    // A date without a time, or none at all.
+    expect(parseLogTime('Oct 22 2026 - Paint #1 - Created by a - order #A')).toBeUndefined();
+    expect(parseLogTime('Paint #1 - Created by a')).toBeUndefined();
   });
 
   it('reads the entries of a log page', () => {

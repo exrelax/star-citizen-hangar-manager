@@ -277,6 +277,16 @@ export const EXCHANGE_ATTENTION_DELAY_MS = 5_000;
  */
 export const BULK_EXCHANGE_DELAY_MS = 1_000;
 
+/**
+ * RSI lets a pledge be melted only this long after it was bought, with store credit or money
+ * (RSI Support: "Reclaim a Pledge"). Pledges marked to melt count down to it (see
+ * `hangar/melt-marks.ts`).
+ */
+export const MELT_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+
+/** How often times counting down (e.g. to melting a marked pledge) are updated on screen. */
+export const CLOCK_TICK_MS = 30 * 1000;
+
 /** CIG refunds purchases paid with money within this many days (shown in "My Hangar"). */
 export const REFUND_DAYS = 30;
 /** From this many days left on, the refund tag is highlighted. */
