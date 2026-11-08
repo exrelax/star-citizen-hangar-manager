@@ -285,7 +285,7 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
   letter-spacing: 0.08em;
   vertical-align: 3px;
   background: var(--shm-warning);
-  border-radius: 3px;
+  border-radius: var(--shm-radius-small);
   cursor: help;
 }
 

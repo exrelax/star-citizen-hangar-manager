@@ -97,6 +97,6 @@ watch(() => [tooltipState.anchor, tooltipState.content], place);
 }
 
 html .shm-tooltip.shm-theme-modern {
-  border-radius: 8px;
+  border-radius: var(--shm-radius-control);
 }
 </style>

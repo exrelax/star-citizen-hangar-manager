@@ -90,7 +90,7 @@ ul {
   padding: 8px;
   color: var(--shm-text);
   text-decoration: none;
-  border-radius: 6px;
+  border-radius: var(--shm-radius-item);
 }
 
 .shm-popup-link .shm-icon {

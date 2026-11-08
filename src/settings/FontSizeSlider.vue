@@ -129,7 +129,7 @@ function stopDrag() {
   left: 28px;
   height: 2px;
   background: rgb(var(--shm-accent-rgb) / 0.3);
-  border-radius: 1px;
+  border-radius: var(--shm-radius-pill);
   content: '';
 }
 
@@ -186,7 +186,7 @@ function stopDrag() {
   height: 16px;
   padding: 4px;
   box-sizing: border-box;
-  border-radius: 999px;
+  border-radius: var(--shm-radius-pill);
 }
 
 .shm-font-size-dot::after {
@@ -194,7 +194,7 @@ function stopDrag() {
   width: 8px;
   height: 8px;
   background: rgb(var(--shm-accent-rgb) / 0.6);
-  border-radius: 999px;
+  border-radius: var(--shm-radius-pill);
   content: '';
 }
 
@@ -210,7 +210,7 @@ function stopDrag() {
   width: 16px;
   height: 16px;
   background: var(--shm-accent);
-  border-radius: 999px;
+  border-radius: var(--shm-radius-pill);
   box-shadow: 0 0 0 3px rgb(var(--shm-accent-rgb) / 0.25);
   transform: translateX(-50%);
   transition: left 0.15s ease;
@@ -224,7 +224,7 @@ function stopDrag() {
   height: 6px;
   margin: 5px;
   background: var(--shm-text-on-accent);
-  border-radius: 999px;
+  border-radius: var(--shm-radius-pill);
   content: '';
 }
 

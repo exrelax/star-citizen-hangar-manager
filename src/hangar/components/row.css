@@ -26,7 +26,7 @@
   color: var(--shm-accent);
   font-size: calc(14px * var(--shm-font-scale));
   background: rgb(5 12 19 / 0.78);
-  border-radius: 999px;
+  border-radius: var(--shm-radius-pill);
 }
 
 .shm-row.is-expanded {
@@ -233,7 +233,7 @@
   text-transform: none;
   background: rgb(var(--shm-accent-rgb) / 0.14);
   border: 1px solid rgb(var(--shm-accent-rgb) / 0.5);
-  border-radius: 4px;
+  border-radius: var(--shm-radius-small);
   transition:
     background 0.15s,
     border-color 0.15s;
@@ -390,7 +390,7 @@
   color: transparent;
   background: rgb(var(--shm-surface-rgb) / 0.6);
   border: 1.5px solid rgb(var(--shm-accent-rgb) / 0.5);
-  border-radius: 999px;
+  border-radius: var(--shm-radius-pill);
   cursor: pointer;
 }
 
