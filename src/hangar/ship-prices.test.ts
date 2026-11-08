@@ -2,7 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { SHIPS_VERSION } from '@/ships/ships-storage';
 import type { Pledge } from './pledge';
 import { createItemPriceLookup } from '@/store/items/item-prices';
-import { createPriceLookup, pledgeDiscount, shipPricesOf } from './ship-prices';
+import {
+  createPriceLookup,
+  pledgeDiscount,
+  roundPaintDiscount,
+  shipPricesOf,
+  type PledgeDiscount,
+} from './ship-prices';
 
 // Names and prices as listed by RSI's upgrade tool.
 const priceOf = createPriceLookup([
@@ -183,5 +189,32 @@ describe('shipPricesOf', () => {
     ]);
     expect(shipPricesOf({ version: 0, ships })).toEqual([]);
     expect(shipPricesOf(null)).toEqual([]);
+  });
+});
+
+describe('roundPaintDiscount', () => {
+  const discount = (percent: number): PledgeDiscount => ({
+    original: 100,
+    paid: 100 - percent,
+    amount: percent,
+    percent,
+    ships: [{ name: 'Paint Pack', price: 100 }],
+  });
+
+  it('rounds to a volume discount tier within 0.2 percentage points', () => {
+    expect(roundPaintDiscount(discount(24.85)).percent).toBe(25);
+    expect(roundPaintDiscount(discount(15.2)).percent).toBe(15);
+    expect(roundPaintDiscount(discount(34.8)).percent).toBe(35);
+    expect(roundPaintDiscount(discount(19.9)).percent).toBe(20);
+  });
+
+  it('keeps the amount in dollars', () => {
+    expect(roundPaintDiscount(discount(29.9))).toMatchObject({ amount: 29.9, percent: 30 });
+  });
+
+  it('keeps discounts further away from a tier', () => {
+    expect(roundPaintDiscount(discount(24.7)).percent).toBe(24.7);
+    expect(roundPaintDiscount(discount(12.5)).percent).toBe(12.5);
+    expect(roundPaintDiscount(discount(40)).percent).toBe(40);
   });
 });

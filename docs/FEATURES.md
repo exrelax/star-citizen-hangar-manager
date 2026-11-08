@@ -278,6 +278,9 @@ The row shows the **discount compared to the original price** – in dollars and
 - **Everything else** – paints, gear, add-ons, packs, game packages, … – is compared with the item
   of the same name in the Pledge Store (its standard price, not a warbond or sale price). Only items
   the store sells now have a price.
+- **Paints** are rounded to RSI's volume discount tiers (2 paints 15%, 3 paints 20%, 5 paints 25%,
+  7 paints 30%, 10 or more 35%) when within 0.2 percentage points of one, e.g. 24.85% → 25%. Older
+  paint packages with other discounts keep theirs.
 - **Free pledges** (rewards, referral bonuses with a value of $0) show no discount.
 - **Bundles of several ships** the store doesn't sell are compared with the sum of their ships'
   prices (without the game, and only if every ship's price is known).

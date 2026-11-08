@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Pledge } from './pledge';
 import { toPledgeView } from './pledge-view';
+import { createItemPriceLookup } from '@/store/items/item-prices';
 
 const PLACEHOLDER = 'https://robertsspaceindustries.com/static/images/Temp/default-image.png';
 
@@ -265,5 +266,55 @@ describe('insurance', () => {
       }),
     );
     expect(ccu.insurance).toEqual({ lifetime: false, months: 120 });
+  });
+
+  it("rounds the discount of paints to RSI's volume discount tiers", () => {
+    const itemPriceOf = createItemPriceLookup([
+      {
+        id: 1,
+        name: 'Hornet Paint Pack',
+        category: 'Paints',
+        price: 40.1,
+        isWarbond: false,
+        available: true,
+      },
+      {
+        id: 2,
+        name: 'Hornet Gear Pack',
+        category: 'Gear',
+        price: 40.1,
+        isWarbond: false,
+        available: true,
+      },
+    ]);
+    const paintPack = toPledgeView(
+      pledge({
+        title: 'Paints - Hornet Paint Pack',
+        valueUsd: 30,
+        items: [
+          { title: 'Hornet - Ghost Paint', kind: 'Skin' },
+          { title: 'Hornet - Tracker Paint', kind: 'Skin' },
+        ],
+      }),
+      {},
+      0,
+      undefined,
+      itemPriceOf,
+    );
+    const gearPack = toPledgeView(
+      pledge({
+        title: 'Gear - Hornet Gear Pack',
+        valueUsd: 30,
+        items: [{ title: 'Helmet', kind: 'Gear' }],
+      }),
+      {},
+      0,
+      undefined,
+      itemPriceOf,
+    );
+
+    // $10.10 of $40.10 is 25.19 %.
+    expect(paintPack.discount).toMatchObject({ amount: 10.1, percent: 25 });
+    expect(gearPack.discount?.percent).toBeCloseTo(25.19, 2);
   });
 });

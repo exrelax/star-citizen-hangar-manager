@@ -1,3 +1,4 @@
+import { PAINT_DISCOUNT_TIERS } from '@/config';
 import { current, type ShipsSnapshot } from '@/ships/ships-storage';
 import type { ItemPriceLookup } from '@/store/items/item-prices';
 import type { Pledge } from './pledge';
@@ -175,4 +176,18 @@ function discountOf(
   if (!(original > 0) || !(pledge.valueUsd > 0)) return undefined;
   const amount = Math.round((original - pledge.valueUsd) * 100) / 100;
   return { original, paid: pledge.valueUsd, amount, percent: (amount / original) * 100, ships };
+}
+
+/**
+ * Rounds the discount of a paint pledge to RSI's volume discount tier it is within the tolerance
+ * of (e.g. 24.85 % → 25 %; see `PAINT_DISCOUNT_TIERS`): the store's prices in whole cents make it
+ * miss the tier slightly. Only the percent changes, the amount in dollars stays what was paid.
+ */
+export function roundPaintDiscount(discount: PledgeDiscount): PledgeDiscount {
+  const { percents, tolerance } = PAINT_DISCOUNT_TIERS;
+  // A little room for floating point errors, so exactly 0.2 points still count.
+  const tier = percents.find((tier) => Math.abs(discount.percent - tier) <= tolerance + 1e-9);
+  return tier === undefined || tier === discount.percent
+    ? discount
+    : { ...discount, percent: tier };
 }
