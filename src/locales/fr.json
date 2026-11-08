@@ -86,6 +86,7 @@
     "ships": "Vaisseaux",
     "warbond": "Warbond",
     "valuable": "Avec valeur",
+    "discount": "Remise",
     "rewards": "Récompenses",
     "reset": "Réinitialiser les filtres",
     "stateOff": "Clic : n’afficher que les éléments avec « $1 ».",
@@ -96,7 +97,8 @@
       "warbond": "Payé en argent réel : le pledge a une commande payée en argent (et non en store credit).",
       "valuable": "Pledges d’une valeur supérieure à 0 $$.",
       "rewards": "Récompenses d’une valeur de 0 $$ : événements, parrainage, Concierge et autres récompenses.",
-      "rewardsByName": "Récompenses, reconnues à leur nom : événements, parrainage, Concierge et autres récompenses."
+      "rewardsByName": "Récompenses, reconnues à leur nom : événements, parrainage, Concierge et autres récompenses.",
+      "discount": "Acheté moins cher que le prix d’origine : vaisseaux et CCU comparés aux prix des vaisseaux de RSI, peintures, équipement et autres au Pledge Store. Les pledges sans prix d’origine connu ou plus chers ne comptent pas."
     },
     "categories": {
       "types": "Types",

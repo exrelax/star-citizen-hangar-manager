@@ -37,7 +37,7 @@ PRIVADO POR DISEÑO
 • Oculta los ID de pledges y pedidos, tu nombre y dirección, los importes y los plazos de reembolso para capturas y streams – o muestra una selección anonimizada en el modo demo
 
 TODO TU HANGAR Y LA RECOMPRA
-• Filtros para incluir o excluir: naves, CCU, pinturas, acceso al juego, recompensas, LTI, warbond, regalables, fundibles, con valor
+• Filtros para incluir o excluir: naves, CCU, pinturas, acceso al juego, recompensas, LTI, warbond, regalables, fundibles, con valor, con descuento
 • El mejor seguro de cada pledge como etiqueta (LTI, 10 años, …)
 • Los descuentos de naves y CCU respecto al precio original
 • El historial completo de CCU de las naves mejoradas, con el descuento de cada paso

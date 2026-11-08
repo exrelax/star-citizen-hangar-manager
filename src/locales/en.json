@@ -86,6 +86,7 @@
     "ships": "Ships",
     "warbond": "Warbond",
     "valuable": "Valuable",
+    "discount": "Discount",
     "rewards": "Rewards",
     "reset": "Reset filters",
     "stateOff": "Click: show only items with “$1”.",
@@ -96,7 +97,8 @@
       "warbond": "Bought with money: the pledge has an order paid with money (not with store credit).",
       "valuable": "Pledges with a value above $$0.",
       "rewards": "Rewards with a value of $$0: event, referral, Concierge and other rewards.",
-      "rewardsByName": "Rewards, recognized by their names: event, referral, Concierge and other rewards."
+      "rewardsByName": "Rewards, recognized by their names: event, referral, Concierge and other rewards.",
+      "discount": "Bought for less than the original price: ships and CCUs compared with RSI's ship prices, paints, gear and more with the Pledge Store. Pledges whose original price isn't known, or that cost more, don't count."
     },
     "categories": {
       "types": "Types",

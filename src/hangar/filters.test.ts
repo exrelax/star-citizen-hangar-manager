@@ -89,6 +89,35 @@ describe('matchesFilterStates', () => {
   });
 });
 
+describe('discount filter', () => {
+  const discount = (amount: number) => ({
+    original: 50,
+    paid: 50 - amount,
+    amount,
+    percent: 0,
+    ships: [],
+  });
+
+  it('matches only pledges bought for less than the original price', () => {
+    const matches = PLEDGE_FILTER_PREDICATES.discount;
+    expect(matches(pledge(1, { discount: discount(25) }))).toBe(true);
+    expect(matches(pledge(2, { discount: discount(0) }))).toBe(false);
+    expect(matches(pledge(3, { discount: discount(-5) }))).toBe(false);
+    expect(matches(pledge(4))).toBe(false);
+  });
+
+  it('joins the stored layouts of existing users, shown after the others', () => {
+    const stored = { order: ['valuable', 'lti'], shown: ['lti'] };
+    const layout = normalizeFilterLayout(
+      stored,
+      PLEDGE_FILTER_CATEGORIES.features,
+      FILTERS.hangar.features,
+    );
+    expect(layout.order.at(-1)).toBe('discount');
+    expect(layout.shown).toContain('discount');
+  });
+});
+
 describe('filterCounts', () => {
   const counts = (entries: [PledgeFilter, FilterState][]) =>
     Object.fromEntries(

@@ -37,7 +37,7 @@ PRIVAT VON GRUND AUF
 • Pledge- und Bestellnummern, Name und Adresse, Werte und Rückerstattungsfristen für Screenshots und Streams ausblenden – oder im Demo-Modus eine anonymisierte Auswahl zeigen
 
 DEIN GANZER HANGAR UND BUY BACK
-• Filter zum Ein- oder Ausschließen: Schiffe, CCUs, Paints, Spielzugang, Rewards, LTI, Warbond, verschenkbar, schmelzbar, mit Wert
+• Filter zum Ein- oder Ausschließen: Schiffe, CCUs, Paints, Spielzugang, Rewards, LTI, Warbond, verschenkbar, schmelzbar, mit Wert, mit Rabatt
 • Die beste Versicherung jedes Pledges als Tag (LTI, 10 Jahre, …)
 • Rabatte von Schiffen und CCUs gegenüber dem Originalpreis
 • Der komplette CCU-Verlauf aufgewerteter Schiffe, mit dem Rabatt jedes Schritts

@@ -86,6 +86,7 @@
     "ships": "Naves",
     "warbond": "Warbond",
     "valuable": "Con valor",
+    "discount": "Descuento",
     "rewards": "Recompensas",
     "reset": "Restablecer filtros",
     "stateOff": "Clic: mostrar solo los elementos con «$1».",
@@ -96,7 +97,8 @@
       "warbond": "Comprado con dinero: el pledge tiene un pedido pagado con dinero (no con store credit).",
       "valuable": "Pledges con un valor superior a $$0.",
       "rewards": "Recompensas con un valor de $$0: eventos, referidos, Concierge y otras recompensas.",
-      "rewardsByName": "Recompensas, reconocidas por su nombre: eventos, referidos, Concierge y otras recompensas."
+      "rewardsByName": "Recompensas, reconocidas por su nombre: eventos, referidos, Concierge y otras recompensas.",
+      "discount": "Comprado por menos del precio original: naves y CCU comparados con los precios de naves de RSI, pinturas, equipo y más con la Pledge Store. No cuentan los pledges sin precio original conocido o que costaron más."
     },
     "categories": {
       "types": "Tipos",

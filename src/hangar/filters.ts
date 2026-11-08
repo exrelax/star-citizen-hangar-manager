@@ -131,13 +131,14 @@ export const PLEDGE_FILTERS = [
   'giftable',
   'meltable',
   'valuable',
+  'discount',
   'rewards',
 ] as const;
 export type PledgeFilter = (typeof PLEDGE_FILTERS)[number];
 
 export const PLEDGE_FILTER_CATEGORIES: Record<FilterCategory, readonly PledgeFilter[]> = {
   types: ['ships', 'ccus', 'paints', 'gameAccess', 'rewards'],
-  features: ['lti', 'warbond', 'giftable', 'meltable', 'valuable'],
+  features: ['lti', 'warbond', 'giftable', 'meltable', 'valuable', 'discount'],
 };
 
 export const PLEDGE_FILTER_PREDICATES: FilterPredicates<PledgeView, PledgeFilter> = {
@@ -152,5 +153,7 @@ export const PLEDGE_FILTER_PREDICATES: FilterPredicates<PledgeView, PledgeFilter
   giftable: (pledge) => pledge.isGiftable,
   meltable: (pledge) => pledge.isMeltable,
   valuable: (pledge) => pledge.valueUsd > 0,
+  // Bought for less than the original price (see ship-prices.ts); unknown or higher: no match.
+  discount: (pledge) => (pledge.discount?.amount ?? 0) > 0,
   rewards: (pledge) => pledge.reward !== undefined,
 };
