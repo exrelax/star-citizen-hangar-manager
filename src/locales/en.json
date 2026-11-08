@@ -197,6 +197,8 @@
     "paintConsultantStoreCreditHint": "The cart may also be paid with your current store credit. Off: only with what melting your own paints gives. The consultant always buys with store credit, never with new money.",
     "paintConsultantFillers": "Use filler paints",
     "paintConsultantFillersHint": "Buys cheap extra paints to reach a higher volume discount and melts them again after RSI's 24-hour cooldown. Off: only your own paints count toward the discount.",
+    "paintConsultantGiftable": "Leave out giftable paints",
+    "paintConsultantGiftableHint": "Paints that can be gifted now are not melted and bought again: bought with store credit, they would no longer be giftable. Also in the consultant itself.",
     "filtersLists": {
       "hangar": "My Hangar",
       "buyback": "Buy Back"
@@ -400,7 +402,12 @@
     "stepCredit": "Pay with store credit only. Paints you bought with money are giftable; bought again with store credit, they are bound to your account and no longer giftable (and lose a warbond status).",
     "stepCooldown": "RSI lets you melt a pledge only 24 hours after buying it, so the filler paints can be melted the next day.",
     "cooldownSource": "RSI Support: Reclaim a Pledge",
-    "stepPacks": "Paint packs and pledges with a paint next to other items aren't included yet."
+    "stepPacks": "Paint packs and pledges with a paint next to other items aren't included yet.",
+    "skipGiftable": "Leave out giftable paints",
+    "skipGiftableHint": "Bought again with store credit, they would no longer be giftable.",
+    "giftableSkipped": "$1 giftable paints that would gain are left out.",
+    "giftableTag": "Giftable",
+    "giftableTagHint": "Giftable now; bought again with store credit, it no longer is."
   },
   "upgradeLog": {
     "title": "Applied upgrades",

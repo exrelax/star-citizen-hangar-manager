@@ -106,6 +106,8 @@ export interface Settings {
     useStoreCredit: boolean;
     /** Cheap filler paints may be bought to reach a higher volume discount. */
     useFillers: boolean;
+    /** Own paints that can be gifted are left out: bought again with store credit, they couldn't. */
+    skipGiftable: boolean;
   };
   /** Links shown next to ships. */
   shipLinks: {
@@ -142,7 +144,7 @@ export const DEFAULT_SETTINGS: Settings = {
     buyback: normalizeFilterGroups(FILTERS.buyback, BUYBACK_FILTER_CATEGORIES, FILTERS.buyback),
   },
   sort: { hangar: 'newest', buyback: 'newest' },
-  paintConsultant: { useStoreCredit: true, useFillers: true },
+  paintConsultant: { useStoreCredit: true, useFillers: true, skipGiftable: true },
   shipLinks: { erkul: true, fleetyards: true },
 };
 
@@ -241,6 +243,11 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
         stored?.paintConsultant?.useFillers,
         isBoolean,
         DEFAULT_SETTINGS.paintConsultant.useFillers,
+      ),
+      skipGiftable: valid(
+        stored?.paintConsultant?.skipGiftable,
+        isBoolean,
+        DEFAULT_SETTINGS.paintConsultant.skipGiftable,
       ),
     },
     shipLinks: {

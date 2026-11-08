@@ -46,7 +46,7 @@ describe('withDefaults', () => {
       filters: DEFAULT_SETTINGS.filters,
       // The buy back can't sort by value: back to the default.
       sort: { hangar: 'valueDesc', buyback: 'newest' },
-      paintConsultant: { useStoreCredit: false, useFillers: true },
+      paintConsultant: { useStoreCredit: false, useFillers: true, skipGiftable: true },
       shipLinks: { erkul: false, fleetyards: true },
     });
   });

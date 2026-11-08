@@ -33,5 +33,12 @@ function set(key: keyof Settings['paintConsultant'], value: boolean) {
     >
       {{ i18n.t('settings.paintConsultantFillers') }}
     </SettingCheck>
+    <SettingCheck
+      :checked="settings.paintConsultant.skipGiftable"
+      :hint="i18n.t('settings.paintConsultantGiftableHint')"
+      @change="(value) => set('skipGiftable', value)"
+    >
+      {{ i18n.t('settings.paintConsultantGiftable') }}
+    </SettingCheck>
   </fieldset>
 </template>

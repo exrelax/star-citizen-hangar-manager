@@ -33,6 +33,8 @@ export interface PaintPledge {
   upgrade?: unknown;
   /** Can be melted (exchanged): not protected by RSI's game access either. */
   isMeltable: boolean;
+  /** Can be gifted; bought again with store credit, it no longer could. */
+  isGiftable: boolean;
 }
 
 /** A paint of the Pledge Store that can be bought on its own with store credit. */
@@ -55,6 +57,8 @@ export interface OwnPaint {
   storePaint: StorePaint;
   /** Its discount compared to the current price, rounded to the tiers, in percent. */
   discount: number;
+  /** Can be gifted now; bought again with store credit, it no longer could. */
+  giftable: boolean;
 }
 
 /** A volume discount tier: from this many paints in the cart, this discount. */
@@ -95,6 +99,8 @@ export interface MissingCredit {
 }
 
 export interface PaintConsultantResult {
+  /** Own paints that would gain, left out because they can be gifted (`skipGiftable`). */
+  giftableSkipped: number;
   /** The best tier that can be paid, if any. */
   plan?: PaintRebuyPlan;
   /**
@@ -111,6 +117,8 @@ export interface PaintConsultantInput {
   storeCredit: number;
   /** Whether filler paints may be bought to reach a tier. */
   useFillers: boolean;
+  /** Leaves out own paints that can be gifted: bought again with store credit, they couldn't. */
+  skipGiftable: boolean;
 }
 
 const cents = (usd: number) => Math.round(usd * 100);
@@ -163,6 +171,7 @@ export function ownPaintsOf(
         meltValue: pledge.valueUsd,
         storePaint,
         discount,
+        giftable: pledge.isGiftable,
       },
     ];
   });
@@ -230,7 +239,13 @@ function cartAt(
  */
 export function planPaintRebuy(input: PaintConsultantInput): PaintConsultantResult {
   const storePaints = storePaintsOf(input.storeItems);
-  const ownPaints = ownPaintsOf(input.pledges, storePaints);
+  const allOwn = ownPaintsOf(input.pledges, storePaints);
+  const ownPaints = input.skipGiftable ? allOwn.filter((paint) => !paint.giftable) : allOwn;
+  // Those that would gain at least at the best tier.
+  const best = Math.max(...PAINT_DISCOUNT_TIERS.tiers.map((tier) => tier.percent));
+  const giftableSkipped = input.skipGiftable
+    ? allOwn.filter((paint) => paint.giftable && paint.discount < best).length
+    : 0;
   const credit = cents(Math.max(0, input.storeCredit));
   const tiers = [...PAINT_DISCOUNT_TIERS.tiers].sort((a, b) => b.percent - a.percent);
 
@@ -245,6 +260,7 @@ export function planPaintRebuy(input: PaintConsultantInput): PaintConsultantResu
   const above = plan ? carts.filter((cart) => cart.tier.percent > plan.tier.percent) : carts;
   const next = plan ? above.at(-1) : [...above].sort((a, b) => missingOf(a) - missingOf(b))[0];
   return {
+    giftableSkipped,
     plan,
     next: next && { tier: next.tier, missing: usd(Math.max(0, missingOf(next))) },
   };
