@@ -260,11 +260,23 @@ onUnmounted(() => {
               'is-failed': failed?.id === pledge.id,
             }"
           >
-            <span class="shm-action-kind" :class="`is-${pledgeKind(pledge)}`">
-              {{ i18n.t(`pledge.kinds.${pledgeKind(pledge)}`) }}
+            <span class="shm-bulk-thumb">
+              <img
+                v-if="pledge.image"
+                :src="pledge.image"
+                alt=""
+                loading="lazy"
+                decoding="async"
+                width="96"
+                height="54"
+              />
             </span>
-            <span class="shm-bulk-title">
-              {{ pledge.title }} <span class="shm-action-id">#{{ pledgeId(pledge) }}</span>
+            <span class="shm-bulk-head">
+              <span class="shm-action-kind" :class="`is-${pledgeKind(pledge)}`">
+                {{ i18n.t(`pledge.kinds.${pledgeKind(pledge)}`) }}
+              </span>
+              <span class="shm-bulk-title" :title="pledge.title">{{ pledge.title }}</span>
+              <span class="shm-action-id">#{{ pledgeId(pledge) }}</span>
             </span>
             <span class="shm-bulk-value">{{ hideValue ? HIDDEN : pledge.value }}</span>
             <span v-if="tagsOf(pledge).length" class="shm-bulk-tags">
@@ -414,23 +426,70 @@ onUnmounted(() => {
   text-transform: uppercase;
 }
 
-/* The pledges to exchange: scrolls on its own, so the form stays in view. */
+/*
+ * The pledges to exchange: rows of a fixed height (the image's plus padding and separator), up to
+ * three in view; more scroll within the list, so the dialog doesn't grow too tall.
+ */
 .shm-bulk-list {
-  max-height: min(240px, 35vh);
+  --shm-bulk-row: calc(54px + 2 * 8px + 1px);
+
+  max-height: calc(3 * var(--shm-bulk-row));
   margin: 0;
   padding: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
   list-style: none;
   border: 1px solid var(--shm-separator);
 }
 
 .shm-bulk-list li {
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: baseline;
-  gap: 4px 10px;
-  padding: 6px 10px;
+  grid-template-columns: 96px minmax(0, 1fr) auto;
+  grid-template-rows: 1fr 1fr;
+  column-gap: 10px;
+  box-sizing: border-box;
+  height: var(--shm-bulk-row);
+  padding: 8px 10px 8px 8px;
   border-bottom: 1px solid var(--shm-separator);
+}
+
+.shm-bulk-thumb {
+  grid-row: 1 / -1;
+  width: 96px;
+  height: 54px;
+  overflow: hidden;
+  background: rgb(var(--shm-accent-rgb) / 0.08);
+  border-radius: var(--shm-radius-small);
+}
+
+.shm-bulk-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Kind, title and id in one line; a long title is cut off (the full one as a tooltip). */
+.shm-bulk-head {
+  display: flex;
+  align-items: center;
+  align-self: end;
+  gap: 6px;
+  min-width: 0;
+}
+
+.shm-bulk-head .shm-action-kind {
+  flex: none;
+}
+
+.shm-bulk-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shm-bulk-head .shm-action-id {
+  flex: none;
 }
 
 .shm-bulk-list li:last-child {
@@ -450,14 +509,19 @@ onUnmounted(() => {
 }
 
 .shm-bulk-value {
+  align-self: end;
   font-variant-numeric: tabular-nums;
 }
 
+/* One line under the title; tags that don't fit are cut off rather than growing the row. */
 .shm-bulk-tags {
   display: flex;
-  flex-wrap: wrap;
   grid-column: 2 / -1;
+  align-self: start;
   gap: 4px;
+  margin-top: 4px;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .shm-bulk-tag {
