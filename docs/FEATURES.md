@@ -258,9 +258,11 @@ on its own.
     doesn't reduce them.
   - **Selected** (with a selection): number, value and discounts of the selected pledges, how many
     of them search or filters hide, and a button that clears the selection.
-  - **Paint Discount Consultant**: how many paints can be bought again with a higher volume
-    discount and the store credit it frees, with a link to the
-    [consultant](#paint-discount-consultant).
+  - **Paint Discount** (only while there is a paint to buy again): how many paints can be bought
+    again with a higher volume discount and the store credit it frees, with a link to the
+    [consultant](#paint-discount-consultant) and a filter button: **Show these paints** lists
+    only them in "My Hangar" (its icon then shows the filter is on); **Show all pledges** or
+    "Reset filters" shows all again, and so does the list once none is left.
 - The sidebar stays on every tab of the manager (Buy Back, Pledge Store, Settings) and keeps
   showing the hangar's figures.
 - **Reorder the boxes** by dragging their title: the dragged box follows the pointer, the places
@@ -287,8 +289,7 @@ on its own.
   - **Features** – what it has: LTI, Warbond (bought with money, i.e. with an order ID),
     Giftable, Meltable, Valuable (worth more than $0) and Discount (bought for less than the
     original price, see [Discounts](#discounts); pledges whose original price isn't known, or
-    that cost more, don't count) and Paint rebuy (the paints the
-    [Paint Discount Consultant](#paint-discount-consultant) would buy again).
+    that cost more, don't count).
 - **Include or exclude**: each click on a filter cycles through off → only pledges with it →
   only pledges without it ("−Rewards" hides all rewards). All active filters combine with "and";
   one click on "Reset filters" turns them all off.
@@ -490,7 +491,7 @@ it into store credit with the paints you already own:
 - **Order**: fill the cart and check it first, melt only after that.
 - **In My Hangar**: the paints it would buy again carry a tag "Rebuy 0% → 35%" (their discount now
   and then; its tooltip says the store credit freed), which opens the consultant. The filter
-  "Paint rebuy" (Features) shows just them.
+  button of the sidebar box **Paint Discount** shows just them.
 - Only pledges with exactly one paint that can be melted, and single paints of the Pledge Store;
   paint packs come later. Hidden while "Hide melt value" is on.
 

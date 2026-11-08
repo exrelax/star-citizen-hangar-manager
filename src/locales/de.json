@@ -94,7 +94,6 @@
     "warbond": "Warbond",
     "valuable": "Mit Wert",
     "discount": "Rabatt",
-    "paintRebuy": "Paint-Rückkauf",
     "rewards": "Rewards",
     "reset": "Filter zurücksetzen",
     "stateOff": "Klick: nur Items mit „$1“ anzeigen.",
@@ -106,8 +105,7 @@
       "valuable": "Pledges mit einem Wert über $$0.",
       "rewards": "Rewards mit einem Wert von $$0: Event-, Referral-, Concierge- und andere Rewards.",
       "rewardsByName": "Rewards, am Namen erkannt: Event-, Referral-, Concierge- und andere Rewards.",
-      "discount": "Günstiger als der Originalpreis gekauft: Schiffe und CCUs verglichen mit RSIs Schiffspreisen, Paints, Gear und mehr mit dem Pledge Store. Pledges ohne bekannten Originalpreis oder mit Aufpreis zählen nicht.",
-      "paintRebuy": "Paints, die der Paint-Rabatt-Berater mit höherem Mengenrabatt einschmelzen und zurückkaufen würde (siehe Tab Pledge Store)."
+      "discount": "Günstiger als der Originalpreis gekauft: Schiffe und CCUs verglichen mit RSIs Schiffspreisen, Paints, Gear und mehr mit dem Pledge Store. Pledges ohne bekannten Originalpreis oder mit Aufpreis zählen nicht."
     },
     "categories": {
       "types": "Typen",
@@ -198,7 +196,7 @@
     "sidebarNotificationsHint": "Erscheint, solange es eine Benachrichtigung gibt: wenn zum Einschmelzen gemerkte Pledges jetzt eingeschmolzen werden können – mit Buttons, um sie anzuzeigen oder auszuwählen – und die gemerkten, die noch warten. Abhakbare Benachrichtigungen: einzeln oder alle auf einmal. Ohne Berechtigung des Browsers.",
     "sidebarStoreCreditHint": "Ausgeblendet, solange „Schmelzwert ausblenden“ an ist.",
     "sidebarSelectionHint": "Erscheint, solange Pledges ausgewählt sind. Ohne sie haben die Zeilen keine Auswahl.",
-    "sidebarPaintConsultantHint": "Wie viele Paints sich mit höherem Mengenrabatt zurückkaufen lassen und wie viele Store Credits dabei frei werden. Ausgeblendet, solange „Schmelzwert ausblenden“ an ist.",
+    "sidebarPaintConsultantHint": "Erscheint, solange sich Paints mit höherem Mengenrabatt zurückkaufen lassen: wie viele, und wie viele Store Credits dabei frei werden. Ausgeblendet, solange „Schmelzwert ausblenden“ an ist.",
     "paintConsultant": "Paint-Rabatt-Berater",
     "paintConsultantStoreCredit": "Meinen Store Credit einbeziehen",
     "paintConsultantStoreCreditHint": "Der Warenkorb darf auch mit deinem aktuellen Store Credit bezahlt werden. Aus: nur mit dem, was das Einschmelzen deiner eigenen Paints ergibt. Der Berater kauft immer mit Store Credit, nie mit neuem Geld.",
@@ -372,6 +370,7 @@
   },
   "consultant": {
     "title": "Paint-Rabatt-Berater",
+    "boxTitle": "Paint-Rabatt",
     "intro": "RSI gewährt im Warenkorb einen Mengenrabatt auf Paints: 15 % ab 2 Paints bis 35 % ab 10. Schmilz deine Paints ein, die mit weniger Rabatt gekauft wurden, kauf sie zusammen mit günstigen Füll-Paints zum höheren Rabatt zurück und schmilz die Füll-Paints nach 24 Stunden wieder ein. Am Ende hast du mehr Store Credit – nur mit Store Credit bezahlt, ohne neues Geld.",
     "hidden": "Ausgeblendet, solange „Schmelzwert ausblenden“ an ist.",
     "noItems": "Die Paints des Pledge Stores sind noch nicht gelesen.",
@@ -418,8 +417,10 @@
     "mark": "Rückkauf $1 → $2",
     "markHint": "Einschmelzen und mit dem Mengenrabatt zurückkaufen ($1 → $2): $3 Store Credits werden frei. Öffnet den Paint-Rabatt-Berater.",
     "boxPaints": "Paints zum Rückkauf",
-    "boxShare": "$1 ihres Schmelzwerts, mit $2 Paints im Warenkorb",
-    "boxNothing": "Gerade profitiert kein Paint von einem höheren Mengenrabatt.",
+    "boxFilter": "Diese Paints anzeigen",
+    "boxFilterHint": "Zeigt in „My Hangar“ nur diese Paints; „Filter zurücksetzen“ oder dieser Button zeigt wieder alle.",
+    "boxUnfilter": "Alle Pledges anzeigen",
+    "boxUnfilterHint": "Schaltet den Filter ab: „My Hangar“ zeigt wieder alle Pledges.",
     "boxOpen": "Berater öffnen"
   },
   "upgradeLog": {

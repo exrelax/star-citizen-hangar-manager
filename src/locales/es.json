@@ -94,7 +94,6 @@
     "warbond": "Warbond",
     "valuable": "Con valor",
     "discount": "Descuento",
-    "paintRebuy": "Recompra de pintura",
     "rewards": "Recompensas",
     "reset": "Restablecer filtros",
     "stateOff": "Clic: mostrar solo los elementos con «$1».",
@@ -106,8 +105,7 @@
       "valuable": "Pledges con un valor superior a $$0.",
       "rewards": "Recompensas con un valor de $$0: eventos, referidos, Concierge y otras recompensas.",
       "rewardsByName": "Recompensas, reconocidas por su nombre: eventos, referidos, Concierge y otras recompensas.",
-      "discount": "Comprado por menos del precio original: naves y CCU comparados con los precios de naves de RSI, pinturas, equipo y más con la Pledge Store. No cuentan los pledges sin precio original conocido o que costaron más.",
-      "paintRebuy": "Pinturas que el asesor de descuentos fundiría y volvería a comprar con un descuento por volumen mayor (ver la pestaña Pledge Store)."
+      "discount": "Comprado por menos del precio original: naves y CCU comparados con los precios de naves de RSI, pinturas, equipo y más con la Pledge Store. No cuentan los pledges sin precio original conocido o que costaron más."
     },
     "categories": {
       "types": "Tipos",
@@ -198,7 +196,7 @@
     "sidebarNotificationsHint": "Aparece mientras haya una notificación: cuando los pledges marcados para fundir ya se pueden fundir, con botones para mostrarlos o seleccionarlos, y los marcados que aún esperan. Las notificaciones que se pueden marcar como hechas: una a una o todas a la vez. Sin permiso del navegador.",
     "sidebarStoreCreditHint": "Oculto mientras «Ocultar el valor de fusión» esté activado.",
     "sidebarSelectionHint": "Se muestra mientras haya pledges seleccionados. Sin él, las filas no tienen control de selección.",
-    "sidebarPaintConsultantHint": "Cuántas pinturas se pueden recomprar con un descuento por volumen mayor y el crédito de tienda que libera. Oculto mientras «Ocultar el valor de fusión» esté activado.",
+    "sidebarPaintConsultantHint": "Aparece mientras haya pinturas que se puedan recomprar con un descuento por volumen mayor: cuántas, y el crédito de tienda que libera. Oculto mientras «Ocultar el valor de fusión» esté activado.",
     "paintConsultant": "Asesor de descuentos de pinturas",
     "paintConsultantStoreCredit": "Incluir mi crédito de tienda",
     "paintConsultantStoreCreditHint": "El carrito también puede pagarse con tu crédito de tienda actual. Desactivado: solo con lo que da fundir tus propias pinturas. El asesor siempre compra con crédito de tienda, nunca con dinero nuevo.",
@@ -372,6 +370,7 @@
   },
   "consultant": {
     "title": "Asesor de descuentos de pinturas",
+    "boxTitle": "Descuento de pinturas",
     "intro": "RSI aplica en el carrito un descuento por volumen en pinturas: del 15 % con 2 pinturas al 35 % con 10. Funde tus pinturas compradas con menos descuento, vuelve a comprarlas junto con pinturas de relleno baratas al descuento mayor y funde de nuevo las de relleno tras 24 horas. Al final tienes más crédito de tienda – pagado solo con crédito de tienda, sin dinero nuevo.",
     "hidden": "Oculto mientras «Ocultar el valor de fusión» esté activado.",
     "noItems": "Las pinturas de la Pledge Store aún no se han leído.",
@@ -418,8 +417,10 @@
     "mark": "Recompra $1 → $2",
     "markHint": "Fúndela y vuelve a comprarla con el descuento por volumen ($1 → $2): se liberan $3 de crédito de tienda. Abre el asesor de descuentos de pinturas.",
     "boxPaints": "Pinturas para recomprar",
-    "boxShare": "$1 de su valor de fusión, con $2 pinturas en el carrito",
-    "boxNothing": "Ahora ninguna pintura gana con un descuento por volumen mayor.",
+    "boxFilter": "Mostrar estas pinturas",
+    "boxFilterHint": "Muestra solo estas pinturas en «My Hangar»; «Restablecer filtros» o este botón vuelve a mostrar todo.",
+    "boxUnfilter": "Mostrar todos los pledges",
+    "boxUnfilterHint": "Desactiva el filtro: «My Hangar» vuelve a mostrar todos los pledges.",
     "boxOpen": "Abrir el asesor"
   },
   "upgradeLog": {

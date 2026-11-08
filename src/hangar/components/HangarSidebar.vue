@@ -17,15 +17,15 @@ import SidebarBox from './SidebarBox.vue';
 import BulkExchangeOverlay from './BulkExchangeOverlay.vue';
 import { checkOff, type AppNotification } from '@/notifications/notifications';
 import { useOpenNotifications } from '@/notifications/use-notifications';
-import { meltReadyIds, showMeltReady, useMarkedPledges } from '../use-melt-marks';
+import { meltReadyIds, useMarkedPledges } from '../use-melt-marks';
+import { clearHangarFilter, hangarViewFilter, showHangarFilter } from '../view-filter';
 import { formatTimeLeft } from '../melt-marks';
-import { hashOfTab, myGearHref } from '../route';
+import { myGearHref } from '../route';
 import { useNow } from '@/shared/use-now';
 import {
   maybePaintConsultant,
   openPaintConsultant,
 } from '@/store/paint-consultant/use-paint-consultant';
-import { formatPercent } from '../discount-format';
 
 /*
  * The sidebar below RSI's page navigation on the left on every tab (App.vue teleports it there),
@@ -114,9 +114,13 @@ function noteHref(note: AppNotification) {
 }
 
 /** Shows only the marked pledges that can be melted now in "My Hangar". */
-function showReady() {
-  showMeltReady.value = { at: Date.now() };
-  location.hash = hashOfTab('hangar');
+const showReady = () => showHangarFilter('meltReady');
+
+/** The paints the consultant would buy again are filtered in "My Hangar" (#146). */
+const rebuyFiltered = computed(() => hangarViewFilter.value?.id === 'paintRebuy');
+function toggleRebuyFilter() {
+  if (rebuyFiltered.value) clearHangarFilter('paintRebuy');
+  else showHangarFilter('paintRebuy');
 }
 
 /** Selects them, so the "Selected" box offers to melt them all at once. */
@@ -129,17 +133,15 @@ const TITLES = {
   storeCredit: 'summary.storeCredit',
   summary: 'summary.title',
   selection: 'summary.selected',
-  paintConsultant: 'consultant.title',
+  paintConsultant: 'consultant.boxTitle',
 } as const;
 
 // The Paint Discount Consultant at first glance (worked out once in App.vue).
 const consultant = maybePaintConsultant();
-const rebuyPlan = computed(() => consultant?.result.value?.plan);
-const rebuyShare = computed(() => {
-  const plan = rebuyPlan.value;
-  return plan && plan.meltValue > 0
-    ? formatPercent((plan.storeCreditFreed / plan.meltValue) * 100, locale.value)
-    : undefined;
+/** The consultant's plan, only with at least one paint to buy again: the box shows only then. */
+const rebuyPlan = computed(() => {
+  const plan = consultant?.result.value?.plan;
+  return plan?.own.length ? plan : undefined;
 });
 
 // ---- Order and collapsed boxes ----
@@ -171,7 +173,7 @@ const isShown = (box: Box) =>
     : box === 'notifications'
       ? noteCount.value > 0
       : box === 'storeCredit' || box === 'paintConsultant'
-        ? !props.settings.hideMeltValue && (box !== 'paintConsultant' || !!consultant)
+        ? !props.settings.hideMeltValue && (box !== 'paintConsultant' || !!rebuyPlan.value)
         : true);
 const boxes = computed(() => order.value.filter(isShown));
 
@@ -502,32 +504,43 @@ async function move(box: Box, step: -1 | 1) {
           />
         </template>
 
-        <template v-else-if="box === 'paintConsultant'">
-          <template v-if="rebuyPlan">
-            <dl class="shm-sidebar-figures">
-              <div>
-                <dt>{{ i18n.t('consultant.boxPaints') }}</dt>
-                <dd>{{ number.format(rebuyPlan.own.length) }}</dd>
-              </div>
-              <div>
-                <dt v-tooltip="i18n.t('consultant.freedHint')">
-                  {{ i18n.t('consultant.freed') }}
-                </dt>
-                <dd class="is-discount">{{ money.format(rebuyPlan.storeCreditFreed) }}</dd>
-              </div>
-            </dl>
-            <p v-if="rebuyShare" class="shm-sidebar-note">
-              {{ i18n.t('consultant.boxShare', [rebuyShare, rebuyPlan.tier.paints]) }}
-            </p>
-          </template>
-          <p v-else class="shm-sidebar-note">
-            {{
-              i18n.t(consultant?.storeItems.value ? 'consultant.boxNothing' : 'consultant.noItems')
-            }}
-          </p>
-          <button type="button" class="shm-sidebar-link" @click="openPaintConsultant">
-            {{ i18n.t('consultant.boxOpen') }}
-          </button>
+        <!-- Only shown with at least one paint to buy again (see `isShown`). -->
+        <template v-else-if="box === 'paintConsultant' && rebuyPlan">
+          <dl class="shm-sidebar-figures">
+            <div>
+              <dt>{{ i18n.t('consultant.boxPaints') }}</dt>
+              <dd>{{ number.format(rebuyPlan.own.length) }}</dd>
+            </div>
+            <div>
+              <dt v-tooltip="i18n.t('consultant.freedHint')">
+                {{ i18n.t('consultant.freed') }}
+              </dt>
+              <dd class="is-discount">{{ money.format(rebuyPlan.storeCreditFreed) }}</dd>
+            </div>
+          </dl>
+          <div class="shm-sidebar-actions">
+            <!-- Shows only these paints in My Hangar, and again all (#146). -->
+            <button
+              v-tooltip="
+                i18n.t(rebuyFiltered ? 'consultant.boxUnfilterHint' : 'consultant.boxFilterHint')
+              "
+              type="button"
+              class="shm-button shm-sidebar-button"
+              :aria-pressed="rebuyFiltered"
+              @click="toggleRebuyFilter"
+            >
+              <SvgIcon :name="rebuyFiltered ? 'filter-circle-xmark' : 'filter'" />
+              {{ i18n.t(rebuyFiltered ? 'consultant.boxUnfilter' : 'consultant.boxFilter') }}
+            </button>
+            <button
+              type="button"
+              class="shm-button shm-sidebar-button"
+              @click="openPaintConsultant"
+            >
+              <SvgIcon name="user-tie" />
+              {{ i18n.t('consultant.boxOpen') }}
+            </button>
+          </div>
         </template>
 
         <template v-if="box === 'selection'" #actions>
@@ -868,6 +881,29 @@ async function move(box: Box, step: -1 | 1) {
   color: var(--shm-text);
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/*
+ * The buttons below a box's figures (the manager's buttons, see row.css and modern.css): side by
+ * side, sharing the width; each takes a line of its own when the box is too narrow for both.
+ */
+.shm-sidebar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.shm-sidebar-button {
+  flex: 1 1 auto;
+  white-space: nowrap;
+}
+
+/* A switch that is on (the consultant's filter): filled, so it reads as pressed. */
+.shm-sidebar-button[aria-pressed='true'] {
+  color: var(--shm-text-strong);
+  background: rgb(var(--shm-accent-rgb) / 0.32);
+  border-color: var(--shm-accent);
 }
 
 /* An action on a box's pledges, e.g. bulk melting the selection. */

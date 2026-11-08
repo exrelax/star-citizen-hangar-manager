@@ -94,7 +94,6 @@
     "warbond": "Warbond",
     "valuable": "Valuable",
     "discount": "Discount",
-    "paintRebuy": "Paint rebuy",
     "rewards": "Rewards",
     "reset": "Reset filters",
     "stateOff": "Click: show only items with “$1”.",
@@ -106,8 +105,7 @@
       "valuable": "Pledges with a value above $$0.",
       "rewards": "Rewards with a value of $$0: event, referral, Concierge and other rewards.",
       "rewardsByName": "Rewards, recognized by their names: event, referral, Concierge and other rewards.",
-      "discount": "Bought for less than the original price: ships and CCUs compared with RSI's ship prices, paints, gear and more with the Pledge Store. Pledges whose original price isn't known, or that cost more, don't count.",
-      "paintRebuy": "Paints the Paint Discount Consultant would melt and buy again with a higher volume discount (see the Pledge Store tab)."
+      "discount": "Bought for less than the original price: ships and CCUs compared with RSI's ship prices, paints, gear and more with the Pledge Store. Pledges whose original price isn't known, or that cost more, don't count."
     },
     "categories": {
       "types": "Types",
@@ -198,7 +196,7 @@
     "sidebarNotificationsHint": "Shown while there is a notification: when pledges marked to melt can be melted now – with buttons to show or select them – and the marked ones still waiting. Notifications that can be checked off: one by one or all at once. No browser permission needed.",
     "sidebarStoreCreditHint": "Hidden while “Hide melt value” is on.",
     "sidebarSelectionHint": "Shown while pledges are selected. Without it, the rows have no select control.",
-    "sidebarPaintConsultantHint": "How many paints can be bought again with a higher volume discount, and the store credit it frees. Hidden while “Hide melt value” is on.",
+    "sidebarPaintConsultantHint": "Shown while paints can be bought again with a higher volume discount: how many, and the store credit it frees. Hidden while “Hide melt value” is on.",
     "paintConsultant": "Paint Discount Consultant",
     "paintConsultantStoreCredit": "Include my store credit",
     "paintConsultantStoreCreditHint": "The cart may also be paid with your current store credit. Off: only with what melting your own paints gives. The consultant always buys with store credit, never with new money.",
@@ -372,6 +370,7 @@
   },
   "consultant": {
     "title": "Paint Discount Consultant",
+    "boxTitle": "Paint Discount",
     "intro": "RSI gives a volume discount on paints in the cart: 15 % from 2 paints up to 35 % from 10. Melt your paints that were bought with less, buy them again together with cheap filler paints at the higher discount, and melt the fillers again after 24 hours. You end up with more store credit – paid with store credit only, no new money.",
     "hidden": "Hidden while “Hide melt value” is on.",
     "noItems": "The paints of the Pledge Store aren't read yet.",
@@ -418,8 +417,10 @@
     "mark": "Rebuy $1 → $2",
     "markHint": "Melt it and buy it again with the volume discount ($1 → $2): $3 of store credit freed. Opens the Paint Discount Consultant.",
     "boxPaints": "Paints to buy again",
-    "boxShare": "$1 of their melt value, with $2 paints in the cart",
-    "boxNothing": "No paint gains from a higher volume discount right now.",
+    "boxFilter": "Show these paints",
+    "boxFilterHint": "Shows only these paints in “My Hangar”; “Reset filters” or this button shows all again.",
+    "boxUnfilter": "Show all pledges",
+    "boxUnfilterHint": "Turns the filter off: “My Hangar” shows all pledges again.",
     "boxOpen": "Open the consultant"
   },
   "upgradeLog": {

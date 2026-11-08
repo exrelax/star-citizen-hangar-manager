@@ -81,10 +81,3 @@ export const MELT_MARKS: InjectionKey<Readonly<Ref<ReadonlyMap<number, MarkedPle
 export function useMarkedPledges(): Readonly<Ref<ReadonlyMap<number, MarkedPledge>>> {
   return inject(MELT_MARKS, shallowRef<ReadonlyMap<number, MarkedPledge>>(new Map()));
 }
-
-/**
- * "Show" of the sidebar's notification: shows only the marked pledges that can be melted now in
- * "My Hangar" – a filter without a button there, which goes once none is left (see `ManagerList`).
- * `at` makes each request new.
- */
-export const showMeltReady = shallowRef<{ at: number } | null>(null);

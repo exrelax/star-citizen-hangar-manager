@@ -1,5 +1,4 @@
 import type { PledgeView } from './pledge-view';
-import { paintRebuys } from '@/store/paint-consultant/use-paint-consultant';
 
 /*
  * Filters of the manager lists. Each filter is a property of an entry and has three states: off,
@@ -133,14 +132,13 @@ export const PLEDGE_FILTERS = [
   'meltable',
   'valuable',
   'discount',
-  'paintRebuy',
   'rewards',
 ] as const;
 export type PledgeFilter = (typeof PLEDGE_FILTERS)[number];
 
 export const PLEDGE_FILTER_CATEGORIES: Record<FilterCategory, readonly PledgeFilter[]> = {
   types: ['ships', 'ccus', 'paints', 'gameAccess', 'rewards'],
-  features: ['lti', 'warbond', 'giftable', 'meltable', 'valuable', 'discount', 'paintRebuy'],
+  features: ['lti', 'warbond', 'giftable', 'meltable', 'valuable', 'discount'],
 };
 
 export const PLEDGE_FILTER_PREDICATES: FilterPredicates<PledgeView, PledgeFilter> = {
@@ -158,6 +156,4 @@ export const PLEDGE_FILTER_PREDICATES: FilterPredicates<PledgeView, PledgeFilter
   // Bought for less than the original price (see ship-prices.ts); unknown or higher: no match.
   discount: (pledge) => (pledge.discount?.amount ?? 0) > 0,
   rewards: (pledge) => pledge.reward !== undefined,
-  // Paints the Paint Discount Consultant would melt and buy again (see `paintRebuys`).
-  paintRebuy: (pledge) => paintRebuys.value.has(pledge.id),
 };

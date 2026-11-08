@@ -17,7 +17,7 @@ const LABELS: Record<SidebarBox, MessageKey> = {
   storeCredit: 'summary.storeCredit',
   summary: 'summary.title',
   selection: 'summary.selected',
-  paintConsultant: 'consultant.title',
+  paintConsultant: 'consultant.boxTitle',
 };
 const HINTS: Partial<Record<SidebarBox, MessageKey>> = {
   notifications: 'settings.sidebarNotificationsHint',
