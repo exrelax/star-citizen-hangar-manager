@@ -13,9 +13,9 @@ import { storeCreditItem, STORE_CREDIT_VERSION } from '@/account/store-credit-st
 import { useStored } from '@/storage/use-stored';
 
 /*
- * The summary box of "My Hangar", below RSI's page navigation on the left (App.vue teleports it
- * there): value, discounts and number of the visible pledges, and – with a selection – the same of
- * the selected ones. It sticks while scrolling and can be dragged anywhere on the page; that
+ * The summary box, below RSI's page navigation on the left on every tab (App.vue teleports it
+ * there): value, discounts and number of the hangar's visible pledges, and – with a selection –
+ * the same of the selected ones. It sticks while scrolling and can be dragged anywhere on the page; that
  * position lasts for the browser session (`summary-position.ts`).
  */
 

@@ -99,8 +99,10 @@ onMounted(() => addEventListener('hashchange', followHash));
 onUnmounted(() => removeEventListener('hashchange', followHash));
 
 /*
- * The summary box of "My Hangar" lives below RSI's page navigation on the left, outside the
- * manager: an element of its own after the navigation's list, where it sticks while scrolling.
+ * The summary box lives below RSI's page navigation on the left, outside the manager: an element
+ * of its own after the navigation's list, where it sticks while scrolling. It stays on every tab
+ * and keeps showing the hangar's figures (its search and filters too), so it neither jumps nor
+ * loses its place when the tab changes.
  */
 const summaryAnchor = ref<HTMLElement>();
 onMounted(() => {
@@ -112,9 +114,7 @@ onMounted(() => {
   summaryAnchor.value = anchor;
 });
 onUnmounted(() => summaryAnchor.value?.remove());
-const showSummary = computed(
-  () => activeTab.value === 'hangar' && listsReady.value && pledges.value.length > 0,
-);
+const showSummary = computed(() => listsReady.value && pledges.value.length > 0);
 // Pledges gone from the hangar (melted, gifted, …) leave the selection.
 watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => pledge.id))));
 </script>
