@@ -94,7 +94,6 @@
     "warbond": "Warbond",
     "valuable": "Avec valeur",
     "discount": "Remise",
-    "paintRebuy": "Rachat de peinture",
     "rewards": "Récompenses",
     "reset": "Réinitialiser les filtres",
     "stateOff": "Clic : n’afficher que les éléments avec « $1 ».",
@@ -106,8 +105,7 @@
       "valuable": "Pledges d’une valeur supérieure à 0 $$.",
       "rewards": "Récompenses d’une valeur de 0 $$ : événements, parrainage, Concierge et autres récompenses.",
       "rewardsByName": "Récompenses, reconnues à leur nom : événements, parrainage, Concierge et autres récompenses.",
-      "discount": "Acheté moins cher que le prix d’origine : vaisseaux et CCU comparés aux prix des vaisseaux de RSI, peintures, équipement et autres au Pledge Store. Les pledges sans prix d’origine connu ou plus chers ne comptent pas.",
-      "paintRebuy": "Peintures que le conseiller de remises fondrait et rachèterait avec une remise sur volume plus élevée (voir l’onglet Pledge Store)."
+      "discount": "Acheté moins cher que le prix d’origine : vaisseaux et CCU comparés aux prix des vaisseaux de RSI, peintures, équipement et autres au Pledge Store. Les pledges sans prix d’origine connu ou plus chers ne comptent pas."
     },
     "categories": {
       "types": "Types",
@@ -198,7 +196,7 @@
     "sidebarNotificationsHint": "Affiché tant qu’il y a une notification : quand des pledges marqués pour fondre peuvent être fondus maintenant – avec des boutons pour les afficher ou les sélectionner – et les pledges marqués qui attendent encore. Les notifications à cocher : une par une ou toutes à la fois. Sans autorisation du navigateur.",
     "sidebarStoreCreditHint": "Masqué tant que « Masquer la valeur de fusion » est activé.",
     "sidebarSelectionHint": "Affiché tant que des pledges sont sélectionnés. Sans lui, les lignes n'ont pas de case de sélection.",
-    "sidebarPaintConsultantHint": "Combien de peintures peuvent être rachetées avec une remise sur volume plus élevée, et le crédit boutique libéré. Masqué tant que « Masquer la valeur de fusion » est activé.",
+    "sidebarPaintConsultantHint": "Affiché tant que des peintures peuvent être rachetées avec une remise sur volume plus élevée : combien, et le crédit boutique libéré. Masqué tant que « Masquer la valeur de fusion » est activé.",
     "paintConsultant": "Conseiller de remises sur les peintures",
     "paintConsultantStoreCredit": "Inclure mon crédit boutique",
     "paintConsultantStoreCreditHint": "Le panier peut aussi être payé avec votre crédit boutique actuel. Désactivé : uniquement avec ce que rapporte la fonte de vos propres peintures. Le conseiller achète toujours avec du crédit boutique, jamais avec de l’argent neuf.",
@@ -372,6 +370,7 @@
   },
   "consultant": {
     "title": "Conseiller de remises sur les peintures",
+    "boxTitle": "Remise sur les peintures",
     "intro": "RSI accorde dans le panier une remise sur volume pour les peintures : 15 % dès 2 peintures jusqu’à 35 % dès 10. Fondez vos peintures achetées avec moins de remise, rachetez-les avec des peintures de remplissage bon marché à la remise plus élevée, et refondez les peintures de remplissage après 24 heures. Vous finissez avec plus de crédit boutique – payé uniquement en crédit boutique, sans argent neuf.",
     "hidden": "Masqué tant que « Masquer la valeur de fusion » est activé.",
     "noItems": "Les peintures de la Pledge Store n’ont pas encore été lues.",
@@ -418,8 +417,10 @@
     "mark": "Rachat $1 → $2",
     "markHint": "La fondre et la racheter avec la remise sur volume ($1 → $2) : $3 de crédit boutique libérés. Ouvre le conseiller de remises sur les peintures.",
     "boxPaints": "Peintures à racheter",
-    "boxShare": "$1 de leur valeur de fusion, avec $2 peintures dans le panier",
-    "boxNothing": "Aucune peinture ne profite actuellement d’une remise sur volume plus élevée.",
+    "boxFilter": "Afficher ces peintures",
+    "boxFilterHint": "N’affiche que ces peintures dans « My Hangar » ; « Réinitialiser les filtres » ou ce bouton affiche tout à nouveau.",
+    "boxUnfilter": "Afficher tous les pledges",
+    "boxUnfilterHint": "Désactive le filtre : « My Hangar » affiche à nouveau tous les pledges.",
     "boxOpen": "Ouvrir le conseiller"
   },
   "upgradeLog": {

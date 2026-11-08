@@ -65,6 +65,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:sort': [sort: S];
+  /** The filter of `filterRequest` went off: by "Reset filters", or as nothing matches it. */
+  'clear-request': [];
   /** The entries search and filters leave visible, whenever they change. */
   visible: [entries: T[]];
 }>();
@@ -125,15 +127,24 @@ function cycleFilter(filter: F) {
 /** The filter requested from outside while it is on (see `filterRequest`). */
 const requested = shallowRef<((entry: T) => boolean) | null>(null);
 
+function clearRequested() {
+  if (!requested.value) return;
+  requested.value = null;
+  emit('clear-request');
+}
+
 const resetFilters = () => {
   filterStates.value = new Map();
-  requested.value = null;
+  clearRequested();
 };
 
 watch(
   () => props.filterRequest,
   (request) => {
-    if (!request) return;
+    if (!request) {
+      requested.value = null;
+      return;
+    }
     query.value = '';
     filterStates.value = new Map();
     requested.value = request.matches;
@@ -144,7 +155,7 @@ watch(
 // Off once nothing matches it any more (e.g. all marked pledges melted).
 watch(
   () => !!requested.value && !props.entries.some(requested.value),
-  (empty) => empty && (requested.value = null),
+  (empty) => empty && clearRequested(),
 );
 
 // A filter turned off in the settings no longer filters the list, either.

@@ -625,6 +625,14 @@ html .shm-theme-modern .shm-button:not(:disabled):focus-visible {
   background: rgb(var(--shm-accent-rgb) / 0.25);
 }
 
+/* A switch of the sidebar that is on (the consultant's filter): filled with the accent. */
+html .shm-theme-modern .shm-sidebar-button[aria-pressed='true'],
+html .shm-theme-modern .shm-sidebar-button[aria-pressed='true']:not(:disabled):hover,
+html .shm-theme-modern .shm-sidebar-button[aria-pressed='true']:not(:disabled):focus-visible {
+  color: var(--shm-text-on-accent);
+  background: var(--shm-accent);
+}
+
 html .shm-theme-modern .shm-button.is-danger {
   color: var(--shm-danger);
   background: color-mix(in srgb, var(--shm-danger) 15%, transparent);

@@ -1,7 +1,6 @@
 import { BUYBACK_FILTER_CATEGORIES, BUYBACK_FILTERS } from '@/buyback/buyback-view';
-import { paintRebuys } from '@/store/paint-consultant/use-paint-consultant';
 import { FILTERS } from '@/config';
-import { afterEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
   filterCounts,
   matchesFilterStates,
@@ -114,19 +113,21 @@ describe('discount filter', () => {
       PLEDGE_FILTER_CATEGORIES.features,
       FILTERS.hangar.features,
     );
-    expect(layout.order.slice(-2)).toEqual(['discount', 'paintRebuy']);
-    expect(layout.shown).toEqual(expect.arrayContaining(['discount', 'paintRebuy']));
+    expect(layout.order.slice(-2)).toEqual(['meltable', 'discount']);
+    expect(layout.shown).toEqual(expect.arrayContaining(['discount']));
   });
 });
 
 describe('paint rebuy filter', () => {
-  afterEach(() => (paintRebuys.value = new Map()));
-
-  it('matches the paints the Paint Discount Consultant would buy again', () => {
-    paintRebuys.value = new Map([[1, { from: 0, to: 35, freed: 1.75 }]]);
-    const matches = PLEDGE_FILTER_PREDICATES.paintRebuy;
-    expect(matches(pledge(1))).toBe(true);
-    expect(matches(pledge(2))).toBe(false);
+  it('is no filter button any more: a stored layout drops it', () => {
+    const stored = { order: ['paintRebuy', 'lti'], shown: ['paintRebuy', 'lti'] };
+    const layout = normalizeFilterLayout(
+      stored,
+      PLEDGE_FILTER_CATEGORIES.features,
+      FILTERS.hangar.features,
+    );
+    expect(layout.order).not.toContain('paintRebuy');
+    expect(layout.shown).not.toContain('paintRebuy');
   });
 });
 

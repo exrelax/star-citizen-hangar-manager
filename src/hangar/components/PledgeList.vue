@@ -13,7 +13,9 @@ import { HANGAR_SORTS, sortEntries, type HangarSort } from '../sorting';
 import { useSettings } from '@/settings/use-settings';
 import { visiblePledgeIds } from '../selection';
 import { canSelectPledges } from '../sidebar';
-import { meltReadyIds, showMeltReady } from '../use-melt-marks';
+import { meltReadyIds } from '../use-melt-marks';
+import { clearHangarFilter, hangarViewFilter, type HangarViewFilter } from '../view-filter';
+import { paintRebuys } from '@/store/paint-consultant/use-paint-consultant';
 import ManagerList from './ManagerList.vue';
 import PledgeRow from './PledgeRow.vue';
 
@@ -51,15 +53,14 @@ onUnmounted(() => (visiblePledgeIds.value = null));
 
 const filterLabel = (filter: PledgeFilter) => i18n.t(`filter.${filter}`);
 
-/** "Show" of the sidebar's notification: only the marked pledges that can be melted now. */
-const meltReadyRequest = computed(() => {
-  const request = showMeltReady.value;
-  return (
-    request && {
-      at: request.at,
-      matches: (pledge: PledgeView) => meltReadyIds.value.has(pledge.id),
-    }
-  );
+/** The filter without a button set from the sidebar (see `view-filter.ts`), while it is on. */
+const VIEW_FILTERS: Record<HangarViewFilter, (pledge: PledgeView) => boolean> = {
+  meltReady: (pledge) => meltReadyIds.value.has(pledge.id),
+  paintRebuy: (pledge) => paintRebuys.value.has(pledge.id),
+};
+const viewFilterRequest = computed(() => {
+  const request = hangarViewFilter.value;
+  return request && { at: request.at, matches: VIEW_FILTERS[request.id] };
 });
 
 /** Filters whose meaning isn't obvious from the label explain it in their tooltip. */
@@ -68,7 +69,6 @@ const HINTS: Partial<Record<PledgeFilter, MessageKey>> = {
   warbond: 'filter.hints.warbond',
   valuable: 'filter.hints.valuable',
   discount: 'filter.hints.discount',
-  paintRebuy: 'filter.hints.paintRebuy',
   rewards: 'filter.hints.rewards',
 };
 const filterHint = (filter: PledgeFilter) => {
@@ -88,7 +88,8 @@ const filterHint = (filter: PledgeFilter) => {
     :active="active"
     :sort-options="sortOptions"
     :sort="settings.sort.hangar"
-    :filter-request="meltReadyRequest"
+    :filter-request="viewFilterRequest"
+    @clear-request="clearHangarFilter()"
     @update:sort="setSort"
     @visible="showVisible"
   >
