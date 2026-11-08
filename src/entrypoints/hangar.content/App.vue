@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import BuybackList from '@/buyback/components/BuybackList.vue';
 import { useBuybackPledges } from '@/buyback/use-buyback-pledges';
+import AccountFigures from '@/hangar/components/AccountFigures.vue';
 import HangarStatus from '@/hangar/components/HangarStatus.vue';
 import HangarSidebar from '@/hangar/components/HangarSidebar.vue';
 import { canSelectPledges } from '@/hangar/sidebar';
@@ -206,16 +207,24 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
       it floats into the top right corner.
     -->
     <div class="shm-header-side">
-      <!-- On every tab, the settings too: it refreshes hangar and buy back together. -->
-      <RefreshButton />
-      <HangarStatus
-        v-if="status"
-        :key="status.source"
-        class="shm-header-status"
-        :source="status.source"
-        :synced-at="status.syncedAt"
-        :smart-updates="settings.smartUpdates"
+      <!-- The account's figures, on every tab: store credit and buy back tokens (#156). -->
+      <AccountFigures
+        v-if="listsReady"
+        :tokens="buyback.tokens.value"
+        :hide-amounts="settings.hideMeltValue"
       />
+      <div class="shm-header-actions">
+        <!-- On every tab, the settings too: it refreshes hangar and buy back together. -->
+        <RefreshButton />
+        <HangarStatus
+          v-if="status"
+          :key="status.source"
+          class="shm-header-status"
+          :source="status.source"
+          :synced-at="status.syncedAt"
+          :smart-updates="settings.smartUpdates"
+        />
+      </div>
     </div>
     <h2 class="title">
       {{ i18n.t('manager.title') }}
@@ -276,7 +285,6 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
         :pledges="buybackPledges"
         :settings="settings"
         :active="activeTab === 'buyback'"
-        :tokens="buyback.tokens.value"
       />
       <template v-else-if="neverLoaded">
         <InitialLoad v-if="!syncState.running" />
@@ -315,9 +323,17 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
  * More specific RSI rules (from stylesheets on their CDN) override layout and font otherwise,
  * hence `!important` on those properties.
  */
-/* Refresh button and status line, on the right of the title. */
+/* Account figures above refresh button and status line, on the right of the title. */
 .shm-header-side {
   float: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 40%;
+}
+
+.shm-header-actions {
   display: flex;
   /* RSI's header has no room below the button: the status goes to its left. Modern Hangar puts
    * it below (modern.css). */
@@ -327,7 +343,7 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
 }
 
 /* In the type of the intro below the title (RSI's 11px), centred on the 30px face of the button. */
-.shm-header-side .shm-header-status {
+.shm-header-actions .shm-header-status {
   justify-content: flex-end;
   margin: 7px 0 0;
   font-size: calc(11px * var(--shm-font-scale));

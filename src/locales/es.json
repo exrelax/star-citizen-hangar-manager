@@ -22,6 +22,7 @@
     "syncProgressSection": "Leyendo $1: página $2 de $3 ($4 del total)",
     "demoBadge": "Demo",
     "demoBadgeHint": "Modo demo: una selección de tus pledges con ID inventados. Desactívalo en los ajustes.",
+    "storeCreditHint": "El crédito de tienda de la cuenta, tal como RSI lo muestra en la última actualización o comprobación. Oculto mientras «Ocultar el valor de fusión» esté activado.",
     "clearSearch": "Borrar la búsqueda"
   },
   "sort": {
@@ -77,7 +78,6 @@
     "label": "Barra lateral",
     "move": "Arrastra para mover el cuadro (o usa las flechas arriba y abajo)",
     "moved": "Movido a la posición $1 de $2",
-    "available": "Disponible",
     "collapse": "Contraer",
     "expand": "Expandir"
   },
@@ -194,7 +194,6 @@
     "sidebarShowHint": "Cuadros bajo la navegación de RSI a la izquierda, en cada pestaña del gestor.",
     "sidebarBoxes": "Cuadros",
     "sidebarNotificationsHint": "Aparece mientras haya una notificación: cuando los pledges marcados para fundir ya se pueden fundir, con botones para mostrarlos o seleccionarlos, y los marcados que aún esperan. Las notificaciones que se pueden marcar como hechas: una a una o todas a la vez. Sin permiso del navegador.",
-    "sidebarStoreCreditHint": "Oculto mientras «Ocultar el valor de fusión» esté activado.",
     "sidebarSelectionHint": "Se muestra mientras haya pledges seleccionados. Sin él, las filas no tienen control de selección.",
     "sidebarPaintConsultantHint": "Aparece mientras haya pinturas que se puedan recomprar con un descuento por volumen mayor: cuántas, y el crédito de tienda que libera. Oculto mientras «Ocultar el valor de fusión» esté activado.",
     "paintConsultant": "Asesor de descuentos de pinturas",
@@ -285,7 +284,7 @@
     "storeCredit": {
       "name": "Crédito de tienda",
       "content": "El crédito de tienda de la cuenta, como lo muestra su menú de cuenta",
-      "missing": "Hasta entonces el resumen no muestra crédito de tienda."
+      "missing": "Hasta entonces el gestor no muestra crédito de tienda arriba a la derecha."
     },
     "settings": {
       "name": "Ajustes",
@@ -324,6 +323,7 @@
     "probablyGiftableHint": "Si lo recompras con dinero real (warbond), este elemento probablemente es regalable, ya que se compró originalmente antes del $1.",
     "showSingleInBuyback": "Mostrar en Buy Back",
     "tokens": "Tokens de recompra: $1",
+    "tokensLabel": "Tokens de recompra",
     "tokensHint": "Cuántos pledges puedes recomprar aún con crédito de tienda (un token por pledge), según lo mostraba RSI en «Buy Back Pledges» en la última actualización o comprobación. Recomprar con dinero no necesita token.",
     "toCart": "Al carrito",
     "addToCart": "Añadir al carrito de RSI y abrir el carrito (nueva pestaña). RSI vacía el carrito para los pledges del buy back.",

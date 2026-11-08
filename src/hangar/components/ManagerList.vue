@@ -73,8 +73,6 @@ const emit = defineEmits<{
 
 defineSlots<{
   row(props: { entry: T; autoExpand: boolean }): unknown;
-  /** Next to the count, on the right. */
-  'count-side'?(): unknown;
 }>();
 
 // Pre-filled from the page URL, e.g. `…/account/pledges?search=polaris#hangar-manager`, and kept
@@ -358,11 +356,10 @@ const countLabel = computed(() =>
       </div>
     </div>
 
-    <!-- The count, and on the right what the list adds (the buy back: its tokens) and the order. -->
+    <!-- The count, and on the right the order. -->
     <div class="shm-count">
       <span aria-live="polite">{{ countLabel }}</span>
       <span class="shm-count-side">
-        <slot name="count-side" />
         <SelectMenu
           v-if="sortOptions && sortOptions.length > 1 && sort"
           class="shm-sort"

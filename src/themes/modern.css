@@ -148,14 +148,14 @@ html .shm-theme-modern .top .separator {
   display: none !important;
 }
 
-html .shm-theme-modern .shm-header-side {
+html .shm-theme-modern .shm-header-actions {
   flex-direction: column;
   align-items: flex-end;
   gap: 6px;
 }
 
 /* In the type of the intro below the title. */
-html .shm-theme-modern .shm-header-side .shm-header-status {
+html .shm-theme-modern .shm-header-actions .shm-header-status {
   margin: 0;
   color: var(--shm-text-secondary);
   font-size: calc(13px * var(--shm-font-scale));
