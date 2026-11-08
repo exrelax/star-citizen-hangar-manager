@@ -23,6 +23,7 @@ export const ICON_NAMES = {
     'chevron-left',
     'chevron-right',
     'chevron-up',
+    'circle-check',
     'circle-xmark',
     'clock-rotate-left',
     'filter-circle-xmark',
