@@ -115,7 +115,7 @@ const displayClasses = computed(() => ({
       <p v-if="!offers.length" class="shm-store-state">{{ i18n.t('store.empty') }}</p>
     </template>
 
-    <PaintConsultant :pledges="pledges" :settings="settings" />
+    <PaintConsultant :settings="settings" />
   </section>
 </template>
 

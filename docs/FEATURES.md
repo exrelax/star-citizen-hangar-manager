@@ -272,7 +272,8 @@ on its own.
   - **Features** – what it has: LTI, Warbond (bought with money, i.e. with an order ID),
     Giftable, Meltable, Valuable (worth more than $0) and Discount (bought for less than the
     original price, see [Discounts](#discounts); pledges whose original price isn't known, or
-    that cost more, don't count).
+    that cost more, don't count) and Paint rebuy (the paints the
+    [Paint Discount Consultant](#paint-discount-consultant) would buy again).
 - **Include or exclude**: each click on a filter cycles through off → only pledges with it →
   only pledges without it ("−Rewards" hides all rewards). All active filters combine with "and";
   one click on "Reset filters" turns them all off.
@@ -451,6 +452,9 @@ it into store credit with the paints you already own:
   how many. Turned off (in the consultant or the settings), they are included and marked
   "Giftable".
 - **Order**: fill the cart and check it first, melt only after that.
+- **In My Hangar**: the paints it would buy again carry a tag "Rebuy 0% → 35%" (their discount now
+  and then; its tooltip says the store credit freed), which opens the consultant. The filter
+  "Paint rebuy" (Features) shows just them.
 - Only pledges with exactly one paint that can be melted, and single paints of the Pledge Store;
   paint packs come later. Hidden while "Hide melt value" is on.
 

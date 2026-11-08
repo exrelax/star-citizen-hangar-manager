@@ -19,6 +19,7 @@ import TabBar from '@/shared/components/TabBar.vue';
 import { i18n } from '@/i18n';
 import SettingsPanel from '@/settings/SettingsPanel.vue';
 import StoreTab from '@/store/components/StoreTab.vue';
+import { providePaintConsultant } from '@/store/paint-consultant/use-paint-consultant';
 import { useSettings } from '@/settings/use-settings';
 import { MANAGER_CONTAINER, useThemeClass } from '@/themes/theme';
 import { computed, inject, onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue';
@@ -60,6 +61,12 @@ const listsReady = computed(() => settingsLoaded.value && demoView.ready.value);
 provide(DEMO_CONTEXT, demoView.context);
 const pledges = demoView.pledges;
 const buybackPledges = demoView.buyback;
+// The Paint Discount Consultant: in the Pledge Store tab and as marks in My Hangar.
+providePaintConsultant({
+  pledges: () => pledges.value,
+  settings: () => settings.value,
+  demoStoreCredit: () => demoView.context.value?.storeCredit,
+});
 
 /** The status line of the list shown (in the settings the hangar's): its last refresh and check. */
 const status = computed(() => {

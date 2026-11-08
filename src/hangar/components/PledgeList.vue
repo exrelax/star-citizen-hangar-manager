@@ -56,6 +56,7 @@ const HINTS: Partial<Record<PledgeFilter, MessageKey>> = {
   warbond: 'filter.hints.warbond',
   valuable: 'filter.hints.valuable',
   discount: 'filter.hints.discount',
+  paintRebuy: 'filter.hints.paintRebuy',
   rewards: 'filter.hints.rewards',
 };
 const filterHint = (filter: PledgeFilter) => {

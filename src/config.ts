@@ -307,8 +307,8 @@ export const FILTERS: {
       shown: ['ships', 'ccus', 'paints', 'gameAccess', 'rewards'],
     },
     features: {
-      order: ['lti', 'warbond', 'giftable', 'meltable', 'valuable', 'discount'],
-      shown: ['lti', 'warbond', 'giftable', 'meltable', 'valuable', 'discount'],
+      order: ['lti', 'warbond', 'giftable', 'meltable', 'valuable', 'discount', 'paintRebuy'],
+      shown: ['lti', 'warbond', 'giftable', 'meltable', 'valuable', 'discount', 'paintRebuy'],
     },
   },
   buyback: {

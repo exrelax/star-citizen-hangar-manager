@@ -94,6 +94,7 @@
     "warbond": "Warbond",
     "valuable": "Con valor",
     "discount": "Descuento",
+    "paintRebuy": "Recompra de pintura",
     "rewards": "Recompensas",
     "reset": "Restablecer filtros",
     "stateOff": "Clic: mostrar solo los elementos con «$1».",
@@ -105,7 +106,8 @@
       "valuable": "Pledges con un valor superior a $$0.",
       "rewards": "Recompensas con un valor de $$0: eventos, referidos, Concierge y otras recompensas.",
       "rewardsByName": "Recompensas, reconocidas por su nombre: eventos, referidos, Concierge y otras recompensas.",
-      "discount": "Comprado por menos del precio original: naves y CCU comparados con los precios de naves de RSI, pinturas, equipo y más con la Pledge Store. No cuentan los pledges sin precio original conocido o que costaron más."
+      "discount": "Comprado por menos del precio original: naves y CCU comparados con los precios de naves de RSI, pinturas, equipo y más con la Pledge Store. No cuentan los pledges sin precio original conocido o que costaron más.",
+      "paintRebuy": "Pinturas que el asesor de descuentos fundiría y volvería a comprar con un descuento por volumen mayor (ver la pestaña Pledge Store)."
     },
     "categories": {
       "types": "Tipos",
@@ -407,7 +409,9 @@
     "skipGiftableHint": "Recompradas con crédito de tienda, ya no se podrían regalar.",
     "giftableSkipped": "Se omiten $1 pinturas regalables que ganarían.",
     "giftableTag": "Regalable",
-    "giftableTagHint": "Regalable ahora; recomprada con crédito de tienda, ya no lo es."
+    "giftableTagHint": "Regalable ahora; recomprada con crédito de tienda, ya no lo es.",
+    "mark": "Recompra $1 → $2",
+    "markHint": "Fúndela y vuelve a comprarla con el descuento por volumen ($1 → $2): se liberan $3 de crédito de tienda. Abre el asesor de descuentos de pinturas."
   },
   "upgradeLog": {
     "title": "Mejoras aplicadas",
