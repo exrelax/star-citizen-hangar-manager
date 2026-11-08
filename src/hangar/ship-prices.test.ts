@@ -90,6 +90,11 @@ describe('pledgeDiscount', () => {
     expect(pledgeDiscount(ship, priceOf, false)).toMatchObject({ amount: -15, percent: -25 });
   });
 
+  it('leaves out free pledges such as referral rewards', () => {
+    const reward = pledge({ valueUsd: 0, items: [{ title: 'Aurora Mk I SE', kind: 'Ship' }] });
+    expect(pledgeDiscount(reward, priceOf, false)).toBeUndefined();
+  });
+
   it('leaves out packages with the game, and bundles with a ship of unknown price', () => {
     const items = [{ title: 'Mercury Star Runner', kind: 'Ship' }];
     expect(pledgeDiscount(pledge({ items }), priceOf, true)).toBeUndefined();
