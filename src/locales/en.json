@@ -195,6 +195,7 @@
     "sidebarShow": "Show the sidebar",
     "sidebarShowHint": "Boxes below RSI's navigation on the left, on every tab of the manager.",
     "sidebarBoxes": "Boxes",
+    "sidebarNotificationsHint": "Shown while there is a notification, e.g. that a pledge marked to melt can be melted now; it also lists the marked ones with the time left. Each notification can be checked off, or all at once; no browser permission needed.",
     "sidebarStoreCreditHint": "Hidden while “Hide melt value” is on.",
     "sidebarSelectionHint": "Shown while pledges are selected. Without it, the rows have no select control.",
     "sidebarPaintConsultantHint": "How many paints can be bought again with a higher volume discount, and the store credit it frees. Hidden while “Hide melt value” is on.",
@@ -567,6 +568,13 @@
     "waiting": "Melt in $1",
     "ready": "Melt now",
     "hint": "Marked to melt. RSI lets you melt a pledge 24 hours after buying it: from $1."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "checkOff": "Done",
+    "checkOffAll": "Mark all as done",
+    "pending": "Coming up",
+    "meltable": "“$1” can be melted now"
   },
   "gift": {
     "button": "Gift",

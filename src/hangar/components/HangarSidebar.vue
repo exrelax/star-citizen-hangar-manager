@@ -15,6 +15,12 @@ import { useStored } from '@/storage/use-stored';
 import { useDemoContext } from '@/demo/use-demo';
 import SidebarBox from './SidebarBox.vue';
 import BulkExchangeOverlay from './BulkExchangeOverlay.vue';
+import { checkOff, type AppNotification } from '@/notifications/notifications';
+import { useOpenNotifications } from '@/notifications/use-notifications';
+import { useMarkedPledges } from '../use-melt-marks';
+import { formatTimeLeft } from '../melt-marks';
+import { myGearHref } from '../route';
+import { useNow } from '@/shared/use-now';
 import {
   maybePaintConsultant,
   openPaintConsultant,
@@ -78,7 +84,30 @@ const types = (summary: PledgeSummary) =>
     .map(({ type, count }) => `${number.value.format(count)} ${i18n.t(`filter.${type}`)}`)
     .join(' · ');
 
+// ---- Notifications (#142) ----
+
+const notes = useOpenNotifications();
+const marked = useMarkedPledges();
+const now = useNow();
+/** Marked pledges that can't be melted yet, the soonest first. */
+const pending = computed(() =>
+  [...marked.value.values()]
+    .filter((mark) => mark.meltableAt > now.value)
+    .sort((a, b) => a.meltableAt - b.meltableAt),
+);
+const noteTime = computed(
+  () => new Intl.DateTimeFormat(locale.value, { dateStyle: 'medium', timeStyle: 'short' }),
+);
+const noteText = (note: AppNotification) => i18n.t('notifications.meltable', [note.title]);
+/** The pledge in RSI's "My Gear", if it is still in the hangar; not in the demo. */
+function noteHref(note: AppNotification) {
+  if (demo.value) return undefined;
+  const pledge = props.pledges.find((candidate) => candidate.id === note.pledgeId);
+  return pledge && myGearHref(location.pathname, pledge.page, pledge.id);
+}
+
 const TITLES = {
+  notifications: 'notifications.title',
   storeCredit: 'summary.storeCredit',
   summary: 'summary.title',
   selection: 'summary.selected',
@@ -121,9 +150,11 @@ const isShown = (box: Box) =>
   !props.settings.sidebarHidden.includes(box) &&
   (box === 'selection'
     ? !!chosen.value
-    : box === 'storeCredit' || box === 'paintConsultant'
-      ? !props.settings.hideMeltValue && (box !== 'paintConsultant' || !!consultant)
-      : true);
+    : box === 'notifications'
+      ? notes.value.length > 0
+      : box === 'storeCredit' || box === 'paintConsultant'
+        ? !props.settings.hideMeltValue && (box !== 'paintConsultant' || !!consultant)
+        : true);
 const boxes = computed(() => order.value.filter(isShown));
 
 const isCollapsed = (box: Box) => savedCollapsed.value.value.includes(box);
@@ -294,14 +325,57 @@ async function move(box: Box, step: -1 | 1) {
   >
     <div v-for="box in boxes" :key="box" class="shm-sidebar-slot" :data-box="box">
       <SidebarBox
-        :title="i18n.t(TITLES[box])"
+        :title="
+          box === 'notifications' && notes.length
+            ? `${i18n.t(TITLES[box])} (${number.format(notes.length)})`
+            : i18n.t(TITLES[box])
+        "
         :dragging="box === dragged"
         :collapsed="isCollapsed(box)"
         @grab="(event) => grab(box, event)"
         @move="(step) => move(box, step)"
         @toggle="toggle(box)"
       >
-        <dl v-if="box === 'storeCredit'" class="shm-sidebar-figures">
+        <template v-if="box === 'notifications'">
+          <!-- Only shown with at least one open notification (see `isShown`). -->
+          <ul class="shm-sidebar-notes">
+            <li v-for="note in notes" :key="note.id">
+              <input
+                type="checkbox"
+                class="shm-sidebar-note-check"
+                :aria-label="`${i18n.t('notifications.checkOff')}: ${noteText(note)}`"
+                @change="checkOff([note.id])"
+              />
+              <span class="shm-sidebar-note-text">
+                <a v-if="noteHref(note)" :href="noteHref(note)">{{ noteText(note) }}</a>
+                <template v-else>{{ noteText(note) }}</template>
+                <time class="shm-sidebar-note">{{ noteTime.format(note.at) }}</time>
+              </span>
+            </li>
+          </ul>
+          <button
+            v-if="notes.length > 1"
+            type="button"
+            class="shm-sidebar-link"
+            @click="checkOff()"
+          >
+            {{ i18n.t('notifications.checkOffAll') }}
+          </button>
+          <!-- What comes later: the marked pledges with the time left. -->
+          <template v-if="pending.length">
+            <p class="shm-sidebar-subtitle">{{ i18n.t('notifications.pending') }}</p>
+            <ul class="shm-sidebar-pending">
+              <li v-for="mark in pending" :key="mark.pledgeId">
+                <span class="shm-sidebar-pending-title">{{ mark.title }}</span>
+                <span class="shm-sidebar-note">
+                  {{ i18n.t('meltMark.waiting', [formatTimeLeft(mark.meltableAt - now, locale)]) }}
+                </span>
+              </li>
+            </ul>
+          </template>
+        </template>
+
+        <dl v-else-if="box === 'storeCredit'" class="shm-sidebar-figures">
           <div>
             <dt>{{ i18n.t('sidebar.available') }}</dt>
             <dd>{{ credit ?? '–' }}</dd>
@@ -590,6 +664,76 @@ async function move(box: Box, step: -1 | 1) {
   margin: 8px 0 0;
   color: var(--shm-text-muted);
   font-size: calc(11px * var(--shm-font-scale));
+}
+
+/* Notifications (#142): each with a checkbox to check it off, newest first. */
+.shm-sidebar-notes,
+.shm-sidebar-pending {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shm-sidebar-notes li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.shm-sidebar-note-check {
+  flex: none;
+  margin: 2px 0 0;
+  accent-color: var(--shm-accent);
+}
+
+.shm-sidebar-note-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  color: var(--shm-text);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+.shm-sidebar-note-text a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.shm-sidebar-note-text a:hover,
+.shm-sidebar-note-text a:focus-visible {
+  color: var(--shm-accent);
+  text-decoration: underline;
+}
+
+.shm-sidebar-note-text .shm-sidebar-note {
+  margin: 2px 0 0;
+}
+
+.shm-sidebar-subtitle {
+  margin: 14px 0 6px;
+  color: var(--shm-text-secondary);
+  font-size: calc(11px * var(--shm-font-scale));
+  text-transform: uppercase;
+}
+
+.shm-sidebar-pending li {
+  display: flex;
+  flex-direction: column;
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+.shm-sidebar-pending .shm-sidebar-note {
+  margin: 0;
+}
+
+.shm-sidebar-pending-title {
+  overflow: hidden;
+  color: var(--shm-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* An action on a box's pledges, e.g. bulk melting the selection. */

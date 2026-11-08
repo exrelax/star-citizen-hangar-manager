@@ -239,6 +239,12 @@ on its own.
 
 - **Select pledges** in "My Hangar" with the round control in the top right corner of each row.
 - **Sidebar** below RSI's page navigation on the left, a column of boxes:
+  - **Notifications** (only while there is one): what the Hangar Manager has to tell you, newest
+    first – for now when a pledge [marked to melt](#mark-to-melt-later) can be melted, with a link
+    to it in "My Gear".
+    Check each one off with its checkbox, or all at once; checked-off ones don't come back. Below
+    them, the marked pledges still waiting, with the time left. Works without the browser's
+    notification permission; kept in this browser only.
   - **Store credit** of the account (as RSI's account menu shows it, read with every refresh and
     smart update).
   - **Summary**: number, value and discounts of the pledges shown in "My Hangar" (after search and
@@ -377,7 +383,8 @@ to melt** under the image of a meltable pledge keeps it in mind: a badge in its 
 time. The purchase time comes from the pledge log; with only the purchase date, the end of that
 day counts, and as RSI doesn't say which time zone it uses, the later reading counts – the badge
 may turn a little late, never too early. The mark goes once the pledge is gone from the hangar;
-the marks are kept in this browser only. Not available in the demo mode.
+the marks are kept in this browser only. Not available in the demo mode. Once a marked pledge
+can be melted, the sidebar's **Notifications** box says so.
 
 ## Gift
 

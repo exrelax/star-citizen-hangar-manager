@@ -62,6 +62,9 @@ sees or stores your RSI login.
   demo. It never leaves your browser.
 - **Pledges marked to melt**: their IDs, titles and when they were marked, kept in the local
   storage until the pledge is gone from your hangar. They never leave your browser.
+- **Notifications** of the sidebar (e.g. that a marked pledge can be melted now): the pledge's ID
+  and title and when it happened, kept in the local storage; checked-off ones are removed after
+  30 days. They never leave your browser.
 - The **search term** is put into the page's address (`?search=…`) so searches can be bookmarked;
   it is part of your browser history like any other address.
 

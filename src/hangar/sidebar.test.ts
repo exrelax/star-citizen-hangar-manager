@@ -25,7 +25,7 @@ describe('sidebarBoxesOf', () => {
 
 describe('normalizeSidebarOrder', () => {
   it('keeps a complete stored order', () => {
-    const order = ['paintConsultant', 'selection', 'storeCredit', 'summary'];
+    const order = ['paintConsultant', 'selection', 'notifications', 'storeCredit', 'summary'];
     expect(normalizeSidebarOrder(order)).toEqual(order);
   });
 
@@ -37,17 +37,19 @@ describe('normalizeSidebarOrder', () => {
   it('drops unknown and repeated boxes', () => {
     expect(
       normalizeSidebarOrder(['summary', 'events', 'summary', 'storeCredit', 'selection']),
-    ).toEqual(['summary', 'storeCredit', 'selection', 'paintConsultant']);
+    ).toEqual(['notifications', 'summary', 'storeCredit', 'selection', 'paintConsultant']);
   });
 
   it('adds missing boxes after the box before them in the default order', () => {
     expect(normalizeSidebarOrder(['selection', 'storeCredit'])).toEqual([
+      'notifications',
       'selection',
       'paintConsultant',
       'storeCredit',
       'summary',
     ]);
     expect(normalizeSidebarOrder(['summary', 'selection'])).toEqual([
+      'notifications',
       'storeCredit',
       'summary',
       'selection',
@@ -58,11 +60,17 @@ describe('normalizeSidebarOrder', () => {
   it('adds a box new in an update after the box before it', () => {
     // An order stored before the Paint Discount Consultant's box: it follows "Selected".
     expect(normalizeSidebarOrder(['selection', 'summary', 'storeCredit'])).toEqual([
+      'notifications',
       'selection',
       'paintConsultant',
       'summary',
       'storeCredit',
     ]);
+  });
+
+  it('puts the notifications on top of an order stored before them', () => {
+    const before = ['paintConsultant', 'storeCredit', 'summary', 'selection'];
+    expect(normalizeSidebarOrder(before)).toEqual(['notifications', ...before]);
   });
 });
 

@@ -13,12 +13,14 @@ const props = defineProps<{ settings: Settings }>();
 const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
 
 const LABELS: Record<SidebarBox, MessageKey> = {
+  notifications: 'notifications.title',
   storeCredit: 'summary.storeCredit',
   summary: 'summary.title',
   selection: 'summary.selected',
   paintConsultant: 'consultant.title',
 };
 const HINTS: Partial<Record<SidebarBox, MessageKey>> = {
+  notifications: 'settings.sidebarNotificationsHint',
   storeCredit: 'settings.sidebarStoreCreditHint',
   selection: 'settings.sidebarSelectionHint',
   paintConsultant: 'settings.sidebarPaintConsultantHint',

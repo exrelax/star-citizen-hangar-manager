@@ -15,12 +15,15 @@ export interface MarkedPledge extends MeltMark {
  * The pledges marked to melt, by pledge id, with the time each can be melted: from the purchase
  * time of the pledge log, else the purchase date of the list (`boughtOn`).
  */
-export function useMeltMarks(
-  boughtOn: () => ReadonlyMap<number, string | undefined>,
-): ComputedRef<ReadonlyMap<number, MarkedPledge>> {
+export function useMeltMarks(boughtOn: () => ReadonlyMap<number, string | undefined>): {
+  pledges: ComputedRef<ReadonlyMap<number, MarkedPledge>>;
+  /** The marks are read (until then `pledges` is empty). */
+  ready: ComputedRef<boolean>;
+} {
   const marks = useStored(meltMarksItem);
   const orders = useStored(ordersSnapshot);
-  return computed(() => {
+  const ready = computed(() => marks.value !== undefined);
+  const pledges = computed(() => {
     const snapshot = orders.value?.version === ORDERS_SNAPSHOT_VERSION ? orders.value : undefined;
     const dates = boughtOn();
     return new Map(
@@ -35,6 +38,7 @@ export function useMeltMarks(
       }),
     );
   });
+  return { pledges, ready };
 }
 
 export const MELT_MARKS: InjectionKey<Readonly<Ref<ReadonlyMap<number, MarkedPledge>>>> =
