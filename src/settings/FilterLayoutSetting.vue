@@ -228,7 +228,7 @@ function onDrop(index: number) {
   font-size: calc(12px * var(--shm-font-scale));
   background: none;
   border: 1px solid transparent;
-  border-radius: 3px;
+  border-radius: var(--shm-radius-small);
   cursor: pointer;
 }
 

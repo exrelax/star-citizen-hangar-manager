@@ -88,6 +88,6 @@ const linked = computed(() => props.ships.filter((ship) => ship.link));
 .shm-link-button img {
   display: block;
   flex: none;
-  border-radius: 2px;
+  border-radius: var(--shm-radius-small);
 }
 </style>

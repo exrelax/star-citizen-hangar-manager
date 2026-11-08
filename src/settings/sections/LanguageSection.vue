@@ -56,6 +56,6 @@ function languageName(code: Locale) {
   color: var(--shm-warning);
   font-size: calc(11px * var(--shm-font-scale));
   border: 1px solid currentColor;
-  border-radius: 999px;
+  border-radius: var(--shm-radius-pill);
 }
 </style>

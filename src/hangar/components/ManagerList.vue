@@ -397,7 +397,7 @@ const countLabel = computed(() =>
   font-size: calc(12px * var(--shm-font-scale));
   background: rgb(var(--shm-surface-rgb) / 0.8);
   border: 1px solid rgb(var(--shm-accent-rgb) / 0.35);
-  border-radius: 0;
+  border-radius: var(--shm-radius-control);
   cursor: pointer;
 }
 
@@ -467,7 +467,7 @@ const countLabel = computed(() =>
   font-size: calc(13px * var(--shm-font-scale));
   background: rgb(var(--shm-surface-rgb) / 0.8);
   border: 1px solid rgb(var(--shm-accent-rgb) / 0.35);
-  border-radius: 0;
+  border-radius: var(--shm-radius-control);
   outline: none;
 }
 

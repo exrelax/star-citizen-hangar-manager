@@ -269,7 +269,7 @@ html:has(.shm-styleguide) {
   height: 36px;
   /* Shows translucent fills and the backdrop over the same ground. */
   border: 1px solid rgb(var(--shm-accent-rgb) / 0.25);
-  border-radius: 6px;
+  border-radius: var(--shm-radius-item);
 }
 
 .shm-sg-value {

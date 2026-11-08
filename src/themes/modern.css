@@ -44,6 +44,22 @@
   --shm-outline: rgb(214 228 242 / 0.16);
   /* Raised segment of the tabs: a light top edge over a soft shadow. */
   --shm-segment-raise: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 1px 3px rgb(0 0 0 / 0.25);
+  /*
+   * Corner radii by role, after the latest design: small – images, pledge ID, kind badge;
+   * item – menu entries and small icon buttons; tag – tags of a row; control – tabs, fields,
+   * buttons, tooltips; group – the tab track, menus, panels inside a sheet; cell – rows, panels,
+   * settings groups, sidebar boxes; sheet – overlay dialogs; container – the manager;
+   * pill – capsules and circles.
+   */
+  --shm-radius-small: 4px;
+  --shm-radius-item: 6px;
+  --shm-radius-tag: 6px;
+  --shm-radius-control: 8px;
+  --shm-radius-group: 10px;
+  --shm-radius-cell: 12px;
+  --shm-radius-sheet: 16px;
+  --shm-radius-container: 20px;
+  --shm-radius-pill: 999px;
   --shm-font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   --shm-font:
     -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', 'Segoe UI', system-ui,
@@ -101,7 +117,7 @@ html .shm-manager.shm-theme-modern {
   padding: 28px 28px 32px !important;
   color: var(--shm-text);
   background: var(--shm-background) !important;
-  border-radius: 20px;
+  border-radius: var(--shm-radius-container);
 }
 
 /* ---- Header: title, intro, refresh button (RSI's markup) ---- */
@@ -155,7 +171,7 @@ html .shm-theme-modern .shm-refresh {
   font-weight: 600 !important;
   line-height: 32px !important;
   background: rgb(var(--shm-accent-rgb) / 0.15) !important;
-  border-radius: 999px !important;
+  border-radius: var(--shm-radius-pill) !important;
 }
 
 html .shm-theme-modern .shm-refresh:not(:disabled):hover {
@@ -178,7 +194,7 @@ html .shm-theme-modern .shm-refresh-bar {
   right: 14px;
   bottom: 4px;
   left: 14px;
-  border-radius: 1px;
+  border-radius: var(--shm-radius-pill);
 }
 
 html .shm-theme-modern .shm-demo-badge {
@@ -187,7 +203,7 @@ html .shm-theme-modern .shm-demo-badge {
   font-size: calc(12px * var(--shm-font-scale));
   font-weight: 600;
   vertical-align: 5px;
-  border-radius: 999px;
+  border-radius: var(--shm-radius-pill);
 }
 
 /* ---- Tabs as a segmented control ---- */
@@ -202,7 +218,7 @@ html .shm-theme-modern .shm-tabs {
   padding: 2px;
   background: var(--shm-fill);
   border: 0;
-  border-radius: 10px;
+  border-radius: var(--shm-radius-group);
 }
 
 html .shm-theme-modern .shm-tab {
@@ -215,7 +231,7 @@ html .shm-theme-modern .shm-tab {
   font-weight: 500;
   text-transform: none;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--shm-radius-control);
 }
 
 html .shm-theme-modern .shm-tab.is-active {
@@ -229,7 +245,7 @@ html .shm-theme-modern .shm-tab.is-active {
 html .shm-theme-modern .shm-tab-indicator {
   background: linear-gradient(rgb(255 255 255 / 0.04), transparent), var(--shm-segment);
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--shm-radius-control);
   box-shadow: var(--shm-segment-raise);
 }
 
@@ -252,7 +268,7 @@ html .shm-theme-modern .shm-status {
 html .shm-theme-modern .shm-status-action {
   padding: 4px 12px;
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--shm-radius-pill);
   background: rgb(var(--shm-upgraded-rgb) / 0.18);
 }
 
@@ -262,7 +278,7 @@ html .shm-theme-modern .shm-controls {
   margin-top: 22px;
   padding: 12px;
   background: var(--shm-surface-elevated);
-  border-radius: 12px;
+  border-radius: var(--shm-radius-cell);
 }
 
 html .shm-theme-modern .shm-filters {
@@ -304,7 +320,7 @@ html .shm-theme-modern .shm-filter {
   font-weight: 500;
   background: var(--shm-fill);
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--shm-radius-pill);
 }
 
 html .shm-theme-modern .shm-filter:hover,
@@ -344,7 +360,7 @@ html .shm-theme-modern .shm-search {
   font-size: calc(15px * var(--shm-font-scale));
   background: var(--shm-fill);
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--shm-radius-control);
 }
 
 html .shm-theme-modern .shm-search:focus {
@@ -372,7 +388,7 @@ html .shm-theme-modern .shm-row {
   overflow: hidden;
   background: var(--shm-surface-elevated);
   border: 0;
-  border-radius: 12px;
+  border-radius: var(--shm-radius-cell);
 }
 
 /* An open card stands out with a ring in the accent color. */
@@ -385,7 +401,7 @@ html .shm-theme-modern.shm-compact .shm-rows {
   display: block;
   overflow: hidden;
   background: var(--shm-surface-elevated);
-  border-radius: 12px;
+  border-radius: var(--shm-radius-cell);
 }
 
 html .shm-theme-modern.shm-compact .shm-row {
@@ -478,11 +494,11 @@ html .shm-theme-modern .shm-row-summary:hover {
 /* Images with small corners, so the picture keeps its shape; the kind badge on it matches. */
 html .shm-theme-modern .shm-thumb {
   overflow: hidden;
-  border-radius: 4px;
+  border-radius: var(--shm-radius-small);
 }
 
 html .shm-theme-modern .shm-row-kind {
-  border-radius: 4px;
+  border-radius: var(--shm-radius-small);
 }
 
 html .shm-theme-modern .shm-title {
@@ -500,7 +516,7 @@ html .shm-theme-modern .shm-meta {
 html .shm-theme-modern .shm-pledge-id {
   padding: 0 6px;
   color: var(--shm-tag-text);
-  border-radius: 4px;
+  border-radius: var(--shm-radius-small);
   box-shadow: inset 0 0 0 1px var(--shm-outline);
 }
 
@@ -516,7 +532,7 @@ html .shm-theme-modern .shm-badge {
   font-weight: 500;
   background: var(--shm-tag);
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--shm-radius-tag);
 }
 
 html .shm-theme-modern .shm-badge.is-lti {
@@ -580,7 +596,7 @@ html .shm-theme-modern .shm-button {
   font-weight: 500;
   background: rgb(var(--shm-accent-rgb) / 0.15);
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--shm-radius-control);
 }
 
 html .shm-theme-modern .shm-button:not(:disabled):hover,
@@ -605,7 +621,7 @@ html .shm-theme-modern .shm-button.is-danger:not(:disabled):focus-visible {
 html .shm-theme-modern .shm-setting {
   background: var(--shm-surface-elevated);
   border: 0;
-  border-radius: 12px;
+  border-radius: var(--shm-radius-cell);
 }
 
 html .shm-theme-modern .shm-label {
@@ -626,7 +642,7 @@ html .shm-theme-modern .shm-input {
   color: var(--shm-text);
   background-color: var(--shm-fill);
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--shm-radius-control);
 }
 
 /* ---- Overlay: blurred backdrop, rounded sheet ---- */
@@ -641,7 +657,7 @@ html .shm-theme-modern .shm-overlay-dialog {
   font-size: calc(13px * var(--shm-font-scale));
   background: var(--shm-surface-elevated);
   border: 0;
-  border-radius: 16px;
+  border-radius: var(--shm-radius-sheet);
   box-shadow:
     0 0 0 1px var(--shm-separator),
     0 24px 60px rgb(0 0 0 / 0.5);
@@ -667,7 +683,7 @@ html .shm-theme-modern .shm-overlay-dialog dt {
 html .shm-theme-modern .shm-order-header {
   background: var(--shm-fill);
   border: 0;
-  border-radius: 10px;
+  border-radius: var(--shm-radius-group);
 }
 
 html .shm-theme-modern .shm-overlay-close {
@@ -676,7 +692,7 @@ html .shm-theme-modern .shm-overlay-close {
   padding: 0;
   font-size: calc(18px * var(--shm-font-scale));
   background: var(--shm-fill);
-  border-radius: 999px;
+  border-radius: var(--shm-radius-pill);
 }
 
 html .shm-theme-modern .shm-order-totals > div:last-child {
@@ -688,7 +704,7 @@ html .shm-theme-modern .shm-order-totals > div:last-child {
 html .shm-theme-modern .shm-initial-load {
   background: var(--shm-surface-elevated);
   border: 0;
-  border-radius: 12px;
+  border-radius: var(--shm-radius-cell);
 }
 
 html .shm-theme-modern .shm-initial-load-title {
@@ -710,12 +726,12 @@ html .shm-theme-modern .shm-sidebar-box {
   padding: 12px;
   background: var(--shm-surface-elevated);
   border: 0;
-  border-radius: 12px;
+  border-radius: var(--shm-radius-cell);
   box-shadow: 0 0 0 1px var(--shm-separator);
 }
 
 html .shm-theme-modern .shm-sidebar-slot {
-  border-radius: 12px;
+  border-radius: var(--shm-radius-cell);
 }
 
 html .shm-theme-modern .shm-sidebar-box.is-dragging {
@@ -737,7 +753,7 @@ html .shm-theme-modern .shm-sidebar-figures dd {
 }
 
 html .shm-theme-modern .shm-sidebar-icon-button {
-  border-radius: 6px;
+  border-radius: var(--shm-radius-item);
 }
 
 html .shm-theme-modern .shm-sidebar-icon-button:hover {

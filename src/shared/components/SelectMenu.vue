@@ -228,13 +228,13 @@ onUnmounted(() => removeEventListener('pointerdown', onOutside, true));
 
 html .shm-theme-modern .shm-select-menu-list {
   border: 0;
-  border-radius: 10px;
+  border-radius: var(--shm-radius-group);
   box-shadow:
     0 0 0 1px var(--shm-separator),
     0 12px 30px rgb(0 0 0 / 0.45);
 }
 
 html .shm-theme-modern .shm-select-menu-option {
-  border-radius: 6px;
+  border-radius: var(--shm-radius-item);
 }
 </style>

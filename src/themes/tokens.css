@@ -25,6 +25,19 @@
   --shm-upgraded-rgb: 240 178 50;
   --shm-danger: #ff8a80;
   --shm-backdrop: rgba(0, 0, 0, 0.7);
+  /*
+   * Corner radii by role (the same names in every theme). "Classic RSI" is square like RSI's
+   * account pages: only small elements, menu items and capsules are rounded.
+   */
+  --shm-radius-small: 4px;
+  --shm-radius-item: 6px;
+  --shm-radius-tag: 0;
+  --shm-radius-control: 0;
+  --shm-radius-group: 0;
+  --shm-radius-cell: 0;
+  --shm-radius-sheet: 0;
+  --shm-radius-container: 0;
+  --shm-radius-pill: 999px;
 }
 
 /*

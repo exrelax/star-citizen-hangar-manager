@@ -161,7 +161,7 @@ const displayClasses = computed(() => ({
   font: inherit;
   background: none;
   border: 0;
-  border-radius: 4px;
+  border-radius: var(--shm-radius-small);
   cursor: pointer;
 }
 
