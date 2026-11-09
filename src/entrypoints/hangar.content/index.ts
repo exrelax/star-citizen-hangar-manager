@@ -11,6 +11,11 @@ import {
   MANAGER_HASH,
   managerHref,
 } from '@/hangar/route';
+import {
+  applyManagerAction,
+  isManagerActionMessage,
+  takeActionFromUrl,
+} from '@/hangar/manager-action';
 import { isTimerActive, startSmartUpdateTimer } from '@/hangar/smart-update/schedule';
 import { listenForChecksElsewhere } from '@/hangar/smart-update/broadcast';
 import { resetBackoff, watchInput } from '@/hangar/smart-update/backoff';
@@ -154,5 +159,18 @@ export default defineContentScript({
       });
     startSmartUpdateTimer(ctx.signal, timerActive, () => maybeRunSmartUpdate());
     render();
+
+    // A click on a browser notification (#154): in this tab as a message, in a tab opened for it
+    // as a URL parameter, read once.
+    const pendingAction = takeActionFromUrl();
+    if (pendingAction) void applyManagerAction(pendingAction);
+    const onAction = (message: unknown) => {
+      if (!isManagerActionMessage(message)) return undefined;
+      void applyManagerAction(message.action);
+      // Tells the background script that this tab took it.
+      return Promise.resolve(true);
+    };
+    browser.runtime.onMessage.addListener(onAction);
+    ctx.onInvalidated(() => browser.runtime.onMessage.removeListener(onAction));
   },
 });

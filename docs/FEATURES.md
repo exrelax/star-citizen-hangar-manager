@@ -692,7 +692,11 @@ In the order of the settings tab:
     pledges of this browser's stored hangar, and only for pledges that were still waiting for RSI's
     24 hours when marked (a mark on a pledge that can be melted already shows "Melt now" at once and
     needs no notification) – and when the Paint Discount Consultant's filler
-    paints can be melted (a notification of their own). A click opens My Hangar. With them on, the extension also reads
+    paints can be melted (a notification of their own). A click opens the Hangar Manager – in
+    an RSI tab already open (My Hangar focused, else another RSI tab), or a new one. In Chrome the
+    notification about marked pledges has the sidebar's buttons too: **Show** lists only the
+    pledges that can be melted now, **Select** selects them for melting them at once (Firefox shows
+    no buttons in notifications; there the click opens the manager). With them on, the extension also reads
     the Pledge Store on its schedule while no RSI page is open (see
     [Pledge Store](#pledge-store-current-warbond-ccus)).
   - **Show dismissed paint notifications again**: the Paint Discount Consultant's notification

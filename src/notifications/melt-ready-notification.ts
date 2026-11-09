@@ -134,6 +134,13 @@ async function announce(due: readonly MeltCandidate[], locale: Locale): Promise<
       due.length === 1
         ? translate(locale, 'notifications.browserMeltReadyOne', [due[0]!.title])
         : translate(locale, 'notifications.browserMeltReady', [due.length]),
+    // Firefox shows no buttons and refuses the option: there a click opens the manager.
+    ...(!import.meta.env.FIREFOX && {
+      buttons: [
+        { title: translate(locale, 'notifications.showReady') },
+        { title: translate(locale, 'notifications.selectReady') },
+      ],
+    }),
   });
 }
 
@@ -147,5 +154,10 @@ export function watchMeltReady(): void {
   browserNotificationsItem.watch(check);
   settingsItem.watch(check);
   onAlarm(MELT_READY_ALARM, check);
-  onNotificationClick(NOTIFICATION_ID, openHangarManager);
+  onNotificationClick(
+    NOTIFICATION_ID,
+    () => void openHangarManager(),
+    // The buttons (Chrome): "Show" and "Select", like the sidebar's.
+    (index) => void openHangarManager(index === 0 ? 'showMeltReady' : 'selectMeltReady'),
+  );
 }
