@@ -533,6 +533,8 @@
   "bulkExchange": {
     "button": "Exchange $1 selected",
     "buttonHint": "Exchange the selected pledges for store credit (melt them) at once. Opens a dialog first.",
+    "disabled": "Bulk melting disabled",
+    "disabledHint": "“Bulk melting” is an experimental setting: turn it on to melt the selected pledges at once. Opens the settings at it.",
     "title": "Exchange $1 pledges",
     "count": "$1 pledges",
     "skipped": "$1 selected can't be exchanged and are left out",

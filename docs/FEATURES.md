@@ -264,7 +264,9 @@ on its own.
     filters). Discounts sum only real ones – a pledge that cost more than the original price
     doesn't reduce them.
   - **Selected** (with a selection): number, value and discounts of the selected pledges, how many
-    of them search or filters hide, and a button that clears the selection.
+    of them search or filters hide, and a button that clears the selection. Below them, a button
+    across the box for [bulk melting](#exchange-melt-with-a-safety-net) – or, with that setting
+    off, one that leads to it.
   - **Paint Discount** (only while there is a paint to buy again): how many paints can be bought
     again with a higher volume discount and the store credit it frees, with a link to the
     [consultant](#paint-discount-consultant) and a filter button: **Show these paints** lists
@@ -388,6 +390,8 @@ acknowledgements, an extra one for the experimental feature and your password, e
 The pledges are exchanged one after the other, a second apart; the first one RSI refuses (e.g. a
 wrong password) stops the rest, and the dialog says what was exchanged and what wasn't. Pledges
 that can't be melted are left out; in the demo mode the button is disabled.
+With it off, the "Selected" box shows **Bulk melting disabled** instead (with meltable pledges
+selected): a click opens the settings at the setting and marks it for a moment.
 
 ## Mark to melt later
 
