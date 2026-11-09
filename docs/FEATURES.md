@@ -689,7 +689,9 @@ In the order of the settings tab:
     it stays off and says so; turned off – here or in the browser's own settings – the permission
     goes back. The sidebar's "Notifications" box needs no permission. They tell when pledges
     marked to melt can be melted – one notification for all that are due, each pledge once, by the
-    pledges of this browser's stored hangar – and when the Paint Discount Consultant's filler
+    pledges of this browser's stored hangar, and only for pledges that were still waiting for RSI's
+    24 hours when marked (a mark on a pledge that can be melted already shows "Melt now" at once and
+    needs no notification) – and when the Paint Discount Consultant's filler
     paints can be melted (a notification of their own). A click opens My Hangar. With them on, the extension also reads
     the Pledge Store on its schedule while no RSI page is open (see
     [Pledge Store](#pledge-store-current-warbond-ccus)).
