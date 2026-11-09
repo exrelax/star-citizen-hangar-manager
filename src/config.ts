@@ -146,6 +146,13 @@ export const SMART_UPDATE = {
   spotCheckPages: { default: 2, min: 1, max: 10 },
   /** The same for the buy back, whose pages are much larger (250 pledges, ~1 MB each). */
   buybackSpotCheckPages: 1,
+  /**
+   * The buy back compares its number of pledges with small pages (#126): first and last page,
+   * the pages of the pledge log's pledges and the binary search load this many pledges each
+   * (~80 KB instead of ~1 MB, measured November 2026); only the spot check loads a full page.
+   * Locating a change takes more of them (log2 of ~400 pages), so they may take more pages too.
+   */
+  buybackCount: { pageSize: 10, maxRepairPages: 30 },
   /** Extra pages a check may load to locate changes; beyond that a full refresh is suggested. */
   maxRepairPages: 15,
   /** A full refresh is suggested once the last one is older than this. */
