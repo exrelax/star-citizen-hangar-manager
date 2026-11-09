@@ -13,7 +13,11 @@ import { vTooltip } from '@/shared/tooltip/tooltip';
 import { useDemoContext } from '@/demo/use-demo';
 import SidebarBox from './SidebarBox.vue';
 import { openTabAt } from '../open-tab-at';
-import { BULK_MELTING_SETTING_ID } from '@/settings/anchors';
+import { BROWSER_NOTIFICATIONS_SETTING_ID, BULK_MELTING_SETTING_ID } from '@/settings/anchors';
+import {
+  browserNotificationsHintDismissedItem,
+  browserNotificationsItem,
+} from '@/notifications/browser-permission';
 import BulkExchangeOverlay from './BulkExchangeOverlay.vue';
 import { checkOff, type AppNotification } from '@/notifications/notifications';
 import { useOpenNotifications } from '@/notifications/use-notifications';
@@ -101,7 +105,11 @@ const pending = computed(() =>
 const readyCount = computed(() => meltReadyIds.value.size);
 /** All notifications: those about marked pledges and paints to buy again, and the stored ones. */
 const noteCount = computed(
-  () => notes.value.length + (readyCount.value ? 1 : 0) + (paintNoteCount.value ? 1 : 0),
+  () =>
+    notes.value.length +
+    (readyCount.value ? 1 : 0) +
+    (paintNoteCount.value ? 1 : 0) +
+    (showBrowserHint.value ? 1 : 0),
 );
 const noteTime = computed(
   () => new Intl.DateTimeFormat(locale.value, { dateStyle: 'medium', timeStyle: 'short' }),
@@ -165,6 +173,22 @@ const paintNoteCount = computed(() => {
   if (!dismissed || !isPaintNotificationShown(rebuyIds.value, dismissed)) return 0;
   return rebuyIds.value.length;
 });
+/*
+ * A hint that browser notifications can be turned on (#152), with a button to the setting, until
+ * they are on in this browser or the hint is dismissed with its X (synced).
+ */
+const browserAllowed = useStored(browserNotificationsItem);
+const browserHintDismissed = useStored(browserNotificationsHintDismissedItem);
+// Not before both are read: it would show for a moment.
+const showBrowserHint = computed(
+  () => browserAllowed.value === false && browserHintDismissed.value === false,
+);
+const openBrowserNotificationsSetting = () =>
+  openTabAt('settings', BROWSER_NOTIFICATIONS_SETTING_ID, { highlight: true });
+function dismissBrowserHint() {
+  void browserNotificationsHintDismissedItem.setValue(true);
+}
+
 function dismissPaintNote() {
   void dismissedItem().setValue(dismissedOf(rebuyIds.value));
 }
@@ -444,6 +468,30 @@ async function move(box: Box, step: -1 | 1) {
             >
               <SvgIcon name="xmark" />
             </button>
+          </div>
+          <div v-if="showBrowserHint" class="shm-sidebar-melt-ready is-dismissable" role="status">
+            <SvgIcon name="bell" />
+            <p>{{ i18n.t('notifications.browserHint') }}</p>
+            <button
+              v-tooltip="i18n.t('notifications.dismissBrowserHintHint')"
+              type="button"
+              class="shm-sidebar-icon-button shm-sidebar-note-dismiss"
+              :aria-label="i18n.t('notifications.dismiss')"
+              @click="dismissBrowserHint"
+            >
+              <SvgIcon name="xmark" />
+            </button>
+            <div v-mark-wrapped class="shm-sidebar-actions">
+              <button
+                v-tooltip="i18n.t('notifications.browserHintOpenHint')"
+                type="button"
+                class="shm-button shm-sidebar-button"
+                @click="openBrowserNotificationsSetting"
+              >
+                <SvgIcon name="gear" />
+                {{ i18n.t('notifications.browserHintOpen') }}
+              </button>
+            </div>
           </div>
           <ul v-if="notes.length" class="shm-sidebar-notes">
             <li v-for="note in notes" :key="note.id">

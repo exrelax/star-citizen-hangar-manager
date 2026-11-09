@@ -71,7 +71,8 @@ sees or stores your RSI login.
   sync storage like the pledges marked to melt, until you dismiss it again or show it again in
   Settings → Notifications.
 - **Browser notifications**: whether this browser allows them (and whether it refused the last
-  time), kept in the local storage. The notifications themselves are made in the extension and
+  time), kept in the local storage. Whether you removed the sidebar's hint about them is kept in
+  the sync storage. The notifications themselves are made in the extension and
   shown by your browser and system; their content is not sent anywhere.
 - The **search term** is put into the page's address (`?search=…`) so searches can be bookmarked;
   it is part of your browser history like any other address.

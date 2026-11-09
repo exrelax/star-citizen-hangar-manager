@@ -7,6 +7,7 @@ import {
   OPEN_NOTIFICATION_PERMISSION,
   REMOVE_NOTIFICATION_PERMISSION,
 } from '@/notifications/browser-permission';
+import { BROWSER_NOTIFICATIONS_SETTING_ID } from '../anchors';
 import SettingCheck from '../SettingCheck.vue';
 import { useStored } from '@/storage/use-stored';
 import {
@@ -57,8 +58,11 @@ async function restore() {
 <template>
   <fieldset class="shm-setting">
     <legend class="shm-label">{{ i18n.t('notifications.title') }}</legend>
+    <!-- Linked from the sidebar's hint about browser notifications. -->
     <SettingCheck
+      :id="BROWSER_NOTIFICATIONS_SETTING_ID"
       :key="checkKey"
+      class="shm-setting-anchor"
       :checked="!!allowed"
       :hint="i18n.t('settings.browserNotificationsHint')"
       @change="setBrowserNotifications"

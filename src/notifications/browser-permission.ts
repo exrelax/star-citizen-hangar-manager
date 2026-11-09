@@ -27,6 +27,15 @@ export const browserNotificationsRefusedItem = storage.defineItem<boolean>(
   { fallback: false },
 );
 
+/**
+ * The sidebar's hint that browser notifications can be turned on was dismissed with its X. Synced:
+ * whoever doesn't want them needn't dismiss it in every browser.
+ */
+export const browserNotificationsHintDismissedItem = storage.defineItem<boolean>(
+  'sync:notifications.browserHintDismissed',
+  { fallback: false },
+);
+
 /** Messages from the settings to the background script. */
 export const OPEN_NOTIFICATION_PERMISSION = 'shm:open-notification-permission';
 export const REMOVE_NOTIFICATION_PERMISSION = 'shm:remove-notification-permission';
