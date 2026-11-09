@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import { i18n } from '@/i18n';
 import SettingCheck from '../SettingCheck.vue';
-import { REBOUGHT_DETECTIONS, type ReboughtDetection, type Settings } from '../settings';
+import {
+  CONSULTANT_LAYOUTS,
+  REBOUGHT_DETECTIONS,
+  type ConsultantLayout,
+  type ReboughtDetection,
+  type Settings,
+} from '../settings';
 
 /*
  * The Paint Discount Consultant (see `store/paint-consultant`): what it may use to reach a
@@ -22,6 +28,21 @@ function set<K extends keyof Settings['paintConsultant']>(
 <template>
   <fieldset class="shm-setting">
     <legend class="shm-label">{{ i18n.t('settings.paintConsultant') }}</legend>
+    <label class="shm-field-label" for="shm-consultant-layout">
+      {{ i18n.t('settings.consultantLayout') }}
+    </label>
+    <select
+      id="shm-consultant-layout"
+      class="shm-select"
+      :value="settings.paintConsultant.layout"
+      @change="set('layout', ($event.target as HTMLSelectElement).value as ConsultantLayout)"
+    >
+      <option v-for="layout in CONSULTANT_LAYOUTS" :key="layout" :value="layout">
+        {{ i18n.t(`settings.consultantLayoutOptions.${layout}`) }}
+      </option>
+    </select>
+    <p class="shm-hint">{{ i18n.t('settings.consultantLayoutHint') }}</p>
+
     <SettingCheck
       :checked="settings.paintConsultant.useStoreCredit"
       :hint="i18n.t('settings.paintConsultantStoreCreditHint')"

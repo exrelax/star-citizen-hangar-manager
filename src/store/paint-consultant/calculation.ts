@@ -147,8 +147,17 @@ export interface PaintConsultantResult {
    * 'guess'`: shown as a guess to check; they stay in the plan.
    */
   probablyRebought: ReboughtPaint[];
-  /** The best tier that can be paid, if any. */
+  /**
+   * The best tier that can be paid, if any – with the melt value of the own paints: they are
+   * melted before the cart is paid, or the cart is paid from the store credit first and the
+   * store credit needed is no more than what there is.
+   */
   plan?: PaintRebuyPlan;
+  /**
+   * The best tier whose whole cart the store credit pays before any paint is melted ("buy first",
+   * the safe way): the same as `plan` or a lower tier, none without enough store credit.
+   */
+  buyFirst?: PaintRebuyPlan;
   /**
    * The next tier above the plan (without a plan: the one closest to being paid) and the store
    * credit missing for it.
@@ -349,6 +358,7 @@ export function planPaintRebuy(input: PaintConsultantInput): PaintConsultantResu
   });
   const missingOf = (cart: PaintRebuyPlan) => cents(cart.storeCreditNeeded) - credit;
   const plan = carts.find((cart) => missingOf(cart) <= 0);
+  const buyFirst = carts.find((cart) => cents(cart.cartCost) <= credit);
 
   // The tier just above the plan; without a plan, the one that needs the least.
   const above = plan ? carts.filter((cart) => cart.tier.percent > plan.tier.percent) : carts;
@@ -358,6 +368,7 @@ export function planPaintRebuy(input: PaintConsultantInput): PaintConsultantResu
     rebought,
     probablyRebought,
     plan,
+    buyFirst,
     next: next && { tier: next.tier, missing: usd(Math.max(0, missingOf(next))) },
   };
 }

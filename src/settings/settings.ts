@@ -36,6 +36,14 @@ export type BuybackLinkMode = (typeof BUYBACK_LINK_MODES)[number];
 export const REBOUGHT_DETECTIONS = ['plan', 'guess'] as const;
 export type ReboughtDetection = (typeof REBOUGHT_DETECTIONS)[number];
 
+/**
+ * How the Paint Discount Consultant shows its plan: `ways` – both ways ("buy first", "melt first")
+ * side by side as cards, each with its own tier, steps and store credit (the default); `table` –
+ * the plan and its paints in tables, as before.
+ */
+export const CONSULTANT_LAYOUTS = ['ways', 'table'] as const;
+export type ConsultantLayout = (typeof CONSULTANT_LAYOUTS)[number];
+
 export const THEMES = ['modern', 'rsi'] as const;
 export type Theme = (typeof THEMES)[number];
 
@@ -122,6 +130,8 @@ export interface Settings {
     skipGiftable: boolean;
     /** How paints bought again are told (#139). */
     reboughtDetection: ReboughtDetection;
+    /** How the plan is shown. */
+    layout: ConsultantLayout;
   };
   /** Links shown next to ships. */
   shipLinks: {
@@ -164,6 +174,7 @@ export const DEFAULT_SETTINGS: Settings = {
     useFillers: true,
     skipGiftable: true,
     reboughtDetection: 'plan',
+    layout: 'ways',
   },
   shipLinks: { erkul: true, fleetyards: true },
 };
@@ -274,6 +285,11 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
         stored?.paintConsultant?.reboughtDetection,
         oneOf(REBOUGHT_DETECTIONS),
         DEFAULT_SETTINGS.paintConsultant.reboughtDetection,
+      ),
+      layout: valid(
+        stored?.paintConsultant?.layout,
+        oneOf(CONSULTANT_LAYOUTS),
+        DEFAULT_SETTINGS.paintConsultant.layout,
       ),
     },
     shipLinks: {
