@@ -74,13 +74,17 @@ sees or stores your RSI login.
   time), kept in the local storage. Whether you removed the sidebar's hint about them is kept in
   the sync storage. The notifications themselves are made in the extension and
   shown by your browser and system; their content is not sent anywhere.
+- **The Paint Discount Consultant's plan**, once its paints were put into the cart: when, the
+  discount tier, the own paints (pledge IDs, titles, melt values) and the filler paints, kept in
+  the local storage (Settings → Stored data → "Paint plan").
 - The **search term** is put into the page's address (`?search=…`) so searches can be bookmarked;
   it is part of your browser history like any other address.
 
 ## Which websites the extension talks to
 
 - **robertsspaceindustries.com**: to read the data listed above and, only after your click, to
-  put a buy back pledge into your cart, to exchange (melt) or gift a pledge, and to open invoices.
+  put a buy back pledge or the paints of the Paint Discount Consultant into your cart (it reads
+  the cart first; nothing is ever checked out), to exchange (melt) or gift a pledge, and to open invoices.
   "Refund Request" opens RSI's support form (support.robertsspaceindustries.com) in a new tab,
   prefilled with the order ID; you review and send it yourself.
 - **api.fleetyards.net** (FleetYards.net): to link your ships to their pages on FleetYards.net and

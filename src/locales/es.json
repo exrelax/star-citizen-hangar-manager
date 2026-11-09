@@ -255,6 +255,7 @@
     "resetConfirm": "¿Borrar «$1» guardado en este navegador?\n\n$2\n\n$3",
     "readAgainRefresh": "La próxima actualización lo vuelve a leer de RSI. Tu hangar en la web de RSI no cambia.",
     "readAgainAuto": "Se vuelve a leer de RSI por sí solo en cuanto el Hangar Manager está abierto.",
+    "readAgainNever": "No se puede volver a leer: pon de nuevo las pinturas en el carrito para guardar un plan nuevo.",
     "resetDone": "«$1» borrado.",
     "checkFailed": "La última comprobación falló.",
     "hangar": {
@@ -296,6 +297,11 @@
       "name": "Crédito de tienda",
       "content": "El crédito de tienda de la cuenta, como lo muestra su menú de cuenta",
       "missing": "Hasta entonces el gestor no muestra crédito de tienda arriba a la derecha."
+    },
+    "paintPlan": {
+      "name": "Plan de pinturas",
+      "content": "El plan del asesor de descuentos de pinturas cuyas pinturas se pusieron en el carrito: propias y de relleno",
+      "missing": "Hasta entonces el asesor no sabe qué pinturas de relleno se compraron."
     },
     "settings": {
       "name": "Ajustes",
@@ -420,6 +426,15 @@
     "stepCooldown": "RSI solo permite fundir un pledge 24 horas después de comprarlo, así que las pinturas de relleno se funden al día siguiente.",
     "cooldownSource": "Soporte de RSI: Reclaim a Pledge",
     "stepPacks": "Los packs de pinturas y los pledges con una pintura junto a otros objetos aún no se incluyen.",
+    "toCart": "Poner las $1 pinturas en el carrito",
+    "toCartHint": "Pone las pinturas propias y las de relleno de este plan en tu carrito de RSI y lo abre. No se compra nada: revisas el carrito y pagas allí.",
+    "cartOccupied": "Tu carrito de RSI ya contiene $1 artículos. Otros artículos cambian el nivel de descuento por volumen y el plan no cuadraría: vacía primero el carrito o añade las pinturas de todos modos.",
+    "openCart": "Abrir el carrito",
+    "addAnyway": "Añadir de todos modos",
+    "cancel": "Cancelar",
+    "cartFailed": "RSI rechazó algunas pinturas, así que el carrito no coincide con el plan. Revísalo antes de fundir nada:",
+    "cartDone": "Las pinturas están en el carrito. Revisa allí el precio final y cada pintura antes de fundir nada, y paga solo con crédito de tienda.",
+    "cartError": "No se pudo leer o llenar el carrito: $1",
     "skipGiftable": "Omitir pinturas regalables",
     "skipGiftableHint": "Recompradas con crédito de tienda, ya no se podrían regalar.",
     "giftableSkipped": "Se omiten $1 pinturas regalables que ganarían.",

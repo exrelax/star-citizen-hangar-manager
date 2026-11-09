@@ -255,6 +255,7 @@
     "resetConfirm": "Supprimer « $1 » enregistré dans ce navigateur ?\n\n$2\n\n$3",
     "readAgainRefresh": "La prochaine actualisation le relit depuis RSI. Ton hangar sur le site de RSI reste inchangé.",
     "readAgainAuto": "Il est relu depuis RSI tout seul dès que le Hangar Manager est ouvert.",
+    "readAgainNever": "Il ne peut pas être relu : remets les peintures dans le panier pour garder un nouveau plan.",
     "resetDone": "« $1 » supprimé.",
     "checkFailed": "La dernière vérification a échoué.",
     "hangar": {
@@ -296,6 +297,11 @@
       "name": "Crédit boutique",
       "content": "Le crédit boutique du compte, comme son menu de compte l’affiche",
       "missing": "D’ici là, le gestionnaire n’affiche pas de crédit boutique en haut à droite."
+    },
+    "paintPlan": {
+      "name": "Plan de peintures",
+      "content": "Le plan du conseiller de remise sur les peintures dont les peintures ont été mises dans le panier : propres et de remplissage",
+      "missing": "D’ici là, le conseiller ne sait pas quelles peintures de remplissage ont été achetées."
     },
     "settings": {
       "name": "Paramètres",
@@ -420,6 +426,15 @@
     "stepCooldown": "RSI ne permet de fondre un pledge que 24 heures après son achat, les peintures de remplissage se fondent donc le lendemain.",
     "cooldownSource": "Support RSI : Reclaim a Pledge",
     "stepPacks": "Les packs de peintures et les pledges contenant une peinture avec d’autres objets ne sont pas encore pris en compte.",
+    "toCart": "Mettre les $1 peintures dans le panier",
+    "toCartHint": "Met les peintures propres et les peintures de remplissage de ce plan dans ton panier RSI et l’ouvre. Rien n’est acheté : tu vérifies le panier et tu paies là-bas.",
+    "cartOccupied": "Ton panier RSI contient déjà $1 articles. D’autres articles changent le palier de remise, le plan ne tiendrait donc plus – vide d’abord le panier ou ajoute les peintures quand même.",
+    "openCart": "Ouvrir le panier",
+    "addAnyway": "Ajouter quand même",
+    "cancel": "Annuler",
+    "cartFailed": "RSI a refusé certaines peintures, le panier ne correspond donc pas au plan. Vérifie-le avant de fondre quoi que ce soit :",
+    "cartDone": "Les peintures sont dans le panier. Vérifie là-bas le prix final et chaque peinture avant de fondre quoi que ce soit, et paie uniquement avec du crédit boutique.",
+    "cartError": "La lecture ou le remplissage du panier a échoué : $1",
     "skipGiftable": "Ignorer les peintures offrables",
     "skipGiftableHint": "Rachetées en crédit boutique, elles ne pourraient plus être offertes.",
     "giftableSkipped": "$1 peintures offrables qui y gagneraient sont ignorées.",

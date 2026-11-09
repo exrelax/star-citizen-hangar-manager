@@ -255,6 +255,7 @@
     "resetConfirm": "„$1“ in diesem Browser löschen?\n\n$2\n\n$3",
     "readAgainRefresh": "Die nächste Aktualisierung liest es neu von RSI. Dein Hangar auf der RSI-Website bleibt unverändert.",
     "readAgainAuto": "Es wird von selbst neu von RSI gelesen, sobald der Hangar Manager offen ist.",
+    "readAgainNever": "Er lässt sich nicht neu einlesen: Lege die Paints erneut in den Warenkorb, um einen neuen Plan zu speichern.",
     "resetDone": "„$1“ gelöscht.",
     "checkFailed": "Die letzte Prüfung ist fehlgeschlagen.",
     "hangar": {
@@ -296,6 +297,11 @@
       "name": "Store Credit",
       "content": "Das Store-Guthaben des Accounts, wie sein Account-Menü es zeigt",
       "missing": "Bis dahin zeigt der Manager oben rechts kein Store-Guthaben."
+    },
+    "paintPlan": {
+      "name": "Paint-Plan",
+      "content": "Der Plan des Paint-Rabatt-Beraters, dessen Paints in den Warenkorb gelegt wurden: eigene und Füll-Paints",
+      "missing": "Bis dahin weiß der Berater nicht, welche Füll-Paints gekauft wurden."
     },
     "settings": {
       "name": "Einstellungen",
@@ -420,6 +426,15 @@
     "stepCooldown": "RSI erlaubt das Einschmelzen eines Pledges erst 24 Stunden nach dem Kauf, die Füll-Paints also am nächsten Tag.",
     "cooldownSource": "RSI-Support: Reclaim a Pledge",
     "stepPacks": "Paint-Pakete und Pledges mit einem Paint neben anderen Items sind noch nicht enthalten.",
+    "toCart": "Die $1 Paints in den Warenkorb legen",
+    "toCartHint": "Legt die eigenen Paints und die Füll-Paints dieses Plans in deinen RSI-Warenkorb und öffnet ihn. Gekauft wird nichts: Du prüfst den Warenkorb und bezahlst dort.",
+    "cartOccupied": "Dein RSI-Warenkorb enthält schon $1 Artikel. Andere Artikel ändern die Rabattstufe, dann geht der Plan nicht auf – leere den Warenkorb zuerst oder lege die Paints trotzdem hinein.",
+    "openCart": "Warenkorb öffnen",
+    "addAnyway": "Trotzdem hinzufügen",
+    "cancel": "Abbrechen",
+    "cartFailed": "RSI hat einige Paints abgelehnt, daher passt der Warenkorb nicht zum Plan. Prüfe ihn, bevor du etwas einschmilzt:",
+    "cartDone": "Die Paints liegen im Warenkorb. Prüfe dort den Endpreis und jedes Paint, bevor du etwas einschmilzt, und bezahle nur mit Store-Guthaben.",
+    "cartError": "Lesen oder Füllen des Warenkorbs fehlgeschlagen: $1",
     "skipGiftable": "Verschenkbare Paints auslassen",
     "skipGiftableHint": "Mit Store Credit zurückgekauft, wären sie nicht mehr verschenkbar.",
     "giftableSkipped": "$1 verschenkbare Paints, die profitieren würden, sind ausgelassen.",

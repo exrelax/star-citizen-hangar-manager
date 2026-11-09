@@ -255,6 +255,7 @@
     "resetConfirm": "Delete “$1” stored in this browser?\n\n$2\n\n$3",
     "readAgainRefresh": "The next refresh reads it again from RSI. Your hangar on RSI's website stays as it is.",
     "readAgainAuto": "It is read again from RSI on its own as soon as the Hangar Manager is open.",
+    "readAgainNever": "It can't be read again: put the paints into the cart again to keep a new plan.",
     "resetDone": "“$1” deleted.",
     "checkFailed": "The last check failed.",
     "hangar": {
@@ -296,6 +297,11 @@
       "name": "Store credit",
       "content": "The account's store credit, as its account menu shows it",
       "missing": "Until then the top right of the manager shows no store credit."
+    },
+    "paintPlan": {
+      "name": "Paint plan",
+      "content": "The Paint Discount Consultant's plan whose paints were put into the cart: own and filler paints",
+      "missing": "Until then the consultant doesn't know which filler paints were bought."
     },
     "settings": {
       "name": "Settings",
@@ -420,6 +426,15 @@
     "stepCooldown": "RSI lets you melt a pledge only 24 hours after buying it, so the filler paints can be melted the next day.",
     "cooldownSource": "RSI Support: Reclaim a Pledge",
     "stepPacks": "Paint packs and pledges with a paint next to other items aren't included yet.",
+    "toCart": "Put the $1 paints into the cart",
+    "toCartHint": "Puts the own paints and the filler paints of this plan into your RSI cart and opens it. Nothing is bought: you check the cart and pay there.",
+    "cartOccupied": "Your RSI cart already holds $1 items. Other items change the volume discount tier, so the plan wouldn't add up – empty the cart first, or add the paints anyway.",
+    "openCart": "Open the cart",
+    "addAnyway": "Add anyway",
+    "cancel": "Cancel",
+    "cartFailed": "RSI refused some paints, so the cart doesn't match the plan. Check it before you melt anything:",
+    "cartDone": "The paints are in the cart. Check the final price and every paint there before you melt anything, and pay with store credit only.",
+    "cartError": "Reading or filling the cart failed: $1",
     "skipGiftable": "Leave out giftable paints",
     "skipGiftableHint": "Bought again with store credit, they would no longer be giftable.",
     "giftableSkipped": "$1 giftable paints that would gain are left out.",

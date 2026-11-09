@@ -509,6 +509,14 @@ it into store credit with the paints you already own:
   how many. Turned off (in the consultant or the settings), they are included and marked
   "Giftable".
 - **Order**: fill the cart and check it first, melt only after that.
+- **Into the cart**: one button puts all paints of the plan – the own paints and the fillers with
+  their counts – into RSI's cart, with the requests RSI's own paint pages send, and opens it.
+  Nothing is bought: you check the final price and every paint there and pay with store credit.
+  The cart is read first: if it already holds items, which would change the tier, it says so and
+  offers to open the cart, add anyway or cancel. A paint RSI refuses (e.g. no longer available)
+  is listed with RSI's reason, and the cart isn't opened on its own then. The plan is kept in this
+  browser (Settings → Stored data → "Paint plan"), so the filler paints can be found again later.
+  Disabled in the demo mode.
 - **In My Hangar**: the paints it would buy again carry a tag "Rebuy 0% → 35%" (their discount now
   and then; its tooltip says the store credit freed), which opens the consultant. The filter
   button of the sidebar box **Paint Discount** shows just them.
