@@ -35,6 +35,11 @@ const props = defineProps<{
   hangar: readonly PledgeView[];
   /** Selected pledges left out because they can't be exchanged. */
   skipped: number;
+  /**
+   * One more acknowledgement needed, e.g. the Paint Discount Consultant's: the cart was filled and
+   * checked before its paints are melted (#104).
+   */
+  extraConsent?: string;
 }>();
 const emit = defineEmits<{ close: [] }>();
 
@@ -116,6 +121,7 @@ const consentLimited = ref(false);
 const consentDiscount = ref(false);
 const consentWarnings = ref(false);
 const consentExperimental = ref(false);
+const consentExtra = ref(false);
 const password = ref('');
 const submitting = ref(false);
 const error = ref<string>();
@@ -139,6 +145,7 @@ const ready = computed(
     consentLimited.value &&
     consentDiscount.value &&
     consentExperimental.value &&
+    (!props.extraConsent || consentExtra.value) &&
     (!hasDanger.value || consentWarnings.value) &&
     password.value !== '' &&
     !submitting.value,
@@ -376,6 +383,10 @@ onUnmounted(() => {
             <label class="is-danger">
               <input v-model="consentExperimental" type="checkbox" />
               <span>{{ i18n.t('bulkExchange.consentExperimental') }}</span>
+            </label>
+            <label v-if="extraConsent" class="is-danger">
+              <input v-model="consentExtra" type="checkbox" />
+              <span>{{ extraConsent }}</span>
             </label>
           </fieldset>
 

@@ -25,6 +25,8 @@ import { planPaintRebuy, type PaintConsultantResult } from './calculation';
  */
 
 export interface PaintConsultantState {
+  /** The pledges the result is worked out from, e.g. to melt the own paints of the plan. */
+  pledges: ComputedRef<readonly PledgeView[]>;
   /** The Pledge Store items, once read. */
   storeItems: ComputedRef<readonly StoreItem[] | undefined>;
   /** The store credit is to be used, but isn't known (yet): it counts as $0. */
@@ -111,7 +113,7 @@ export function providePaintConsultant({
         : new Map();
   });
 
-  const state = { storeItems, creditUnknown, result };
+  const state = { pledges: computed(pledges), storeItems, creditUnknown, result };
   provide(KEY, state);
   return state;
 }
