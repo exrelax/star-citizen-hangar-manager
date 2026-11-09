@@ -31,7 +31,10 @@ beforeEach(() => fakeBrowser.reset());
 
 describe('syncBuyback', () => {
   it('stores all pledges with category and the items of pledges with several items', async () => {
-    const fetchDetails = vi.fn(async (id: number) => [`Ship ${id}`, 'Lifetime Insurance']);
+    const fetchDetails = vi.fn(async (id: number) => ({
+      items: [`Ship ${id}`, 'Lifetime Insurance'],
+      price: id,
+    }));
     const progress = new SyncProgressTracker();
     await syncBuyback({ fetchPage, fetchDetails, fetchShipLinks: async () => ({}), progress });
 
@@ -51,14 +54,33 @@ describe('syncBuyback', () => {
     await buybackSnapshot.setValue({
       version: BUYBACK_SNAPSHOT_VERSION,
       syncedAt: '2026-10-01T00:00:00.000Z',
-      pledges: [{ ...pledge(30, 'Fury and 2 items'), items: ['Fury', 'Lifetime Insurance'] }],
+      pledges: [
+        { ...pledge(30, 'Fury and 2 items'), items: ['Fury', 'Lifetime Insurance'], price: 70 },
+      ],
     });
-    const fetchDetails = vi.fn(async (id: number) => [`Item ${id}`]);
+    const fetchDetails = vi.fn(async (id: number) => ({ items: [`Item ${id}`] }));
     await syncBuyback({ fetchPage, fetchDetails, fetchShipLinks: async () => ({}) });
 
     expect(fetchDetails.mock.calls.map(([id]) => id)).toEqual([10]);
     const fury = (await buybackSnapshot.getValue())?.pledges.find((p) => p.id === 30);
-    expect(fury?.items).toEqual(['Fury', 'Lifetime Insurance']);
+    expect(fury).toMatchObject({ items: ['Fury', 'Lifetime Insurance'], price: 70 });
+  });
+
+  it('reads the price of pledges stored before prices were, once', async () => {
+    await buybackSnapshot.setValue({
+      version: BUYBACK_SNAPSHOT_VERSION,
+      syncedAt: '2026-10-01T00:00:00.000Z',
+      pledges: [{ ...pledge(30, 'Fury and 2 items'), items: ['Fury', 'Lifetime Insurance'] }],
+    });
+    const fetchDetails = vi.fn(async (id: number) => ({ items: [`Item ${id}`] }));
+    await syncBuyback({ fetchPage, fetchDetails, fetchShipLinks: async () => ({}) });
+    expect(fetchDetails.mock.calls.map(([id]) => id).sort()).toEqual([10, 30]);
+    // A page without a price is remembered as such and not read again.
+    const stored = await buybackSnapshot.getValue();
+    expect(stored?.pledges.find((p) => p.id === 30)?.price).toBeNull();
+    fetchDetails.mockClear();
+    await syncBuyback({ fetchPage, fetchDetails, fetchShipLinks: async () => ({}) });
+    expect(fetchDetails).not.toHaveBeenCalled();
   });
 });
 
@@ -69,7 +91,10 @@ describe('buy back tokens', () => {
       ...(await fetchPage(page, category)),
       ...(page === 1 && !category && { tokens }),
     });
-  const deps = { fetchDetails: async () => ['Item'], fetchShipLinks: async () => ({}) };
+  const deps = {
+    fetchDetails: async () => ({ items: ['Item'] }),
+    fetchShipLinks: async () => ({}),
+  };
 
   it('stores the tokens of the first page on a full sync', async () => {
     await syncBuyback({ ...deps, fetchPage: withTokens(2) });

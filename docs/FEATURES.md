@@ -213,6 +213,20 @@ icon and a tooltip that names and explains it:
 
 - **Store credit**, as RSI's account menu shows it, read with every refresh and smart update.
   Hidden with "Hide melt value"; the demo mode shows its made-up one.
+- **Buy back price**: what buying a pledge back costs, in USD without taxes like the other values,
+  next to its pledge ID (hidden with "Hide melt value"). RSI's buy back list shows no price, so a
+  tooltip names where it comes from (checked against RSI in November 2026):
+  - pledges with several items: the price on the pledge's own buy back page, read with its items
+    (RSI shows it with the taxes of your country; they are taken off) – the only source for game
+    packages, which cost more than the ship of the same name,
+  - CCUs: the difference of the standard prices of their ships, as RSI's upgrade dialog charges,
+  - what the Pledge Store sells under the pledge's name (paints, gear, ships with their insurance,
+    packs, …): its standard price there – RSI's buy back costs the current standard price, not a
+    warbond or sale price,
+  - standalone ships (also with insurance and extras like "10 Year" or "ILW") and pledges that are
+    just a ship: the ship's standard price; an upgraded one only from its buy back page.
+    A pledge none of them knows (e.g. an item the store doesn't sell any more) shows no price. A
+    full refresh reads the prices of pledges with several items stored before prices were shown.
 - **Buy back tokens**: how many pledges can still be bought back with store credit, as RSI shows
   it above its buy back list, read with every refresh and smart update.
 

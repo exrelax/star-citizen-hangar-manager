@@ -343,6 +343,11 @@
     "openInManagerBuyback": "Im Hangar Manager öffnen – Buy Back (#$1)"
   },
   "buyback": {
+    "price": {
+      "rsi": "Buy-Back-Preis, wie RSI ihn auf der Seite des Pledges zeigt, ohne Steuern.",
+      "ships": "Buy-Back-Preis: der Standardpreis des Schiffs, bei einem CCU die Differenz der Standardpreise seiner Schiffe – was RSI berechnet –, ohne Steuern.",
+      "store": "Buy-Back-Preis: der Standardpreis des Artikels im Pledge Store – was RSI berechnet –, ohne Steuern."
+    },
     "empty": "RSI listet keine Buy-Back-Pledges für deinen Account.",
     "contains": "Enthält: $1",
     "reclaimed": "Eingeschmolzen $1",

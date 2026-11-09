@@ -24,6 +24,19 @@ const props = defineProps<{
   linkMode: BuybackLinkMode;
 }>();
 
+/** RSI's way of writing a value, as "My Hangar" shows it: "$1,234.50 USD". */
+const RSI_USD = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+
+/** What buying it back costs, with where the price comes from (#185). */
+const price = computed(() => {
+  const value = props.pledge.price;
+  if (!value) return undefined;
+  return {
+    text: `${RSI_USD.format(value.amount)} USD`,
+    hint: i18n.t(`buyback.price.${value.source}`),
+  };
+});
+
 const expanded = ref(!!props.autoExpand);
 // Only rows opened automatically close again automatically; a manual toggle is kept.
 let openedAutomatically = expanded.value;
@@ -120,6 +133,7 @@ const kind = computed(() =>
         </span>
         <span class="shm-meta">
           <span class="shm-pledge-id">#{{ pledge.displayId ?? pledge.id }}</span>
+          <span v-if="price" v-tooltip="price.hint" class="shm-value">{{ price.text }}</span>
           <span v-if="pledge.reclaimedAt">
             {{ i18n.t('buyback.reclaimed', [pledge.reclaimedAt]) }}
           </span>
