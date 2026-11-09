@@ -1,7 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { browserNotificationsItem } from '@/notifications/browser-permission';
-import { FILLER_ALARM, notifyFillers, scheduleFillerNotification } from './filler-notification';
+import { HANGAR_SNAPSHOT_VERSION, type Pledge } from '@/hangar/pledge';
+import { hangarSnapshot } from '@/hangar/hangar-storage';
+import {
+  clearMeltedFillers,
+  FILLER_ALARM,
+  notifyFillers,
+  scheduleFillerNotification,
+} from './filler-notification';
 import { REBUY_PLAN_VERSION, rebuyPlanItem, type StoredRebuyPlan } from './rebuy-plan-storage';
 
 beforeEach(() => {
@@ -66,5 +73,26 @@ describe('notifyFillers', () => {
     await notifyFillers();
     expect(create).not.toHaveBeenCalled();
     expect((await rebuyPlanItem.getValue())?.purchase?.notifiedAt).toBeTypeOf('number');
+  });
+});
+
+describe('clearMeltedFillers', () => {
+  it('takes the notification away once the filler paints are melted', async () => {
+    stubNotifications();
+    const clear = (fakeBrowser as unknown as { notifications: { clear: ReturnType<typeof vi.fn> } })
+      .notifications.clear;
+    await rebuyPlanItem.setValue({ ...plan, purchase: { ...plan.purchase!, notifiedAt: 1 } });
+    const hangar = (...ids: number[]) =>
+      hangarSnapshot.setValue({
+        version: HANGAR_SNAPSHOT_VERSION,
+        syncedAt: '2026-11-09T12:00:00.000Z',
+        pledges: ids.map((id) => ({ id }) as Pledge),
+      });
+    await hangar(2);
+    await clearMeltedFillers();
+    expect(clear).not.toHaveBeenCalled();
+    await hangar();
+    await clearMeltedFillers();
+    expect(clear).toHaveBeenCalledWith('shm-consultant-fillers');
   });
 });

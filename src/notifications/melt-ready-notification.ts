@@ -1,4 +1,10 @@
-import { onAlarm, onNotificationClick, openHangarManager } from '@/background/dispatch';
+import {
+  onAlarm,
+  onManagerSeen,
+  onNotificationClick,
+  onNotificationClosed,
+  openHangarManager,
+} from '@/background/dispatch';
 import { hangarSnapshot } from '@/hangar/hangar-storage';
 import { meltableAt, meltMarksItem, type MeltMarks } from '@/hangar/melt-marks';
 import { HANGAR_SNAPSHOT_VERSION, type HangarSnapshot } from '@/hangar/pledge';
@@ -34,6 +40,15 @@ const notifiedItem = storage.defineItem<Readonly<Record<string, number>>>(
   'local:notifications.meltReadyNotified',
   { fallback: {} },
 );
+
+/**
+ * The pledges the browser notification shown now is about. It goes away once none of them can be
+ * melted any more (melted, unmarked), once the Hangar Manager is seen – its sidebar tells the same –
+ * or when the user closes it (#155).
+ */
+const shownItem = storage.defineItem<readonly number[]>('local:notifications.meltReadyShown', {
+  fallback: [],
+});
 
 /** A marked pledge of this device's hangar, with when it can be melted. */
 export interface MeltCandidate {
@@ -108,7 +123,22 @@ export async function checkMeltReady(now = Date.now()): Promise<void> {
   const { demoMode, language } = withDefaults(settings);
   const shown = allowed && !demoMode;
   const { due, next } = meltSchedule(candidates, notified, now);
-  if (due.length && shown) await announce(due, resolveLanguage(language));
+  // The pledges of the notification shown, as far as they can still be melted.
+  const readyNow = new Set(
+    candidates.filter((c) => c.meltableAt <= now).map((candidate) => candidate.pledgeId),
+  );
+  const before = await shownItem.getValue();
+  let showing = before.filter((id) => readyNow.has(id));
+  if (due.length && shown) {
+    showing = [...new Set([...showing, ...due.map((candidate) => candidate.pledgeId)])];
+    await announce(
+      candidates.filter((candidate) => showing.includes(candidate.pledgeId)),
+      resolveLanguage(language),
+    );
+  } else if (before.length && !showing.length) {
+    await clearShown();
+  }
+  if (showing.length !== before.length) await shownItem.setValue(showing);
 
   const marked = new Set(candidates.map((candidate) => String(candidate.pledgeId)));
   const kept = Object.fromEntries(
@@ -122,6 +152,12 @@ export async function checkMeltReady(now = Date.now()): Promise<void> {
   // An alarm only while notifications can be shown; turning them on checks again.
   if (next === undefined || !shown) await browser.alarms.clear(MELT_READY_ALARM);
   else await browser.alarms.create(MELT_READY_ALARM, { when: next });
+}
+
+/** Takes the notification away, e.g. once the Hangar Manager was seen. */
+async function clearShown(): Promise<void> {
+  await shownItem.setValue([]);
+  await browser.notifications?.clear(NOTIFICATION_ID);
 }
 
 /** One notification for all of them. */
@@ -154,6 +190,8 @@ export function watchMeltReady(): void {
   browserNotificationsItem.watch(check);
   settingsItem.watch(check);
   onAlarm(MELT_READY_ALARM, check);
+  onManagerSeen(() => void clearShown());
+  onNotificationClosed(NOTIFICATION_ID, () => void shownItem.setValue([]));
   onNotificationClick(
     NOTIFICATION_ID,
     () => void openHangarManager(),

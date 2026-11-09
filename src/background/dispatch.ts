@@ -1,5 +1,6 @@
 import {
   ACTION_PARAM,
+  MANAGER_SEEN,
   type ManagerAction,
   type ManagerActionMessage,
 } from '@/hangar/manager-action-message';
@@ -9,6 +10,10 @@ import {
  * notification goes through one listener each, to the handler registered under its name. The
  * alarms survive a browser restart; the handlers are registered again whenever the background
  * script starts.
+ *
+ * Browser notifications are used sparingly: only for what is worth knowing while no RSI page is
+ * open, and each goes away on its own once its cause is gone or the Hangar Manager was seen, where
+ * the sidebar tells the same (#155).
  */
 
 const alarmHandlers = new Map<string, () => void>();
@@ -20,6 +25,31 @@ export function onAlarm(name: string, handler: () => void): void {
   if (listeningToAlarms) return;
   listeningToAlarms = true;
   browser.alarms.onAlarm.addListener((alarm) => alarmHandlers.get(alarm.name)?.());
+}
+
+const seenHandlers: (() => void)[] = [];
+let listeningToSeen = false;
+
+/** Runs `handler` whenever the Hangar Manager is seen (its sidebar shows the notifications). */
+export function onManagerSeen(handler: () => void): void {
+  seenHandlers.push(handler);
+  if (listeningToSeen) return;
+  listeningToSeen = true;
+  browser.runtime.onMessage.addListener((message) => {
+    if (message === MANAGER_SEEN) for (const seen of seenHandlers) seen();
+  });
+}
+
+const closedHandlers: [prefix: string, handler: (id: string) => void][] = [];
+let listeningToClosed = false;
+
+/**
+ * Runs `handler` when the user closes a notification whose id is `id` or starts with it (`note:`
+ * for the sidebar's, see `note-sync.ts`); the handler gets the full id.
+ */
+export function onNotificationClosed(id: string, handler: (id: string) => void): void {
+  closedHandlers.push([id, handler]);
+  listenToNotificationClicks();
 }
 
 const clickHandlers = new Map<string, () => void>();
@@ -51,6 +81,14 @@ export function listenToNotificationClicks(): void {
     handler();
     void browser.notifications.clear(id);
   });
+  // Closed by the user (×, swiped away): the sidebar follows (#155).
+  if (!listeningToClosed) {
+    listeningToClosed = true;
+    browser.notifications.onClosed.addListener((id, byUser) => {
+      if (!byUser) return;
+      for (const [prefix, handler] of closedHandlers) if (id.startsWith(prefix)) handler(id);
+    });
+  }
   // Buttons only exist in Chrome; Firefox shows none and has no such event.
   browser.notifications.onButtonClicked?.addListener((id, index) => {
     const handler = buttonHandlers.get(id);

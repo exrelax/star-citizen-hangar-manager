@@ -1,4 +1,9 @@
-import { onAlarm, onNotificationClick, openHangarManager } from '@/background/dispatch';
+import {
+  onAlarm,
+  onManagerSeen,
+  onNotificationClick,
+  openHangarManager,
+} from '@/background/dispatch';
 import { hangarSnapshot } from '@/hangar/hangar-storage';
 import { meltableAt } from '@/hangar/melt-marks';
 import { HANGAR_SNAPSHOT_VERSION } from '@/hangar/pledge';
@@ -72,10 +77,27 @@ export async function notifyFillers(): Promise<void> {
   await rebuyPlanItem.setValue({ ...plan, purchase: { ...purchase, notifiedAt: Date.now() } });
 }
 
+/**
+ * Takes the notification away once its filler paints are gone from the hangar (melted) (#155).
+ * Closing it otherwise is up to the user, or to seeing the Hangar Manager, whose sidebar offers to
+ * melt them.
+ */
+export async function clearMeltedFillers(): Promise<void> {
+  const [plan, snapshot] = await Promise.all([rebuyPlanItem.getValue(), hangarSnapshot.getValue()]);
+  const purchase = plan?.version === REBUY_PLAN_VERSION ? plan.purchase : undefined;
+  if (!purchase?.notifiedAt || snapshot?.version !== HANGAR_SNAPSHOT_VERSION) return;
+  const inHangar = new Set(snapshot.pledges.map((pledge) => pledge.id));
+  if (!purchase.pledgeIds.some((id) => inHangar.has(id))) {
+    await browser.notifications?.clear(NOTIFICATION_ID);
+  }
+}
+
 /** Wires the alarm and the click on the notification (call it in the background script). */
 export function watchFillerNotification(): void {
   void scheduleFillerNotification();
   rebuyPlanItem.watch(() => void scheduleFillerNotification());
   onAlarm(FILLER_ALARM, () => void notifyFillers());
+  hangarSnapshot.watch(() => void clearMeltedFillers());
+  onManagerSeen(() => void browser.notifications?.clear(NOTIFICATION_ID));
   onNotificationClick(NOTIFICATION_ID, () => void openHangarManager());
 }

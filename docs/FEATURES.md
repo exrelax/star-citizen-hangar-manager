@@ -696,7 +696,12 @@ In the order of the settings tab:
     an RSI tab already open (My Hangar focused, else another RSI tab), or a new one. In Chrome the
     notification about marked pledges has the sidebar's buttons too: **Show** lists only the
     pledges that can be melted now, **Select** selects them for melting them at once (Firefox shows
-    no buttons in notifications; there the click opens the manager). With them on, the extension also reads
+    no buttons in notifications; there the click opens the manager).
+    Browser notifications are used sparingly – only for what is worth knowing while no RSI page is
+    open – and each goes away on its own: once its pledges are melted or unmarked, once the Hangar
+    Manager is shown (its sidebar tells the same), or when closed. A sidebar notification that can
+    be checked off and also shows in the browser stays in step: checked off in the sidebar, it goes
+    in the browser; closed in the browser, it is checked off in the sidebar. With them on, the extension also reads
     the Pledge Store on its schedule while no RSI page is open (see
     [Pledge Store](#pledge-store-current-warbond-ccus)).
   - **Show dismissed paint notifications again**: the Paint Discount Consultant's notification

@@ -1,6 +1,7 @@
 import { listenToNotificationClicks } from '@/background/dispatch';
 import { isCheckingMessage, relayToOtherTabs } from '@/hangar/smart-update/broadcast';
 import { watchMeltReady } from '@/notifications/melt-ready-notification';
+import { watchNotesInStep } from '@/notifications/note-sync';
 import {
   mirrorNotificationPermission,
   notificationsPermission,
@@ -54,6 +55,9 @@ export default defineBackground(() => {
   // Pledges marked to melt can be melted now (#153): an alarm at the earliest time, then one
   // browser notification for all of them.
   watchMeltReady();
+
+  // The sidebar's notifications and their browser notifications in step (#155).
+  watchNotesInStep();
 
   // The Pledge Store on the schedule around the full hour, also with no RSI tab open (#163):
   // while browser notifications are on.

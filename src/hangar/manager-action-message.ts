@@ -27,3 +27,9 @@ export function actionFromSearch(search: string): ManagerAction | undefined {
   const action = new URLSearchParams(search).get(ACTION_PARAM);
   return MANAGER_ACTIONS.find((known) => known === action);
 }
+
+/**
+ * The message of the content script whenever the Hangar Manager is shown in a visible tab: its
+ * sidebar tells what the browser notifications tell, so they can go (#155).
+ */
+export const MANAGER_SEEN = 'shm:manager-seen';
