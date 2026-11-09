@@ -9,6 +9,7 @@ import { DEFAULT_SETTINGS, type Settings } from '@/settings/settings';
 import { storeItemsItem, STORE_ITEMS_VERSION } from '../items/store-items-storage';
 import type { StoreItem } from '../items/store-items';
 import { providePaintConsultant } from '../paint-consultant/use-paint-consultant';
+import { rebuyPlanItem, REBUY_PLAN_VERSION } from '../paint-consultant/rebuy-plan-storage';
 import PaintConsultant from './PaintConsultant.vue';
 
 let app: App | undefined;
@@ -117,5 +118,51 @@ describe('PaintConsultant', () => {
       paintConsultant: { useStoreCredit: true, useFillers: true, skipGiftable: false },
     });
     expect(marked.querySelectorAll('.shm-consultant-tag')).toHaveLength(2);
+  });
+
+  describe('melting the own paints (#104)', () => {
+    const meltButton = (root: HTMLElement) =>
+      [...root.querySelectorAll<HTMLButtonElement>('.shm-consultant-cart button')].find((b) =>
+        b.textContent?.includes('Melt the'),
+      );
+    const storePlan = (pledgeIds: number[]) =>
+      rebuyPlanItem.setValue({
+        version: REBUY_PLAN_VERSION,
+        at: 1,
+        tier: { paints: 10, percent: 35 },
+        own: pledgeIds.map((pledgeId) => ({ pledgeId, title: '', skuId: 1, meltValue: 5 })),
+        fillers: [],
+        cartCost: 0,
+      });
+
+    it('is only offered with bulk melting on', async () => {
+      const root = await render(await storeExample());
+      expect(meltButton(root)).toBeUndefined();
+    });
+
+    it('waits until the paints were put into the cart', async () => {
+      const pledges = await storeExample();
+      const root = await render(pledges, { bulkMelting: true });
+      expect(meltButton(root)?.disabled).toBe(true);
+      app?.unmount();
+
+      await storePlan(pledges.map((pledge) => pledge.id));
+      const ready = await render(pledges, { bulkMelting: true });
+      expect(meltButton(ready)?.disabled).toBe(false);
+      expect(meltButton(ready)?.textContent).toContain('Melt the 5 own paints');
+    });
+
+    it('asks to confirm the checked cart in the dialog, besides the other acknowledgements', async () => {
+      const pledges = await storeExample();
+      await storePlan(pledges.map((pledge) => pledge.id));
+      const root = await render(pledges, { bulkMelting: true });
+      meltButton(root)!.click();
+      await nextTick();
+      const dialog = document.querySelector('.shm-action-dialog')!;
+      expect(dialog.textContent).toContain('checked it there');
+      const submit = dialog.querySelector<HTMLButtonElement>('.shm-action-submit')!;
+      // Without every acknowledgement and the password nothing can be sent.
+      expect(submit.disabled).toBe(true);
+    });
   });
 });

@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { RSI_CART_PATH } from '@/buyback/cart';
 import { useDemoContext } from '@/demo/use-demo';
+import BulkExchangeOverlay from '@/hangar/components/BulkExchangeOverlay.vue';
 import { formatPercent, formatUsd } from '@/hangar/discount-format';
+import type { PledgeView } from '@/hangar/pledge-view';
+import { useStored } from '@/storage/use-stored';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { i18n, locale } from '@/i18n';
 import type { Settings } from '@/settings/settings';
@@ -17,7 +20,11 @@ import {
   type CartLine,
   type CartResult,
 } from '../paint-consultant/cart';
-import { rebuyPlanItem, storedPlanOf } from '../paint-consultant/rebuy-plan-storage';
+import {
+  REBUY_PLAN_VERSION,
+  rebuyPlanItem,
+  storedPlanOf,
+} from '../paint-consultant/rebuy-plan-storage';
 
 /*
  * The Paint Discount Consultant (#95) in the Pledge Store tab: which own paints to melt and buy
@@ -33,7 +40,7 @@ const COOLDOWN_SOURCE =
   'https://support.robertsspaceindustries.com/hc/en-us/articles/115013193627-Reclaim-a-Pledge';
 
 // Worked out once for the manager (App.vue), also for the marks in My Hangar.
-const { storeItems, creditUnknown, result } = usePaintConsultant();
+const { pledges, storeItems, creditUnknown, result } = usePaintConsultant();
 
 const options = computed(() => props.settings.paintConsultant);
 const { update } = useSettings();
@@ -134,6 +141,25 @@ async function fillCart() {
     reportCartError(error);
   }
 }
+
+// ---- Melt the own paints at once (#104, with bulk melting on) ----
+
+const storedPlan = useStored(rebuyPlanItem);
+/** The own paints of the plan were put into the cart (#103): only then they may be melted. */
+const cartFilled = computed(() => {
+  const stored = storedPlan.value;
+  if (!plan.value || stored?.version !== REBUY_PLAN_VERSION) return false;
+  const inCart = new Set(stored.own.map((paint) => paint.pledgeId));
+  return plan.value.own.every((paint) => inCart.has(paint.pledgeId));
+});
+/** The hangar's pledges of the plan's own paints. */
+const ownPledges = computed(() => {
+  const byId = new Map(pledges.value.map((pledge) => [pledge.id, pledge]));
+  return (plan.value?.own ?? [])
+    .map((paint) => byId.get(paint.pledgeId))
+    .filter((pledge): pledge is PledgeView => !!pledge && pledge.isMeltable);
+});
+const melting = ref(false);
 
 function reportCartError(error: unknown) {
   console.error('[star-citizen-hangar-manager] Filling the cart failed', error);
@@ -407,6 +433,34 @@ function reportCartError(error: unknown) {
           <p v-if="cartError" class="shm-consultant-note" role="alert">
             {{ i18n.t('consultant.cartError', [cartError]) }}
           </p>
+
+          <!-- Bulk melting (experimental): the own paints at once, after the cart was filled. -->
+          <template v-if="settings.bulkMelting && ownPledges.length">
+            <button
+              v-tooltip="
+                demo
+                  ? i18n.t('exchange.demo')
+                  : cartFilled
+                    ? i18n.t('consultant.meltHintReady')
+                    : i18n.t('consultant.meltHintCart')
+              "
+              type="button"
+              class="shm-button is-danger"
+              :disabled="!!demo || !cartFilled"
+              @click="melting = true"
+            >
+              <SvgIcon name="triangle-exclamation" />
+              {{ i18n.t('consultant.meltOwn', [ownPledges.length]) }}
+            </button>
+            <BulkExchangeOverlay
+              v-if="melting"
+              :pledges="ownPledges"
+              :hangar="pledges"
+              :skipped="0"
+              :extra-consent="i18n.t('consultant.meltConsent')"
+              @close="melting = false"
+            />
+          </template>
         </div>
       </div>
     </template>
