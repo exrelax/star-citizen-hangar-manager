@@ -26,7 +26,7 @@ Large hangars and buy backs (thousands of pledges with their items, plus orders)
 **alarms**
 
 ```text
-Only with browser notifications turned on: an alarm for the time the user's filler paints of the Paint Discount Consultant can be melted (24 hours after their order), so the extension can show a browser notification then, also while no RSI page is open; and an alarm every 30 seconds that reads RSI's Pledge Store (warbond offers and store items) when due – every 30 seconds around the full hour, otherwise every few minutes – so changes can be notified without an open RSI page. Nothing is sent anywhere else.
+Only with browser notifications turned on: alarms for the times pledges the user marked to melt, or the user's filler paints of the Paint Discount Consultant, can be melted (24 hours after their purchase, RSI's cooldown), so the extension can show a browser notification then, also while no RSI page is open; and an alarm every 30 seconds that reads RSI's Pledge Store (warbond offers and store items) when due – every 30 seconds around the full hour, otherwise every few minutes – so changes can be notified without an open RSI page. Nothing is sent anywhere else.
 ```
 
 **notifications** (optional permission)

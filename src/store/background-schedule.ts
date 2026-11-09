@@ -1,3 +1,4 @@
+import { onAlarm } from '@/background/dispatch';
 import { PLEDGE_STORE } from '@/config';
 import { browserNotificationsItem } from '@/notifications/browser-permission';
 import { settingsItem, withDefaults } from '@/settings/settings';
@@ -55,9 +56,7 @@ export function watchPledgeStore(): void {
   void schedulePledgeStore();
   browserNotificationsItem.watch(() => void schedulePledgeStore());
   settingsItem.watch(() => void schedulePledgeStore());
-  browser.alarms.onAlarm.addListener((alarm) => {
-    if (alarm.name === PLEDGE_STORE_ALARM) void readPledgeStoreIfDue();
-  });
+  onAlarm(PLEDGE_STORE_ALARM, () => void readPledgeStoreIfDue());
 }
 
 /** Message of the Development settings: read the Pledge Store in the background now. */

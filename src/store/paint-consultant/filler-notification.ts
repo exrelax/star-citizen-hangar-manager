@@ -1,3 +1,4 @@
+import { onAlarm, onNotificationClick, openHangarManager } from '@/background/dispatch';
 import { hangarSnapshot } from '@/hangar/hangar-storage';
 import { meltableAt } from '@/hangar/melt-marks';
 import { HANGAR_SNAPSHOT_VERSION } from '@/hangar/pledge';
@@ -17,7 +18,6 @@ import { REBUY_PLAN_VERSION, rebuyPlanItem, type FillerPurchase } from './rebuy-
 
 export const FILLER_ALARM = 'shm-consultant-fillers';
 const NOTIFICATION_ID = 'shm-consultant-fillers';
-const HANGAR_URL = 'https://robertsspaceindustries.com/en/account/pledges';
 
 /** When the filler paints can be melted, in ms: 24 hours after their order. */
 export const fillersMeltableAt = (purchase: FillerPurchase) =>
@@ -76,24 +76,6 @@ export async function notifyFillers(): Promise<void> {
 export function watchFillerNotification(): void {
   void scheduleFillerNotification();
   rebuyPlanItem.watch(() => void scheduleFillerNotification());
-  browser.alarms.onAlarm.addListener((alarm) => {
-    if (alarm.name === FILLER_ALARM) void notifyFillers();
-  });
-  listenToFillerClicks();
-}
-
-let listening = false;
-
-/**
- * Opens My Hangar on a click on the notification. Without the permission there is no
- * `browser.notifications` to listen to: call it again once it is granted.
- */
-export function listenToFillerClicks(): void {
-  if (listening || !browser.notifications?.onClicked) return;
-  listening = true;
-  browser.notifications.onClicked.addListener((id) => {
-    if (id !== NOTIFICATION_ID) return;
-    void browser.tabs.create({ url: HANGAR_URL });
-    void browser.notifications.clear(id);
-  });
+  onAlarm(FILLER_ALARM, () => void notifyFillers());
+  onNotificationClick(NOTIFICATION_ID, openHangarManager);
 }

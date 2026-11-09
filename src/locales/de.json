@@ -192,7 +192,7 @@
     "sidebarShowHint": "Boxen unter RSIs Navigation links, auf jedem Tab des Managers.",
     "sidebarBoxes": "Boxen",
     "browserNotifications": "Browser-Benachrichtigungen",
-    "browserNotificationsHint": "Auch wenn keine RSI-Seite offen ist, z. B. wenn die Füll-Paints des Paint Discount Consultant eingeschmolzen werden können. Eingeschaltet liest die Extension den Pledge Store nach seinem Zeitplan auch, wenn keine RSI-Seite offen ist (siehe „Intelligente Updates“). Standardmäßig aus: Einschalten öffnet eine Seite, auf der dein Browser um Erlaubnis fragt, Benachrichtigungen anzuzeigen; Ausschalten gibt die Erlaubnis zurück. Nur für diesen Browser. Die Box „Benachrichtigungen“ der Sidebar funktioniert auch ohne.",
+    "browserNotificationsHint": "Auch wenn keine RSI-Seite offen ist, z. B. wenn zum Einschmelzen gemerkte Pledges oder die Füll-Paints des Paint Discount Consultant eingeschmolzen werden können. Eingeschaltet liest die Extension den Pledge Store nach seinem Zeitplan auch, wenn keine RSI-Seite offen ist (siehe „Intelligente Updates“). Standardmäßig aus: Einschalten öffnet eine Seite, auf der dein Browser um Erlaubnis fragt, Benachrichtigungen anzuzeigen; Ausschalten gibt die Erlaubnis zurück. Nur für diesen Browser. Die Box „Benachrichtigungen“ der Sidebar funktioniert auch ohne.",
     "browserNotificationsAsked": "Dein Browser fragt im gerade geöffneten Tab um Erlaubnis.",
     "browserNotificationsRefused": "Dein Browser hat Benachrichtigungen beim letzten Mal nicht erlaubt, daher sind sie aus. Schalte die Einstellung ein, um erneut gefragt zu werden.",
     "sidebarNotifications": "Sidebar",
@@ -750,6 +750,9 @@
     "testMessage": "Browser-Benachrichtigungen sind an."
   },
   "notifications": {
+    "browserMeltReadyTitle": "Pledges können eingeschmolzen werden",
+    "browserMeltReady": "$1 gemerkte Pledges können jetzt eingeschmolzen werden. Öffne My Hangar, um sie einzuschmelzen.",
+    "browserMeltReadyOne": "„$1“ kann jetzt eingeschmolzen werden. Öffne My Hangar, um es einzuschmelzen.",
     "title": "Benachrichtigungen",
     "checkOff": "Erledigt",
     "checkOffAll": "Alle als erledigt markieren",
