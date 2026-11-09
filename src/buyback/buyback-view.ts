@@ -48,6 +48,8 @@ export interface BuybackView {
   isProbablyGiftable: boolean;
   /** What buying it back costs, if known (see `buyback-price.ts`). */
   price?: BuybackPrice;
+  /** Its detail page was read for the price (a price or none), so it needn't be read again. */
+  priceRead: boolean;
   /** Normalized title, ship names and pledge id for the live search. */
   searchText: string;
 }
@@ -122,6 +124,7 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
       (!!pledge.reclaimedAt && pledge.reclaimedAt < cutoff) ||
       (idLimit !== undefined && pledge.id <= idLimit),
     ...(price && { price }),
+    priceRead: pledge.price !== undefined,
     searchText: normalizeSearchText([pledge.title, ...shipNames, pledge.id].join(' ')),
   };
 }

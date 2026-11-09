@@ -94,6 +94,16 @@ describe('createBuybackPricer', () => {
     expect(priceOfCutlass({ ...cutlass, price: 115 })).toEqual({ amount: 115, source: 'rsi' });
   });
 
+  it("takes a price read from one item's page for its copies", () => {
+    const paint = (id: number, price?: number) =>
+      pledge('Paints - Avenger - Skullcrusher Paint', 'Avenger - Skullcrusher Paint', {
+        id,
+        ...(price !== undefined && { price }),
+      });
+    const withRead = createBuybackPricer({ pledges: [paint(1, 5), paint(2)] });
+    expect(withRead(paint(2))).toEqual({ amount: 5, source: 'rsi' });
+  });
+
   it('knows no price of a pledge with several items without its detail page', () => {
     expect(priceOf(pledge('Package - Bundle', 'Fury and 4 items'))).toBeUndefined();
     expect(

@@ -11,7 +11,7 @@ import {
   type BuybackPledge,
   type BuybackSnapshot,
 } from './buyback';
-import { buybackSnapshot } from './buyback-storage';
+import { buybackSnapshot, rememberBuybackPrice } from './buyback-storage';
 import {
   parseBuybackDetail,
   parseBuybackPage,
@@ -192,4 +192,29 @@ export async function fetchBuybackDetails(id: number): Promise<BuybackDetails> {
   const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
   const price = parseBuybackPrice(doc);
   return { items: parseBuybackDetail(doc), ...(price !== undefined && { price }) };
+}
+
+const loadingPrices = new Map<number, Promise<void>>();
+
+/**
+ * Reads the buy back price of one pledge from its detail page and keeps it (#185): for single
+ * items the Pledge Store doesn't sell any more, when their row is opened. Once per pledge, also
+ * when its row is opened twice meanwhile; a failure leaves it unread, so the next opening tries
+ * again.
+ */
+export function loadBuybackPrice(
+  id: number,
+  fetchDetails: (id: number) => Promise<BuybackDetails> = fetchBuybackDetails,
+): Promise<void> {
+  let loading = loadingPrices.get(id);
+  if (!loading) {
+    loading = fetchDetails(id)
+      .then(({ price }) => rememberBuybackPrice(id, price ?? null))
+      .catch((error: unknown) =>
+        console.warn(`[star-citizen-hangar-manager] Buy back price of ${id} unavailable`, error),
+      )
+      .finally(() => loadingPrices.delete(id));
+    loadingPrices.set(id, loading);
+  }
+  return loading;
 }

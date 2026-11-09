@@ -6,7 +6,7 @@ import { SyncProgressTracker } from '@/hangar/sync-progress';
 import { buybackSnapshot } from './buyback-storage';
 import { runBuybackSmartUpdate } from './run';
 import { buybackMeta } from './buyback-storage';
-import { syncBuyback, type FetchBuybackPage } from './sync-buyback';
+import { loadBuybackPrice, syncBuyback, type FetchBuybackPage } from './sync-buyback';
 
 const pledge = (id: number, contained = `Item ${id}`): BuybackPledge => ({
   id,
@@ -112,5 +112,30 @@ describe('buy back tokens', () => {
     expect(after?.tokens).toBe(1);
     expect(after?.pledges).toEqual(before?.pledges);
     expect((await buybackMeta.getValue()).lastOutcome?.status).toBe(outcome?.status);
+  });
+});
+
+describe('loadBuybackPrice', () => {
+  it('reads the price of one pledge once and keeps it', async () => {
+    await buybackSnapshot.setValue({
+      version: BUYBACK_SNAPSHOT_VERSION,
+      syncedAt: '2026-10-01T00:00:00.000Z',
+      pledges: [pledge(30, 'Avenger - Skullcrusher Paint'), pledge(20)],
+    });
+    const fetchDetails = vi.fn(async () => ({ items: [], price: 10 }));
+    await Promise.all([loadBuybackPrice(30, fetchDetails), loadBuybackPrice(30, fetchDetails)]);
+    expect(fetchDetails).toHaveBeenCalledOnce();
+    const stored = await buybackSnapshot.getValue();
+    expect(stored?.pledges.map((p) => p.price)).toEqual([10, undefined]);
+  });
+
+  it('remembers a page without a price', async () => {
+    await buybackSnapshot.setValue({
+      version: BUYBACK_SNAPSHOT_VERSION,
+      syncedAt: '2026-10-01T00:00:00.000Z',
+      pledges: [pledge(30)],
+    });
+    await loadBuybackPrice(30, async () => ({ items: [] }));
+    expect((await buybackSnapshot.getValue())?.pledges[0]?.price).toBeNull();
   });
 });

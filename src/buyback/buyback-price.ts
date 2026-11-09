@@ -30,11 +30,27 @@ export interface BuybackPriceCatalog {
   shipPriceOf?: PriceLookup;
   /** The standard price of a Pledge Store item by a pledge title. */
   itemPriceOf?: ItemPriceLookup;
+  /**
+   * The buy back pledges: a price read from one single item's page counts for its copies with the
+   * same title too (several of the same paint cost the same).
+   */
+  pledges?: readonly BuybackPledge[];
 }
 
 /** A function giving the buy back price of a pledge, if known. */
-export function createBuybackPricer({ ships = [], shipPriceOf, itemPriceOf }: BuybackPriceCatalog) {
+export function createBuybackPricer({
+  ships = [],
+  shipPriceOf,
+  itemPriceOf,
+  pledges = [],
+}: BuybackPriceCatalog) {
   const msrpById = new Map(ships.map((ship) => [ship.id, ship.msrp]));
+  const readByTitle = new Map<string, number>();
+  for (const pledge of pledges) {
+    if (typeof pledge.price === 'number' && !pledge.isUpgrade && !hasSeveralItems(pledge)) {
+      readByTitle.set(pledge.title, pledge.price);
+    }
+  }
   return (pledge: BuybackPledge): BuybackPrice | undefined => {
     if (typeof pledge.price === 'number') return { amount: pledge.price, source: 'rsi' };
     if (pledge.isUpgrade) {
@@ -58,7 +74,9 @@ export function createBuybackPricer({ ships = [], shipPriceOf, itemPriceOf }: Bu
     if (hasSeveralItems(pledge) && !isStandaloneShip(pledge)) return undefined;
     const [ship] = buybackShipNames(pledge);
     const shipPrice = ship ? shipPriceOf?.(ship) : undefined;
-    return shipPrice ? { amount: shipPrice.price, source: 'ships' } : undefined;
+    if (shipPrice) return { amount: shipPrice.price, source: 'ships' };
+    const read = readByTitle.get(pledge.title);
+    return read !== undefined ? { amount: read, source: 'rsi' } : undefined;
   };
 }
 

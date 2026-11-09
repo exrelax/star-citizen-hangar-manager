@@ -45,6 +45,7 @@ export function useBuybackPledges() {
       ships: currentShips(ships)?.ships,
       shipPriceOf: shipPrices.length ? createPriceLookup(shipPrices) : undefined,
       itemPriceOf: items.length ? createItemPriceLookup(items) : undefined,
+      pledges: current?.pledges,
     });
     pledges.value = current
       ? current.pledges.map((pledge, position) =>
