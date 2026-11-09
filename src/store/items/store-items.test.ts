@@ -126,14 +126,18 @@ describe('maybeRefreshStoreItems', () => {
   const fetchItems = () =>
     vi.fn(async () => ({ items: [toStoreItem(sku(1), 'Gear')!], requests: 1 }));
 
-  it('follows the interval of the settings', async () => {
+  it('reads at the fixed minutes of the hour only', async () => {
     const read = fetchItems();
-    await settingsItem.setValue({ storeItemsMinutes: 10 });
-    await maybeRefreshStoreItems({ fetchItems: read, now: () => 0 });
-    await maybeRefreshStoreItems({ fetchItems: read, now: () => 9 * MINUTE });
+    const at = (minutes: number) => () => new Date(2026, 10, 9, 12, minutes).getTime();
+    await maybeRefreshStoreItems({ fetchItems: read, now: at(1) });
+    await maybeRefreshStoreItems({ fetchItems: read, now: at(4) });
     expect(read).toHaveBeenCalledTimes(1);
-    await maybeRefreshStoreItems({ fetchItems: read, now: () => 10 * MINUTE });
+    await maybeRefreshStoreItems({ fetchItems: read, now: at(5) });
     expect(read).toHaveBeenCalledTimes(2);
+    // 12:10 and 12:30 were missed: read once, not twice.
+    await maybeRefreshStoreItems({ fetchItems: read, now: at(31) });
+    await maybeRefreshStoreItems({ fetchItems: read, now: at(34) });
+    expect(read).toHaveBeenCalledTimes(3);
   });
 
   it('reads once a day with smart updates off', async () => {

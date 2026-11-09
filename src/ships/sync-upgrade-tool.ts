@@ -2,6 +2,7 @@ import { UPGRADE_TOOL } from '@/config';
 import { settingsItem, withDefaults } from '@/settings/settings';
 import { hashOf, recordCheck, recordSync, type MetaItem } from '@/storage/meta';
 import { reactive, readonly } from 'vue';
+import { upgradeToolMaxAgeMs } from '@/store/refresh-schedule';
 import { fetchUpgradeTool } from './fetch-upgrade-tool';
 import type { UpgradeToolData } from './ships';
 import {
@@ -17,7 +18,8 @@ import {
 /*
  * Keeps the data of the upgrade tool current: ships, ships on sale and warbond editions, read
  * with one request and stored in three storages. They are read again once older than the interval
- * of the settings (smart updates; otherwise once a day), and always with a full refresh. A part
+ * of the settings, every 30 seconds around the full hour (smart updates; otherwise once a day),
+ * and always with a full refresh. A part
  * whose answer is unchanged (same fingerprint) is not written again, only its check is recorded.
  */
 
@@ -111,14 +113,15 @@ export function refreshUpgradeTool({
 
 /**
  * The automatic refresh: with smart updates on, once the stored data is older than the interval
- * of the settings; without them, once a day (see `UPGRADE_TOOL`).
+ * of the settings, or 30 seconds around the full hour (see `upgradeToolMaxAgeMs`); without them,
+ * once a day (see `UPGRADE_TOOL`).
  */
 export async function maybeRefreshUpgradeTool(
   options: { fetchData?: () => Promise<UpgradeToolData>; now?: () => number } = {},
 ): Promise<void> {
   const settings = withDefaults(await settingsItem.getValue());
   const maxAgeMs = settings.smartUpdates
-    ? settings.storeRefreshMinutes * 60_000
+    ? upgradeToolMaxAgeMs((options.now ?? Date.now)(), settings.storeRefreshMinutes)
     : UPGRADE_TOOL.maxAgeWithoutSmartUpdatesMs;
   await refreshUpgradeTool({ ...options, maxAgeMs });
 }

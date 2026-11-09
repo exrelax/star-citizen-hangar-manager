@@ -124,7 +124,8 @@ export const SYNC_WORK = { requestOverhead: 40, detailPage: 70, finish: 150 };
 /**
  * RSI's ship upgrade tool (see `src/ships`): ships with their standard prices, ships on sale and
  * warbond editions, read with one request. Read again with every full refresh and, with smart
- * updates, at the interval of the settings (`PLEDGE_STORE.refreshMinutes`).
+ * updates, at the interval of the settings (`PLEDGE_STORE.refreshMinutes`) and every 30 seconds
+ * around the full hour (`PLEDGE_STORE.fastWindow`).
  */
 export const UPGRADE_TOOL = {
   /** With smart updates off: read again once the stored data is older than this. */
@@ -186,10 +187,11 @@ export const STORE_ITEMS = {
   /** Requests at the same time. */
   concurrency: 2,
   /**
-   * Smart updates read the items again once older than this many minutes (a setting; this is its
-   * default and its range). Without smart updates once a day (`maxAgeWithoutSmartUpdatesMs`).
+   * Smart updates read the items at these minutes of every hour (local clock), when CIG changes
+   * the Pledge Store (see `src/store/refresh-schedule.ts`). Without smart updates once a day
+   * (`maxAgeWithoutSmartUpdatesMs`).
    */
-  refreshMinutes: { default: 5, min: 1, max: 1440 },
+  readAtMinutes: [0, 5, 10, 30, 35],
   maxAgeWithoutSmartUpdatesMs: 24 * 60 * 60 * 1000,
 } as const;
 
@@ -225,6 +227,12 @@ export const PLEDGE_STORE = {
    * setting; this is its default and its range).
    */
   refreshMinutes: { default: 5, min: 1, max: 1440 },
+  /**
+   * Around the full hour, when CIG changes the Pledge Store, the warbond CCUs are read every
+   * `everyMs` instead (minutes of the local clock, both included; see
+   * `src/store/refresh-schedule.ts`).
+   */
+  fastWindow: { from: 59, to: 10, everyMs: 30 * 1000 },
   /** How often an open Pledge Store tab looks whether its offers are due. */
   dueCheckMs: 60 * 1000,
 } as const;
