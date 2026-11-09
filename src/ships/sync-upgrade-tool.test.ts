@@ -88,13 +88,24 @@ describe('refreshUpgradeTool', () => {
 });
 
 describe('maybeRefreshUpgradeTool', () => {
-  it('follows the interval of the settings', async () => {
+  it('follows the interval of the settings outside the full hour', async () => {
     const fetchData = vi.fn(async () => DATA);
+    const quarterPast = new Date(2026, 10, 7, 12, 15).getTime();
     await settingsItem.setValue({ storeRefreshMinutes: 10 });
-    await maybeRefreshUpgradeTool({ fetchData, now: () => START });
-    await maybeRefreshUpgradeTool({ fetchData, now: () => START + 9 * MINUTE });
+    await maybeRefreshUpgradeTool({ fetchData, now: () => quarterPast });
+    await maybeRefreshUpgradeTool({ fetchData, now: () => quarterPast + 9 * MINUTE });
     expect(fetchData).toHaveBeenCalledTimes(1);
-    await maybeRefreshUpgradeTool({ fetchData, now: () => START + 10 * MINUTE });
+    await maybeRefreshUpgradeTool({ fetchData, now: () => quarterPast + 10 * MINUTE });
+    expect(fetchData).toHaveBeenCalledTimes(2);
+  });
+
+  it('reads every 30 seconds around the full hour', async () => {
+    const fetchData = vi.fn(async () => DATA);
+    const fullHour = new Date(2026, 10, 7, 13, 0).getTime();
+    await maybeRefreshUpgradeTool({ fetchData, now: () => fullHour });
+    await maybeRefreshUpgradeTool({ fetchData, now: () => fullHour + 20_000 });
+    expect(fetchData).toHaveBeenCalledTimes(1);
+    await maybeRefreshUpgradeTool({ fetchData, now: () => fullHour + 30_000 });
     expect(fetchData).toHaveBeenCalledTimes(2);
   });
 

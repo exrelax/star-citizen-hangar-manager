@@ -464,9 +464,19 @@ Paints, Game access, LTI, Warbond, Probably giftable, Rewards), plus:
 ## Pledge Store: current warbond CCUs
 
 The **Pledge Store** tab lists the warbond CCUs RSI currently offers – read from RSI's own ship
-upgrade tool and stored in the browser, so the tab shows them at once. With smart updates they are
-read again once they are older than 5 minutes (a setting), and always with the refresh button and
-the initial load; the count line says when they were updated. For each warbond ship:
+upgrade tool and stored in the browser, so the tab shows them at once. CIG changes the Pledge Store
+mostly at the full hour, sometimes a few minutes late, so smart updates read it on a schedule around
+the full hour (local clock), while the manager is open in a visible tab:
+
+- **Warbond CCUs**: every 30 seconds from xx:59 to xx:10, otherwise once they are older than
+  5 minutes (a setting).
+- **Pledge Store items** (about 13 requests): only at xx:00, xx:05, xx:10, xx:30 and xx:35.
+- A read missed meanwhile (browser closed, computer asleep) runs once at the next chance, not once
+  per missed time. Only one tab reads at a time.
+
+That is about 34 reads of the upgrade tool and 65 requests for the items per hour, instead of 12
+and 156 with the former 5-minute interval of the items. The refresh button and the initial load
+always read both; the count line says when the offers were updated. For each warbond ship:
 
 - **Prices**: the warbond price, the standard price (struck through) and the discount in dollars
   and percent, with the ship's image.
@@ -668,12 +678,11 @@ In the order of the settings tab:
     changes within a pledge (new items, gift status, …). The hint below shows, for your number of
     hangar pages, how likely such a change shows in the next check and after how many checks every
     page was checked.
-  - **Read the warbond CCUs of the Pledge Store again after** 5 minutes (1 to 1440; the default),
-    together with the ships and their prices. With smart updates off, once a day and with the
-    refresh button.
-  - **Read the Pledge Store items again after** 5 minutes (1 to 1440; the default): the items of
-    the Pledge Store (about 13 requests each time). With smart updates off, once a day and with
-    the refresh button.
+  - **Outside the full hour, read the warbond CCUs of the Pledge Store again after** 5 minutes
+    (1 to 1440; the default), together with the ships and their prices. From xx:59 to xx:10 they
+    are read every 30 seconds, and the Pledge Store items at xx:00, xx:05, xx:10, xx:30 and xx:35
+    (see [Pledge Store](#pledge-store-current-warbond-ccus)); the hint explains the schedule.
+    With smart updates off, both once a day and with the refresh button.
 - **Filters**: order and selection of the filter buttons, separately for My Hangar and Buy Back
   and for types and features – drag a filter (or use its arrows) to move it within its group,
   uncheck it to hide its button.

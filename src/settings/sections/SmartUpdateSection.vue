@@ -10,7 +10,6 @@ import {
   isRefreshMinutes,
   isSmartUpdateMinutes,
   isSpotCheckPages,
-  isStoreItemsMinutes,
   type Settings,
 } from '../settings';
 
@@ -20,13 +19,25 @@ const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
 const storeRange = PLEDGE_STORE.refreshMinutes;
 const checkRange = SMART_UPDATE.checkMinutes;
 const spotRange = SMART_UPDATE.spotCheckPages;
-const itemsRange = STORE_ITEMS.refreshMinutes;
 
-type NumberKey =
-  'storeRefreshMinutes' | 'storeItemsMinutes' | 'smartUpdateMinutes' | 'spotCheckPages';
+/** The schedule of the Pledge Store around the full hour, e.g. "xx:59", "xx:00, xx:05 and xx:10". */
+const atMinute = (minute: number) => `xx:${String(minute).padStart(2, '0')}`;
+const storeHint = computed(() =>
+  i18n.t('settings.storeRefreshHint', [
+    storeRange.min,
+    storeRange.max,
+    atMinute(PLEDGE_STORE.fastWindow.from),
+    atMinute(PLEDGE_STORE.fastWindow.to),
+    PLEDGE_STORE.fastWindow.everyMs / 1000,
+    new Intl.ListFormat(locale.value, { type: 'conjunction' }).format(
+      STORE_ITEMS.readAtMinutes.map(atMinute),
+    ),
+  ]),
+);
+
+type NumberKey = 'storeRefreshMinutes' | 'smartUpdateMinutes' | 'spotCheckPages';
 const VALID: Record<NumberKey, (value: unknown) => value is number> = {
   storeRefreshMinutes: isRefreshMinutes,
-  storeItemsMinutes: isStoreItemsMinutes,
   smartUpdateMinutes: isSmartUpdateMinutes,
   spotCheckPages: isSpotCheckPages,
 };
@@ -162,30 +173,7 @@ const spotHint = computed(() => {
       {{ i18n.t('settings.minutes') }}
     </span>
     <p id="shm-store-refresh-hint" class="shm-hint">
-      {{ i18n.t('settings.storeRefreshHint', [storeRange.min, storeRange.max]) }}
-    </p>
-
-    <label class="shm-field-label" for="shm-store-items-refresh">
-      {{ i18n.t('settings.storeItemsRefresh') }}
-    </label>
-    <span class="shm-number-field">
-      <input
-        id="shm-store-items-refresh"
-        class="shm-input shm-number"
-        type="number"
-        inputmode="numeric"
-        :min="itemsRange.min"
-        :max="itemsRange.max"
-        step="1"
-        :value="settings.storeItemsMinutes"
-        :disabled="!settings.smartUpdates"
-        aria-describedby="shm-store-items-refresh-hint"
-        @change="changeNumber($event, 'storeItemsMinutes')"
-      />
-      {{ i18n.t('settings.minutes') }}
-    </span>
-    <p id="shm-store-items-refresh-hint" class="shm-hint">
-      {{ i18n.t('settings.storeItemsRefreshHint', [itemsRange.min, itemsRange.max]) }}
+      {{ storeHint }}
     </p>
   </fieldset>
 </template>
