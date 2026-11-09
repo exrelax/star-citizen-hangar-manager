@@ -34,3 +34,8 @@ export function isPaintNotificationShown(
 /** The ids to store when the notification is dismissed: the paints of now, each once, sorted. */
 export const dismissedOf = (paints: readonly number[]): number[] =>
   [...new Set(paints)].sort((a, b) => a - b);
+
+/** Shows the notification again for all paints, the dismissed ones too (the settings, #151). */
+export async function restorePaintNotifications(): Promise<void> {
+  await Promise.all([dismissedPaintsItem.removeValue(), demoDismissedPaintsItem.removeValue()]);
+}

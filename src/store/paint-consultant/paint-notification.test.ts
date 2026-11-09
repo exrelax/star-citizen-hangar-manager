@@ -5,6 +5,7 @@ import {
   dismissedOf,
   dismissedPaintsItem,
   isPaintNotificationShown,
+  restorePaintNotifications,
 } from './paint-notification';
 
 beforeEach(() => fakeBrowser.reset());
@@ -38,6 +39,16 @@ describe('storage', () => {
     expect(await fakeBrowser.storage.sync.get('consultant.dismissedPaints')).toEqual({
       'consultant.dismissedPaints': [1, 2],
     });
+    expect(await demoDismissedPaintsItem.getValue()).toEqual([]);
+  });
+});
+
+describe('restorePaintNotifications', () => {
+  it('forgets the dismissed paints, the demo ones too', async () => {
+    await dismissedPaintsItem.setValue([1, 2]);
+    await demoDismissedPaintsItem.setValue([3]);
+    await restorePaintNotifications();
+    expect(await dismissedPaintsItem.getValue()).toEqual([]);
     expect(await demoDismissedPaintsItem.getValue()).toEqual([]);
   });
 });

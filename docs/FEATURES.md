@@ -260,7 +260,8 @@ on its own.
     - When the [Paint Discount Consultant](#paint-discount-consultant) finds paints to buy again
       with more discount: how many (not with "Hide melt value"). Its **×** dismisses it for exactly
       these paints, kept in the sync storage so it stays dismissed on your other browsers too; it
-      comes back with the count of all of them as soon as another paint can be bought again.
+      comes back with the count of all of them as soon as another paint can be bought again, or
+      with "Show dismissed paint notifications again" in the settings.
     - Other notifications, newest first, each checked off with its checkbox or all at once;
       checked-off ones don't come back.
     - Below them, the marked pledges still waiting, with the time left.
@@ -574,6 +575,10 @@ In the order of the settings tab:
     into their default order; which boxes are shown and which are collapsed stays as it is.
   - **Count the pledges per type in the summary** (off by default): only for the "Summary" box;
     the "Selected" box always counts the selected pledges per type.
+- **Notifications**:
+  - **Show dismissed paint notifications again**: the Paint Discount Consultant's notification
+    shows again for all paints, also those dismissed with its × (on all browsers, as the dismissed
+    paints are synced).
 - **Paint Discount Consultant** (it always buys with store credit, never with new money):
   - **Include my store credit** (on by default): the cart may also be paid with the current store
     credit; off, only with the melt value of the own paints.
