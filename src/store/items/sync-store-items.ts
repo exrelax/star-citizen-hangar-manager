@@ -4,6 +4,8 @@ import { withLease } from '@/storage/lease';
 import { settingsItem, withDefaults } from '@/settings/settings';
 import { hashOf, recordCheck, recordSync } from '@/storage/meta';
 import { storeItemsMaxAgeMs } from '../refresh-schedule';
+import { noteStoreItemChanges } from '../store-change-notes';
+import type { StoreItem } from './store-items';
 import { fetchStoreItems, type StoreItemsRead } from './fetch-store-items';
 import { storeItemsItem, storeItemsMeta, STORE_ITEMS_VERSION } from './store-items-storage';
 
@@ -38,7 +40,8 @@ export function refreshStoreItems({
     ]);
     const current = stored?.version === STORE_ITEMS_VERSION;
     if (current && now() - meta.checkedAt < maxAgeMs) return 'skipped' as const;
-    const read = () => readStoreItems(fetchItems, now, current, meta);
+    const read = () =>
+      readStoreItems(fetchItems, now, current, meta, current ? stored.items : undefined);
     if (!maxAgeMs) return read();
     return (await withLease(LEASE_KEY, PLEDGE_STORE.readLeaseMs, read, now)) ?? 'skipped';
   })().finally(() => (running = undefined));
@@ -50,6 +53,7 @@ async function readStoreItems(
   now: () => number,
   current: boolean,
   meta: Awaited<ReturnType<typeof storeItemsMeta.getValue>>,
+  before: readonly StoreItem[] | undefined,
 ): Promise<RefreshResult> {
   const startedAt = performance.now();
   try {
@@ -58,7 +62,11 @@ async function readStoreItems(
     const value = { version: STORE_ITEMS_VERSION, items };
     const fingerprint = hashOf(value);
     const unchanged = current && meta.fingerprint === fingerprint;
-    if (!unchanged) await storeItemsItem.setValue(value);
+    if (!unchanged) {
+      await storeItemsItem.setValue(value);
+      // What changed since the last read, for the notifications (#164); nothing on the first.
+      await noteStoreItemChanges(before, items, at);
+    }
     await recordSync(storeItemsMeta, {
       at,
       fingerprint,

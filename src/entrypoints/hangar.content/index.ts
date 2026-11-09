@@ -130,8 +130,13 @@ export default defineContentScript({
     };
     /** The sidebar now tells what the browser notifications told: they can go (#155). */
     const announceSeen = () => {
-      if (document.visibilityState === 'visible') {
+      // An invalidated script (extension reloaded or updated) has no background to tell: sending
+      // throws right away there instead of rejecting.
+      if (ctx.isInvalid || document.visibilityState !== 'visible') return;
+      try {
         void browser.runtime.sendMessage(MANAGER_SEEN).catch(() => undefined);
+      } catch {
+        // Nothing to tell.
       }
     };
 

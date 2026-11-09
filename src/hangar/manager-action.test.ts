@@ -44,3 +44,10 @@ describe('applyManagerAction', () => {
     expect(hangarViewFilter.value?.id).toBe('meltReady');
   });
 });
+
+describe('showWarbonds', () => {
+  it('opens the Pledge Store tab', async () => {
+    await applyManagerAction('showWarbonds');
+    expect(location.hash).toBe('#hangar-manager-store');
+  });
+});

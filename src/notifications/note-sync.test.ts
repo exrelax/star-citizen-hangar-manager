@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { checkOff, notificationsItem } from './notifications';
-import { browserIdOf, noteIdOf, watchNotesInStep } from './note-sync';
+import { browserNotificationsItem } from './browser-permission';
+import { browserIdOf, noteIdOf, showNewNotesInBrowser, watchNotesInStep } from './note-sync';
 
 const clear = vi.fn();
 let closed: ((id: string, byUser: boolean) => void) | undefined;
@@ -46,5 +47,41 @@ describe('watchNotesInStep', () => {
     closed?.('note:store:42', true);
     await settle();
     expect((await notificationsItem.getValue())[0]?.doneAt).toBeTypeOf('number');
+  });
+});
+
+describe('showNewNotesInBrowser', () => {
+  const warbonds = {
+    id: 'warbonds:1',
+    kind: 'warbonds' as const,
+    text: 'New warbond CCUs: Zeus MR ($170)',
+    at: 1_000_000,
+    browser: { title: 'New warbond CCUs in the Pledge Store', text: 'Zeus MR ($170)' },
+  };
+  let create: ReturnType<typeof vi.fn>;
+  beforeEach(() => {
+    create = vi.fn().mockResolvedValue('id');
+    (fakeBrowser as unknown as { notifications: { create: unknown } }).notifications.create =
+      create;
+  });
+
+  it('shows a new one once, while the browser allows it', async () => {
+    await browserNotificationsItem.setValue(true);
+    await showNewNotesInBrowser([warbonds], warbonds.at + 1000);
+    await showNewNotesInBrowser([warbonds], warbonds.at + 2000);
+    expect(create).toHaveBeenCalledOnce();
+    expect(create.mock.calls[0]![0]).toBe('note:warbonds:1');
+  });
+
+  it('leaves out old ones, those without a browser text and those without the permission', async () => {
+    await browserNotificationsItem.setValue(true);
+    await showNewNotesInBrowser([warbonds], warbonds.at + 60 * 60 * 1000);
+    await showNewNotesInBrowser(
+      [{ ...warbonds, id: 'storeItems:1', browser: undefined }],
+      warbonds.at,
+    );
+    await browserNotificationsItem.setValue(false);
+    await showNewNotesInBrowser([{ ...warbonds, id: 'warbonds:2' }], warbonds.at);
+    expect(create).not.toHaveBeenCalled();
   });
 });

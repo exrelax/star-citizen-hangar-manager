@@ -750,6 +750,18 @@
     "testMessage": "Browser-Benachrichtigungen sind an."
   },
   "notifications": {
+    "andMore": "… und $1 weitere",
+    "warbondsNew": "Neue Warbond CCUs: $1",
+    "warbondsGone": "Nicht mehr angebotene Warbond CCUs: $1",
+    "browserWarbondsTitle": "Neue Warbond CCUs im Pledge Store",
+    "storeItemNew": "Neu: $1 ($2)",
+    "storeItemGone": "Entfernt: $1",
+    "storeItemSale": "Im Angebot: $1, $2 → $3",
+    "storeItemPrice": "Neuer Preis: $1, $2 → $3",
+    "storeItemsChanged": "$1 Änderungen im Pledge Store",
+    "storeItemsChangedOne": "1 Änderung im Pledge Store",
+    "showChanges": "Änderungen anzeigen",
+    "showInStore": "Im Pledge Store anzeigen",
     "browserMeltReadyTitle": "Pledges können eingeschmolzen werden",
     "browserMeltReady": "$1 gemerkte Pledges können jetzt eingeschmolzen werden. Öffne My Hangar, um sie einzuschmelzen.",
     "browserMeltReadyOne": "„$1“ kann jetzt eingeschmolzen werden. Öffne My Hangar, um es einzuschmelzen.",

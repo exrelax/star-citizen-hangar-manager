@@ -65,8 +65,9 @@ sees or stores your RSI login.
   sync storage until the pledge is gone from your hangar, so they follow your browser profile to
   your other devices – by your browser's own sync, like the settings.
 - **Notifications** of the sidebar: their text, the pledge they are about and when they
-  happened, kept in the local storage; checked-off ones are removed after 30 days. They never
-  leave your browser.
+  happened – also the changes in the Pledge Store (public offers and prices) – kept in the local
+  storage, with which ones were shown as browser notifications; removed ones go after 30 days.
+  They never leave your browser.
 - **Paints whose consultant notification you dismissed**: their pledge IDs, kept in the browser's
   sync storage like the pledges marked to melt, until you dismiss it again or show it again in
   Settings → Notifications.

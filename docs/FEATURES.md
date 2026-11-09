@@ -296,8 +296,13 @@ on its own.
     - Until browser notifications are on in this browser: a hint that they can be turned on, with a
       **Settings** button that opens the settings at "Browser notifications". Its **×** removes it
       for good (synced).
-    - Other notifications, newest first, each checked off with its checkbox or all at once;
-      checked-off ones don't come back.
+    - Other notifications, newest first, each removed with the **×** in its top right corner or all
+      at once; removed ones don't come back. Changes in the Pledge Store (#164), found by its
+      schedule around the full hour: **new and gone warbond CCUs** with their prices, and how many
+      **Pledge Store items** changed, with the list (new, gone, new price, on sale) to open; both
+      with **Show in Pledge Store**. Only new warbond CCUs also show as a browser notification –
+      time-limited offers worth knowing while away; a click (or its button in Chrome) opens the
+      Pledge Store tab at the warbond CCUs.
     - When filler paints of the [Paint Discount Consultant](#paint-discount-consultant) are among
       them: how many, with **Melt the filler paints**, which melts exactly them at once (bulk
       melting on; otherwise it leads to the setting).

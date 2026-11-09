@@ -5,6 +5,7 @@ import { settingsItem, withDefaults } from '@/settings/settings';
 import { hashOf, recordCheck, recordSync, type MetaItem } from '@/storage/meta';
 import { reactive, readonly } from 'vue';
 import { upgradeToolMaxAgeMs } from '@/store/refresh-schedule';
+import { noteWarbondChanges } from '@/store/store-change-notes';
 import { fetchUpgradeTool } from './fetch-upgrade-tool';
 import type { UpgradeToolData } from './ships';
 import {
@@ -115,12 +116,21 @@ async function readUpgradeTool(
     const { ships, buyable, warbonds } = await fetchData();
     const at = now();
     const version = SHIPS_VERSION;
+    const before = await warbondsItem.getValue();
     await Promise.all([
       storePart(shipsItem, shipsMeta, { version, ships }, at),
       storePart(buyableShipsItem, buyableShipsMeta, { version, skus: buyable }, at),
       storePart(warbondsItem, warbondsMeta, { version, warbonds }, at),
     ]);
     state.error = undefined;
+    // What changed in the warbond CCUs since the last read, for the notifications (#164); nothing
+    // on the first read.
+    await noteWarbondChanges(
+      before?.version === SHIPS_VERSION ? before.warbonds : undefined,
+      warbonds,
+      ships,
+      at,
+    );
     return 'read';
   } catch (cause) {
     if (cause instanceof RsiSignedOutError) return 'signedOut';

@@ -22,6 +22,15 @@ export interface AppNotification {
   at: number;
   /** When it was checked off, in ms. */
   doneAt?: number;
+  /** What it is about, for a link to it: changes in the Pledge Store (#164). */
+  kind?: 'warbonds' | 'storeItems';
+  /** A list shown when it is expanded, e.g. each changed Pledge Store item. */
+  details?: string[];
+  /**
+   * Also shown as a browser notification (#155), with this title and text – only for what is worth
+   * knowing while no RSI page is open, e.g. new warbond CCUs.
+   */
+  browser?: { title: string; text: string };
 }
 
 export const notificationsItem = storage.defineItem<AppNotification[]>('local:notifications', {
