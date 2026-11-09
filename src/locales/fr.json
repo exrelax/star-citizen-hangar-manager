@@ -557,7 +557,7 @@
       "stepMeltFreesSub": "Libère leur valeur de fusion",
       "stepFillers": "Fondre les $1 peintures de remplissage après 24 h",
       "stepFillersOne": "Fondre la peinture de remplissage après 24 h",
-      "stepFillersSub": "Délai de RSI – pas avant",
+      "stepFillersSub": "Marquées – vous recevrez une notification",
       "hintSafe": "Sûr : vos peintures restent dans le hangar jusqu’à l’achat des nouvelles copies.",
       "hintSafeLower": "Vos peintures restent dans le hangar jusqu’à l’achat des nouvelles copies. Avec $1, elle atteint $2.",
       "hintImpossible": "Le panier est payé avant que vos peintures soient fondues, leurs $1 n’aident donc pas. Il manque $2.",
@@ -575,6 +575,16 @@
       "noteCooldownSource": "Support RSI",
       "noteGiftable": "Rachetées, les peintures ne peuvent plus être offertes",
       "notePacks": "Les packs de peintures ne sont pas encore inclus"
+    },
+    "fillers": {
+      "notificationTitle": "Les peintures de remplissage peuvent être fondues",
+      "ready": "Les $1 peintures de remplissage du conseiller de remises sur les peintures peuvent être fondues maintenant. Ouvrez My Hangar pour les fondre.",
+      "readyOne": "La peinture de remplissage du conseiller de remises sur les peintures peut être fondue maintenant. Ouvrez My Hangar pour la fondre.",
+      "amongReady": "$1 d’entre eux sont des peintures de remplissage du conseiller de remises sur les peintures.",
+      "amongReadyOne": "1 d’entre eux est une peinture de remplissage du conseiller de remises sur les peintures.",
+      "melt": "Fondre les $1 peintures de remplissage",
+      "meltOne": "Fondre la peinture de remplissage",
+      "meltHint": "Fond les peintures de remplissage achetées par la commande du conseiller de remises sur les peintures – d’après leurs ids de pledge, jamais d’autres copies de la même peinture. Ouvre d’abord une boîte de dialogue."
     }
   },
   "upgradeLog": {

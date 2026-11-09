@@ -76,7 +76,9 @@ sees or stores your RSI login.
   shown by your browser and system; their content is not sent anywhere.
 - **The Paint Discount Consultant's plan**, once its paints were put into the cart: when, the
   discount tier, the own paints (pledge IDs, titles, melt values) and the filler paints, kept in
-  the local storage (Settings → Stored data → "Paint plan").
+  the local storage (Settings → Stored data → "Paint plan"). Once the order that bought them is
+  found, its ID and time and the pledge IDs of the filler paints are kept with it; the filler
+  paints are marked to melt like your own marks.
 - The **search term** is put into the page's address (`?search=…`) so searches can be bookmarked;
   it is part of your browser history like any other address.
 
@@ -120,6 +122,8 @@ visiting it doesn't contact GitHub's API.
 
 - **storage**: keeps the data and settings described above in your browser.
 - **unlimitedStorage**: large hangars and buy backs can exceed the default storage quota.
+- **alarms**: a timer in your browser for when the Paint Discount Consultant's filler paints can be
+  melted, so a browser notification can tell you then (only with browser notifications on).
 - **notifications** (optional): asked for only when you turn on Settings → Notifications →
   "Browser notifications", on a page of the extension, never at install or update. Without it,
   nothing changes – the sidebar's notifications need no permission. Turning the setting off gives

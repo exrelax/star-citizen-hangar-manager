@@ -212,9 +212,9 @@ export const PAINT_DISCOUNT_TIERS = {
 
 /**
  * The Paint Discount Consultant (see `src/store/paint-consultant`): RSI's cart takes this many of
- * the same item.
+ * the same item; a kept plan is checked against the orders for this many days (#105).
  */
-export const PAINT_CONSULTANT = { maxPerItem: 5 } as const;
+export const PAINT_CONSULTANT = { maxPerItem: 5, fillerCheckDays: 7 } as const;
 
 /** The "Pledge Store" tab: current warbond CCUs from RSI's ship upgrade tool (see `src/store`). */
 export const PLEDGE_STORE = {

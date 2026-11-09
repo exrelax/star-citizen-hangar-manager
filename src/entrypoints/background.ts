@@ -7,6 +7,10 @@ import {
   REMOVE_NOTIFICATION_PERMISSION,
 } from '@/notifications/browser-permission';
 import { OPEN_STYLEGUIDE } from '@/shared/messages';
+import {
+  listenToFillerClicks,
+  watchFillerNotification,
+} from '@/store/paint-consultant/filler-notification';
 import { migrateStorage } from '@/storage/migrate';
 
 export default defineBackground(() => {
@@ -21,7 +25,10 @@ export default defineBackground(() => {
   // Browser notifications (#152): the settings see whether this browser allows them – also when
   // the permission is taken back in the browser's own settings, or was while the extension slept.
   void mirrorNotificationPermission();
-  browser.permissions.onAdded.addListener(() => void mirrorNotificationPermission());
+  browser.permissions.onAdded.addListener(() => {
+    void mirrorNotificationPermission();
+    listenToFillerClicks();
+  });
   browser.permissions.onRemoved.addListener(() => void mirrorNotificationPermission());
   browser.runtime.onMessage.addListener((message) => {
     // Turning them on: the browser asks only on an extension page, after a click there.
@@ -35,6 +42,10 @@ export default defineBackground(() => {
         .then(() => mirrorNotificationPermission());
     }
   });
+
+  // The Paint Discount Consultant's filler paints can be melted (#105): an alarm 24 hours after
+  // their order, then a browser notification.
+  watchFillerNotification();
 
   // Development only: the manager's "Styleguide" link opens the styleguide page in a new tab.
   if (import.meta.env.DEV) {

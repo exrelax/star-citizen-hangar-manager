@@ -31,6 +31,7 @@ import TabBar from '@/shared/components/TabBar.vue';
 import { i18n } from '@/i18n';
 import SettingsPanel from '@/settings/SettingsPanel.vue';
 import StoreTab from '@/store/components/StoreTab.vue';
+import { checkFillerPurchase } from '@/store/paint-consultant/filler-purchase';
 import { providePaintConsultant } from '@/store/paint-consultant/use-paint-consultant';
 import { useSettings } from '@/settings/use-settings';
 import { MANAGER_CONTAINER, useThemeClass } from '@/themes/theme';
@@ -120,11 +121,25 @@ watch(
 );
 
 // The Paint Discount Consultant: in the Pledge Store tab and as marks in My Hangar.
-providePaintConsultant({
+const consultant = providePaintConsultant({
   pledges: () => pledges.value,
   settings: () => settings.value,
   demoStoreCredit: () => demoView.context.value?.storeCredit,
 });
+// Its filler paints bought (#105): the kept plan is checked against the real hangar and orders,
+// the fillers are marked to melt. Never in the demo.
+watch(
+  () =>
+    syncedAt.value && !demo.value && consultant.storeItems.value
+      ? ([hangar.pledges.value, orders.value, consultant.storeItems.value] as const)
+      : undefined,
+  (current) => {
+    if (!current) return;
+    const [hangarPledges, ordersValue, storeItems] = current;
+    void checkFillerPurchase({ pledges: hangarPledges, orders: ordersValue, storeItems });
+  },
+  { immediate: true },
+);
 
 /** The status line of the list shown (in the settings the hangar's): its last refresh and check. */
 const status = computed(() => {

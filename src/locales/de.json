@@ -557,7 +557,7 @@
       "stepMeltFreesSub": "Macht ihren Schmelzwert frei",
       "stepFillers": "Die $1 Füll-Paints nach 24 h einschmelzen",
       "stepFillersOne": "Das Füll-Paint nach 24 h einschmelzen",
-      "stepFillersSub": "Sperrfrist von RSI – nicht früher",
+      "stepFillersSub": "Markiert – du bekommst eine Benachrichtigung",
       "hintSafe": "Sicher: Deine Paints bleiben im Hangar, bis die neuen Exemplare gekauft sind.",
       "hintSafeLower": "Deine Paints bleiben im Hangar, bis die neuen Exemplare gekauft sind. Mit $1 reicht es für $2.",
       "hintImpossible": "Der Warenkorb wird bezahlt, bevor deine Paints eingeschmolzen sind, ihre $1 helfen also nicht. $2 fehlen.",
@@ -575,6 +575,16 @@
       "noteCooldownSource": "RSI-Support",
       "noteGiftable": "Neu gekauft sind Paints nicht mehr verschenkbar",
       "notePacks": "Paint-Pakete sind noch nicht dabei"
+    },
+    "fillers": {
+      "notificationTitle": "Füll-Paints können eingeschmolzen werden",
+      "ready": "Die $1 Füll-Paints des Paint-Rabatt-Beraters können jetzt eingeschmolzen werden. Öffne My Hangar, um sie einzuschmelzen.",
+      "readyOne": "Das Füll-Paint des Paint-Rabatt-Beraters kann jetzt eingeschmolzen werden. Öffne My Hangar, um es einzuschmelzen.",
+      "amongReady": "$1 davon sind Füll-Paints des Paint-Rabatt-Beraters.",
+      "amongReadyOne": "1 davon ist ein Füll-Paint des Paint-Rabatt-Beraters.",
+      "melt": "Die $1 Füll-Paints einschmelzen",
+      "meltOne": "Das Füll-Paint einschmelzen",
+      "meltHint": "Schmilzt die Füll-Paints ein, die die Order des Paint-Rabatt-Beraters gekauft hat – nach ihren Pledge-IDs, nie andere Exemplare desselben Paints. Öffnet zuerst einen Dialog."
     }
   },
   "upgradeLog": {

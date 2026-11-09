@@ -267,6 +267,9 @@ on its own.
       for good (synced).
     - Other notifications, newest first, each checked off with its checkbox or all at once;
       checked-off ones don't come back.
+    - When filler paints of the [Paint Discount Consultant](#paint-discount-consultant) are among
+      them: how many, with **Melt the filler paints**, which melts exactly them at once (bulk
+      melting on; otherwise it leads to the setting).
     - Below them, the marked pledges still waiting, with the time left.
     - Works without the browser's notification permission.
   - **Summary**: number, value and discounts of the pledges shown in "My Hangar" (after search and
@@ -539,6 +542,16 @@ it into store credit with the paints you already own:
   the button melts them first (way 2), with its own acknowledgement: buy them again right away.
   The plan is kept then, so the paints to buy again are known although the hangar no longer shows
   them.
+- **Filler paints bought**: the kept plan is checked against the orders and the hangar whenever
+  they are read. An order made on the plan's day or later, paid with store credit, that created
+  own paints and filler paints of the plan confirms the purchase. The filler paints it created are
+  [marked to melt](#mark-to-melt-later) by their pledge ids – never others of the same name, so an
+  older copy is never melted – and can be melted 24 hours after that order. The sidebar's
+  **Notifications** box then counts them among the marked pledges that can be melted now, with
+  **Melt the filler paints** (bulk melting on; otherwise it leads to the setting), which opens the
+  bulk melting dialog with exactly them. With browser notifications on, a notification tells it
+  also while no RSI page is open; a click opens My Hangar. Without such an order within 7 days,
+  the plan isn't checked any more (it is kept for the paints bought again and those left to buy).
 - **Left to buy**: own paints of a kept plan that are gone from the hangar – melted – and not
   bought again since are listed with the tier the store credit pays now (fewer filler paints if it
   is short; it says what the planned tier misses) and their own "Put the paints into the cart"
@@ -629,7 +642,8 @@ In the order of the settings tab:
     open. Turning it on opens a page of the extension where the browser asks for the permission to
     display notifications (never at install or update); a first notification confirms it. Refused,
     it stays off and says so; turned off – here or in the browser's own settings – the permission
-    goes back. The sidebar's "Notifications" box needs no permission.
+    goes back. The sidebar's "Notifications" box needs no permission. So far one tells when the
+    Paint Discount Consultant's filler paints can be melted.
   - **Show dismissed paint notifications again**: the Paint Discount Consultant's notification
     shows again for all paints, also those dismissed with its × (on all browsers, as the dismissed
     paints are synced).

@@ -204,9 +204,11 @@ asked for with `permissions.request` only when the user turns its feature on.
   background script mirrors the state into `local:notifications.browserAllowed` for the content
   scripts (`permissions.onAdded`/`onRemoved`, and at start for changes while it slept). The
   permission is per browser, so it isn't a synced setting: the permission itself is the switch.
-- **alarms** (planned for the background notifications, #96): shows no warning in Chrome. Firefox
-  can't ask for it as an optional permission, and whether adding it prompts in Firefox's update
-  dialog isn't documented clearly – check with a test build before adding it. Chrome fires alarms
+- **alarms** (required since #105): the background script sets an alarm for the time the Paint
+  Discount Consultant's filler paints can be melted and shows the browser notification then
+  (`store/paint-consultant/filler-notification.ts`). It shows no warning in Chrome; Firefox can't
+  ask for it as an optional permission and lists no warning for it either – whether its update
+  dialog asks is still to be checked with a test build before the release. Chrome fires alarms
   at most every 30 seconds; Firefox rounds periods below a minute up (to verify for #162).
 - **cookies** (maybe, for reading RSI from the background, #163): check together with `alarms`,
   as it may show a warning.
