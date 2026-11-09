@@ -77,5 +77,5 @@ export function watchFillerNotification(): void {
   void scheduleFillerNotification();
   rebuyPlanItem.watch(() => void scheduleFillerNotification());
   onAlarm(FILLER_ALARM, () => void notifyFillers());
-  onNotificationClick(NOTIFICATION_ID, openHangarManager);
+  onNotificationClick(NOTIFICATION_ID, () => void openHangarManager());
 }
