@@ -533,6 +533,8 @@
   "bulkExchange": {
     "button": "Fondre $1 sélectionnés",
     "buttonHint": "Échange les pledges sélectionnés contre du crédit boutique (les fondre) à la fois. Ouvre d’abord une boîte de dialogue.",
+    "disabled": "Fusion multiple désactivée",
+    "disabledHint": "« Fondre plusieurs pledges à la fois » est un paramètre expérimental : active-le pour fondre les pledges sélectionnés en une fois. Ouvre les paramètres à cet endroit.",
     "title": "Fondre $1 pledges",
     "count": "$1 pledges",
     "skipped": "$1 sélectionnés ne peuvent pas être fondus et sont ignorés",

@@ -12,6 +12,8 @@ import { summarize, type PledgeSummary } from '../summary';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { useDemoContext } from '@/demo/use-demo';
 import SidebarBox from './SidebarBox.vue';
+import { openTabAt } from '../open-tab-at';
+import { BULK_MELTING_SETTING_ID } from '@/settings/anchors';
 import BulkExchangeOverlay from './BulkExchangeOverlay.vue';
 import { checkOff, type AppNotification } from '@/notifications/notifications';
 import { useOpenNotifications } from '@/notifications/use-notifications';
@@ -56,6 +58,9 @@ const shown = computed(() => summarize(visible.value));
 // Bulk melting (an experimental setting): the selected pledges that can be exchanged.
 const meltable = computed(() => selected.value.filter((pledge) => pledge.isMeltable));
 const bulkExchanging = ref(false);
+/** Bulk melting is off: the settings tab, at its setting. */
+const openBulkMeltingSetting = () =>
+  openTabAt('settings', BULK_MELTING_SETTING_ID, { highlight: true });
 const chosen = computed(() => (selected.value.length ? summarize(selected.value) : undefined));
 
 // The demo mode: its pledge ids are made up, so nothing links to RSI or melts.
@@ -470,18 +475,31 @@ async function move(box: Box, step: -1 | 1) {
           <p v-if="hiddenSelected" class="shm-sidebar-note is-warning" role="status">
             {{ i18n.t('summary.hidden', [hiddenSelected]) }}
           </p>
-          <!-- Disabled in the demo: its pledge ids are made up. -->
-          <button
-            v-if="settings.bulkMelting && meltable.length"
-            v-tooltip="demo ? i18n.t('exchange.demo') : i18n.t('bulkExchange.buttonHint')"
-            type="button"
-            class="shm-button is-danger shm-sidebar-action"
-            :disabled="!!demo"
-            @click="bulkExchanging = true"
-          >
-            <SvgIcon name="triangle-exclamation" />
-            {{ i18n.t('bulkExchange.button', [meltable.length]) }}
-          </button>
+          <div v-if="meltable.length" class="shm-sidebar-actions">
+            <!-- Disabled in the demo: its pledge ids are made up. -->
+            <button
+              v-if="settings.bulkMelting"
+              v-tooltip="demo ? i18n.t('exchange.demo') : i18n.t('bulkExchange.buttonHint')"
+              type="button"
+              class="shm-button is-danger shm-sidebar-button is-full"
+              :disabled="!!demo"
+              @click="bulkExchanging = true"
+            >
+              <SvgIcon name="triangle-exclamation" />
+              {{ i18n.t('bulkExchange.button', [meltable.length]) }}
+            </button>
+            <!-- Off: points to the experimental setting, so the feature can be found (#159). -->
+            <button
+              v-else
+              v-tooltip="i18n.t('bulkExchange.disabledHint')"
+              type="button"
+              class="shm-button shm-sidebar-button is-full"
+              @click="openBulkMeltingSetting"
+            >
+              <SvgIcon name="gear" />
+              {{ i18n.t('bulkExchange.disabled') }}
+            </button>
+          </div>
           <BulkExchangeOverlay
             v-if="bulkExchanging"
             :pledges="meltable"
@@ -888,19 +906,17 @@ async function move(box: Box, step: -1 | 1) {
   white-space: nowrap;
 }
 
+/* A single button of its own, e.g. bulk melting: the whole width, its label may wrap. */
+.shm-sidebar-button.is-full {
+  flex-basis: 100%;
+  white-space: normal;
+}
+
 /* A switch that is on (the consultant's filter): filled, so it reads as pressed. */
 .shm-sidebar-button[aria-pressed='true'] {
   color: var(--shm-text-strong);
   background: rgb(var(--shm-accent-rgb) / 0.32);
   border-color: var(--shm-accent);
-}
-
-/* An action on a box's pledges, e.g. bulk melting the selection. */
-.shm-sidebar-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 10px;
 }
 
 /* A link-like button below a box's figures, e.g. to the Paint Discount Consultant. */

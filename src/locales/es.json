@@ -533,6 +533,8 @@
   "bulkExchange": {
     "button": "Fundir $1 seleccionados",
     "buttonHint": "Cambia los pledges seleccionados por crédito de tienda (fundirlos) a la vez. Abre primero un diálogo.",
+    "disabled": "Fusión múltiple desactivada",
+    "disabledHint": "«Fundir varios pledges a la vez» es un ajuste experimental: actívalo para fundir los pledges seleccionados de una vez. Abre los ajustes en ese punto.",
     "title": "Fundir $1 pledges",
     "count": "$1 pledges",
     "skipped": "$1 seleccionados no se pueden fundir y se omiten",

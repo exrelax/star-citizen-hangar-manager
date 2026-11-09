@@ -533,6 +533,8 @@
   "bulkExchange": {
     "button": "$1 ausgewählte einschmelzen",
     "buttonHint": "Die ausgewählten Pledges auf einmal gegen Store Credit tauschen (einschmelzen). Öffnet zuerst einen Dialog.",
+    "disabled": "Mehrfach-Einschmelzen aus",
+    "disabledHint": "„Mehrere Pledges auf einmal einschmelzen“ ist eine experimentelle Einstellung: Schalte sie ein, um die ausgewählten Pledges auf einmal einzuschmelzen. Öffnet die Einstellungen an dieser Stelle.",
     "title": "$1 Pledges einschmelzen",
     "count": "$1 Pledges",
     "skipped": "$1 ausgewählte lassen sich nicht einschmelzen und bleiben außen vor",

@@ -171,3 +171,34 @@
   text-decoration: underline;
   outline: none;
 }
+
+/* A setting other parts link to (see `openTabAt`): clear of RSI's header, marked for a moment. */
+.shm-settings .shm-setting-anchor {
+  scroll-margin-top: 90px;
+  border-radius: var(--shm-radius-item);
+}
+
+.shm-settings .shm-setting-anchor.is-flashed {
+  animation: shm-setting-flash 1.6s ease-out;
+}
+
+@keyframes shm-setting-flash {
+  0%,
+  40% {
+    background: rgb(var(--shm-accent-rgb) / 0.2);
+    box-shadow: 0 0 0 6px rgb(var(--shm-accent-rgb) / 0.2);
+  }
+
+  100% {
+    background: transparent;
+    box-shadow: 0 0 0 6px transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shm-settings .shm-setting-anchor.is-flashed {
+    animation: none;
+    outline: 1px solid var(--shm-accent);
+    outline-offset: 4px;
+  }
+}

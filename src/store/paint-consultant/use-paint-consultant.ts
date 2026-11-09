@@ -1,7 +1,7 @@
 import { storeCreditItem, STORE_CREDIT_VERSION } from '@/account/store-credit-storage';
 import type { StoreCredit } from '@/account/store-credit';
 import type { PledgeView } from '@/hangar/pledge-view';
-import { hashOfTab } from '@/hangar/route';
+import { openTabAt } from '@/hangar/open-tab-at';
 import type { Settings } from '@/settings/settings';
 import { useStored } from '@/storage/use-stored';
 import {
@@ -130,27 +130,5 @@ export function maybePaintConsultant(): PaintConsultantState | undefined {
 
 /** Shows the consultant: switches to the Pledge Store tab and scrolls to it. */
 export function openPaintConsultant(): void {
-  location.hash = hashOfTab('store');
-  // The tab may be built on first use: wait for the consultant to be there.
-  let frames = 0;
-  const find = () => {
-    const title = document.getElementById('shm-consultant-title');
-    if (title) settle(title);
-    else if (++frames < 30) requestAnimationFrame(find);
-  };
-  requestAnimationFrame(find);
-}
-
-/**
- * Scrolls `title` to the top, and again while the tab above it still grows (its list being
- * built): a smooth scroll alone would stop at the place the title had when it started.
- */
-function settle(title: HTMLElement, attempt = 0) {
-  const margin = parseFloat(getComputedStyle(title).scrollMarginTop) || 0;
-  const atBottom = scrollY >= document.documentElement.scrollHeight - innerHeight - 1;
-  if (attempt > 0 && (Math.abs(title.getBoundingClientRect().top - margin) < 4 || atBottom)) {
-    return;
-  }
-  title.scrollIntoView({ behavior: attempt === 0 ? 'smooth' : 'auto', block: 'start' });
-  if (attempt < 5) setTimeout(() => settle(title, attempt + 1), 400);
+  openTabAt('store', 'shm-consultant-title');
 }

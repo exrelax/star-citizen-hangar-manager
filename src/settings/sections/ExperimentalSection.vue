@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { i18n } from '@/i18n';
+import { BULK_MELTING_SETTING_ID } from '../anchors';
 import SettingCheck from '../SettingCheck.vue';
 import type { Settings } from '../settings';
 
@@ -20,7 +21,10 @@ const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
       <SvgIcon name="triangle-exclamation" />
       <span>{{ i18n.t('settings.experimentalWarning') }}</span>
     </p>
+    <!-- Linked from the sidebar's "Selected" box while it is off. -->
     <SettingCheck
+      :id="BULK_MELTING_SETTING_ID"
+      class="shm-setting-anchor"
       :checked="settings.bulkMelting"
       :hint="i18n.t('settings.bulkMeltingHint')"
       @change="(bulkMelting) => emit('update', { bulkMelting })"
