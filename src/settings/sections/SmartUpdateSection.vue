@@ -127,7 +127,13 @@ const spotHint = computed(() => {
       {{ i18n.t('settings.minutes') }}
     </span>
     <p id="shm-smart-update-interval-hint" class="shm-hint">
-      {{ i18n.t('settings.smartUpdateIntervalHint', [checkRange.min, checkRange.max]) }}
+      {{
+        i18n.t('settings.smartUpdateIntervalHint', [
+          checkRange.min,
+          checkRange.max,
+          SMART_UPDATE.backoff.maxFactor,
+        ])
+      }}
     </p>
 
     <label class="shm-field-label" for="shm-spot-checks">
