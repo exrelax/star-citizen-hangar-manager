@@ -1,9 +1,11 @@
-import { postRsiJson } from '@/shared/rsi-api';
+import { postRsiJson, RsiSignedOutError } from '@/shared/rsi-api';
 import type { Ship, ShipSku, UpgradeToolData, WarbondSku } from './ships';
 
 /*
  * Reads RSI's ship upgrade tool – the same GraphQL API its "Ship upgrades" overlay uses. Works
- * with the session of the RSI page, also without being signed in.
+ * with the session of the RSI page, also without being signed in, and from the background script
+ * with RSI's cookies. Without any session (no cookies sent) the targets fail: then it throws
+ * `RsiSignedOutError`.
  */
 
 const UPGRADE_GRAPHQL = '/pledge-store/api/upgrade/v2/graphql';
@@ -33,7 +35,7 @@ interface ApiShip {
 
 export interface UpgradeToolResponse {
   data?: { from?: { ships?: ApiShip[] | null } | null; to?: { ships?: ApiShip[] | null } | null };
-  errors?: { message: string }[];
+  errors?: { message: string; path?: (string | number)[] }[];
 }
 
 export async function fetchUpgradeTool(): Promise<UpgradeToolData> {
@@ -49,8 +51,14 @@ export async function fetchUpgradeTool(): Promise<UpgradeToolData> {
 
 /** Ships, SKUs on sale and warbond editions of an answer (prices there are in cents). */
 export function parseUpgradeTool(result: UpgradeToolResponse | undefined): UpgradeToolData {
-  if (result?.errors?.length) {
-    throw new Error(`Loading the ship upgrade tool failed: ${result.errors[0]!.message}`);
+  const error = result?.errors?.[0];
+  if (error) {
+    // Without a session RSI fails on the targets' account: "Cannot read properties of null
+    // (reading 'account')".
+    if (error.path?.[0] === 'to' && /\baccount\b/.test(error.message)) {
+      throw new RsiSignedOutError(`Loading the ship upgrade tool failed: ${error.message}`);
+    }
+    throw new Error(`Loading the ship upgrade tool failed: ${error.message}`);
   }
   const from = result?.data?.from?.ships ?? [];
   const to = result?.data?.to?.ships ?? [];

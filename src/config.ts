@@ -233,6 +233,16 @@ export const PLEDGE_STORE = {
    * `src/store/refresh-schedule.ts`).
    */
   fastWindow: { from: 59, to: 10, everyMs: 30 * 1000 },
+  /**
+   * A read of the upgrade tool or the store items holds a lease in the storage for at most this
+   * long, so RSI's tabs and the background script don't read at the same time (#163).
+   */
+  readLeaseMs: 60 * 1000,
+  /**
+   * While browser notifications are on, the background script looks this often whether the
+   * Pledge Store is due (an alarm; Chrome allows 30 seconds at the most).
+   */
+  backgroundCheckMinutes: 0.5,
   /** How often an open Pledge Store tab looks whether its offers are due. */
   dueCheckMs: 60 * 1000,
 } as const;

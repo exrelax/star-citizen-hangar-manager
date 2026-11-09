@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { RsiSignedOutError } from '@/shared/rsi-api';
 import { parseUpgradeTool } from './fetch-upgrade-tool';
 
 const media = (key: string) => ({ productThumbMediumAndSmall: `https://media/${key}.jpg` });
@@ -59,5 +60,15 @@ describe('parseUpgradeTool', () => {
   it('fails on errors and on answers without ships', () => {
     expect(() => parseUpgradeTool({ errors: [{ message: 'denied' }] })).toThrow('denied');
     expect(() => parseUpgradeTool({ data: { from: { ships: [] } } })).toThrow('no ships');
+  });
+
+  it('tells a missing session apart', () => {
+    const message = "Cannot read properties of null (reading 'account')";
+    expect(() => parseUpgradeTool({ errors: [{ message, path: ['to'] }] })).toThrow(
+      RsiSignedOutError,
+    );
+    expect(() => parseUpgradeTool({ errors: [{ message: 'denied', path: ['to'] }] })).not.toThrow(
+      RsiSignedOutError,
+    );
   });
 });

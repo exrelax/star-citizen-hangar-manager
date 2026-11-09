@@ -1,4 +1,6 @@
-import { UPGRADE_TOOL } from '@/config';
+import { PLEDGE_STORE, UPGRADE_TOOL } from '@/config';
+import { RsiSignedOutError } from '@/shared/rsi-api';
+import { withLease } from '@/storage/lease';
 import { settingsItem, withDefaults } from '@/settings/settings';
 import { hashOf, recordCheck, recordSync, type MetaItem } from '@/storage/meta';
 import { reactive, readonly } from 'vue';
@@ -70,11 +72,21 @@ async function storePart<T extends { version: number }>(
   await recordSync(meta, { at, fingerprint, ...(unchanged && { updatedAt: previous.updatedAt }) });
 }
 
-let running: Promise<void> | undefined;
+/**
+ * How a refresh ended: read, not due (or read elsewhere right now), not signed in to RSI (nothing
+ * stored, nothing logged: the next run tries again), or failed.
+ */
+export type RefreshResult = 'read' | 'skipped' | 'signedOut' | 'failed';
+
+/** The lease of the automatic reads, shared with the background script (see `withLease`). */
+const LEASE_KEY = 'local:ships.readLease';
+
+let running: Promise<RefreshResult> | undefined;
 
 /**
  * Reads the upgrade tool and stores its three parts, if the stored ones are older than `maxAgeMs`
- * (0: in any case). A failure keeps the stored data. Calls during a read wait for that read.
+ * (0: in any case). A failure keeps the stored data. Calls during a read wait for that read. An
+ * automatic read (`maxAgeMs` > 0) is skipped while another tab or the background script reads.
  */
 export function refreshUpgradeTool({
   maxAgeMs = 0,
@@ -84,31 +96,43 @@ export function refreshUpgradeTool({
   maxAgeMs?: number;
   fetchData?: () => Promise<UpgradeToolData>;
   now?: () => number;
-} = {}): Promise<void> {
+} = {}): Promise<RefreshResult> {
+  const read = () => readUpgradeTool(fetchData, now);
   running ??= (async () => {
-    if (!(await isUpgradeToolDue(maxAgeMs, now()))) return;
-    state.loading = true;
-    try {
-      const { ships, buyable, warbonds } = await fetchData();
-      const at = now();
-      const version = SHIPS_VERSION;
-      await Promise.all([
-        storePart(shipsItem, shipsMeta, { version, ships }, at),
-        storePart(buyableShipsItem, buyableShipsMeta, { version, skus: buyable }, at),
-        storePart(warbondsItem, warbondsMeta, { version, warbonds }, at),
-      ]);
-      state.error = undefined;
-    } catch (cause) {
-      console.warn('[star-citizen-hangar-manager] Ship upgrade tool unavailable', cause);
-      state.error = cause instanceof Error ? cause.message : String(cause);
-      await Promise.all(
-        PARTS.map(({ meta }) => recordCheck(meta, { status: 'failed' }, { at: now() })),
-      );
-    } finally {
-      state.loading = false;
-    }
+    if (!(await isUpgradeToolDue(maxAgeMs, now()))) return 'skipped' as const;
+    if (!maxAgeMs) return read();
+    return (await withLease(LEASE_KEY, PLEDGE_STORE.readLeaseMs, read, now)) ?? 'skipped';
   })().finally(() => (running = undefined));
   return running;
+}
+
+async function readUpgradeTool(
+  fetchData: () => Promise<UpgradeToolData>,
+  now: () => number,
+): Promise<RefreshResult> {
+  state.loading = true;
+  try {
+    const { ships, buyable, warbonds } = await fetchData();
+    const at = now();
+    const version = SHIPS_VERSION;
+    await Promise.all([
+      storePart(shipsItem, shipsMeta, { version, ships }, at),
+      storePart(buyableShipsItem, buyableShipsMeta, { version, skus: buyable }, at),
+      storePart(warbondsItem, warbondsMeta, { version, warbonds }, at),
+    ]);
+    state.error = undefined;
+    return 'read';
+  } catch (cause) {
+    if (cause instanceof RsiSignedOutError) return 'signedOut';
+    console.warn('[star-citizen-hangar-manager] Ship upgrade tool unavailable', cause);
+    state.error = cause instanceof Error ? cause.message : String(cause);
+    await Promise.all(
+      PARTS.map(({ meta }) => recordCheck(meta, { status: 'failed' }, { at: now() })),
+    );
+    return 'failed';
+  } finally {
+    state.loading = false;
+  }
 }
 
 /**
@@ -118,10 +142,10 @@ export function refreshUpgradeTool({
  */
 export async function maybeRefreshUpgradeTool(
   options: { fetchData?: () => Promise<UpgradeToolData>; now?: () => number } = {},
-): Promise<void> {
+): Promise<RefreshResult> {
   const settings = withDefaults(await settingsItem.getValue());
   const maxAgeMs = settings.smartUpdates
     ? upgradeToolMaxAgeMs((options.now ?? Date.now)(), settings.storeRefreshMinutes)
     : UPGRADE_TOOL.maxAgeWithoutSmartUpdatesMs;
-  await refreshUpgradeTool({ ...options, maxAgeMs });
+  return refreshUpgradeTool({ ...options, maxAgeMs });
 }

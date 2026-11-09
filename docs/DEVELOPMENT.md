@@ -128,7 +128,8 @@ Firefox removes temporary add-ons when it quits.
   first entry “Hangar Manager”. It opens the manager view at `/account/pledges#hangar-manager`.
 - **Background:** In Chrome, click **service worker** on the extension's entry in
   `chrome://extensions`; in Firefox, click **Inspect** in `about:debugging`. Errors and logs of the
-  background script show up there.
+  background script show up there. Whether it can read RSI without a page: **Settings →
+  Development → Read the Pledge Store in the background**.
 
 If the navigation entry does not appear in Firefox, check under `about:addons` → Star Citizen
 Hangar Manager → **Permissions** that access to `robertsspaceindustries.com` is allowed.
@@ -210,8 +211,18 @@ asked for with `permissions.request` only when the user turns its feature on.
   ask for it as an optional permission and lists no warning for it either – whether its update
   dialog asks is still to be checked with a test build before the release. Chrome fires alarms
   at most every 30 seconds; Firefox rounds periods below a minute up (to verify for #162).
-- **cookies** (maybe, for reading RSI from the background, #163): check together with `alarms`,
-  as it may show a warning.
+  Since #163 a second alarm (`shm-pledge-store`, every 30 seconds) reads the Pledge Store while
+  browser notifications are on (`store/background-schedule.ts`).
+- **No cookies permission** (#163): the background script reads RSI with `fetch` to absolute URLs
+  and `credentials: 'include'`; the host permission sends RSI's cookies. The `X-Rsi-Token` header
+  (from `document.cookie`) is only sent from pages: the Pledge Store search and the upgrade tool
+  work without it. Without any RSI session the upgrade tool fails on its targets
+  (`RsiSignedOutError`): the background then reads neither it nor the store items (RSI lists
+  fewer items without a session) and tries again at the next alarm, without logging an error.
+  To check, a development build has **Settings → Development → Read the Pledge Store in the
+  background**: the background script reads both once and shows what it got, nothing stored.
+  Checked on 2026-11-09 in Chrome and Firefox (Total Cookie Protection still sends RSI's
+  cookies): 242 ships, 4 warbonds, 680 store items in 16 requests, the same as the page.
 
 ## Storage
 

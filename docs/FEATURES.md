@@ -473,6 +473,10 @@ the full hour (local clock), while the manager is open in a visible tab:
 - **Pledge Store items** (about 13 requests): only at xx:00, xx:05, xx:10, xx:30 and xx:35.
 - A read missed meanwhile (browser closed, computer asleep) runs once at the next chance, not once
   per missed time. Only one tab reads at a time.
+- With **browser notifications** on, the extension reads the Pledge Store on the same schedule
+  also while no RSI page is open (an alarm every 30 seconds looks whether a read is due). It uses
+  your RSI cookies; signed out of RSI, it waits until you sign in again. Tabs and the background
+  never read at the same time.
 
 That is about 34 reads of the upgrade tool and 65 requests for the items per hour, instead of 12
 and 156 with the former 5-minute interval of the items. The refresh button and the initial load
