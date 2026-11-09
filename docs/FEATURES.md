@@ -87,8 +87,8 @@ Each check works in three steps:
   refreshed as well.
 - **Measured**: an unchanged hangar of ~1,000 pledges is checked in 0.4–0.7 seconds, the buy back of
   ~4,000 pledges in under 2 seconds with about 1.2 MB (3 MB before the small pages).
-- **Regular, but only when useful**: every 5 minutes (a setting) while the manager is open in a
-  visible tab – it looks 10 seconds after its last look, once any check is done, whether the
+- **Regular, but only when useful**: every 5 minutes (a setting; longer while nothing happens, see
+  below) while the manager is open in a visible tab – it looks 10 seconds after its last look, once any check is done, whether the
   interval has passed (only a look into the stored data, no request to RSI) – and right away when
   you come back from RSI's "My Gear" page, where you may just have melted or gifted something. A
   hidden tab sends no requests and checks when it is shown again. Several open tabs check only
@@ -670,7 +670,9 @@ In the order of the settings tab:
     display notifications (never at install or update); a first notification confirms it. Refused,
     it stays off and says so; turned off – here or in the browser's own settings – the permission
     goes back. The sidebar's "Notifications" box needs no permission. So far one tells when the
-    Paint Discount Consultant's filler paints can be melted.
+    Paint Discount Consultant's filler paints can be melted. With them on, the extension also reads
+    the Pledge Store on its schedule while no RSI page is open (see
+    [Pledge Store](#pledge-store-current-warbond-ccus)).
   - **Show dismissed paint notifications again**: the Paint Discount Consultant's notification
     shows again for all paints, also those dismissed with its × (on all browsers, as the dismissed
     paints are synced).
@@ -689,17 +691,22 @@ In the order of the settings tab:
   - **Check hangar, buy back and orders for changes** (on by default) – see
     [Built for speed](#built-for-speed).
   - **Check for changes every** 5 minutes (1 to 1440; the default) while the manager is open in a
-    visible tab.
+    visible tab; up to 4 times as long while checks find nothing and nobody uses the tab (see
+    [Built for speed](#built-for-speed)).
+  - Besides, a check runs when the manager is opened or shown again, when "My Gear" or "Buy Back
+    Pledges" is opened (when due), and a few seconds after an own exchange, gift or upgrade there.
   - **Spot checks per check (only for changes within an existing pledge)**: 2 hangar pages (1 to 10; the default) besides the first and the
     last one. Added or removed pledges are found by every check anyway; the spot checks find
     changes within a pledge (new items, gift status, …). The hint below shows, for your number of
     hangar pages, how likely such a change shows in the next check and after how many checks every
-    page was checked.
+    page was checked. The buy back always takes one spot check page in full size (its count is
+    compared with small pages).
   - **Outside the full hour, read the warbond CCUs of the Pledge Store again after** 5 minutes
     (1 to 1440; the default), together with the ships and their prices. From xx:59 to xx:10 they
     are read every 30 seconds, and the Pledge Store items at xx:00, xx:05, xx:10, xx:30 and xx:35
     (see [Pledge Store](#pledge-store-current-warbond-ccus)); the hint explains the schedule.
-    With smart updates off, both once a day and with the refresh button.
+    Both while the manager is open in a visible tab, and with browser notifications on also while
+    no RSI page is open. With smart updates off, both once a day and with the refresh button.
 - **Filters**: order and selection of the filter buttons, separately for My Hangar and Buy Back
   and for types and features – drag a filter (or use its arrows) to move it within its group,
   uncheck it to hide its button.
