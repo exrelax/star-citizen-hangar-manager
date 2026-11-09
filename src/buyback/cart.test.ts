@@ -6,13 +6,16 @@ import { addBuybackToCart, CartError } from './cart';
 const ok = { success: 1, code: 'OK', msg: 'OK', data: null };
 const upgrade = { fromShipId: 268, toShipId: 5, toSkuId: 12991 };
 
+/** The path of a request to RSI (they go to its absolute URL). */
+const pathOf = (url: unknown) => new URL(String(url)).pathname;
+
 /** Answers RSI's API by path; records the requests. */
 function mockRsi(answers: Record<string, unknown>) {
-  const fetchMock = vi.fn<typeof fetch>(async (path) => Response.json(answers[String(path)] ?? ok));
+  const fetchMock = vi.fn<typeof fetch>(async (url) => Response.json(answers[pathOf(url)] ?? ok));
   vi.stubGlobal('fetch', fetchMock);
   const requests = () =>
-    fetchMock.mock.calls.map(([path, init]) => ({
-      path,
+    fetchMock.mock.calls.map(([url, init]) => ({
+      path: pathOf(url),
       body: init?.body ? JSON.parse(init.body as string) : undefined,
       token: (init?.headers as Record<string, string>)['X-Rsi-Token'],
     }));

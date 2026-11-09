@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { UPGRADE_TOOL } from '@/config';
 import { settingsItem } from '@/settings/settings';
+import { RsiSignedOutError } from '@/shared/rsi-api';
 import type { UpgradeToolData } from './ships';
 import {
   buyableShipsItem,
@@ -84,6 +85,29 @@ describe('refreshUpgradeTool', () => {
     const fetchData = vi.fn(async () => DATA);
     await Promise.all([refreshUpgradeTool({ fetchData }), refreshUpgradeTool({ fetchData })]);
     expect(fetchData).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('refreshUpgradeTool results', () => {
+  it('stores nothing and logs nothing without a session', async () => {
+    const warn = vi.spyOn(console, 'warn');
+    const fetchData = vi.fn(async () => {
+      throw new RsiSignedOutError();
+    });
+    expect(await refreshUpgradeTool({ fetchData, now: () => START })).toBe('signedOut');
+    expect(warn).not.toHaveBeenCalled();
+    expect((await warbondsMeta.getValue()).checkedAt).toBe(0);
+  });
+
+  it('skips an automatic read while another one holds the lease', async () => {
+    await storage.setItem('local:ships.readLease', { until: START + MINUTE });
+    const fetchData = vi.fn(async () => DATA);
+    expect(await refreshUpgradeTool({ fetchData, maxAgeMs: MINUTE, now: () => START })).toBe(
+      'skipped',
+    );
+    expect(fetchData).not.toHaveBeenCalled();
+    // The refresh button reads anyway.
+    expect(await refreshUpgradeTool({ fetchData, now: () => START })).toBe('read');
   });
 });
 

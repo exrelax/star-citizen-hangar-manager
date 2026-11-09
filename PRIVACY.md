@@ -88,7 +88,9 @@ sees or stores your RSI login.
   put a buy back pledge or the paints of the Paint Discount Consultant into your cart (it reads
   the cart first; nothing is ever checked out), to exchange (melt) or gift a pledge, and to open invoices.
   "Refund Request" opens RSI's support form (support.robertsspaceindustries.com) in a new tab,
-  prefilled with the order ID; you review and send it yourself.
+  prefilled with the order ID; you review and send it yourself. With browser notifications on,
+  the extension also reads the Pledge Store (warbond CCUs and store items, public data) from RSI
+  while no RSI page is open, with your RSI cookies, on the same schedule as in the manager.
 - **api.fleetyards.net** (FleetYards.net): to link your ships to their pages on FleetYards.net and
   erkul.games, the extension loads FleetYards' public list of ship models and the details of the
   models in your hangar. These requests contain nothing but ship model names (e.g. "polaris") –
@@ -122,14 +124,16 @@ visiting it doesn't contact GitHub's API.
 
 - **storage**: keeps the data and settings described above in your browser.
 - **unlimitedStorage**: large hangars and buy backs can exceed the default storage quota.
-- **alarms**: a timer in your browser for when the Paint Discount Consultant's filler paints can be
-  melted, so a browser notification can tell you then (only with browser notifications on).
+- **alarms**: timers in your browser, only with browser notifications on: for when the Paint
+  Discount Consultant's filler paints can be melted, and to read the Pledge Store around the full
+  hour while no RSI page is open.
 - **notifications** (optional): asked for only when you turn on Settings → Notifications →
   "Browser notifications", on a page of the extension, never at install or update. Without it,
   nothing changes – the sidebar's notifications need no permission. Turning the setting off gives
   the permission back; you can also take it back in your browser's settings for the extension.
 - **Access to robertsspaceindustries.com**: shows the Hangar Manager on RSI's account pages and
-  reads your hangar there.
+  reads your hangar there; with browser notifications on, also the Pledge Store from the
+  background.
 - **Access to ccugame.app** (content script): adds the links to the Hangar Manager.
 
 ## Deleting your data

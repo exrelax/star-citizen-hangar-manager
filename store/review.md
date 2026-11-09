@@ -26,7 +26,7 @@ Large hangars and buy backs (thousands of pledges with their items, plus orders)
 **alarms**
 
 ```text
-Sets a single alarm for the time the user's filler paints of the Paint Discount Consultant can be melted (24 hours after their order), so the extension can show a browser notification then, also while no RSI page is open. Only with browser notifications turned on is anything shown; nothing is sent anywhere.
+Only with browser notifications turned on: an alarm for the time the user's filler paints of the Paint Discount Consultant can be melted (24 hours after their order), so the extension can show a browser notification then, also while no RSI page is open; and an alarm every 30 seconds that reads RSI's Pledge Store (warbond offers and store items) when due – every 30 seconds around the full hour, otherwise every few minutes – so changes can be notified without an open RSI page. Nothing is sent anywhere else.
 ```
 
 **notifications** (optional permission)
@@ -38,7 +38,7 @@ Optional, off by default. Requested with permissions.request only when the user 
 **Host permission: https://robertsspaceindustries.com/\***
 
 ```text
-The manager is shown on RSI's account pages (a new entry in the account navigation). It reads the user's hangar, buy back and orders from RSI's pages with the session the user is already logged in with. Actions on RSI (exchange, gift, adding a buy back pledge to the cart) are sent only when the user clicks them.
+The manager is shown on RSI's account pages (a new entry in the account navigation). It reads the user's hangar, buy back and orders from RSI's pages with the session the user is already logged in with. Actions on RSI (exchange, gift, adding a buy back pledge to the cart) are sent only when the user clicks them. With browser notifications turned on, the background script also reads RSI's Pledge Store (public offers) while no RSI page is open.
 ```
 
 **Content script on https://ccugame.app/\***

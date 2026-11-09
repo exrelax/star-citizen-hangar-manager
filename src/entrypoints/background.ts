@@ -8,6 +8,11 @@ import {
 } from '@/notifications/browser-permission';
 import { OPEN_STYLEGUIDE } from '@/shared/messages';
 import {
+  READ_PLEDGE_STORE_IN_BACKGROUND,
+  testReadPledgeStore,
+  watchPledgeStore,
+} from '@/store/background-schedule';
+import {
   listenToFillerClicks,
   watchFillerNotification,
 } from '@/store/paint-consultant/filler-notification';
@@ -47,12 +52,18 @@ export default defineBackground(() => {
   // their order, then a browser notification.
   watchFillerNotification();
 
+  // The Pledge Store on the schedule around the full hour, also with no RSI tab open (#163):
+  // while browser notifications are on.
+  watchPledgeStore();
+
   // Development only: the manager's "Styleguide" link opens the styleguide page in a new tab.
   if (import.meta.env.DEV) {
     browser.runtime.onMessage.addListener((message) => {
       if (message === OPEN_STYLEGUIDE) {
         void browser.tabs.create({ url: browser.runtime.getURL('/styleguide.html') });
       }
+      // The Development settings: can the background read the Pledge Store from RSI?
+      if (message === READ_PLEDGE_STORE_IN_BACKGROUND) return testReadPledgeStore();
     });
   }
 });
