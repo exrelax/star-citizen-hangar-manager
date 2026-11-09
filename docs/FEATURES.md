@@ -67,9 +67,10 @@ Each check works in three steps:
    first, by the time of the action, also for old pledges. Its first page shows whether anything
    happened since the last check and which pledges it was about (bought, melted, bought back,
    upgraded, gift claimed, …). It also brings in new orders and their refund periods.
-2. **Then the buy back**: its first and last page, one rotating spot-check page (its pages are
-   much larger) and the pages of the pledges named by the log. A pledge new in the buy back was
-   melted, so it has to be gone from the hangar.
+2. **Then the buy back**: its first and last page and the pages of the pledges named by the log,
+   all with small pages of 10 pledges (~80 KB instead of ~1 MB for RSI's 250), and one rotating
+   spot-check page in full size. A pledge new in the buy back was melted, so it has to be gone
+   from the hangar.
 3. **Then the hangar**: its first and last page, two rotating spot-check pages (a setting, up to 10) and the pages of the pledges named by the log and of those just melted.
 
 - **Exact, not guessed**: RSI lists pledges strictly by ID, newest first. So every page covers a
@@ -85,7 +86,7 @@ Each check works in three steps:
 - **Follows the consequences**: an applied CCU disappears and changes another pledge, which is
   refreshed as well.
 - **Measured**: an unchanged hangar of ~1,000 pledges is checked in 0.4–0.7 seconds, the buy back of
-  ~4,000 pledges in 1–3 seconds.
+  ~4,000 pledges in under 2 seconds with about 1.2 MB (3 MB before the small pages).
 - **Regular, but only when useful**: every 5 minutes (a setting) while the manager is open in a
   visible tab – it looks 10 seconds after its last look, once any check is done, whether the
   interval has passed (only a look into the stored data, no request to RSI) – and right away when

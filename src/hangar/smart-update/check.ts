@@ -66,19 +66,18 @@ interface CheckBase {
   nextCursor: number;
 }
 
+/** A list with changes found by a check. */
+export interface ListUpdate<T extends ListEntry> {
+  status: 'updated';
+  /** The complete new list, in RSI's order. */
+  pledges: T[];
+  added: T[];
+  removed: T[];
+  changed: T[];
+}
+
 export type CheckResult<T extends ListEntry = Pledge> = CheckBase &
-  (
-    | { status: 'unchanged' }
-    | { status: 'needsFullSync' }
-    | {
-        status: 'updated';
-        /** The complete new list, in RSI's order. */
-        pledges: T[];
-        added: T[];
-        removed: T[];
-        changed: T[];
-      }
-  );
+  ({ status: 'unchanged' } | { status: 'needsFullSync' } | ListUpdate<T>);
 
 /** Spot check pages for this run: the next ones in the rotation over pages 2 … lastPage - 1. */
 export function pickSpotPages(cursor: number, lastPage: number, count: number) {
@@ -327,6 +326,63 @@ export async function checkList<T extends ListEntry>(
     changed: pledges.filter((pledge) => changedIds.has(pledge.id)),
     requests,
     nextCursor: spot.nextCursor,
+  };
+}
+
+/**
+ * Checks single pages of a list for changes – the spot check of a list whose number of entries
+ * was compared with smaller pages (the buy back, #126). Each loaded page covers a closed id range,
+ * so the stored entries in its range are compared with it. A page that isn't full (the list changed
+ * while loading) is skipped: the next check finds it.
+ */
+export async function checkPages<T extends ListEntry>(
+  stored: T[],
+  options: {
+    fetchPage: (page: number) => Promise<ListPage<T>>;
+    pages: readonly number[];
+    pageSize: number;
+    fingerprint: (entry: T) => string;
+    merge?: (fresh: T, stored: T) => T;
+  },
+): Promise<{ requests: number } & ({ status: 'unchanged' } | ListUpdate<T>)> {
+  const { fetchPage, pages, pageSize, fingerprint, merge = (fresh) => fresh } = options;
+  const loaded = await Promise.all(pages.map((page) => fetchPage(page)));
+  const fresh = new Map<number, T>();
+  const ranges: [number, number][] = [];
+  loaded.forEach(({ pledges, lastPage }, index) => {
+    if (!pledges.length || (pages[index]! < lastPage && pledges.length !== pageSize)) return;
+    ranges.push([pledges.at(-1)!.id, pledges[0]!.id]);
+    for (const pledge of pledges) fresh.set(pledge.id, pledge);
+  });
+  const inRange = (id: number) => ranges.some(([low, high]) => id >= low && id <= high);
+  const storedById = new Map(stored.map((pledge) => [pledge.id, pledge]));
+  const removed = stored.filter((pledge) => inRange(pledge.id) && !fresh.has(pledge.id));
+  const added = [...fresh.values()].filter((pledge) => !storedById.has(pledge.id));
+  const changedIds = new Set(
+    [...fresh.values()]
+      .filter((pledge) => {
+        const old = storedById.get(pledge.id);
+        return old !== undefined && fingerprint(old) !== fingerprint(pledge);
+      })
+      .map((pledge) => pledge.id),
+  );
+  const requests = pages.length;
+  if (!removed.length && !added.length && !changedIds.size)
+    return { status: 'unchanged', requests };
+  const removedIds = new Set(removed.map((pledge) => pledge.id));
+  const pledges = [
+    ...stored
+      .filter((pledge) => !removedIds.has(pledge.id))
+      .map((pledge) => (changedIds.has(pledge.id) ? merge(fresh.get(pledge.id)!, pledge) : pledge)),
+    ...added,
+  ].sort((a, b) => b.id - a.id);
+  return {
+    status: 'updated',
+    pledges,
+    added,
+    removed,
+    changed: pledges.filter((pledge) => changedIds.has(pledge.id)),
+    requests,
   };
 }
 

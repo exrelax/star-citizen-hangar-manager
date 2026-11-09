@@ -2,7 +2,13 @@ import { BUYBACK_PAGE_SIZE, SMART_UPDATE } from '@/config';
 import { PLEDGE_CATEGORIES } from '@/hangar/pledge';
 import { hangarSnapshot } from '@/hangar/hangar-storage';
 import { recordCheck, type CheckOutcome } from '@/storage/meta';
-import { checkList } from '@/hangar/smart-update/check';
+import {
+  checkList,
+  checkPages,
+  pickSpotPages,
+  type CheckResult,
+  type ListUpdate,
+} from '@/hangar/smart-update/check';
 import {
   BUYBACK_SNAPSHOT_VERSION,
   buybackFingerprint,
@@ -16,6 +22,11 @@ import { enrichBuyback, fetchBuybackPage, type BuybackSyncDeps } from './sync-bu
 /**
  * Smart update of the buy back, the same way as the hangar's (see check.ts). Melted pledges keep
  * their old id, so they appear anywhere in the list – the binary search finds them.
+ *
+ * Its pages are large (250 pledges, ~1 MB), so the number of pledges is compared with small pages
+ * (#126, `SMART_UPDATE.buybackCount`): first and last page, the pages of the pledge log's pledges
+ * and the binary search. Only the rotating spot check loads a full page, for changes within a
+ * pledge that keep the number.
  */
 export async function runBuybackSmartUpdate(
   deps: BuybackSyncDeps & {
@@ -34,19 +45,37 @@ export async function runBuybackSmartUpdate(
 
   // The first page is always checked; it shows the current buy back tokens, too.
   let tokens = snapshot.tokens;
-  const result = await checkList(snapshot.pledges, {
+  const { pageSize, maxRepairPages } = SMART_UPDATE.buybackCount;
+  const counted = await checkList(snapshot.pledges, {
     fetchPage: async (page) => {
-      const listPage = await fetchPage(page);
+      const listPage = await fetchPage(page, undefined, pageSize);
       if (page === 1 && listPage.tokens !== undefined) tokens = listPage.tokens;
       return listPage;
     },
-    cursor: meta.cursor ?? 0,
-    pageSize: BUYBACK_PAGE_SIZE,
-    spotCheckPages: SMART_UPDATE.buybackSpotCheckPages,
+    cursor: 0,
+    pageSize,
+    spotCheckPages: 0,
+    maxRepairPages,
     fingerprint: buybackFingerprint,
     merge: withBuybackExtensionData,
     hintIds,
   });
+
+  // The spot check: full pages, rotating over the list as it is after the comparison.
+  const current = counted.status === 'updated' ? counted.pledges : snapshot.pledges;
+  const spot = pickSpotPages(
+    meta.cursor ?? 0,
+    Math.max(1, Math.ceil(current.length / BUYBACK_PAGE_SIZE)),
+    counted.status === 'needsFullSync' ? 0 : SMART_UPDATE.buybackSpotCheckPages,
+  );
+  const spotted = await checkPages(current, {
+    fetchPage: (page) => fetchPage(page, undefined, BUYBACK_PAGE_SIZE),
+    pages: spot.pages,
+    pageSize: BUYBACK_PAGE_SIZE,
+    fingerprint: buybackFingerprint,
+    merge: withBuybackExtensionData,
+  });
+  const result = combined(counted, spotted, spot.nextCursor);
 
   const save = (outcome: Omit<CheckOutcome, 'at'>) =>
     recordCheck(
@@ -99,6 +128,33 @@ export async function runBuybackSmartUpdate(
     removed: removed.length,
     changed: changed.length,
   });
+}
+
+/** The result of the comparison with small pages and the spot check together. */
+function combined(
+  counted: CheckResult<BuybackPledge>,
+  spotted: Awaited<ReturnType<typeof checkPages<BuybackPledge>>>,
+  nextCursor: number,
+): CheckResult<BuybackPledge> {
+  const base = { requests: counted.requests + spotted.requests, nextCursor };
+  if (counted.status === 'needsFullSync') return { ...base, status: 'needsFullSync' };
+  if (counted.status !== 'updated' && spotted.status !== 'updated') {
+    return { ...base, status: 'unchanged' };
+  }
+  const parts = [counted, spotted].filter(
+    (part): part is typeof part & ListUpdate<BuybackPledge> => part.status === 'updated',
+  );
+  // The spot check ran on the list after the comparison: its list is the newest.
+  const pledges = parts.at(-1)!.pledges;
+  const changedIds = new Set(parts.flatMap((part) => part.changed.map((pledge) => pledge.id)));
+  return {
+    ...base,
+    status: 'updated',
+    pledges,
+    added: parts.flatMap((part) => part.added),
+    removed: parts.flatMap((part) => part.removed),
+    changed: pledges.filter((pledge) => changedIds.has(pledge.id)),
+  };
 }
 
 /** Whether the stored buy back is still `snapshot`: no sync or other update stored meanwhile. */
