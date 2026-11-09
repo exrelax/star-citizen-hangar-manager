@@ -56,16 +56,25 @@ export interface BuybackSnapshot {
 
 export const BUYBACK_SNAPSHOT_VERSION = 1;
 
-const SEVERAL_ITEMS = /^(.*) and (\d+) items?$/i;
+/**
+ * RSI's "Contained" of a pledge with several items: "Fury and 4 items", or only "2 items" when no
+ * item is named (e.g. "Add-Ons - Galaxy - Cargo Module - IAE": the module and its insurance).
+ */
+const SEVERAL_ITEMS = /^(?:(.*) and )?(\d+) items?$/i;
 
 /** Whether the pledge has more items than the one named in "Contained". */
 export function hasSeveralItems(pledge: Pick<BuybackPledge, 'contained'>): boolean {
   return SEVERAL_ITEMS.test(pledge.contained);
 }
 
-/** The item named in "Contained" ("Fury and 4 items" → "Fury"). */
-export function mainItem(pledge: Pick<BuybackPledge, 'contained'>): string {
-  return SEVERAL_ITEMS.exec(pledge.contained)?.[1]?.trim() ?? pledge.contained.trim();
+/**
+ * The item named in "Contained" ("Fury and 4 items" → "Fury"); with only a count ("2 items") the
+ * first item of the detail page, if read, else none ('').
+ */
+export function mainItem(pledge: Pick<BuybackPledge, 'contained' | 'items'>): string {
+  const several = SEVERAL_ITEMS.exec(pledge.contained);
+  if (!several) return pledge.contained.trim();
+  return several[1]?.trim() ?? pledge.items?.[0] ?? '';
 }
 
 /** Ships of a buy back pledge: the main item of ship pledges and packages. */
@@ -75,7 +84,8 @@ export function buybackShipNames(pledge: BuybackPledge): string[] {
     pledge.category === 'standalone_ship' ||
     pledge.category === 'game_package' ||
     /^(standalone ships?|package)\b/i.test(pledge.title);
-  return isShipPledge && pledge.contained ? [mainItem(pledge)] : [];
+  const main = mainItem(pledge);
+  return isShipPledge && main ? [main] : [];
 }
 
 /** Content as RSI shows it, to notice changes in smart updates. */

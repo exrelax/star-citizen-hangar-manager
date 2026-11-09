@@ -115,6 +115,15 @@ describe('contained helpers', () => {
     expect(mainItem({ contained: 'F8C Lightning and 2 items' })).toBe('F8C Lightning');
   });
 
+  it('knows several items also by a count alone', () => {
+    // "Add-Ons - Galaxy - Cargo Module - IAE": the module and its insurance.
+    const contained = '2 items';
+    expect(hasSeveralItems({ contained })).toBe(true);
+    expect(mainItem({ contained })).toBe('');
+    const items = ['Galaxy - Cargo Module', '120 Month Insurance'];
+    expect(mainItem({ contained, items })).toBe('Galaxy - Cargo Module');
+  });
+
   it('names ships only for ship pledges and packages', () => {
     const base = { id: 1, contained: 'Fury and 4 items', isUpgrade: false } as BuybackPledge;
     expect(buybackShipNames({ ...base, title: 'Standalone Ship - Fury' })).toEqual(['Fury']);
@@ -123,6 +132,21 @@ describe('contained helpers', () => {
 });
 
 describe('toBuybackView', () => {
+  it('lists all items of a pledge that names none in "Contained"', () => {
+    const view = toBuybackView(
+      {
+        id: 62182501,
+        title: 'Add-Ons - Galaxy - Cargo Module - IAE',
+        contained: '2 items',
+        isUpgrade: false,
+        items: ['Galaxy - Cargo Module', '120 Month Insurance'],
+      },
+      { position: 0, idLimit: undefined },
+    );
+    expect(view.items).toEqual(['Galaxy - Cargo Module', '120 Month Insurance']);
+    expect(view.insurance).toBeDefined();
+  });
+
   const pledge = (overrides: Partial<BuybackPledge>): BuybackPledge => ({
     id: 100,
     title: 'Standalone Ship - Fury',
