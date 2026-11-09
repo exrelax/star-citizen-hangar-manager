@@ -644,6 +644,28 @@ html .shm-theme-modern .shm-button.is-danger:not(:disabled):focus-visible {
   background: color-mix(in srgb, var(--shm-danger) 25%, transparent);
 }
 
+/* ---- Paint Discount Consultant, both ways side by side: grouped surfaces without outlines ---- */
+
+html .shm-theme-modern .shm-ways-panel:not(.shm-way),
+html .shm-theme-modern .shm-ways .shm-ways-paint {
+  background: var(--shm-surface-elevated);
+  border-color: transparent;
+}
+
+html .shm-theme-modern .shm-ways .shm-ways-paint.is-own {
+  border-color: var(--shm-outline);
+}
+
+/* The way cards keep a ring in their color; "melt first" without an advantage only a faint one. */
+html .shm-theme-modern .shm-ways .shm-way {
+  background: var(--shm-surface-elevated);
+}
+
+html .shm-theme-modern .shm-ways.is-same .shm-way.is-melt,
+html .shm-theme-modern .shm-ways .shm-way.is-impossible {
+  border-color: var(--shm-separator);
+}
+
 /* ---- Settings: grouped sections ---- */
 
 html .shm-theme-modern .shm-setting {

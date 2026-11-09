@@ -54,6 +54,7 @@ describe('withDefaults', () => {
         useFillers: true,
         skipGiftable: true,
         reboughtDetection: 'plan',
+        layout: 'ways',
       },
       shipLinks: { erkul: false, fleetyards: true },
     });
@@ -71,13 +72,24 @@ describe('withDefaults', () => {
         compactView: 'no',
         storeRefreshMinutes: 2.5,
         filters: { hangar: 'all', buyback: { order: 5 } },
-        paintConsultant: { useStoreCredit: 'yes', useFillers: 0, reboughtDetection: 'always' },
+        paintConsultant: {
+          useStoreCredit: 'yes',
+          useFillers: 0,
+          reboughtDetection: 'always',
+          layout: 'cards',
+        },
         sidebarOrder: 'summary',
         sidebarCollapsed: ['events'],
         sidebar: 'no',
         sidebarHidden: 'summary',
       } as never),
     ).toEqual(DEFAULT_SETTINGS);
+  });
+
+  it('keeps the table layout of the Paint Discount Consultant', () => {
+    expect(
+      withDefaults({ paintConsultant: { layout: 'table' } } as never).paintConsultant.layout,
+    ).toBe('table');
   });
 
   it('accepts whole minutes in range for the store refresh only', () => {

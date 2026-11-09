@@ -20,7 +20,11 @@ import {
  * added (`filled`). Nothing is ever checked out.
  */
 
-const props = defineProps<{ lines: readonly PaintCartLine[] }>();
+const props = defineProps<{
+  lines: readonly PaintCartLine[];
+  /** The button's text; "Put the N paints into the cart" without it. */
+  label?: string;
+}>();
 const emit = defineEmits<{ filled: [result: CartResult] }>();
 
 // The demo is for screenshots: nothing goes into the real cart.
@@ -88,7 +92,7 @@ function report(failure: unknown) {
     @click="toCart"
   >
     <SvgIcon name="basket-shopping" />
-    {{ i18n.t('consultant.toCart', [count]) }}
+    {{ label ?? i18n.t('consultant.toCart', [count]) }}
   </button>
 
   <div v-if="state === 'occupied'" class="shm-consultant-note" role="alert">

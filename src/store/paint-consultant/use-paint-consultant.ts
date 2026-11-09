@@ -38,6 +38,8 @@ export interface PaintConsultantState {
   storeItems: ComputedRef<readonly StoreItem[] | undefined>;
   /** The store credit is to be used, but isn't known (yet): it counts as $0. */
   creditUnknown: ComputedRef<boolean>;
+  /** The store credit the plan may use, in USD (0 if the setting leaves it out). */
+  storeCredit: ComputedRef<number>;
   result: ComputedRef<PaintConsultantResult | undefined>;
   /** Paints of the kept plan melted first and left to buy again (#168). */
   pending: ComputedRef<PendingRebuy | undefined>;
@@ -101,12 +103,14 @@ export function providePaintConsultant({
   });
   const creditUnknown = computed(() => options.value.useStoreCredit && credit.value === undefined);
 
+  const storeCredit = computed(() => (options.value.useStoreCredit ? (credit.value ?? 0) : 0));
+
   const result = computed(() =>
     storeItems.value
       ? planPaintRebuy({
           pledges: pledges(),
           storeItems: storeItems.value,
-          storeCredit: options.value.useStoreCredit ? (credit.value ?? 0) : 0,
+          storeCredit: storeCredit.value,
           useFillers: options.value.useFillers,
           skipGiftable: options.value.skipGiftable,
           keptPlan: keptPlan.value,
@@ -155,7 +159,14 @@ export function providePaintConsultant({
     paintRebuys.value = marks;
   });
 
-  const state = { pledges: computed(pledges), storeItems, creditUnknown, result, pending };
+  const state = {
+    pledges: computed(pledges),
+    storeItems,
+    creditUnknown,
+    storeCredit,
+    result,
+    pending,
+  };
   provide(KEY, state);
   return state;
 }

@@ -52,7 +52,12 @@ async function storeExample(credit = 1) {
 
 async function render(pledges: ReturnType<typeof paint>[], settings: Partial<Settings> = {}) {
   const root = document.createElement('div');
-  const all = { ...DEFAULT_SETTINGS, ...settings };
+  // The tests below see the table layout unless they ask for the cards.
+  const all = {
+    ...DEFAULT_SETTINGS,
+    paintConsultant: { ...DEFAULT_SETTINGS.paintConsultant, layout: 'table' as const },
+    ...settings,
+  };
   // As App.vue does: the result is provided to the consultant.
   app = createApp({
     setup() {
@@ -105,6 +110,7 @@ describe('PaintConsultant', () => {
         useFillers: false,
         skipGiftable: true,
         reboughtDetection: 'plan',
+        layout: 'table',
       },
     });
     // Without fillers, 5 own paints reach 25 % and the melt value pays for it.
@@ -136,6 +142,7 @@ describe('PaintConsultant', () => {
         useFillers: true,
         skipGiftable: false,
         reboughtDetection: 'plan',
+        layout: 'table',
       },
     });
     expect(marked.querySelectorAll('.shm-consultant-tag')).toHaveLength(2);
@@ -233,5 +240,66 @@ describe('PaintConsultant', () => {
     expect(section?.querySelector('.shm-consultant-cart button')?.textContent).toContain(
       'Put the 10 paints into the cart',
     );
+  });
+  describe('both ways side by side (the default layout)', () => {
+    const cards = { paintConsultant: DEFAULT_SETTINGS.paintConsultant };
+    const way = (root: HTMLElement, kind: 'buy' | 'melt') =>
+      root.querySelector<HTMLElement>(`.shm-way.is-${kind}`)!;
+    const buttons = (root: HTMLElement) => [...root.querySelectorAll<HTMLButtonElement>('button')];
+
+    it('is the default and shows the same result for both ways', async () => {
+      expect(DEFAULT_SETTINGS.paintConsultant.layout).toBe('ways');
+      const root = await render(await storeExample(40), cards);
+      expect(root.querySelector('.shm-consultant-table')).toBeNull();
+      expect(text(root)).toContain('Same result on both ways');
+      expect(text(root)).toContain('Two ways to the same +$8.75');
+      expect(root.querySelectorAll('.shm-ways-paint')).toHaveLength(10);
+      expect(text(way(root, 'buy'))).toContain('Recommended');
+      // Paid first: $40 − $26, then the melt value and the fillers: $48.75 in the end.
+      expect(text(way(root, 'buy'))).toContain('$14');
+      expect(text(way(root, 'buy'))).toContain('$48.75');
+      expect(text(way(root, 'melt'))).toContain('No advantage here');
+      expect(root.querySelector('.shm-ways-why')).toBeNull();
+      expect(root.querySelector('.shm-ways-chart svg')).not.toBeNull();
+    });
+
+    it('buys first at a lower tier when the store credit pays only that one', async () => {
+      // $20: the 35 % cart costs $26, the 25 % one ($25 × 0.75) $18.75.
+      const root = await render(await storeExample(20), cards);
+      expect(text(root)).toContain('Two ways – with $20 both work, at different discounts');
+      expect(text(way(root, 'buy'))).toContain('25%');
+      expect(text(way(root, 'buy'))).toContain('Put the 5 paints into the cart');
+      expect(text(way(root, 'melt'))).toContain('35%');
+      expect(root.querySelectorAll('.shm-ways-formulas > span')).toHaveLength(2);
+      expect(text(root.querySelector('.shm-ways-why')!)).toContain('35% would cost $26');
+    });
+
+    it("can't buy first without enough store credit", async () => {
+      const root = await render(await storeExample(1), cards);
+      expect(text(root)).toContain('Two ways – with $1 only one works');
+      expect(text(way(root, 'buy'))).toContain('Not possible');
+      const needs = buttons(way(root, 'buy')).find((b) => b.textContent?.includes('Needs $25'));
+      expect(needs?.disabled).toBe(true);
+      expect(text(way(root, 'melt'))).toContain('Fill the cart and save the plan');
+    });
+
+    it('offers melting first only after the cart was filled', async () => {
+      const pledges = await storeExample(1);
+      const settings = { ...cards, bulkMelting: true };
+      const before = await render(pledges, settings);
+      expect(buttons(way(before, 'melt')).some((b) => b.textContent?.includes('Melt the'))).toBe(
+        false,
+      );
+      app?.unmount();
+
+      await storePlan(pledges.map((pledge) => pledge.id));
+      const after = await render(pledges, settings);
+      const melt = buttons(way(after, 'melt')).find((b) => b.textContent?.includes('Melt the 5'));
+      melt!.click();
+      await nextTick();
+      expect(document.querySelector('.shm-action-dialog')?.textContent).toContain(
+        'checked it there',
+      );
+    });
   });
 });

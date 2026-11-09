@@ -519,6 +519,20 @@ it into store credit with the paints you already own:
   Disabled in the demo mode.
 - **Two ways**: buying first and melting after (recommended, safer, but the store credit of the
   own paints isn't free for the cart yet), or melting first and buying after.
+- **Both ways side by side** (the default layout; the setting "Layout" switches to the tables):
+  - **Buy first** pays the whole cart from the store credit before any paint is melted, so it
+    takes the best tier the store credit pays alone – the same as melting first, a lower one, or
+    none ("Needs $… more store credit").
+  - **Melt first** fills the cart and keeps the plan, melts the own paints (with bulk melting on,
+    once its cart was filled) and pays with their melt value.
+  - On top, the store credit each way frees and the discount tiers they reach. Below that, the
+    cart as cards: own paints ("Yours") and fillers, with the standard price and the price in the
+    cart – for both carts when the tiers differ.
+  - When the ways differ, "Why they differ" compares what each needs before melting with the store
+    credit there is. Each way has its own card: discount, store credit freed, what it needs
+    upfront, its steps with the store credit after each one, a hint and its cart button.
+  - A chart shows the store credit along both ways, and short notes say what to know before you
+    start.
 - **Melt the own paints at once** (with the experimental bulk melting on): a button opens the bulk
   melting dialog with exactly the own paints of the plan and the store credit they give. Once these
   paints were put into the cart, the dialog asks to confirm that the cart was checked. Before that
@@ -628,6 +642,8 @@ In the order of the settings tab:
     longer be giftable. Also right in the consultant.
   - **Paints bought again**: only those of a plan put into the cart (default, safe), or also guessed
     from discount and age – shown as a guess to check, without acting on it.
+  - **Layout**: both ways ("Buy first", "Melt first") side by side as cards (default), or the plan
+    and its paints in tables.
 - **Smart updates**:
   - **Check hangar, buy back and orders for changes** (on by default) – see
     [Built for speed](#built-for-speed).

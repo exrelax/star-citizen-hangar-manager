@@ -16,6 +16,7 @@ import { refreshStoreItems } from '../items/sync-store-items';
 import { usePaintConsultant } from '../paint-consultant/use-paint-consultant';
 import { cartLinesOf } from '../paint-consultant/cart';
 import PaintCartButton from './PaintCartButton.vue';
+import PaintConsultantWays from './PaintConsultantWays.vue';
 import {
   REBUY_PLAN_VERSION,
   rebuyPlanItem,
@@ -36,9 +37,11 @@ const COOLDOWN_SOURCE =
   'https://support.robertsspaceindustries.com/hc/en-us/articles/115013193627-Reclaim-a-Pledge';
 
 // Worked out once for the manager (App.vue), also for the marks in My Hangar.
-const { pledges, storeItems, creditUnknown, result, pending } = usePaintConsultant();
+const { pledges, storeItems, creditUnknown, storeCredit, result, pending } = usePaintConsultant();
 
 const options = computed(() => props.settings.paintConsultant);
+/** Both ways side by side as cards (the default), or the plan in tables. */
+const ways = computed(() => options.value.layout === 'ways');
 const { update } = useSettings();
 /** The option is also in the settings (`PaintConsultantSection.vue`); both change the same value. */
 const setSkipGiftable = (skipGiftable: boolean) =>
@@ -185,12 +188,40 @@ const openBulkMeltingSetting = () =>
 </script>
 
 <template>
-  <section class="shm-consultant" aria-labelledby="shm-consultant-title">
-    <!-- Styled like the warbond title above (`shm-store-title`, modern.css). -->
-    <h3 id="shm-consultant-title" class="shm-store-title shm-consultant-title">
-      {{ i18n.t('consultant.title') }}
-    </h3>
-    <p class="shm-consultant-intro">{{ i18n.t('consultant.intro') }}</p>
+  <section
+    class="shm-consultant"
+    :class="{ 'is-ways': ways }"
+    aria-labelledby="shm-consultant-title"
+  >
+    <div class="shm-consultant-head">
+      <div>
+        <!-- Styled like the warbond title above (`shm-store-title`, modern.css). -->
+        <h3 id="shm-consultant-title" class="shm-store-title shm-consultant-title">
+          {{ i18n.t('consultant.title') }}
+        </h3>
+        <p
+          v-if="ways"
+          v-tooltip="i18n.t('consultant.intro')"
+          class="shm-consultant-intro has-hint-text"
+        >
+          {{ i18n.t('consultant.ways.intro') }}
+        </p>
+        <p v-else class="shm-consultant-intro">{{ i18n.t('consultant.intro') }}</p>
+      </div>
+      <!-- The cards: the option next to the title, its hint in a tooltip. -->
+      <label
+        v-if="ways && storeItems && !settings.hideMeltValue"
+        v-tooltip="i18n.t('consultant.skipGiftableHint')"
+        class="shm-consultant-option"
+      >
+        <input
+          type="checkbox"
+          :checked="options.skipGiftable"
+          @change="setSkipGiftable(($event.target as HTMLInputElement).checked)"
+        />
+        <span>{{ i18n.t('consultant.skipGiftable') }}</span>
+      </label>
+    </div>
 
     <p v-if="settings.hideMeltValue" class="shm-consultant-state">
       {{ i18n.t('consultant.hidden') }}
@@ -202,7 +233,7 @@ const openBulkMeltingSetting = () =>
       </button>
     </div>
     <template v-else>
-      <label class="shm-consultant-option">
+      <label v-if="!ways" class="shm-consultant-option">
         <input
           type="checkbox"
           :checked="options.skipGiftable"
@@ -423,7 +454,15 @@ const openBulkMeltingSetting = () =>
         }}
       </p>
 
-      <div v-if="plan" class="shm-consultant-plan">
+      <PaintConsultantWays
+        v-if="plan && ways"
+        :plan="plan"
+        :buy-first="result?.buyFirst"
+        :credit="storeCredit"
+        :next="result?.next"
+        :settings="settings"
+      />
+      <div v-else-if="plan" class="shm-consultant-plan">
         <dl class="shm-consultant-totals">
           <div>
             <dt>{{ i18n.t('consultant.tier') }}</dt>
@@ -660,6 +699,28 @@ const openBulkMeltingSetting = () =>
   font-weight: normal;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+/* The cards: the title and a short intro, the option next to them. */
+.shm-consultant.is-ways .shm-consultant-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.shm-consultant.is-ways .shm-consultant-head .shm-consultant-option {
+  align-items: center;
+  margin-top: 0;
+}
+
+.shm-consultant.is-ways .shm-consultant-head .shm-consultant-option input {
+  margin: 0;
+}
+
+.shm-consultant-intro.has-hint-text {
+  cursor: help;
 }
 
 .shm-consultant-intro,

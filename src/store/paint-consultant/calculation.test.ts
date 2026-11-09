@@ -134,6 +134,58 @@ describe('planPaintRebuy', () => {
     expect(next).toBeUndefined();
   });
 
+  describe('buying first (the safe way)', () => {
+    // The layout's example: $22 + $5 + $5 own paints without discount, filler paints at $3.
+    const example = (storeCredit: number) => {
+      const storeItems = [
+        storeItem('Polaris - Quasar Paint', 22),
+        storeItem('Lynx - Moonrise Paint', 5),
+        storeItem('C8 Pisces - Code Blue Paint', 5),
+        ...cheapPaints(2),
+      ];
+      const pledges = [
+        paintPledge('Polaris - Quasar Paint', 22),
+        paintPledge('Lynx - Moonrise Paint', 5),
+        paintPledge('C8 Pisces - Code Blue Paint', 5),
+      ];
+      return planPaintRebuy({
+        pledges,
+        storeItems,
+        storeCredit,
+        useFillers: true,
+        skipGiftable: false,
+      });
+    };
+
+    it('takes the same tier when the store credit pays the whole cart', () => {
+      const { plan, buyFirst } = example(40);
+      expect(plan!.tier.percent).toBe(35);
+      expect(buyFirst).toEqual(plan);
+    });
+
+    it('takes a lower tier whose whole cart the store credit pays', () => {
+      const { plan, buyFirst } = example(30);
+      // ($32 + $21) × 0.65 = $34.45 and ($32 + $12) × 0.7 = $30.80 are too much for $30.
+      expect(plan).toMatchObject({
+        tier: { percent: 35 },
+        cartCost: 34.45,
+        storeCreditNeeded: 2.45,
+      });
+      expect(buyFirst).toMatchObject({
+        tier: { paints: 5, percent: 25 },
+        cartCost: 28.5,
+        storeCreditFreed: 8,
+      });
+      expect(buyFirst!.own).toHaveLength(3);
+    });
+
+    it('is not possible when the store credit pays no cart before melting', () => {
+      const { plan, buyFirst } = example(5);
+      expect(plan!.tier.percent).toBe(35);
+      expect(buyFirst).toBeUndefined();
+    });
+  });
+
   it('fills the cart with the cheapest paints, up to 5 of the same', () => {
     // One own paint at $5 needs 9 fillers for 35 %: 5 × Arrow and 4 × ROC at $3 each.
     const storeItems = [
