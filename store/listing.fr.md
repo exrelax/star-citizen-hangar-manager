@@ -34,6 +34,7 @@ CONÇU POUR LA VITESSE
 PRIVÉ PAR CONCEPTION
 • Pas de compte, pas de serveur propre, pas de pistage, pas d’analyse
 • Ton hangar, tes rachats et tes commandes sont stockés uniquement dans ton navigateur
+• Notifications du navigateur seulement si tu les actives : l’autorisation est demandée à ce moment-là, jamais à l’installation
 • Masque les ID de pledges et de commandes, ton nom et ton adresse, les montants et les délais de remboursement pour les captures d’écran et les streams – ou affiche une sélection anonymisée en mode démo
 
 TOUT TON HANGAR ET TES RACHATS

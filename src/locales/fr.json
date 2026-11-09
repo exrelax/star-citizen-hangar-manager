@@ -193,6 +193,11 @@
     "sidebarShow": "Afficher la barre latérale",
     "sidebarShowHint": "Des cadres sous la navigation de RSI à gauche, sur chaque onglet du gestionnaire.",
     "sidebarBoxes": "Cadres",
+    "browserNotifications": "Notifications du navigateur",
+    "browserNotificationsHint": "Même quand aucune page RSI n’est ouverte, p. ex. quand des pledges marqués peuvent être fondus. Désactivé par défaut : l’activer ouvre une page où ton navigateur demande l’autorisation d’afficher des notifications ; le désactiver rend l’autorisation. Seulement pour ce navigateur. Le cadre « Notifications » de la barre latérale fonctionne sans.",
+    "browserNotificationsAsked": "Ton navigateur demande l’autorisation dans l’onglet qui vient de s’ouvrir.",
+    "browserNotificationsRefused": "Ton navigateur n’a pas autorisé les notifications la dernière fois, elles sont donc désactivées. Active le paramètre pour qu’il te le redemande.",
+    "sidebarNotifications": "Barre latérale",
     "restorePaintNotifications": "Réafficher les notifications de peintures masquées",
     "restorePaintNotificationsHint": "La notification du conseiller de remise sur les peintures (combien de peintures peuvent être rachetées avec plus de remise) réapparaît pour toutes les peintures, aussi celles que tu as masquées avec sa ×. Sur tous tes navigateurs, car les peintures masquées sont synchronisées.",
     "restorePaintNotificationsDone": "Réaffichée.",
@@ -576,6 +581,16 @@
     "waiting": "Fondre dans $1",
     "ready": "Fondre maintenant",
     "hint": "Marqué pour fondre. RSI permet de fondre un pledge 24 heures après son achat : à partir du $1."
+  },
+  "browserNotifications": {
+    "title": "Notifications du navigateur",
+    "intro": "Le Hangar Manager peut te signaler des changements avec les notifications de ton navigateur, même quand aucune page RSI n’est ouverte – p. ex. quand des pledges marqués pour fondre peuvent être fondus. Pour cela, ton navigateur te demande une fois l’autorisation d’afficher des notifications.",
+    "privacy": "Rien ne quitte ton navigateur : les notifications sont créées dans l’extension elle-même. Tu peux les désactiver à tout moment dans les paramètres du Hangar Manager ou de ton navigateur.",
+    "allow": "Autoriser les notifications du navigateur",
+    "granted": "Les notifications du navigateur sont activées – une première devrait s’afficher maintenant. Tu peux fermer cet onglet.",
+    "already": "Les notifications du navigateur sont déjà activées. Tu peux fermer cet onglet.",
+    "refused": "Ton navigateur ne l’a pas autorisé, les notifications du navigateur restent donc désactivées. Réessaie ou vérifie si ton navigateur ou ton système bloque les notifications.",
+    "testMessage": "Les notifications du navigateur sont activées."
   },
   "notifications": {
     "title": "Notifications",

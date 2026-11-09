@@ -16,6 +16,7 @@ export const ICON_NAMES = {
     'award',
     'bars',
     'basket-shopping',
+    'bell',
     'box',
     'btc',
     'bug',

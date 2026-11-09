@@ -34,6 +34,7 @@ GEBAUT FÜR TEMPO
 PRIVAT VON GRUND AUF
 • Kein Konto, kein eigener Server, kein Tracking, keine Analyse
 • Hangar, Buy Back und Bestellungen werden nur in deinem Browser gespeichert
+• Browser-Benachrichtigungen nur, wenn du sie einschaltest – erst dann wird um Erlaubnis gefragt, nie bei der Installation
 • Pledge- und Bestellnummern, Name und Adresse, Werte und Rückerstattungsfristen für Screenshots und Streams ausblenden – oder im Demo-Modus eine anonymisierte Auswahl zeigen
 
 DEIN GANZER HANGAR UND BUY BACK

@@ -193,6 +193,11 @@
     "sidebarShow": "Seitenleiste anzeigen",
     "sidebarShowHint": "Boxen unter RSIs Navigation links, auf jedem Tab des Managers.",
     "sidebarBoxes": "Boxen",
+    "browserNotifications": "Browser-Benachrichtigungen",
+    "browserNotificationsHint": "Auch wenn keine RSI-Seite offen ist, z. B. wenn gemerkte Pledges eingeschmolzen werden können. Standardmäßig aus: Einschalten öffnet eine Seite, auf der dein Browser um Erlaubnis fragt, Benachrichtigungen anzuzeigen; Ausschalten gibt die Erlaubnis zurück. Nur für diesen Browser. Die Box „Benachrichtigungen“ der Sidebar funktioniert auch ohne.",
+    "browserNotificationsAsked": "Dein Browser fragt im gerade geöffneten Tab um Erlaubnis.",
+    "browserNotificationsRefused": "Dein Browser hat Benachrichtigungen beim letzten Mal nicht erlaubt, daher sind sie aus. Schalte die Einstellung ein, um erneut gefragt zu werden.",
+    "sidebarNotifications": "Sidebar",
     "restorePaintNotifications": "Ausgeblendete Paint-Benachrichtigungen wieder anzeigen",
     "restorePaintNotificationsHint": "Die Benachrichtigung des Paint-Rabatt-Beraters (wie viele Paints sich mit mehr Rabatt zurückkaufen lassen) erscheint wieder für alle Paints, auch für die, die du mit ihrem × ausgeblendet hast. Auf allen deinen Browsern, da die ausgeblendeten Paints synchronisiert werden.",
     "restorePaintNotificationsDone": "Wieder eingeblendet.",
@@ -576,6 +581,16 @@
     "waiting": "Einschmelzen in $1",
     "ready": "Jetzt einschmelzen",
     "hint": "Zum Einschmelzen gemerkt. RSI erlaubt das Einschmelzen 24 Stunden nach dem Kauf: ab $1."
+  },
+  "browserNotifications": {
+    "title": "Browser-Benachrichtigungen",
+    "intro": "Der Hangar Manager kann dich mit den Benachrichtigungen deines Browsers über Änderungen informieren, auch wenn keine RSI-Seite offen ist – z. B. wenn zum Einschmelzen gemerkte Pledges eingeschmolzen werden können. Dafür fragt dich dein Browser einmal um Erlaubnis, Benachrichtigungen anzuzeigen.",
+    "privacy": "Nichts verlässt deinen Browser: Die Benachrichtigungen entstehen in der Erweiterung selbst. Du kannst sie jederzeit in den Einstellungen des Hangar Managers oder deines Browsers wieder abschalten.",
+    "allow": "Browser-Benachrichtigungen erlauben",
+    "granted": "Browser-Benachrichtigungen sind an – eine erste sollte jetzt erscheinen. Du kannst diesen Tab schließen.",
+    "already": "Browser-Benachrichtigungen sind schon an. Du kannst diesen Tab schließen.",
+    "refused": "Dein Browser hat es nicht erlaubt, daher bleiben Browser-Benachrichtigungen aus. Versuche es erneut oder prüfe, ob dein Browser oder System Benachrichtigungen blockiert.",
+    "testMessage": "Browser-Benachrichtigungen sind an."
   },
   "notifications": {
     "title": "Benachrichtigungen",

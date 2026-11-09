@@ -193,6 +193,11 @@
     "sidebarShow": "Show the sidebar",
     "sidebarShowHint": "Boxes below RSI's navigation on the left, on every tab of the manager.",
     "sidebarBoxes": "Boxes",
+    "browserNotifications": "Browser notifications",
+    "browserNotificationsHint": "Also while no RSI page is open, e.g. when marked pledges can be melted. Off by default: turning it on opens a page where your browser asks for permission to display notifications; off gives the permission back. Only for this browser. The “Notifications” box of the sidebar works without it.",
+    "browserNotificationsAsked": "Your browser asks for the permission in the tab that just opened.",
+    "browserNotificationsRefused": "Your browser didn't allow notifications the last time, so they are off. Turn the setting on to be asked again.",
+    "sidebarNotifications": "Sidebar",
     "restorePaintNotifications": "Show dismissed paint notifications again",
     "restorePaintNotificationsHint": "The Paint Discount Consultant's notification (how many paints can be bought again with more discount) shows again for all paints, also those you dismissed with its ×. On all your browsers, as the dismissed paints are synced.",
     "restorePaintNotificationsDone": "Shown again.",
@@ -576,6 +581,16 @@
     "waiting": "Melt in $1",
     "ready": "Melt now",
     "hint": "Marked to melt. RSI lets you melt a pledge 24 hours after buying it: from $1."
+  },
+  "browserNotifications": {
+    "title": "Browser notifications",
+    "intro": "The Hangar Manager can tell you about changes with your browser's notifications, also while no RSI page is open – e.g. when pledges you marked to melt can be melted. For this, your browser asks you once for permission to display notifications.",
+    "privacy": "Nothing leaves your browser: the notifications are made in the extension itself. You can turn them off again any time in the settings of the Hangar Manager or of your browser.",
+    "allow": "Allow browser notifications",
+    "granted": "Browser notifications are on – a first one should show now. You can close this tab.",
+    "already": "Browser notifications are already on. You can close this tab.",
+    "refused": "Your browser didn't allow it, so browser notifications stay off. Try again, or check whether your browser or system blocks notifications.",
+    "testMessage": "Browser notifications are on."
   },
   "notifications": {
     "title": "Notifications",

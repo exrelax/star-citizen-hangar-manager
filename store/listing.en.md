@@ -34,6 +34,7 @@ BUILT FOR SPEED
 PRIVATE BY DESIGN
 • No account, no server of its own, no tracking, no analytics
 • Your hangar, buy back and orders are stored only in your browser
+• Browser notifications only if you turn them on – the permission is asked for then, never at install
 • Hide pledge and order IDs, your name and address, values and refund periods for screenshots and streams – or show an anonymized selection in the demo mode
 
 YOUR WHOLE HANGAR AND BUY BACK

@@ -2,7 +2,7 @@
 
 **Star Citizen Hangar Manager** (browser extension for Chrome and Firefox)
 
-Last updated: 7 November 2026
+Last updated: 9 November 2026
 
 The extension is built so that your data stays in your browser. It has no server of its own, no
 user accounts, no analytics and no tracking. This policy explains which data the extension
@@ -67,6 +67,12 @@ sees or stores your RSI login.
 - **Notifications** of the sidebar: their text, the pledge they are about and when they
   happened, kept in the local storage; checked-off ones are removed after 30 days. They never
   leave your browser.
+- **Paints whose consultant notification you dismissed**: their pledge IDs, kept in the browser's
+  sync storage like the pledges marked to melt, until you dismiss it again or show it again in
+  Settings → Notifications.
+- **Browser notifications**: whether this browser allows them (and whether it refused the last
+  time), kept in the local storage. The notifications themselves are made in the extension and
+  shown by your browser and system; their content is not sent anywhere.
 - The **search term** is put into the page's address (`?search=…`) so searches can be bookmarked;
   it is part of your browser history like any other address.
 
@@ -109,6 +115,10 @@ visiting it doesn't contact GitHub's API.
 
 - **storage**: keeps the data and settings described above in your browser.
 - **unlimitedStorage**: large hangars and buy backs can exceed the default storage quota.
+- **notifications** (optional): asked for only when you turn on Settings → Notifications →
+  "Browser notifications", on a page of the extension, never at install or update. Without it,
+  nothing changes – the sidebar's notifications need no permission. Turning the setting off gives
+  the permission back; you can also take it back in your browser's settings for the extension.
 - **Access to robertsspaceindustries.com**: shows the Hangar Manager on RSI's account pages and
   reads your hangar there.
 - **Access to ccugame.app** (content script): adds the links to the Hangar Manager.
