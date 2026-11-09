@@ -170,6 +170,12 @@ export const SMART_UPDATE = {
    * on the next page load if RSI reloads it first – up to `maxAgeMs` after the click.
    */
   ownAction: { checkAfterMs: 4 * 1000, maxAgeMs: 2 * 60 * 1000 },
+  /**
+   * The adaptive interval (#125, see `smart-update/backoff.ts`): it doubles after each check that
+   * found nothing, up to `maxFactor` times the set one, until a change or input in a tab. Input
+   * is noted at most once per `inputThrottleMs`.
+   */
+  backoff: { maxFactor: 4, inputThrottleMs: 30 * 1000 },
 } as const;
 
 /**

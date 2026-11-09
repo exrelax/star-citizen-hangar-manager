@@ -93,6 +93,11 @@ Each check works in three steps:
   hidden tab sends no requests and checks when it is shown again. Several open tabs check only
   once per interval together. If too much changed, it suggests a full refresh instead of loading
   page after page.
+- **Slower when nothing happens**: while checks find nothing and nobody uses the tab, the interval
+  doubles after each check – 5, 10, then 20 minutes at most (4 times the setting). Any input in a
+  tab (mouse, keys, scrolling), a check that finds a change or your own exchange, gift or upgrade
+  on RSI's pages goes back to the set interval at once, and a check follows as soon as it is due.
+  The tabs share it, so they never check more often together.
 - **Also from RSI's own pages**: opening "My Gear" or "Buy Back Pledges" – in any tab, without the
   Hangar Manager – starts a check too when one is due (paging through them doesn't check on every
   page). What it finds shows in every tab with the Hangar Manager open within seconds, without

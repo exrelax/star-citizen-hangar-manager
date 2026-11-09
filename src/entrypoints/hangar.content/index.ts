@@ -13,6 +13,7 @@ import {
 } from '@/hangar/route';
 import { isTimerActive, startSmartUpdateTimer } from '@/hangar/smart-update/schedule';
 import { listenForChecksElsewhere } from '@/hangar/smart-update/broadcast';
+import { resetBackoff, watchInput } from '@/hangar/smart-update/backoff';
 import { takeOwnAction, watchOwnActions } from '@/hangar/smart-update/own-actions';
 import { maybeRunSmartUpdate, setCheckingElsewhere } from '@/hangar/sync-state';
 import { migrateStorage } from '@/storage/migrate';
@@ -53,9 +54,12 @@ export default defineContentScript({
 
     // An exchange, gift or applied upgrade confirmed in RSI's dialogs (#124): a check right after
     // it, whatever the interval; also when RSI reloaded the page after it.
-    const checkOwnAction = () => void maybeRunSmartUpdate({ force: true });
+    const checkOwnAction = () =>
+      void resetBackoff().then(() => maybeRunSmartUpdate({ force: true }));
     if (await takeOwnAction()) checkOwnAction();
     watchOwnActions(ctx.signal, checkOwnAction);
+    // Someone uses the tab: back to the set interval (#125).
+    watchInput(ctx.signal);
 
     // "Buy Back Pledges": melting or buying back may start here, maybe without the manager ever
     // being opened in this tab. A check when one is due; the tabs with the manager follow.

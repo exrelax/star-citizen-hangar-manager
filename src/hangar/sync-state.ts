@@ -14,6 +14,7 @@ import { pledgeIdsOfLogEntries } from '@/orders/pledge-log';
 import { prepareOrderSync, updateOrders } from '@/orders/sync-orders';
 import { prepareHangarSync } from './sync';
 import { SyncProgressTracker, type SyncProgress } from './sync-progress';
+import { currentIntervalMinutes, recordCheckResult } from './smart-update/backoff';
 import { isCheckDue, withSmartUpdateLock } from './smart-update/schedule';
 import { announceCheck } from './smart-update/broadcast';
 import { SMART_UPDATE } from '@/config';
@@ -191,21 +192,23 @@ async function runSmartUpdateIfDue(force: boolean): Promise<void> {
   const settings = withDefaults(await settingsItem.getValue());
   if (!settings.smartUpdates) return;
   const { checkedAt } = await hangarMeta.getValue();
-  const intervalMinutes = settings.smartUpdateMinutes;
+  // The set interval, longer while checks find nothing and nobody uses the tabs (#125).
+  const intervalMinutes = await currentIntervalMinutes(settings.smartUpdateMinutes);
   if (!force && !isCheckDue({ checkedAt, intervalMinutes, now: Date.now() })) return;
 
   // Shown as "Checking …", here and in the other tabs.
   state.checking = true;
   announceCheck(true);
   try {
-    await runChecks(settings.spotCheckPages);
+    await recordCheckResult(await runChecks(settings.spotCheckPages));
   } finally {
     state.checking = false;
     announceCheck(false);
   }
 }
 
-async function runChecks(spotCheckPages: number): Promise<void> {
+/** Runs the checks; whether they found anything (a new log entry or a changed pledge). */
+async function runChecks(spotCheckPages: number): Promise<boolean> {
   // The store credit: one small request, it changes with exchanges and store credit purchases.
   await refreshStoreCredit();
 
@@ -220,7 +223,7 @@ async function runChecks(spotCheckPages: number): Promise<void> {
 
   // 2. The buy back first: a pledge new there was melted, so it has to be gone from the hangar.
   const melted: number[] = [];
-  await runLogged('Buy back smart update', buybackMeta, () =>
+  const buyback = await runLogged('Buy back smart update', buybackMeta, () =>
     runBuybackSmartUpdate({
       hintIds: logIds,
       onChanges: ({ added }) => melted.push(...added.map((pledge) => pledge.id)),
@@ -229,22 +232,34 @@ async function runChecks(spotCheckPages: number): Promise<void> {
 
   // 3. The hangar: first and last page, spot checks, and the pages of the pledges above.
   const hintIds = [...new Set([...logIds, ...melted])];
-  await runLogged('Smart update', hangarMeta, () => runSmartUpdate({ spotCheckPages, hintIds }));
+  const hangar = await runLogged('Smart update', hangarMeta, () =>
+    runSmartUpdate({ spotCheckPages, hintIds }),
+  );
+  return logIds.length > 0 || hasChanges(buyback) || hasChanges(hangar);
 }
 
-async function runLogged(label: string, meta: MetaItem, run: () => Promise<CheckOutcome | null>) {
+const hasChanges = (outcome: CheckOutcome | null | undefined) =>
+  !!outcome && outcome.added + outcome.removed + outcome.changed > 0;
+
+async function runLogged(
+  label: string,
+  meta: MetaItem,
+  run: () => Promise<CheckOutcome | null>,
+): Promise<CheckOutcome | null> {
   const startedAt = performance.now();
   try {
     const outcome = await run();
-    if (!outcome) return;
+    if (!outcome) return null;
     const ms = Math.round(performance.now() - startedAt);
     console.info(
       `[star-citizen-hangar-manager] ${label}: ${outcome.status} ` +
         `(+${outcome.added} / -${outcome.removed} / ~${outcome.changed}) in ${ms} ms`,
     );
+    return outcome;
   } catch (error) {
     console.error(`[star-citizen-hangar-manager] ${label} failed`, error);
     // Counts as a check, so a broken connection isn't retried on every trigger.
     await recordCheck(meta, { status: 'failed' });
+    return null;
   }
 }
