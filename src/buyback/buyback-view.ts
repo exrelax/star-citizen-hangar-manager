@@ -91,7 +91,9 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
   // The detail page lists the items besides the main one named in "Contained".
   const extraItems = pledge.items ?? [];
   const main = mainItem(pledge);
-  const items = extraItems.length ? [main, ...extraItems.filter((item) => item !== main)] : [];
+  const items = extraItems.length
+    ? [...(main ? [main] : []), ...extraItems.filter((item) => item !== main)]
+    : [];
   const shipNames = buybackShipNames(pledge);
   return {
     id: pledge.id,
