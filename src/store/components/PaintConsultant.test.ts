@@ -156,16 +156,21 @@ describe('PaintConsultant', () => {
       expect(toSetting).toBeDefined();
     });
 
-    it('waits until the paints were put into the cart', async () => {
+    it('melts after the cart was filled, or first with its own acknowledgement (#168)', async () => {
       const pledges = await storeExample();
-      const root = await render(pledges, { bulkMelting: true });
-      expect(meltButton(root)?.disabled).toBe(true);
+      const first = await render(pledges, { bulkMelting: true });
+      expect(meltButton(first)?.disabled).toBe(false);
+      expect(meltButton(first)?.textContent).toContain('Melt the 5 own paints first');
+      meltButton(first)!.click();
+      await nextTick();
+      expect(document.querySelector('.shm-action-dialog')?.textContent).toContain(
+        'I melt these paints before buying them again',
+      );
       app?.unmount();
 
       await storePlan(pledges.map((pledge) => pledge.id));
       const ready = await render(pledges, { bulkMelting: true });
-      expect(meltButton(ready)?.disabled).toBe(false);
-      expect(meltButton(ready)?.textContent).toContain('Melt the 5 own paints');
+      expect(meltButton(ready)?.textContent?.trim()).toBe('Melt the 5 own paints');
     });
 
     it('asks to confirm the checked cart in the dialog, besides the other acknowledgements', async () => {
@@ -212,5 +217,21 @@ describe('PaintConsultant', () => {
     });
     expect(guessing.querySelector('.shm-consultant-rebought')).toBeNull();
     expect(text(guessing)).toContain('1 paint looks bought again');
+  });
+
+  it('lists the paints melted first that are left to buy again (#168)', async () => {
+    const pledges = await storeExample(40);
+    // Two own paints of a kept plan are gone from the hangar: melted first.
+    await storePlan(pledges.map((pledge) => pledge.id));
+    const root = await render(pledges.slice(2));
+    const section = root.querySelector('.shm-consultant-pending');
+    expect(section?.textContent).toContain('Melted, left to buy again (2)');
+    // $40 of store credit: 2 × $5 + 8 cheap paints × $3 at 35 % = $22.10.
+    expect(section?.textContent).toContain(
+      'Buy them again with 35% discount: 10 paints for $22.10',
+    );
+    expect(section?.querySelector('.shm-consultant-cart button')?.textContent).toContain(
+      'Put the 10 paints into the cart',
+    );
   });
 });

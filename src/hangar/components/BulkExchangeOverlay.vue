@@ -41,7 +41,11 @@ const props = defineProps<{
    */
   extraConsent?: string;
 }>();
-const emit = defineEmits<{ close: [] }>();
+const emit = defineEmits<{
+  close: [];
+  /** The pledges RSI exchanged, once the run is over (e.g. to keep the consultant's plan). */
+  exchanged: [ids: number[]];
+}>();
 
 const { settings } = useSettings();
 /** RSI's own texts: in English unless the setting translates them (see rsi-text.ts). */
@@ -169,6 +173,7 @@ async function submit() {
     );
     failed.value = result.failed;
     finished.value = true;
+    if (exchanged.value.length) emit('exchanged', [...exchanged.value]);
   } finally {
     submitting.value = false;
     password.value = '';

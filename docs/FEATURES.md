@@ -517,10 +517,18 @@ it into store credit with the paints you already own:
   is listed with RSI's reason, and the cart isn't opened on its own then. The plan is kept in this
   browser (Settings → Stored data → "Paint plan"), so the filler paints can be found again later.
   Disabled in the demo mode.
+- **Two ways**: buying first and melting after (recommended, safer, but the store credit of the
+  own paints isn't free for the cart yet), or melting first and buying after.
 - **Melt the own paints at once** (with the experimental bulk melting on): a button opens the bulk
-  melting dialog with exactly the own paints of the plan and the store credit they give. It is
-  enabled only once these paints were put into the cart, and the dialog also asks to confirm that
-  the cart was checked. Afterwards the hangar is read again, as after every bulk melting. With bulk
+  melting dialog with exactly the own paints of the plan and the store credit they give. Once these
+  paints were put into the cart, the dialog asks to confirm that the cart was checked. Before that
+  the button melts them first (way 2), with its own acknowledgement: buy them again right away.
+  The plan is kept then, so the paints to buy again are known although the hangar no longer shows
+  them.
+- **Left to buy**: own paints of a kept plan that are gone from the hangar – melted – and not
+  bought again since are listed with the tier the store credit pays now (fewer filler paints if it
+  is short; it says what the planned tier misses) and their own "Put the paints into the cart"
+  button, which keeps the tier and fillers really put into the cart. Afterwards the hangar is read again, as after every bulk melting. With bulk
   melting off, **Bulk melting disabled** opens the settings at that setting instead.
 - **Bought again**: once the paints were bought, the hangar holds each own paint twice – the old
   pledge without the discount and the new copy with it. The consultant pairs each copy with one
