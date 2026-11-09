@@ -586,6 +586,10 @@
     "showAllHint": "Désactive le filtre : « My Hangar » affiche à nouveau tous les pledges.",
     "selectReady": "Sélectionner",
     "selectReadyHint": "Sélectionne ces pledges : l’encadré « Sélection » propose alors de tous les fondre à la fois (avec « Fondre plusieurs pledges à la fois » activé).",
+    "paintsRebuy": "$1 peintures peuvent être rachetées avec plus de remise",
+    "paintsRebuyOne": "1 peinture peut être rachetée avec plus de remise",
+    "dismiss": "Masquer",
+    "dismissPaintsHint": "Retire cette notification pour exactement ces peintures. Elle revient dès qu’une autre peinture peut être rachetée avec plus de remise – alors avec le nombre de toutes.",
     "count": "$1 notifications",
     "countOne": "1 notification"
   },

@@ -586,6 +586,10 @@
     "showAllHint": "Desactiva el filtro: «My Hangar» vuelve a mostrar todos los pledges.",
     "selectReady": "Seleccionar",
     "selectReadyHint": "Selecciona estos pledges: la caja «Seleccionados» ofrece entonces fundirlos todos a la vez (con «Fundir varios pledges a la vez» activado).",
+    "paintsRebuy": "$1 pinturas se pueden recomprar con más descuento",
+    "paintsRebuyOne": "1 pintura se puede recomprar con más descuento",
+    "dismiss": "Descartar",
+    "dismissPaintsHint": "Quita esta notificación para exactamente estas pinturas. Vuelve en cuanto otra pintura se pueda recomprar con más descuento, entonces con el número de todas.",
     "count": "$1 notificaciones",
     "countOne": "1 notificación"
   },

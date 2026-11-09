@@ -149,8 +149,9 @@ Your hangar is nobody else's business. The extension is built so that your data 
 
 Your settings (language, display options, …) are saved in the browser's sync storage, so they
 follow you to your other devices if you use a browser account (Google account in Chrome, Firefox
-account in Firefox). That is your browser's own sync; the extension has no server for it. Your
-hangar data is never synced.
+account in Firefox). That is your browser's own sync; the extension has no server for it. Besides
+them, only pledge IDs sync: of the pledges [marked to melt](#mark-to-melt-later) and of the paints
+whose consultant notification you dismissed. Your hangar data itself is never synced.
 
 ### It acts only when you click
 
@@ -256,6 +257,10 @@ on its own.
       "Reset filters" – and the list shows all on its own once none is left. **Select** selects
       them, so the "Selected" box offers to melt them all at once with bulk melting on. It stays
       while there are any and can't be checked off.
+    - When the [Paint Discount Consultant](#paint-discount-consultant) finds paints to buy again
+      with more discount: how many (not with "Hide melt value"). Its **×** dismisses it for exactly
+      these paints, kept in the sync storage so it stays dismissed on your other browsers too; it
+      comes back with the count of all of them as soon as another paint can be bought again.
     - Other notifications, newest first, each checked off with its checkbox or all at once;
       checked-off ones don't come back.
     - Below them, the marked pledges still waiting, with the time left.
