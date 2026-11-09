@@ -16,6 +16,8 @@ import {
   restorePaintNotifications,
 } from '@/store/paint-consultant/paint-notification';
 import { computed, ref } from 'vue';
+import { isKindOn, withKind, type NotificationKind } from '@/notifications/kinds';
+import type { Settings } from '../settings';
 
 /*
  * Notifications: browser notifications, an optional extra for when no RSI page is open (#152,
@@ -23,6 +25,14 @@ import { computed, ref } from 'vue';
  * Paint Discount Consultant's one can be dismissed for its paints (#151) – here it is shown again
  * for all of them, on every browser, as the dismissed paints are synced.
  */
+
+const props = defineProps<{ settings: Settings }>();
+const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
+
+/** The kinds of notifications, each turned on and off on its own (#197). */
+const kindOn = (kind: NotificationKind) => isKindOn(props.settings.notificationsOff, kind);
+const setKind = (kind: NotificationKind, on: boolean) =>
+  emit('update', { notificationsOff: withKind(props.settings.notificationsOff, kind, on) });
 
 // Browser notifications: on while this browser allows them; the permission is the setting.
 const allowed = useStored(browserNotificationsItem);
@@ -75,6 +85,34 @@ async function restore() {
     <p v-else-if="!allowed && asked" class="shm-hint is-indented" role="status">
       {{ i18n.t('settings.browserNotificationsAsked') }}
     </p>
+    <!-- The kinds only the browser shows, below the switch they depend on (#197). -->
+    <div class="shm-setting-subgroup" role="group" :aria-disabled="!allowed">
+      <SettingCheck
+        :checked="kindOn('meltReady')"
+        :disabled="!allowed"
+        :hint="i18n.t('settings.notificationKindMeltReadyHint')"
+        @change="(on) => setKind('meltReady', on)"
+      >
+        {{ i18n.t('settings.notificationKindMeltReady') }}
+      </SettingCheck>
+    </div>
+
+    <!-- Changes in the Pledge Store (#164): in the sidebar, and new warbond CCUs in the browser. -->
+    <p class="shm-field-label">{{ i18n.t('settings.storeChangeNotifications') }}</p>
+    <SettingCheck
+      :checked="kindOn('warbonds')"
+      :hint="i18n.t('settings.notificationKindWarbondsHint')"
+      @change="(on) => setKind('warbonds', on)"
+    >
+      {{ i18n.t('settings.notificationKindWarbonds') }}
+    </SettingCheck>
+    <SettingCheck
+      :checked="kindOn('storeItems')"
+      :hint="i18n.t('settings.notificationKindStoreItemsHint')"
+      @change="(on) => setKind('storeItems', on)"
+    >
+      {{ i18n.t('settings.notificationKindStoreItems') }}
+    </SettingCheck>
 
     <p class="shm-field-label">{{ i18n.t('settings.sidebarNotifications') }}</p>
     <button type="button" class="shm-button" :disabled="!dismissed" @click="restore">

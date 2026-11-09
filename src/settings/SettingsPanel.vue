@@ -32,7 +32,7 @@ const update = (patch: Partial<Settings>) => emit('update', patch);
     <PrivacySection :settings="settings" @update="update" />
     <GeneralSection :settings="settings" @update="update" />
     <SidebarSection :settings="settings" @update="update" />
-    <NotificationsSection />
+    <NotificationsSection :settings="settings" @update="update" />
     <PaintConsultantSection :settings="settings" @update="update" />
     <SmartUpdateSection :settings="settings" @update="update" />
     <FilterSection :settings="settings" @update="update" />

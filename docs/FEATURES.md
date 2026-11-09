@@ -709,6 +709,13 @@ In the order of the settings tab:
     in the browser; closed in the browser, it is checked off in the sidebar. With them on, the extension also reads
     the Pledge Store on its schedule while no RSI page is open (see
     [Pledge Store](#pledge-store-current-warbond-ccus)).
+  - **Kinds of notifications** (#197), each on by default and turned off on its own:
+    - **Marked pledges can be melted** (below "Browser notifications", only while they are on): the
+      browser notifications about marked pledges and the consultant's filler paints; the sidebar
+      tells it anyway.
+    - **Pledge Store changes**: **Warbond CCUs changed** (in the sidebar, new ones also in the
+      browser) and **Pledge Store items changed** (in the sidebar only). Turned off, a kind adds no
+      notification, and its open ones go – in the sidebar and in the browser.
   - **Show dismissed paint notifications again**: the Paint Discount Consultant's notification
     shows again for all paints, also those dismissed with its × (on all browsers, as the dismissed
     paints are synced).

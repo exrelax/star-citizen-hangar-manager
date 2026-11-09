@@ -1,3 +1,4 @@
+import { notificationKindsOf, type NotificationKind } from '@/notifications/kinds';
 import { BUYBACK_FILTER_CATEGORIES, type BuybackFilter } from '@/buyback/buyback-view';
 import { FILTERS, FONT_SIZE_SCALES, PLEDGE_STORE, SMART_UPDATE } from '@/config';
 import {
@@ -93,6 +94,8 @@ export interface Settings {
   hideRefund: boolean;
   /** Keeps hangar, buy back and orders current by checking a few of their pages now and then. */
   smartUpdates: boolean;
+  /** The kinds of notifications turned off (#197, see `notifications/kinds.ts`); all on by default. */
+  notificationsOff: NotificationKind[];
   /**
    * Smart updates read the warbond CCUs of the Pledge Store again after this many minutes, except
    * around the full hour (`PLEDGE_STORE.fastWindow`).
@@ -157,6 +160,7 @@ export const DEFAULT_SETTINGS: Settings = {
   demoMode: false,
   hideRefund: false,
   smartUpdates: true,
+  notificationsOff: [],
   storeRefreshMinutes: PLEDGE_STORE.refreshMinutes.default,
   smartUpdateMinutes: SMART_UPDATE.checkMinutes.default,
   spotCheckPages: SMART_UPDATE.spotCheckPages.default,
@@ -239,6 +243,7 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
     demoMode: pick('demoMode', isBoolean),
     hideRefund: pick('hideRefund', isBoolean),
     smartUpdates: pick('smartUpdates', isBoolean),
+    notificationsOff: notificationKindsOf(stored?.notificationsOff),
     storeRefreshMinutes: pick('storeRefreshMinutes', isRefreshMinutes),
     smartUpdateMinutes: pick('smartUpdateMinutes', isSmartUpdateMinutes),
     spotCheckPages: pick('spotCheckPages', isSpotCheckPages),
