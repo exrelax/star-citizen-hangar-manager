@@ -192,7 +192,7 @@
     "sidebarShowHint": "Des cadres sous la navigation de RSI à gauche, sur chaque onglet du gestionnaire.",
     "sidebarBoxes": "Cadres",
     "browserNotifications": "Notifications du navigateur",
-    "browserNotificationsHint": "Même quand aucune page RSI n’est ouverte, p. ex. quand les peintures de remplissage du Paint Discount Consultant peuvent être fondues. Activées, l’extension lit aussi le Pledge Store selon son horaire quand aucune page RSI n’est ouverte (voir « Mises à jour intelligentes »). Désactivé par défaut : l’activer ouvre une page où ton navigateur demande l’autorisation d’afficher des notifications ; le désactiver rend l’autorisation. Seulement pour ce navigateur. Le cadre « Notifications » de la barre latérale fonctionne sans.",
+    "browserNotificationsHint": "Même quand aucune page RSI n’est ouverte, p. ex. quand des pledges marqués à fondre ou les peintures de remplissage du Paint Discount Consultant peuvent être fondus. Activées, l’extension lit aussi le Pledge Store selon son horaire quand aucune page RSI n’est ouverte (voir « Mises à jour intelligentes »). Désactivé par défaut : l’activer ouvre une page où ton navigateur demande l’autorisation d’afficher des notifications ; le désactiver rend l’autorisation. Seulement pour ce navigateur. Le cadre « Notifications » de la barre latérale fonctionne sans.",
     "browserNotificationsAsked": "Ton navigateur demande l’autorisation dans l’onglet qui vient de s’ouvrir.",
     "browserNotificationsRefused": "Ton navigateur n’a pas autorisé les notifications la dernière fois, elles sont donc désactivées. Active le paramètre pour qu’il te le redemande.",
     "sidebarNotifications": "Barre latérale",
@@ -750,6 +750,9 @@
     "testMessage": "Les notifications du navigateur sont activées."
   },
   "notifications": {
+    "browserMeltReadyTitle": "Des pledges peuvent être fondus",
+    "browserMeltReady": "$1 pledges marqués peuvent être fondus maintenant. Ouvre My Hangar pour les fondre.",
+    "browserMeltReadyOne": "« $1 » peut être fondu maintenant. Ouvre My Hangar pour le fondre.",
     "title": "Notifications",
     "checkOff": "Terminé",
     "checkOffAll": "Tout marquer comme terminé",

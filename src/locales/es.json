@@ -192,7 +192,7 @@
     "sidebarShowHint": "Cuadros bajo la navegación de RSI a la izquierda, en cada pestaña del gestor.",
     "sidebarBoxes": "Cuadros",
     "browserNotifications": "Notificaciones del navegador",
-    "browserNotificationsHint": "También sin ninguna página de RSI abierta, p. ej. cuando las pinturas de relleno del Paint Discount Consultant ya se pueden fundir. Activadas, la extensión también lee la Pledge Store según su horario sin ninguna página de RSI abierta (ver «Actualizaciones inteligentes»). Desactivado por defecto: al activarlo se abre una página donde tu navegador pide permiso para mostrar notificaciones; al desactivarlo se devuelve el permiso. Solo para este navegador. El cuadro «Notificaciones» de la barra lateral funciona sin ello.",
+    "browserNotificationsHint": "También sin ninguna página de RSI abierta, p. ej. cuando los pledges marcados para fundir o las pinturas de relleno del Paint Discount Consultant ya se pueden fundir. Activadas, la extensión también lee la Pledge Store según su horario sin ninguna página de RSI abierta (ver «Actualizaciones inteligentes»). Desactivado por defecto: al activarlo se abre una página donde tu navegador pide permiso para mostrar notificaciones; al desactivarlo se devuelve el permiso. Solo para este navegador. El cuadro «Notificaciones» de la barra lateral funciona sin ello.",
     "browserNotificationsAsked": "Tu navegador pide el permiso en la pestaña que se acaba de abrir.",
     "browserNotificationsRefused": "Tu navegador no permitió las notificaciones la última vez, así que están desactivadas. Activa el ajuste para que te lo vuelva a preguntar.",
     "sidebarNotifications": "Barra lateral",
@@ -750,6 +750,9 @@
     "testMessage": "Las notificaciones del navegador están activadas."
   },
   "notifications": {
+    "browserMeltReadyTitle": "Se pueden fundir pledges",
+    "browserMeltReady": "$1 pledges marcados ya se pueden fundir. Abre My Hangar para fundirlos.",
+    "browserMeltReadyOne": "«$1» ya se puede fundir. Abre My Hangar para fundirlo.",
     "title": "Notificaciones",
     "checkOff": "Hecho",
     "checkOffAll": "Marcar todas como hechas",

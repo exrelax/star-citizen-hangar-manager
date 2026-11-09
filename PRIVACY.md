@@ -124,9 +124,9 @@ visiting it doesn't contact GitHub's API.
 
 - **storage**: keeps the data and settings described above in your browser.
 - **unlimitedStorage**: large hangars and buy backs can exceed the default storage quota.
-- **alarms**: timers in your browser, only with browser notifications on: for when the Paint
-  Discount Consultant's filler paints can be melted, and to read the Pledge Store around the full
-  hour while no RSI page is open.
+- **alarms**: timers in your browser, only with browser notifications on: for when pledges you
+  marked to melt or the Paint Discount Consultant's filler paints can be melted, and to read the
+  Pledge Store around the full hour while no RSI page is open.
 - **notifications** (optional): asked for only when you turn on Settings → Notifications →
   "Browser notifications", on a page of the extension, never at install or update. Without it,
   nothing changes – the sidebar's notifications need no permission. Turning the setting off gives

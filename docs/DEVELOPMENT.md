@@ -212,7 +212,10 @@ asked for with `permissions.request` only when the user turns its feature on.
   dialog asks is still to be checked with a test build before the release. Chrome fires alarms
   at most every 30 seconds; Firefox rounds periods below a minute up (to verify for #162).
   Since #163 a second alarm (`shm-pledge-store`, every 30 seconds) reads the Pledge Store while
-  browser notifications are on (`store/background-schedule.ts`).
+  browser notifications are on (`store/background-schedule.ts`), and since #153 a third one
+  (`shm-melt-ready`) goes off when a pledge marked to melt can be melted
+  (`notifications/melt-ready-notification.ts`). All alarms and notification clicks go through
+  one listener each (`background/dispatch.ts`).
 - **No cookies permission** (#163): the background script reads RSI with `fetch` to absolute URLs
   and `credentials: 'include'`; the host permission sends RSI's cookies. The `X-Rsi-Token` header
   (from `document.cookie`) is only sent from pages: the Pledge Store search and the upgrade tool

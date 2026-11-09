@@ -1,4 +1,6 @@
+import { listenToNotificationClicks } from '@/background/dispatch';
 import { isCheckingMessage, relayToOtherTabs } from '@/hangar/smart-update/broadcast';
+import { watchMeltReady } from '@/notifications/melt-ready-notification';
 import {
   mirrorNotificationPermission,
   notificationsPermission,
@@ -12,10 +14,7 @@ import {
   testReadPledgeStore,
   watchPledgeStore,
 } from '@/store/background-schedule';
-import {
-  listenToFillerClicks,
-  watchFillerNotification,
-} from '@/store/paint-consultant/filler-notification';
+import { watchFillerNotification } from '@/store/paint-consultant/filler-notification';
 import { migrateStorage } from '@/storage/migrate';
 
 export default defineBackground(() => {
@@ -32,7 +31,7 @@ export default defineBackground(() => {
   void mirrorNotificationPermission();
   browser.permissions.onAdded.addListener(() => {
     void mirrorNotificationPermission();
-    listenToFillerClicks();
+    listenToNotificationClicks();
   });
   browser.permissions.onRemoved.addListener(() => void mirrorNotificationPermission());
   browser.runtime.onMessage.addListener((message) => {
@@ -51,6 +50,10 @@ export default defineBackground(() => {
   // The Paint Discount Consultant's filler paints can be melted (#105): an alarm 24 hours after
   // their order, then a browser notification.
   watchFillerNotification();
+
+  // Pledges marked to melt can be melted now (#153): an alarm at the earliest time, then one
+  // browser notification for all of them.
+  watchMeltReady();
 
   // The Pledge Store on the schedule around the full hour, also with no RSI tab open (#163):
   // while browser notifications are on.

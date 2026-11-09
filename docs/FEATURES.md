@@ -687,8 +687,10 @@ In the order of the settings tab:
     open. Turning it on opens a page of the extension where the browser asks for the permission to
     display notifications (never at install or update); a first notification confirms it. Refused,
     it stays off and says so; turned off – here or in the browser's own settings – the permission
-    goes back. The sidebar's "Notifications" box needs no permission. So far one tells when the
-    Paint Discount Consultant's filler paints can be melted. With them on, the extension also reads
+    goes back. The sidebar's "Notifications" box needs no permission. They tell when pledges
+    marked to melt can be melted – one notification for all that are due, each pledge once, by the
+    pledges of this browser's stored hangar – and when the Paint Discount Consultant's filler
+    paints can be melted (a notification of their own). A click opens My Hangar. With them on, the extension also reads
     the Pledge Store on its schedule while no RSI page is open (see
     [Pledge Store](#pledge-store-current-warbond-ccus)).
   - **Show dismissed paint notifications again**: the Paint Discount Consultant's notification
