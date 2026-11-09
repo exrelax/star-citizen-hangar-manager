@@ -27,6 +27,13 @@ import {
   maybePaintConsultant,
   openPaintConsultant,
 } from '@/store/paint-consultant/use-paint-consultant';
+import {
+  demoDismissedPaintsItem,
+  dismissedOf,
+  dismissedPaintsItem,
+  isPaintNotificationShown,
+} from '@/store/paint-consultant/paint-notification';
+import { useStored } from '@/storage/use-stored';
 
 /*
  * The sidebar below RSI's page navigation on the left on every tab (App.vue teleports it there),
@@ -92,8 +99,10 @@ const pending = computed(() =>
  * there are any – it can't be checked off.
  */
 const readyCount = computed(() => meltReadyIds.value.size);
-/** All notifications: the one about the marked pledges, and the stored ones. */
-const noteCount = computed(() => notes.value.length + (readyCount.value ? 1 : 0));
+/** All notifications: those about marked pledges and paints to buy again, and the stored ones. */
+const noteCount = computed(
+  () => notes.value.length + (readyCount.value ? 1 : 0) + (paintNoteCount.value ? 1 : 0),
+);
 const noteTime = computed(
   () => new Intl.DateTimeFormat(locale.value, { dateStyle: 'medium', timeStyle: 'short' }),
 );
@@ -137,6 +146,28 @@ const rebuyPlan = computed(() => {
   const plan = consultant?.result.value?.plan;
   return plan?.own.length ? plan : undefined;
 });
+
+/*
+ * The consultant's notification (#151): how many paints can be bought again with more discount,
+ * until it is dismissed for exactly these paints (see `paint-notification.ts`). Not with "Hide
+ * melt value" on, like the box.
+ */
+const realDismissed = useStored(dismissedPaintsItem);
+const demoDismissed = useStored(demoDismissedPaintsItem);
+const dismissedItem = () => (demo.value ? demoDismissedPaintsItem : dismissedPaintsItem);
+const rebuyIds = computed(() =>
+  props.settings.hideMeltValue ? [] : (rebuyPlan.value?.own.map((paint) => paint.pledgeId) ?? []),
+);
+/** The paints the notification counts, or 0 while it isn't shown. */
+const paintNoteCount = computed(() => {
+  const dismissed = demo.value ? demoDismissed.value : realDismissed.value;
+  // Not before the dismissed paints are read: it would show for a moment.
+  if (!dismissed || !isPaintNotificationShown(rebuyIds.value, dismissed)) return 0;
+  return rebuyIds.value.length;
+});
+function dismissPaintNote() {
+  void dismissedItem().setValue(dismissedOf(rebuyIds.value));
+}
 
 // ---- Order and collapsed boxes ----
 
@@ -391,6 +422,28 @@ async function move(box: Box, step: -1 | 1) {
                 {{ i18n.t('notifications.selectReady') }}
               </button>
             </div>
+          </div>
+          <div v-if="paintNoteCount" class="shm-sidebar-melt-ready is-dismissable" role="status">
+            <SvgIcon name="paintbrush" />
+            <p>
+              {{
+                i18n.t(
+                  paintNoteCount === 1
+                    ? 'notifications.paintsRebuyOne'
+                    : 'notifications.paintsRebuy',
+                  [number.format(paintNoteCount)],
+                )
+              }}
+            </p>
+            <button
+              v-tooltip="i18n.t('notifications.dismissPaintsHint')"
+              type="button"
+              class="shm-sidebar-icon-button shm-sidebar-note-dismiss"
+              :aria-label="i18n.t('notifications.dismiss')"
+              @click="dismissPaintNote"
+            >
+              <SvgIcon name="xmark" />
+            </button>
           </div>
           <ul v-if="notes.length" class="shm-sidebar-notes">
             <li v-for="note in notes" :key="note.id">
@@ -783,7 +836,8 @@ async function move(box: Box, step: -1 | 1) {
 }
 
 /*
- * Marked pledges that can be melted now: one notification for all, laid out like the others – an
+ * The notifications worked out from the current state – marked pledges that can be melted now,
+ * paints to buy again (#151) – each one for all of its pledges, laid out like the others – an
  * icon in place of the checkbox (it can't be checked off) and the text, then its actions as buttons
  * like those of the Paint Discount box (`.shm-sidebar-actions`). Side by side they take the full
  * width, so they fit more often (measured on RSI's page: English in Modern Hangar); stacked, they
@@ -816,8 +870,24 @@ async function move(box: Box, step: -1 | 1) {
   grid-column: 2;
 }
 
+.shm-sidebar-melt-ready + .shm-sidebar-melt-ready,
 .shm-sidebar-melt-ready + .shm-sidebar-notes {
   margin-top: 8px;
+}
+
+/* With an X in its top right corner that dismisses it; the text keeps clear of it. */
+.shm-sidebar-melt-ready.is-dismissable {
+  position: relative;
+}
+
+.shm-sidebar-melt-ready.is-dismissable p {
+  padding-right: 16px;
+}
+
+.shm-sidebar-note-dismiss {
+  position: absolute;
+  top: 2px;
+  right: 2px;
 }
 
 /* Notifications (#142): each with a checkbox to check it off, newest first. */

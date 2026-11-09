@@ -586,6 +586,10 @@
     "showAllHint": "Schaltet den Filter ab: „My Hangar“ zeigt wieder alle Pledges.",
     "selectReady": "Auswählen",
     "selectReadyHint": "Wählt diese Pledges aus: Die Box „Ausgewählt“ bietet dann an, alle auf einmal einzuschmelzen (wenn „Mehrere Pledges auf einmal einschmelzen“ an ist).",
+    "paintsRebuy": "$1 Paints lassen sich mit mehr Rabatt zurückkaufen",
+    "paintsRebuyOne": "1 Paint lässt sich mit mehr Rabatt zurückkaufen",
+    "dismiss": "Ausblenden",
+    "dismissPaintsHint": "Entfernt diese Benachrichtigung für genau diese Paints. Sie erscheint wieder, sobald sich ein weiteres Paint mit mehr Rabatt zurückkaufen lässt – dann mit der Anzahl aller.",
     "count": "$1 Benachrichtigungen",
     "countOne": "1 Benachrichtigung"
   },

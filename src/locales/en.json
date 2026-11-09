@@ -586,6 +586,10 @@
     "showAllHint": "Turns the filter off: “My Hangar” shows all pledges again.",
     "selectReady": "Select",
     "selectReadyHint": "Selects these pledges: the “Selected” box then offers to melt them all at once (with “Bulk melting” on).",
+    "paintsRebuy": "$1 paints can be bought again with more discount",
+    "paintsRebuyOne": "1 paint can be bought again with more discount",
+    "dismiss": "Dismiss",
+    "dismissPaintsHint": "Removes this notification for exactly these paints. It comes back as soon as another paint can be bought again with more discount – then with the count of all of them.",
     "count": "$1 notifications",
     "countOne": "1 notification"
   },
