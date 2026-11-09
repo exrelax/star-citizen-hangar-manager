@@ -34,7 +34,7 @@ function rsi(current: BuybackPledge[]) {
   return { fetchPage, requests };
 }
 
-const deps = { fetchDetails: async () => ['Item'], fetchShipLinks: async () => ({}) };
+const deps = { fetchDetails: async () => ({ items: ['Item'] }), fetchShipLinks: async () => ({}) };
 
 async function store(pledges: BuybackPledge[]) {
   await buybackSnapshot.setValue({

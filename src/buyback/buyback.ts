@@ -28,6 +28,12 @@ export interface BuybackPledge {
    * only ones that can contain insurance – and kept, as a melted pledge doesn't change any more.
    */
   items?: string[];
+  /**
+   * The buy back price in USD without taxes, from the detail page (read with the items, #185);
+   * `null` when the page showed none. Other pledges' prices come from the catalog (see
+   * `buyback-price.ts`).
+   */
+  price?: number | null;
 }
 
 /** Locally stored result of the last buy back sync. */

@@ -343,6 +343,11 @@
     "openInManagerBuyback": "Ouvrir dans le Hangar Manager – Buy Back (#$1)"
   },
   "buyback": {
+    "price": {
+      "rsi": "Prix de rachat tel que RSI l’affiche sur la page du pledge, hors taxes.",
+      "ships": "Prix de rachat : le prix standard du vaisseau, ou pour un CCU la différence des prix standard de ses vaisseaux – ce que RSI facture –, hors taxes.",
+      "store": "Prix de rachat : le prix standard de l’article dans le Pledge Store – ce que RSI facture –, hors taxes."
+    },
     "empty": "RSI n’indique aucun pledge à racheter pour ton compte.",
     "contains": "Contient : $1",
     "reclaimed": "Fusionné le $1",

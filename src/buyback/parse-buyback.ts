@@ -85,6 +85,23 @@ function parseLastPage(doc: Document): number {
 }
 
 /** Items listed on the detail page of a buy back pledge (`/pledge/buyback/<id>`). */
+/**
+ * The buy back price on a pledge's detail page, in USD without taxes: RSI shows it with the taxes
+ * of the account's country (`data-value` in cents, "VAT 19%" in its tax details), the extension's
+ * prices are without them. Undefined without a price in USD.
+ */
+export function parseBuybackPrice(doc: Document): number | undefined {
+  const price = doc.querySelector('.final-price[data-value]');
+  const cents = Number(price?.getAttribute('data-value'));
+  if (!price || !Number.isFinite(cents) || cents <= 0) return undefined;
+  if ((price.getAttribute('data-currency') ?? 'USD') !== 'USD') return undefined;
+  const percent = [...(price.parentElement?.querySelectorAll('.taxes-details li') ?? [])]
+    .map((li) => Number(/(\d+(?:[.,]\d+)?)\s*%/.exec(text(li))?.[1]?.replace(',', '.')))
+    .filter((value) => Number.isFinite(value))
+    .reduce((sum, value) => sum + value, 0);
+  return Math.round(cents / (1 + percent / 100)) / 100;
+}
+
 export function parseBuybackDetail(doc: Document): string[] {
   return [...doc.querySelectorAll('.package-listing.item ul > li')]
     .map((li) => text(li))

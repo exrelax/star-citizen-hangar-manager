@@ -12,7 +12,12 @@ import {
   type BuybackSnapshot,
 } from './buyback';
 import { buybackSnapshot } from './buyback-storage';
-import { parseBuybackDetail, parseBuybackPage, type BuybackListPage } from './parse-buyback';
+import {
+  parseBuybackDetail,
+  parseBuybackPage,
+  parseBuybackPrice,
+  type BuybackListPage,
+} from './parse-buyback';
 
 export type FetchBuybackPage = (
   page: number,
@@ -22,7 +27,12 @@ export type FetchBuybackPage = (
 
 export interface BuybackSyncDeps {
   fetchPage?: FetchBuybackPage;
-  fetchDetails?: (id: number) => Promise<string[]>;
+  fetchDetails?: (id: number) => Promise<BuybackDetails>;
+  /**
+   * Also reads the detail pages of pledges with several items whose price isn't known yet (a full
+   * sync, after an update that added prices, #185). Smart updates read only new pledges.
+   */
+  backfillPrices?: boolean;
   fetchShipLinks?: (pledges: Pledge[], previous: ShipLinks | undefined) => Promise<ShipLinks>;
   /** Hears about the list pages and – once known – the detail pages to read. */
   progress?: ProgressSink;
@@ -80,7 +90,8 @@ async function storeBuyback(
 
   const previous = await buybackSnapshot.getValue();
   const all = [...pledges.values()];
-  const shipLinks = await enrichBuyback(all, previous, deps);
+  // A full sync also fills in the prices of pledges read before prices were (#185).
+  const shipLinks = await enrichBuyback(all, previous, { ...deps, backfillPrices: true });
 
   // RSI shows the tokens above every page of the list; the first one is read anyway.
   const tokens = (pagesOf(undefined)[0] as BuybackListPage | undefined)?.tokens;
@@ -97,9 +108,16 @@ async function storeBuyback(
   return snapshot;
 }
 
+/** What a buy back pledge's detail page adds: all its items and its price. */
+export interface BuybackDetails {
+  items: string[];
+  /** USD without taxes; undefined if the page shows none. */
+  price?: number;
+}
+
 /**
- * Adds what the list pages don't show: the items of pledges with several items (from their
- * detail pages; known ones are reused) and links for their ships. Returns the ship links.
+ * Adds what the list pages don't show: the items and the price of pledges with several items (from
+ * their detail pages; known ones are reused) and links for their ships. Returns the ship links.
  */
 export async function enrichBuyback(
   pledges: BuybackPledge[],
@@ -111,22 +129,24 @@ export async function enrichBuyback(
     fetchShipLinks = resolveShipLinks,
     concurrency = SYNC_CONCURRENCY,
     progress,
+    backfillPrices = false,
   } = deps;
 
-  const knownItems = new Map(
-    (previous?.pledges ?? []).filter((p) => p.items).map((p) => [p.id, p.items!]),
-  );
+  const known = new Map((previous?.pledges ?? []).filter((p) => p.items).map((p) => [p.id, p]));
   const missing: BuybackPledge[] = [];
   for (const pledge of pledges) {
     if (!hasSeveralItems(pledge)) continue;
-    const items = pledge.items ?? knownItems.get(pledge.id);
-    if (items) pledge.items = items;
-    else missing.push(pledge);
+    const before = known.get(pledge.id);
+    pledge.items ??= before?.items;
+    if (pledge.price === undefined && before?.price !== undefined) pledge.price = before.price;
+    if (!pledge.items || (backfillPrices && pledge.price === undefined)) missing.push(pledge);
   }
   // Only known once the list pages are read, so they join the progress late.
   progress?.expect(missing.length, missing.length * SYNC_WORK.detailPage);
   await mapWithConcurrency(missing, concurrency, async (pledge) => {
-    pledge.items = await fetchDetails(pledge.id);
+    const details = await fetchDetails(pledge.id);
+    pledge.items = details.items;
+    pledge.price = details.price ?? null;
     progress?.complete(1, SYNC_WORK.detailPage);
   });
 
@@ -164,10 +184,12 @@ export const fetchBuybackPage: FetchBuybackPage = async (
   return parseBuybackPage(doc);
 };
 
-/** Items of a buy back pledge, from its detail page. */
-export async function fetchBuybackDetails(id: number): Promise<string[]> {
+/** Items and price of a buy back pledge, from its detail page. */
+export async function fetchBuybackDetails(id: number): Promise<BuybackDetails> {
   const response = await fetch(`/pledge/buyback/${id}`, { credentials: 'include' });
   if (!response.ok)
     throw new Error(`Loading buy back pledge ${id} failed: HTTP ${response.status}`);
-  return parseBuybackDetail(new DOMParser().parseFromString(await response.text(), 'text/html'));
+  const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
+  const price = parseBuybackPrice(doc);
+  return { items: parseBuybackDetail(doc), ...(price !== undefined && { price }) };
 }

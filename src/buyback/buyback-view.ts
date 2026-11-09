@@ -13,6 +13,7 @@ import {
   type BuybackPledge,
   type BuybackUpgrade,
 } from './buyback';
+import type { BuybackPrice, BuybackPricer } from './buyback-price';
 
 /** What the buy back list shows for a pledge. */
 export interface BuybackView {
@@ -45,6 +46,8 @@ export interface BuybackView {
   hasGameAccess: boolean;
   /** Bought before `BUYBACK_GIFTABLE_PURCHASED_BEFORE`: giftable again after a warbond buy back. */
   isProbablyGiftable: boolean;
+  /** What buying it back costs, if known (see `buyback-price.ts`). */
+  price?: BuybackPrice;
   /** Normalized title, ship names and pledge id for the live search. */
   searchText: string;
 }
@@ -72,10 +75,19 @@ export interface BuybackViewContext {
   idLimit: number | undefined;
   shipLinks?: ShipLinks;
   cutoff?: string;
+  /** The buy back price of a pledge (see `buyback-price.ts`). */
+  priceOf?: BuybackPricer;
 }
 
 export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext): BuybackView {
-  const { position, idLimit, shipLinks = {}, cutoff = BUYBACK_GIFTABLE_PURCHASED_BEFORE } = context;
+  const {
+    position,
+    idLimit,
+    shipLinks = {},
+    cutoff = BUYBACK_GIFTABLE_PURCHASED_BEFORE,
+    priceOf,
+  } = context;
+  const price = priceOf?.(pledge);
   // The detail page lists the items besides the main one named in "Contained".
   const extraItems = pledge.items ?? [];
   const main = mainItem(pledge);
@@ -107,6 +119,7 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
     isProbablyGiftable:
       (!!pledge.reclaimedAt && pledge.reclaimedAt < cutoff) ||
       (idLimit !== undefined && pledge.id <= idLimit),
+    ...(price && { price }),
     searchText: normalizeSearchText([pledge.title, ...shipNames, pledge.id].join(' ')),
   };
 }
