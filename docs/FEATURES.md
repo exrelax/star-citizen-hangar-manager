@@ -224,9 +224,13 @@ icon and a tooltip that names and explains it:
     packs, …): its standard price there – RSI's buy back costs the current standard price, not a
     warbond or sale price,
   - standalone ships (also with insurance and extras like "10 Year" or "ILW") and pledges that are
-    just a ship: the ship's standard price; an upgraded one only from its buy back page.
-    A pledge none of them knows (e.g. an item the store doesn't sell any more) shows no price. A
-    full refresh reads the prices of pledges with several items stored before prices were shown.
+    just a ship: the ship's standard price; an upgraded one only from its buy back page,
+  - a single item the store doesn't sell any more (e.g. an event paint): its buy back page, read
+    once when its row is opened ("Price …" meanwhile) and kept, as a melted pledge doesn't change –
+    no request for rows nobody opens. Its copies with the same title show the same price.
+
+  A full refresh reads the prices of pledges with several items stored before prices were shown.
+
 - **Buy back tokens**: how many pledges can still be bought back with store credit, as RSI shows
   it above its buy back list, read with every refresh and smart update.
 

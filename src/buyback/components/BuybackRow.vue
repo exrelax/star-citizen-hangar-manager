@@ -12,6 +12,7 @@ import type { BuybackLinkMode } from '@/settings/settings';
 import { computed, ref, watch } from 'vue';
 import type { BuybackView } from '../buyback-view';
 import { addBuybackToCart, CartError, RSI_CART_PATH } from '../cart';
+import { loadBuybackPrice } from '../sync-buyback';
 import { giftableHint } from '../giftable-hint';
 import { GIFTING_FAQ_URL } from '@/config';
 import { vTooltip } from '@/shared/tooltip/tooltip';
@@ -56,6 +57,21 @@ const toggle = () => {
   expanded.value = !expanded.value;
   openedAutomatically = false;
 };
+
+// No price from the catalog (an item the store doesn't sell any more): its buy back page has it,
+// read once when the row is opened (#185). Not for made-up demo pledges.
+const loadingPrice = ref(false);
+watch(
+  expanded,
+  async (open) => {
+    const { pledge } = props;
+    if (!open || pledge.price || pledge.priceRead || pledge.isCcu || pledge.displayId) return;
+    loadingPrice.value = true;
+    await loadBuybackPrice(pledge.id);
+    loadingPrice.value = false;
+  },
+  { immediate: true },
+);
 
 // The manager lives on the hangar page; buyback links keep its locale prefix.
 const pathname = location.pathname;
@@ -134,6 +150,9 @@ const kind = computed(() =>
         <span class="shm-meta">
           <span class="shm-pledge-id">#{{ pledge.displayId ?? pledge.id }}</span>
           <span v-if="price" v-tooltip="price.hint" class="shm-value">{{ price.text }}</span>
+          <span v-else-if="loadingPrice" class="shm-value is-loading">
+            {{ i18n.t('buyback.priceLoading') }}
+          </span>
           <span v-if="pledge.reclaimedAt">
             {{ i18n.t('buyback.reclaimed', [pledge.reclaimedAt]) }}
           </span>

@@ -343,6 +343,7 @@
     "openInManagerBuyback": "Open in Hangar Manager – Buy Back (#$1)"
   },
   "buyback": {
+    "priceLoading": "Price …",
     "price": {
       "rsi": "Buy back price as RSI shows it on the pledge's page, without taxes.",
       "ships": "Buy back price: the standard price of the ship, or for a CCU the difference of its ships' standard prices – what RSI charges – without taxes.",

@@ -343,6 +343,7 @@
     "openInManagerBuyback": "Abrir en el Hangar Manager – Buy Back (#$1)"
   },
   "buyback": {
+    "priceLoading": "Precio …",
     "price": {
       "rsi": "Precio de recompra tal como RSI lo muestra en la página del pledge, sin impuestos.",
       "ships": "Precio de recompra: el precio estándar de la nave, o para un CCU la diferencia de los precios estándar de sus naves – lo que cobra RSI –, sin impuestos.",

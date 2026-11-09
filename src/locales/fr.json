@@ -343,6 +343,7 @@
     "openInManagerBuyback": "Ouvrir dans le Hangar Manager – Buy Back (#$1)"
   },
   "buyback": {
+    "priceLoading": "Prix …",
     "price": {
       "rsi": "Prix de rachat tel que RSI l’affiche sur la page du pledge, hors taxes.",
       "ships": "Prix de rachat : le prix standard du vaisseau, ou pour un CCU la différence des prix standard de ses vaisseaux – ce que RSI facture –, hors taxes.",
