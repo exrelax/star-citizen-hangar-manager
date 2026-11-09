@@ -1599,7 +1599,14 @@ const chart = computed(() => {
 }
 
 .shm-ways .shm-way-actions {
+  align-items: stretch;
   margin-top: auto;
+}
+
+/* The buttons of a way span the card, a little taller than elsewhere. */
+.shm-ways .shm-way-actions > .shm-button {
+  justify-content: center;
+  min-height: 36px;
 }
 
 /* The cart button of each way in its color, filled for the way that is recommended or works. */
