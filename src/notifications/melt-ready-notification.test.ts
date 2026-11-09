@@ -28,11 +28,13 @@ const hangar = (...ids: number[]): HangarSnapshot => ({
   pledges: ids.map((id) => ({ id, title: `Paints - Paint ${id}` }) as Pledge),
 });
 
+const clear = vi.fn();
 function stubNotifications() {
   const create = vi.fn().mockResolvedValue('id');
+  clear.mockClear();
   (fakeBrowser as unknown as { notifications: unknown }).notifications = {
     create,
-    clear: vi.fn(),
+    clear,
     onClicked: { addListener: vi.fn() },
   };
   return create;
@@ -137,5 +139,32 @@ describe('checkMeltReady', () => {
     await meltMarksItem.setValue({ 1: MARKED });
     await checkMeltReady(READY + 2000);
     expect(create).toHaveBeenCalledTimes(2);
+  });
+
+  it('takes the notification away once its pledges are melted', async () => {
+    stubNotifications();
+    await browserNotificationsItem.setValue(true);
+    await meltMarksItem.setValue({ 1: MARKED, 2: MARKED });
+    await hangarSnapshot.setValue(hangar(1, 2));
+    await checkMeltReady(READY);
+    // One melted: the notification stays for the other.
+    await hangarSnapshot.setValue(hangar(2));
+    await checkMeltReady(READY + 1000);
+    expect(clear).not.toHaveBeenCalled();
+    // Both melted.
+    await hangarSnapshot.setValue(hangar());
+    await checkMeltReady(READY + 2000);
+    expect(clear).toHaveBeenCalledWith('shm-melt-ready');
+  });
+
+  it('names all pledges still to melt when another one is due', async () => {
+    const create = stubNotifications();
+    await browserNotificationsItem.setValue(true);
+    await hangarSnapshot.setValue(hangar(1, 2));
+    await meltMarksItem.setValue({ 1: MARKED });
+    await checkMeltReady(READY);
+    await meltMarksItem.setValue({ 1: MARKED, 2: MARKED + 60_000 });
+    await checkMeltReady(READY + 60_000);
+    expect(create.mock.calls[1]![1].message).toContain('2 marked pledges');
   });
 });

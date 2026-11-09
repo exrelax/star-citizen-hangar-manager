@@ -16,6 +16,7 @@ import {
   isManagerActionMessage,
   takeActionFromUrl,
 } from '@/hangar/manager-action';
+import { MANAGER_SEEN } from '@/hangar/manager-action-message';
 import { isTimerActive, startSmartUpdateTimer } from '@/hangar/smart-update/schedule';
 import { listenForChecksElsewhere } from '@/hangar/smart-update/broadcast';
 import { resetBackoff, watchInput } from '@/hangar/smart-update/backoff';
@@ -125,6 +126,13 @@ export default defineContentScript({
 
       // Coming back from "My Gear", pledges may just have been melted or gifted: check right away.
       if (showManager) void maybeRunSmartUpdate({ force: !firstRender });
+      if (showManager) announceSeen();
+    };
+    /** The sidebar now tells what the browser notifications told: they can go (#155). */
+    const announceSeen = () => {
+      if (document.visibilityState === 'visible') {
+        void browser.runtime.sendMessage(MANAGER_SEEN).catch(() => undefined);
+      }
     };
 
     // The nav links point to `/account/pledges` without the locale prefix, so following them
@@ -149,7 +157,10 @@ export default defineContentScript({
     ctx.addEventListener(window, 'popstate', render);
     ctx.addEventListener(window, 'hashchange', render);
     ctx.addEventListener(document, 'visibilitychange', () => {
-      if (document.visibilityState === 'visible' && managerVisible) void maybeRunSmartUpdate();
+      if (document.visibilityState === 'visible' && managerVisible) {
+        void maybeRunSmartUpdate();
+        announceSeen();
+      }
     });
     // While it stays open and visible: a check whenever the interval has passed.
     const timerActive = () =>
