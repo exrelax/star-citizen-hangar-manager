@@ -85,7 +85,7 @@ export interface KeptPlan {
 }
 
 /** A day "YYYY-MM-DD" of a time, in local time like the purchase dates. */
-const dayOf = (ms: number) => {
+export const dayOf = (ms: number) => {
   const date = new Date(ms);
   const pad = (n: number) => String(n).padStart(2, '0');
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
@@ -359,5 +359,107 @@ export function planPaintRebuy(input: PaintConsultantInput): PaintConsultantResu
     probablyRebought,
     plan,
     next: next && { tier: next.tier, missing: usd(Math.max(0, missingOf(next))) },
+  };
+}
+
+/** An own paint of a kept plan, as the plan keeps it. */
+export interface KeptPaint {
+  pledgeId: number;
+  title: string;
+  skuId: number;
+}
+
+/** A paint melted first that is left to buy again (#168). */
+export interface PendingPaint {
+  /** The melted pledge. */
+  pledgeId: number;
+  title: string;
+  storePaint: StorePaint;
+}
+
+/** What is left to buy of a kept plan whose own paints were melted first (#168). */
+export interface PendingRebuy {
+  /** Own paints melted, not bought again yet. */
+  toBuy: PendingPaint[];
+  /** Melted paints the Pledge Store doesn't sell on their own any more. */
+  unavailable: string[];
+  /** The best tier the store credit pays now, with the filler paints for it. */
+  plan?: Pick<PaintRebuyPlan, 'tier' | 'fillers' | 'cartPrice' | 'cartCost'>;
+  /** The tier the plan had, when the store credit doesn't pay it now: what is missing. */
+  missing?: MissingCredit;
+}
+
+/**
+ * The own paints of a kept plan that are gone from the hangar – melted – and not bought again yet
+ * (no younger copy of the same paint bought on the plan's day or later), and the best tier the
+ * store credit pays for them now: the store credit their melting freed pays the cart. Undefined
+ * when nothing is left to buy.
+ */
+export function planPendingRebuy(input: {
+  kept: { at: number; tier: PaintTier; own: readonly KeptPaint[] };
+  pledges: readonly PaintPledge[];
+  storeItems: readonly StoreItem[];
+  storeCredit: number;
+  useFillers: boolean;
+}): PendingRebuy | undefined {
+  const storePaints = storePaintsOf(input.storeItems);
+  const bySku = new Map(storePaints.map((paint) => [paint.id, paint]));
+  const inHangar = new Set(input.pledges.map((pledge) => pledge.id));
+  const keptIds = new Set(input.kept.own.map((paint) => paint.pledgeId));
+  const since = dayOf(input.kept.at);
+  // Copies bought since the plan, each counted for one melted paint.
+  const copies = ownPaintsOf(input.pledges, storePaints).filter(
+    (paint) => !keptIds.has(paint.pledgeId) && (paint.boughtOn ?? '') >= since,
+  );
+  const used = new Set<number>();
+
+  const toBuy: PendingPaint[] = [];
+  const unavailable: string[] = [];
+  for (const kept of input.kept.own) {
+    if (inHangar.has(kept.pledgeId)) continue;
+    const copy = copies.find(
+      (paint) => paint.storePaint.id === kept.skuId && !used.has(paint.pledgeId),
+    );
+    if (copy) {
+      used.add(copy.pledgeId);
+      continue;
+    }
+    const storePaint = bySku.get(kept.skuId);
+    if (storePaint) toBuy.push({ pledgeId: kept.pledgeId, title: kept.title, storePaint });
+    else unavailable.push(kept.title);
+  }
+  if (!toBuy.length && !unavailable.length) return undefined;
+
+  // As own paints without melt value: their store credit is free already.
+  const asOwn: OwnPaint[] = toBuy.map((paint) => ({
+    ...paint,
+    meltValue: 0,
+    discount: 0,
+    giftable: false,
+  }));
+  const credit = cents(Math.max(0, input.storeCredit));
+  const tiers = [...PAINT_DISCOUNT_TIERS.tiers].sort((a, b) => b.percent - a.percent);
+  const carts = tiers.flatMap((tier) => {
+    const cart = asOwn.length ? cartAt(tier, asOwn, storePaints, input.useFillers) : undefined;
+    return cart ? [cart] : [];
+  });
+  const cart = carts.find((candidate) => cents(candidate.cartCost) <= credit);
+  const planned = carts.find((candidate) => candidate.tier.percent === input.kept.tier.percent);
+  const missing =
+    planned && (!cart || cart.tier.percent < planned.tier.percent)
+      ? { tier: planned.tier, missing: usd(cents(planned.cartCost) - credit) }
+      : undefined;
+  return {
+    toBuy,
+    unavailable,
+    ...(cart && {
+      plan: {
+        tier: cart.tier,
+        fillers: cart.fillers,
+        cartPrice: cart.cartPrice,
+        cartCost: cart.cartCost,
+      },
+    }),
+    ...(missing && { missing }),
   };
 }

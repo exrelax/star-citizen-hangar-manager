@@ -1,5 +1,5 @@
 import { postRsiJson } from '@/shared/rsi-api';
-import type { PaintRebuyPlan } from './calculation';
+import type { FillerPaint, StorePaint } from './calculation';
 
 /*
  * Puts the paints of the Paint Discount Consultant's plan into RSI's cart (#103): the own paints
@@ -24,7 +24,10 @@ export interface CartLine {
 }
 
 /** The plan's paints as cart lines: own paints of the same SKU together, then the fillers. */
-export function cartLinesOf(plan: Pick<PaintRebuyPlan, 'own' | 'fillers'>): PaintCartLine[] {
+export function cartLinesOf(plan: {
+  own: readonly { storePaint: StorePaint }[];
+  fillers: readonly FillerPaint[];
+}): PaintCartLine[] {
   const lines = new Map<number, PaintCartLine>();
   const add = (skuId: number, name: string, qty: number) => {
     const line = lines.get(skuId);

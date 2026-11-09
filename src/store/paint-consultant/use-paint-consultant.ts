@@ -15,7 +15,13 @@ import {
 } from 'vue';
 import { storeItemsItem, STORE_ITEMS_VERSION } from '../items/store-items-storage';
 import type { StoreItem } from '../items/store-items';
-import { planPaintRebuy, type KeptPlan, type PaintConsultantResult } from './calculation';
+import {
+  planPaintRebuy,
+  planPendingRebuy,
+  type KeptPlan,
+  type PaintConsultantResult,
+  type PendingRebuy,
+} from './calculation';
 import { rebuyPlanItem, REBUY_PLAN_VERSION } from './rebuy-plan-storage';
 
 /*
@@ -33,6 +39,8 @@ export interface PaintConsultantState {
   /** The store credit is to be used, but isn't known (yet): it counts as $0. */
   creditUnknown: ComputedRef<boolean>;
   result: ComputedRef<PaintConsultantResult | undefined>;
+  /** Paints of the kept plan melted first and left to buy again (#168). */
+  pending: ComputedRef<PendingRebuy | undefined>;
 }
 
 /**
@@ -107,6 +115,19 @@ export function providePaintConsultant({
       : undefined,
   );
 
+  // Melted first (#168): what of the kept plan is left to buy, with the store credit there is now.
+  const pending = computed(() => {
+    const stored = storedPlan.value;
+    if (!storeItems.value || stored?.version !== REBUY_PLAN_VERSION) return undefined;
+    return planPendingRebuy({
+      kept: stored,
+      pledges: pledges(),
+      storeItems: storeItems.value,
+      storeCredit: credit.value ?? 0,
+      useFillers: options.value.useFillers,
+    });
+  });
+
   watchEffect(() => {
     const plan = result.value?.plan;
     const marks = new Map<number, PaintRebuy>();
@@ -134,7 +155,7 @@ export function providePaintConsultant({
     paintRebuys.value = marks;
   });
 
-  const state = { pledges: computed(pledges), storeItems, creditUnknown, result };
+  const state = { pledges: computed(pledges), storeItems, creditUnknown, result, pending };
   provide(KEY, state);
   return state;
 }

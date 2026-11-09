@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { RSI_CART_PATH } from '@/buyback/cart';
 import { useDemoContext } from '@/demo/use-demo';
 import BulkExchangeOverlay from '@/hangar/components/BulkExchangeOverlay.vue';
 import { formatPercent, formatUsd } from '@/hangar/discount-format';
@@ -15,13 +14,8 @@ import { useSettings } from '@/settings/use-settings';
 import { computed, ref } from 'vue';
 import { refreshStoreItems } from '../items/sync-store-items';
 import { usePaintConsultant } from '../paint-consultant/use-paint-consultant';
-import {
-  addLinesToCart,
-  cartLinesOf,
-  readCart,
-  type CartLine,
-  type CartResult,
-} from '../paint-consultant/cart';
+import { cartLinesOf } from '../paint-consultant/cart';
+import PaintCartButton from './PaintCartButton.vue';
 import {
   REBUY_PLAN_VERSION,
   rebuyPlanItem,
@@ -42,7 +36,7 @@ const COOLDOWN_SOURCE =
   'https://support.robertsspaceindustries.com/hc/en-us/articles/115013193627-Reclaim-a-Pledge';
 
 // Worked out once for the manager (App.vue), also for the marks in My Hangar.
-const { pledges, storeItems, creditUnknown, result } = usePaintConsultant();
+const { pledges, storeItems, creditUnknown, result, pending } = usePaintConsultant();
 
 const options = computed(() => props.settings.paintConsultant);
 const { update } = useSettings();
@@ -95,53 +89,12 @@ const fillerCount = computed(
 
 // ---- Into the cart (#103) ----
 
-// The demo is for screenshots: nothing goes into the real cart.
+// The demo is for screenshots: nothing goes into the real cart, nothing is melted.
 const demo = useDemoContext();
-/** `busy` while reading or filling the cart; `occupied` when the cart already holds items. */
-const cartState = ref<'idle' | 'busy' | 'occupied' | 'done'>('idle');
-/** The cart's items before adding, while it isn't empty. */
-const cartBefore = ref<CartLine[]>([]);
-const cartItemsBefore = computed(() => cartBefore.value.reduce((sum, line) => sum + line.qty, 0));
-const cartResult = ref<CartResult>();
-const cartError = ref<string>();
-
-function openCart() {
-  if (!window.open(RSI_CART_PATH, '_blank')) location.assign(RSI_CART_PATH);
-}
-
-/** Reads the cart first: other items in it change the volume discount tier. */
-async function toCart() {
-  if (!plan.value || demo.value || cartState.value === 'busy') return;
-  cartState.value = 'busy';
-  cartError.value = undefined;
-  cartResult.value = undefined;
-  try {
-    cartBefore.value = await readCart();
-    if (cartBefore.value.length) {
-      cartState.value = 'occupied';
-      return;
-    }
-    await fillCart();
-  } catch (error) {
-    reportCartError(error);
-  }
-}
-
-/** Adds the plan's paints, keeps the plan for later (#105) and opens the cart. */
-async function fillCart() {
-  const current = plan.value;
-  if (!current) return;
-  cartState.value = 'busy';
-  try {
-    const result = await addLinesToCart(cartLinesOf(current));
-    cartResult.value = result;
-    if (result.added.length) await rebuyPlanItem.setValue(storedPlanOf(current, Date.now()));
-    cartState.value = 'done';
-    // With a refused paint the cart isn't what the plan needs: the user reads why first.
-    if (!result.failed.length) openCart();
-  } catch (error) {
-    reportCartError(error);
-  }
+const planLines = computed(() => (plan.value ? cartLinesOf(plan.value) : []));
+/** Keeps the plan once its paints are in the cart, for later (#105, #139, #168). */
+async function keepPlan() {
+  if (plan.value) await rebuyPlanItem.setValue(storedPlanOf(plan.value, Date.now()));
 }
 
 // ---- Melt the own paints at once (#104, with bulk melting on) ----
@@ -162,6 +115,13 @@ const ownPledges = computed(() => {
     .filter((pledge): pledge is PledgeView => !!pledge && pledge.isMeltable);
 });
 const melting = ref(false);
+/**
+ * Melted first (#168): the plan is kept, so the paints to buy again are known once they are gone
+ * from the hangar. A plan kept with the cart (way 1) stays as it is.
+ */
+async function keepPlanMelted() {
+  if (!cartFilled.value) await keepPlan();
+}
 
 // ---- Paints bought again already (#139): only melting the old pledges is left ----
 
@@ -188,15 +148,40 @@ const reboughtPledges = computed(() => {
 const meltingRebought = ref(false);
 /** Pairs that look bought again without a kept plan (`reboughtDetection: 'guess'`). */
 const probablyRebought = computed(() => result.value?.probablyRebought ?? []);
+// ---- Melted first, left to buy (#168) ----
+
+const pendingFillerCount = computed(
+  () => pending.value?.plan?.fillers.reduce((sum, f) => sum + f.quantity, 0) ?? 0,
+);
+const pendingLines = computed(() =>
+  pending.value?.plan
+    ? cartLinesOf({ own: pending.value.toBuy, fillers: pending.value.plan.fillers })
+    : [],
+);
+/** What a paint costs in the cart at the tier the store credit pays now. */
+const inPendingCart = (price: number) =>
+  pending.value?.plan ? Math.round(price * (100 - pending.value.plan.tier.percent)) / 100 : price;
+/** The kept plan takes the tier and the filler paints really put into the cart (#105). */
+async function keepPendingPlan() {
+  const stored = storedPlan.value;
+  const current = pending.value?.plan;
+  if (!stored || !current) return;
+  await rebuyPlanItem.setValue({
+    ...stored,
+    tier: { ...current.tier },
+    fillers: current.fillers.map((filler) => ({
+      skuId: filler.paint.id,
+      name: filler.paint.name,
+      quantity: filler.quantity,
+      price: filler.paint.price,
+    })),
+    cartCost: current.cartCost,
+  });
+}
+
 /** Bulk melting is off: the settings tab, at its setting. */
 const openBulkMeltingSetting = () =>
   openTabAt('settings', BULK_MELTING_SETTING_ID, { highlight: true });
-
-function reportCartError(error: unknown) {
-  console.error('[star-citizen-hangar-manager] Filling the cart failed', error);
-  cartError.value = error instanceof Error ? error.message : String(error);
-  cartState.value = 'idle';
-}
 </script>
 
 <template>
@@ -325,6 +310,80 @@ function reportCartError(error: unknown) {
             <SvgIcon name="gear" />
             {{ i18n.t('bulkExchange.disabled') }}
           </button>
+        </div>
+      </div>
+
+      <!-- Melted first (#168): the kept plan says what is left to buy again. -->
+      <div v-if="pending" class="shm-consultant-plan shm-consultant-pending">
+        <h4 class="shm-consultant-subtitle">
+          {{ i18n.t('consultant.pendingTitle', [pending.toBuy.length]) }}
+        </h4>
+        <ol class="shm-consultant-steps shm-consultant-progress">
+          <li class="is-done">
+            <SvgIcon name="circle-check" />
+            {{ i18n.t('consultant.pendingMelted') }}
+          </li>
+          <li class="is-open">
+            <SvgIcon name="basket-shopping" />
+            {{
+              pending.plan
+                ? i18n.t('consultant.pendingBuy', [
+                    percent(pending.plan.tier.percent),
+                    pending.toBuy.length + pendingFillerCount,
+                    usd(pending.plan.cartCost),
+                  ])
+                : i18n.t('consultant.pendingNoTier')
+            }}
+          </li>
+        </ol>
+        <div v-if="pending.toBuy.length" class="shm-consultant-table-wrap">
+          <table class="shm-consultant-table">
+            <thead>
+              <tr>
+                <th scope="col">{{ i18n.t('consultant.colPaint') }}</th>
+                <th scope="col" class="is-number">{{ i18n.t('consultant.colCount') }}</th>
+                <th scope="col" class="is-number">{{ i18n.t('consultant.colPrice') }}</th>
+                <th scope="col" class="is-number">{{ i18n.t('consultant.colCart') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="paint in pending.toBuy" :key="paint.pledgeId">
+                <th scope="row">{{ paint.storePaint.name }}</th>
+                <td class="is-number">1</td>
+                <td class="is-number">{{ usd(paint.storePaint.price) }}</td>
+                <td class="is-number">{{ usd(inPendingCart(paint.storePaint.price)) }}</td>
+              </tr>
+              <tr
+                v-for="filler in pending.plan?.fillers ?? []"
+                :key="`filler-${filler.paint.id}`"
+                class="is-filler"
+              >
+                <th scope="row">
+                  {{ filler.paint.name }}
+                  <span class="shm-consultant-tag">{{ i18n.t('consultant.fillerTag') }}</span>
+                </th>
+                <td class="is-number">{{ filler.quantity }}</td>
+                <td class="is-number">{{ usd(filler.paint.price) }}</td>
+                <td class="is-number">
+                  {{ usd(inPendingCart(filler.paint.price * filler.quantity)) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p v-if="pending.missing" class="shm-consultant-note">
+          {{
+            i18n.t('consultant.pendingMissing', [
+              usd(pending.missing.missing),
+              percent(pending.missing.tier.percent),
+            ])
+          }}
+        </p>
+        <p v-if="pending.unavailable.length" class="shm-consultant-note">
+          {{ i18n.t('consultant.pendingUnavailable', [pending.unavailable.join(', ')]) }}
+        </p>
+        <div v-if="pendingLines.length" class="shm-consultant-cart">
+          <PaintCartButton :lines="pendingLines" @filled="keepPendingPlan" />
         </div>
       </div>
 
@@ -531,55 +590,7 @@ function reportCartError(error: unknown) {
 
         <!-- Fills RSI's cart; the user checks it and pays there – nothing is checked out here. -->
         <div class="shm-consultant-cart">
-          <button
-            v-tooltip="demo ? i18n.t('exchange.demo') : i18n.t('consultant.toCartHint')"
-            type="button"
-            class="shm-button"
-            :class="{ 'is-busy': cartState === 'busy' }"
-            :disabled="!!demo || cartState === 'busy' || cartState === 'occupied'"
-            @click="toCart"
-          >
-            <SvgIcon name="basket-shopping" />
-            {{ i18n.t('consultant.toCart', [plan.own.length + fillerCount]) }}
-          </button>
-
-          <div v-if="cartState === 'occupied'" class="shm-consultant-note" role="alert">
-            <p>{{ i18n.t('consultant.cartOccupied', [cartItemsBefore]) }}</p>
-            <div class="shm-consultant-cart-actions">
-              <button type="button" class="shm-button" @click="openCart">
-                <SvgIcon name="square-up-right" />
-                {{ i18n.t('consultant.openCart') }}
-              </button>
-              <button type="button" class="shm-button" @click="fillCart">
-                {{ i18n.t('consultant.addAnyway') }}
-              </button>
-              <button type="button" class="shm-button" @click="cartState = 'idle'">
-                {{ i18n.t('consultant.cancel') }}
-              </button>
-            </div>
-          </div>
-
-          <div v-if="cartResult?.failed.length" class="shm-consultant-note" role="alert">
-            <p>{{ i18n.t('consultant.cartFailed') }}</p>
-            <ul>
-              <li v-for="failure in cartResult.failed" :key="failure.line.skuId">
-                {{ failure.line.name }} × {{ failure.line.qty }}: {{ failure.reason }}
-              </li>
-            </ul>
-            <button type="button" class="shm-button" @click="openCart">
-              <SvgIcon name="square-up-right" />
-              {{ i18n.t('consultant.openCart') }}
-            </button>
-          </div>
-          <p v-else-if="cartState === 'done'" class="shm-consultant-note is-info" role="status">
-            {{ i18n.t('consultant.cartDone') }}
-            <button type="button" class="shm-link-button" @click="openCart">
-              {{ i18n.t('consultant.openCart') }}
-            </button>
-          </p>
-          <p v-if="cartError" class="shm-consultant-note" role="alert">
-            {{ i18n.t('consultant.cartError', [cartError]) }}
-          </p>
+          <PaintCartButton :lines="planLines" @filled="keepPlan" />
 
           <!-- Bulk melting (experimental): the own paints at once, after the cart was filled. -->
           <template v-if="settings.bulkMelting && ownPledges.length">
@@ -589,22 +600,32 @@ function reportCartError(error: unknown) {
                   ? i18n.t('exchange.demo')
                   : cartFilled
                     ? i18n.t('consultant.meltHintReady')
-                    : i18n.t('consultant.meltHintCart')
+                    : i18n.t('consultant.meltFirstHint')
               "
               type="button"
               class="shm-button is-danger"
-              :disabled="!!demo || !cartFilled"
+              :disabled="!!demo"
               @click="melting = true"
             >
               <SvgIcon name="triangle-exclamation" />
-              {{ i18n.t('consultant.meltOwn', [ownPledges.length]) }}
+              {{
+                cartFilled
+                  ? i18n.t('consultant.meltOwn', [ownPledges.length])
+                  : i18n.t('consultant.meltFirst', [ownPledges.length])
+              }}
             </button>
+            <!-- Way 2 (#168): melting before buying needs its own acknowledgement. -->
             <BulkExchangeOverlay
               v-if="melting"
               :pledges="ownPledges"
               :hangar="pledges"
               :skipped="0"
-              :extra-consent="i18n.t('consultant.meltConsent')"
+              :extra-consent="
+                cartFilled
+                  ? i18n.t('consultant.meltConsent')
+                  : i18n.t('consultant.meltFirstConsent')
+              "
+              @exchanged="keepPlanMelted"
               @close="melting = false"
             />
           </template>

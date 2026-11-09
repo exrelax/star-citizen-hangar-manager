@@ -4,6 +4,7 @@ import {
   findRebought,
   ownPaintsOf,
   planPaintRebuy,
+  planPendingRebuy,
   storePaintsOf,
   type PaintPledge,
 } from './calculation';
@@ -427,5 +428,97 @@ describe('findRebought (#139)', () => {
       expect(result.rebought).toEqual([]);
       expect(result.plan?.own.map((paint) => paint.pledgeId)).toContain(old.id);
     });
+  });
+});
+
+describe('planPendingRebuy (#168)', () => {
+  const at = new Date(2026, 10, 9, 10).getTime();
+  const setup = () => {
+    const quasar = storeItem('Polaris - Quasar Paint', 22);
+    const moonrise = storeItem('Lynx - Moonrise Paint', 5);
+    const storeItems = [quasar, moonrise, ...cheapPaints(10)];
+    const kept = {
+      at,
+      tier: { paints: 10, percent: 35 },
+      own: [
+        { pledgeId: 101, title: 'Paints - Polaris - Quasar Paint', skuId: quasar.id },
+        { pledgeId: 102, title: 'Paints - Lynx - Moonrise Paint', skuId: moonrise.id },
+      ],
+    };
+    return { quasar, moonrise, storeItems, kept };
+  };
+
+  it('lists the melted paints left to buy, at the tier the store credit pays', () => {
+    const { storeItems, kept } = setup();
+    const pending = planPendingRebuy({
+      kept,
+      pledges: [],
+      storeItems,
+      storeCredit: 100,
+      useFillers: true,
+    });
+    expect(pending?.toBuy.map((paint) => paint.pledgeId)).toEqual([101, 102]);
+    expect(pending?.plan?.tier.percent).toBe(35);
+    // (22 + 5 + 8 × 3) × 0.65
+    expect(pending?.plan?.cartCost).toBe(33.15);
+    expect(pending?.missing).toBeUndefined();
+  });
+
+  it('takes a lower tier when the store credit is short, and says what the planned one misses', () => {
+    const { storeItems, kept } = setup();
+    const pending = planPendingRebuy({
+      kept,
+      pledges: [],
+      storeItems,
+      storeCredit: 25,
+      useFillers: true,
+    });
+    expect(pending?.plan?.tier.percent).toBeLessThan(35);
+    expect(pending?.plan && pending.plan.cartCost <= 25).toBe(true);
+    expect(pending?.missing).toEqual({ tier: { paints: 10, percent: 35 }, missing: 8.15 });
+  });
+
+  it('skips paints still in the hangar and paints bought again since the plan', () => {
+    const { storeItems, kept } = setup();
+    const notMelted = paintPledge('Polaris - Quasar Paint', 22, { id: 101 });
+    const copy = paintPledge('Lynx - Moonrise Paint', 3.25, { createdAt: '2026-11-09' });
+    expect(
+      planPendingRebuy({
+        kept,
+        pledges: [notMelted, copy],
+        storeItems,
+        storeCredit: 100,
+        useFillers: true,
+      }),
+    ).toBeUndefined();
+  });
+
+  it('doesn’t count a copy bought before the plan', () => {
+    const { storeItems, kept } = setup();
+    const older = paintPledge('Lynx - Moonrise Paint', 3.25, { createdAt: '2026-10-22' });
+    const pending = planPendingRebuy({
+      kept,
+      pledges: [older],
+      storeItems,
+      storeCredit: 100,
+      useFillers: true,
+    });
+    expect(pending?.toBuy.map((paint) => paint.pledgeId)).toEqual([101, 102]);
+  });
+
+  it('names melted paints the store doesn’t sell any more', () => {
+    const { kept } = setup();
+    const pending = planPendingRebuy({
+      kept,
+      pledges: [],
+      storeItems: cheapPaints(10),
+      storeCredit: 100,
+      useFillers: true,
+    });
+    expect(pending?.toBuy).toEqual([]);
+    expect(pending?.unavailable).toEqual([
+      'Paints - Polaris - Quasar Paint',
+      'Paints - Lynx - Moonrise Paint',
+    ]);
   });
 });
