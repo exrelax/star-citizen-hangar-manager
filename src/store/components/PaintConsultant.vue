@@ -4,6 +4,8 @@ import { useDemoContext } from '@/demo/use-demo';
 import BulkExchangeOverlay from '@/hangar/components/BulkExchangeOverlay.vue';
 import { formatPercent, formatUsd } from '@/hangar/discount-format';
 import type { PledgeView } from '@/hangar/pledge-view';
+import { openTabAt } from '@/hangar/open-tab-at';
+import { BULK_MELTING_SETTING_ID } from '@/settings/anchors';
 import { useStored } from '@/storage/use-stored';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { i18n, locale } from '@/i18n';
@@ -160,6 +162,9 @@ const ownPledges = computed(() => {
     .filter((pledge): pledge is PledgeView => !!pledge && pledge.isMeltable);
 });
 const melting = ref(false);
+/** Bulk melting is off: the settings tab, at its setting. */
+const openBulkMeltingSetting = () =>
+  openTabAt('settings', BULK_MELTING_SETTING_ID, { highlight: true });
 
 function reportCartError(error: unknown) {
   console.error('[star-citizen-hangar-manager] Filling the cart failed', error);
@@ -461,6 +466,17 @@ function reportCartError(error: unknown) {
               @close="melting = false"
             />
           </template>
+          <!-- Off: points to the experimental setting, as the sidebar's "Selected" box does. -->
+          <button
+            v-else-if="ownPledges.length"
+            v-tooltip="i18n.t('bulkExchange.disabledHint')"
+            type="button"
+            class="shm-button"
+            @click="openBulkMeltingSetting"
+          >
+            <SvgIcon name="gear" />
+            {{ i18n.t('bulkExchange.disabled') }}
+          </button>
         </div>
       </div>
     </template>

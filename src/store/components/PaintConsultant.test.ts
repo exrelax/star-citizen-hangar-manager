@@ -135,9 +135,13 @@ describe('PaintConsultant', () => {
         cartCost: 0,
       });
 
-    it('is only offered with bulk melting on', async () => {
+    it('is only offered with bulk melting on, otherwise a button leads to the setting', async () => {
       const root = await render(await storeExample());
       expect(meltButton(root)).toBeUndefined();
+      const toSetting = [...root.querySelectorAll('.shm-consultant-cart button')].find((b) =>
+        b.textContent?.includes('Bulk melting disabled'),
+      );
+      expect(toSetting).toBeDefined();
     });
 
     it('waits until the paints were put into the cart', async () => {

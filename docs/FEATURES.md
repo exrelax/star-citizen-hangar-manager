@@ -520,7 +520,8 @@ it into store credit with the paints you already own:
 - **Melt the own paints at once** (with the experimental bulk melting on): a button opens the bulk
   melting dialog with exactly the own paints of the plan and the store credit they give. It is
   enabled only once these paints were put into the cart, and the dialog also asks to confirm that
-  the cart was checked. Afterwards the hangar is read again, as after every bulk melting.
+  the cart was checked. Afterwards the hangar is read again, as after every bulk melting. With bulk
+  melting off, **Bulk melting disabled** opens the settings at that setting instead.
 - **In My Hangar**: the paints it would buy again carry a tag "Rebuy 0% → 35%" (their discount now
   and then; its tooltip says the store credit freed), which opens the consultant. The filter
   button of the sidebar box **Paint Discount** shows just them.
