@@ -557,7 +557,7 @@
       "stepMeltFreesSub": "Libera su valor de fusión",
       "stepFillers": "Funde las $1 pinturas de relleno tras 24 h",
       "stepFillersOne": "Funde la pintura de relleno tras 24 h",
-      "stepFillersSub": "Plazo de espera de RSI – no antes",
+      "stepFillersSub": "Marcadas – recibirás una notificación",
       "hintSafe": "Seguro: tus pinturas siguen en el hangar hasta que compras las nuevas copias.",
       "hintSafeLower": "Tus pinturas siguen en el hangar hasta que compras las nuevas copias. Con $1 alcanza el $2.",
       "hintImpossible": "El carrito se paga antes de fundir tus pinturas, así que sus $1 no ayudan. Faltan $2.",
@@ -575,6 +575,16 @@
       "noteCooldownSource": "Soporte de RSI",
       "noteGiftable": "Recompradas, las pinturas ya no se pueden regalar",
       "notePacks": "Los packs de pinturas aún no están incluidos"
+    },
+    "fillers": {
+      "notificationTitle": "Ya se pueden fundir las pinturas de relleno",
+      "ready": "Las $1 pinturas de relleno del asesor de descuentos de pinturas ya se pueden fundir. Abre My Hangar para fundirlas.",
+      "readyOne": "La pintura de relleno del asesor de descuentos de pinturas ya se puede fundir. Abre My Hangar para fundirla.",
+      "amongReady": "$1 de ellos son pinturas de relleno del asesor de descuentos de pinturas.",
+      "amongReadyOne": "1 de ellos es una pintura de relleno del asesor de descuentos de pinturas.",
+      "melt": "Fundir las $1 pinturas de relleno",
+      "meltOne": "Fundir la pintura de relleno",
+      "meltHint": "Funde las pinturas de relleno que compró el pedido del asesor de descuentos de pinturas – por sus ids de pledge, nunca otras copias de la misma pintura. Abre primero un diálogo."
     }
   },
   "upgradeLog": {

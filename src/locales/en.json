@@ -557,7 +557,7 @@
       "stepMeltFreesSub": "Frees their melt value",
       "stepFillers": "Melt the $1 filler paints after 24 h",
       "stepFillersOne": "Melt the filler paint after 24 h",
-      "stepFillersSub": "RSI's cooldown – not earlier",
+      "stepFillersSub": "Marked – you get a notification",
       "hintSafe": "Safe: your paints stay in the hangar until the new copies are bought.",
       "hintSafeLower": "Your paints stay in the hangar until the new copies are bought. With $1 it reaches $2.",
       "hintImpossible": "The cart is paid before your paints are melted, so their $1 can't help. $2 are missing.",
@@ -575,6 +575,16 @@
       "noteCooldownSource": "RSI Support",
       "noteGiftable": "Bought again, paints are no longer giftable",
       "notePacks": "Paint packs are not included yet"
+    },
+    "fillers": {
+      "notificationTitle": "Filler paints can be melted",
+      "ready": "The $1 filler paints of the Paint Discount Consultant can be melted now. Open My Hangar to melt them.",
+      "readyOne": "The filler paint of the Paint Discount Consultant can be melted now. Open My Hangar to melt it.",
+      "amongReady": "$1 of them are filler paints of the Paint Discount Consultant.",
+      "amongReadyOne": "1 of them is a filler paint of the Paint Discount Consultant.",
+      "melt": "Melt the $1 filler paints",
+      "meltOne": "Melt the filler paint",
+      "meltHint": "Melts the filler paints the Paint Discount Consultant's order bought – by their pledge ids, never other copies of the same paint. Opens a dialog first."
     }
   },
   "upgradeLog": {

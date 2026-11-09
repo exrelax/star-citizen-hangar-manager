@@ -35,7 +35,7 @@ export default defineConfig({
     description: '__MSG_extDescription__',
     default_locale: 'en',
     // unlimitedStorage: large hangars can exceed the default quota of storage.local.
-    permissions: ['storage', 'unlimitedStorage'],
+    permissions: ['storage', 'unlimitedStorage', 'alarms'],
     // Asked for only when the user turns browser notifications on (#152): no prompt at install
     // or update, and nothing changes without it (see src/notifications/browser-permission.ts).
     optional_permissions: ['notifications'],

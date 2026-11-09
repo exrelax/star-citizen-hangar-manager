@@ -21,6 +21,23 @@ export interface StoredRebuyPlan {
   fillers: { skuId: number; name: string; quantity: number; price: number }[];
   /** What the cart was worked out to cost after the volume discount, in USD. */
   cartCost: number;
+  /** The order that bought the plan's filler paints, once found (#105). */
+  purchase?: FillerPurchase;
+  /** No such order showed within `PAINT_CONSULTANT.fillerCheckDays`: no longer looked for (ms). */
+  checkEndedAt?: number;
+}
+
+/** The filler paints of a plan as bought (#105). */
+export interface FillerPurchase {
+  orderId: string;
+  /** When the order created them, as the pledge log shows it ("2026-11-09T19:55"), if known. */
+  boughtAt?: string;
+  /** The pledges of the filler paints this order created – never others of the same name. */
+  pledgeIds: number[];
+  /** When the order was found, in ms. */
+  foundAt: number;
+  /** When the browser notification about them was shown, in ms. */
+  notifiedAt?: number;
 }
 
 export const rebuyPlanItem = storage.defineItem<StoredRebuyPlan | null>('local:consultant.plan', {

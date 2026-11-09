@@ -19,6 +19,7 @@ import {
   browserNotificationsItem,
 } from '@/notifications/browser-permission';
 import BulkExchangeOverlay from './BulkExchangeOverlay.vue';
+import { REBUY_PLAN_VERSION, rebuyPlanItem } from '@/store/paint-consultant/rebuy-plan-storage';
 import { checkOff, type AppNotification } from '@/notifications/notifications';
 import { useOpenNotifications } from '@/notifications/use-notifications';
 import { meltReadyIds, useMarkedPledges } from '../use-melt-marks';
@@ -139,6 +140,21 @@ function toggleRebuyFilter() {
 function selectReady() {
   selection.replace(meltReadyIds.value);
 }
+
+/*
+ * The Paint Discount Consultant's filler paints among them (#105): those its order created, by
+ * pledge id. They can be melted all at once right here (with bulk melting on). Not in the demo.
+ */
+const keptPlan = useStored(rebuyPlanItem);
+const readyFillers = computed(() => {
+  const purchase = keptPlan.value?.version === REBUY_PLAN_VERSION && keptPlan.value.purchase;
+  if (demo.value || !purchase) return [];
+  const ids = new Set(purchase.pledgeIds);
+  return props.pledges.filter(
+    (pledge) => ids.has(pledge.id) && meltReadyIds.value.has(pledge.id) && pledge.isMeltable,
+  );
+});
+const meltingFillers = ref(false);
 
 const TITLES = {
   notifications: 'notifications.title',
@@ -451,6 +467,49 @@ async function move(box: Box, step: -1 | 1) {
                 {{ i18n.t('notifications.selectReady') }}
               </button>
             </div>
+            <!-- Among them the consultant's filler paints (#105): all of them at once. -->
+            <template v-if="readyFillers.length">
+              <p class="shm-sidebar-note">
+                {{
+                  readyFillers.length === 1
+                    ? i18n.t('consultant.fillers.amongReadyOne')
+                    : i18n.t('consultant.fillers.amongReady', [number.format(readyFillers.length)])
+                }}
+              </p>
+              <div class="shm-sidebar-actions">
+                <button
+                  v-if="settings.bulkMelting"
+                  v-tooltip="i18n.t('consultant.fillers.meltHint')"
+                  type="button"
+                  class="shm-button is-danger shm-sidebar-button is-full"
+                  @click="meltingFillers = true"
+                >
+                  <SvgIcon name="triangle-exclamation" />
+                  {{
+                    readyFillers.length === 1
+                      ? i18n.t('consultant.fillers.meltOne')
+                      : i18n.t('consultant.fillers.melt', [readyFillers.length])
+                  }}
+                </button>
+                <button
+                  v-else
+                  v-tooltip="i18n.t('bulkExchange.disabledHint')"
+                  type="button"
+                  class="shm-button shm-sidebar-button is-full"
+                  @click="openBulkMeltingSetting"
+                >
+                  <SvgIcon name="gear" />
+                  {{ i18n.t('bulkExchange.disabled') }}
+                </button>
+              </div>
+              <BulkExchangeOverlay
+                v-if="meltingFillers"
+                :pledges="readyFillers"
+                :hangar="pledges"
+                :skipped="0"
+                @close="meltingFillers = false"
+              />
+            </template>
           </div>
           <div v-if="paintNoteCount" class="shm-sidebar-melt-ready is-dismissable" role="status">
             <SvgIcon name="paintbrush" />

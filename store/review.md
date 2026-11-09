@@ -23,6 +23,12 @@ Stores the user's hangar, buy back and orders, read from robertsspaceindustries.
 Large hangars and buy backs (thousands of pledges with their items, plus orders) exceed the default quota of storage.local. The data never leaves the browser.
 ```
 
+**alarms**
+
+```text
+Sets a single alarm for the time the user's filler paints of the Paint Discount Consultant can be melted (24 hours after their order), so the extension can show a browser notification then, also while no RSI page is open. Only with browser notifications turned on is anything shown; nothing is sent anywhere.
+```
+
 **notifications** (optional permission)
 
 ```text
