@@ -98,6 +98,13 @@ Each check works in three steps:
   page). What it finds shows in every tab with the Hangar Manager open within seconds, without
   reloading it, including the time of the check below the refresh button; while it runs, those
   tabs show "Checking …" as well.
+- **Right after your own actions**: when you confirm an exchange (melt), a gift or an applied
+  upgrade in RSI's own dialogs in "My Gear", a check runs a few seconds later, whatever the
+  interval – also when RSI reloads the page after it. Every tab with the Hangar Manager open
+  shows the change within seconds. Only your confirming click counts (the button in the step
+  with your password); opening a dialog, going a step back or cancelling it starts nothing. The
+  extension only watches your clicks: it never clicks or sends anything on RSI's pages. A buy
+  back is checked out in RSI's store and found by the next regular check.
 
 ### Never in your way
 

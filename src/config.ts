@@ -164,6 +164,12 @@ export const SMART_UPDATE = {
    * (the tab was closed meanwhile). Checks take seconds; a large buy back up to a minute.
    */
   checkingElsewhereMaxMs: 2 * 60 * 1000,
+  /**
+   * An exchange, gift or applied upgrade confirmed in RSI's dialogs (#124, see
+   * `smart-update/own-actions.ts`): checked this long after the click, once RSI processed it, or
+   * on the next page load if RSI reloads it first – up to `maxAgeMs` after the click.
+   */
+  ownAction: { checkAfterMs: 4 * 1000, maxAgeMs: 2 * 60 * 1000 },
 } as const;
 
 /**
