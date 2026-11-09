@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import type { StoreItem } from '../items/store-items';
-import { ownPaintsOf, planPaintRebuy, storePaintsOf, type PaintPledge } from './calculation';
+import {
+  findRebought,
+  ownPaintsOf,
+  planPaintRebuy,
+  storePaintsOf,
+  type PaintPledge,
+} from './calculation';
 
 let nextId = 1;
 
@@ -227,7 +233,13 @@ describe('planPaintRebuy', () => {
         useFillers: true,
         skipGiftable: false,
       }),
-    ).toEqual({ giftableSkipped: 0, plan: undefined, next: undefined });
+    ).toEqual({
+      giftableSkipped: 0,
+      rebought: [],
+      probablyRebought: [],
+      plan: undefined,
+      next: undefined,
+    });
   });
 
   it('puts at most 5 of the same paint into the cart', () => {
@@ -321,5 +333,99 @@ describe('planPaintRebuy', () => {
     const without = planPaintRebuy({ ...input, skipGiftable: true });
     expect(without.plan!.own.map((paint) => paint.storePaint.name)).toEqual(['Bound Paint']);
     expect(without.giftableSkipped).toBe(1);
+  });
+});
+
+describe('findRebought (#139)', () => {
+  const store = storePaintsOf([
+    storeItem('Polaris - Quasar Paint', 22),
+    storeItem('Lynx - Moonrise Paint', 5),
+  ]);
+  const own = (pledges: PaintPledge[]) => ownPaintsOf(pledges, store);
+
+  it('pairs a younger copy bought with a higher discount with the old pledge', () => {
+    const old = paintPledge('Polaris - Quasar Paint', 22);
+    const copy = paintPledge('Polaris - Quasar Paint', 14.3, { createdAt: '2026-11-09' });
+    const [pair, ...others] = findRebought(own([old, copy]));
+    expect(others).toEqual([]);
+    expect(pair!.old.pledgeId).toBe(old.id);
+    expect(pair!.copy.pledgeId).toBe(copy.id);
+    expect(pair!.copy.discount).toBe(35);
+    expect(pair!.copy.boughtOn).toBe('2026-11-09');
+  });
+
+  it('pairs several copies of the same paint, each with one old pledge, the oldest first', () => {
+    const olds = [paintPledge('Lynx - Moonrise Paint', 5), paintPledge('Lynx - Moonrise Paint', 5)];
+    const third = paintPledge('Lynx - Moonrise Paint', 5);
+    const copies = [
+      paintPledge('Lynx - Moonrise Paint', 3.25),
+      paintPledge('Lynx - Moonrise Paint', 3.25),
+    ];
+    const pairs = findRebought(own([...olds, third, ...copies]));
+    expect(pairs.map((pair) => pair.old.pledgeId)).toEqual(olds.map((pledge) => pledge.id));
+    expect(pairs.map((pair) => pair.copy.pledgeId).sort()).toEqual(
+      copies.map((pledge) => pledge.id).sort(),
+    );
+  });
+
+  it('leaves a copy without an old partner as a normal own paint', () => {
+    const copy = paintPledge('Lynx - Moonrise Paint', 3.25);
+    expect(findRebought(own([copy]))).toEqual([]);
+    // Older than the pledge without the discount: bought on sale once, not bought again.
+    const later = paintPledge('Lynx - Moonrise Paint', 5);
+    expect(findRebought(own([copy, later]))).toEqual([]);
+  });
+
+  it('finds nothing once the old pledge is melted', () => {
+    const copy = paintPledge('Polaris - Quasar Paint', 14.3);
+    expect(findRebought(own([copy]))).toEqual([]);
+  });
+
+  describe('with a kept plan or as a guess', () => {
+    const setup = () => {
+      const old = paintPledge('Polaris - Quasar Paint', 22);
+      const copy = paintPledge('Polaris - Quasar Paint', 14.3, { createdAt: '2026-11-09' });
+      const other = paintPledge('Lynx - Moonrise Paint', 5);
+      const plan = (input: Partial<Parameters<typeof planPaintRebuy>[0]>) =>
+        planPaintRebuy({
+          pledges: [old, copy, other],
+          storeItems: [
+            storeItem('Polaris - Quasar Paint', 22, { id: store[0]!.id }),
+            storeItem('Lynx - Moonrise Paint', 5, { id: store[1]!.id }),
+            ...cheapPaints(10),
+          ],
+          storeCredit: 100,
+          useFillers: true,
+          skipGiftable: false,
+          ...input,
+        });
+      return { old, copy, other, plan };
+    };
+    const at = new Date(2026, 10, 9, 10).getTime();
+
+    it('keeps confirmed pairs out of a new plan, next to other paints', () => {
+      const { old, other, plan } = setup();
+      const result = plan({ keptPlan: { at, ownPledgeIds: [old.id] } });
+      expect(result.rebought.map((pair) => pair.old.pledgeId)).toEqual([old.id]);
+      expect(result.plan?.own.map((paint) => paint.pledgeId)).toEqual([other.id]);
+    });
+
+    it('confirms nothing without a kept plan, or with a copy bought before it', () => {
+      const { old, plan } = setup();
+      expect(plan({}).rebought).toEqual([]);
+      const later = new Date(2026, 10, 10).getTime();
+      expect(plan({ keptPlan: { at: later, ownPledgeIds: [old.id] } }).rebought).toEqual([]);
+      // Another paint was in the plan, not this one.
+      expect(plan({ keptPlan: { at, ownPledgeIds: [12345] } }).rebought).toEqual([]);
+    });
+
+    it('shows unconfirmed pairs as a guess, which stay in the plan', () => {
+      const { old, plan } = setup();
+      expect(plan({}).probablyRebought).toEqual([]);
+      const result = plan({ guessRebought: true });
+      expect(result.probablyRebought.map((pair) => pair.old.pledgeId)).toEqual([old.id]);
+      expect(result.rebought).toEqual([]);
+      expect(result.plan?.own.map((paint) => paint.pledgeId)).toContain(old.id);
+    });
   });
 });

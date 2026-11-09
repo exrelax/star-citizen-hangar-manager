@@ -35,6 +35,8 @@ export interface PaintPledge {
   isMeltable: boolean;
   /** Can be gifted; bought again with store credit, it no longer could. */
   isGiftable: boolean;
+  /** Purchase date, e.g. "2026-11-09". */
+  createdAt?: string;
 }
 
 /** A paint of the Pledge Store that can be bought on its own with store credit. */
@@ -59,6 +61,43 @@ export interface OwnPaint {
   discount: number;
   /** Can be gifted now; bought again with store credit, it no longer could. */
   giftable: boolean;
+  /** Purchase date of the pledge, e.g. "2026-11-09". */
+  boughtOn?: string;
+}
+
+/**
+ * An own paint already bought again with a higher discount (#139): the old pledge without it is
+ * still in the hangar – the only open step is melting it.
+ */
+export interface ReboughtPaint {
+  /** The old pledge, to melt. */
+  old: OwnPaint;
+  /** The new copy, bought with the higher discount. */
+  copy: OwnPaint;
+}
+
+/** The plan kept when its paints were put into the cart (#103), to confirm paints bought again. */
+export interface KeptPlan {
+  /** When the paints were put into the cart, in ms. */
+  at: number;
+  /** The own paints of the plan, by pledge id. */
+  ownPledgeIds: readonly number[];
+}
+
+/** A day "YYYY-MM-DD" of a time, in local time like the purchase dates. */
+const dayOf = (ms: number) => {
+  const date = new Date(ms);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+};
+
+/**
+ * Whether a pair is confirmed by the kept plan: the old pledge was one of its own paints, and the
+ * copy was bought on the day the paints were put into the cart or later.
+ */
+export function isConfirmedRebuy(pair: ReboughtPaint, kept: KeptPlan | undefined): boolean {
+  if (!kept || !pair.copy.boughtOn) return false;
+  return kept.ownPledgeIds.includes(pair.old.pledgeId) && pair.copy.boughtOn >= dayOf(kept.at);
 }
 
 /** A volume discount tier: from this many paints in the cart, this discount. */
@@ -101,6 +140,13 @@ export interface MissingCredit {
 export interface PaintConsultantResult {
   /** Own paints that would gain, left out because they can be gifted (`skipGiftable`). */
   giftableSkipped: number;
+  /** Own paints already bought again: their old pledges are only left to melt (#139). */
+  rebought: ReboughtPaint[];
+  /**
+   * Pairs that look bought again but aren't confirmed by a kept plan, with `reboughtDetection:
+   * 'guess'`: shown as a guess to check; they stay in the plan.
+   */
+  probablyRebought: ReboughtPaint[];
   /** The best tier that can be paid, if any. */
   plan?: PaintRebuyPlan;
   /**
@@ -119,6 +165,10 @@ export interface PaintConsultantInput {
   useFillers: boolean;
   /** Leaves out own paints that can be gifted: bought again with store credit, they couldn't. */
   skipGiftable: boolean;
+  /** The plan kept when its paints were put into the cart, if any. */
+  keptPlan?: KeptPlan;
+  /** Also guess paints bought again without a kept plan (shown, not acted on). */
+  guessRebought?: boolean;
 }
 
 const cents = (usd: number) => Math.round(usd * 100);
@@ -172,9 +222,44 @@ export function ownPaintsOf(
         storePaint,
         discount,
         giftable: pledge.isGiftable,
+        ...(pledge.createdAt && { boughtOn: pledge.createdAt }),
       },
     ];
   });
+}
+
+/**
+ * Own paints already bought again (#139): a copy of the same paint bought with the discount of a
+ * tier, younger than an old pledge of it with less discount. Each copy is paired with exactly one
+ * old pledge – the oldest one with less discount (pledge ids grow with the purchases); copies
+ * without such a partner are normal own paints.
+ */
+export function findRebought(ownPaints: readonly OwnPaint[]): ReboughtPaint[] {
+  const lowest = Math.min(...PAINT_DISCOUNT_TIERS.tiers.map((tier) => tier.percent));
+  const bySku = new Map<number, OwnPaint[]>();
+  for (const paint of ownPaints) {
+    bySku.set(paint.storePaint.id, [...(bySku.get(paint.storePaint.id) ?? []), paint]);
+  }
+  const pairs: ReboughtPaint[] = [];
+  for (const paints of bySku.values()) {
+    if (paints.length < 2) continue;
+    const byAge = [...paints].sort((a, b) => a.pledgeId - b.pledgeId);
+    const paired = new Set<number>();
+    // The youngest copies first: they are the ones bought again last.
+    for (const copy of [...byAge].reverse()) {
+      if (copy.discount < lowest || paired.has(copy.pledgeId)) continue;
+      const old = byAge.find(
+        (candidate) =>
+          candidate.pledgeId < copy.pledgeId &&
+          candidate.discount < copy.discount &&
+          !paired.has(candidate.pledgeId),
+      );
+      if (!old) continue;
+      paired.add(old.pledgeId).add(copy.pledgeId);
+      pairs.push({ old, copy });
+    }
+  }
+  return pairs.sort((a, b) => a.old.pledgeId - b.old.pledgeId);
 }
 
 /** What a cart at `tier` would contain and cost, if it can be filled at all. */
@@ -239,7 +324,16 @@ function cartAt(
  */
 export function planPaintRebuy(input: PaintConsultantInput): PaintConsultantResult {
   const storePaints = storePaintsOf(input.storeItems);
-  const allOwn = ownPaintsOf(input.pledges, storePaints);
+  const owned = ownPaintsOf(input.pledges, storePaints);
+  // Paints already bought again are no candidates: their old pledge is only left to melt, and the
+  // new copy has its discount already.
+  const pairs = findRebought(owned);
+  const rebought = pairs.filter((pair) => isConfirmedRebuy(pair, input.keptPlan));
+  const probablyRebought = input.guessRebought
+    ? pairs.filter((pair) => !rebought.includes(pair))
+    : [];
+  const pairedIds = new Set(rebought.flatMap(({ old, copy }) => [old.pledgeId, copy.pledgeId]));
+  const allOwn = owned.filter((paint) => !pairedIds.has(paint.pledgeId));
   const ownPaints = input.skipGiftable ? allOwn.filter((paint) => !paint.giftable) : allOwn;
   // Those that would gain at least at the best tier.
   const best = Math.max(...PAINT_DISCOUNT_TIERS.tiers.map((tier) => tier.percent));
@@ -261,6 +355,8 @@ export function planPaintRebuy(input: PaintConsultantInput): PaintConsultantResu
   const next = plan ? above.at(-1) : [...above].sort((a, b) => missingOf(a) - missingOf(b))[0];
   return {
     giftableSkipped,
+    rebought,
+    probablyRebought,
     plan,
     next: next && { tier: next.tier, missing: usd(Math.max(0, missingOf(next))) },
   };

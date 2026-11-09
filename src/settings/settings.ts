@@ -29,6 +29,13 @@ export type BuybackLinkMode = (typeof BUYBACK_LINK_MODES)[number];
  * Look of the manager, in the order of the setting's options: `modern` after Apple's HIG (the
  * default), `rsi` ("Classic RSI") like RSI's account pages (src/themes).
  */
+/**
+ * How the Paint Discount Consultant tells paints bought again (#139): `plan` – only those of a plan
+ * put into the cart; `guess` – also others, by discount and age, shown as a guess to check.
+ */
+export const REBOUGHT_DETECTIONS = ['plan', 'guess'] as const;
+export type ReboughtDetection = (typeof REBOUGHT_DETECTIONS)[number];
+
 export const THEMES = ['modern', 'rsi'] as const;
 export type Theme = (typeof THEMES)[number];
 
@@ -113,6 +120,8 @@ export interface Settings {
     useFillers: boolean;
     /** Own paints that can be gifted are left out: bought again with store credit, they couldn't. */
     skipGiftable: boolean;
+    /** How paints bought again are told (#139). */
+    reboughtDetection: ReboughtDetection;
   };
   /** Links shown next to ships. */
   shipLinks: {
@@ -150,7 +159,12 @@ export const DEFAULT_SETTINGS: Settings = {
     buyback: normalizeFilterGroups(FILTERS.buyback, BUYBACK_FILTER_CATEGORIES, FILTERS.buyback),
   },
   sort: { hangar: 'newest', buyback: 'newest' },
-  paintConsultant: { useStoreCredit: true, useFillers: true, skipGiftable: true },
+  paintConsultant: {
+    useStoreCredit: true,
+    useFillers: true,
+    skipGiftable: true,
+    reboughtDetection: 'plan',
+  },
   shipLinks: { erkul: true, fleetyards: true },
 };
 
@@ -255,6 +269,11 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
         stored?.paintConsultant?.skipGiftable,
         isBoolean,
         DEFAULT_SETTINGS.paintConsultant.skipGiftable,
+      ),
+      reboughtDetection: valid(
+        stored?.paintConsultant?.reboughtDetection,
+        oneOf(REBOUGHT_DETECTIONS),
+        DEFAULT_SETTINGS.paintConsultant.reboughtDetection,
       ),
     },
     shipLinks: {

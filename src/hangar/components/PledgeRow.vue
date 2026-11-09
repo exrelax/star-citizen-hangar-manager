@@ -56,10 +56,17 @@ const rebuyText = computed(() => {
   if (!value) return undefined;
   const from = formatPercent(value.from, locale.value);
   const to = formatPercent(value.to, locale.value);
-  return {
-    label: i18n.t('consultant.mark', [from, to]),
-    hint: i18n.t('consultant.markHint', [from, to, formatUsd(value.freed, locale.value)]),
-  };
+  const freed = formatUsd(value.freed, locale.value);
+  // Bought again already (#139): this old pledge is only left to melt.
+  return value.kind === 'melt'
+    ? {
+        label: i18n.t('consultant.markMelt', [to]),
+        hint: i18n.t('consultant.markMeltHint', [to, freed]),
+      }
+    : {
+        label: i18n.t('consultant.mark', [from, to]),
+        hint: i18n.t('consultant.markHint', [from, to, freed]),
+      };
 });
 
 const discount = computed(() =>
