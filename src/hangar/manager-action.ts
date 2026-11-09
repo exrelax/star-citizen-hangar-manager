@@ -1,5 +1,6 @@
 import { watch } from 'vue';
 import { actionFromSearch, ACTION_PARAM, type ManagerAction } from './manager-action-message';
+import { openTabAt } from './open-tab-at';
 import { hashOfTab } from './route';
 import { selection } from './selection';
 import { meltReadyIds } from './use-melt-marks';
@@ -50,6 +51,11 @@ function meltReadyWhenKnown(): Promise<ReadonlySet<number>> {
 
 /** Shows My Hangar in the manager and does what the action asks. */
 export async function applyManagerAction(action: ManagerAction): Promise<void> {
+  // New warbond CCUs (#164): the Pledge Store tab at its warbond CCUs.
+  if (action === 'showWarbonds') {
+    openTabAt('store', 'shm-store-title', { highlight: true });
+    return;
+  }
   location.hash = hashOfTab('hangar');
   if (action === 'open') return;
   // A tab opened just now reads its lists first: the filter and the selection need them.

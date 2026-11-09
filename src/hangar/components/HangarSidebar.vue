@@ -122,6 +122,12 @@ function noteHref(note: AppNotification) {
   return pledge && myGearHref(location.pathname, pledge.page, pledge.id);
 }
 
+/** The Pledge Store tab, at the warbond CCUs for their notification (#164). */
+function openStoreAt(kind: NonNullable<AppNotification['kind']>) {
+  // The tab starts with the warbond CCUs; for changed items it is just opened.
+  openTabAt('store', 'shm-store-title', { highlight: kind === 'warbonds' });
+}
+
 /** Shows only the marked pledges that can be melted now in "My Hangar", and again all (#147). */
 const readyFiltered = computed(() => hangarViewFilter.value?.id === 'meltReady');
 function toggleReadyFilter() {
@@ -559,17 +565,36 @@ async function move(box: Box, step: -1 | 1) {
           </div>
           <ul v-if="notes.length" class="shm-sidebar-notes">
             <li v-for="note in notes" :key="note.id">
-              <input
-                type="checkbox"
-                class="shm-sidebar-note-check"
-                :aria-label="`${i18n.t('notifications.checkOff')}: ${note.text}`"
-                @change="checkOff([note.id])"
-              />
               <span class="shm-sidebar-note-text">
                 <a v-if="noteHref(note)" :href="noteHref(note)">{{ note.text }}</a>
                 <template v-else>{{ note.text }}</template>
                 <time class="shm-sidebar-note">{{ noteTime.format(note.at) }}</time>
+                <!-- Changed Pledge Store items: the count first, the list on demand (#164). -->
+                <details v-if="note.details?.length" class="shm-sidebar-note-details">
+                  <summary>{{ i18n.t('notifications.showChanges') }}</summary>
+                  <ul>
+                    <li v-for="(line, index) in note.details" :key="index">{{ line }}</li>
+                  </ul>
+                </details>
+                <button
+                  v-if="note.kind"
+                  type="button"
+                  class="shm-sidebar-link shm-sidebar-note-link"
+                  @click="openStoreAt(note.kind)"
+                >
+                  {{ i18n.t('notifications.showInStore') }}
+                </button>
               </span>
+              <!-- An × like the other notifications' dismiss buttons: checks it off (#164). -->
+              <button
+                v-tooltip="i18n.t('notifications.checkOff')"
+                type="button"
+                class="shm-sidebar-icon-button shm-sidebar-note-dismiss"
+                :aria-label="`${i18n.t('notifications.checkOff')}: ${note.text}`"
+                @click="checkOff([note.id])"
+              >
+                <SvgIcon name="xmark" />
+              </button>
             </li>
           </ul>
           <button
@@ -947,7 +972,7 @@ async function move(box: Box, step: -1 | 1) {
  * cell, see modern.css).
  */
 .shm-sidebar-melt-ready,
-.shm-sidebar-notes li {
+.shm-sidebar-notes > li {
   padding: 8px;
   background: rgb(var(--shm-accent-rgb) / 0.06);
   border: 1px solid rgb(var(--shm-accent-rgb) / 0.18);
@@ -1017,7 +1042,7 @@ async function move(box: Box, step: -1 | 1) {
   right: 2px;
 }
 
-/* Notifications (#142): each with a checkbox to check it off, newest first. */
+/* Notifications (#142): each with an × to check it off (#164), newest first. */
 .shm-sidebar-notes,
 .shm-sidebar-pending {
   display: flex;
@@ -1028,16 +1053,51 @@ async function move(box: Box, step: -1 | 1) {
   list-style: none;
 }
 
-.shm-sidebar-notes li {
+/*
+ * The sidebar sits in RSI's navigation, whose `.sidenav li` has a fixed height of 35 px and a
+ * margin: the lists here take the height of their text. One class more than RSI's rule, whose
+ * stylesheet comes later.
+ */
+.shm-sidebar-box-content .shm-sidebar-notes li,
+.shm-sidebar-box-content .shm-sidebar-pending li {
+  height: auto;
+  margin-bottom: 0;
+}
+
+.shm-sidebar-notes > li {
+  position: relative;
   display: flex;
   align-items: flex-start;
   gap: 8px;
 }
 
-.shm-sidebar-note-check {
-  flex: none;
-  margin: 2px 0 0;
-  accent-color: var(--shm-accent);
+/* Their text keeps clear of the × in the top right corner. */
+.shm-sidebar-notes > li > .shm-sidebar-note-text {
+  padding-right: 16px;
+}
+
+/* The list of changed Pledge Store items, opened from its summary. */
+.shm-sidebar-note-details {
+  margin-top: 4px;
+  font-size: calc(11px * var(--shm-font-scale));
+}
+
+.shm-sidebar-note-details summary {
+  color: var(--shm-accent);
+  cursor: pointer;
+}
+
+.shm-sidebar-note-details ul {
+  margin: 4px 0 0;
+  padding-left: 16px;
+  color: var(--shm-text-secondary);
+}
+
+.shm-sidebar-note-link {
+  display: block;
+  margin-top: 4px;
+  padding: 0;
+  text-align: left;
 }
 
 .shm-sidebar-note-text {

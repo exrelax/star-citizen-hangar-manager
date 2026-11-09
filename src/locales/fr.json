@@ -750,6 +750,18 @@
     "testMessage": "Les notifications du navigateur sont activées."
   },
   "notifications": {
+    "andMore": "… et $1 de plus",
+    "warbondsNew": "Nouveaux CCU warbond : $1",
+    "warbondsGone": "CCU warbond plus proposés : $1",
+    "browserWarbondsTitle": "Nouveaux CCU warbond dans le Pledge Store",
+    "storeItemNew": "Nouveau : $1 ($2)",
+    "storeItemGone": "Retiré : $1",
+    "storeItemSale": "En promotion : $1, $2 → $3",
+    "storeItemPrice": "Nouveau prix : $1, $2 → $3",
+    "storeItemsChanged": "$1 changements dans le Pledge Store",
+    "storeItemsChangedOne": "1 changement dans le Pledge Store",
+    "showChanges": "Afficher les changements",
+    "showInStore": "Afficher dans le Pledge Store",
     "browserMeltReadyTitle": "Des pledges peuvent être fondus",
     "browserMeltReady": "$1 pledges marqués peuvent être fondus maintenant. Ouvre My Hangar pour les fondre.",
     "browserMeltReadyOne": "« $1 » peut être fondu maintenant. Ouvre My Hangar pour le fondre.",

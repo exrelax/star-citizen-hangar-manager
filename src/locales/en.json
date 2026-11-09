@@ -750,6 +750,18 @@
     "testMessage": "Browser notifications are on."
   },
   "notifications": {
+    "andMore": "… and $1 more",
+    "warbondsNew": "New warbond CCUs: $1",
+    "warbondsGone": "Warbond CCUs no longer offered: $1",
+    "browserWarbondsTitle": "New warbond CCUs in the Pledge Store",
+    "storeItemNew": "New: $1 ($2)",
+    "storeItemGone": "Gone: $1",
+    "storeItemSale": "On sale: $1, $2 → $3",
+    "storeItemPrice": "New price: $1, $2 → $3",
+    "storeItemsChanged": "$1 changes in the Pledge Store",
+    "storeItemsChangedOne": "1 change in the Pledge Store",
+    "showChanges": "Show the changes",
+    "showInStore": "Show in Pledge Store",
     "browserMeltReadyTitle": "Pledges can be melted",
     "browserMeltReady": "$1 marked pledges can be melted now. Open My Hangar to melt them.",
     "browserMeltReadyOne": "“$1” can be melted now. Open My Hangar to melt it.",

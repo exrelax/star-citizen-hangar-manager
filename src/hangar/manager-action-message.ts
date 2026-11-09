@@ -4,7 +4,12 @@
  * `manager-action.ts`). Kept free of the manager's code, so the background doesn't load it.
  */
 
-export const MANAGER_ACTIONS = ['open', 'showMeltReady', 'selectMeltReady'] as const;
+export const MANAGER_ACTIONS = [
+  'open',
+  'showMeltReady',
+  'selectMeltReady',
+  'showWarbonds',
+] as const;
 export type ManagerAction = (typeof MANAGER_ACTIONS)[number];
 
 /** The message to a tab with the content script. */

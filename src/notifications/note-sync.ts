@@ -1,4 +1,12 @@
-import { onNotificationClosed } from '@/background/dispatch';
+import {
+  onNotificationClick,
+  onNotificationClosed,
+  openHangarManager,
+} from '@/background/dispatch';
+import { translate } from '@/i18n';
+import { resolveLanguage } from '@/settings/language';
+import { settingsItem, withDefaults } from '@/settings/settings';
+import { browserNotificationsItem } from './browser-permission';
 import { checkOff, notificationsItem, type AppNotification } from './notifications';
 
 /*
@@ -21,14 +29,59 @@ export const browserIdOf = (note: Pick<AppNotification, 'id'>) => `${PREFIX}${no
 export const noteIdOf = (browserId: string) =>
   browserId.startsWith(PREFIX) ? browserId.slice(PREFIX.length) : undefined;
 
-/** Shows a sidebar notification in the browser too (the caller checks the permission). */
-export async function showNoteInBrowser(note: AppNotification, title: string): Promise<void> {
+/** A notification older than this isn't shown in the browser any more (e.g. after a restart). */
+const BROWSER_MAX_AGE_MS = 15 * 60 * 1000;
+
+/** The sidebar notifications already shown in the browser, so each shows once. */
+const shownItem = storage.defineItem<readonly string[]>('local:notifications.browserShown', {
+  fallback: [],
+});
+
+/** Shows a sidebar notification in the browser, with its browser title and text. */
+export async function showNoteInBrowser(
+  note: AppNotification & Required<Pick<AppNotification, 'browser'>>,
+): Promise<void> {
+  const locale = resolveLanguage(withDefaults(await settingsItem.getValue()).language);
+  const showStore = translate(locale, 'notifications.showInStore');
   await browser.notifications.create(browserIdOf(note), {
     type: 'basic',
     iconUrl: browser.runtime.getURL('/icon/128.png'),
-    title,
-    message: note.text,
+    title: note.browser.title,
+    message: note.browser.text,
+    // The button (Chrome) does what the click does: Firefox shows none and refuses the option.
+    ...(!import.meta.env.FIREFOX && { buttons: [{ title: showStore }] }),
   });
+}
+
+/**
+ * Shows the new notifications that want it in the browser too: once each, only recent ones, and
+ * only while the browser allows it and the demo mode is off.
+ */
+export async function showNewNotesInBrowser(
+  list: readonly AppNotification[],
+  now = Date.now(),
+): Promise<void> {
+  const fresh = list.filter(
+    (note): note is AppNotification & Required<Pick<AppNotification, 'browser'>> =>
+      !!note.browser && note.doneAt === undefined && now - note.at < BROWSER_MAX_AGE_MS,
+  );
+  if (!fresh.length) return;
+  const shown = new Set(await shownItem.getValue());
+  const unseen = fresh.filter((note) => !shown.has(note.id));
+  if (!unseen.length) return;
+  const [allowed, settings] = await Promise.all([
+    browserNotificationsItem.getValue(),
+    settingsItem.getValue(),
+  ]);
+  if (allowed && !withDefaults(settings).demoMode) {
+    for (const note of unseen) await showNoteInBrowser(note);
+  }
+  // Only the ids of notifications still stored are kept.
+  const stored = new Set(list.map((note) => note.id));
+  await shownItem.setValue([
+    ...[...shown].filter((id) => stored.has(id)),
+    ...unseen.map((n) => n.id),
+  ]);
 }
 
 /** Wires both directions (call it in the background script). */
@@ -43,10 +96,18 @@ export function watchNotesInStep(): void {
       if (!stillOpen.has(id)) void browser.notifications?.clear(browserIdOf({ id }));
     }
     open = stillOpen;
+    void showNewNotesInBrowser(list ?? []);
   });
   void notificationsItem.getValue().then((list) => {
     open = new Set(list.filter((note) => note.doneAt === undefined).map((note) => note.id));
   });
+  // A click (or its button): so far only new warbond CCUs show in the browser, so the Pledge
+  // Store tab at them.
+  onNotificationClick(
+    PREFIX,
+    () => void openHangarManager('showWarbonds'),
+    () => void openHangarManager('showWarbonds'),
+  );
   // Closed in the browser: checked off in the sidebar.
   onNotificationClosed(PREFIX, (browserId) => {
     const id = noteIdOf(browserId);

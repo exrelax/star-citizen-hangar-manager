@@ -71,12 +71,20 @@ export function onNotificationClick(
   listenToNotificationClicks();
 }
 
+/** The handler of a notification: by its id, or by a prefix ending in ":" (`note:`). */
+function handlerOf<T>(handlers: ReadonlyMap<string, T>, id: string): T | undefined {
+  if (handlers.has(id)) return handlers.get(id);
+  for (const [key, handler] of handlers)
+    if (key.endsWith(':') && id.startsWith(key)) return handler;
+  return undefined;
+}
+
 /** Starts listening to clicks on notifications, once the browser has the API. */
 export function listenToNotificationClicks(): void {
   if (listeningToClicks || !browser.notifications?.onClicked) return;
   listeningToClicks = true;
   browser.notifications.onClicked.addListener((id) => {
-    const handler = clickHandlers.get(id);
+    const handler = handlerOf(clickHandlers, id);
     if (!handler) return;
     handler();
     void browser.notifications.clear(id);
@@ -91,7 +99,7 @@ export function listenToNotificationClicks(): void {
   }
   // Buttons only exist in Chrome; Firefox shows none and has no such event.
   browser.notifications.onButtonClicked?.addListener((id, index) => {
-    const handler = buttonHandlers.get(id);
+    const handler = handlerOf(buttonHandlers, id);
     if (!handler) return;
     handler(index);
     void browser.notifications.clear(id);
