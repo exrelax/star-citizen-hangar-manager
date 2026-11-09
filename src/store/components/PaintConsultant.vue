@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { RSI_CART_PATH } from '@/buyback/cart';
+import { useDemoContext } from '@/demo/use-demo';
 import { formatPercent, formatUsd } from '@/hangar/discount-format';
+import SvgIcon from '@/icons/SvgIcon.vue';
 import { i18n, locale } from '@/i18n';
 import type { Settings } from '@/settings/settings';
 import { vTooltip } from '@/shared/tooltip/tooltip';
@@ -7,6 +10,14 @@ import { useSettings } from '@/settings/use-settings';
 import { computed, ref } from 'vue';
 import { refreshStoreItems } from '../items/sync-store-items';
 import { usePaintConsultant } from '../paint-consultant/use-paint-consultant';
+import {
+  addLinesToCart,
+  cartLinesOf,
+  readCart,
+  type CartLine,
+  type CartResult,
+} from '../paint-consultant/cart';
+import { rebuyPlanItem, storedPlanOf } from '../paint-consultant/rebuy-plan-storage';
 
 /*
  * The Paint Discount Consultant (#95) in the Pledge Store tab: which own paints to melt and buy
@@ -72,6 +83,63 @@ const freedShare = computed(() =>
 const fillerCount = computed(
   () => plan.value?.fillers.reduce((sum, f) => sum + f.quantity, 0) ?? 0,
 );
+
+// ---- Into the cart (#103) ----
+
+// The demo is for screenshots: nothing goes into the real cart.
+const demo = useDemoContext();
+/** `busy` while reading or filling the cart; `occupied` when the cart already holds items. */
+const cartState = ref<'idle' | 'busy' | 'occupied' | 'done'>('idle');
+/** The cart's items before adding, while it isn't empty. */
+const cartBefore = ref<CartLine[]>([]);
+const cartItemsBefore = computed(() => cartBefore.value.reduce((sum, line) => sum + line.qty, 0));
+const cartResult = ref<CartResult>();
+const cartError = ref<string>();
+
+function openCart() {
+  if (!window.open(RSI_CART_PATH, '_blank')) location.assign(RSI_CART_PATH);
+}
+
+/** Reads the cart first: other items in it change the volume discount tier. */
+async function toCart() {
+  if (!plan.value || demo.value || cartState.value === 'busy') return;
+  cartState.value = 'busy';
+  cartError.value = undefined;
+  cartResult.value = undefined;
+  try {
+    cartBefore.value = await readCart();
+    if (cartBefore.value.length) {
+      cartState.value = 'occupied';
+      return;
+    }
+    await fillCart();
+  } catch (error) {
+    reportCartError(error);
+  }
+}
+
+/** Adds the plan's paints, keeps the plan for later (#105) and opens the cart. */
+async function fillCart() {
+  const current = plan.value;
+  if (!current) return;
+  cartState.value = 'busy';
+  try {
+    const result = await addLinesToCart(cartLinesOf(current));
+    cartResult.value = result;
+    if (result.added.length) await rebuyPlanItem.setValue(storedPlanOf(current, Date.now()));
+    cartState.value = 'done';
+    // With a refused paint the cart isn't what the plan needs: the user reads why first.
+    if (!result.failed.length) openCart();
+  } catch (error) {
+    reportCartError(error);
+  }
+}
+
+function reportCartError(error: unknown) {
+  console.error('[star-citizen-hangar-manager] Filling the cart failed', error);
+  cartError.value = error instanceof Error ? error.message : String(error);
+  cartState.value = 'idle';
+}
 </script>
 
 <template>
@@ -287,6 +355,59 @@ const fillerCount = computed(
           </li>
           <li>{{ i18n.t('consultant.stepPacks') }}</li>
         </ul>
+
+        <!-- Fills RSI's cart; the user checks it and pays there – nothing is checked out here. -->
+        <div class="shm-consultant-cart">
+          <button
+            v-tooltip="demo ? i18n.t('exchange.demo') : i18n.t('consultant.toCartHint')"
+            type="button"
+            class="shm-button"
+            :class="{ 'is-busy': cartState === 'busy' }"
+            :disabled="!!demo || cartState === 'busy' || cartState === 'occupied'"
+            @click="toCart"
+          >
+            <SvgIcon name="basket-shopping" />
+            {{ i18n.t('consultant.toCart', [plan.own.length + fillerCount]) }}
+          </button>
+
+          <div v-if="cartState === 'occupied'" class="shm-consultant-note" role="alert">
+            <p>{{ i18n.t('consultant.cartOccupied', [cartItemsBefore]) }}</p>
+            <div class="shm-consultant-cart-actions">
+              <button type="button" class="shm-button" @click="openCart">
+                <SvgIcon name="square-up-right" />
+                {{ i18n.t('consultant.openCart') }}
+              </button>
+              <button type="button" class="shm-button" @click="fillCart">
+                {{ i18n.t('consultant.addAnyway') }}
+              </button>
+              <button type="button" class="shm-button" @click="cartState = 'idle'">
+                {{ i18n.t('consultant.cancel') }}
+              </button>
+            </div>
+          </div>
+
+          <div v-if="cartResult?.failed.length" class="shm-consultant-note" role="alert">
+            <p>{{ i18n.t('consultant.cartFailed') }}</p>
+            <ul>
+              <li v-for="failure in cartResult.failed" :key="failure.line.skuId">
+                {{ failure.line.name }} × {{ failure.line.qty }}: {{ failure.reason }}
+              </li>
+            </ul>
+            <button type="button" class="shm-button" @click="openCart">
+              <SvgIcon name="square-up-right" />
+              {{ i18n.t('consultant.openCart') }}
+            </button>
+          </div>
+          <p v-else-if="cartState === 'done'" class="shm-consultant-note is-info" role="status">
+            {{ i18n.t('consultant.cartDone') }}
+            <button type="button" class="shm-link-button" @click="openCart">
+              {{ i18n.t('consultant.openCart') }}
+            </button>
+          </p>
+          <p v-if="cartError" class="shm-consultant-note" role="alert">
+            {{ i18n.t('consultant.cartError', [cartError]) }}
+          </p>
+        </div>
       </div>
     </template>
   </section>
@@ -479,5 +600,42 @@ const fillerCount = computed(
 
 .shm-consultant-notes a {
   color: var(--shm-accent);
+}
+.shm-consultant-cart {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.shm-consultant-cart .shm-consultant-note {
+  margin: 0;
+}
+
+.shm-consultant-cart .shm-consultant-note p,
+.shm-consultant-cart .shm-consultant-note ul {
+  margin: 0 0 8px;
+}
+
+.shm-consultant-cart-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.shm-consultant-cart .shm-link-button {
+  padding: 0;
+  color: var(--shm-accent);
+  font: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.shm-consultant-cart .shm-link-button:hover,
+.shm-consultant-cart .shm-link-button:focus-visible {
+  text-decoration: underline;
+  outline: none;
 }
 </style>

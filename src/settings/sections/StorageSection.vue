@@ -93,7 +93,11 @@ const resetDone = ref<StorageId>();
 
 async function reset(definition: StorageDefinition) {
   const readAgain = i18n.t(
-    definition.readAgain === 'auto' ? 'storage.readAgainAuto' : 'storage.readAgainRefresh',
+    definition.readAgain === 'auto'
+      ? 'storage.readAgainAuto'
+      : definition.readAgain === 'never'
+        ? 'storage.readAgainNever'
+        : 'storage.readAgainRefresh',
   );
   const message = i18n.t('storage.resetConfirm', [
     name(definition.id),
@@ -145,7 +149,9 @@ async function reset(definition: StorageDefinition) {
             </td>
             <td class="is-action">
               <span class="shm-storage-actions">
+                <!-- Not for what can't be read from RSI, e.g. the consultant's plan. -->
                 <button
+                  v-if="row.definition.readAgain !== 'never'"
                   v-tooltip="i18n.t('storage.refreshOne', [name(row.definition.id)])"
                   type="button"
                   class="shm-button is-icon"

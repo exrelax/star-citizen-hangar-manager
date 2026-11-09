@@ -105,7 +105,7 @@ export async function startSync(): Promise<void> {
  * are one read). Not while another sync runs.
  */
 export async function startStorageSync(id: StorageId): Promise<void> {
-  if (state.running || id === 'settings') return;
+  if (state.running || id === 'settings' || id === 'paintPlan') return;
   state.running = true;
   state.storage = id;
   state.progress = null;

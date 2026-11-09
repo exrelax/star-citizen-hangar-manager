@@ -21,6 +21,7 @@ import {
   storeItemsMeta,
   type StoreItemsSnapshot,
 } from '@/store/items/store-items-storage';
+import { rebuyPlanItem, type StoredRebuyPlan } from '@/store/paint-consultant/rebuy-plan-storage';
 import type { BuybackSnapshot } from '@/buyback/buyback';
 import type { HangarSnapshot } from '@/hangar/pledge';
 import type { OrdersSnapshot } from '@/orders/orders';
@@ -53,6 +54,7 @@ export type StorageId =
   | 'shipsWarbonds'
   | 'storeItems'
   | 'storeCredit'
+  | 'paintPlan'
   | 'settings';
 
 export interface StorageDefinition {
@@ -73,9 +75,9 @@ export interface StorageDefinition {
   count?: (value: never) => number;
   /**
    * After a reset: read again by the next refresh, or on its own as soon as the manager is open
-   * (the small data of the upgrade tool).
+   * (the small data of the upgrade tool), or never (what the user did, e.g. the consultant's plan).
    */
-  readAgain?: 'refresh' | 'auto';
+  readAgain?: 'refresh' | 'auto' | 'never';
   /** Keys of earlier versions with the same format, moved to this one by `migrateStorage`. */
   legacyKeys?: `local:${string}`[];
   /** Keys of earlier versions in another format: removed, the data is read again. */
@@ -181,6 +183,17 @@ export const STORAGES: readonly StorageDefinition[] = [
     kind: 'data',
     count: (value: StoreCreditSnapshot | null) => (value ? 1 : 0),
     readAgain: 'auto',
+  },
+  {
+    id: 'paintPlan',
+    item: rebuyPlanItem,
+    content: "The Paint Discount Consultant's plan whose paints were put into the cart",
+    source: 'The Paint Discount Consultant ("Put the paints into the cart")',
+    usedBy: ['Paint Discount Consultant (filler paints to melt again)'],
+    kind: 'data',
+    count: (value: StoredRebuyPlan | null) =>
+      value ? value.own.length + value.fillers.reduce((sum, f) => sum + f.quantity, 0) : 0,
+    readAgain: 'never',
   },
   {
     id: 'settings',
