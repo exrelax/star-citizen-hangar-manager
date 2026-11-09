@@ -2,6 +2,7 @@ import { listenToNotificationClicks } from '@/background/dispatch';
 import { isCheckingMessage, relayToOtherTabs } from '@/hangar/smart-update/broadcast';
 import { watchMeltReady } from '@/notifications/melt-ready-notification';
 import { watchNotesInStep } from '@/notifications/note-sync';
+import { watchStoreNoteKinds } from '@/store/store-change-notes';
 import {
   mirrorNotificationPermission,
   notificationsPermission,
@@ -58,6 +59,8 @@ export default defineBackground(() => {
 
   // The sidebar's notifications and their browser notifications in step (#155).
   watchNotesInStep();
+  // A kind of the Pledge Store changes turned off: its notifications go (#197).
+  watchStoreNoteKinds();
 
   // The Pledge Store on the schedule around the full hour, also with no RSI tab open (#163):
   // while browser notifications are on.

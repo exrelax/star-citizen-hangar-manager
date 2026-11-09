@@ -16,6 +16,7 @@ import { resolveLanguage } from '@/settings/language';
 import { settingsItem, withDefaults } from '@/settings/settings';
 import { rebuyPlanItem } from '@/store/paint-consultant/rebuy-plan-storage';
 import { browserNotificationsItem } from './browser-permission';
+import { isKindOn } from './kinds';
 
 /*
  * The browser notification that pledges marked to melt (#97, #144) can be melted now (#153),
@@ -120,8 +121,8 @@ export async function checkMeltReady(now = Date.now()): Promise<void> {
     browserNotificationsItem.getValue(),
     settingsItem.getValue(),
   ]);
-  const { demoMode, language } = withDefaults(settings);
-  const shown = allowed && !demoMode;
+  const { demoMode, language, notificationsOff } = withDefaults(settings);
+  const shown = allowed && !demoMode && isKindOn(notificationsOff, 'meltReady');
   const { due, next } = meltSchedule(candidates, notified, now);
   // The pledges of the notification shown, as far as they can still be melted.
   const readyNow = new Set(
@@ -135,8 +136,10 @@ export async function checkMeltReady(now = Date.now()): Promise<void> {
       candidates.filter((candidate) => showing.includes(candidate.pledgeId)),
       resolveLanguage(language),
     );
-  } else if (before.length && !showing.length) {
+  } else if (before.length && (!showing.length || !shown)) {
+    // Nothing left to melt, or the kind was turned off (#197).
     await clearShown();
+    showing = [];
   }
   if (showing.length !== before.length) await shownItem.setValue(showing);
 

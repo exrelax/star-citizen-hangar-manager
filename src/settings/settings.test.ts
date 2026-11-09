@@ -38,6 +38,7 @@ describe('withDefaults', () => {
       demoMode: true,
       hideRefund: true,
       smartUpdates: true,
+      notificationsOff: [],
       storeRefreshMinutes: 5,
       smartUpdateMinutes: 5,
       spotCheckPages: 2,

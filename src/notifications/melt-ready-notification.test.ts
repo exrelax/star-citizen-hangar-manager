@@ -167,4 +167,20 @@ describe('checkMeltReady', () => {
     await checkMeltReady(READY + 60_000);
     expect(create.mock.calls[1]![1].message).toContain('2 marked pledges');
   });
+
+  it('shows nothing while the kind is turned off, and takes a shown one away', async () => {
+    const create = stubNotifications();
+    await browserNotificationsItem.setValue(true);
+    await meltMarksItem.setValue({ 1: MARKED });
+    await hangarSnapshot.setValue(hangar(1));
+    await checkMeltReady(READY);
+    expect(create).toHaveBeenCalledOnce();
+    await settingsItem.setValue({ notificationsOff: ['meltReady'] });
+    await checkMeltReady(READY + 1000);
+    expect(clear).toHaveBeenCalledWith('shm-melt-ready');
+    await meltMarksItem.setValue({ 1: MARKED, 2: MARKED });
+    await hangarSnapshot.setValue(hangar(1, 2));
+    await checkMeltReady(READY + 2000);
+    expect(create).toHaveBeenCalledOnce();
+  });
 });

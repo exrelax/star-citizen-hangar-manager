@@ -1,8 +1,16 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { notificationsItem } from '@/notifications/notifications';
+import { settingsItem } from '@/settings/settings';
 import type { StoreItem } from './items/store-items';
-import { noteWarbondChanges, shortList, storeItemsNote, warbondNote } from './store-change-notes';
+import {
+  noteStoreItemChanges,
+  noteWarbondChanges,
+  shortList,
+  storeItemsNote,
+  warbondNote,
+  watchStoreNoteKinds,
+} from './store-change-notes';
 
 beforeEach(() => fakeBrowser.reset());
 
@@ -79,5 +87,24 @@ describe('noteWarbondChanges', () => {
     await noteWarbondChanges([], [warbond(1, 170)], ships, 7);
     await noteWarbondChanges([], [warbond(1, 170)], ships, 7);
     expect((await notificationsItem.getValue()).map((note) => note.id)).toEqual(['warbonds:7']);
+  });
+});
+
+describe('kinds turned off (#197)', () => {
+  it('adds no notification of a kind turned off', async () => {
+    await settingsItem.setValue({ notificationsOff: ['warbonds'] });
+    await noteWarbondChanges([], [warbond(1, 170)], ships, 7);
+    await noteStoreItemChanges([], [item(1, 'Helmet', 10)], 7);
+    expect((await notificationsItem.getValue()).map((note) => note.id)).toEqual(['storeItems:7']);
+  });
+
+  it('checks off the open notifications of a kind once it is turned off', async () => {
+    await noteWarbondChanges([], [warbond(1, 170)], ships, 7);
+    await noteStoreItemChanges([], [item(1, 'Helmet', 10)], 7);
+    watchStoreNoteKinds();
+    await settingsItem.setValue({ notificationsOff: ['storeItems'] });
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    const done = (await notificationsItem.getValue()).filter((note) => note.doneAt !== undefined);
+    expect(done.map((note) => note.id)).toEqual(['storeItems:7']);
   });
 });

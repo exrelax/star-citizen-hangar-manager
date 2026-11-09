@@ -9,6 +9,7 @@ import { meltableAt } from '@/hangar/melt-marks';
 import { HANGAR_SNAPSHOT_VERSION } from '@/hangar/pledge';
 import { translate } from '@/i18n';
 import { browserNotificationsItem } from '@/notifications/browser-permission';
+import { isKindOn } from '@/notifications/kinds';
 import { resolveLanguage } from '@/settings/language';
 import { settingsItem, withDefaults } from '@/settings/settings';
 import { REBUY_PLAN_VERSION, rebuyPlanItem, type FillerPurchase } from './rebuy-plan-storage';
@@ -62,8 +63,11 @@ export async function notifyFillers(): Promise<void> {
   const left = inHangar
     ? purchase.pledgeIds.filter((id) => inHangar.has(id)).length
     : purchase.pledgeIds.length;
-  if (left && (await browserNotificationsItem.getValue())) {
-    const locale = resolveLanguage(withDefaults(await settingsItem.getValue()).language);
+  const settings = withDefaults(await settingsItem.getValue());
+  // The kind "can be melted" turned off (#197): told, but not shown.
+  const kindOn = isKindOn(settings.notificationsOff, 'meltReady');
+  if (left && kindOn && (await browserNotificationsItem.getValue())) {
+    const locale = resolveLanguage(settings.language);
     await browser.notifications.create(NOTIFICATION_ID, {
       type: 'basic',
       iconUrl: browser.runtime.getURL('/icon/128.png'),
@@ -98,6 +102,12 @@ export function watchFillerNotification(): void {
   rebuyPlanItem.watch(() => void scheduleFillerNotification());
   onAlarm(FILLER_ALARM, () => void notifyFillers());
   hangarSnapshot.watch(() => void clearMeltedFillers());
+  // The kind turned off (#197): its notification goes.
+  settingsItem.watch((settings) => {
+    if (!isKindOn(withDefaults(settings).notificationsOff, 'meltReady')) {
+      void browser.notifications?.clear(NOTIFICATION_ID);
+    }
+  });
   onManagerSeen(() => void browser.notifications?.clear(NOTIFICATION_ID));
   onNotificationClick(NOTIFICATION_ID, () => void openHangarManager());
 }

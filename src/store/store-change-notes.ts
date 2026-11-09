@@ -1,6 +1,10 @@
 import { formatUsd } from '@/hangar/discount-format';
 import { translate, type Locale } from '@/i18n';
+import { isKindOn, type NotificationKind } from '@/notifications/kinds';
 import {
+  checkOff,
+  notificationsItem,
+  openNotifications,
   updateNotifications,
   withAdded,
   type AppNotification,
@@ -106,10 +110,14 @@ export function storeItemsNote(
   };
 }
 
-/** Adds the notification, if there is one, in the user's language. */
-async function addNote(build: (locale: Locale) => AppNotification | undefined): Promise<void> {
-  const locale = resolveLanguage(withDefaults(await settingsItem.getValue()).language);
-  const note = build(locale);
+/** Adds the notification, if there is one and its kind is on (#197), in the user's language. */
+async function addNote(
+  kind: NotificationKind,
+  build: (locale: Locale) => AppNotification | undefined,
+): Promise<void> {
+  const settings = withDefaults(await settingsItem.getValue());
+  if (!isKindOn(settings.notificationsOff, kind)) return;
+  const note = build(resolveLanguage(settings.language));
   if (note) await updateNotifications((list) => withAdded(list, [note]));
 }
 
@@ -119,11 +127,28 @@ export const noteWarbondChanges = (
   next: readonly WarbondSku[],
   ships: readonly Ship[],
   at: number,
-) => addNote((locale) => warbondNote(previous, next, ships, locale, at));
+) => addNote('warbonds', (locale) => warbondNote(previous, next, ships, locale, at));
 
 /** After a read of the Pledge Store items: tells what changed. */
 export const noteStoreItemChanges = (
   previous: readonly StoreItem[] | undefined,
   next: readonly StoreItem[],
   at: number,
-) => addNote((locale) => storeItemsNote(previous, next, locale, at));
+) => addNote('storeItems', (locale) => storeItemsNote(previous, next, locale, at));
+
+/**
+ * A kind turned off (#197) takes its open notifications away – in the sidebar, and so in the
+ * browser (#155). Call it in the background script, so it follows changes from other devices.
+ */
+export function watchStoreNoteKinds(): void {
+  const clearOff = async () => {
+    const { notificationsOff } = withDefaults(await settingsItem.getValue());
+    const kinds = new Set<string>(notificationsOff);
+    const ids = openNotifications(await notificationsItem.getValue())
+      .filter((note) => note.kind && kinds.has(note.kind))
+      .map((note) => note.id);
+    if (ids.length) await checkOff(ids);
+  };
+  void clearOff();
+  settingsItem.watch(() => void clearOff());
+}

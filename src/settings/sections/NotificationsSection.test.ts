@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { createApp, nextTick, type App } from 'vue';
 import { dismissedPaintsItem } from '@/store/paint-consultant/paint-notification';
+import { withDefaults, type Settings } from '../settings';
 import NotificationsSection from './NotificationsSection.vue';
 
 let app: App | undefined;
@@ -16,9 +17,12 @@ async function settle() {
   }
 }
 
-async function render() {
+async function render(
+  settings: Settings = withDefaults({}),
+  onUpdate: (patch: Partial<Settings>) => void = () => undefined,
+) {
   const root = document.createElement('div');
-  app = createApp(NotificationsSection);
+  app = createApp(NotificationsSection, { settings, onUpdate });
   app.mount(root);
   await settle();
   return root;
@@ -42,5 +46,22 @@ describe('NotificationsSection', () => {
     const root = await render();
     expect(root.querySelector('button')!.disabled).toBe(true);
     expect(root.textContent).toContain('No paint notification is dismissed');
+  });
+
+  it('turns the kinds of notifications on and off (#197)', async () => {
+    const updates: Partial<Settings>[] = [];
+    const root = await render(withDefaults({ notificationsOff: ['storeItems'] }), (patch) =>
+      updates.push(patch),
+    );
+    const checks = [...root.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')];
+    const byLabel = (text: string) =>
+      checks.find((check) => check.closest('label')?.textContent?.includes(text))!;
+    // Browser only: off while the browser doesn't allow notifications.
+    expect(byLabel('Marked pledges can be melted').disabled).toBe(true);
+    expect(byLabel('Pledge Store items changed').checked).toBe(false);
+    const warbonds = byLabel('Warbond CCUs changed');
+    warbonds.checked = false;
+    warbonds.dispatchEvent(new Event('change'));
+    expect(updates).toEqual([{ notificationsOff: ['warbonds', 'storeItems'] }]);
   });
 });
