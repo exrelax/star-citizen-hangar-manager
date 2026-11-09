@@ -21,6 +21,7 @@ beforeEach(() => {
 const MARKED = Date.UTC(2026, 10, 9, 10, 0);
 const READY = MARKED + MELT_COOLDOWN_MS;
 
+/** Pledges without a known purchase time: they can be melted 24 hours after their mark. */
 const hangar = (...ids: number[]): HangarSnapshot => ({
   version: HANGAR_SNAPSHOT_VERSION,
   syncedAt: '2026-11-09T09:00:00.000Z',
@@ -43,6 +44,14 @@ describe('meltCandidates', () => {
     const candidates = meltCandidates(marks, hangar(1, 2), null, new Set([2]));
     // 3 isn't in this device's hangar (marked elsewhere), 2 is a filler paint.
     expect(candidates).toEqual([{ pledgeId: 1, title: 'Paints - Paint 1', meltableAt: READY }]);
+  });
+});
+
+describe('meltCandidates of pledges meltable already', () => {
+  it('leaves out a pledge that could be melted when it was marked', () => {
+    const old = hangar(1);
+    old.pledges[0]!.createdAt = '2024-09-30';
+    expect(meltCandidates({ 1: MARKED }, old, null)).toEqual([]);
   });
 });
 

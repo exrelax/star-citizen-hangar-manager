@@ -15,7 +15,9 @@ import { browserNotificationsItem } from './browser-permission';
  * The browser notification that pledges marked to melt (#97, #144) can be melted now (#153),
  * shown by the background script also while no RSI page is open. An alarm goes off at the
  * earliest time one of them can be melted – the same time the sidebar shows (`meltableAt`) – and
- * one notification names all that can be melted then. Each pledge is announced once.
+ * one notification names all that can be melted then. Each pledge is announced once, and only one
+ * marked while it was still waiting: a mark on a pledge that can be melted already tells nothing
+ * new.
  *
  * Only marks of pledges in this device's stored hangar count: the marks follow the browser profile,
  * and each device notifies by its own hangar. The Paint Discount Consultant's filler paints have
@@ -40,7 +42,10 @@ export interface MeltCandidate {
   meltableAt: number;
 }
 
-/** The marked pledges of the hangar, with their times, but not those left out (filler paints). */
+/**
+ * The marked pledges of the hangar that were still waiting for RSI's 24 hours when marked, with
+ * their times, but not those left out (filler paints).
+ */
 export function meltCandidates(
   marks: MeltMarks,
   hangar: HangarSnapshot | null | undefined,
@@ -56,6 +61,9 @@ export function meltCandidates(
     if (!pledge || leftOut.has(pledgeId)) return [];
     const purchase = purchases.get(pledgeId);
     const at = meltableAt({ boughtAt: purchase?.at, boughtOn: purchase?.on, markedAt });
+    // Meltable already when marked: the row shows "Melt now" right away, nothing to wait for. Marks
+    // may also just collect pledges; a notification on every click would be noise.
+    if (at <= markedAt) return [];
     return [{ pledgeId, title: pledge.title, meltableAt: at }];
   });
 }
