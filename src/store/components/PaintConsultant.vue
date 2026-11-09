@@ -162,6 +162,32 @@ const ownPledges = computed(() => {
     .filter((pledge): pledge is PledgeView => !!pledge && pledge.isMeltable);
 });
 const melting = ref(false);
+
+// ---- Paints bought again already (#139): only melting the old pledges is left ----
+
+const rebought = computed(() => result.value?.rebought ?? []);
+/** Store credit melting the old pledges gives. */
+const reboughtCredit = computed(
+  () => Math.round(rebought.value.reduce((sum, { old }) => sum + old.meltValue, 0) * 100) / 100,
+);
+/** The newest purchase of the copies, for the done steps. */
+const reboughtOn = computed(
+  () =>
+    rebought.value
+      .map(({ copy }) => copy.boughtOn)
+      .filter((on): on is string => !!on)
+      .sort()
+      .at(-1) ?? '',
+);
+const reboughtPledges = computed(() => {
+  const byId = new Map(pledges.value.map((pledge) => [pledge.id, pledge]));
+  return rebought.value
+    .map(({ old }) => byId.get(old.pledgeId))
+    .filter((pledge): pledge is PledgeView => !!pledge && pledge.isMeltable);
+});
+const meltingRebought = ref(false);
+/** Pairs that look bought again without a kept plan (`reboughtDetection: 'guess'`). */
+const probablyRebought = computed(() => result.value?.probablyRebought ?? []);
 /** Bulk melting is off: the settings tab, at its setting. */
 const openBulkMeltingSetting = () =>
   openTabAt('settings', BULK_MELTING_SETTING_ID, { highlight: true });
@@ -209,7 +235,123 @@ function reportCartError(error: unknown) {
       </p>
       <p v-if="creditUnknown" class="shm-consultant-note">{{ i18n.t('consultant.noCredit') }}</p>
 
-      <p v-if="!plan && !result?.next" class="shm-consultant-state">
+      <!-- Bought again already: steps 1 and 2 done, melting the old pledges is left. -->
+      <div v-if="rebought.length" class="shm-consultant-plan shm-consultant-rebought">
+        <h4 class="shm-consultant-subtitle">
+          {{ i18n.t('consultant.reboughtTitle', [rebought.length]) }}
+        </h4>
+        <ol class="shm-consultant-steps shm-consultant-progress">
+          <li class="is-done">
+            <SvgIcon name="circle-check" />
+            {{ i18n.t('consultant.reboughtCart') }}
+          </li>
+          <li class="is-done">
+            <SvgIcon name="circle-check" />
+            {{
+              reboughtOn
+                ? i18n.t('consultant.reboughtPaidOn', [reboughtOn])
+                : i18n.t('consultant.reboughtPaid')
+            }}
+          </li>
+          <li class="is-open">
+            <SvgIcon name="recycle" />
+            {{
+              rebought.length === 1
+                ? i18n.t('consultant.reboughtMeltOne', [usd(reboughtCredit)])
+                : i18n.t('consultant.reboughtMelt', [rebought.length, usd(reboughtCredit)])
+            }}
+          </li>
+        </ol>
+        <div class="shm-consultant-table-wrap">
+          <table class="shm-consultant-table">
+            <thead>
+              <tr>
+                <th scope="col">{{ i18n.t('consultant.colPaint') }}</th>
+                <th scope="col" class="is-number">{{ i18n.t('consultant.colOld') }}</th>
+                <th scope="col" class="is-number">{{ i18n.t('consultant.colMelt') }}</th>
+                <th scope="col" class="is-number">{{ i18n.t('consultant.colCopy') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="{ old, copy } in rebought" :key="old.pledgeId">
+                <th scope="row">{{ old.storePaint.name }}</th>
+                <td class="is-number">
+                  {{ i18n.t('consultant.oldValue', [percent(old.discount)]) }}
+                </td>
+                <td class="is-number">{{ usd(old.meltValue) }}</td>
+                <td class="is-number">
+                  {{
+                    copy.boughtOn
+                      ? i18n.t('consultant.copyValueOn', [percent(copy.discount), copy.boughtOn])
+                      : i18n.t('consultant.copyValue', [percent(copy.discount)])
+                  }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="shm-consultant-note is-info">{{ i18n.t('consultant.reboughtSafe') }}</p>
+        <div v-if="reboughtPledges.length" class="shm-consultant-cart">
+          <template v-if="settings.bulkMelting">
+            <button
+              v-tooltip="demo ? i18n.t('exchange.demo') : i18n.t('consultant.meltOldHint')"
+              type="button"
+              class="shm-button is-danger"
+              :disabled="!!demo"
+              @click="meltingRebought = true"
+            >
+              <SvgIcon name="triangle-exclamation" />
+              {{
+                reboughtPledges.length === 1
+                  ? i18n.t('consultant.meltOldOne')
+                  : i18n.t('consultant.meltOld', [reboughtPledges.length])
+              }}
+            </button>
+            <BulkExchangeOverlay
+              v-if="meltingRebought"
+              :pledges="reboughtPledges"
+              :hangar="pledges"
+              :skipped="0"
+              @close="meltingRebought = false"
+            />
+          </template>
+          <button
+            v-else
+            v-tooltip="i18n.t('bulkExchange.disabledHint')"
+            type="button"
+            class="shm-button"
+            @click="openBulkMeltingSetting"
+          >
+            <SvgIcon name="gear" />
+            {{ i18n.t('bulkExchange.disabled') }}
+          </button>
+        </div>
+      </div>
+
+      <!-- A guess without a kept plan: shown to check, nothing is done with it. -->
+      <div v-if="probablyRebought.length" class="shm-consultant-note is-info" role="note">
+        <p>
+          {{
+            probablyRebought.length === 1
+              ? i18n.t('consultant.probablyReboughtOne')
+              : i18n.t('consultant.probablyRebought', [probablyRebought.length])
+          }}
+        </p>
+        <ul>
+          <li v-for="{ old, copy } in probablyRebought" :key="old.pledgeId">
+            {{
+              i18n.t('consultant.probablyReboughtItem', [
+                old.storePaint.name,
+                percent(old.discount),
+                percent(copy.discount),
+                copy.boughtOn ?? '–',
+              ])
+            }}
+          </li>
+        </ul>
+      </div>
+
+      <p v-if="!plan && !result?.next && !rebought.length" class="shm-consultant-state">
         {{ i18n.t('consultant.nothing') }}
       </p>
       <p v-else-if="!plan && result?.next" class="shm-consultant-state">
@@ -707,5 +849,36 @@ function reportCartError(error: unknown) {
 .shm-consultant-cart .shm-link-button:focus-visible {
   text-decoration: underline;
   outline: none;
+}
+/* The steps of paints bought again: done ones checked, the open one stands out. */
+.shm-consultant-progress {
+  padding-left: 0;
+  list-style: none;
+}
+
+.shm-consultant-progress li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.shm-consultant-progress li.is-done {
+  color: var(--shm-text-muted);
+}
+
+.shm-consultant-progress li.is-done .shm-icon {
+  color: var(--shm-success);
+}
+
+.shm-consultant-progress li.is-open {
+  font-weight: 600;
+}
+
+.shm-consultant-progress li.is-open .shm-icon {
+  color: var(--shm-accent);
+}
+
+.shm-consultant-rebought + .shm-consultant-plan {
+  margin-top: 18px;
 }
 </style>

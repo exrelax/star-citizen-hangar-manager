@@ -522,6 +522,17 @@ it into store credit with the paints you already own:
   enabled only once these paints were put into the cart, and the dialog also asks to confirm that
   the cart was checked. Afterwards the hangar is read again, as after every bulk melting. With bulk
   melting off, **Bulk melting disabled** opens the settings at that setting instead.
+- **Bought again**: once the paints were bought, the hangar holds each own paint twice – the old
+  pledge without the discount and the new copy with it. The consultant pairs each copy with one
+  old pledge of the same paint (the oldest one with less discount; the copy is younger). By
+  default a pair counts only when the old pledge was in a plan whose paints were put into the cart
+  and the copy was bought that day or later; the setting "Paints bought again" can also show other
+  pairs as a guess to check, which change nothing. For a counted pair it shows
+  "cart filled" and "bought" as done, with the date, and only "melt the old paints" as open, with
+  the store credit it gives. Melting them is safe – the paints are in the hangar again – so a
+  button melts them at once (with bulk melting on; otherwise it leads to the setting). The pairs
+  are not planned again; other paints can form a new plan next to them. In My Hangar the old
+  pledges carry "Melt – bought again at 35%", and the sidebar box counts them.
 - **In My Hangar**: the paints it would buy again carry a tag "Rebuy 0% → 35%" (their discount now
   and then; its tooltip says the store credit freed), which opens the consultant. The filter
   button of the sidebar box **Paint Discount** shows just them.
@@ -607,6 +618,8 @@ In the order of the settings tab:
     are melted again after RSI's 24-hour cooldown; off, only the own paints count.
   - **Leave out giftable paints** (on by default): bought again with store credit, they would no
     longer be giftable. Also right in the consultant.
+  - **Paints bought again**: only those of a plan put into the cart (default, safe), or also guessed
+    from discount and age – shown as a guess to check, without acting on it.
 - **Smart updates**:
   - **Check hangar, buy back and orders for changes** (on by default) – see
     [Built for speed](#built-for-speed).

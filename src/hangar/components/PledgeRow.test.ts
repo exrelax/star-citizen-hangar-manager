@@ -152,7 +152,7 @@ describe('PledgeRow', () => {
   });
 
   it('marks a paint the Paint Discount Consultant would buy again', () => {
-    paintRebuys.value = new Map([[7, { from: 0, to: 35, freed: 1.75 }]]);
+    paintRebuys.value = new Map([[7, { kind: 'rebuy', from: 0, to: 35, freed: 1.75 }]]);
     const paint = { id: 7, items: [{ title: 'Lynx - Moonrise Paint', kind: 'Skin' }] };
 
     const marked = render(paint);
@@ -162,5 +162,12 @@ describe('PledgeRow', () => {
 
     app?.unmount();
     expect(render({ ...paint, id: 8 }).querySelector('.shm-badge.is-rebuy')).toBeNull();
+  });
+
+  it('marks the old pledge of a paint bought again as left to melt (#139)', () => {
+    paintRebuys.value = new Map([[9, { kind: 'melt', from: 0, to: 35, freed: 5 }]]);
+    const old = { id: 9, items: [{ title: 'Lynx - Moonrise Paint', kind: 'Skin' }] };
+    const badge = render(old).querySelector('.shm-badge.is-rebuy');
+    expect(badge?.textContent?.trim()).toBe('Melt – bought again at 35%');
   });
 });

@@ -154,6 +154,11 @@ const rebuyPlan = computed(() => {
   const plan = consultant?.result.value?.plan;
   return plan?.own.length ? plan : undefined;
 });
+/** Paints already bought again (#139): their old pledges are left to melt. */
+const meltNow = computed(() => consultant?.result.value?.rebought ?? []);
+const meltNowCredit = computed(
+  () => Math.round(meltNow.value.reduce((sum, { old }) => sum + old.meltValue, 0) * 100) / 100,
+);
 
 /*
  * The consultant's notification (#151): how many paints can be bought again with more discount,
@@ -222,7 +227,7 @@ const isShown = (box: Box) =>
     : box === 'notifications'
       ? noteCount.value > 0
       : box === 'paintConsultant'
-        ? !props.settings.hideMeltValue && !!rebuyPlan.value
+        ? !props.settings.hideMeltValue && (!!rebuyPlan.value || meltNow.value.length > 0)
         : true);
 const boxes = computed(() => order.value.filter(isShown));
 
@@ -611,18 +616,33 @@ async function move(box: Box, step: -1 | 1) {
         </template>
 
         <!-- Only shown with at least one paint to buy again (see `isShown`). -->
-        <template v-else-if="box === 'paintConsultant' && rebuyPlan">
+        <template v-else-if="box === 'paintConsultant' && (rebuyPlan || meltNow.length)">
           <dl class="shm-sidebar-figures">
-            <div>
-              <dt>{{ i18n.t('consultant.boxPaints') }}</dt>
-              <dd>{{ number.format(rebuyPlan.own.length) }}</dd>
-            </div>
-            <div>
-              <dt v-tooltip="i18n.t('consultant.freedHint')">
-                {{ i18n.t('consultant.freed') }}
-              </dt>
-              <dd class="is-discount">{{ money.format(rebuyPlan.storeCreditFreed) }}</dd>
-            </div>
+            <!-- Bought again already (#139): the old pledges are left to melt. -->
+            <template v-if="meltNow.length">
+              <div>
+                <dt v-tooltip="i18n.t('consultant.boxMeltNowHint')">
+                  {{ i18n.t('consultant.boxMeltNow') }}
+                </dt>
+                <dd>{{ number.format(meltNow.length) }}</dd>
+              </div>
+              <div>
+                <dt>{{ i18n.t('consultant.boxMeltNowCredit') }}</dt>
+                <dd>{{ money.format(meltNowCredit) }}</dd>
+              </div>
+            </template>
+            <template v-if="rebuyPlan">
+              <div>
+                <dt>{{ i18n.t('consultant.boxPaints') }}</dt>
+                <dd>{{ number.format(rebuyPlan.own.length) }}</dd>
+              </div>
+              <div>
+                <dt v-tooltip="i18n.t('consultant.freedHint')">
+                  {{ i18n.t('consultant.freed') }}
+                </dt>
+                <dd class="is-discount">{{ money.format(rebuyPlan.storeCreditFreed) }}</dd>
+              </div>
+            </template>
           </dl>
           <div class="shm-sidebar-actions">
             <!-- Shows only these paints in My Hangar, and again all (#146). -->

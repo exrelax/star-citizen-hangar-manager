@@ -49,7 +49,12 @@ describe('withDefaults', () => {
       filters: DEFAULT_SETTINGS.filters,
       // The buy back can't sort by value: back to the default.
       sort: { hangar: 'valueDesc', buyback: 'newest' },
-      paintConsultant: { useStoreCredit: false, useFillers: true, skipGiftable: true },
+      paintConsultant: {
+        useStoreCredit: false,
+        useFillers: true,
+        skipGiftable: true,
+        reboughtDetection: 'plan',
+      },
       shipLinks: { erkul: false, fleetyards: true },
     });
   });
@@ -66,7 +71,7 @@ describe('withDefaults', () => {
         compactView: 'no',
         storeRefreshMinutes: 2.5,
         filters: { hangar: 'all', buyback: { order: 5 } },
-        paintConsultant: { useStoreCredit: 'yes', useFillers: 0 },
+        paintConsultant: { useStoreCredit: 'yes', useFillers: 0, reboughtDetection: 'always' },
         sidebarOrder: 'summary',
         sidebarCollapsed: ['events'],
         sidebar: 'no',
