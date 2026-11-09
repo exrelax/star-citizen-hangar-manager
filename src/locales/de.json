@@ -132,7 +132,7 @@
     "hideMeltValueHint": "Blendet alle $$-Beträge aus: Pledge-Werte, Rabatte, die Kosten angewendeter Upgrades, die Beträge der Bestellungen und die Werte in den Dialogen zum Eintauschen und Verschenken.",
     "general": "Allgemein",
     "smartUpdates": "Intelligente Updates",
-    "smartUpdatesHint": "Prüft die erste, die letzte und einige weitere Seiten von Hangar und Buy Back sowie die neuesten Bestellungen auf Änderungen: wenn der Hangar Manager geöffnet oder wieder angezeigt wird (höchstens im Intervall unten) und direkt nach „My Gear“. Die Listen werden ohne vollständigen Abgleich aktualisiert.",
+    "smartUpdatesHint": "Prüft das Pledge-Log, die neuesten Bestellungen und einige Seiten von Hangar und Buy Back auf Änderungen und aktualisiert die Listen ohne vollständigen Abgleich: regelmäßig, solange der Hangar Manager in einem sichtbaren Tab offen ist (im Intervall unten, länger, solange nichts passiert), wenn er geöffnet oder wieder angezeigt wird, wenn „My Gear“ oder „Buy Back Pledges“ geöffnet wird, und direkt nach deinem eigenen Exchange, Gift oder Upgrade dort.",
     "smartUpdatesLists": "Hangar, Buy Back und Bestellungen auf Änderungen prüfen",
     "smartUpdateInterval": "Auf Änderungen prüfen: alle",
     "smartUpdateIntervalHint": "Solange der Hangar Manager in einem sichtbaren Tab offen ist ($1 bis $2 Minuten); ein verborgener Tab prüft wieder, sobald er angezeigt wird. Ein kürzeres Intervall findet Änderungen früher, mit mehr Anfragen an RSI. Finden die Prüfungen nichts und nutzt niemand den Tab, verdoppelt sich das Intervall nach jeder Prüfung, bis zum $3-Fachen; jede Eingabe im Tab, eine gefundene Änderung oder deine eigene Aktion auf RSIs Seiten kehrt zu ihm zurück.",
