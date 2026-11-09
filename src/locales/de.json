@@ -609,6 +609,10 @@
     "paintsRebuyOne": "1 Paint lässt sich mit mehr Rabatt zurückkaufen",
     "dismiss": "Ausblenden",
     "dismissPaintsHint": "Entfernt diese Benachrichtigung für genau diese Paints. Sie erscheint wieder, sobald sich ein weiteres Paint mit mehr Rabatt zurückkaufen lässt – dann mit der Anzahl aller.",
+    "browserHint": "Browser-Benachrichtigungen informieren dich über Änderungen, auch wenn keine RSI-Seite offen ist. Schalte sie in den Einstellungen ein.",
+    "browserHintOpen": "Einstellungen",
+    "browserHintOpenHint": "Öffnet die Einstellungen bei „Browser-Benachrichtigungen“.",
+    "dismissBrowserHintHint": "Entfernt diesen Hinweis dauerhaft. Browser-Benachrichtigungen kannst du jederzeit in den Einstellungen einschalten.",
     "count": "$1 Benachrichtigungen",
     "countOne": "1 Benachrichtigung"
   },

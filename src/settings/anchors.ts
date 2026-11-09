@@ -5,3 +5,6 @@
 
 /** The experimental setting "Bulk melting", linked from the sidebar's "Selected" box (#159). */
 export const BULK_MELTING_SETTING_ID = 'shm-setting-bulk-melting';
+
+/** "Browser notifications", linked from the sidebar's hint about them (#152). */
+export const BROWSER_NOTIFICATIONS_SETTING_ID = 'shm-setting-browser-notifications';

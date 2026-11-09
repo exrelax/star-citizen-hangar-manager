@@ -609,6 +609,10 @@
     "paintsRebuyOne": "1 paint can be bought again with more discount",
     "dismiss": "Dismiss",
     "dismissPaintsHint": "Removes this notification for exactly these paints. It comes back as soon as another paint can be bought again with more discount – then with the count of all of them.",
+    "browserHint": "Browser notifications can tell you about changes also while no RSI page is open. Turn them on in the settings.",
+    "browserHintOpen": "Settings",
+    "browserHintOpenHint": "Opens the settings at “Browser notifications”.",
+    "dismissBrowserHintHint": "Removes this hint for good. You can turn browser notifications on in the settings any time.",
     "count": "$1 notifications",
     "countOne": "1 notification"
   },

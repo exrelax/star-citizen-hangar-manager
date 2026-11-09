@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import {
+  browserNotificationsHintDismissedItem,
   browserNotificationsItem,
   browserNotificationsRefusedItem,
   mirrorNotificationPermission,
@@ -43,5 +44,15 @@ describe('requestNotificationPermission', () => {
     const failing = () => Promise.reject(new Error('needs a user gesture'));
     expect(await requestNotificationPermission(failing)).toBe(false);
     expect(await browserNotificationsRefusedItem.getValue()).toBe(true);
+  });
+});
+
+describe('browserNotificationsHintDismissedItem', () => {
+  it('keeps the dismissed hint in the sync storage', async () => {
+    expect(await browserNotificationsHintDismissedItem.getValue()).toBe(false);
+    await browserNotificationsHintDismissedItem.setValue(true);
+    expect(await fakeBrowser.storage.sync.get('notifications.browserHintDismissed')).toEqual({
+      'notifications.browserHintDismissed': true,
+    });
   });
 });

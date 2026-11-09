@@ -262,6 +262,9 @@ on its own.
       these paints, kept in the sync storage so it stays dismissed on your other browsers too; it
       comes back with the count of all of them as soon as another paint can be bought again, or
       with "Show dismissed paint notifications again" in the settings.
+    - Until browser notifications are on in this browser: a hint that they can be turned on, with a
+      **Settings** button that opens the settings at "Browser notifications". Its **×** removes it
+      for good (synced).
     - Other notifications, newest first, each checked off with its checkbox or all at once;
       checked-off ones don't come back.
     - Below them, the marked pledges still waiting, with the time left.

@@ -609,6 +609,10 @@
     "paintsRebuyOne": "1 pintura se puede recomprar con más descuento",
     "dismiss": "Descartar",
     "dismissPaintsHint": "Quita esta notificación para exactamente estas pinturas. Vuelve en cuanto otra pintura se pueda recomprar con más descuento, entonces con el número de todas.",
+    "browserHint": "Las notificaciones del navegador te avisan de cambios también sin ninguna página de RSI abierta. Actívalas en los ajustes.",
+    "browserHintOpen": "Ajustes",
+    "browserHintOpenHint": "Abre los ajustes en «Notificaciones del navegador».",
+    "dismissBrowserHintHint": "Quita este aviso para siempre. Puedes activar las notificaciones del navegador en los ajustes cuando quieras.",
     "count": "$1 notificaciones",
     "countOne": "1 notificación"
   },
