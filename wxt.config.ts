@@ -36,6 +36,9 @@ export default defineConfig({
     default_locale: 'en',
     // unlimitedStorage: large hangars can exceed the default quota of storage.local.
     permissions: ['storage', 'unlimitedStorage'],
+    // Asked for only when the user turns browser notifications on (#152): no prompt at install
+    // or update, and nothing changes without it (see src/notifications/browser-permission.ts).
+    optional_permissions: ['notifications'],
     host_permissions: ['https://robertsspaceindustries.com/*'],
     // The toolbar icon opens the popup with links to the manager (src/entrypoints/popup).
     action: {

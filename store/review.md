@@ -23,6 +23,12 @@ Stores the user's hangar, buy back and orders, read from robertsspaceindustries.
 Large hangars and buy backs (thousands of pledges with their items, plus orders) exceed the default quota of storage.local. The data never leaves the browser.
 ```
 
+**notifications** (optional permission)
+
+```text
+Optional, off by default. Requested with permissions.request only when the user turns on "Browser notifications" in the extension's settings (on an extension page, after a click there). It lets the extension tell the user about changes in their hangar, e.g. that pledges they marked to melt can be melted now, while no RSI page is open. The notifications are created locally; nothing is sent anywhere. Turning the setting off removes the permission again.
+```
+
 **Host permission: https://robertsspaceindustries.com/\***
 
 ```text
@@ -95,6 +101,8 @@ The extension works on robertsspaceindustries.com and needs a logged-in RSI acco
 Settings → "Hide sensitive information" → "Demo mode" shows an anonymized selection with made-up IDs.
 
 The extension never buys, exchanges (melts) or gifts anything on its own: these actions are sent to RSI only when the user confirms them in their dialog, with the RSI password typed by the user.
+
+Optional permission "notifications": requested only when the user turns on Settings → Notifications → "Browser notifications" (it opens an extension page with a button that calls permissions.request). Without it nothing changes.
 
 Requests: robertsspaceindustries.com (the user's data, with the user's session) and api.fleetyards.net (public ship data, only ship model names are sent; can be turned off under "Show links for ships"). No analytics, no tracking.
 

@@ -191,6 +191,26 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
 Tunable values – e.g. how often smart updates check the hangar, how many pages they check and
 when a full refresh is suggested – live in [`src/config.ts`](../src/config.ts).
 
+## Permissions
+
+`wxt.config.ts` declares the permissions. A new **required** permission that shows a warning
+disables the extension after an update until the user approves it (Chrome) or asks again in the
+update dialog (Firefox). So anything with a warning is added as an **optional** permission and
+asked for with `permissions.request` only when the user turns its feature on.
+
+- **notifications** (optional, #152): browser notifications. Content scripts can't use the
+  `permissions` API, and the request needs a click as user gesture in an extension context, so
+  the settings open the extension page `notification-permission.html`, whose button asks. The
+  background script mirrors the state into `local:notifications.browserAllowed` for the content
+  scripts (`permissions.onAdded`/`onRemoved`, and at start for changes while it slept). The
+  permission is per browser, so it isn't a synced setting: the permission itself is the switch.
+- **alarms** (planned for the background notifications, #96): shows no warning in Chrome. Firefox
+  can't ask for it as an optional permission, and whether adding it prompts in Firefox's update
+  dialog isn't documented clearly – check with a test build before adding it. Chrome fires alarms
+  at most every 30 seconds; Firefox rounds periods below a minute up (to verify for #162).
+- **cookies** (maybe, for reading RSI from the background, #163): check together with `alarms`,
+  as it may show a warning.
+
 ## Storage
 
 Everything the extension keeps lives in `browser.storage`: the settings in `storage.sync`, all

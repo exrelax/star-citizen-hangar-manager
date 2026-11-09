@@ -576,6 +576,11 @@ In the order of the settings tab:
   - **Count the pledges per type in the summary** (off by default): only for the "Summary" box;
     the "Selected" box always counts the selected pledges per type.
 - **Notifications**:
+  - **Browser notifications** (off by default, only for this browser): also while no RSI page is
+    open. Turning it on opens a page of the extension where the browser asks for the permission to
+    display notifications (never at install or update); a first notification confirms it. Refused,
+    it stays off and says so; turned off – here or in the browser's own settings – the permission
+    goes back. The sidebar's "Notifications" box needs no permission.
   - **Show dismissed paint notifications again**: the Paint Discount Consultant's notification
     shows again for all paints, also those dismissed with its × (on all browsers, as the dismissed
     paints are synced).

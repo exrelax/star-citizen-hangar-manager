@@ -34,6 +34,7 @@ HECHO PARA LA VELOCIDAD
 PRIVADO POR DISEÑO
 • Sin cuenta, sin servidor propio, sin rastreo, sin analíticas
 • Tu hangar, la recompra y los pedidos se guardan solo en tu navegador
+• Notificaciones del navegador solo si las activas: el permiso se pide entonces, nunca al instalar
 • Oculta los ID de pledges y pedidos, tu nombre y dirección, los importes y los plazos de reembolso para capturas y streams – o muestra una selección anonimizada en el modo demo
 
 TODO TU HANGAR Y LA RECOMPRA
