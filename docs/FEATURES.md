@@ -194,14 +194,16 @@ information (for screenshots or content creators)** keeps private details off sc
   tool and the items of the Pledge Store, or a small bundled catalog before they are read – instead
   of your own (#175): standalone ships, game packages, CCUs (also warbond), paints, gear, add-ons,
   packs and rewards, with plausible values and discounts, nothing of your hangar – neither the
-  items nor their number nor the value. It stays the same on every visit. Its pledges have every
+  items nor their number nor the value. It stays the same on every visit. The buy back is
+  generated the same way (#177): melted ships, game packages, CCUs, paints, gear, add-ons and
+  rewards, some bought with money, with buy back prices of every source and an item without a
+  price, and made-up buy back tokens. The hangar's pledges have every
   state (#176): meltable or not, giftable or not, LTI and insurances in years and months (also
   several at once), upgraded ships with made-up "Applied upgrades", protected game access (`SC`,
   `SQ42`, `SC · SQ42`, also a reward without a ship), and orders paid with money, in part with
   store credit or with store credit only, with made-up invoices. Two of them have the refund
   countdown, the newest was bought a few hours ago, and a new demo hangar starts with two marks to
-  melt – one still waiting, one ready. The buy back still
-  shows a fixed selection of 50 of your buy back pledges. Everything has made-up pledge and order
+  melt – one still waiting, one ready. Everything has made-up pledge and order
   IDs (e.g. `99FE3X712`). Order details show a dummy billing address and payment
   provider instead of the real ones; links to RSI, the cart, invoices and refund requests are
   disabled. A **Demo** badge shows on every tab. Purchase dates are made up as well (newest first,

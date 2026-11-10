@@ -80,6 +80,8 @@ export interface DemoContext {
   generatedUpgradeLog?: (pledgeId: number) => UpgradeLogEntry[] | undefined;
   /** The made-up invoice of a generated order (#176); none for an order of the own selection. */
   orderDetails?: (order: Order) => OrderDetails | undefined;
+  /** Buy back tokens shown instead of the account's, with the generated buy back (#177). */
+  tokens?: number;
   /** The store credit shown instead of the account's. */
   storeCredit: StoreCredit;
   /**
@@ -157,9 +159,18 @@ export function useDemo(
     const account = generatedAccount.value;
     // The generated orders by their made-up ids, with what their invoices list.
     const generatedOrders = new Map(
-      (account?.pledges ?? []).flatMap((pledge) =>
-        pledge.order ? [[pledge.order.id, pledge] as const] : [],
-      ),
+      [
+        ...(account?.pledges ?? []).map((pledge) => ({
+          order: pledge.order,
+          title: pledge.originalName ?? pledge.title,
+          total: pledge.valueUsd,
+        })),
+        ...(account?.buyback ?? []).map((pledge) => ({
+          order: pledge.order,
+          title: pledge.title,
+          total: pledge.price?.amount ?? 0,
+        })),
+      ].flatMap((entry) => (entry.order ? [[entry.order.id, entry] as const] : [])),
     );
     return {
       fakeId,
@@ -168,19 +179,19 @@ export function useDemo(
       ...(account && {
         generatedUpgradeLog: (pledgeId: number) => account.account.upgradeLogs.get(pledgeId),
         orderDetails: (order: Order) => {
-          const pledge = generatedOrders.get(order.id);
-          return pledge
-            ? demoOrderDetails(order, [pledge.originalName ?? pledge.title], pledge.valueUsd)
-            : undefined;
+          const entry = generatedOrders.get(order.id);
+          return entry ? demoOrderDetails(order, [entry.title], entry.total) : undefined;
         },
+        tokens: account.generatedBuyback.tokens,
       }),
       storeCredit: demoStoreCredit(demoKey),
       justBought,
     };
   });
-  const demoBuybackPledges = computed(() =>
-    active.value && key.value ? demoBuyback(buyback.value, key.value) : [],
-  );
+  const demoBuybackPledges = computed(() => {
+    if (!active.value || !key.value) return [];
+    return generatedAccount.value?.buyback ?? demoBuyback(buyback.value, key.value);
+  });
   return {
     ready,
     context,
