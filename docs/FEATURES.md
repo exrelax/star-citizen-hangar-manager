@@ -518,7 +518,8 @@ plus:
   can sell again, or, excluded, only those it can't.
 - **Price increase**: a warning with a countdown on ships, packages, CCUs and related items (e.g.
   modules) whose price is expected to rise soon – buy them back or use them as a discount token
-  before then. With a probable time it counts the days and, on the last day, hours and minutes;
+  before then. With a probable time it counts the days, on the last day hours and minutes and in the last hour
+  minutes and seconds (`46:12`);
   otherwise it shows the day. Its tooltip gives the expected date, the expected flight ready date
   for ships not flight ready yet and a note, and says that the dates are expected, not confirmed
   by RSI. The filter **Price increase expected** shows the pledges whose price is expected to rise

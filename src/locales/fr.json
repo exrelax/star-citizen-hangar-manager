@@ -876,7 +876,7 @@
     "days": "$1 jours",
     "day": "1 jour",
     "hours": "$1 h $2 min",
-    "minutes": "$1 min",
+    "fullHours": "$1 h",
     "today": "aujourd’hui",
     "hint": "Le prix du $1 devrait augmenter le $2.",
     "hintBuyback": "Rachetez-le ou utilisez-le comme jeton de réduction avant cette date.",
