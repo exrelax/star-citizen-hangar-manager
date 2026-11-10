@@ -327,8 +327,9 @@ With the default demo settings it always shows, in both themes (`demo-cases.test
 an account without stored data):
 
 - Every tag, filter, sorting and the search of My Hangar: insurance (LTI, years, months, several
-  at once), upgraded with "Applied upgrades", gift, melt, protected game access (`SC`, `SQ42`,
-  `SC · SQ42`, a reward without a ship), discount and above the price, warbond, valuable, rewards.
+  at once), upgraded with "Applied upgrades", gift, melt, protected game access (one pledge per game
+  like RSI's: `SC` on a reward without a ship and `SQ42`, or `SC · SQ42` by the demo settings),
+  discount and above the price, warbond, valuable, rewards.
 - Every state per item: meltable or not, giftable or not, paid with money, in part with store
   credit or with store credit only, orders with invoices and the refund request, the refund
   countdown (normal and last days), a pledge bought a few hours ago, marks to melt (waiting and

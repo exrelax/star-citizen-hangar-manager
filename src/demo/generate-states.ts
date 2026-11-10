@@ -233,12 +233,13 @@ export function withStates(
       if (result.log.length) upgradeLogs.set(pledge.id, result.log);
     });
 
-  // Protected game access: SC, SQ42 and both, and a reward without a ship.
-  if (states.protectedAccess) {
-    const packages = ofKind(generated, 'packages');
-    set(packages[0], (pledge) => protectedFor(pledge, ['SC']));
-    set(packages[1], (pledge) => protectedFor(pledge, ['SQ42']));
-    set(packages[2], (pledge) => protectedFor(pledge, ['SC', 'SQ42']));
+  // Protected game access: RSI protects one pledge per game – one for each game (SC on a reward
+  // without a ship, SQ42 on a game package), or one for both.
+  const packages = ofKind(generated, 'packages');
+  if (states.protectedAccess === 'together') {
+    set(packages[0], (pledge) => protectedFor(pledge, ['SC', 'SQ42']));
+  } else if (states.protectedAccess === 'separate') {
+    set(packages[0], (pledge) => protectedFor(pledge, ['SQ42']));
     set(ofKind(generated, 'rewards')[0], (pledge) => ({
       ...pledge,
       title: 'VIP High Admiral',

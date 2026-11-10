@@ -5,6 +5,8 @@ import {
   DEFAULT_DEMO_SETTINGS,
   DEMO_LIMITS,
   DEMO_SOURCES,
+  PROTECTED_ACCESS,
+  type ProtectedAccess,
   isKindCount,
   isListSize,
   isDemoCredit,
@@ -37,7 +39,7 @@ const set = (patch: Partial<DemoSettings>) => emit('update', { demo: { ...demo()
 const setStates = (patch: Partial<DemoStates>) => set({ states: { ...demo().states, ...patch } });
 
 const KINDS = Object.keys(DEFAULT_DEMO_SETTINGS.composition) as (keyof DemoComposition)[];
-const STATE_CHECKS = ['refund', 'protectedAccess', 'upgraded', 'justBought', 'meltMarks'] as const;
+const STATE_CHECKS = ['refund', 'upgraded', 'justBought', 'meltMarks'] as const;
 
 /** A whole number in range is stored; anything else snaps back to the stored value. */
 function number(event: Event, isValid: (value: unknown) => value is number, stored: number) {
@@ -157,6 +159,23 @@ async function reset() {
 
     <template v-if="settings.demo.source === 'generated'">
       <p class="shm-field-label">{{ i18n.t('settings.demo.states') }}</p>
+      <label class="shm-field-label" for="shm-demo-protected">
+        {{ i18n.t('settings.demo.stateChecks.protectedAccess') }}
+      </label>
+      <select
+        id="shm-demo-protected"
+        class="shm-select"
+        :value="settings.demo.states.protectedAccess"
+        @change="
+          setStates({
+            protectedAccess: ($event.target as HTMLSelectElement).value as ProtectedAccess,
+          })
+        "
+      >
+        <option v-for="access in PROTECTED_ACCESS" :key="access" :value="access">
+          {{ i18n.t(`settings.demo.protectedAccessOptions.${access}`) }}
+        </option>
+      </select>
       <SettingCheck
         v-for="state in STATE_CHECKS"
         :key="state"
