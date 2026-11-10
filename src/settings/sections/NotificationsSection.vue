@@ -26,14 +26,28 @@ import { STORE_ITEMS_VERSION, storeItemsItem } from '@/store/items/store-items-s
 import { computed, ref } from 'vue';
 import { isKindOn, withKind, type NotificationKind } from '@/notifications/kinds';
 import type { Settings } from '../settings';
+import { buybackSnapshot } from '@/buyback/buyback-storage';
+import {
+  demoDismissedPriceIncreasesItem,
+  dismissedPriceIncreasesItem,
+  isPriceIncreaseNoteShown,
+  pledgesWithinDays,
+  restorePriceIncreaseNotes,
+  storedPriceIncreasePledges,
+} from '@/price-increases/price-increase-notes';
+import {
+  priceIncreasesItem,
+  storedPriceIncreases,
+} from '@/price-increases/price-increases-storage';
 
 /*
  * Notifications: browser notifications, an optional extra for when no RSI page is open (#152,
  * see `notifications/browser-permission.ts`), and the sidebar's "Notifications" box. Its
  * checked-off or dismissed notifications come back here as far as they still matter (#213, see
  * `notifications/restore.ts`): the stored ones, the Paint Discount Consultant's while paints can
- * be bought again (dismissed for its paints, #151, synced) and the hint on browser notifications
- * while they are off.
+ * be bought again (dismissed for its paints, #151, synced), the expected price increases' while
+ * buy back pledges are in their period (#193) and the hint on browser notifications while they
+ * are off.
  */
 
 const props = defineProps<{ settings: Settings }>();
@@ -92,11 +106,32 @@ const paintToRestore = computed(() => {
   const dismissed = [...(realDismissed.value ?? []), ...(demoDismissed.value ?? [])];
   return paints.length > 0 && dismissed.length > 0 && !isPaintNotificationShown(paints, dismissed);
 });
+/** The expected price increases' notification, dismissed while its pledges are in the period. */
+const buybackStored = useStored(buybackSnapshot);
+const priceIncreasesStored = useStored(priceIncreasesItem);
+const realPriceDismissed = useStored(dismissedPriceIncreasesItem);
+const demoPriceDismissed = useStored(demoDismissedPriceIncreasesItem);
+const priceToRestore = computed(() => {
+  if (!kindOn('priceIncreases')) return false;
+  const now = Date.now();
+  const pledges = storedPriceIncreasePledges(
+    buybackStored.value,
+    storedPriceIncreases(priceIncreasesStored.value ?? null),
+    now,
+  );
+  const ids = pledgesWithinDays(pledges, now, props.settings.priceIncreaseDays);
+  const dismissed = [...(realPriceDismissed.value ?? []), ...(demoPriceDismissed.value ?? [])];
+  return ids.length > 0 && dismissed.length > 0 && !isPriceIncreaseNoteShown(ids, dismissed);
+});
 /** The hint on browser notifications, dismissed while they are off. */
 const hintToRestore = computed(() => allowed.value === false && hintDismissed.value === true);
 
 const restoreCount = computed(
-  () => notesToRestore.value.length + Number(paintToRestore.value) + Number(hintToRestore.value),
+  () =>
+    notesToRestore.value.length +
+    Number(paintToRestore.value) +
+    Number(priceToRestore.value) +
+    Number(hintToRestore.value),
 );
 /** How many came back with the last click, shown below the button. */
 const restored = ref<number>();
@@ -107,6 +142,7 @@ async function restore() {
   await Promise.all([
     updateNotifications((list) => withRestored(list, ids)),
     paintToRestore.value ? restorePaintNotifications() : undefined,
+    priceToRestore.value ? restorePriceIncreaseNotes() : undefined,
     hintToRestore.value ? browserNotificationsHintDismissedItem.setValue(false) : undefined,
   ]);
   restored.value = count;
@@ -168,6 +204,17 @@ async function restore() {
       @change="(on) => setKind('events', on)"
     >
       {{ i18n.t('settings.notificationKindEvents') }}
+    </SettingCheck>
+
+    <!-- The buy back: its pledges whose price is expected to rise (#193), in the sidebar and,
+         shortly before, in the browser. -->
+    <p class="shm-field-label">{{ i18n.t('settings.buybackNotifications') }}</p>
+    <SettingCheck
+      :checked="kindOn('priceIncreases')"
+      :hint="i18n.t('settings.notificationKindPriceIncreasesHint')"
+      @change="(on) => setKind('priceIncreases', on)"
+    >
+      {{ i18n.t('settings.notificationKindPriceIncreases') }}
     </SettingCheck>
 
     <p class="shm-field-label">{{ i18n.t('settings.sidebarNotifications') }}</p>

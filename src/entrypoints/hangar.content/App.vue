@@ -254,7 +254,12 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
   </div>
 
   <Teleport v-if="summaryAnchor" :to="summaryAnchor">
-    <HangarSidebar v-if="showSummary" :pledges="pledges" :settings="settings" />
+    <HangarSidebar
+      v-if="showSummary"
+      :pledges="pledges"
+      :buyback="buybackPledges"
+      :settings="settings"
+    />
   </Teleport>
 
   <TabBar

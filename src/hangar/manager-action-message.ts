@@ -9,6 +9,7 @@ export const MANAGER_ACTIONS = [
   'showMeltReady',
   'selectMeltReady',
   'showWarbonds',
+  'showPriceIncreases',
 ] as const;
 export type ManagerAction = (typeof MANAGER_ACTIONS)[number];
 

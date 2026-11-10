@@ -211,6 +211,9 @@
     "notificationKindStoreItemsHint": "New, gone and repriced items of the Pledge Store, in the sidebar only.",
     "notificationKindEvents": "Events",
     "notificationKindEventsHint": "An event like the Intergalactic Aerospace Expo shortly before it starts, in the sidebar only. The Pledge Store tab shows it anyway.",
+    "buybackNotifications": "Buy Back",
+    "notificationKindPriceIncreases": "Expected price increases",
+    "notificationKindPriceIncreasesHint": "Buy back items whose price is expected to rise within the period set under “General”, in the sidebar; in the browser once less than 2 days are left.",
     "sidebarNotifications": "Sidebar",
     "restoreNotifications": "Show checked-off notifications again",
     "restoreNotificationsHint": "Brings back the sidebar notifications you checked off or dismissed, as far as they still matter: events still shown, new warbond CCUs still offered, Pledge Store items still at their new price, paints that can still be bought again with more discount, and the hint on browser notifications while they are off. Kinds turned off stay hidden. The paints' notification comes back on all your browsers, as dismissed paints are synced.",
@@ -829,7 +832,14 @@
     "browserHintOpenHint": "Opens the settings at “Browser notifications”.",
     "dismissBrowserHintHint": "Removes this hint for good. You can turn browser notifications on in the settings any time.",
     "count": "$1 notifications",
-    "countOne": "1 notification"
+    "countOne": "1 notification",
+    "priceIncrease": "$1 buy back items will probably cost more within $2 days",
+    "priceIncreaseOne": "1 buy back item will probably cost more within $2 days",
+    "dismissPriceIncreaseHint": "Removes this notification for exactly these items. It comes back as soon as another item’s price is expected to rise within the period – then with the count of all of them.",
+    "showPriceIncreaseHint": "Shows these items in the buy back with the filter “Price increase expected”.",
+    "browserPriceIncreaseTitle": "Expected price increase",
+    "browserPriceIncreaseOne": "“$1” will probably cost more in less than 2 days ($2). Buy it back or use it as a discount token before then.",
+    "browserPriceIncrease": "$1 buy back items will probably cost more in less than 2 days ($2). Buy them back or use them as discount tokens before then."
   },
   "gift": {
     "button": "Gift",

@@ -62,6 +62,11 @@ const props = defineProps<{
    */
   filterRequest?: { matches: (entry: T) => boolean; at: number } | null;
   /**
+   * A filter button turned on from outside (e.g. the sidebar's notification about expected price
+   * increases, #193): each new request (`at`) includes only this filter, without search.
+   */
+  includeRequest?: { filter: F; at: number } | null;
+  /**
    * The classes that highlight in every row what the included filters are about (#216, see
    * `highlights.ts`), from their states.
    */
@@ -151,6 +156,17 @@ watch(
     query.value = '';
     filterStates.value = new Map();
     requested.value = request.matches;
+  },
+  { immediate: true },
+);
+
+watch(
+  () => props.includeRequest,
+  (request) => {
+    if (!request) return;
+    query.value = '';
+    clearRequested();
+    filterStates.value = new Map([[request.filter, 'include']]);
   },
   { immediate: true },
 );

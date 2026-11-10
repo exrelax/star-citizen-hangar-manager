@@ -302,6 +302,13 @@ on its own.
       these paints, kept in the sync storage so it stays dismissed on your other browsers too; it
       comes back with the count of all of them as soon as another paint can be bought again, or
       with "Show checked-off notifications again" in the settings.
+    - When buy back pledges are [expected to cost more](#buy-back) within the period of the
+      settings (14 days by default): how many, with **Show**, which opens the buy back with the
+      filter "Price increase expected" on. Its **×** dismisses it for exactly these pledges (synced,
+      like the consultant's); it comes back with the count of all of them as soon as another pledge
+      enters the period. Pledges whose price increase is over don't count any more. Once a pledge
+      has less than 2 days left, a browser notification tells it too – one for all pledges crossing
+      that limit at the same time, each pledge once; a click opens the filtered buy back.
     - Until browser notifications are on in this browser: a hint that they can be turned on, with a
       **Settings** button that opens the settings at "Browser notifications". Its **×** removes it
       (synced) until "Show checked-off notifications again" in the settings.
@@ -768,13 +775,16 @@ In the order of the settings tab:
       browser notifications about marked pledges and the consultant's filler paints; the sidebar
       tells it anyway.
     - **Pledge Store**: **Warbond CCUs changed** (in the sidebar, new ones also in the browser),
-      **Pledge Store items changed** and **Events** (both in the sidebar only). Turned off, a kind
-      adds no notification, and its open ones go – in the sidebar and in the browser.
+      **Pledge Store items changed** and **Events** (both in the sidebar only).
+    - **Buy Back**: **Expected price increases** (in the sidebar, and in the browser once less than
+      2 days are left). Turned off, a kind adds no notification, and its open ones go – in the
+      sidebar and in the browser.
   - **Show checked-off notifications again** (#213): brings back the sidebar notifications checked
     off or dismissed with their ×, as far as they still matter – an event while it is shown, new
     warbond CCUs while one is still offered, changed Pledge Store items while one of the new or
     repriced ones still has that price, the Paint Discount Consultant's while paints can still be
-    bought again (on all browsers, as the dismissed paints are synced), and the hint on browser
+    bought again (on all browsers, as the dismissed paints are synced), the expected price
+    increases' while buy back pledges are in their period, and the hint on browser
     notifications while they are off. Kinds turned off stay hidden; notifications from before this
     version (without what they were about) don't come back. It says how many came back.
 - **Paint Discount Consultant** (it always buys with store credit, never with new money):

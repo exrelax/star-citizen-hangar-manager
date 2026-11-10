@@ -44,6 +44,15 @@ import {
   isPaintNotificationShown,
 } from '@/store/paint-consultant/paint-notification';
 import { useStored } from '@/storage/use-stored';
+import type { BuybackView } from '@/buyback/buyback-view';
+import { showBuybackFilter } from '@/buyback/buyback-filter-request';
+import { isKindOn } from '@/notifications/kinds';
+import {
+  demoDismissedPriceIncreasesItem,
+  dismissedPriceIncreasesItem,
+  isPriceIncreaseNoteShown,
+  pledgesWithinDays,
+} from '@/price-increases/price-increase-notes';
 
 /*
  * The sidebar below RSI's page navigation on the left on every tab (App.vue teleports it there),
@@ -53,7 +62,12 @@ import { useStored } from '@/storage/use-stored';
  * the order and the collapsed boxes are kept in the settings (see `sidebar.ts`).
  */
 
-const props = defineProps<{ pledges: readonly PledgeView[]; settings: Settings }>();
+const props = defineProps<{
+  pledges: readonly PledgeView[];
+  /** The buy back, for its pledges whose price is expected to rise (#193). */
+  buyback: readonly BuybackView[];
+  settings: Settings;
+}>();
 const { update } = useSettings();
 
 const visible = computed(() => {
@@ -115,6 +129,7 @@ const noteCount = computed(
     notes.value.length +
     (readyCount.value ? 1 : 0) +
     (paintNoteCount.value ? 1 : 0) +
+    (priceNoteCount.value ? 1 : 0) +
     (showBrowserHint.value ? 1 : 0),
 );
 const noteTime = computed(
@@ -221,6 +236,32 @@ const openBrowserNotificationsSetting = () =>
 function dismissBrowserHint() {
   void browserNotificationsHintDismissedItem.setValue(true);
 }
+
+/*
+ * Buy back pledges whose price is expected to rise within the period of the settings (#193): one
+ * notification for all of them, until it is dismissed for exactly these pledges (see
+ * `price-increase-notes.ts`).
+ */
+const realPriceDismissed = useStored(dismissedPriceIncreasesItem);
+const demoPriceDismissed = useStored(demoDismissedPriceIncreasesItem);
+const priceIds = computed(() =>
+  isKindOn(props.settings.notificationsOff, 'priceIncreases')
+    ? pledgesWithinDays(props.buyback, now.value, props.settings.priceIncreaseDays)
+    : [],
+);
+/** The pledges the notification counts, or 0 while it isn't shown. */
+const priceNoteCount = computed(() => {
+  const dismissed = demo.value ? demoPriceDismissed.value : realPriceDismissed.value;
+  // Not before the dismissed pledges are read: it would show for a moment.
+  if (!dismissed || !isPriceIncreaseNoteShown(priceIds.value, dismissed)) return 0;
+  return priceIds.value.length;
+});
+function dismissPriceNote() {
+  void (demo.value ? demoDismissedPriceIncreasesItem : dismissedPriceIncreasesItem).setValue(
+    priceIds.value,
+  );
+}
+const showPriceIncreases = () => showBuybackFilter('priceIncrease');
 
 function dismissPaintNote() {
   void dismissedItem().setValue(dismissedOf(rebuyIds.value));
@@ -544,6 +585,39 @@ async function move(box: Box, step: -1 | 1) {
             >
               <SvgIcon name="xmark" />
             </button>
+          </div>
+          <div v-if="priceNoteCount" class="shm-sidebar-melt-ready is-dismissable" role="status">
+            <SvgIcon name="triangle-exclamation" />
+            <p>
+              {{
+                i18n.t(
+                  priceNoteCount === 1
+                    ? 'notifications.priceIncreaseOne'
+                    : 'notifications.priceIncrease',
+                  [number.format(priceNoteCount), settings.priceIncreaseDays],
+                )
+              }}
+            </p>
+            <button
+              v-tooltip="i18n.t('notifications.dismissPriceIncreaseHint')"
+              type="button"
+              class="shm-sidebar-icon-button shm-sidebar-note-dismiss"
+              :aria-label="i18n.t('notifications.dismiss')"
+              @click="dismissPriceNote"
+            >
+              <SvgIcon name="xmark" />
+            </button>
+            <div v-mark-wrapped class="shm-sidebar-actions">
+              <button
+                v-tooltip="i18n.t('notifications.showPriceIncreaseHint')"
+                type="button"
+                class="shm-button shm-sidebar-button"
+                @click="showPriceIncreases"
+              >
+                <SvgIcon name="filter" />
+                {{ i18n.t('notifications.showReady') }}
+              </button>
+            </div>
           </div>
           <div v-if="showBrowserHint" class="shm-sidebar-melt-ready is-dismissable" role="status">
             <SvgIcon name="bell" />
