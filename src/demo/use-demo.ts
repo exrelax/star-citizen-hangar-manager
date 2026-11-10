@@ -1,7 +1,9 @@
 import type { BuybackView } from '@/buyback/buyback-view';
 import type { PledgeView } from '@/hangar/pledge-view';
-import type { Order } from '@/orders/orders';
-import { computed, inject, onMounted, shallowRef, type InjectionKey, type Ref } from 'vue';
+import type { Order, OrderDetails } from '@/orders/orders';
+import { demoOrderDetails } from './generate-states';
+import { computed, inject, onMounted, shallowRef, watch, type InjectionKey, type Ref } from 'vue';
+import { demoMeltMarksItem } from '@/hangar/melt-marks';
 import type { StoreCredit } from '@/account/store-credit';
 import { current, shipsItem } from '@/ships/ships-storage';
 import { STORE_ITEMS_VERSION, storeItemsItem } from '@/store/items/store-items-storage';
@@ -12,7 +14,7 @@ import {
   createFakeIds,
   demoBuyback,
   demoHangar,
-  generatedHangar,
+  generatedDemo,
   demoPurchaseTime,
   demoStoreCredit,
   demoUpgradeLog,
@@ -33,6 +35,29 @@ async function demoKey(): Promise<string> {
   return key;
 }
 
+/** The demo key the demo's marks were set for, so they are set once per demo hangar. */
+const marksSeededItem = storage.defineItem<string | null>('local:demo.marksSeeded', {
+  fallback: null,
+});
+
+/**
+ * Marks to melt of a new demo hangar (#176): the pledge bought a few hours ago, still waiting for
+ * RSI's 24 hours, and an older meltable one, ready to melt. Set once per key, in the demo's own
+ * marks; marking and unmarking changes them as usual.
+ */
+async function seedDemoMarks(key: string, pledges: readonly PledgeView[], justBought?: number) {
+  if ((await marksSeededItem.getValue()) === key) return;
+  const now = Date.now();
+  const older = pledges.find(
+    (pledge) => pledge.isMeltable && pledge.id !== justBought && pledge.isPaint,
+  );
+  await demoMeltMarksItem.setValue({
+    ...(justBought !== undefined && { [justBought]: now - 60 * 60 * 1000 }),
+    ...(older && { [older.id]: now - 2 * 60 * 60 * 1000 }),
+  });
+  await marksSeededItem.setValue(key);
+}
+
 /** What the rows need to know in the demo; `null` outside of it. */
 export interface DemoContext {
   /** Made-up id for a real pledge or order id, e.g. of an applied CCU. */
@@ -48,6 +73,13 @@ export interface DemoContext {
     createdAt: string | undefined,
     entries: readonly UpgradeLogEntry[],
   ) => UpgradeLogEntry[];
+  /**
+   * The applied CCUs of a generated pledge (#176), instead of loading RSI's log; none for a
+   * pledge of the own selection.
+   */
+  generatedUpgradeLog?: (pledgeId: number) => UpgradeLogEntry[] | undefined;
+  /** The made-up invoice of a generated order (#176); none for an order of the own selection. */
+  orderDetails?: (order: Order) => OrderDetails | undefined;
   /** The store credit shown instead of the account's. */
   storeCredit: StoreCredit;
   /**
@@ -90,11 +122,18 @@ export function useDemo(
   const generated = computed(() => settings().source === 'generated');
 
   const ready = computed(() => !active.value || key.value !== undefined);
+  const generatedAccount = computed(() =>
+    active.value && key.value && generated.value
+      ? generatedDemo(catalog.value, key.value)
+      : undefined,
+  );
+  watch(generatedAccount, (account) => {
+    if (!account || !key.value) return;
+    void seedDemoMarks(key.value, account.pledges, justBoughtOf(account.pledges));
+  });
   const demoPledges = computed(() => {
     if (!active.value || !key.value) return [];
-    return generated.value
-      ? generatedHangar(catalog.value, key.value)
-      : demoHangar(pledges.value, key.value);
+    return generatedAccount.value?.pledges ?? demoHangar(pledges.value, key.value);
   });
   const context = computed<DemoContext | null>(() => {
     if (!active.value || !key.value) return null;
@@ -115,7 +154,29 @@ export function useDemo(
     const justBoughtId = justBoughtOf(demoPledges.value);
     const justBought =
       justBoughtId === undefined ? undefined : { pledgeId: justBoughtId, at: demoPurchaseTime() };
-    return { fakeId, realOrder, upgradeLog, storeCredit: demoStoreCredit(demoKey), justBought };
+    const account = generatedAccount.value;
+    // The generated orders by their made-up ids, with what their invoices list.
+    const generatedOrders = new Map(
+      (account?.pledges ?? []).flatMap((pledge) =>
+        pledge.order ? [[pledge.order.id, pledge] as const] : [],
+      ),
+    );
+    return {
+      fakeId,
+      realOrder,
+      upgradeLog,
+      ...(account && {
+        generatedUpgradeLog: (pledgeId: number) => account.account.upgradeLogs.get(pledgeId),
+        orderDetails: (order: Order) => {
+          const pledge = generatedOrders.get(order.id);
+          return pledge
+            ? demoOrderDetails(order, [pledge.originalName ?? pledge.title], pledge.valueUsd)
+            : undefined;
+        },
+      }),
+      storeCredit: demoStoreCredit(demoKey),
+      justBought,
+    };
   });
   const demoBuybackPledges = computed(() =>
     active.value && key.value ? demoBuyback(buyback.value, key.value) : [],

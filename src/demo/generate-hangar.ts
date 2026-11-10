@@ -247,6 +247,9 @@ export function generateHangar(
   );
   times(composition.packs, (index) => pack(random, catalog, index));
   times(composition.rewards, (index) => reward(random, index));
-  const ordered = random.shuffle('order', pledges, (pledge) => pledges.indexOf(pledge).toString());
+  const shuffled = random.shuffle('order', pledges, (pledge) => pledges.indexOf(pledge).toString());
+  // A paint comes first: the newest pledge, bought a few hours ago with store credit (#176).
+  const paint = shuffled.find((pledge) => pledge.demoKind === 'paints');
+  const ordered = paint ? [paint, ...shuffled.filter((pledge) => pledge !== paint)] : shuffled;
   return ordered.map((pledge, position) => ({ ...pledge, id: DEMO.idBase - position }));
 }
