@@ -47,3 +47,12 @@ describe('filter "available"', () => {
     expect(BUYBACK_FILTER_PREDICATES.available(view(ccu(84, 150)))).toBe(false);
   });
 });
+
+describe('probably giftable', () => {
+  it("is never what RSI can't sell again", () => {
+    const view = (pledge: BuybackPledge) =>
+      toBuybackView(pledge, { position: 0, availabilityOf, giftable: () => true });
+    expect(view(ccu(5, 150)).isProbablyGiftable).toBe(true);
+    expect(view(ccu(84, 150)).isProbablyGiftable).toBe(false);
+  });
+});

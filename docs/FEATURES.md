@@ -491,9 +491,9 @@ Paints, Game access, LTI, Warbond, Probably giftable, Available, Rewards), plus:
   ways (e.g. gifted once already), and buying back with store credit makes it ungiftable.
 - **Not available**: RSI sells a CCU only from a cheaper ship to a more expensive one, at today's
   standard prices. A CCU whose base ship now costs as much as its target ship or more can't be
-  bought back: it is labelled, its tooltip compares both ships' prices today, and its "To Cart" is
-  disabled. The filter **Available** shows only the pledges RSI can sell again, or, excluded,
-  only those it can't.
+  bought back: it is labelled, its tooltip compares both ships' prices today, its "To Cart" is
+  disabled, and it is never probably giftable. The filter **Available** shows only the pledges RSI
+  can sell again, or, excluded, only those it can't.
 - **Buy back tokens**: how many pledges can still be bought back with store credit, as RSI shows
   it above its buy back list – at the top right of the manager, on every tab (see
   [The Hangar Manager page](#the-hangar-manager-page)).
