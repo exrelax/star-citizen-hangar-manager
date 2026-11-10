@@ -41,7 +41,11 @@ export interface DemoBuyback {
 
 /** Items the store doesn't sell (any more): their buy back price is unknown. */
 const DISCONTINUED = ['Gear - Discontinued Explorer Helmet', 'Gear - Retired Racing Suit'];
-const REWARDS = ['Referral Bonus - Origin Racing Gear Pack', 'IAE 2954 - Hangar Poster'];
+/**
+ * Rewards that can be melted, so they can be in the buy back: event rewards. Referral bonuses and
+ * the like can't be melted, so they never are.
+ */
+const REWARDS = ['IAE 2954 - Hangar Poster', 'Luminalia 2953 - Holiday Decoration'];
 
 /** Days between 2023-01-01 and today, for the melt dates. */
 const meltDate = (random: DemoRandom, label: string, today: string) => {
@@ -168,12 +172,13 @@ export function generateBuyback(
   const orders: DemoBuyback['orders'] = { pledgeOrders: {}, orders: {} };
   for (const pledge of pledges) {
     const price = typeof pledge.price === 'number' ? pledge.price : 0;
-    if (pledge.title.startsWith('Referral') || !random.chance(`order:${pledge.id}`, 0.3)) continue;
+    if (!random.chance(`order:${pledge.id}`, 0.3)) continue;
     const placedAt = meltDate(random, `bought:${pledge.id}`, pledge.reclaimedAt!);
     buybackOrder(orders, pledge.id, placedAt, price || random.int(`paid:${pledge.id}`, 5, 60));
   }
   const giftFlags = withGiftableCases(pledges, orders);
-  return { pledges, orders, giftFlags, tokens: random.int('tokens', 1, 5) };
+  // An account has at most two buy back tokens.
+  return { pledges, orders, giftFlags, tokens: random.int('tokens', 0, DEMO.maxBuybackTokens) };
 }
 
 /**
@@ -188,7 +193,7 @@ function withGiftableCases(
 ): Record<string, boolean> {
   // Not on CCUs: one RSI can't sell again is never giftable (#208).
   const cases = pledges.filter(
-    (pledge) => !pledge.isUpgrade && !pledge.title.startsWith('Referral') && pledge.price !== null,
+    (pledge) => !pledge.isUpgrade && pledge.price !== null && !REWARDS.includes(pledge.title),
   );
   const [
     money,
