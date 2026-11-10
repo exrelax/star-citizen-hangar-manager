@@ -305,6 +305,15 @@
       "done": {
         "newHangar": "Un nouveau hangar de démo s’affiche.",
         "reset": "Les paramètres de la démo sont réinitialisés, ses marques effacées."
+      },
+      "storeCredit": "Crédit boutique de la démo",
+      "storeCreditHint": "Affiché dans les chiffres du compte et utilisé par le conseiller de réduction des peintures au lieu du vôtre. Les choix rapides le règlent pour chaque cas du conseiller sur ce hangar de démo.",
+      "creditCases": "Crédit boutique pour un cas du conseiller",
+      "creditCase": {
+        "same": "Même palier",
+        "lowerTier": "Palier inférieur",
+        "impossible": "Pas possible",
+        "none": "Aucun crédit"
       }
     }
   },

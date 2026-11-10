@@ -7,6 +7,7 @@ import {
   DEMO_SOURCES,
   isKindCount,
   isListSize,
+  isDemoCredit,
   isPercent,
   type DemoSettings,
   type DemoSource,
@@ -14,7 +15,11 @@ import {
 } from '@/demo/demo-settings';
 import type { DemoComposition } from '@/demo/generate-hangar';
 import { newDemoHangar, resetDemoData } from '@/demo/use-demo';
-import { ref } from 'vue';
+import { CREDIT_CASES, creditForCases, type CreditCase } from '@/demo/demo-store-credit';
+import { maybePaintConsultant } from '@/store/paint-consultant/use-paint-consultant';
+import { formatUsd } from '@/hangar/discount-format';
+import { locale } from '@/i18n';
+import { computed, ref } from 'vue';
 import SettingCheck from '../SettingCheck.vue';
 import type { Settings } from '../settings';
 
@@ -54,6 +59,21 @@ function setPercent(event: Event, key: 'notGiftablePercent' | 'notMeltablePercen
   const value = number(event, isPercent, demo().states[key]);
   if (value !== undefined) setStates({ [key]: value });
 }
+
+// The store credit of the demo (#179), with a quick choice for each case of the consultant.
+function setCredit(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const value = Math.round(Number(input.value) * 100) / 100;
+  if (isDemoCredit(value)) set({ storeCredit: value });
+  else input.value = String(demo().storeCredit);
+}
+const consultant = maybePaintConsultant();
+const creditCases = computed((): Partial<Record<CreditCase, number>> => {
+  const items = consultant?.storeItems.value;
+  if (!consultant || !items) return { none: 0 };
+  const { useFillers, skipGiftable } = props.settings.paintConsultant;
+  return creditForCases(consultant.pledges.value, items, { useFillers, skipGiftable });
+});
 
 /** What the last button did, shown below the buttons. */
 const done = ref<'newHangar' | 'reset'>();
@@ -168,6 +188,42 @@ async function reset() {
         </label>
       </div>
     </template>
+
+    <label class="shm-field-label" for="shm-demo-credit">
+      {{ i18n.t('settings.demo.storeCredit') }}
+    </label>
+    <span class="shm-number-field">
+      <input
+        id="shm-demo-credit"
+        class="shm-input shm-number"
+        type="number"
+        inputmode="decimal"
+        min="0"
+        :max="DEMO_LIMITS.storeCredit"
+        step="0.01"
+        :value="settings.demo.storeCredit"
+        aria-describedby="shm-demo-credit-hint"
+        @change="setCredit"
+      />
+      USD
+    </span>
+    <div class="shm-setting-actions" role="group" :aria-label="i18n.t('settings.demo.creditCases')">
+      <button
+        v-for="kind in CREDIT_CASES"
+        :key="kind"
+        type="button"
+        class="shm-button"
+        :aria-pressed="creditCases[kind] === settings.demo.storeCredit"
+        :disabled="creditCases[kind] === undefined"
+        @click="set({ storeCredit: creditCases[kind]! })"
+      >
+        {{ i18n.t(`settings.demo.creditCase.${kind}`) }}
+        <template v-if="creditCases[kind] !== undefined">
+          ({{ formatUsd(creditCases[kind]!, locale) }})
+        </template>
+      </button>
+    </div>
+    <p id="shm-demo-credit-hint" class="shm-hint">{{ i18n.t('settings.demo.storeCreditHint') }}</p>
 
     <div class="shm-setting-actions">
       <button

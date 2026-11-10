@@ -21,7 +21,6 @@ import {
   demoHangar,
   generatedDemo,
   demoPurchaseTime,
-  demoStoreCredit,
   demoUpgradeLog,
   justBoughtOf,
 } from './demo';
@@ -227,7 +226,8 @@ export function useDemo(
         tokens: account.generatedBuyback.tokens,
       }),
       events: events.value,
-      storeCredit: demoStoreCredit(demoKey),
+      // Set in the demo settings (#179).
+      storeCredit: { amount: settings().storeCredit, currency: 'USD' },
       justBought,
     };
   });

@@ -38,6 +38,8 @@ export interface DemoSettings {
   /** Pledges of the hangar when the own ones are the source. */
   ownHangarPledges: number;
   states: DemoStates;
+  /** The store credit of the demo in USD (#179), instead of the account's. */
+  storeCredit: number;
 }
 
 /** The range of each kind's number and of the list sizes. */
@@ -45,6 +47,7 @@ export const DEMO_LIMITS = {
   kind: { min: 0, max: 60 },
   list: { min: 10, max: 300 },
   percent: { min: 0, max: 100 },
+  storeCredit: 100_000,
 } as const;
 
 export const DEFAULT_DEMO_SETTINGS: DemoSettings = {
@@ -61,6 +64,7 @@ export const DEFAULT_DEMO_SETTINGS: DemoSettings = {
     notGiftablePercent: 30,
     notMeltablePercent: 8,
   },
+  storeCredit: 50,
 };
 
 const wholeIn =
@@ -70,6 +74,13 @@ const wholeIn =
 export const isKindCount = wholeIn(DEMO_LIMITS.kind);
 export const isListSize = wholeIn(DEMO_LIMITS.list);
 export const isPercent = wholeIn(DEMO_LIMITS.percent);
+/** A store credit in USD, whole cents, up to `DEMO_LIMITS.storeCredit`. */
+export const isDemoCredit = (value: unknown): value is number =>
+  typeof value === 'number' &&
+  Number.isFinite(value) &&
+  value >= 0 &&
+  value <= DEMO_LIMITS.storeCredit &&
+  Math.round(value * 100) === value * 100;
 
 const valid = <T>(value: unknown, isValid: (value: unknown) => value is T, fallback: T): T =>
   isValid(value) ? value : fallback;
@@ -109,5 +120,6 @@ export function demoSettingsOf(stored: Partial<DemoSettings> | null | undefined)
         defaults.states.notMeltablePercent,
       ),
     },
+    storeCredit: valid(stored?.storeCredit, isDemoCredit, defaults.storeCredit),
   };
 }

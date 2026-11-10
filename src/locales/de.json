@@ -305,6 +305,15 @@
       "done": {
         "newHangar": "Ein neuer Demo-Hangar wird angezeigt.",
         "reset": "Die Demo-Einstellungen sind zurückgesetzt, die Markierungen der Demo gelöscht."
+      },
+      "storeCredit": "Store Credits des Demos",
+      "storeCreditHint": "Werden statt deiner eigenen in den Kontozahlen angezeigt und vom Paint-Rabatt-Berater genutzt. Die Schnellauswahl setzt sie für jeden Fall des Beraters auf diesem Demo-Hangar.",
+      "creditCases": "Store Credits für einen Fall des Beraters",
+      "creditCase": {
+        "same": "Gleiche Stufe",
+        "lowerTier": "Niedrigere Stufe",
+        "impossible": "Nicht möglich",
+        "none": "Keine Store Credits"
       }
     }
   },
