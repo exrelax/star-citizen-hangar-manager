@@ -758,20 +758,24 @@ it into store credit with the paints you already own:
 
 ## Settings
 
-In the order of the settings tab:
+In the order of the settings tab (#117): first how the manager looks and what it hides, then the
+lists, the sidebar and the notifications, then the Paint Discount Consultant, and last what is
+rarely needed. Settings that depend on a switch sit indented below it and look off while it is
+off.
 
-- **Language**: automatic, English, German, French or Spanish. The exchange and gift dialogs
-  show RSI's own texts in RSI's English by default, as its wording counts; translating them too
-  is an experimental option (see below).
-- **Theme**: Modern Hangar (the default) or Classic RSI.
-  - **Font size** (the same for both themes): small, medium (the default) or large – for the
-    lists, the settings and the dialogs (the factors are in `FONT_SIZE_SCALES` in
-    `src/config.ts`).
-  - **Compact view** (off by default, the same for both themes): in Modern Hangar the items as one
-    grouped list with separators instead of cards with gaps; in Classic RSI the items without
-    gaps, separated by a 1 px border.
-  - The exchange and gift dialogs look like RSI's own dialogs in "My Gear" by default (with the
-    manager's summary and warnings); an option shows them in the selected theme instead.
+- **Language and appearance**:
+  - **Language**: automatic, English, German, French or Spanish. The exchange and gift dialogs
+    show RSI's own texts in RSI's English by default, as its wording counts; translating them too
+    is an experimental option (see below).
+  - **Theme**: Modern Hangar (the default) or Classic RSI.
+    - **Font size** (the same for both themes): small, medium (the default) or large – for the
+      lists, the settings and the dialogs (the factors are in `FONT_SIZE_SCALES` in
+      `src/config.ts`).
+    - **Compact view** (off by default, the same for both themes): in Modern Hangar the items as one
+      grouped list with separators instead of cards with gaps; in Classic RSI the items without
+      gaps, separated by a 1 px border.
+    - The exchange and gift dialogs look like RSI's own dialogs in "My Gear" by default (with the
+      manager's summary and warnings); an option shows them in the selected theme instead.
 - **Hide sensitive information**: see [Anonymization for content creators](#anonymization-for-content-creators).
 - **Demo mode** (#178, only while the demo mode is on): where the demo hangar comes from – generated
   (the default) or a selection of your own pledges –, how many pledges of each kind it has, how
@@ -782,13 +786,17 @@ In the order of the settings tab:
   this demo hangar – same tier, lower tier, not possible, no store credit (a case the hangar can't
   show is disabled). **New demo hangar** makes another random one; **Reset demo** puts
   these settings back and clears the demo's marks. Changes apply at once.
-- **General**:
+- **My Hangar and Buy Back** (formerly "General" and "Show links for ships"):
   - **Show only the best insurance of upgraded ships** (on by default): after upgrades a pledge
     lists the insurance of every step; only the one that counts (LTI, otherwise the most months)
     is listed.
+  - **Show links for ships**: erkul.games and FleetYards.net, each on or off.
   - **"Show in Buy Back" opens**: only the pledge, or the list page with the pledge highlighted.
   - **Price increases within … days** (14 by default, 1 to 90): the period of the buy back filter
     "Price increase expected" and its notification.
+- **Filters**: order and selection of the filter buttons, separately for My Hangar and Buy Back
+  and for types and features – drag a filter (or use its arrows) to move it within its group,
+  uncheck it to hide its button.
 - **Sidebar**:
   - **Show the sidebar** (on by default) – see [Selection and summary](#selection-and-summary).
   - **Boxes** (all on by default, only while the sidebar is shown): notifications, summary,
@@ -850,7 +858,7 @@ In the order of the settings tab:
     and its paints in tables.
 - **Smart updates**:
   - **Check hangar, buy back and orders for changes** (on by default) – see
-    [Built for speed](#built-for-speed).
+    [Built for speed](#built-for-speed). The three settings below it only count while it is on.
   - **Check for changes every** 5 minutes (1 to 1440; the default) while the manager is open in a
     visible tab; up to 4 times as long while checks find nothing and nobody uses the tab (see
     [Built for speed](#built-for-speed)).
@@ -868,10 +876,6 @@ In the order of the settings tab:
     (see [Pledge Store](#pledge-store-current-warbond-ccus)); the hint explains the schedule.
     Both while the manager is open in a visible tab, and with browser notifications on also while
     no RSI page is open. With smart updates off, both once a day and with the refresh button.
-- **Filters**: order and selection of the filter buttons, separately for My Hangar and Buy Back
-  and for types and features – drag a filter (or use its arrows) to move it within its group,
-  uncheck it to hide its button.
-- **Show links for ships**: erkul.games and FleetYards.net, each on or off.
 - **Experimental** (all off by default), with a clear warning: these features may not work as
   intended, and using them is at your own risk – the developer accepts no liability.
   - **Bulk melting**: exchange all selected pledges at once – see

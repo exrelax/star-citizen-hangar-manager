@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import erkulIcon from '@/assets/erkul.png';
+import fleetyardsIcon from '@/assets/fleetyards.png';
 import { i18n } from '@/i18n';
 import SettingCheck from '../SettingCheck.vue';
 import { PRICE_INCREASES } from '@/config';
@@ -9,10 +11,20 @@ import {
   type Settings,
 } from '../settings';
 
+/*
+ * What the lists of My Hangar and the buy back show (#117: formerly "General" and "Show links
+ * for ships"): the insurance of upgraded ships, the links for ships, where "Show in Buy Back"
+ * leads and the period of the expected price increases.
+ */
+
 const props = defineProps<{ settings: Settings }>();
 const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
 
 const daysRange = PRICE_INCREASES.periodDays;
+
+function setShipLink(platform: keyof Settings['shipLinks'], enabled: boolean) {
+  emit('update', { shipLinks: { ...props.settings.shipLinks, [platform]: enabled } });
+}
 
 /** Stores whole days in range; anything else snaps back to the stored value (#192). */
 function changeDays(event: Event) {
@@ -25,7 +37,7 @@ function changeDays(event: Event) {
 
 <template>
   <fieldset class="shm-setting">
-    <legend class="shm-label">{{ i18n.t('settings.general') }}</legend>
+    <legend class="shm-label">{{ i18n.t('settings.lists') }}</legend>
     <SettingCheck
       :checked="settings.hideSupersededInsurances"
       :hint="i18n.t('settings.hideSupersededInsurancesHint')"
@@ -33,6 +45,24 @@ function changeDays(event: Event) {
     >
       {{ i18n.t('settings.hideSupersededInsurances') }}
     </SettingCheck>
+
+    <div role="group" aria-labelledby="shm-ship-links-label">
+      <p id="shm-ship-links-label" class="shm-field-label">{{ i18n.t('settings.shipLinks') }}</p>
+      <SettingCheck
+        :checked="settings.shipLinks.erkul"
+        @change="(enabled) => setShipLink('erkul', enabled)"
+      >
+        <img class="shm-check-icon" :src="erkulIcon" alt="" width="14" height="14" />
+        {{ i18n.t('settings.shipLinkErkul') }}
+      </SettingCheck>
+      <SettingCheck
+        :checked="settings.shipLinks.fleetyards"
+        @change="(enabled) => setShipLink('fleetyards', enabled)"
+      >
+        <img class="shm-check-icon" :src="fleetyardsIcon" alt="" width="14" height="14" />
+        {{ i18n.t('settings.shipLinkFleetyards') }}
+      </SettingCheck>
+    </div>
 
     <label class="shm-field-label" for="shm-buyback-link">
       {{ i18n.t('settings.buybackLink') }}
@@ -76,3 +106,11 @@ function changeDays(event: Event) {
     </p>
   </fieldset>
 </template>
+
+<style scoped>
+/* Favicon of the platform a checkbox stands for, as on its link buttons. */
+.shm-check-icon {
+  flex: none;
+  margin-right: -2px;
+}
+</style>

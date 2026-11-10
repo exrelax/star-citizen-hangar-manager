@@ -123,6 +123,7 @@
     "settings": "Paramètres"
   },
   "settings": {
+    "appearance": "Langue et apparence",
     "language": "Langue",
     "languageAuto": "Automatique ($1)",
     "languageHint": "Automatique utilise la langue du navigateur si l’extension est traduite dans cette langue, sinon l’anglais.",
@@ -134,7 +135,7 @@
     "bulkMeltingHint": "Fond tous les pledges sélectionnés de « My Hangar » à la fois, depuis l’encadré de sélection de la barre latérale, avec le mot de passe saisi une seule fois. S’arrête au premier pledge refusé par RSI.",
     "hideMeltValue": "Masquer la valeur de fusion",
     "hideMeltValueHint": "Masque tous les montants en $ : valeurs des pledges, remises, coûts des améliorations appliquées, montants des commandes et valeurs dans les fenêtres d’échange et de cadeau.",
-    "general": "Général",
+    "lists": "My Hangar et Buy Back",
     "smartUpdates": "Mises à jour intelligentes",
     "smartUpdatesHint": "Vérifie le journal des pledges, les dernières commandes et quelques pages du hangar et du rachat, et met les listes à jour sans actualisation complète : régulièrement tant que le Hangar Manager est ouvert dans un onglet visible (à l’intervalle ci-dessous, plus long tant que rien ne se passe), à son ouverture ou à son retour, à l’ouverture de « My Gear » ou de « Buy Back Pledges », et juste après ton propre échange, cadeau ou amélioration sur ces pages.",
     "smartUpdatesLists": "Vérifier les changements du hangar, du rachat et des commandes",

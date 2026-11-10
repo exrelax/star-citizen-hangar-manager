@@ -32,7 +32,9 @@ const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
     >
       {{ i18n.t('settings.hideRefund') }}
     </SettingCheck>
+    <!-- Not just hiding: a whole made-up hangar instead (#129), set apart from the rest. -->
     <SettingCheck
+      class="is-spaced"
       :checked="settings.demoMode"
       :hint="i18n.t('settings.demoModeHint')"
       @change="(demoMode) => emit('update', { demoMode })"

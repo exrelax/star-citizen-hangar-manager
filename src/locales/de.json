@@ -123,6 +123,7 @@
     "settings": "Einstellungen"
   },
   "settings": {
+    "appearance": "Sprache und Darstellung",
     "language": "Sprache",
     "languageAuto": "Automatisch ($1)",
     "languageHint": "Automatisch nutzt die Browsersprache, sofern die Extension in diese übersetzt ist, sonst Englisch.",
@@ -134,7 +135,7 @@
     "bulkMeltingHint": "Schmilzt alle ausgewählten Pledges von „My Hangar“ auf einmal ein, über die Auswahl-Box der Sidebar, mit einmal eingegebenem Passwort. Stoppt beim ersten Pledge, das RSI ablehnt.",
     "hideMeltValue": "Schmelzwert ausblenden",
     "hideMeltValueHint": "Blendet alle $$-Beträge aus: Pledge-Werte, Rabatte, die Kosten angewendeter Upgrades, die Beträge der Bestellungen und die Werte in den Dialogen zum Eintauschen und Verschenken.",
-    "general": "Allgemein",
+    "lists": "My Hangar und Buy Back",
     "smartUpdates": "Intelligente Updates",
     "smartUpdatesHint": "Prüft das Pledge-Log, die neuesten Bestellungen und einige Seiten von Hangar und Buy Back auf Änderungen und aktualisiert die Listen ohne vollständigen Abgleich: regelmäßig, solange der Hangar Manager in einem sichtbaren Tab offen ist (im Intervall unten, länger, solange nichts passiert), wenn er geöffnet oder wieder angezeigt wird, wenn „My Gear“ oder „Buy Back Pledges“ geöffnet wird, und direkt nach deinem eigenen Exchange, Gift oder Upgrade dort.",
     "smartUpdatesLists": "Hangar, Buy Back und Bestellungen auf Änderungen prüfen",

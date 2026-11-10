@@ -11,7 +11,8 @@ import {
 
 /*
  * The Paint Discount Consultant (see `store/paint-consultant`): what it may use to reach a
- * higher volume discount for paints. It always buys with store credit, never with new money.
+ * higher volume discount for paints, how it finds paints bought again and how it shows its plan.
+ * It always buys with store credit, never with new money.
  */
 
 const props = defineProps<{ settings: Settings }>();
@@ -28,21 +29,6 @@ function set<K extends keyof Settings['paintConsultant']>(
 <template>
   <fieldset class="shm-setting">
     <legend class="shm-label">{{ i18n.t('settings.paintConsultant') }}</legend>
-    <label class="shm-field-label" for="shm-consultant-layout">
-      {{ i18n.t('settings.consultantLayout') }}
-    </label>
-    <select
-      id="shm-consultant-layout"
-      class="shm-select"
-      :value="settings.paintConsultant.layout"
-      @change="set('layout', ($event.target as HTMLSelectElement).value as ConsultantLayout)"
-    >
-      <option v-for="layout in CONSULTANT_LAYOUTS" :key="layout" :value="layout">
-        {{ i18n.t(`settings.consultantLayoutOptions.${layout}`) }}
-      </option>
-    </select>
-    <p class="shm-hint">{{ i18n.t('settings.consultantLayoutHint') }}</p>
-
     <SettingCheck
       :checked="settings.paintConsultant.useStoreCredit"
       :hint="i18n.t('settings.paintConsultantStoreCreditHint')"
@@ -81,5 +67,20 @@ function set<K extends keyof Settings['paintConsultant']>(
       </option>
     </select>
     <p class="shm-hint">{{ i18n.t('settings.reboughtDetectionHint') }}</p>
+
+    <label class="shm-field-label" for="shm-consultant-layout">
+      {{ i18n.t('settings.consultantLayout') }}
+    </label>
+    <select
+      id="shm-consultant-layout"
+      class="shm-select"
+      :value="settings.paintConsultant.layout"
+      @change="set('layout', ($event.target as HTMLSelectElement).value as ConsultantLayout)"
+    >
+      <option v-for="layout in CONSULTANT_LAYOUTS" :key="layout" :value="layout">
+        {{ i18n.t(`settings.consultantLayoutOptions.${layout}`) }}
+      </option>
+    </select>
+    <p class="shm-hint">{{ i18n.t('settings.consultantLayoutHint') }}</p>
   </fieldset>
 </template>

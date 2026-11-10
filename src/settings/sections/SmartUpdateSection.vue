@@ -110,79 +110,82 @@ const spotHint = computed(() => {
       {{ i18n.t('settings.smartUpdatesLists') }}
     </SettingCheck>
 
-    <label class="shm-field-label" for="shm-smart-update-interval">
-      {{ i18n.t('settings.smartUpdateInterval') }}
-    </label>
-    <span class="shm-number-field">
-      <input
-        id="shm-smart-update-interval"
-        class="shm-input shm-number"
-        type="number"
-        inputmode="numeric"
-        :min="checkRange.min"
-        :max="checkRange.max"
-        step="1"
-        :value="settings.smartUpdateMinutes"
-        :disabled="!settings.smartUpdates"
-        aria-describedby="shm-smart-update-interval-hint"
-        @change="changeNumber($event, 'smartUpdateMinutes')"
-      />
-      {{ i18n.t('settings.minutes') }}
-    </span>
-    <p id="shm-smart-update-interval-hint" class="shm-hint">
-      {{
-        i18n.t('settings.smartUpdateIntervalHint', [
-          checkRange.min,
-          checkRange.max,
-          SMART_UPDATE.backoff.maxFactor,
-        ])
-      }}
-    </p>
+    <!-- The timing of the checks and reads, below the switch it depends on. -->
+    <div class="shm-setting-subgroup" role="group" :aria-disabled="!settings.smartUpdates">
+      <label class="shm-field-label" for="shm-smart-update-interval">
+        {{ i18n.t('settings.smartUpdateInterval') }}
+      </label>
+      <span class="shm-number-field">
+        <input
+          id="shm-smart-update-interval"
+          class="shm-input shm-number"
+          type="number"
+          inputmode="numeric"
+          :min="checkRange.min"
+          :max="checkRange.max"
+          step="1"
+          :value="settings.smartUpdateMinutes"
+          :disabled="!settings.smartUpdates"
+          aria-describedby="shm-smart-update-interval-hint"
+          @change="changeNumber($event, 'smartUpdateMinutes')"
+        />
+        {{ i18n.t('settings.minutes') }}
+      </span>
+      <p id="shm-smart-update-interval-hint" class="shm-hint">
+        {{
+          i18n.t('settings.smartUpdateIntervalHint', [
+            checkRange.min,
+            checkRange.max,
+            SMART_UPDATE.backoff.maxFactor,
+          ])
+        }}
+      </p>
 
-    <label class="shm-field-label" for="shm-spot-checks">
-      {{ i18n.t('settings.spotChecks') }}
-    </label>
-    <span class="shm-number-field">
-      <input
-        id="shm-spot-checks"
-        class="shm-input shm-number"
-        type="number"
-        inputmode="numeric"
-        :min="spotRange.min"
-        :max="spotRange.max"
-        step="1"
-        :value="settings.spotCheckPages"
-        :disabled="!settings.smartUpdates"
-        aria-describedby="shm-spot-checks-hint"
-        @change="changeNumber($event, 'spotCheckPages')"
-      />
-      {{ i18n.t('settings.pages') }}
-    </span>
-    <p id="shm-spot-checks-hint" class="shm-hint">
-      {{ spotHint }} {{ i18n.t('settings.spotChecksRange', [spotRange.min, spotRange.max]) }}
-    </p>
+      <label class="shm-field-label" for="shm-spot-checks">
+        {{ i18n.t('settings.spotChecks') }}
+      </label>
+      <span class="shm-number-field">
+        <input
+          id="shm-spot-checks"
+          class="shm-input shm-number"
+          type="number"
+          inputmode="numeric"
+          :min="spotRange.min"
+          :max="spotRange.max"
+          step="1"
+          :value="settings.spotCheckPages"
+          :disabled="!settings.smartUpdates"
+          aria-describedby="shm-spot-checks-hint"
+          @change="changeNumber($event, 'spotCheckPages')"
+        />
+        {{ i18n.t('settings.pages') }}
+      </span>
+      <p id="shm-spot-checks-hint" class="shm-hint">
+        {{ spotHint }} {{ i18n.t('settings.spotChecksRange', [spotRange.min, spotRange.max]) }}
+      </p>
 
-    <label class="shm-field-label" for="shm-store-refresh">
-      {{ i18n.t('settings.storeRefresh') }}
-    </label>
-    <span class="shm-number-field">
-      <input
-        id="shm-store-refresh"
-        class="shm-input shm-number"
-        type="number"
-        inputmode="numeric"
-        :min="storeRange.min"
-        :max="storeRange.max"
-        step="1"
-        :value="settings.storeRefreshMinutes"
-        :disabled="!settings.smartUpdates"
-        aria-describedby="shm-store-refresh-hint"
-        @change="changeNumber($event, 'storeRefreshMinutes')"
-      />
-      {{ i18n.t('settings.minutes') }}
-    </span>
-    <p id="shm-store-refresh-hint" class="shm-hint">
-      {{ storeHint }}
-    </p>
+      <label class="shm-field-label" for="shm-store-refresh">
+        {{ i18n.t('settings.storeRefresh') }}
+      </label>
+      <span class="shm-number-field">
+        <input
+          id="shm-store-refresh"
+          class="shm-input shm-number"
+          type="number"
+          inputmode="numeric"
+          :min="storeRange.min"
+          :max="storeRange.max"
+          step="1"
+          :value="settings.storeRefreshMinutes"
+          :disabled="!settings.smartUpdates"
+          aria-describedby="shm-store-refresh-hint"
+          @change="changeNumber($event, 'storeRefreshMinutes')"
+        />
+        {{ i18n.t('settings.minutes') }}
+      </span>
+      <p id="shm-store-refresh-hint" class="shm-hint">
+        {{ storeHint }}
+      </p>
+    </div>
   </fieldset>
 </template>
