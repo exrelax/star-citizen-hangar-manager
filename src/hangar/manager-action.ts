@@ -5,6 +5,7 @@ import { hashOfTab } from './route';
 import { selection } from './selection';
 import { meltReadyIds } from './use-melt-marks';
 import { showHangarFilter } from './view-filter';
+import { showBuybackFilter } from '@/buyback/buyback-filter-request';
 
 export {
   isManagerActionMessage,
@@ -15,7 +16,7 @@ export {
 /*
  * What a click on a browser notification asks the Hangar Manager to do (#154): open it, show only
  * the marked pledges that can be melted now, or select them – like the sidebar's "Show" and
- * "Select". The background script sends it to an open RSI tab as a message, or opens the manager
+ * "Select" –, or show the buy back's pledges whose price is expected to rise (#193). The background script sends it to an open RSI tab as a message, or opens the manager
  * with it in the URL (`?shm-action=…`), which the content script reads once and removes.
  */
 
@@ -54,6 +55,11 @@ export async function applyManagerAction(action: ManagerAction): Promise<void> {
   // New warbond CCUs (#164): the Pledge Store tab at its warbond CCUs.
   if (action === 'showWarbonds') {
     openTabAt('store', 'shm-store-title', { highlight: true });
+    return;
+  }
+  // Expected price increases (#193): the buy back with its filter "Price increase expected".
+  if (action === 'showPriceIncreases') {
+    showBuybackFilter('priceIncrease');
     return;
   }
   location.hash = hashOfTab('hangar');

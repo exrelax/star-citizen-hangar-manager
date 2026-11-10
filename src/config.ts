@@ -230,6 +230,11 @@ export const PRICE_INCREASES = {
    * within this many days (a setting; this is its default and its range, #192).
    */
   periodDays: { default: 14, min: 1, max: 90 },
+  /**
+   * A buy back pledge with less time than this left until its expected price increase is told in
+   * the browser, also while no RSI page is open (#193).
+   */
+  browserNoticeMs: 2 * 24 * 60 * 60 * 1000,
 } as const;
 
 /**

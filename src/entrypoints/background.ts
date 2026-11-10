@@ -2,6 +2,7 @@ import { listenToNotificationClicks } from '@/background/dispatch';
 import { watchGiftFlags } from '@/buyback/gift-flags';
 import { isCheckingMessage, relayToOtherTabs } from '@/hangar/smart-update/broadcast';
 import { watchMeltReady } from '@/notifications/melt-ready-notification';
+import { watchPriceIncreases } from '@/price-increases/price-increase-browser-notification';
 import { watchNotesInStep } from '@/notifications/note-sync';
 import { watchStoreNoteKinds } from '@/store/store-change-notes';
 import {
@@ -60,6 +61,10 @@ export default defineBackground(() => {
   // Pledges marked to melt can be melted now (#153): an alarm at the earliest time, then one
   // browser notification for all of them.
   watchMeltReady();
+
+  // Buy back pledges whose price is expected to rise in less than two days (#193): an alarm when
+  // the next one crosses the limit, then one browser notification for all of them.
+  watchPriceIncreases();
 
   // The sidebar's notifications and their browser notifications in step (#155).
   watchNotesInStep();

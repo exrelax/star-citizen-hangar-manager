@@ -211,6 +211,9 @@
     "notificationKindStoreItemsHint": "Artículos de la Pledge Store nuevos, retirados o con precio cambiado, solo en la barra lateral.",
     "notificationKindEvents": "Eventos",
     "notificationKindEventsHint": "Un evento como la Intergalactic Aerospace Expo poco antes de que empiece, solo en la barra lateral. La pestaña Pledge Store lo muestra de todos modos.",
+    "buybackNotifications": "Buy Back",
+    "notificationKindPriceIncreases": "Subidas de precio previstas",
+    "notificationKindPriceIncreasesHint": "Artículos del Buy Back cuyo precio se espera que suba dentro del periodo ajustado en «General», en la barra lateral; en el navegador cuando quedan menos de 2 días.",
     "sidebarNotifications": "Barra lateral",
     "restoreNotifications": "Volver a mostrar las notificaciones marcadas",
     "restoreNotificationsHint": "Recupera las notificaciones de la barra lateral que marcaste o cerraste, mientras sigan siendo relevantes: eventos que aún se muestran, nuevos CCU warbond que aún se ofrecen, artículos del Pledge Store que aún tienen su nuevo precio, pinturas que aún se pueden recomprar con más descuento y el aviso de las notificaciones del navegador mientras estén desactivadas. Los tipos desactivados siguen ocultos. La notificación de las pinturas vuelve en todos tus navegadores, ya que las pinturas cerradas se sincronizan.",
@@ -829,7 +832,14 @@
     "browserHintOpenHint": "Abre los ajustes en «Notificaciones del navegador».",
     "dismissBrowserHintHint": "Quita este aviso para siempre. Puedes activar las notificaciones del navegador en los ajustes cuando quieras.",
     "count": "$1 notificaciones",
-    "countOne": "1 notificación"
+    "countOne": "1 notificación",
+    "priceIncrease": "$1 artículos del Buy Back probablemente costarán más en los próximos $2 días",
+    "priceIncreaseOne": "1 artículo del Buy Back probablemente costará más en los próximos $2 días",
+    "dismissPriceIncreaseHint": "Quita esta notificación para exactamente estos artículos. Vuelve en cuanto se espere que suba el precio de otro artículo dentro del periodo, entonces con el número de todos.",
+    "showPriceIncreaseHint": "Muestra estos artículos en el Buy Back con el filtro «Subida de precio prevista».",
+    "browserPriceIncreaseTitle": "Subida de precio prevista",
+    "browserPriceIncreaseOne": "«$1» probablemente costará más en menos de 2 días ($2). Recómpralo o úsalo como token de descuento antes.",
+    "browserPriceIncrease": "$1 artículos del Buy Back probablemente costarán más en menos de 2 días ($2). Recómpralos o úsalos como tokens de descuento antes."
   },
   "gift": {
     "button": "Gift",

@@ -12,6 +12,7 @@ import BuybackRow from './BuybackRow.vue';
 import { BUYBACK_SORTS, sortEntries, type BuybackSort } from '@/hangar/sorting';
 import { useSettings } from '@/settings/use-settings';
 import { isWithinDays } from '@/price-increases/price-increases';
+import { buybackFilterRequest } from '../buyback-filter-request';
 import { useNow } from '@/shared/use-now';
 
 const props = defineProps<{
@@ -88,6 +89,7 @@ const filterHint = (filter: BuybackFilter) => {
     :sort-options="sortOptions"
     :sort="settings.sort.buyback"
     :highlights="highlights"
+    :include-request="buybackFilterRequest"
     @update:sort="setSort"
   >
     <template #row="{ entry, autoExpand }">

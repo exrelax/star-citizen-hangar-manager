@@ -7,10 +7,18 @@
  * - `storeItems`: changed Pledge Store items (#164), in the sidebar only.
  * - `events`: an event of the project website whose display period started (#69), in the sidebar
  *   only.
+ * - `priceIncreases`: buy back pledges whose price is expected to rise within the period of the
+ *   settings (#193), in the sidebar, and in the browser once less than two days are left.
  * Only the kinds turned off are stored, so a kind added later starts on.
  */
 
-export const NOTIFICATION_KINDS = ['meltReady', 'warbonds', 'storeItems', 'events'] as const;
+export const NOTIFICATION_KINDS = [
+  'meltReady',
+  'warbonds',
+  'storeItems',
+  'events',
+  'priceIncreases',
+] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 
 /** Kinds that are only browser notifications: they depend on the browser notifications setting. */
