@@ -20,12 +20,33 @@ import { eventsItem, eventsMeta, EVENTS_VERSION } from './events-storage';
 export async function fetchEvents(): Promise<StarCitizenEvent[] | undefined> {
   if (import.meta.env.DEV) {
     const local = await import('../../site/public/data/events.json');
-    return parseEvents(local.default);
+    return withLocalImages(parseEvents(local.default));
   }
   // No cookies: the website needs none, and it is another origin.
   const response = await fetch(EVENTS.url, { credentials: 'omit', cache: 'no-cache' });
   if (!response.ok) throw new Error(`Loading the events failed: HTTP ${response.status}`);
   return parseEvents(await response.json());
+}
+
+/**
+ * The development build: the images of the working copy (`site/public/images/events/`), inlined,
+ * instead of their URLs on the website, which may not be deployed yet.
+ */
+async function withLocalImages(
+  events: StarCitizenEvent[] | undefined,
+): Promise<StarCitizenEvent[] | undefined> {
+  if (!events) return undefined;
+  const local = import.meta.glob<string>('../../site/public/images/events/*', {
+    query: '?inline',
+    import: 'default',
+  });
+  return Promise.all(
+    events.map(async (event) => {
+      const path = event.image?.slice(EVENTS.imageBase.length);
+      const load = path && local[`../../site/public/${path}`];
+      return load ? { ...event, image: await load() } : event;
+    }),
+  );
 }
 
 /** Whether the events are due to be read again. */

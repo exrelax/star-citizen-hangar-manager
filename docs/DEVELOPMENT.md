@@ -184,7 +184,9 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   of the Pledge Store tab (#69). The store build reads it from the live site at most once a day;
   the dev build reads the file of the working copy, so new events can be tried before they are
   deployed – "Stored data" → "Events" in the settings reads it again at once. The format is
-  checked by [`src/events/events.ts`](../src/events/events.ts); icons must be on the site itself.
+  checked by [`src/events/events.ts`](../src/events/events.ts). An event's `image` is a 16:9 image
+  (256×144, twice the row's thumbnail) in `site/public/images/events/`, linked with its URL on the
+  site; images from elsewhere are ignored, and the dev build shows the working copy's.
   `name` and `description` are one text, or one per language of the extension –
   `{ "en": "…", "de": "…", "fr": "…", "es": "…" }`, English required and shown for a language
   not given.

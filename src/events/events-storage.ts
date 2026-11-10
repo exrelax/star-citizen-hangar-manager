@@ -1,7 +1,7 @@
 import { defineMeta } from '@/storage/meta';
 import type { StarCitizenEvent } from './events';
 
-/** Format version of the stored events; others are ignored and read again. 2: texts per language. */
+/** Format version of the stored events; others are ignored and read again. 2: texts per language, `image`. */
 export const EVENTS_VERSION = 2;
 
 export interface EventsSnapshot {

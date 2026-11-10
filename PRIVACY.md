@@ -101,9 +101,10 @@ sees or stores your RSI login.
   and the extension talks to RSI only.
 - **exrelax.github.io** (this project's website on GitHub Pages): at most once a day, the
   extension loads the list of Star Citizen events it shows in the Pledge Store tab
-  (`data/events.json`). It is a public file, the same for everyone; the request sends no data, no
-  cookies, nothing about your account. Like every request on the internet, it reveals your IP
-  address to GitHub (see [This website](#this-website)).
+  (`data/events.json`), and while the tab shows an event, its image from the same website. Both
+  are public files, the same for everyone; the requests send no data, no cookies, nothing about
+  your account. Like every request on the internet, they reveal your IP address to GitHub (see
+  [This website](#this-website)).
 - **ccugame.app**: on CCU Game's pages, the extension adds links to the Hangar Manager. It only
   reads the pledge ID shown on the page to build the link and sends nothing.
 

@@ -193,8 +193,8 @@ export const SMART_UPDATE = {
  */
 export const EVENTS = {
   url: 'https://exrelax.github.io/star-citizen-hangar-manager/data/events.json',
-  /** The only origin icons may come from. */
-  iconOrigin: 'https://exrelax.github.io',
+  /** Where event images may come from: the project website only. */
+  imageBase: 'https://exrelax.github.io/star-citizen-hangar-manager/',
   /** The format the extension reads; files of other versions are ignored. */
   schemaVersion: 1,
   refreshMs: 24 * 60 * 60 * 1000,

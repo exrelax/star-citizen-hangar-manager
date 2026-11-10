@@ -65,17 +65,19 @@ describe('parseEvents', () => {
     expect(events?.map((event) => event.id)).toEqual(['iae-2956']);
   });
 
-  it('takes icons only from the project website', () => {
-    const [own, other, broken] = parseEvents(
+  it('takes images only from the project website', () => {
+    const [own, other, sibling, broken] = parseEvents(
       file(
-        entry({ id: 'a', icon: 'https://exrelax.github.io/star-citizen-hangar-manager/i.svg' }),
-        entry({ id: 'b', icon: 'https://example.com/i.svg' }),
-        entry({ id: 'c', icon: 'javascript:alert(1)' }),
+        entry({ id: 'a', image: 'https://exrelax.github.io/star-citizen-hangar-manager/i.jpg' }),
+        entry({ id: 'b', image: 'https://example.com/i.jpg' }),
+        entry({ id: 'c', image: 'https://exrelax.github.io/other-project/i.jpg' }),
+        entry({ id: 'd', image: 'javascript:alert(1)' }),
       ),
     )!;
-    expect(own?.icon).toBe('https://exrelax.github.io/star-citizen-hangar-manager/i.svg');
-    expect(other?.icon).toBeUndefined();
-    expect(broken?.icon).toBeUndefined();
+    expect(own?.image).toBe('https://exrelax.github.io/star-citizen-hangar-manager/i.jpg');
+    expect(other?.image).toBeUndefined();
+    expect(sibling?.image).toBeUndefined();
+    expect(broken?.image).toBeUndefined();
   });
 });
 
