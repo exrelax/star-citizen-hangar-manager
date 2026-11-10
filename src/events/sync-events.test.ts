@@ -7,8 +7,8 @@ import type { StarCitizenEvent } from './events';
 import { eventsItem, eventsMeta } from './events-storage';
 import { eventsDue, maybeRefreshEvents } from './sync-events';
 
-/** 12:30 on the local clock: read at 12:00, next at 14:00 (`SITE_DATA.schedule`). */
-const NOW = new Date(2026, 10, 10, 12, 30).getTime();
+/** 11:30 UTC: read at 11:00, next at 13:00 (`SITE_DATA.schedule`). */
+const NOW = Date.UTC(2026, 10, 10, 11, 30);
 const HOUR = 60 * 60 * 1000;
 
 const iae: StarCitizenEvent = {
