@@ -1117,6 +1117,14 @@ async function move(box: Box, step: -1 | 1) {
   margin-top: 8px;
 }
 
+/*
+ * A note below the actions, e.g. the consultant's filler paints among the pledges (#105): under
+ * the text, not in the icon's column, which it would widen and squeeze the text.
+ */
+.shm-sidebar-melt-ready > .shm-sidebar-note {
+  grid-column: 2;
+}
+
 .shm-sidebar-melt-ready .shm-sidebar-actions.is-wrapped {
   grid-column: 2;
 }
