@@ -197,7 +197,11 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   not given.
 - **Expected price increases**: `data/price-increases.json` lists the ships whose price is
   expected to rise, for the Buy Back Reminder (#195). Every date in it is an assumption, and the
-  extension says so. See [below](#editing-the-expected-price-increases) for how to edit it.
+  extension says so. Read like the events, by the same loader
+  ([`src/site-data/sync-site-data.ts`](../src/site-data/sync-site-data.ts)): at most once a day,
+  the dev build from the working copy, checked by
+  [`src/price-increases/price-increases.ts`](../src/price-increases/price-increases.ts). See
+  [below](#editing-the-expected-price-increases) for how to edit it.
 - **Previews**: both pages have Open Graph and X tags with the same title and description as the
   page, and `store/social-preview-1280x640.png` as the image. Its URL has to be absolute: the build
   puts it below the site's address (`SITE_URL` in `site/vite.config.ts`).

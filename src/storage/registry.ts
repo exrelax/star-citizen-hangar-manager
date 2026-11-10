@@ -23,6 +23,11 @@ import {
 } from '@/store/items/store-items-storage';
 import { rebuyPlanItem, type StoredRebuyPlan } from '@/store/paint-consultant/rebuy-plan-storage';
 import { eventsItem, eventsMeta, type EventsSnapshot } from '@/events/events-storage';
+import {
+  priceIncreasesItem,
+  priceIncreasesMeta,
+  type PriceIncreasesSnapshot,
+} from '@/price-increases/price-increases-storage';
 import type { BuybackSnapshot } from '@/buyback/buyback';
 import type { HangarSnapshot } from '@/hangar/pledge';
 import type { OrdersSnapshot } from '@/orders/orders';
@@ -55,6 +60,7 @@ export type StorageId =
   | 'shipsWarbonds'
   | 'storeItems'
   | 'events'
+  | 'priceIncreases'
   | 'storeCredit'
   | 'paintPlan'
   | 'settings';
@@ -184,6 +190,17 @@ export const STORAGES: readonly StorageDefinition[] = [
     usedBy: ['Pledge Store (events)', 'sidebar notifications'],
     kind: 'data',
     count: (value: EventsSnapshot | null) => value?.events.length ?? 0,
+    readAgain: 'auto',
+  },
+  {
+    id: 'priceIncreases',
+    meta: priceIncreasesMeta,
+    item: priceIncreasesItem,
+    content: 'Expected price increases: ship id and names, dates, related items, note',
+    source: 'The project website (GitHub Pages, data/price-increases.json)',
+    usedBy: [],
+    kind: 'data',
+    count: (value: PriceIncreasesSnapshot | null) => value?.priceIncreases.length ?? 0,
     readAgain: 'auto',
   },
   {

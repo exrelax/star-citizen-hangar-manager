@@ -204,6 +204,19 @@ export const EVENTS = {
 } as const;
 
 /**
+ * The expected price increases of the Buy Back Reminder (#195): ships whose price is expected to
+ * rise, on the project website like the events, read the same way (at most once a day, after a
+ * failure again after an hour; only data, never code).
+ */
+export const PRICE_INCREASES = {
+  url: 'https://exrelax.github.io/star-citizen-hangar-manager/data/price-increases.json',
+  /** The format the extension reads; files of other versions are ignored. */
+  schemaVersion: 1,
+  refreshMs: 24 * 60 * 60 * 1000,
+  retryMs: 60 * 60 * 1000,
+} as const;
+
+/**
  * The items of RSI's Pledge Store (see `src/store/items`), read with the store's own search: all
  * items of these products, 100 per request – 13 requests, ~2 s for ~680 items (November 2026).
  * Physical merchandise and CCUs (from the ship upgrade tool) are left out.

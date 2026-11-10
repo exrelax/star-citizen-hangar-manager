@@ -321,6 +321,11 @@
       "content": "Les événements de Star Citizen depuis le site du projet, avec leurs dates",
       "missing": "D’ici là, l’onglet Pledge Store n’affiche aucun événement."
     },
+    "priceIncreases": {
+      "name": "Hausses de prix attendues",
+      "content": "Les vaisseaux dont le prix devrait augmenter, depuis le site du projet, avec leurs dates",
+      "missing": "Rien ne les utilise encore."
+    },
     "storeCredit": {
       "name": "Crédit boutique",
       "content": "Le crédit boutique du compte, comme son menu de compte l’affiche",

@@ -146,7 +146,7 @@ Your hangar is nobody else's business. The extension is built so that your data 
 - **No server of its own, no account, no tracking, no analytics.** There is nothing to sign up for
   and nothing that reports back.
 - **Everything is stored locally** in your browser's extension storage: hangar, buy back, orders,
-  ship data, the items of the Pledge Store and the events. It never leaves your computer, and removing the
+  ship data, the items of the Pledge Store, the events and the expected price increases. It never leaves your computer, and removing the
   extension removes it. The settings show all of it ("Stored data"), and each part can be read
   again or deleted on its own. The CCU
   history is not even stored – it is loaded from RSI when you open it.
@@ -157,9 +157,10 @@ Your hangar is nobody else's business. The extension is built so that your data 
   model names (e.g. "polaris") – no pledge data, no IDs, no login, no cookies. Turn both ship
   links off in the settings, and the extension talks to RSI only. The icons of both sites are part
   of the extension, so showing the links doesn't contact them.
-- **Events from the project website**: the list of events in the Pledge Store tab is read from the
-  project's own website on GitHub Pages, at most once a day – a public file, the same for everyone;
-  the request carries nothing but your IP address, like any request.
+- **Events and expected price increases from the project website**: the list of events in the
+  Pledge Store tab and the list of ships whose price is expected to rise are read from the
+  project's own website on GitHub Pages, each at most once a day – public files, the same for
+  everyone; the requests carry nothing but your IP address, like any request.
 
 ### Only your settings sync – through your browser
 
@@ -800,7 +801,7 @@ In the order of the settings tab:
   - **Translate RSI's texts in the exchange and gift dialogs**: RSI's changes to its texts reach
     the translations only later.
 - **Stored data**: a table of everything the extension keeps in this browser – My Hangar, Buy
-  Back, order history, ships, ships on sale, warbond offers, Pledge Store items and the store
+  Back, order history, ships, ships on sale, warbond offers, Pledge Store items, events, expected price increases and the store
   credit – with the number of entries, the
   size, the last full read and the last check. Each can be read again from RSI on its own (the
   refresh icon; ships, ships on sale and warbond offers are one read) and deleted on its own; the

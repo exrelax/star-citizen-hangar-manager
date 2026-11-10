@@ -321,6 +321,11 @@
       "content": "Events von Star Citizen von der Projekt-Website, mit ihren Daten",
       "missing": "Bis dahin zeigt der Tab Pledge Store keine Events."
     },
+    "priceIncreases": {
+      "name": "Erwartete Preiserhöhungen",
+      "content": "Schiffe, deren Preis voraussichtlich steigt, von der Projekt-Website, mit ihren Daten",
+      "missing": "Wird noch nirgends genutzt."
+    },
     "storeCredit": {
       "name": "Store Credits",
       "content": "Die Store Credits des Accounts, wie sein Account-Menü sie zeigt",
