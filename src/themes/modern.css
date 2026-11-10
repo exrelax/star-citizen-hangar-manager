@@ -740,7 +740,7 @@ html .shm-theme-modern .shm-settings-nav-item:not([aria-current='page']):hover {
   background: var(--shm-hover);
 }
 
-html .shm-theme-modern .shm-settings-title {
+html .shm-theme-modern .shm-settings-title:not(#shm-none) {
   color: var(--shm-text-strong);
   font-size: calc(22px * var(--shm-font-scale));
   font-weight: 600;
