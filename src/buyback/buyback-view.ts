@@ -1,4 +1,4 @@
-import { BUYBACK_GIFTABLE_PURCHASED_BEFORE, BUYBACK_PAGE_SIZE } from '@/config';
+import { BUYBACK_PAGE_SIZE } from '@/config';
 import type { PaidOrder } from '@/orders/orders';
 import type { FilterCategory, FilterPredicates } from '@/hangar/filters';
 import { isRewardTitle } from '@/hangar/rewards';
@@ -15,6 +15,7 @@ import {
 } from './buyback';
 import type { BuybackImager } from './buyback-image';
 import type { BuybackPrice, BuybackPricer } from './buyback-price';
+import type { GiftableCheck } from './probably-giftable';
 
 /** What the buy back list shows for a pledge. */
 export interface BuybackView {
@@ -45,7 +46,7 @@ export interface BuybackView {
   /** RSI's product category "game package": the game is what the pledge is about. */
   isGamePackage: boolean;
   hasGameAccess: boolean;
-  /** Bought before `BUYBACK_GIFTABLE_PURCHASED_BEFORE`: giftable again after a warbond buy back. */
+  /** Probably giftable when bought back with money (see `probably-giftable.ts`). */
   isProbablyGiftable: boolean;
   /** What buying it back costs, if known (see `buyback-price.ts`). */
   price?: BuybackPrice;
@@ -55,29 +56,12 @@ export interface BuybackView {
   searchText: string;
 }
 
-/**
- * Highest pledge id known to be bought before the cutoff date, from the hangar's pledges and
- * their creation dates. Pledge ids grow over time and are kept when a pledge is melted, so every
- * buy back pledge up to this id was bought before the cutoff, too.
- */
-export function giftableIdLimit(
-  hangarPledges: readonly { id: number; createdAt?: string }[],
-  cutoff = BUYBACK_GIFTABLE_PURCHASED_BEFORE,
-): number | undefined {
-  let limit: number | undefined;
-  for (const { id, createdAt } of hangarPledges) {
-    if (createdAt && createdAt < cutoff && (limit === undefined || id > limit)) limit = id;
-  }
-  return limit;
-}
-
 export interface BuybackViewContext {
   /** Index in the stored buy back, which has RSI's order. */
   position: number;
-  /** See `giftableIdLimit`. */
-  idLimit: number | undefined;
   shipLinks?: ShipLinks;
-  cutoff?: string;
+  /** Whether a pledge is probably giftable (see `probably-giftable.ts`); without it none is. */
+  giftable?: GiftableCheck;
   /** The buy back price of a pledge (see `buyback-price.ts`). */
   priceOf?: BuybackPricer;
   /** The best image of a pledge (see `buyback-image.ts`); without it RSI's own, if real. */
@@ -85,14 +69,7 @@ export interface BuybackViewContext {
 }
 
 export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext): BuybackView {
-  const {
-    position,
-    idLimit,
-    shipLinks = {},
-    cutoff = BUYBACK_GIFTABLE_PURCHASED_BEFORE,
-    priceOf,
-    imageOf,
-  } = context;
+  const { position, shipLinks = {}, giftable, priceOf, imageOf } = context;
   const price = priceOf?.(pledge);
   // The detail page lists the items besides the main one named in "Contained".
   const extraItems = pledge.items ?? [];
@@ -123,10 +100,7 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
     isGamePackage: pledge.category === 'game_package',
     hasGameAccess:
       pledge.category === 'game_package' || items.some((item) => GAME_DOWNLOAD.test(item)),
-    // Melted before the cutoff means bought before it; otherwise the id tells.
-    isProbablyGiftable:
-      (!!pledge.reclaimedAt && pledge.reclaimedAt < cutoff) ||
-      (idLimit !== undefined && pledge.id <= idLimit),
+    isProbablyGiftable: giftable?.(pledge.id) ?? false,
     ...(price && { price }),
     priceRead: pledge.price !== undefined,
     searchText: normalizeSearchText([pledge.title, ...shipNames, pledge.id].join(' ')),

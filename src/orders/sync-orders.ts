@@ -47,8 +47,9 @@ export interface OrderSyncResult {
 /**
  * First step of the order sync: reads the first page of the pledge log and of the billing list.
  * Without a stored snapshot everything is read; otherwise only the pages up to the first known
- * entry (the log and the billing list are sorted newest first). Nothing is stored unless every
- * page was read.
+ * entry (the log and the billing list are sorted newest first) – but the whole billing list once
+ * for a snapshot stored before the store credit of the orders was read (#204). Nothing is stored
+ * unless every page was read.
  */
 export async function prepareOrderSync(
   deps: OrderSyncDeps = {},
@@ -72,8 +73,10 @@ export async function prepareOrderSync(
 
   // Without a snapshot all pages are known to be needed; otherwise each further one is
   // announced when it turns out to be needed.
+  // Orders stored before the store credit was read (#204): the whole billing list once more.
+  const rereadBilling = !previous?.creditsRead;
   const logPages = previous ? 1 : firstLog.pageCount;
-  const billingPages = previous ? 1 : firstBilling.lastPage;
+  const billingPages = rereadBilling ? firstBilling.lastPage : 1;
   progress?.expect(
     logPages + billingPages,
     logPages * LOG_PAGE_WORK + billingPages * BILLING_PAGE_WORK,
@@ -94,7 +97,9 @@ export async function prepareOrderSync(
       first: firstBilling.orders,
       lastPage: firstBilling.lastPage,
       fetchPage: async (page) => (await fetchBillingPage(page)).orders,
-      isKnown: previous ? (page) => page.some((order) => previous.orders[order.id]) : undefined,
+      isKnown: rereadBilling
+        ? undefined
+        : (page) => page.some((order) => previous?.orders[order.id]),
       work: BILLING_PAGE_WORK,
       progress,
       concurrency,
@@ -106,7 +111,7 @@ export async function prepareOrderSync(
     const newLogEntries = previous ? logEntries.filter((entry) => !knownEntries.has(entry)) : [];
     const newEntries = newLogEntries.length;
     const newOrders = orders.filter((order) => !previous?.orders[order.id]).length;
-    if (previous && newEntries === 0 && newOrders === 0) {
+    if (previous && !rereadBilling && newEntries === 0 && newOrders === 0) {
       await recordCheck(ordersMeta, { status: 'unchanged', pages: pagesRead }, { fingerprint });
       return { snapshot: previous, newLogEntries };
     }
@@ -120,6 +125,7 @@ export async function prepareOrderSync(
         Object.entries(previous?.orders ?? {}).map(([id, order]) => [id, { ...order }]),
       ),
       recentLogEntries: firstLog.entries,
+      creditsRead: true,
     };
     for (const entry of logEntries) {
       const link = parseLogEntry(entry);

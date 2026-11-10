@@ -1,4 +1,5 @@
 import { listenToNotificationClicks } from '@/background/dispatch';
+import { watchGiftFlags } from '@/buyback/gift-flags';
 import { isCheckingMessage, relayToOtherTabs } from '@/hangar/smart-update/broadcast';
 import { watchMeltReady } from '@/notifications/melt-ready-notification';
 import { watchNotesInStep } from '@/notifications/note-sync';
@@ -48,6 +49,9 @@ export default defineBackground(() => {
         .then(() => mirrorNotificationPermission());
     }
   });
+
+  // RSI's gift flag of pledges leaving the hangar, for "probably giftable" in the buy back (#204).
+  watchGiftFlags();
 
   // The Paint Discount Consultant's filler paints can be melted (#105): an alarm 24 hours after
   // their order, then a browser notification.

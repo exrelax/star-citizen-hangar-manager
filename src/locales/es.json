@@ -360,7 +360,7 @@
     "contains": "Contiene: $1",
     "reclaimed": "Fundido el $1",
     "showInBuyback": "Mostrar en Buy Back (página $1)",
-    "probablyGiftableHint": "Si lo recompras con dinero real (warbond), este elemento probablemente es regalable, ya que se compró originalmente antes del $1.",
+    "probablyGiftableHint": "Si lo recompras con dinero real (warbond), este elemento probablemente es regalable: se compró antes del $1 solo con dinero, sin crédito de tienda, y mantiene ese estado.",
     "showSingleInBuyback": "Mostrar en Buy Back",
     "tokens": "Tokens de recompra: $1",
     "tokensLabel": "Tokens de recompra",

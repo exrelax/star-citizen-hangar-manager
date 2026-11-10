@@ -24,9 +24,10 @@ sees or stores your RSI login.
 
 - **Hangar ("My Gear")**: pledges with their IDs, names, values, contained items, insurances,
   purchase dates and whether they can be gifted, melted or upgraded.
-- **Buy back**: the pledges you can buy back and the number of buy back tokens left.
-- **Orders**: from RSI's pledge log and billing history, the order IDs, amounts paid and dates,
-  and which pledge was bought with which order.
+- **Buy back**: the pledges you can buy back and the number of buy back tokens left, and for
+  pledges that left your hangar whether they could be gifted then.
+- **Orders**: from RSI's pledge log and billing history, the order IDs, amounts paid, store
+  credit used and dates, and which pledge was bought with which order.
 - **Order details**: items, totals, payments and your **name and billing address**, as RSI's
   billing page shows them. They are loaded only when you open an order's details and are **not
   stored**.

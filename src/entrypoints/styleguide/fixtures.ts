@@ -175,5 +175,5 @@ const BUYBACK: BuybackPledge[] = [
 ];
 
 export const buybackFixtures: BuybackView[] = BUYBACK.map((entry, position) =>
-  toBuybackView(entry, { position, idLimit: undefined }),
+  toBuybackView(entry, { position, giftable: (id) => id !== 80000002 }),
 );

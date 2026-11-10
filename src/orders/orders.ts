@@ -17,6 +17,11 @@ export interface Order {
   /** ISO date (YYYY-MM-DD). */
   placedAt?: string;
   /**
+   * The store credit used, as RSI shows it ("$0.00 USD"); with money paid as well, the order was
+   * paid in part with store credit (#204). Missing in orders stored before it was read.
+   */
+  creditsUsed?: string;
+  /**
    * Index in the billing list (newest first) as of the last sync: with a page size of 1, the
    * order is on page `position + 1`.
    */
@@ -46,6 +51,11 @@ export interface OrdersSnapshot {
   orders: Record<string, Order>;
   /** Newest entries of the pledge log, to read only what is new next time. */
   recentLogEntries: string[];
+  /**
+   * The whole billing list was read with the store credit of each order (#204). Snapshots stored
+   * before read it once more, without the pledge log.
+   */
+  creditsRead?: boolean;
 }
 
 /** 2: orders know their position in the billing list. */
@@ -59,6 +69,14 @@ export interface PaidOrder extends Order {
 /** Whether money was paid (store credit orders have an amount of 0). */
 export function isPaidWithMoney(order: Order): boolean {
   return parseAmount(order.amount) > 0;
+}
+
+/**
+ * Whether only money was paid: any store credit makes a pledge ungiftable (#204). Orders stored
+ * before the store credit was read count by their amount.
+ */
+export function isPaidWithMoneyOnly(order: Order): boolean {
+  return isPaidWithMoney(order) && !(order.creditsUsed && parseAmount(order.creditsUsed) > 0);
 }
 
 /** The money-paid order of a pledge, if there is one. */
@@ -139,7 +157,15 @@ export function parseBillingPage(doc: Document): { orders: Order[]; lastPage: nu
       if (!/^[A-Z0-9]+$/.test(id)) return undefined;
       // "October 30, 2026 19:55" – the date is enough.
       const placed = column('Order Placed:').replace(/\s+\d{1,2}:\d{2}$/, '');
-      return { id, amount: column('Amount:'), placedAt: parseDate(placed) };
+      const credits = totalsOf(li.querySelector('.payment-wrapper .right-section')).find((total) =>
+        /^credits used$/i.test(total.label),
+      )?.value;
+      return {
+        id,
+        amount: column('Amount:'),
+        placedAt: parseDate(placed),
+        ...(credits && { creditsUsed: credits }),
+      };
     })
     .filter((order): order is Order => order !== undefined);
 

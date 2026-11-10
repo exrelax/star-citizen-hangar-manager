@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from 'vitest';
 import { buybackShipNames, hasSeveralItems, mainItem, type BuybackPledge } from './buyback';
-import { giftableIdLimit, toBuybackView } from './buyback-view';
+import { toBuybackView } from './buyback-view';
 import { parseBuybackDetail, parseBuybackPage, parseBuybackTokens } from './parse-buyback';
 
 // Trimmed-down copy of `/en/account/buy-back-pledges` with made-up values.
@@ -141,7 +141,7 @@ describe('toBuybackView', () => {
         isUpgrade: false,
         items: ['Galaxy - Cargo Module', '120 Month Insurance'],
       },
-      { position: 0, idLimit: undefined },
+      { position: 0 },
     );
     expect(view.items).toEqual(['Galaxy - Cargo Module', '120 Month Insurance']);
     expect(view.insurance).toBeDefined();
@@ -154,16 +154,15 @@ describe('toBuybackView', () => {
     isUpgrade: false,
     ...overrides,
   });
-  const view = (p: BuybackPledge, idLimit?: number) =>
-    toBuybackView(p, { position: 0, idLimit, cutoff: '2026-10-30' });
+  const view = (p: BuybackPledge) => toBuybackView(p, { position: 0 });
 
-  it('is probably giftable when melted before the cutoff or bought before it (by id)', () => {
-    expect(view(pledge({ reclaimedAt: '2026-10-12' })).isProbablyGiftable).toBe(true);
-    expect(view(pledge({ id: 500, reclaimedAt: '2026-11-01' }), 600).isProbablyGiftable).toBe(true);
-    expect(view(pledge({ id: 700, reclaimedAt: '2026-11-01' }), 600).isProbablyGiftable).toBe(
+  it('is probably giftable as the check says, else not', () => {
+    const giftable = (id: number) => id === 100;
+    expect(toBuybackView(pledge({}), { position: 0, giftable }).isProbablyGiftable).toBe(true);
+    expect(toBuybackView(pledge({ id: 7 }), { position: 0, giftable }).isProbablyGiftable).toBe(
       false,
     );
-    expect(view(pledge({ reclaimedAt: '2026-11-01' })).isProbablyGiftable).toBe(false);
+    expect(view(pledge({ reclaimedAt: '2026-10-12' })).isProbablyGiftable).toBe(false);
   });
 
   it('knows LTI and game access only from the detail items', () => {
@@ -201,24 +200,7 @@ describe('toBuybackView', () => {
   });
 
   it('derives the buy back page from the position (250 per page)', () => {
-    expect(toBuybackView(pledge({}), { position: 249, idLimit: undefined }).page).toBe(1);
-    expect(toBuybackView(pledge({}), { position: 250, idLimit: undefined }).page).toBe(2);
-  });
-});
-
-describe('giftableIdLimit', () => {
-  it('takes the highest id created before the cutoff', () => {
-    expect(
-      giftableIdLimit(
-        [
-          { id: 900, createdAt: '2026-10-30' },
-          { id: 800, createdAt: '2026-10-22' },
-          { id: 700, createdAt: '2026-09-01' },
-          { id: 650 },
-        ],
-        '2026-10-30',
-      ),
-    ).toBe(800);
-    expect(giftableIdLimit([], '2026-10-30')).toBeUndefined();
+    expect(toBuybackView(pledge({}), { position: 249 }).page).toBe(1);
+    expect(toBuybackView(pledge({}), { position: 250 }).page).toBe(2);
   });
 });
