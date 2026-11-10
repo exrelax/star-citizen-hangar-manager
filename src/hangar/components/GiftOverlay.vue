@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDemoContext } from '@/demo/use-demo';
 import { giftingRulesDate } from '@/buyback/giftable-hint';
 import { GIFTING_FAQ_URL } from '@/config';
 import { i18n } from '@/i18n';
@@ -50,7 +51,11 @@ const ready = computed(
     !submitting.value,
 );
 
+/** The demo shows the dialog, but changes nothing: its pledge ids are made up. */
+const demo = useDemoContext();
+
 async function submit() {
+  if (demo.value) return;
   if (!ready.value) {
     error.value = i18n.t('gift.missing');
     return;
@@ -202,7 +207,12 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
             <button type="button" class="shm-button" :disabled="submitting" @click="close">
               {{ i18n.t('gift.cancel') }}
             </button>
-            <button type="submit" class="shm-button shm-action-submit" :disabled="!ready">
+            <button
+              v-tooltip="demo ? i18n.t('gift.demo') : undefined"
+              type="submit"
+              class="shm-button shm-action-submit"
+              :disabled="!ready || !!demo"
+            >
               {{ submitting ? i18n.t('gift.submitting') : i18n.t('gift.submit') }}
             </button>
           </div>
