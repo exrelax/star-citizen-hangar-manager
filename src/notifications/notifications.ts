@@ -22,8 +22,8 @@ export interface AppNotification {
   at: number;
   /** When it was checked off, in ms. */
   doneAt?: number;
-  /** What it is about, for a link to it: changes in the Pledge Store (#164). */
-  kind?: 'warbonds' | 'storeItems';
+  /** What it is about, for a link to it: changes in the Pledge Store (#164), events (#69). */
+  kind?: 'warbonds' | 'storeItems' | 'events';
   /** A list shown when it is expanded, e.g. each changed Pledge Store item. */
   details?: string[];
   /**

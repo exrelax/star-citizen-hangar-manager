@@ -22,6 +22,7 @@ import {
   type StoreItemsSnapshot,
 } from '@/store/items/store-items-storage';
 import { rebuyPlanItem, type StoredRebuyPlan } from '@/store/paint-consultant/rebuy-plan-storage';
+import { eventsItem, eventsMeta, type EventsSnapshot } from '@/events/events-storage';
 import type { BuybackSnapshot } from '@/buyback/buyback';
 import type { HangarSnapshot } from '@/hangar/pledge';
 import type { OrdersSnapshot } from '@/orders/orders';
@@ -53,6 +54,7 @@ export type StorageId =
   | 'shipsBuyable'
   | 'shipsWarbonds'
   | 'storeItems'
+  | 'events'
   | 'storeCredit'
   | 'paintPlan'
   | 'settings';
@@ -171,6 +173,17 @@ export const STORAGES: readonly StorageDefinition[] = [
     usedBy: [],
     kind: 'data',
     count: (value: StoreItemsSnapshot | null) => value?.items.length ?? 0,
+    readAgain: 'auto',
+  },
+  {
+    id: 'events',
+    meta: eventsMeta,
+    item: eventsItem,
+    content: 'Events of Star Citizen: name, dates, description, icon',
+    source: 'The project website (GitHub Pages, data/events.json)',
+    usedBy: ['Pledge Store (events)', 'sidebar notifications'],
+    kind: 'data',
+    count: (value: EventsSnapshot | null) => value?.events.length ?? 0,
     readAgain: 'auto',
   },
   {

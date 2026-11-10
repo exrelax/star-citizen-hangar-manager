@@ -122,9 +122,10 @@ function noteHref(note: AppNotification) {
   return pledge && myGearHref(location.pathname, pledge.page, pledge.id);
 }
 
-/** The Pledge Store tab, at the warbond CCUs for their notification (#164). */
+/** The Pledge Store tab, at the warbond CCUs (#164) or the events (#69) of the notification. */
 function openStoreAt(kind: NonNullable<AppNotification['kind']>) {
-  // The tab starts with the warbond CCUs; for changed items it is just opened.
+  if (kind === 'events') return openTabAt('store', 'shm-events-title', { highlight: true });
+  // The warbond CCUs follow the events; for changed items the tab is just opened.
   openTabAt('store', 'shm-store-title', { highlight: kind === 'warbonds' });
 }
 

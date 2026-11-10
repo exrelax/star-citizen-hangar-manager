@@ -146,7 +146,7 @@ Your hangar is nobody else's business. The extension is built so that your data 
 - **No server of its own, no account, no tracking, no analytics.** There is nothing to sign up for
   and nothing that reports back.
 - **Everything is stored locally** in your browser's extension storage: hangar, buy back, orders,
-  ship data and the items of the Pledge Store. It never leaves your computer, and removing the
+  ship data, the items of the Pledge Store and the events. It never leaves your computer, and removing the
   extension removes it. The settings show all of it ("Stored data"), and each part can be read
   again or deleted on its own. The CCU
   history is not even stored – it is loaded from RSI when you open it.
@@ -157,6 +157,9 @@ Your hangar is nobody else's business. The extension is built so that your data 
   model names (e.g. "polaris") – no pledge data, no IDs, no login, no cookies. Turn both ship
   links off in the settings, and the extension talks to RSI only. The icons of both sites are part
   of the extension, so showing the links doesn't contact them.
+- **Events from the project website**: the list of events in the Pledge Store tab is read from the
+  project's own website on GitHub Pages, at most once a day – a public file, the same for everyone;
+  the request carries nothing but your IP address, like any request.
 
 ### Only your settings sync – through your browser
 
@@ -302,7 +305,9 @@ on its own.
       **Pledge Store items** changed, with the list (new, gone, new price, on sale) to open; both
       with **Show in Pledge Store**. Only new warbond CCUs also show as a browser notification –
       time-limited offers worth knowing while away; a click (or its button in Chrome) opens the
-      Pledge Store tab at the warbond CCUs.
+      Pledge Store tab at the warbond CCUs. An **event** like the Intergalactic Aerospace Expo,
+      once its notice starts (see [Pledge Store](#pledge-store-current-warbond-ccus)), with **Show
+      in Pledge Store** – in the sidebar only.
     - When filler paints of the [Paint Discount Consultant](#paint-discount-consultant) are among
       them: how many, with **Melt the filler paints**, which melts exactly them at once (bulk
       melting on; otherwise it leads to the setting).
@@ -506,6 +511,14 @@ Paints, Game access, LTI, Warbond, Probably giftable, Available, Rewards), plus:
 ---
 
 ## Pledge Store: current warbond CCUs
+
+**Events** come first while there are any: Star Citizen events like the Intergalactic Aerospace
+Expo, when the Pledge Store usually has new ships and sales. The list is a small file on the
+project website (`data/events.json`), read at most once a day and kept in the browser – data only,
+checked field by field, its texts shown as plain text. Each event shows from a few days before it
+starts until it ends, with its name, start and end, **Upcoming · starts in 3 days** or **Running ·
+ends in 5 days**, and a description and icon if given. Once its notice starts, the sidebar tells it
+once (the kind "Events" in the settings).
 
 The **Pledge Store** tab lists the warbond CCUs RSI currently offers – read from RSI's own ship
 upgrade tool and stored in the browser, so the tab shows them at once. CIG changes the Pledge Store
@@ -721,9 +734,9 @@ In the order of the settings tab:
     - **Marked pledges can be melted** (below "Browser notifications", only while they are on): the
       browser notifications about marked pledges and the consultant's filler paints; the sidebar
       tells it anyway.
-    - **Pledge Store changes**: **Warbond CCUs changed** (in the sidebar, new ones also in the
-      browser) and **Pledge Store items changed** (in the sidebar only). Turned off, a kind adds no
-      notification, and its open ones go – in the sidebar and in the browser.
+    - **Pledge Store**: **Warbond CCUs changed** (in the sidebar, new ones also in the browser),
+      **Pledge Store items changed** and **Events** (both in the sidebar only). Turned off, a kind
+      adds no notification, and its open ones go – in the sidebar and in the browser.
   - **Show dismissed paint notifications again**: the Paint Discount Consultant's notification
     shows again for all paints, also those dismissed with its × (on all browsers, as the dismissed
     paints are synced).

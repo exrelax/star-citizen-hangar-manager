@@ -97,7 +97,8 @@ async function restore() {
       </SettingCheck>
     </div>
 
-    <!-- Changes in the Pledge Store (#164): in the sidebar, and new warbond CCUs in the browser. -->
+    <!-- The Pledge Store: its changes (#164), in the sidebar, new warbond CCUs also in the browser;
+         its events (#69), in the sidebar. -->
     <p class="shm-field-label">{{ i18n.t('settings.storeChangeNotifications') }}</p>
     <SettingCheck
       :checked="kindOn('warbonds')"
@@ -112,6 +113,13 @@ async function restore() {
       @change="(on) => setKind('storeItems', on)"
     >
       {{ i18n.t('settings.notificationKindStoreItems') }}
+    </SettingCheck>
+    <SettingCheck
+      :checked="kindOn('events')"
+      :hint="i18n.t('settings.notificationKindEventsHint')"
+      @change="(on) => setKind('events', on)"
+    >
+      {{ i18n.t('settings.notificationKindEvents') }}
     </SettingCheck>
 
     <p class="shm-field-label">{{ i18n.t('settings.sidebarNotifications') }}</p>
