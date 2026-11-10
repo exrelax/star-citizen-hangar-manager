@@ -22,6 +22,8 @@ import { createPriceIncreaseMatcher } from '@/price-increases/price-increase-mat
 import type { ExpectedPriceIncrease } from '@/price-increases/price-increases';
 import { demoPriceIncreases } from './demo-price-increases';
 import { fraction, hash } from './random';
+import { DEFAULT_DEMO_SETTINGS, type DemoSettings, type DemoStates } from './demo-settings';
+import type { DemoBuybackComposition } from './generate-buyback';
 
 /*
  * The demo view, e.g. for screenshots, reveals nothing of the real account: by default a hangar
@@ -87,6 +89,7 @@ export function demoHangar(
   key: string,
   today = localToday(),
   now = Date.now(),
+  count: number = DEMO.hangarPledges,
 ): PledgeView[] {
   // Some upgraded pledges for their "Applied upgrades", in the same fixed random order.
   const upgraded = new Set(
@@ -98,7 +101,7 @@ export function demoHangar(
   );
   const selection = pickDemo(
     pledges,
-    DEMO.hangarPledges,
+    count,
     key,
     // The protected game access pledges (at most two) show the lock tag.
     (pledge) =>
@@ -119,6 +122,7 @@ export function generatedDemo(
   key: string,
   today = localToday(),
   now = Date.now(),
+  settings: DemoSettings = DEFAULT_DEMO_SETTINGS,
 ): {
   pledges: PledgeView[];
   buyback: BuybackView[];
@@ -126,8 +130,13 @@ export function generatedDemo(
   generatedBuyback: DemoBuyback;
   priceIncreases: ExpectedPriceIncrease[];
 } {
-  const account = generateDemoAccount(catalog, key);
-  const generatedBuyback = generateBuyback(catalog, key, today);
+  const account = generateDemoAccount(catalog, key, settings);
+  const generatedBuyback = generateBuyback(
+    catalog,
+    key,
+    today,
+    buybackComposition(settings.buybackPledges),
+  );
   // One order snapshot for both lists, like the order sync's.
   const orders: OrdersSnapshot = {
     ...account.orders,
@@ -149,7 +158,7 @@ export function generatedDemo(
     const priceIncrease = matcher.hangar(pledge);
     return priceIncrease ? { ...view, priceIncrease } : view;
   });
-  const pledges = demoViews(views, key, today, now);
+  const pledges = demoViews(views, key, today, now, settings.states);
   const buyback = generatedBuybackViews(
     generatedBuyback,
     catalog,
@@ -159,6 +168,18 @@ export function generatedDemo(
     matcher.buyback,
   );
   return { pledges, buyback, account, generatedBuyback, priceIncreases };
+}
+
+/** The kinds of the generated buy back for `count` pledges, in the shares of the default. */
+export function buybackComposition(count: number): DemoBuybackComposition {
+  const defaults = DEMO.buybackComposition;
+  const total = Object.values(defaults).reduce((sum, value) => sum + value, 0);
+  return Object.fromEntries(
+    Object.entries(defaults).map(([kind, value]) => [
+      kind,
+      Math.max(1, Math.round((value * count) / total)),
+    ]),
+  ) as unknown as DemoBuybackComposition;
 }
 
 /**
@@ -220,9 +241,10 @@ function demoViews(
   key: string,
   today: string,
   now: number,
+  states: Pick<DemoStates, 'refund' | 'justBought'> = DEFAULT_DEMO_SETTINGS.states,
 ): PledgeView[] {
   const fakeId = createFakeIds(key);
-  const justBought = justBoughtOf(selection);
+  const justBought = states.justBought ? justBoughtOf(selection) : undefined;
   const dates = demoDates(
     selection,
     key,
@@ -230,6 +252,7 @@ function demoViews(
     justBought === undefined
       ? undefined
       : { id: justBought, on: demoPurchaseTime(now).slice(0, 10) },
+    states.refund ? DEMO.refundDaysLeft : [],
   );
   return selection.map((pledge, position) => {
     const demo = anonymized(pledge, fakeId);
@@ -285,6 +308,7 @@ export function demoDates(
   today: string,
   /** The pledge bought a few hours ago (see `justBoughtOf`), on this day. */
   justBought?: { id: number; on: string },
+  refundDaysLeft: readonly number[] = DEMO.refundDaysLeft,
 ): string[] {
   // Fixed dates, newest first: the pledge just bought, the refund pledges, then the end of the
   // refund period.
@@ -292,9 +316,9 @@ export function demoDates(
   if (justBought) anchors.set(justBought.id, justBought.on);
   pledges
     .filter((pledge) => pledge.order)
-    .slice(0, DEMO.refundDaysLeft.length)
+    .slice(0, refundDaysLeft.length)
     .forEach((pledge, index) =>
-      anchors.set(pledge.id, addDays(today, DEMO.refundDaysLeft[index]! - REFUND_DAYS)),
+      anchors.set(pledge.id, addDays(today, refundDaysLeft[index]! - REFUND_DAYS)),
     );
   const refundEnd = addDays(today, -REFUND_DAYS - 1);
   const dates: string[] = [];
@@ -380,9 +404,13 @@ function daysBetween(from: string, to: string): number {
 }
 
 /** The demo selection of the buy back, with made-up ids (also for the search). */
-export function demoBuyback(pledges: readonly BuybackView[], key: string): BuybackView[] {
+export function demoBuyback(
+  pledges: readonly BuybackView[],
+  key: string,
+  count: number = DEMO.buybackPledges,
+): BuybackView[] {
   const fakeId = createFakeIds(key);
-  return pickDemo(pledges, DEMO.buybackPledges, key).map((pledge, position) => ({
+  return pickDemo(pledges, count, key).map((pledge, position) => ({
     ...anonymized(pledge, fakeId),
     position,
     page: Math.floor(position / BUYBACK_PAGE_SIZE) + 1,

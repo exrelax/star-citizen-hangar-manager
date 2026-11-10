@@ -757,6 +757,12 @@ In the order of the settings tab:
   - The exchange and gift dialogs look like RSI's own dialogs in "My Gear" by default (with the
     manager's summary and warnings); an option shows them in the selected theme instead.
 - **Hide sensitive information**: see [Anonymization for content creators](#anonymization-for-content-creators).
+- **Demo mode** (#178, only while the demo mode is on): where the demo hangar comes from – generated
+  (the default) or a selection of your own pledges –, how many pledges of each kind it has, how
+  many the buy back has, which states show (refund countdown, protected game access, upgraded
+  ships, a pledge bought a few hours ago, marks to melt in a new demo hangar) and how many pledges
+  can't be gifted or melted. **New demo hangar** makes another random one; **Reset demo** puts
+  these settings back and clears the demo's marks. Changes apply at once.
 - **General**:
   - **Show only the best insurance of upgraded ships** (on by default): after upgrades a pledge
     lists the insurance of every step; only the one that counts (LTI, otherwise the most months)

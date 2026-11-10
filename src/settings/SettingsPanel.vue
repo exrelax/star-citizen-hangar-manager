@@ -7,6 +7,7 @@ import GeneralSection from './sections/GeneralSection.vue';
 import LanguageSection from './sections/LanguageSection.vue';
 import NotificationsSection from './sections/NotificationsSection.vue';
 import PrivacySection from './sections/PrivacySection.vue';
+import DemoSection from './sections/DemoSection.vue';
 import PaintConsultantSection from './sections/PaintConsultantSection.vue';
 import ShipLinkSection from './sections/ShipLinkSection.vue';
 import SidebarSection from './sections/SidebarSection.vue';
@@ -30,6 +31,7 @@ const update = (patch: Partial<Settings>) => emit('update', patch);
     <LanguageSection :settings="settings" @update="update" />
     <ThemeSection :settings="settings" @update="update" />
     <PrivacySection :settings="settings" @update="update" />
+    <DemoSection :settings="settings" @update="update" />
     <GeneralSection :settings="settings" @update="update" />
     <SidebarSection :settings="settings" @update="update" />
     <NotificationsSection :settings="settings" @update="update" />

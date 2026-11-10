@@ -268,7 +268,45 @@
     "changelogHint": "What changed in each version.",
     "license": "MIT License",
     "licenseHint": "Open source, provided as is, without warranty.",
-    "disclaimer": "An unofficial fan project, not affiliated with or endorsed by Cloud Imperium Games or Roberts Space Industries."
+    "disclaimer": "An unofficial fan project, not affiliated with or endorsed by Cloud Imperium Games or Roberts Space Industries.",
+    "demo": {
+      "title": "Demo mode",
+      "hint": "What the demo mode shows. Changes apply at once and stay in this browser’s settings.",
+      "source": "Demo hangar",
+      "sources": {
+        "generated": "Generated from the Pledge Store and the ship catalog",
+        "own": "A selection of my own pledges"
+      },
+      "composition": "Pledges of each kind",
+      "kinds": {
+        "ships": "Standalone ships",
+        "packages": "Game packages",
+        "ccus": "CCUs",
+        "paints": "Paints",
+        "gear": "Gear",
+        "addOns": "Add-ons",
+        "packs": "Packs",
+        "rewards": "Rewards"
+      },
+      "ownHangarPledges": "Pledges in My Hangar",
+      "buybackPledges": "Pledges in the buy back",
+      "states": "States",
+      "stateChecks": {
+        "refund": "Refund countdown",
+        "protectedAccess": "Protected game access",
+        "upgraded": "Upgraded ships",
+        "justBought": "A pledge bought a few hours ago",
+        "meltMarks": "Marks to melt in a new demo hangar"
+      },
+      "notGiftablePercent": "Not giftable",
+      "notMeltablePercent": "Not meltable",
+      "newHangar": "New demo hangar",
+      "reset": "Reset demo",
+      "done": {
+        "newHangar": "A new demo hangar is shown.",
+        "reset": "The demo settings are back to their defaults, the demo’s marks are cleared."
+      }
+    }
   },
   "storage": {
     "title": "Stored data",
