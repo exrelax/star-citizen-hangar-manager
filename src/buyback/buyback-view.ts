@@ -3,7 +3,7 @@ import type { PaidOrder } from '@/orders/orders';
 import type { FilterCategory, FilterPredicates } from '@/hangar/filters';
 import { isRewardTitle } from '@/hangar/rewards';
 import { bestInsurance, type Insurance } from '@/hangar/insurance';
-import { GAME_DOWNLOAD, type ShipRef } from '@/hangar/pledge-view';
+import { GAME_DOWNLOAD, isRealImage, type ShipRef } from '@/hangar/pledge-view';
 import { normalizeSearchText } from '@/hangar/search';
 import type { ShipLinks } from '@/hangar/ship-links';
 import {
@@ -13,6 +13,7 @@ import {
   type BuybackPledge,
   type BuybackUpgrade,
 } from './buyback';
+import type { BuybackImager } from './buyback-image';
 import type { BuybackPrice, BuybackPricer } from './buyback-price';
 
 /** What the buy back list shows for a pledge. */
@@ -79,6 +80,8 @@ export interface BuybackViewContext {
   cutoff?: string;
   /** The buy back price of a pledge (see `buyback-price.ts`). */
   priceOf?: BuybackPricer;
+  /** The best image of a pledge (see `buyback-image.ts`); without it RSI's own, if real. */
+  imageOf?: BuybackImager;
 }
 
 export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext): BuybackView {
@@ -88,6 +91,7 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
     shipLinks = {},
     cutoff = BUYBACK_GIFTABLE_PURCHASED_BEFORE,
     priceOf,
+    imageOf,
   } = context;
   const price = priceOf?.(pledge);
   // The detail page lists the items besides the main one named in "Contained".
@@ -102,7 +106,7 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
     position,
     page: Math.floor(position / BUYBACK_PAGE_SIZE) + 1,
     title: pledge.title,
-    image: pledge.image,
+    image: imageOf ? imageOf(pledge) : isRealImage(pledge.image) ? pledge.image : undefined,
     reclaimedAt: pledge.reclaimedAt,
     contained: pledge.contained,
     items,

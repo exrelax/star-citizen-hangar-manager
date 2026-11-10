@@ -14,12 +14,13 @@ import {
   STORE_ITEMS_VERSION,
   type StoreItemsSnapshot,
 } from '@/store/items/store-items-storage';
+import { createBuybackImager } from './buyback-image';
 import { createBuybackPricer } from './buyback-price';
 
 /**
  * Pledges of the stored buy back, kept up to date. The hangar snapshot contributes the id limit
- * for "probably giftable" and its ship links; the ships and the Pledge Store items the buy back
- * prices (#185).
+ * for "probably giftable", its ship links and images (#202); the ships the images too, and with the
+ * Pledge Store items the buy back prices (#185).
  */
 export function useBuybackPledges() {
   const pledges = shallowRef<BuybackView[]>([]);
@@ -41,15 +42,20 @@ export function useBuybackPledges() {
     const shipLinks = { ...validHangar?.shipLinks, ...current?.shipLinks };
     const shipPrices = shipPricesOf(ships);
     const items = storeItems?.version === STORE_ITEMS_VERSION ? storeItems.items : [];
+    const catalog = currentShips(ships)?.ships;
+    const imageOf = createBuybackImager({ ships: catalog, hangarPledges: validHangar?.pledges });
     const priceOf = createBuybackPricer({
-      ships: currentShips(ships)?.ships,
+      ships: catalog,
       shipPriceOf: shipPrices.length ? createPriceLookup(shipPrices) : undefined,
       itemPriceOf: items.length ? createItemPriceLookup(items) : undefined,
       pledges: current?.pledges,
     });
     pledges.value = current
       ? current.pledges.map((pledge, position) =>
-          withOrder(toBuybackView(pledge, { position, idLimit, shipLinks, priceOf }), orders),
+          withOrder(
+            toBuybackView(pledge, { position, idLimit, shipLinks, priceOf, imageOf }),
+            orders,
+          ),
         )
       : [];
     syncedAt.value = current?.syncedAt;

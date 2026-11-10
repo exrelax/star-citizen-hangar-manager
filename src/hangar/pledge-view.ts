@@ -170,6 +170,7 @@ export function isPaintItem(item: PledgeItem): boolean {
   return item.kind === 'Skin' || (!item.kind && /\b(paint|livery)\b/i.test(item.title));
 }
 
-function isRealImage(url: string | undefined): url is string {
+/** Whether the image is one of its own, not RSI's placeholder. */
+export function isRealImage(url: string | undefined): url is string {
   return !!url && !url.includes(PLACEHOLDER_IMAGE);
 }
