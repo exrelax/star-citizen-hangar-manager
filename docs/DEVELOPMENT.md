@@ -173,7 +173,7 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   without a milestone are listed under "Later", issues labelled `website` or
   `internal` (work for the project itself, e.g. the release or the demo mode) never show. Sub-issues
   are left out where their parent issue is listed (same milestone or "Later"); the parent stands
-  for them, also in the progress. With a `GITHUB_TOKEN` that can read the
+  for them, also in the progress. A hidden parent (`website`, `internal`) hides its sub-issues too. With a `GITHUB_TOKEN` that can read the
   [project board](https://github.com/users/exrelax/projects/1), the issues are grouped by its
   columns, otherwise into open and done. Locally it works without a
   token (GitHub allows 60 requests an hour without one).

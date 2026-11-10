@@ -11,6 +11,8 @@
  *
  * Only the main features show: a sub-issue is left out when its parent issue is listed in the same
  * place (the same milestone, or "Later"), and doesn't count for the milestone's progress either.
+ * That holds for a hidden parent too, so the sub-issues of an internal issue (e.g. the demo mode)
+ * are hidden with it.
  */
 
 export interface RoadmapIssue {
@@ -167,6 +169,13 @@ export async function fetchRoadmap(options: FetchRoadmapOptions): Promise<Roadma
     return issues.filter((issue) => !issue.parent_issue_url || !listed.has(issue.parent_issue_url));
   };
 
+  /**
+   * The issues to show: first without the sub-issues of a parent in the same place, then without
+   * the hidden ones – in this order, so a hidden parent takes its sub-issues along.
+   */
+  const shown = (issues: GitHubIssue[]) =>
+    mainIssues(issues.filter((issue) => !issue.pull_request)).filter(visible);
+
   const milestones = (await getAll<GitHubMilestone>('/milestones?state=open&sort=due_on'))
     .filter((milestone) => milestone.due_on)
     .sort((a, b) => a.due_on!.localeCompare(b.due_on!));
@@ -175,11 +184,9 @@ export async function fetchRoadmap(options: FetchRoadmapOptions): Promise<Roadma
       getAll<GitHubIssue>(`/issues?milestone=${milestone.number}&state=all`),
     ),
   );
-  const later = (
-    await getAll<GitHubIssue>(
-      `/issues?state=open&milestone=none&labels=${ROADMAP_SOURCE.laterLabel}`,
-    )
-  ).filter(visible);
+  const later = await getAll<GitHubIssue>(
+    `/issues?state=open&milestone=none&labels=${ROADMAP_SOURCE.laterLabel}`,
+  );
 
   let columns: Map<number, string> | undefined;
   try {
@@ -193,11 +200,9 @@ export async function fetchRoadmap(options: FetchRoadmapOptions): Promise<Roadma
     release: await getRelease(),
     fromBoard: columns !== undefined,
     milestones: milestones
-      .map((milestone, index) =>
-        toMilestone(milestone, mainIssues(issuesByMilestone[index]!.filter(visible)), columns),
-      )
+      .map((milestone, index) => toMilestone(milestone, shown(issuesByMilestone[index]!), columns))
       .filter((milestone) => milestone.open + milestone.done > 0),
-    later: mainIssues(later)
+    later: shown(later)
       .sort((a, b) => a.number - b.number)
       .map(toIssue),
   };
