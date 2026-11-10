@@ -232,9 +232,11 @@ Each entry of `priceIncreases` is one ship (the values are an example):
   tool and the buy back's CCUs use the same id (#187).
 - **`ship.aliases`** (optional): other names RSI uses for the ship, only where they differ from
   the Ship Matrix, e.g. "Hercules Starlifter M2" (My Hangar) for "M2 Hercules", "Mercury Star
-  Runner" for "Mercury". Names are compared without case, punctuation and the endings
-  "Standard Edition" and "Warbond Edition", but otherwise exactly: "Galaxy" doesn't match
-  "Galaxy Refinery Module".
+  Runner" for "Mercury". Names are compared without case, punctuation, word order and the
+  endings "Standard Edition" and "Warbond Edition", but otherwise exactly: "Galaxy" doesn't match
+  "Galaxy Refinery Module" (see
+  [`src/price-increases/price-increase-match.ts`](../src/price-increases/price-increase-match.ts)
+  for which items an entry affects).
 - **`priceIncreaseAt`** (required): when the price is expected to rise. A day (`"2026-11-16"`)
   if only the day is expected, or a time in UTC (`"2026-11-16T16:00:00Z"`) if the probable time
   of the Pledge Store update is known, e.g. 17:00 CET during the IAE. With a time the extension
