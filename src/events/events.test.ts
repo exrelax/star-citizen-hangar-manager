@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { eventState, parseEvents, shownEvents } from './events';
+import { eventState, localized, parseEvents, shownEvents } from './events';
 
 const entry = (overrides: Record<string, unknown> = {}) => ({
   id: 'iae-2956',
@@ -18,14 +18,30 @@ describe('parseEvents', () => {
     expect(parseEvents(file(entry({ description: ' Free fly. ' })))).toEqual([
       {
         id: 'iae-2956',
-        name: 'Intergalactic Aerospace Expo 2956',
+        name: { en: 'Intergalactic Aerospace Expo 2956' },
         eventStart: Date.parse('2026-11-13T16:00:00Z'),
         eventEnd: Date.parse('2026-11-27T20:00:00Z'),
         displayStart: Date.parse('2026-11-06T00:00:00Z'),
         displayEnd: Date.parse('2026-11-27T20:00:00Z'),
-        description: 'Free fly.',
+        description: { en: 'Free fly.' },
       },
     ]);
+  });
+
+  it('reads texts per language, with English required', () => {
+    const [event] = parseEvents(
+      file(
+        entry({
+          name: { en: 'Expo', de: 'Messe', xx: 'unknown' },
+          description: { de: 'Nur Deutsch' },
+        }),
+      ),
+    )!;
+    expect(event?.name).toEqual({ en: 'Expo', de: 'Messe' });
+    expect(event?.description).toBeUndefined();
+    expect(localized(event!.name, 'de')).toBe('Messe');
+    expect(localized(event!.name, 'fr')).toBe('Expo');
+    expect(parseEvents(file(entry({ name: { de: 'Messe' } })))).toEqual([]);
   });
 
   it('ignores files of another format', () => {

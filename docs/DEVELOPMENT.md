@@ -185,6 +185,9 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   the dev build reads the file of the working copy, so new events can be tried before they are
   deployed – "Stored data" → "Events" in the settings reads it again at once. The format is
   checked by [`src/events/events.ts`](../src/events/events.ts); icons must be on the site itself.
+  `name` and `description` are one text, or one per language of the extension –
+  `{ "en": "…", "de": "…", "fr": "…", "es": "…" }`, English required and shown for a language
+  not given.
 - **Previews**: both pages have Open Graph and X tags with the same title and description as the
   page, and `store/social-preview-1280x640.png` as the image. Its URL has to be absolute: the build
   puts it below the site's address (`SITE_URL` in `site/vite.config.ts`).

@@ -7,7 +7,7 @@ import {
 } from '@/notifications/notifications';
 import { resolveLanguage } from '@/settings/language';
 import { settingsItem, withDefaults } from '@/settings/settings';
-import { eventState, shownEvents, type StarCitizenEvent } from './events';
+import { eventState, localized, shownEvents, type StarCitizenEvent } from './events';
 
 /*
  * A sidebar notification once per event when its display period starts (#69), as the kind
@@ -28,11 +28,11 @@ export function eventNote(event: StarCitizenEvent, locale: Locale, now: number):
     kind: 'events',
     text: upcoming
       ? translate(locale, 'notifications.eventUpcoming', [
-          event.name,
+          localized(event.name, locale),
           formatEventTime(event.eventStart, locale),
         ])
       : translate(locale, 'notifications.eventRunning', [
-          event.name,
+          localized(event.name, locale),
           formatEventTime(event.eventEnd, locale),
         ]),
     at: now,

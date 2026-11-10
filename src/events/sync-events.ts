@@ -49,29 +49,35 @@ export function maybeRefreshEvents({
   running ??= (async () => {
     const [stored, meta] = await Promise.all([eventsItem.getValue(), eventsMeta.getValue()]);
     const current = stored?.version === EVENTS_VERSION ? stored : null;
+    // Stored in an earlier format: removed and read again at once (after a failure, then hourly).
+    const outdated = !!stored && !current;
+    if (outdated) await eventsItem.removeValue();
     let events = current?.events ?? [];
     // Without stored events too only when due: a missing file is tried again after an hour, not on
     // every check. Deleting them in the settings deletes their metadata, so they are read again.
-    if (force || eventsDue(meta, now())) {
-      events = (await readEvents(fetch, now, meta)) ?? events;
+    if (force || outdated || eventsDue(meta, now())) {
+      events = (await readEvents(fetch, now, current ? meta : undefined)) ?? events;
     }
     await noteShownEvents(events, now());
   })().finally(() => (running = undefined));
   return running;
 }
 
-/** Reads and stores the events; the events read, or none if they couldn't be. */
+/**
+ * Reads and stores the events; the events read, or none if they couldn't be. Without `meta`
+ * (nothing current stored) they are stored in any case.
+ */
 async function readEvents(
   fetch: () => Promise<StarCitizenEvent[] | undefined>,
   now: () => number,
-  meta: StorageMeta,
+  meta: StorageMeta | undefined,
 ): Promise<StarCitizenEvent[] | undefined> {
   try {
     const events = await fetch();
     if (!events) throw new Error('The events file has an unknown format');
     const value = { version: EVENTS_VERSION, events };
     const fingerprint = hashOf(value);
-    const unchanged = meta.fingerprint === fingerprint;
+    const unchanged = meta?.fingerprint === fingerprint;
     if (!unchanged) await eventsItem.setValue(value);
     await recordSync(eventsMeta, {
       at: now(),

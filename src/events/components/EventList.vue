@@ -4,7 +4,7 @@ import { i18n, locale } from '@/i18n';
 import { useNow } from '@/shared/use-now';
 import { computed } from 'vue';
 import { formatEventTime } from '../event-notes';
-import { eventState, shownEvents, type StarCitizenEvent } from '../events';
+import { eventState, localized, shownEvents, type StarCitizenEvent } from '../events';
 import { formatUntil } from '../format-until';
 
 /*
@@ -23,6 +23,8 @@ const rows = computed(() =>
     const state = eventState(event, now.value);
     return {
       event,
+      name: localized(event.name, locale.value),
+      description: event.description && localized(event.description, locale.value),
       state,
       period: `${formatEventTime(event.eventStart, locale.value)} – ${formatEventTime(event.eventEnd, locale.value)}`,
       status:
@@ -54,12 +56,12 @@ const rows = computed(() =>
             <SvgIcon v-else name="award" />
           </span>
           <span class="shm-main">
-            <span class="shm-title">{{ row.event.name }}</span>
+            <span class="shm-title">{{ row.name }}</span>
             <span class="shm-meta">
               <time :datetime="new Date(row.event.eventStart).toISOString()">{{ row.period }}</time>
             </span>
-            <span v-if="row.event.description" class="shm-event-description">
-              {{ row.event.description }}
+            <span v-if="row.description" class="shm-event-description">
+              {{ row.description }}
             </span>
           </span>
           <span class="shm-badges">
