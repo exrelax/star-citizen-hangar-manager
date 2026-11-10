@@ -106,7 +106,8 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
     isGamePackage: pledge.category === 'game_package',
     hasGameAccess:
       pledge.category === 'game_package' || items.some((item) => GAME_DOWNLOAD.test(item)),
-    isProbablyGiftable: giftable?.(pledge.id) ?? false,
+    // What RSI can't sell again can't be bought back, so it can't become giftable either (#207).
+    isProbablyGiftable: !unavailable && (giftable?.(pledge.id) ?? false),
     ...(price && { price }),
     ...(unavailable && { unavailable }),
     priceRead: pledge.price !== undefined,
