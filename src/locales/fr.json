@@ -395,7 +395,8 @@
       "name": "Paramètres",
       "content": "Langue, thème, options d’affichage et de confidentialité, filtres, tri",
       "missing": "Tous les paramètres reviennent à leurs valeurs par défaut."
-    }
+    },
+    "demoDisabled": "Pas en mode démo : ces chiffres sont ceux de la démo, vos données restent inchangées."
   },
   "status": {
     "refreshing": "Actualisation …",

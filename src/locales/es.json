@@ -395,7 +395,8 @@
       "name": "Ajustes",
       "content": "Idioma, tema, opciones de visualización y privacidad, filtros, orden",
       "missing": "Todos los ajustes vuelven a sus valores predeterminados."
-    }
+    },
+    "demoDisabled": "No en el modo demo: estas cifras son las de la demo, tus datos no cambian."
   },
   "status": {
     "refreshing": "Actualizando …",

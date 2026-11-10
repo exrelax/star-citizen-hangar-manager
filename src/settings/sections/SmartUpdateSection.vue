@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { HANGAR_PAGE_SIZE, PLEDGE_STORE, SMART_UPDATE, STORE_ITEMS } from '@/config';
 import { hangarSnapshot } from '@/hangar/hangar-storage';
+import { useDemoContext } from '@/demo/use-demo';
 import { HANGAR_SNAPSHOT_VERSION, type HangarSnapshot } from '@/hangar/pledge';
 import { spotCheckCoverage } from '@/hangar/smart-update/check';
 import { i18n, locale } from '@/i18n';
@@ -77,8 +78,10 @@ function formatDuration(minutes: number) {
   }).format(value);
 }
 
+// The demo mode counts the demo hangar's pages (#132), not the real one's.
+const demo = useDemoContext();
 const spotHint = computed(() => {
-  const pages = hangarPages.value;
+  const pages = demo.value?.storage.hangarPages ?? hangarPages.value;
   if (pages === undefined) return i18n.t('settings.spotChecksHintNoData');
   const { settings } = props;
   const coverage = spotCheckCoverage(pages, settings.spotCheckPages);
