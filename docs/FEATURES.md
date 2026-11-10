@@ -197,7 +197,8 @@ information (for screenshots or content creators)** keeps private details off sc
   items nor their number nor the value. It stays the same on every visit. The buy back is
   generated the same way (#177): melted ships, game packages, CCUs, paints, gear, add-ons and
   rewards, some bought with money, with buy back prices of every source and an item without a
-  price, and made-up buy back tokens. Its orders and remembered gift flags show every case of
+  price, and made-up buy back tokens (0 to 2, as an account has at most two). Its rewards are event
+  rewards only: referral bonuses and the like can't be melted. Its orders and remembered gift flags show every case of
   "probably giftable" (#205): money only before 2026-10-30 (also a buy back paid with money),
   store credit only, both, money after the date, no known order, a gift flag overruling the order,
   and two pledges of one order. Two CCUs can't be bought back (#208): one whose base ship now costs

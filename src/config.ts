@@ -341,6 +341,8 @@ export const DEMO = {
   },
   /** Minutes the invisible demo mode for screenshots lasts (#133, development builds only). */
   invisibleMinutes: 10,
+  /** Buy back tokens an account can have at most. */
+  maxBuybackTokens: 2,
   /** How many pledges of each kind the generated buy back has (#177). */
   buybackComposition: {
     ships: 5,

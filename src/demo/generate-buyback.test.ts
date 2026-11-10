@@ -15,12 +15,17 @@ describe('generateBuyback (#177)', () => {
     const dates = first.pledges.map((pledge) => pledge.reclaimedAt!);
     expect(dates).toEqual([...dates].sort().reverse());
     for (const pledge of first.pledges) expect(pledge.id).toBeLessThan(DEMO.idBase - 100_000);
-    expect(first.tokens).toBeGreaterThan(0);
+    expect(first.tokens).toBeGreaterThanOrEqual(0);
+    expect(first.tokens).toBeLessThanOrEqual(2);
   });
 });
 
 describe.each(['key-a', 'key-b', 'key-c'])('the generated buy back of %s', (key) => {
   const { buyback } = generatedDemo(FALLBACK_CATALOG, key, TODAY, NOW);
+
+  it('has no rewards that can’t be melted', () => {
+    expect(buyback.some((pledge) => /referral/i.test(pledge.title))).toBe(false);
+  });
 
   it('has pledges of each kind', () => {
     for (const filter of ['ships', 'ccus', 'paints', 'gameAccess', 'lti', 'rewards'] as const) {
@@ -51,7 +56,7 @@ describe.each(['key-a', 'key-b'])(
     const giftable = (id: number) => buyback.find((pledge) => pledge.id === id)!.isProbablyGiftable;
     const cases = generatedBuyback.pledges.filter(
       (pledge) =>
-        !pledge.isUpgrade && !pledge.title.startsWith('Referral') && pledge.price !== null,
+        !pledge.isUpgrade && !/^(IAE|Luminalia) /.test(pledge.title) && pledge.price !== null,
     );
     const [money, back, credit, mixed, late, unknown, yes, no, sameA, sameB] = cases.map(
       (pledge) => pledge.id,
