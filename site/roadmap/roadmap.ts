@@ -6,7 +6,8 @@
  *   there is none), above the timeline; the hero shows it, too.
  * - Timeline: the open milestones with a due date and issues, by date, with their issues grouped
  *   by the column of the project board (or into "Open" and "Done" if the board can't be read).
- * - Later: open `enhancement` issues without a milestone, except the website's own (`website`).
+ * - Later: open `enhancement` issues without a milestone, except the website's own
+ *   (`website`) and internal ones (`internal`).
  *
  * Only the main features show: a sub-issue is left out when its parent issue is listed in the same
  * place (the same milestone, or "Later"), and doesn't count for the milestone's progress either.
@@ -62,8 +63,11 @@ export const ROADMAP_SOURCE = {
   projectNumber: 1,
   /** Open issues with this label and no milestone are listed under "Later" … */
   laterLabel: 'enhancement',
-  /** … except those with this label. Issues with it never show anywhere on the roadmap. */
-  excludedLabel: 'website',
+  /**
+   * … except those with one of these labels. Issues with them never show anywhere on the roadmap:
+   * the website's own issues and work for the project itself (release, demo mode).
+   */
+  excludedLabels: ['website', 'internal'],
 };
 
 /** The board's columns in their order; issues in other columns count as "Backlog". */
@@ -155,7 +159,7 @@ export async function fetchRoadmap(options: FetchRoadmapOptions): Promise<Roadma
 
   const visible = (issue: GitHubIssue) =>
     !issue.pull_request &&
-    !issue.labels.some((label) => label.name === ROADMAP_SOURCE.excludedLabel);
+    !issue.labels.some((label) => ROADMAP_SOURCE.excludedLabels.includes(label.name ?? ''));
 
   /** Without the sub-issues whose parent is among `issues`: the parent stands for them. */
   const mainIssues = (issues: GitHubIssue[]) => {

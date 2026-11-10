@@ -53,9 +53,10 @@ const ISSUES: Record<number, unknown[]> = {
     issue(1),
     closed(6, '2026-11-06T10:00:00Z'),
     closed(13, '2026-11-06T12:00:00Z'),
-    // Pull requests and the website's own issues never show.
+    // Pull requests, the website's own issues and internal ones never show.
     issue(40, { pull_request: {} }),
     issue(25, { labels: [{ name: 'website' }] }),
+    issue(41, { labels: [{ name: 'internal' }] }),
     // Sub-issues of an issue of the same milestone: only their parent shows.
     sub(30, 3),
     sub(31, 6, { state: 'closed', closed_at: '2026-11-07T10:00:00Z' }),
@@ -70,6 +71,7 @@ const LATER = [
   issue(5),
   sub(12, 11),
   issue(22, { labels: [{ name: 'enhancement' }, { name: 'website' }] }),
+  issue(23, { labels: [{ name: 'enhancement' }, { name: 'internal' }] }),
 ];
 
 const RELEASE = {
