@@ -33,8 +33,9 @@ describe('the default demo on an empty account (#130)', () => {
     expect(has((pledge) => pledge.isUpgraded)).toBe(true);
     expect(has((pledge) => pledge.isGiftable) && has((pledge) => !pledge.isGiftable)).toBe(true);
     expect(has((pledge) => pledge.isMeltable) && has((pledge) => !pledge.isMeltable)).toBe(true);
-    const games = new Set(pledges.map((pledge) => pledge.protectedGames.join(' · ')));
-    for (const game of ['SC', 'SQ42', 'SC · SQ42']) expect(games).toContain(game);
+    // One pledge per game (`SC · SQ42` on one pledge with the demo setting "together").
+    const games = pledges.flatMap((pledge) => pledge.protectedGames);
+    expect(games.sort()).toEqual(['SC', 'SQ42']);
     expect(has((pledge) => !!pledge.order)).toBe(true);
     expect(has((pledge) => !!pledge.priceIncrease)).toBe(true);
     expect(justBoughtOf(pledges)).toBeDefined();

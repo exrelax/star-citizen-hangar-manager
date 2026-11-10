@@ -314,6 +314,11 @@
         "lowerTier": "Nivel inferior",
         "impossible": "No posible",
         "none": "Sin crédito"
+      },
+      "protectedAccessOptions": {
+        "separate": "Un pledge por juego: SC y SQ42",
+        "together": "Un pledge para ambos juegos: SC · SQ42",
+        "off": "Ninguno"
       }
     }
   },

@@ -40,7 +40,11 @@ describe('the demo settings in the generated demo', () => {
   });
 
   it('turn states off', () => {
-    const states = { ...DEFAULT_DEMO_SETTINGS.states, upgraded: false, protectedAccess: false };
+    const states = {
+      ...DEFAULT_DEMO_SETTINGS.states,
+      upgraded: false,
+      protectedAccess: 'off' as const,
+    };
     const off = demoSettingsOf({ states, buybackPledges: 50 });
     const { pledges } = generatedDemo(FALLBACK_CATALOG, 'key', TODAY, NOW, off);
     expect(pledges.some((pledge) => pledge.isUpgraded)).toBe(false);

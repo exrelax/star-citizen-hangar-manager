@@ -9,14 +9,21 @@ import type { DemoComposition } from './generate-hangar';
  */
 
 export const DEMO_SOURCES = ['generated', 'own'] as const;
+
+export const PROTECTED_ACCESS = ['separate', 'together', 'off'] as const;
+export type ProtectedAccess = (typeof PROTECTED_ACCESS)[number];
 export type DemoSource = (typeof DEMO_SOURCES)[number];
 
 /** The states of the generated pledges that can be turned off, and how often some show. */
 export interface DemoStates {
   /** Two pledges with the refund countdown, normal and in its last days. */
   refund: boolean;
-  /** Pledges protected as game access (`SC`, `SQ42`, `SC · SQ42`). */
-  protectedAccess: boolean;
+  /**
+   * The game access protected (#176): RSI protects one pledge per game, so either one pledge for
+   * each game (`SC` on a reward without a ship, `SQ42` on a game package), one for both
+   * (`SC · SQ42`), or none.
+   */
+  protectedAccess: ProtectedAccess;
   /** Upgraded ships with "Applied upgrades". */
   upgraded: boolean;
   /** The newest pledge bought a few hours ago. */
@@ -57,7 +64,7 @@ export const DEFAULT_DEMO_SETTINGS: DemoSettings = {
   ownHangarPledges: DEMO.hangarPledges,
   states: {
     refund: true,
-    protectedAccess: true,
+    protectedAccess: 'separate',
     upgraded: true,
     justBought: true,
     meltMarks: true,
@@ -105,7 +112,9 @@ export function demoSettingsOf(stored: Partial<DemoSettings> | null | undefined)
     ownHangarPledges: valid(stored?.ownHangarPledges, isListSize, defaults.ownHangarPledges),
     states: {
       refund: valid(states?.refund, isBoolean, defaults.states.refund),
-      protectedAccess: valid(states?.protectedAccess, isBoolean, defaults.states.protectedAccess),
+      protectedAccess: PROTECTED_ACCESS.includes(states?.protectedAccess as ProtectedAccess)
+        ? states!.protectedAccess
+        : defaults.states.protectedAccess,
       upgraded: valid(states?.upgraded, isBoolean, defaults.states.upgraded),
       justBought: valid(states?.justBought, isBoolean, defaults.states.justBought),
       meltMarks: valid(states?.meltMarks, isBoolean, defaults.states.meltMarks),

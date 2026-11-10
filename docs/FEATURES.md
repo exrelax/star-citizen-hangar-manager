@@ -224,8 +224,9 @@ information (for screenshots or content creators)** keeps private details off sc
   normal demo mode with its badge is back. The Pledge Store tab shows warbond CCUs of the demo's
   own, next to its CCUs in the same price range (#130), so every case shows on any account. The hangar's pledges have every
   state (#176): meltable or not, giftable or not, LTI and insurances in years and months (also
-  several at once), upgraded ships with made-up "Applied upgrades", protected game access (`SC`,
-  `SQ42`, `SC · SQ42`, also a reward without a ship), and orders paid with money, in part with
+  several at once), upgraded ships with made-up "Applied upgrades", protected game access – one
+  pledge per game like RSI's, by the demo settings `SC` on a reward without a ship and `SQ42` on a
+  game package, or `SC · SQ42` on one –, and orders paid with money, in part with
   store credit or with store credit only, with made-up invoices. Two of them have the refund
   countdown, the newest was bought a few hours ago, and a new demo hangar starts with two marks to
   melt – one still waiting, one ready. Everything has made-up pledge and order

@@ -314,6 +314,11 @@
         "lowerTier": "Lower tier",
         "impossible": "Not possible",
         "none": "No store credit"
+      },
+      "protectedAccessOptions": {
+        "separate": "One pledge per game: SC and SQ42",
+        "together": "One pledge for both games: SC · SQ42",
+        "off": "None"
       }
     }
   },

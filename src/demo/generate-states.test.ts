@@ -4,6 +4,7 @@ import { isPaidWithMoney, isPaidWithMoneyOnly } from '@/orders/orders';
 import { refundWindow } from '@/orders/refund';
 import { FALLBACK_CATALOG } from './catalog';
 import { generatedDemo, justBoughtOf } from './demo';
+import { DEFAULT_DEMO_SETTINGS } from './demo-settings';
 
 const TODAY = '2026-11-10';
 const NOW = Date.parse('2026-11-10T12:00:00Z');
@@ -41,13 +42,25 @@ describe.each(['key-a', 'key-b', 'key-c', 'a much longer demo key'])(
       }
     });
 
-    it('has protected game access for SC, SQ42 and both, also a reward without a ship', () => {
-      const games = pledges.map((pledge) => pledge.protectedGames.join(' · '));
-      expect(games).toEqual(expect.arrayContaining(['SC', 'SQ42', 'SC · SQ42']));
+    it('protects one pledge per game, SC on a reward without a ship', () => {
+      const games = pledges.flatMap((pledge) => pledge.protectedGames);
+      expect(games.sort()).toEqual(['SC', 'SQ42']);
       some(
         (pledge) =>
-          pledge.protectedGames.length > 0 && !pledge.items.some((item) => item.kind === 'Ship'),
+          pledge.protectedGames.includes('SC') &&
+          !pledge.items.some((item) => item.kind === 'Ship'),
       );
+    });
+
+    it('protects one pledge for both games when chosen, and none when off', () => {
+      const states = { ...DEFAULT_DEMO_SETTINGS.states };
+      const of = (protectedAccess: 'together' | 'off') =>
+        generatedDemo(FALLBACK_CATALOG, key, TODAY, NOW, {
+          ...DEFAULT_DEMO_SETTINGS,
+          states: { ...states, protectedAccess },
+        }).pledges.filter((pledge) => pledge.protectedGames.length);
+      expect(of('together').map((pledge) => pledge.protectedGames)).toEqual([['SC', 'SQ42']]);
+      expect(of('off')).toEqual([]);
     });
 
     it('has orders paid with money, in part with store credit, and with store credit only', () => {
