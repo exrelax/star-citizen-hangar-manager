@@ -165,7 +165,7 @@
     "hideRefund": "Refund-Frist ausblenden",
     "hideRefundHint": "Blendet bei Käufen mit Geld aus, wie viele der $1 Tage für einen Refund noch übrig sind, und den Button „Refund Request“ in den Order-Details.",
     "demoMode": "Demo-Modus",
-    "demoModeHint": "Zeigt nur $1 Pledges aus „My Hangar“ und $2 aus dem Buy Back, mit erfundenen Pledge-IDs – z. B. für Screenshots. Links zu RSI und der Warenkorb sind währenddessen ohne Funktion.",
+    "demoModeHint": "Zeigt statt deines eigenen einen Hangar, der aus dem Pledge Store und dem Schiffskatalog erfunden ist, mit erfundenen Pledge-IDs – z. B. für Screenshots. Links zu RSI und der Warenkorb sind währenddessen ohne Funktion.",
     "theme": "Theme",
     "themeHint": "Ändert nur das Aussehen des Hangar Managers, der Rest der RSI-Website bleibt unverändert. „Modern Hangar“ folgt dem hellen oder dunklen Erscheinungsbild des Systems.",
     "fontSize": "Schriftgröße",

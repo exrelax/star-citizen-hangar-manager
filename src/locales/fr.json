@@ -165,7 +165,7 @@
     "hideRefund": "Masquer le délai de remboursement",
     "hideRefundHint": "Masque, pour les achats payés en argent, combien des $1 jours de remboursement il reste, ainsi que le bouton « Refund Request » dans les détails de la commande.",
     "demoMode": "Mode démo",
-    "demoModeHint": "N’affiche que $1 pledges de « My Hangar » et $2 du buy back, avec des ID inventés – p. ex. pour des captures d’écran. Les liens vers RSI et le panier ne font rien pendant ce temps.",
+    "demoModeHint": "Affiche, au lieu du vôtre, un hangar inventé à partir du Pledge Store et du catalogue de vaisseaux, avec des ID inventés – p. ex. pour des captures d’écran. Les liens vers RSI et le panier ne font rien pendant ce temps.",
     "theme": "Thème",
     "themeHint": "Ne change que l’apparence du Hangar Manager ; le reste du site de RSI reste inchangé. « Modern Hangar » suit l’apparence claire ou sombre du système.",
     "fontSize": "Taille du texte",

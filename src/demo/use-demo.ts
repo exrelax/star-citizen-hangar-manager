@@ -3,10 +3,16 @@ import type { PledgeView } from '@/hangar/pledge-view';
 import type { Order } from '@/orders/orders';
 import { computed, inject, onMounted, shallowRef, type InjectionKey, type Ref } from 'vue';
 import type { StoreCredit } from '@/account/store-credit';
+import { current, shipsItem } from '@/ships/ships-storage';
+import { STORE_ITEMS_VERSION, storeItemsItem } from '@/store/items/store-items-storage';
+import { useStored } from '@/storage/use-stored';
+import { demoCatalog } from './catalog';
+import type { DemoSettings } from './demo-settings';
 import {
   createFakeIds,
   demoBuyback,
   demoHangar,
+  generatedHangar,
   demoPurchaseTime,
   demoStoreCredit,
   demoUpgradeLog,
@@ -59,19 +65,37 @@ export function useDemoContext(): Ref<DemoContext | null> {
 }
 
 /**
- * The demo variants of the lists, built from the real ones while `active` (the demo mode
- * setting; the selection is only computed when it is on).
+ * The demo variants of the lists while `active` (the demo mode setting; only computed when it is
+ * on): generated from the public catalog (#175) or a selection of the real ones, by `settings`.
  */
 export function useDemo(
   active: Readonly<Ref<boolean>>,
   pledges: Ref<PledgeView[]>,
   buyback: Ref<BuybackView[]>,
+  settings: () => DemoSettings,
 ) {
   const key = shallowRef<string>();
   onMounted(async () => (key.value = await demoKey()));
 
+  // The public catalog the generated hangar is made of; a bundled one stands in for what isn't
+  // stored yet.
+  const ships = useStored(shipsItem);
+  const storeItems = useStored(storeItemsItem);
+  const catalog = computed(() =>
+    demoCatalog(
+      current(ships.value ?? null)?.ships,
+      storeItems.value?.version === STORE_ITEMS_VERSION ? storeItems.value.items : undefined,
+    ),
+  );
+  const generated = computed(() => settings().source === 'generated');
+
   const ready = computed(() => !active.value || key.value !== undefined);
-  const demoPledges = computed(() => (key.value ? demoHangar(pledges.value, key.value) : []));
+  const demoPledges = computed(() => {
+    if (!active.value || !key.value) return [];
+    return generated.value
+      ? generatedHangar(catalog.value, key.value)
+      : demoHangar(pledges.value, key.value);
+  });
   const context = computed<DemoContext | null>(() => {
     if (!active.value || !key.value) return null;
     const fakeId = createFakeIds(key.value);
@@ -94,7 +118,7 @@ export function useDemo(
     return { fakeId, realOrder, upgradeLog, storeCredit: demoStoreCredit(demoKey), justBought };
   });
   const demoBuybackPledges = computed(() =>
-    key.value ? demoBuyback(buyback.value, key.value) : [],
+    active.value && key.value ? demoBuyback(buyback.value, key.value) : [],
   );
   return {
     ready,

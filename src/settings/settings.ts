@@ -1,3 +1,4 @@
+import { DEFAULT_DEMO_SETTINGS, demoSettingsOf, type DemoSettings } from '@/demo/demo-settings';
 import { notificationKindsOf, type NotificationKind } from '@/notifications/kinds';
 import { BUYBACK_FILTER_CATEGORIES, type BuybackFilter } from '@/buyback/buyback-view';
 import { FILTERS, FONT_SIZE_SCALES, PLEDGE_STORE, PRICE_INCREASES, SMART_UPDATE } from '@/config';
@@ -144,6 +145,8 @@ export interface Settings {
     erkul: boolean;
     fleetyards: boolean;
   };
+  /** The demo mode's own settings (#178, see `demo/demo-settings.ts`). */
+  demo: DemoSettings;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -184,6 +187,7 @@ export const DEFAULT_SETTINGS: Settings = {
     layout: 'ways',
   },
   shipLinks: { erkul: true, fleetyards: true },
+  demo: DEFAULT_DEMO_SETTINGS,
 };
 
 /**
@@ -304,6 +308,7 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
       erkul: stored?.shipLinks?.erkul ?? DEFAULT_SETTINGS.shipLinks.erkul,
       fleetyards: stored?.shipLinks?.fleetyards ?? DEFAULT_SETTINGS.shipLinks.fleetyards,
     },
+    demo: demoSettingsOf(stored?.demo),
   };
 }
 
