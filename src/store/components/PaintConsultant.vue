@@ -20,6 +20,8 @@ import PaintConsultantWays from './PaintConsultantWays.vue';
 import {
   REBUY_PLAN_VERSION,
   rebuyPlanItem,
+  demoRebuyPlanItem,
+  rebuyPlanItemOf,
   storedPlanOf,
 } from '../paint-consultant/rebuy-plan-storage';
 
@@ -97,12 +99,16 @@ const demo = useDemoContext();
 const planLines = computed(() => (plan.value ? cartLinesOf(plan.value) : []));
 /** Keeps the plan once its paints are in the cart, for later (#105, #139, #168). */
 async function keepPlan() {
-  if (plan.value) await rebuyPlanItem.setValue(storedPlanOf(plan.value, Date.now()));
+  if (plan.value) await planItem().setValue(storedPlanOf(plan.value, Date.now()));
 }
 
 // ---- Melt the own paints at once (#104, with bulk melting on) ----
 
-const storedPlan = useStored(rebuyPlanItem);
+// The demo has a kept plan of its own (#131), never the account's.
+const realPlan = useStored(rebuyPlanItem);
+const demoPlan = useStored(demoRebuyPlanItem);
+const storedPlan = computed(() => (demo.value ? demoPlan.value : realPlan.value));
+const planItem = () => rebuyPlanItemOf(!!demo.value);
 /** The own paints of the plan were put into the cart (#103): only then they may be melted. */
 const cartFilled = computed(() => {
   const stored = storedPlan.value;
@@ -169,7 +175,7 @@ async function keepPendingPlan() {
   const stored = storedPlan.value;
   const current = pending.value?.plan;
   if (!stored || !current) return;
-  await rebuyPlanItem.setValue({
+  await planItem().setValue({
     ...stored,
     tier: { ...current.tier },
     fillers: current.fillers.map((filler) => ({

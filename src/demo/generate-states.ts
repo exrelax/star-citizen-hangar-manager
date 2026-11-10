@@ -248,6 +248,36 @@ export function withStates(
     }));
   }
 
+  // A paint bought again with more discount (#139, #131): an old copy at its full price, a newer
+  // one at the best tier; the demo's kept plan confirms it (`demo-consultant.ts`).
+  const paints = ofKind(generated, 'paints');
+  const [copy, old] = [paints[1], paints.at(-1)];
+  if (copy && old && copy !== old) {
+    const source = byId.get(old.id)!;
+    set(old, (pledge) => ({
+      ...pledge,
+      value: usdText(pledge.standardPrice),
+      valueUsd: pledge.standardPrice,
+      isExchangeable: true,
+      isGiftable: false,
+    }));
+    set(copy, (pledge) => {
+      const value = Math.round(source.standardPrice * 0.65 * 100) / 100;
+      return {
+        ...pledge,
+        title: source.title,
+        name: source.title,
+        items: source.items,
+        image: source.image,
+        standardPrice: source.standardPrice,
+        value: usdText(value),
+        valueUsd: value,
+        isExchangeable: true,
+        isGiftable: false,
+      };
+    });
+  }
+
   const pledges = generated.map((pledge) => byId.get(pledge.id)!);
   return { pledges, orders: ordersOf(pledges, random), upgradeLogs };
 }

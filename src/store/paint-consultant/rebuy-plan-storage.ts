@@ -44,6 +44,18 @@ export const rebuyPlanItem = storage.defineItem<StoredRebuyPlan | null>('local:c
   fallback: null,
 });
 
+/**
+ * The kept plan of the demo mode (#131), apart from the real one: the demo never reads or writes
+ * the account's plan. Set for each demo hangar (`demo/demo-consultant.ts`).
+ */
+export const demoRebuyPlanItem = storage.defineItem<StoredRebuyPlan | null>(
+  'local:demo.consultantPlan',
+  { fallback: null },
+);
+
+/** The kept plan's storage: the demo's in the demo mode, the account's otherwise. */
+export const rebuyPlanItemOf = (demo: boolean) => (demo ? demoRebuyPlanItem : rebuyPlanItem);
+
 /** The plan as it is stored. */
 export function storedPlanOf(plan: PaintRebuyPlan, at: number): StoredRebuyPlan {
   return {

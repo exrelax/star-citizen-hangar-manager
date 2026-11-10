@@ -208,8 +208,11 @@ information (for screenshots or content creators)** keeps private details off sc
   labels, the filter and the sidebar notification show every case. The Pledge Store tab shows
   made-up events (#210) instead of the website's – one running with description, image and
   phases, one upcoming without – and the sidebar shows sample notifications of its own instead of
-  the real ones, among them those of these events; checking them off in the demo changes nothing
-  real. The hangar's pledges have every
+  the real ones, among them those of these events and of the Pledge Store's changes (new and gone
+  warbond CCUs, changed items, #131); checking them off in the demo changes nothing real. The
+  Paint Discount Consultant has a kept plan of its own (#131), never the account's: a paint bought
+  again with its old pledge left to melt, paints melted first and left to buy again, and its
+  filler paints marked to melt – one waiting, one ready, with the sidebar's button disabled. The hangar's pledges have every
   state (#176): meltable or not, giftable or not, LTI and insurances in years and months (also
   several at once), upgraded ships with made-up "Applied upgrades", protected game access (`SC`,
   `SQ42`, `SC · SQ42`, also a reward without a ship), and orders paid with money, in part with

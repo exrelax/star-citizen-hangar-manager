@@ -12,7 +12,10 @@ import type { StoreCredit } from '@/account/store-credit';
 import { current, shipsItem } from '@/ships/ships-storage';
 import { STORE_ITEMS_VERSION, storeItemsItem } from '@/store/items/store-items-storage';
 import { useStored } from '@/storage/use-stored';
-import { demoCatalog } from './catalog';
+import { demoCatalog, FALLBACK_CATALOG, type DemoCatalog } from './catalog';
+import { demoStoreNotes } from './demo-store-notes';
+import type { StoreItem } from '@/store/items/store-items';
+import { demoKeptPlan, resetDemoPlan, seedDemoPlan } from './demo-consultant';
 import { localToday } from '@/orders/refund';
 import type { DemoSettings } from './demo-settings';
 import {
@@ -49,17 +52,28 @@ async function demoKey(): Promise<string> {
  */
 export const newDemoHangar = (): Promise<void> => demoKeyItem.setValue(randomKey());
 
+/** Counts the resets of the demo, so its marks and kept plan are set again at once. */
+const demoResets = shallowRef(0);
+
 /**
- * The demo's marks cleared, e.g. with its settings reset (#178); its sample notifications show
- * again. A new demo hangar's marks are set with the next visit.
+ * The demo back to its start (#178): its marks, its consultant's kept plan and its sample
+ * notifications as a new demo hangar has them.
  */
 export async function resetDemoData(): Promise<void> {
-  await Promise.all([demoMeltMarksItem.removeValue(), resetDemoNotes()]);
-  await seedDemoNotes(await demoKey(), demoSampleNotes(Date.now()));
+  await Promise.all([
+    demoMeltMarksItem.removeValue(),
+    marksSeededItem.removeValue(),
+    resetDemoPlan(),
+    resetDemoNotes(),
+  ]);
+  demoResets.value++;
 }
 
 /** The demo's sample notifications (#210, #131), in the language shown. */
-const demoSampleNotes = (now: number) => demoEventNotes(now, locale.value);
+const demoSampleNotes = (now: number, catalog: DemoCatalog = FALLBACK_CATALOG) => [
+  ...demoStoreNotes(catalog, locale.value, now),
+  ...demoEventNotes(now, locale.value),
+];
 
 /** The demo key the demo's marks were set for, so they are set once per demo hangar. */
 const marksSeededItem = storage.defineItem<string | null>('local:demo.marksSeeded', {
@@ -71,16 +85,24 @@ const marksSeededItem = storage.defineItem<string | null>('local:demo.marksSeede
  * RSI's 24 hours, and an older meltable one, ready to melt. Set once per key, in the demo's own
  * marks; marking and unmarking changes them as usual.
  */
-async function seedDemoMarks(key: string, pledges: readonly PledgeView[], justBought?: number) {
+/** The pledges the demo marks: the one just bought, and an older meltable paint of its own. */
+function demoMarkIds(pledges: readonly PledgeView[], justBought?: number): number[] {
+  const count = (title: string) => pledges.filter((pledge) => pledge.title === title).length;
+  // Not one of the pair bought again (#131): its paint shows twice.
+  const older = pledges.find(
+    (pledge) =>
+      pledge.isMeltable && pledge.id !== justBought && pledge.isPaint && count(pledge.title) === 1,
+  );
+  return [...(justBought === undefined ? [] : [justBought]), ...(older ? [older.id] : [])];
+}
+
+async function seedDemoMarks(key: string, ids: readonly number[]) {
   if ((await marksSeededItem.getValue()) === key) return;
   const now = Date.now();
-  const older = pledges.find(
-    (pledge) => pledge.isMeltable && pledge.id !== justBought && pledge.isPaint,
+  // The first still waiting for RSI's 24 hours (bought a few hours ago), the second ready.
+  await demoMeltMarksItem.setValue(
+    Object.fromEntries(ids.map((id, index) => [id, now - (index + 1) * 60 * 60 * 1000])),
   );
-  await demoMeltMarksItem.setValue({
-    ...(justBought !== undefined && { [justBought]: now - 60 * 60 * 1000 }),
-    ...(older && { [older.id]: now - 2 * 60 * 60 * 1000 }),
-  });
   await marksSeededItem.setValue(key);
 }
 
@@ -108,6 +130,8 @@ export interface DemoContext {
   orderDetails?: (order: Order) => OrderDetails | undefined;
   /** The events shown in the Pledge Store tab instead of the website's (#210). */
   events: StarCitizenEvent[];
+  /** The catalog's items, for the Paint Discount Consultant of the generated demo (#131). */
+  storeItems?: readonly StoreItem[];
   /** Buy back tokens shown instead of the account's, with the generated buy back (#177). */
   tokens?: number;
   /** The store credit shown instead of the account's. */
@@ -160,14 +184,19 @@ export function useDemo(
       ? generatedDemo(catalog.value, key.value, localToday(), Date.now(), settings())
       : undefined,
   );
-  watch(generatedAccount, (account) => {
-    if (!account || !key.value || !settings().states.meltMarks) return;
-    void seedDemoMarks(key.value, account.pledges, justBoughtOf(account.pledges));
+  watch([generatedAccount, demoResets], ([account]) => {
+    if (!account || !key.value) return;
+    const marked = demoMarkIds(account.pledges, justBoughtOf(account.pledges));
+    if (settings().states.meltMarks) void seedDemoMarks(key.value, marked);
+    // The consultant's kept plan (#131): its filler paints are the marked ones.
+    const plan = demoKeptPlan(account.pledges, catalog.value.items, marked, Date.now());
+    void seedDemoPlan(key.value, plan);
   });
-  // The demo's own sidebar notifications (#210), once per key.
+  // The demo's own sidebar notifications (#210, #131), once per key.
   watch(
-    () => (active.value ? key.value : undefined),
-    (demoKey) => demoKey && void seedDemoNotes(demoKey, demoSampleNotes(Date.now())),
+    () => [active.value ? key.value : undefined, demoResets.value] as const,
+    ([demoKey]) =>
+      demoKey && void seedDemoNotes(demoKey, demoSampleNotes(Date.now(), catalog.value)),
     { immediate: true },
   );
   const events = computed(() => (active.value ? demoEvents(Date.now()) : []));
@@ -224,6 +253,7 @@ export function useDemo(
           return entry ? demoOrderDetails(order, [entry.title], entry.total) : undefined;
         },
         tokens: account.generatedBuyback.tokens,
+        storeItems: catalog.value.items,
       }),
       events: events.value,
       // Set in the demo settings (#179).

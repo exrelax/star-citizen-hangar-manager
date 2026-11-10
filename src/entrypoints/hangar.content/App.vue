@@ -125,6 +125,7 @@ const consultant = providePaintConsultant({
   pledges: () => pledges.value,
   settings: () => settings.value,
   demoStoreCredit: () => demoView.context.value?.storeCredit,
+  demoStoreItems: () => demoView.context.value?.storeItems,
 });
 // Its filler paints bought (#105): the kept plan is checked against the real hangar and orders,
 // the fillers are marked to melt. Never in the demo.

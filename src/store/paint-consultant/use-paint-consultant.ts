@@ -22,7 +22,7 @@ import {
   type PaintConsultantResult,
   type PendingRebuy,
 } from './calculation';
-import { rebuyPlanItem, REBUY_PLAN_VERSION } from './rebuy-plan-storage';
+import { demoRebuyPlanItem, rebuyPlanItem, REBUY_PLAN_VERSION } from './rebuy-plan-storage';
 
 /*
  * The Paint Discount Consultant's result for the whole manager, worked out once (in App.vue) from
@@ -72,15 +72,23 @@ export function providePaintConsultant({
   pledges,
   settings,
   demoStoreCredit,
+  demoStoreItems = () => undefined,
 }: {
   pledges: () => readonly PledgeView[];
   settings: () => Settings;
   /** The made-up store credit of the demo mode, if on (App.vue provides the demo context). */
   demoStoreCredit: () => StoreCredit | undefined;
+  /**
+   * The demo's catalog items while the demo mode is on (#131): its paints and prices, and its own
+   * kept plan instead of the account's.
+   */
+  demoStoreItems?: () => readonly StoreItem[] | undefined;
 }): PaintConsultantState {
   const storedItems = useStored(storeItemsItem);
-  const storeItems = computed(() =>
-    storedItems.value?.version === STORE_ITEMS_VERSION ? storedItems.value.items : undefined,
+  const storeItems = computed(
+    () =>
+      demoStoreItems() ??
+      (storedItems.value?.version === STORE_ITEMS_VERSION ? storedItems.value.items : undefined),
   );
 
   // The account's store credit (in the demo mode a made-up one), in USD only.
@@ -94,7 +102,9 @@ export function providePaintConsultant({
 
   const options = computed(() => settings().paintConsultant);
   // The plan kept when its paints were put into the cart: confirms paints bought again (#139).
-  const storedPlan = useStored(rebuyPlanItem);
+  const realPlan = useStored(rebuyPlanItem);
+  const demoPlan = useStored(demoRebuyPlanItem);
+  const storedPlan = computed(() => (demoStoreCredit() ? demoPlan.value : realPlan.value));
   const keptPlan = computed<KeptPlan | undefined>(() => {
     const stored = storedPlan.value;
     return stored?.version === REBUY_PLAN_VERSION
