@@ -5,6 +5,7 @@ import { settingsItem, withDefaults } from '@/settings/settings';
 import { maybeRefreshUpgradeTool, refreshUpgradeTool } from '@/ships/sync-upgrade-tool';
 import { maybeRefreshStoreItems, refreshStoreItems } from '@/store/items/sync-store-items';
 import { refreshStoreCredit } from '@/account/sync-store-credit';
+import { maybeRefreshEvents } from '@/events/sync-events';
 import type { StorageId } from '@/storage/registry';
 import { reactive, readonly } from 'vue';
 import { recordCheck, recordSync, type CheckOutcome, type MetaItem } from '@/storage/meta';
@@ -131,7 +132,9 @@ export async function startStorageSync(id: StorageId): Promise<void> {
         ? refreshStoreItems()
         : id === 'storeCredit'
           ? refreshStoreCredit()
-          : refreshUpgradeTool());
+          : id === 'events'
+            ? maybeRefreshEvents({ force: true })
+            : refreshUpgradeTool());
       section.complete(1, 1);
     }
   } catch (error) {
@@ -189,6 +192,8 @@ async function runSmartUpdateIfDue(force: boolean): Promise<void> {
   await maybeRefreshUpgradeTool();
   // The items of the Pledge Store, on their own interval (see the settings).
   await maybeRefreshStoreItems();
+  // The events of the project website: once a day; tells the ones whose display period started.
+  await maybeRefreshEvents();
   const settings = withDefaults(await settingsItem.getValue());
   if (!settings.smartUpdates) return;
   const { checkedAt } = await hangarMeta.getValue();

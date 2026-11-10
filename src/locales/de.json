@@ -199,11 +199,13 @@
     "browserNotificationsRefused": "Dein Browser hat Benachrichtigungen beim letzten Mal nicht erlaubt, daher sind sie aus. Schalte die Einstellung ein, um erneut gefragt zu werden.",
     "notificationKindMeltReady": "Gemerkte Pledges können eingeschmolzen werden",
     "notificationKindMeltReadyHint": "Wenn zum Einschmelzen gemerkte Pledges oder die Füll-Paints des Paint Discount Consultant nach RSIs 24 Stunden eingeschmolzen werden können. Die Sidebar zeigt es in jedem Fall.",
-    "storeChangeNotifications": "Änderungen im Pledge Store",
+    "storeChangeNotifications": "Pledge Store",
     "notificationKindWarbonds": "Warbond CCUs geändert",
     "notificationKindWarbondsHint": "Neue und nicht mehr angebotene Warbond CCUs in der Sidebar; neue auch als Browser-Benachrichtigung, wenn diese an sind.",
     "notificationKindStoreItems": "Artikel des Pledge Store geändert",
     "notificationKindStoreItemsHint": "Neue, entfernte und im Preis geänderte Artikel des Pledge Store, nur in der Sidebar.",
+    "notificationKindEvents": "Events",
+    "notificationKindEventsHint": "Ein Event wie die Intergalactic Aerospace Expo kurz vor seinem Beginn, nur in der Sidebar. Der Tab Pledge Store zeigt es sowieso.",
     "sidebarNotifications": "Sidebar",
     "restorePaintNotifications": "Ausgeblendete Paint-Benachrichtigungen wieder anzeigen",
     "restorePaintNotificationsHint": "Die Benachrichtigung des Paint-Rabatt-Beraters (wie viele Paints sich mit mehr Rabatt zurückkaufen lassen) erscheint wieder für alle Paints, auch für die, die du mit ihrem × ausgeblendet hast. Auf allen deinen Browsern, da die ausgeblendeten Paints synchronisiert werden.",
@@ -312,6 +314,11 @@
       "content": "Schiffe, Gear, Packs, Paints und mehr mit Kategorie, Preis, Bild und Link",
       "missing": "Wird noch nirgends genutzt."
     },
+    "events": {
+      "name": "Events",
+      "content": "Events von Star Citizen von der Projekt-Website, mit ihren Daten",
+      "missing": "Bis dahin zeigt der Tab Pledge Store keine Events."
+    },
     "storeCredit": {
       "name": "Store Credits",
       "content": "Die Store Credits des Accounts, wie sein Account-Menü sie zeigt",
@@ -411,6 +418,14 @@
     "colCount": "Anzahl",
     "colValue": "Wert",
     "colDiscount": "Rabatt"
+  },
+  "events": {
+    "title": "Events",
+    "intro": "Events von Star Citizen, von der Projekt-Website: Der Pledge Store hat dann meist neue Schiffe und Angebote.",
+    "upcoming": "Demnächst",
+    "running": "Läuft",
+    "startsIn": "beginnt $1",
+    "endsIn": "endet $1"
   },
   "consultant": {
     "title": "Paint-Rabatt-Berater",
@@ -762,6 +777,8 @@
   },
   "notifications": {
     "andMore": "… und $1 weitere",
+    "eventUpcoming": "Event: $1 beginnt am $2.",
+    "eventRunning": "Event: $1 läuft bis $2.",
     "warbondsNew": "Neue Warbond CCUs: $1",
     "warbondsGone": "Nicht mehr angebotene Warbond CCUs: $1",
     "browserWarbondsTitle": "Neue Warbond CCUs im Pledge Store",

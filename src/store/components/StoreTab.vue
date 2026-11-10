@@ -17,6 +17,9 @@ import RefreshIcon from '@/hangar/components/RefreshIcon.vue';
 import WarbondRow from './WarbondRow.vue';
 import PaintConsultant from './PaintConsultant.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
+import EventList from '@/events/components/EventList.vue';
+import { EVENTS_VERSION, eventsItem } from '@/events/events-storage';
+import { useStored } from '@/storage/use-stored';
 
 /*
  * The "Pledge Store" tab: the warbond CCUs RSI currently offers, each with the cheapest ships to
@@ -34,6 +37,12 @@ const props = defineProps<{
 }>();
 
 const { data, fetchedAt, loaded } = useStoreData();
+
+/** The events of the project website (#69): shown above the warbond CCUs while they last. */
+const storedEvents = useStored(eventsItem);
+const events = computed(() =>
+  storedEvents.value?.version === EVENTS_VERSION ? storedEvents.value.events : [],
+);
 
 // While the tab is shown: right away, then now and then, whether the offers are due.
 const now = ref(Date.now());
@@ -72,6 +81,7 @@ const displayClasses = computed(() => ({
 
 <template>
   <section class="shm-store" :class="displayClasses" aria-labelledby="shm-store-title">
+    <EventList :events="events" />
     <h3 id="shm-store-title" class="shm-store-title">{{ i18n.t('store.warbondTitle') }}</h3>
     <p class="shm-store-intro">{{ i18n.t('store.warbondIntro') }}</p>
 

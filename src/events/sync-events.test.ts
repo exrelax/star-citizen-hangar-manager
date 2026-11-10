@@ -1,0 +1,89 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { fakeBrowser } from 'wxt/testing/fake-browser';
+import { notificationsItem } from '@/notifications/notifications';
+import { settingsItem } from '@/settings/settings';
+import { EMPTY_META } from '@/storage/meta';
+import type { StarCitizenEvent } from './events';
+import { eventsItem, eventsMeta } from './events-storage';
+import { eventsDue, maybeRefreshEvents } from './sync-events';
+
+const NOW = Date.parse('2026-11-10T12:00:00Z');
+const HOUR = 60 * 60 * 1000;
+
+const iae: StarCitizenEvent = {
+  id: 'iae-2956',
+  name: 'IAE 2956',
+  eventStart: Date.parse('2026-11-13T16:00:00Z'),
+  eventEnd: Date.parse('2026-11-27T20:00:00Z'),
+  displayStart: Date.parse('2026-11-06T00:00:00Z'),
+  displayEnd: Date.parse('2026-11-27T20:00:00Z'),
+};
+
+describe('eventsDue', () => {
+  it('reads once a day, after a failure again after an hour', () => {
+    expect(eventsDue(EMPTY_META, NOW)).toBe(true);
+    const read = { ...EMPTY_META, checkedAt: NOW - 2 * HOUR };
+    expect(eventsDue(read, NOW)).toBe(false);
+    expect(eventsDue({ ...read, checkedAt: NOW - 25 * HOUR }, NOW)).toBe(true);
+    const failed = {
+      ...read,
+      lastOutcome: {
+        at: read.checkedAt,
+        status: 'failed' as const,
+        added: 0,
+        removed: 0,
+        changed: 0,
+      },
+    };
+    expect(eventsDue(failed, NOW)).toBe(true);
+  });
+});
+
+describe('maybeRefreshEvents', () => {
+  beforeEach(() => fakeBrowser.reset());
+
+  it('stores the events and tells a shown one once in the sidebar', async () => {
+    const fetch = vi.fn(async () => [iae]);
+    await maybeRefreshEvents({ fetch, now: () => NOW });
+    await maybeRefreshEvents({ fetch, now: () => NOW + HOUR });
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect((await eventsItem.getValue())?.events).toEqual([iae]);
+    const notes = await notificationsItem.getValue();
+    expect(notes.map((note) => [note.id, note.kind])).toEqual([['events:iae-2956', 'events']]);
+    expect(notes[0]?.text).toContain('IAE 2956');
+  });
+
+  it('keeps the stored events when the file can not be read', async () => {
+    await maybeRefreshEvents({ fetch: async () => [iae], now: () => NOW });
+    await maybeRefreshEvents({
+      force: true,
+      fetch: async () => {
+        throw new Error('offline');
+      },
+      now: () => NOW,
+    });
+    expect((await eventsItem.getValue())?.events).toEqual([iae]);
+    expect((await eventsMeta.getValue()).lastOutcome?.status).toBe('failed');
+  });
+
+  it('tells nothing while the kind is turned off', async () => {
+    await settingsItem.setValue({ notificationsOff: ['events'] } as never);
+    await maybeRefreshEvents({ fetch: async () => [iae], now: () => NOW });
+    expect(await notificationsItem.getValue()).toEqual([]);
+  });
+});
+
+describe('maybeRefreshEvents after a failure', () => {
+  beforeEach(() => fakeBrowser.reset());
+
+  it('tries again after an hour, also without stored events', async () => {
+    const fetch = vi.fn(async (): Promise<StarCitizenEvent[]> => {
+      throw new Error('HTTP 404');
+    });
+    await maybeRefreshEvents({ fetch, now: () => NOW });
+    await maybeRefreshEvents({ fetch, now: () => NOW + 30_000 });
+    expect(fetch).toHaveBeenCalledTimes(1);
+    await maybeRefreshEvents({ fetch, now: () => NOW + HOUR });
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+});

@@ -110,7 +110,7 @@ The extension never buys, exchanges (melts) or gifts anything on its own: these 
 
 Optional permission "notifications": requested only when the user turns on Settings → Notifications → "Browser notifications" (it opens an extension page with a button that calls permissions.request). Without it nothing changes.
 
-Requests: robertsspaceindustries.com (the user's data, with the user's session) and api.fleetyards.net (public ship data, only ship model names are sent; can be turned off under "Show links for ships"). No analytics, no tracking.
+Requests: robertsspaceindustries.com (the user's data, with the user's session), api.fleetyards.net (public ship data, only ship model names are sent; can be turned off under "Show links for ships") and exrelax.github.io, the project's own website (a public JSON list of game events, at most once a day, no cookies, no user data; data only, no code). No analytics, no tracking.
 
 Source code: https://github.com/exrelax/star-citizen-hangar-manager
 ```
@@ -147,7 +147,7 @@ The extension works on robertsspaceindustries.com and needs a logged-in RSI acco
 
 The extension never buys, exchanges (melts) or gifts anything on its own: these actions are sent to RSI only when the user confirms them in their dialog.
 
-Requests: robertsspaceindustries.com (the user's data, with the user's session) and api.fleetyards.net (public ship data, only ship model names are sent). No analytics, no tracking. All JavaScript is part of the package; the readable source code and the build instructions are given in the version's fields.
+Requests: robertsspaceindustries.com (the user's data, with the user's session) api.fleetyards.net (public ship data, only ship model names are sent) and exrelax.github.io, the project's own website (a public JSON list of game events, at most once a day, no user data; data only, no code). No analytics, no tracking. All JavaScript is part of the package; the readable source code and the build instructions are given in the version's fields.
 ```
 
 On a new version, change the version in both source code URLs.
@@ -168,7 +168,7 @@ Settings → "Hide sensitive information" → "Demo mode" shows an anonymized se
 
 The extension never buys, exchanges (melts) or gifts anything on its own: these actions are sent to RSI only when the user confirms them in their dialog.
 
-Requests: robertsspaceindustries.com (the user's data, with the user's session) and api.fleetyards.net (public ship data, only ship model names are sent). No analytics, no tracking.
+Requests: robertsspaceindustries.com (the user's data, with the user's session) api.fleetyards.net (public ship data, only ship model names are sent) and exrelax.github.io, the project's own website (a public JSON list of game events, at most once a day, no user data; data only, no code). No analytics, no tracking.
 
 Source code: https://github.com/exrelax/star-citizen-hangar-manager
 ```

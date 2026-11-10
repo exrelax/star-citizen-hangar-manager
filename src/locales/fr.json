@@ -199,11 +199,13 @@
     "browserNotificationsRefused": "Ton navigateur n’a pas autorisé les notifications la dernière fois, elles sont donc désactivées. Active le paramètre pour qu’il te le redemande.",
     "notificationKindMeltReady": "Des pledges marqués peuvent être fondus",
     "notificationKindMeltReadyHint": "Quand des pledges marqués à fondre, ou les peintures de remplissage du Paint Discount Consultant, peuvent être fondus après les 24 heures de RSI. La barre latérale l’indique dans tous les cas.",
-    "storeChangeNotifications": "Changements du Pledge Store",
+    "storeChangeNotifications": "Pledge Store",
     "notificationKindWarbonds": "CCU warbond modifiés",
     "notificationKindWarbondsHint": "Nouveaux CCU warbond et ceux qui ne sont plus proposés dans la barre latérale ; les nouveaux aussi en notification du navigateur, si elles sont activées.",
     "notificationKindStoreItems": "Articles du Pledge Store modifiés",
     "notificationKindStoreItemsHint": "Articles du Pledge Store nouveaux, retirés ou au prix modifié, seulement dans la barre latérale.",
+    "notificationKindEvents": "Événements",
+    "notificationKindEventsHint": "Un événement comme l’Intergalactic Aerospace Expo peu avant son début, dans la barre latérale uniquement. L’onglet Pledge Store l’affiche de toute façon.",
     "sidebarNotifications": "Barre latérale",
     "restorePaintNotifications": "Réafficher les notifications de peintures masquées",
     "restorePaintNotificationsHint": "La notification du conseiller de remise sur les peintures (combien de peintures peuvent être rachetées avec plus de remise) réapparaît pour toutes les peintures, aussi celles que tu as masquées avec sa ×. Sur tous tes navigateurs, car les peintures masquées sont synchronisées.",
@@ -312,6 +314,11 @@
       "content": "Vaisseaux, équipement, packs, peintures et plus avec catégorie, prix, image et lien",
       "missing": "Rien ne les utilise encore."
     },
+    "events": {
+      "name": "Événements",
+      "content": "Les événements de Star Citizen depuis le site du projet, avec leurs dates",
+      "missing": "D’ici là, l’onglet Pledge Store n’affiche aucun événement."
+    },
     "storeCredit": {
       "name": "Crédit boutique",
       "content": "Le crédit boutique du compte, comme son menu de compte l’affiche",
@@ -411,6 +418,14 @@
     "colCount": "Nombre",
     "colValue": "Valeur",
     "colDiscount": "Remise"
+  },
+  "events": {
+    "title": "Événements",
+    "intro": "Les événements de Star Citizen, depuis le site du projet : le Pledge Store propose alors souvent de nouveaux vaisseaux et des offres.",
+    "upcoming": "À venir",
+    "running": "En cours",
+    "startsIn": "commence $1",
+    "endsIn": "se termine $1"
   },
   "consultant": {
     "title": "Conseiller de remises sur les peintures",
@@ -762,6 +777,8 @@
   },
   "notifications": {
     "andMore": "… et $1 de plus",
+    "eventUpcoming": "Événement : $1 commence le $2.",
+    "eventRunning": "Événement : $1 est en cours jusqu’au $2.",
     "warbondsNew": "Nouveaux CCU warbond : $1",
     "warbondsGone": "CCU warbond plus proposés : $1",
     "browserWarbondsTitle": "Nouveaux CCU warbond dans le Pledge Store",

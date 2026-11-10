@@ -21,6 +21,9 @@ import { fetchRoadmap, renderRoadmap, renderVersion } from './roadmap/roadmap.ts
  *
  * The privacy page (`privacy.html`) is made from the repository's PRIVACY.md (see
  * `privacy/privacy.ts`), so the policy has a single source.
+ *
+ * `public/` is copied as is: the data the extension loads from the site (`data/events.json`, the
+ * event notices of the Pledge Store, #69), at URLs that never change.
  */
 const root = fileURLToPath(new URL('.', import.meta.url));
 const repository = fileURLToPath(new URL('..', import.meta.url));
@@ -140,8 +143,8 @@ export default defineConfig({
   // Relative URLs: the site works under any path, e.g. /star-citizen-hangar-manager/ on GitHub
   // Pages, or a custom domain later.
   base: './',
-  // Everything the site shows is referenced from the HTML; there is nothing to copy as is.
-  publicDir: false,
+  // Copied as is, at fixed URLs: the data the extension loads, e.g. `data/events.json` (#69).
+  publicDir: 'public',
   server: {
     // The images live outside `site/`.
     fs: { allow: [repository] },
