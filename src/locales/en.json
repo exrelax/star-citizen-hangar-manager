@@ -865,5 +865,18 @@
     "manager": "Hangar Manager",
     "settings": "Settings",
     "repository": "GitHub repository"
+  },
+  "priceIncrease": {
+    "label": "Price increase: $1",
+    "days": "$1 days",
+    "day": "1 day",
+    "hours": "$1 h $2 min",
+    "minutes": "$1 min",
+    "today": "today",
+    "hint": "The price of $1 is expected to rise on $2.",
+    "hintBuyback": "Buy it back or use it as a discount token before then.",
+    "hintHangar": "Melting it before then means buying it back at the higher price.",
+    "flightReady": "Expected to become flight ready on $1.",
+    "expected": "These dates are expected, not confirmed by RSI."
   }
 }

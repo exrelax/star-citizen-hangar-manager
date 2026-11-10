@@ -15,5 +15,11 @@ export const priceIncreasesItem = storage.defineItem<PriceIncreasesSnapshot | nu
   { fallback: null },
 );
 
+/** The stored price increases, if of the current format; else none. */
+export const storedPriceIncreases = (
+  snapshot: PriceIncreasesSnapshot | null,
+): ExpectedPriceIncrease[] =>
+  snapshot?.version === PRICE_INCREASES_VERSION ? snapshot.priceIncreases : [];
+
 /** Last read, check and fingerprint of the price increases (see `storage/meta.ts`). */
 export const priceIncreasesMeta = defineMeta('local:priceIncreases');

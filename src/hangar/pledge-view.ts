@@ -1,3 +1,4 @@
+import type { PriceIncreaseMatch } from '@/price-increases/price-increase-match';
 import { HANGAR_PAGE_SIZE } from '@/config';
 import type { Game, Pledge, PledgeItem, PledgeUpgrade } from './pledge';
 import type { PaidOrder } from '@/orders/orders';
@@ -77,6 +78,8 @@ export interface PledgeView {
   upgrade?: PledgeUpgrade;
   /** Normalized title, ship names and pledge id, prepared once so the live search stays cheap. */
   searchText: string;
+  /** Its expected price increase, if any (#190, see `price-increase-match.ts`). */
+  priceIncrease?: PriceIncreaseMatch;
 }
 
 /** Items that grant access to the game, e.g. in VIP packages. */

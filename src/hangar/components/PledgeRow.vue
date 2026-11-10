@@ -16,6 +16,7 @@ import ExchangeOverlay from './ExchangeOverlay.vue';
 import ExternalLinks from './ExternalLinks.vue';
 import GiftOverlay from './GiftOverlay.vue';
 import ProtectedBadge from './ProtectedBadge.vue';
+import PriceIncreaseBadge from '@/price-increases/components/PriceIncreaseBadge.vue';
 import UpgradeLog from './UpgradeLog.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { selection } from '../selection';
@@ -224,6 +225,11 @@ const toggle = () => {
               : i18n.t(refund.daysLeft === 1 ? 'refund.day' : 'refund.days', [refund.daysLeft])
           }}
         </span>
+        <PriceIncreaseBadge
+          v-if="pledge.priceIncrease"
+          :match="pledge.priceIncrease"
+          place="hangar"
+        />
         <span
           v-if="pledge.insurance"
           v-tooltip="i18n.t('insurance.badgeTitle')"

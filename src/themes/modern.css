@@ -585,6 +585,26 @@ html .shm-theme-modern .shm-badge.is-unavailable {
   background: color-mix(in srgb, var(--shm-warning) 16%, transparent);
 }
 
+html .shm-theme-modern .shm-badge.is-price-increase.is-warning {
+  color: var(--shm-warning);
+  background: color-mix(in srgb, var(--shm-warning) 16%, transparent);
+}
+
+html .shm-theme-modern .shm-badge.is-price-increase.is-warning.is-soon {
+  color: var(--shm-text-on-warning);
+  background: var(--shm-warning);
+}
+
+html .shm-theme-modern .shm-badge.is-price-increase.is-info {
+  color: var(--shm-text-strong);
+  background: rgb(var(--shm-accent-rgb) / 0.12);
+}
+
+html .shm-theme-modern .shm-badge.is-price-increase.is-info.is-soon {
+  color: var(--shm-warning);
+  background: color-mix(in srgb, var(--shm-warning) 12%, transparent);
+}
+
 html .shm-theme-modern .shm-badge.is-melt-mark {
   color: var(--shm-warning);
   background: color-mix(in srgb, var(--shm-warning) 16%, transparent);

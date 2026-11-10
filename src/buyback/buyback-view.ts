@@ -17,6 +17,7 @@ import type { AvailabilityCheck, BuybackUnavailable } from './buyback-availabili
 import type { BuybackImager } from './buyback-image';
 import type { BuybackPrice, BuybackPricer } from './buyback-price';
 import type { GiftableCheck } from './probably-giftable';
+import type { PriceIncreaseMatch } from '@/price-increases/price-increase-match';
 
 /** What the buy back list shows for a pledge. */
 export interface BuybackView {
@@ -55,6 +56,8 @@ export interface BuybackView {
   unavailable?: BuybackUnavailable;
   /** Its detail page was read for the price (a price or none), so it needn't be read again. */
   priceRead: boolean;
+  /** Its expected price increase, if any (#190, see `price-increase-match.ts`). */
+  priceIncrease?: PriceIncreaseMatch;
   /** Normalized title, ship names and pledge id for the live search. */
   searchText: string;
 }
@@ -71,11 +74,22 @@ export interface BuybackViewContext {
   imageOf?: BuybackImager;
   /** Whether RSI can sell the pledge again (see `buyback-availability.ts`). */
   availabilityOf?: AvailabilityCheck;
+  /** The expected price increase of a pledge (see `price-increase-match.ts`). */
+  priceIncreaseOf?: (pledge: BuybackPledge) => PriceIncreaseMatch | undefined;
 }
 
 export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext): BuybackView {
-  const { position, shipLinks = {}, giftable, priceOf, imageOf, availabilityOf } = context;
+  const {
+    position,
+    shipLinks = {},
+    giftable,
+    priceOf,
+    imageOf,
+    availabilityOf,
+    priceIncreaseOf,
+  } = context;
   const unavailable = availabilityOf?.(pledge);
+  const priceIncrease = priceIncreaseOf?.(pledge);
   const price = priceOf?.(pledge);
   // The detail page lists the items besides the main one named in "Contained".
   const extraItems = pledge.items ?? [];
@@ -110,6 +124,7 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
     isProbablyGiftable: !unavailable && (giftable?.(pledge.id) ?? false),
     ...(price && { price }),
     ...(unavailable && { unavailable }),
+    ...(priceIncrease && { priceIncrease }),
     priceRead: pledge.price !== undefined,
     searchText: normalizeSearchText([pledge.title, ...shipNames, pledge.id].join(' ')),
   };

@@ -17,6 +17,7 @@ import { loadBuybackPrice } from '../sync-buyback';
 import { giftableHint } from '../giftable-hint';
 import { GIFTING_FAQ_URL } from '@/config';
 import { vTooltip } from '@/shared/tooltip/tooltip';
+import PriceIncreaseBadge from '@/price-increases/components/PriceIncreaseBadge.vue';
 
 const props = defineProps<{
   pledge: BuybackView;
@@ -175,6 +176,11 @@ const kind = computed(() =>
       </span>
 
       <span class="shm-badges">
+        <PriceIncreaseBadge
+          v-if="pledge.priceIncrease"
+          :match="pledge.priceIncrease"
+          place="buyback"
+        />
         <span
           v-if="pledge.insurance"
           v-tooltip="i18n.t('insurance.badgeTitle')"
