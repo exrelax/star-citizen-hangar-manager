@@ -1,6 +1,7 @@
 <script setup lang="ts" generic="F extends string">
 import type { FilterLayout } from '@/hangar/filters';
 import { i18n } from '@/i18n';
+import SvgIcon from '@/icons/SvgIcon.vue';
 import { ref } from 'vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 
@@ -90,7 +91,7 @@ function onDrop(index: number) {
         @drop.prevent="onDrop(index)"
         @dragend="dragged = over = undefined"
       >
-        <span class="shm-drag-handle" aria-hidden="true">⠿</span>
+        <SvgIcon class="shm-drag-handle" name="grip-vertical" />
         <label class="shm-check">
           <input
             :id="`${id}-${filter}`"
@@ -198,7 +199,7 @@ function onDrop(index: number) {
 
 .shm-drag-handle {
   color: var(--shm-text-muted);
-  font-size: calc(14px * var(--shm-font-scale));
+  font-size: calc(12px * var(--shm-font-scale));
 }
 
 .shm-check {

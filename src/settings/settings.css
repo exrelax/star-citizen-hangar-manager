@@ -1,112 +1,413 @@
 /*
- * The building blocks shared by all sections of the settings tab (src/settings/sections). Not
- * scoped, so they reach into the sections; `.shm-settings` keeps them inside the tab.
+ * The building blocks of the settings tab (SettingsPanel.vue and src/settings/sections): the list
+ * of categories, the shown category with its heading, groups of rows (SettingsGroup.vue) and
+ * their rows (SettingCheck.vue, SettingRow.vue) with switches, segmented controls, selects and
+ * number fields. Not scoped, so they reach into the sections; `.shm-settings` keeps them inside
+ * the tab. These are the styles of "Classic RSI"; "Modern Hangar" adjusts them in modern.css.
  */
 
 .shm-settings {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
   margin-top: 20px;
   color: var(--shm-text);
   font-size: calc(13px * var(--shm-font-scale));
+  container-type: inline-size;
 }
 
-.shm-settings .shm-setting {
-  margin: 0;
-  padding: 14px 16px;
-  background: rgb(var(--shm-surface-rgb) / 0.6);
-  border: 1px solid rgb(var(--shm-accent-rgb) / 0.15);
+/* ---- The list of categories ---- */
+
+.shm-settings-nav {
+  position: sticky;
+  top: 90px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.shm-settings .shm-label {
-  display: block;
-  margin-bottom: 8px;
-  padding: 0;
-  color: var(--shm-accent);
-  font-size: calc(13px * var(--shm-font-scale));
+.shm-settings-nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.shm-settings-nav-title {
+  padding: 0 10px 4px;
+  color: var(--shm-text-muted);
+  font-size: calc(11px * var(--shm-font-scale));
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
-/*
- * A legend sits in the fieldset's top border by default, above the padding. Floated, it flows
- * inside the padding like the headings of the other sections; what follows starts below it.
- */
-.shm-settings legend.shm-label {
-  float: left;
-  width: 100%;
-}
-
-.shm-settings legend.shm-label + * {
-  clear: both;
-}
-
-/* A field right below the heading needs no extra space above it. */
-.shm-settings legend.shm-label + .shm-field-label {
-  margin-top: 0;
-}
-
-/* Label of a field inside a group, below the group's heading. */
-.shm-settings .shm-field-label {
-  display: block;
-  margin: 14px 0 6px;
-  color: var(--shm-text);
-}
-
-.shm-settings .shm-check {
+.shm-settings-nav-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 4px 0;
+  gap: 10px;
+  min-height: 32px;
+  padding: 0 10px;
+  color: var(--shm-text-secondary);
+  font: inherit;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-left: 2px solid transparent;
+  border-radius: var(--shm-radius-small);
   cursor: pointer;
+  transition:
+    background-color 0.12s,
+    color 0.12s;
 }
 
-.shm-settings .shm-check input {
-  accent-color: var(--shm-accent);
+.shm-settings-nav-item .shm-icon {
+  color: var(--shm-text-muted);
 }
 
-/* A checkbox whose setting depends on another one that is off. */
-.shm-settings .shm-check-setting.is-disabled {
-  opacity: 0.5;
+.shm-settings-nav-item[aria-current='page'] {
+  color: var(--shm-accent);
+  background: rgb(var(--shm-accent-rgb) / 0.1);
+  border-left-color: var(--shm-accent);
 }
 
-.shm-settings .shm-check-setting.is-disabled .shm-check {
-  cursor: default;
+.shm-settings-nav-item[aria-current='page'] .shm-icon {
+  color: var(--shm-accent);
 }
 
-/* Settings that depend on the checkbox above them, indented below it. */
-.shm-settings .shm-setting-subgroup {
-  margin-left: 21px;
+@media (hover: hover) and (pointer: fine) {
+  .shm-settings-nav-item:not([aria-current='page']):hover {
+    color: var(--shm-text-strong);
+    background: rgb(var(--shm-accent-rgb) / 0.06);
+  }
 }
 
-.shm-settings .shm-setting-subgroup > .shm-field-label {
-  margin-top: 8px;
+.shm-settings-nav-item:focus-visible {
+  outline: 2px solid var(--shm-accent);
+  outline-offset: 1px;
 }
 
-/* While the switch above is off, its fields look off too, as its checkboxes do (SettingCheck). */
-.shm-settings .shm-setting-subgroup[aria-disabled='true'] > .shm-field-label,
-.shm-settings .shm-setting-subgroup[aria-disabled='true'] > .shm-number-field,
-.shm-settings .shm-setting-subgroup[aria-disabled='true'] > .shm-hint {
-  opacity: 0.5;
+.shm-settings-nav-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* The input dims with its field, not twice. */
-.shm-settings .shm-setting-subgroup[aria-disabled='true'] > .shm-number-field .shm-input:disabled {
+/* A status of the category, e.g. the demo mode being on. */
+.shm-settings-nav-badge {
+  flex: none;
+  padding: 0 6px;
+  color: var(--shm-warning);
+  font-size: calc(11px * var(--shm-font-scale));
+  line-height: calc(16px * var(--shm-font-scale));
+  background: color-mix(in srgb, var(--shm-warning) 18%, transparent);
+  border-radius: var(--shm-radius-pill);
+}
+
+/* ---- The shown category ---- */
+
+.shm-settings-category {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.shm-settings-title {
+  margin: 0;
+  color: var(--shm-accent);
+  font-size: calc(15px * var(--shm-font-scale));
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* What the category is about, right below its heading. */
+.shm-settings .shm-settings-intro {
+  margin: -14px 0 0;
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+/* ---- Groups of rows ---- */
+
+.shm-settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: opacity 0.2s;
+}
+
+/* Dimmed while the switch it depends on is off; its own disabled rows dim with it, not twice. */
+.shm-settings-group.is-disabled {
+  opacity: 0.45;
+}
+
+.shm-settings-group.is-disabled .shm-setting-row.is-disabled {
   opacity: 1;
 }
 
-/* A checkbox set apart from the field above it (see SettingCheck.vue). */
-.shm-settings .shm-check-setting.is-spaced {
-  margin-top: 14px;
+.shm-settings-group-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 4px;
 }
 
+.shm-settings-group-title {
+  color: var(--shm-text-muted);
+  font-size: calc(11px * var(--shm-font-scale));
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.shm-settings-rows {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: rgb(var(--shm-surface-rgb) / 0.6);
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.15);
+  border-radius: var(--shm-radius-cell);
+}
+
+/* Actions that can't be undone, e.g. deleting the local data. */
+.shm-settings-rows.is-danger {
+  border-color: color-mix(in srgb, var(--shm-danger) 35%, transparent);
+}
+
+.shm-settings .shm-settings-group-foot {
+  margin: 0;
+  padding: 0 4px;
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+.shm-settings .shm-settings-group-foot.is-done {
+  color: var(--shm-success);
+}
+
+/* ---- Rows ---- */
+
+.shm-setting-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px 16px;
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.shm-setting-row + .shm-setting-row,
+.shm-setting-row-status + .shm-setting-row {
+  border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.1);
+}
+
+/* Belongs to the row above it, e.g. "Count pledges per type" to the "Summary" box. */
+.shm-setting-row.is-indented {
+  padding-left: 44px;
+}
+
+.shm-setting-row.is-disabled {
+  opacity: 0.5;
+}
+
+.shm-setting-row-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  min-height: 28px;
+}
+
+label.shm-setting-row-main {
+  cursor: pointer;
+}
+
+.shm-setting-row.is-disabled label.shm-setting-row-main {
+  cursor: default;
+}
+
+.shm-setting-row-text {
+  display: flex;
+  flex: 1 1 240px;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.shm-setting-row-label {
+  color: var(--shm-text-strong);
+}
+
+.shm-settings .shm-hint {
+  margin: 0;
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+.shm-setting-row-control {
+  display: flex;
+  flex: none;
+  align-items: center;
+  max-width: 100%;
+}
+
+/* A note on the row above it, e.g. that the browser refused its notifications. */
+.shm-settings .shm-setting-row-status {
+  margin: -6px 0 0;
+  padding: 0 16px 12px;
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+.shm-settings .shm-setting-row-status.is-warning {
+  color: var(--shm-warning);
+}
+
+/* A link as a row (About): its icon, label and hint, an arrow for the new tab. */
+a.shm-setting-row {
+  transition: background-color 0.12s;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a.shm-setting-row:hover {
+    background: rgb(var(--shm-accent-rgb) / 0.06);
+  }
+}
+
+a.shm-setting-row:focus-visible {
+  outline: 2px solid var(--shm-accent);
+  outline-offset: -2px;
+}
+
+.shm-setting-link-icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: var(--shm-accent);
+  background: rgb(var(--shm-accent-rgb) / 0.12);
+  border-radius: var(--shm-radius-small);
+}
+
+.shm-setting-link-external {
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+/* ---- Switch ---- */
+
+.shm-settings .shm-switch {
+  position: relative;
+  flex: none;
+  width: 36px;
+  height: 20px;
+  margin: 0;
+  background: rgb(var(--shm-accent-rgb) / 0.08);
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.45);
+  border-radius: var(--shm-radius-small);
+  cursor: pointer;
+  appearance: none;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+}
+
+.shm-settings .shm-switch::before {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 12px;
+  height: 12px;
+  background: var(--shm-text-muted);
+  border-radius: 2px;
+  content: '';
+  transition:
+    transform 0.2s cubic-bezier(0.23, 1, 0.32, 1),
+    background-color 0.2s;
+}
+
+.shm-settings .shm-switch:checked {
+  background: rgb(var(--shm-accent-rgb) / 0.3);
+  border-color: var(--shm-accent);
+}
+
+.shm-settings .shm-switch:checked::before {
+  background: var(--shm-text-strong);
+  transform: translateX(16px);
+}
+
+.shm-settings .shm-switch:disabled {
+  cursor: default;
+}
+
+.shm-settings .shm-switch:focus-visible {
+  outline: 2px solid var(--shm-accent);
+  outline-offset: 2px;
+}
+
+/* ---- Segmented control ---- */
+
+.shm-segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.35);
+  border-radius: var(--shm-radius-control);
+}
+
+.shm-segment {
+  display: flex;
+  align-items: center;
+  padding: 4px 12px;
+  color: var(--shm-text-secondary);
+  border-radius: var(--shm-radius-control);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color 0.16s,
+    color 0.16s;
+}
+
+.shm-segment.is-selected {
+  color: var(--shm-text-strong);
+  background: rgb(var(--shm-accent-rgb) / 0.25);
+}
+
+.shm-segment:has(input:focus-visible) {
+  outline: 2px solid var(--shm-accent);
+  outline-offset: 1px;
+}
+
+/* The radio button stays for keyboard and screen readers, not for the eye. */
+.shm-segment input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  opacity: 0;
+}
+
+/* ---- Selects, number fields, small links ---- */
+
 .shm-settings .shm-select {
-  min-width: 280px;
+  min-width: 200px;
+  max-width: min(340px, 100%);
   height: 32px;
   /* Room on the right for the arrow, which sits inside instead of at the edge. */
   padding: 0 34px 0 10px;
+  overflow: hidden;
   color: var(--shm-text);
   font: inherit;
+  text-overflow: ellipsis;
   /* Own arrow instead of the browser's (that one sits right at the edge). Its gray works on
    * the dark and light backgrounds of all themes. */
   appearance: none;
@@ -119,80 +420,87 @@
   cursor: pointer;
 }
 
+.shm-settings .shm-select:disabled {
+  cursor: default;
+}
+
 /* A number with its unit after it, e.g. "5 minutes". */
 .shm-settings .shm-number-field {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  color: var(--shm-text-secondary);
 }
 
 .shm-settings .shm-input {
-  width: 80px;
+  width: 72px;
   height: 32px;
   padding: 0 10px;
   color: var(--shm-text);
   font: inherit;
   font-variant-numeric: tabular-nums;
+  text-align: right;
   background-color: rgb(var(--shm-surface-rgb) / 0.9);
   border: 1px solid rgb(var(--shm-accent-rgb) / 0.35);
 }
 
 .shm-settings .shm-input:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
+  cursor: default;
 }
 
-.shm-settings .shm-hint {
-  margin: 6px 0 0;
-  color: var(--shm-text-muted);
-  font-size: calc(12px * var(--shm-font-scale));
-}
-
-/* Hint right under the legend, before the controls. */
-.shm-settings .shm-hint.is-first {
-  margin: 0 0 12px;
-}
-
-/* Hint of a checkbox in a group: under its label text, before the next checkbox. */
-.shm-settings .shm-hint.is-indented {
-  margin: 0 0 8px 21px;
-}
-
-/* Links of the "About" and "Development" sections, each with its hint below it. */
-.shm-settings .shm-link-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin: 0;
+/* A small action as text, e.g. "Reset order" at the right of a group's title. */
+.shm-settings .shm-link-button {
   padding: 0;
-  list-style: none;
-}
-
-/* Side by side as far as there is room. */
-.shm-settings .shm-link-list.is-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 12px 28px;
-}
-
-.shm-settings .shm-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
   color: var(--shm-accent);
-  text-decoration: none;
+  font: inherit;
+  font-size: calc(12px * var(--shm-font-scale));
+  background: none;
+  border: 0;
+  cursor: pointer;
 }
 
-.shm-settings .shm-link:hover,
-.shm-settings .shm-link:focus-visible {
+.shm-settings .shm-link-button:hover:not(:disabled),
+.shm-settings .shm-link-button:focus-visible {
   text-decoration: underline;
   outline: none;
 }
 
-/* A setting other parts link to (see `openTabAt`): clear of RSI's header, marked for a moment. */
+.shm-settings .shm-link-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ---- Narrow: the categories as a row above the shown one ---- */
+
+@container (max-width: 640px) {
+  .shm-settings {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .shm-settings-nav {
+    position: static;
+    flex-flow: row wrap;
+    gap: 4px;
+  }
+
+  .shm-settings-nav-group {
+    display: contents;
+  }
+
+  .shm-settings-nav-title {
+    display: none;
+  }
+
+  .shm-settings-nav-item {
+    border-left: 0;
+  }
+}
+
+/* ---- A setting other parts link to (see `openTabAt`): clear of RSI's header, marked ---- */
+
 .shm-settings .shm-setting-anchor {
   scroll-margin-top: 90px;
-  border-radius: var(--shm-radius-item);
 }
 
 .shm-settings .shm-setting-anchor.is-flashed {
@@ -203,12 +511,10 @@
   0%,
   40% {
     background: rgb(var(--shm-accent-rgb) / 0.2);
-    box-shadow: 0 0 0 6px rgb(var(--shm-accent-rgb) / 0.2);
   }
 
   100% {
     background: transparent;
-    box-shadow: 0 0 0 6px transparent;
   }
 }
 
@@ -216,6 +522,11 @@
   .shm-settings .shm-setting-anchor.is-flashed {
     animation: none;
     outline: 1px solid var(--shm-accent);
-    outline-offset: 4px;
+    outline-offset: -1px;
+  }
+
+  .shm-settings *,
+  .shm-settings *::before {
+    transition: none !important;
   }
 }

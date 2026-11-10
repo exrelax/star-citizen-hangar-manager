@@ -7,6 +7,8 @@ import { spotCheckCoverage } from '@/hangar/smart-update/check';
 import { i18n, locale } from '@/i18n';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import SettingCheck from '../SettingCheck.vue';
+import SettingRow from '../SettingRow.vue';
+import SettingsGroup from '../SettingsGroup.vue';
 import {
   isRefreshMinutes,
   isSmartUpdateMinutes,
@@ -78,6 +80,14 @@ function formatDuration(minutes: number) {
   }).format(value);
 }
 
+const intervalHint = computed(() =>
+  i18n.t('settings.smartUpdateIntervalHint', [
+    checkRange.min,
+    checkRange.max,
+    SMART_UPDATE.backoff.maxFactor,
+  ]),
+);
+
 // The demo mode counts the demo hangar's pages (#132), not the real one's.
 const demo = useDemoContext();
 const spotHint = computed(() => {
@@ -97,11 +107,13 @@ const spotHint = computed(() => {
     formatDuration(coverage.checksToCoverAll * settings.smartUpdateMinutes),
   ]);
 });
+const spotChecksHint = computed(
+  () => `${spotHint.value} ${i18n.t('settings.spotChecksRange', [spotRange.min, spotRange.max])}`,
+);
 </script>
 
 <template>
-  <fieldset class="shm-setting">
-    <legend class="shm-label">{{ i18n.t('settings.smartUpdates') }}</legend>
+  <SettingsGroup>
     <SettingCheck
       :checked="settings.smartUpdates"
       :hint="i18n.t('settings.smartUpdatesHint')"
@@ -109,12 +121,17 @@ const spotHint = computed(() => {
     >
       {{ i18n.t('settings.smartUpdatesLists') }}
     </SettingCheck>
+  </SettingsGroup>
 
-    <!-- The timing of the checks and reads, below the switch it depends on. -->
-    <div class="shm-setting-subgroup" role="group" :aria-disabled="!settings.smartUpdates">
-      <label class="shm-field-label" for="shm-smart-update-interval">
-        {{ i18n.t('settings.smartUpdateInterval') }}
-      </label>
+  <!-- The timing of the checks and reads, dimmed while the switch above is off. -->
+  <SettingsGroup :title="i18n.t('settings.smartUpdateSchedule')" :disabled="!settings.smartUpdates">
+    <SettingRow
+      :label="i18n.t('settings.smartUpdateInterval')"
+      for="shm-smart-update-interval"
+      hint-id="shm-smart-update-interval-hint"
+      :hint="intervalHint"
+      :disabled="!settings.smartUpdates"
+    >
       <span class="shm-number-field">
         <input
           id="shm-smart-update-interval"
@@ -131,19 +148,14 @@ const spotHint = computed(() => {
         />
         {{ i18n.t('settings.minutes') }}
       </span>
-      <p id="shm-smart-update-interval-hint" class="shm-hint">
-        {{
-          i18n.t('settings.smartUpdateIntervalHint', [
-            checkRange.min,
-            checkRange.max,
-            SMART_UPDATE.backoff.maxFactor,
-          ])
-        }}
-      </p>
-
-      <label class="shm-field-label" for="shm-spot-checks">
-        {{ i18n.t('settings.spotChecks') }}
-      </label>
+    </SettingRow>
+    <SettingRow
+      :label="i18n.t('settings.spotChecks')"
+      for="shm-spot-checks"
+      hint-id="shm-spot-checks-hint"
+      :hint="spotChecksHint"
+      :disabled="!settings.smartUpdates"
+    >
       <span class="shm-number-field">
         <input
           id="shm-spot-checks"
@@ -160,13 +172,20 @@ const spotHint = computed(() => {
         />
         {{ i18n.t('settings.pages') }}
       </span>
-      <p id="shm-spot-checks-hint" class="shm-hint">
-        {{ spotHint }} {{ i18n.t('settings.spotChecksRange', [spotRange.min, spotRange.max]) }}
-      </p>
+    </SettingRow>
+  </SettingsGroup>
 
-      <label class="shm-field-label" for="shm-store-refresh">
-        {{ i18n.t('settings.storeRefresh') }}
-      </label>
+  <SettingsGroup
+    :title="i18n.t('settings.storeChangeNotifications')"
+    :disabled="!settings.smartUpdates"
+  >
+    <SettingRow
+      :label="i18n.t('settings.storeRefresh')"
+      for="shm-store-refresh"
+      hint-id="shm-store-refresh-hint"
+      :hint="storeHint"
+      :disabled="!settings.smartUpdates"
+    >
       <span class="shm-number-field">
         <input
           id="shm-store-refresh"
@@ -183,9 +202,6 @@ const spotHint = computed(() => {
         />
         {{ i18n.t('settings.minutes') }}
       </span>
-      <p id="shm-store-refresh-hint" class="shm-hint">
-        {{ storeHint }}
-      </p>
-    </div>
-  </fieldset>
+    </SettingRow>
+  </SettingsGroup>
 </template>

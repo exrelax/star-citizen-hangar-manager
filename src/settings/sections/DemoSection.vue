@@ -23,18 +23,21 @@ import { formatUsd } from '@/hangar/discount-format';
 import { locale } from '@/i18n';
 import { computed, ref } from 'vue';
 import SettingCheck from '../SettingCheck.vue';
+import SettingRow from '../SettingRow.vue';
+import SettingsGroup from '../SettingsGroup.vue';
 import type { Settings } from '../settings';
 
 /*
- * The demo mode's own settings (#178), shown while it is on: where the demo hangar comes from,
- * its size and composition, the states of its pledges, a new random hangar and a reset. Changes
- * apply at once.
+ * The demo mode and its own settings (#178), dimmed while it is off: where the demo hangar comes
+ * from, its size and composition, the states of its pledges, a new random hangar and a reset.
+ * Changes apply at once.
  */
 
 const props = defineProps<{ settings: Settings }>();
 const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
 
 const demo = () => props.settings.demo;
+const off = computed(() => !props.settings.demoMode);
 const set = (patch: Partial<DemoSettings>) => emit('update', { demo: { ...demo(), ...patch } });
 const setStates = (patch: Partial<DemoStates>) => set({ states: { ...demo().states, ...patch } });
 
@@ -91,81 +94,108 @@ async function reset() {
 </script>
 
 <template>
-  <fieldset v-if="settings.demoMode" class="shm-setting">
-    <legend class="shm-label">{{ i18n.t('settings.demo.title') }}</legend>
-    <p class="shm-hint">{{ i18n.t('settings.demo.hint') }}</p>
-
-    <label class="shm-field-label" for="shm-demo-source">
-      {{ i18n.t('settings.demo.source') }}
-    </label>
-    <select
-      id="shm-demo-source"
-      class="shm-select"
-      :value="settings.demo.source"
-      @change="set({ source: ($event.target as HTMLSelectElement).value as DemoSource })"
+  <p class="shm-settings-intro">{{ i18n.t('settings.demo.hint') }}</p>
+  <SettingsGroup>
+    <SettingCheck
+      :checked="settings.demoMode"
+      :hint="i18n.t('settings.demoModeHint')"
+      @change="(demoMode) => emit('update', { demoMode })"
     >
-      <option v-for="source in DEMO_SOURCES" :key="source" :value="source">
-        {{ i18n.t(`settings.demo.sources.${source}`) }}
-      </option>
-    </select>
+      {{ i18n.t('settings.demoMode') }}
+    </SettingCheck>
+  </SettingsGroup>
 
-    <template v-if="settings.demo.source === 'generated'">
-      <p class="shm-field-label">{{ i18n.t('settings.demo.composition') }}</p>
-      <div class="shm-demo-grid">
-        <label v-for="kind in KINDS" :key="kind" class="shm-demo-number">
-          <span>{{ i18n.t(`settings.demo.kinds.${kind}`) }}</span>
-          <input
-            class="shm-input shm-number"
-            type="number"
-            inputmode="numeric"
-            :min="DEMO_LIMITS.kind.min"
-            :max="DEMO_LIMITS.kind.max"
-            step="1"
-            :value="settings.demo.composition[kind]"
-            @change="setKind($event, kind)"
-          />
-        </label>
-      </div>
+  <!-- The demo's own settings (#178), dimmed while it is off. -->
+  <SettingsGroup :title="i18n.t('settings.demo.hangar')" :disabled="off">
+    <template v-if="settings.demo.source === 'generated'" #action>
+      <button type="button" class="shm-link-button" :disabled="off" @click="createNewHangar">
+        {{ i18n.t('settings.demo.newHangar') }}
+      </button>
     </template>
+    <SettingRow :label="i18n.t('settings.demo.source')" for="shm-demo-source">
+      <select
+        id="shm-demo-source"
+        class="shm-select"
+        :value="settings.demo.source"
+        :disabled="off"
+        @change="set({ source: ($event.target as HTMLSelectElement).value as DemoSource })"
+      >
+        <option v-for="source in DEMO_SOURCES" :key="source" :value="source">
+          {{ i18n.t(`settings.demo.sources.${source}`) }}
+        </option>
+      </select>
+    </SettingRow>
+    <SettingRow
+      v-if="settings.demo.source === 'generated'"
+      :label="i18n.t('settings.demo.composition')"
+    >
+      <template #below>
+        <div class="shm-demo-grid">
+          <label v-for="kind in KINDS" :key="kind" class="shm-demo-number">
+            <span>{{ i18n.t(`settings.demo.kinds.${kind}`) }}</span>
+            <input
+              class="shm-input shm-number"
+              type="number"
+              inputmode="numeric"
+              :min="DEMO_LIMITS.kind.min"
+              :max="DEMO_LIMITS.kind.max"
+              step="1"
+              :value="settings.demo.composition[kind]"
+              :disabled="off"
+              @change="setKind($event, kind)"
+            />
+          </label>
+        </div>
+      </template>
+    </SettingRow>
+    <SettingRow
+      v-if="settings.demo.source === 'own'"
+      :label="i18n.t('settings.demo.ownHangarPledges')"
+      for="shm-demo-own"
+    >
+      <input
+        id="shm-demo-own"
+        class="shm-input shm-number"
+        type="number"
+        inputmode="numeric"
+        :min="DEMO_LIMITS.list.min"
+        :max="DEMO_LIMITS.list.max"
+        step="1"
+        :value="settings.demo.ownHangarPledges"
+        :disabled="off"
+        @change="setList($event, 'ownHangarPledges')"
+      />
+    </SettingRow>
+    <SettingRow :label="i18n.t('settings.demo.buybackPledges')" for="shm-demo-buyback">
+      <input
+        id="shm-demo-buyback"
+        class="shm-input shm-number"
+        type="number"
+        inputmode="numeric"
+        :min="DEMO_LIMITS.list.min"
+        :max="DEMO_LIMITS.list.max"
+        step="1"
+        :value="settings.demo.buybackPledges"
+        :disabled="off"
+        @change="setList($event, 'buybackPledges')"
+      />
+    </SettingRow>
+  </SettingsGroup>
 
-    <div class="shm-demo-grid">
-      <label v-if="settings.demo.source === 'own'" class="shm-demo-number">
-        <span>{{ i18n.t('settings.demo.ownHangarPledges') }}</span>
-        <input
-          class="shm-input shm-number"
-          type="number"
-          inputmode="numeric"
-          :min="DEMO_LIMITS.list.min"
-          :max="DEMO_LIMITS.list.max"
-          step="1"
-          :value="settings.demo.ownHangarPledges"
-          @change="setList($event, 'ownHangarPledges')"
-        />
-      </label>
-      <label class="shm-demo-number">
-        <span>{{ i18n.t('settings.demo.buybackPledges') }}</span>
-        <input
-          class="shm-input shm-number"
-          type="number"
-          inputmode="numeric"
-          :min="DEMO_LIMITS.list.min"
-          :max="DEMO_LIMITS.list.max"
-          step="1"
-          :value="settings.demo.buybackPledges"
-          @change="setList($event, 'buybackPledges')"
-        />
-      </label>
-    </div>
-
-    <template v-if="settings.demo.source === 'generated'">
-      <p class="shm-field-label">{{ i18n.t('settings.demo.states') }}</p>
-      <label class="shm-field-label" for="shm-demo-protected">
-        {{ i18n.t('settings.demo.stateChecks.protectedAccess') }}
-      </label>
+  <SettingsGroup
+    v-if="settings.demo.source === 'generated'"
+    :title="i18n.t('settings.demo.states')"
+    :disabled="off"
+  >
+    <SettingRow
+      :label="i18n.t('settings.demo.stateChecks.protectedAccess')"
+      for="shm-demo-protected"
+    >
       <select
         id="shm-demo-protected"
         class="shm-select"
         :value="settings.demo.states.protectedAccess"
+        :disabled="off"
         @change="
           setStates({
             protectedAccess: ($event.target as HTMLSelectElement).value as ProtectedAccess,
@@ -176,90 +206,101 @@ async function reset() {
           {{ i18n.t(`settings.demo.protectedAccessOptions.${access}`) }}
         </option>
       </select>
-      <SettingCheck
-        v-for="state in STATE_CHECKS"
-        :key="state"
-        :checked="settings.demo.states[state]"
-        @change="(on) => setStates({ [state]: on })"
-      >
-        {{ i18n.t(`settings.demo.stateChecks.${state}`) }}
-      </SettingCheck>
-      <div class="shm-demo-grid">
-        <label
-          v-for="key in ['notGiftablePercent', 'notMeltablePercent'] as const"
-          :key="key"
-          class="shm-demo-number"
+    </SettingRow>
+    <SettingCheck
+      v-for="state in STATE_CHECKS"
+      :key="state"
+      :checked="settings.demo.states[state]"
+      :disabled="off"
+      @change="(on) => setStates({ [state]: on })"
+    >
+      {{ i18n.t(`settings.demo.stateChecks.${state}`) }}
+    </SettingCheck>
+    <SettingRow
+      v-for="key in ['notGiftablePercent', 'notMeltablePercent'] as const"
+      :key="key"
+      :label="i18n.t(`settings.demo.${key}`)"
+      :for="`shm-demo-${key}`"
+    >
+      <span class="shm-number-field">
+        <input
+          :id="`shm-demo-${key}`"
+          class="shm-input shm-number"
+          type="number"
+          inputmode="numeric"
+          :min="DEMO_LIMITS.percent.min"
+          :max="DEMO_LIMITS.percent.max"
+          step="1"
+          :value="settings.demo.states[key]"
+          :disabled="off"
+          @change="setPercent($event, key)"
+        />
+        %
+      </span>
+    </SettingRow>
+  </SettingsGroup>
+
+  <SettingsGroup :disabled="off">
+    <SettingRow
+      :label="i18n.t('settings.demo.storeCredit')"
+      :hint="i18n.t('settings.demo.storeCreditHint')"
+      for="shm-demo-credit"
+      hint-id="shm-demo-credit-hint"
+    >
+      <span class="shm-number-field">
+        <input
+          id="shm-demo-credit"
+          class="shm-input shm-number"
+          type="number"
+          inputmode="decimal"
+          min="0"
+          :max="DEMO_LIMITS.storeCredit"
+          step="0.01"
+          :value="settings.demo.storeCredit"
+          :disabled="off"
+          aria-describedby="shm-demo-credit-hint"
+          @change="setCredit"
+        />
+        USD
+      </span>
+      <template #below>
+        <div
+          class="shm-setting-actions"
+          role="group"
+          :aria-label="i18n.t('settings.demo.creditCases')"
         >
-          <span>{{ i18n.t(`settings.demo.${key}`) }}</span>
-          <span class="shm-number-field">
-            <input
-              class="shm-input shm-number"
-              type="number"
-              inputmode="numeric"
-              :min="DEMO_LIMITS.percent.min"
-              :max="DEMO_LIMITS.percent.max"
-              step="1"
-              :value="settings.demo.states[key]"
-              @change="setPercent($event, key)"
-            />
-            %
-          </span>
-        </label>
-      </div>
-    </template>
+          <button
+            v-for="kind in CREDIT_CASES"
+            :key="kind"
+            type="button"
+            class="shm-button"
+            :aria-pressed="creditCases[kind] === settings.demo.storeCredit"
+            :disabled="off || creditCases[kind] === undefined"
+            @click="set({ storeCredit: creditCases[kind]! })"
+          >
+            {{ i18n.t(`settings.demo.creditCase.${kind}`) }}
+            <template v-if="creditCases[kind] !== undefined">
+              ({{ formatUsd(creditCases[kind]!, locale) }})
+            </template>
+          </button>
+        </div>
+      </template>
+    </SettingRow>
+  </SettingsGroup>
 
-    <label class="shm-field-label" for="shm-demo-credit">
-      {{ i18n.t('settings.demo.storeCredit') }}
-    </label>
-    <span class="shm-number-field">
-      <input
-        id="shm-demo-credit"
-        class="shm-input shm-number"
-        type="number"
-        inputmode="decimal"
-        min="0"
-        :max="DEMO_LIMITS.storeCredit"
-        step="0.01"
-        :value="settings.demo.storeCredit"
-        aria-describedby="shm-demo-credit-hint"
-        @change="setCredit"
-      />
-      USD
-    </span>
-    <div class="shm-setting-actions" role="group" :aria-label="i18n.t('settings.demo.creditCases')">
-      <button
-        v-for="kind in CREDIT_CASES"
-        :key="kind"
-        type="button"
-        class="shm-button"
-        :aria-pressed="creditCases[kind] === settings.demo.storeCredit"
-        :disabled="creditCases[kind] === undefined"
-        @click="set({ storeCredit: creditCases[kind]! })"
-      >
-        {{ i18n.t(`settings.demo.creditCase.${kind}`) }}
-        <template v-if="creditCases[kind] !== undefined">
-          ({{ formatUsd(creditCases[kind]!, locale) }})
-        </template>
-      </button>
-    </div>
-    <p id="shm-demo-credit-hint" class="shm-hint">{{ i18n.t('settings.demo.storeCreditHint') }}</p>
-
-    <div class="shm-setting-actions">
-      <button
-        v-if="settings.demo.source === 'generated'"
-        type="button"
-        class="shm-button"
-        @click="createNewHangar"
-      >
+  <SettingsGroup :disabled="off">
+    <SettingRow :label="i18n.t('settings.demo.reset')" :hint="i18n.t('settings.demo.resetHint')">
+      <button type="button" class="shm-button" :disabled="off" @click="reset">
         <SvgIcon name="rotate-left" />
-        {{ i18n.t('settings.demo.newHangar') }}
-      </button>
-      <button type="button" class="shm-button" @click="reset">
         {{ i18n.t('settings.demo.reset') }}
       </button>
-    </div>
-    <p v-if="done" class="shm-hint" role="status">{{ i18n.t(`settings.demo.done.${done}`) }}</p>
-  </fieldset>
+    </SettingRow>
+    <template #after>
+      <p v-if="done" class="shm-settings-group-foot is-done" role="status">
+        {{ i18n.t(`settings.demo.done.${done}`) }}
+      </p>
+    </template>
+  </SettingsGroup>
 </template>
 
 <style scoped>
@@ -267,19 +308,19 @@ async function reset() {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 8px 16px;
-  margin-bottom: 8px;
 }
 
 .shm-demo-number {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--shm-text-secondary);
 }
 
 .shm-setting-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 8px;
 }
 </style>

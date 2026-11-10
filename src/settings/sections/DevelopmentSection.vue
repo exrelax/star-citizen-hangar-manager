@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { i18n, locale } from '@/i18n';
+import { locale } from '@/i18n';
 import { updateNotifications, withAdded } from '@/notifications/notifications';
 import { storeItemsNote, warbondNote } from '@/store/store-change-notes';
 import SvgIcon from '@/icons/SvgIcon.vue';
@@ -18,12 +18,13 @@ import {
 import { useSettings } from '@/settings/use-settings';
 import { useStored } from '@/storage/use-stored';
 import { useNow } from '@/shared/use-now';
+import SettingRow from '../SettingRow.vue';
+import SettingsGroup from '../SettingsGroup.vue';
 
 /*
- * Tools for developing the extension: development builds only, and not on the styleguide itself
- * (see wxt.config.ts). Its texts are English only, like the styleguide.
+ * Tools for developing the extension, shown as DEVELOPMENT_SHOWN says (development.ts). Its texts
+ * are English only, like the styleguide.
  */
-const shown = import.meta.env.DEV && !location.pathname.endsWith('/styleguide.html');
 const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
 
 /**
@@ -46,6 +47,15 @@ async function toggleInvisibleDemo() {
 
 /** A test read of the Pledge Store by the background script (#163), nothing stored. */
 const backgroundRead = ref<BackgroundReadResult | 'reading'>();
+const backgroundHint = computed(() => {
+  const read = backgroundRead.value;
+  if (read === 'reading') return 'Reading …';
+  if (read?.status === 'read') {
+    return `${read.ships} ships, ${read.warbonds} warbonds, ${read.items} store items in ${read.requests} requests, ${read.ms} ms. Nothing was stored.`;
+  }
+  if (read) return `${read.status}: ${read.message}`;
+  return 'What the background script gets from RSI with no page: the upgrade tool and the store items, read once and not stored.';
+});
 async function readInBackground() {
   backgroundRead.value = 'reading';
   backgroundRead.value = (await browser.runtime.sendMessage(READ_PLEDGE_STORE_IN_BACKGROUND)) as
@@ -91,75 +101,57 @@ async function addSampleStoreNotes() {
 </script>
 
 <template>
-  <section v-if="shown" class="shm-setting">
-    <span class="shm-label">{{ i18n.t('settings.development') }}</span>
-    <ul class="shm-link-list">
-      <li>
-        <a class="shm-link" href="#" @click.prevent="openStyleguide">
-          <SvgIcon name="paintbrush" />
-          Styleguide
-        </a>
-        <p class="shm-hint">
-          All building blocks of the manager with made-up pledges, in a new tab.
-        </p>
-      </li>
-      <li>
-        <a
-          class="shm-link"
-          href="#"
-          data-shm-dev="sample-store-notes"
-          @click.prevent="addSampleStoreNotes"
-        >
-          <SvgIcon name="bell" />
-          Add sample Pledge Store notifications
-        </a>
-        <p class="shm-hint">
-          New and gone warbond CCUs (also as a browser notification, if allowed) and changed store
-          items, in the sidebar's notifications.
-        </p>
-      </li>
-      <li>
-        <a class="shm-link" href="#" @click.prevent="toggleInvisibleDemo">
-          <SvgIcon name="lock-open" />
-          {{
-            invisibleLeft
-              ? `Invisible demo mode: ${invisibleLeft} min left – end now`
-              : 'Invisible demo mode'
-          }}
-        </a>
-        <p class="shm-hint">
-          The demo mode without its badge and with every button looking enabled, for screenshots ({{
-            DEMO.invisibleMinutes
-          }}
-          minutes, then the normal demo mode is back).
-        </p>
-      </li>
-      <li>
-        <a
-          class="shm-link"
-          href="#"
-          data-shm-dev="background-read"
-          @click.prevent="readInBackground"
-        >
-          <SvgIcon name="clock-rotate-left" />
-          Read the Pledge Store in the background
-        </a>
-        <p class="shm-hint" data-shm-dev="background-read-result" aria-live="polite">
-          <template v-if="backgroundRead === 'reading'">Reading …</template>
-          <template v-else-if="backgroundRead?.status === 'read'">
-            {{ backgroundRead.ships }} ships, {{ backgroundRead.warbonds }} warbonds,
-            {{ backgroundRead.items }} store items in {{ backgroundRead.requests }} requests,
-            {{ backgroundRead.ms }} ms. Nothing was stored.
-          </template>
-          <template v-else-if="backgroundRead">
-            {{ backgroundRead.status }}: {{ backgroundRead.message }}
-          </template>
-          <template v-else>
-            What the background script gets from RSI with no page: the upgrade tool and the store
-            items, read once and not stored.
-          </template>
-        </p>
-      </li>
-    </ul>
-  </section>
+  <p class="shm-settings-intro">Tools for working on the extension, in development builds only.</p>
+  <SettingsGroup>
+    <SettingRow
+      label="Styleguide"
+      hint="All building blocks of the manager with made-up pledges, in a new tab."
+    >
+      <button type="button" class="shm-button" @click="openStyleguide">
+        <SvgIcon name="square-up-right" />
+        Open
+      </button>
+    </SettingRow>
+    <SettingRow
+      label="Sample Pledge Store notifications"
+      hint="New and gone warbond CCUs (also as a browser notification, if allowed) and changed store items, in the sidebar's notifications."
+    >
+      <button
+        type="button"
+        class="shm-button"
+        data-shm-dev="sample-store-notes"
+        @click="addSampleStoreNotes"
+      >
+        <SvgIcon name="bell" />
+        Add
+      </button>
+    </SettingRow>
+    <SettingRow
+      :label="
+        invisibleLeft ? `Invisible demo mode: ${invisibleLeft} min left` : 'Invisible demo mode'
+      "
+      :hint="`The demo mode without its badge and with every button looking enabled, for screenshots (${DEMO.invisibleMinutes} minutes, then the normal demo mode is back).`"
+    >
+      <button type="button" class="shm-button" @click="toggleInvisibleDemo">
+        <SvgIcon name="lock-open" />
+        {{ invisibleLeft ? 'End now' : 'Start' }}
+      </button>
+    </SettingRow>
+    <SettingRow
+      label="Read the Pledge Store in the background"
+      :hint="backgroundHint"
+      hint-id="shm-dev-background-read-result"
+    >
+      <button
+        type="button"
+        class="shm-button"
+        data-shm-dev="background-read"
+        :disabled="backgroundRead === 'reading'"
+        @click="readInBackground"
+      >
+        <SvgIcon name="clock-rotate-left" />
+        Run
+      </button>
+    </SettingRow>
+  </SettingsGroup>
 </template>

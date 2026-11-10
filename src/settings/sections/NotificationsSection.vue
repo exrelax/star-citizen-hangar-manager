@@ -10,6 +10,8 @@ import {
 } from '@/notifications/browser-permission';
 import { BROWSER_NOTIFICATIONS_SETTING_ID } from '../anchors';
 import SettingCheck from '../SettingCheck.vue';
+import SettingRow from '../SettingRow.vue';
+import SettingsGroup from '../SettingsGroup.vue';
 import { useStored } from '@/storage/use-stored';
 import {
   demoDismissedPaintsItem,
@@ -154,8 +156,7 @@ async function restore() {
 </script>
 
 <template>
-  <fieldset class="shm-setting">
-    <legend class="shm-label">{{ i18n.t('notifications.title') }}</legend>
+  <SettingsGroup>
     <!-- Linked from the sidebar's hint about browser notifications. -->
     <SettingCheck
       :id="BROWSER_NOTIFICATIONS_SETTING_ID"
@@ -167,27 +168,27 @@ async function restore() {
     >
       {{ i18n.t('settings.browserNotifications') }}
     </SettingCheck>
-    <p v-if="!allowed && refused" class="shm-hint is-indented is-warning" role="status">
+    <p v-if="!allowed && refused" class="shm-setting-row-status is-warning" role="status">
       {{ i18n.t('settings.browserNotificationsRefused') }}
     </p>
-    <p v-else-if="!allowed && asked" class="shm-hint is-indented" role="status">
+    <p v-else-if="!allowed && asked" class="shm-setting-row-status" role="status">
       {{ i18n.t('settings.browserNotificationsAsked') }}
     </p>
     <!-- The kinds only the browser shows, below the switch they depend on (#197). -->
-    <div class="shm-setting-subgroup" role="group" :aria-disabled="!allowed">
-      <SettingCheck
-        :checked="kindOn('meltReady')"
-        :disabled="!allowed"
-        :hint="i18n.t('settings.notificationKindMeltReadyHint')"
-        @change="(on) => setKind('meltReady', on)"
-      >
-        {{ i18n.t('settings.notificationKindMeltReady') }}
-      </SettingCheck>
-    </div>
+    <SettingCheck
+      indented
+      :checked="kindOn('meltReady')"
+      :disabled="!allowed"
+      :hint="i18n.t('settings.notificationKindMeltReadyHint')"
+      @change="(on) => setKind('meltReady', on)"
+    >
+      {{ i18n.t('settings.notificationKindMeltReady') }}
+    </SettingCheck>
+  </SettingsGroup>
 
-    <!-- The Pledge Store: its changes (#164), in the sidebar, new warbond CCUs also in the browser;
-         its events (#69), in the sidebar. -->
-    <p class="shm-field-label">{{ i18n.t('settings.storeChangeNotifications') }}</p>
+  <!-- The Pledge Store: its changes (#164), in the sidebar, new warbond CCUs also in the browser;
+       its events (#69), in the sidebar. -->
+  <SettingsGroup :title="i18n.t('settings.storeChangeNotifications')">
     <SettingCheck
       :checked="kindOn('warbonds')"
       :hint="i18n.t('settings.notificationKindWarbondsHint')"
@@ -209,10 +210,11 @@ async function restore() {
     >
       {{ i18n.t('settings.notificationKindEvents') }}
     </SettingCheck>
+  </SettingsGroup>
 
-    <!-- The buy back: its pledges whose price is expected to rise (#193), in the sidebar and,
-         shortly before, in the browser. -->
-    <p class="shm-field-label">{{ i18n.t('settings.buybackNotifications') }}</p>
+  <!-- The buy back: its pledges whose price is expected to rise (#193), in the sidebar and,
+       shortly before, in the browser. -->
+  <SettingsGroup :title="i18n.t('settings.buybackNotifications')">
     <SettingCheck
       :checked="kindOn('priceIncreases')"
       :hint="i18n.t('settings.notificationKindPriceIncreasesHint')"
@@ -220,28 +222,25 @@ async function restore() {
     >
       {{ i18n.t('settings.notificationKindPriceIncreases') }}
     </SettingCheck>
+  </SettingsGroup>
 
-    <p class="shm-field-label">{{ i18n.t('settings.sidebarNotifications') }}</p>
-    <button type="button" class="shm-button" :disabled="!restoreCount" @click="restore">
-      <SvgIcon name="rotate-left" />
-      {{ i18n.t('settings.restoreNotifications') }}
-    </button>
-    <p class="shm-hint">{{ i18n.t('settings.restoreNotificationsHint') }}</p>
-    <p v-if="restored && !restoreCount" class="shm-hint is-done" role="status">
-      {{ i18n.t('settings.restoreNotificationsDone', [restored]) }}
-    </p>
-    <p v-else-if="!restoreCount" class="shm-hint">
-      {{ i18n.t('settings.restoreNotificationsNone') }}
-    </p>
-  </fieldset>
+  <SettingsGroup :title="i18n.t('settings.sidebarNotifications')">
+    <SettingRow
+      :label="i18n.t('settings.restoreNotifications')"
+      :hint="i18n.t('settings.restoreNotificationsHint')"
+    >
+      <button type="button" class="shm-button" :disabled="!restoreCount" @click="restore">
+        <SvgIcon name="rotate-left" />
+        {{ i18n.t('settings.restoreNotificationsButton') }}
+      </button>
+    </SettingRow>
+    <template #after>
+      <p v-if="restored && !restoreCount" class="shm-settings-group-foot is-done" role="status">
+        {{ i18n.t('settings.restoreNotificationsDone', [restored]) }}
+      </p>
+      <p v-else-if="!restoreCount" class="shm-settings-group-foot">
+        {{ i18n.t('settings.restoreNotificationsNone') }}
+      </p>
+    </template>
+  </SettingsGroup>
 </template>
-
-<style scoped>
-.shm-hint.is-done {
-  color: var(--shm-success);
-}
-
-.shm-hint.is-warning {
-  color: var(--shm-warning);
-}
-</style>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import RefreshIcon from '@/hangar/components/RefreshIcon.vue';
 import ResetSection from './ResetSection.vue';
+import SettingsGroup from '../SettingsGroup.vue';
 import { startStorageSync, syncState } from '@/hangar/sync-state';
 import { upgradeToolState } from '@/ships/sync-upgrade-tool';
 import { i18n, locale } from '@/i18n';
@@ -150,9 +151,8 @@ async function reset(definition: StorageDefinition) {
 </script>
 
 <template>
-  <fieldset class="shm-setting">
-    <legend class="shm-label">{{ i18n.t('storage.title') }}</legend>
-    <p class="shm-hint is-first">{{ i18n.t('storage.intro') }}</p>
+  <p class="shm-settings-intro">{{ i18n.t('storage.intro') }}</p>
+  <SettingsGroup>
     <div class="shm-storage-scroll">
       <table class="shm-storage-table">
         <thead>
@@ -231,11 +231,13 @@ async function reset(definition: StorageDefinition) {
         </tbody>
       </table>
     </div>
-    <p v-if="resetDone" class="shm-hint is-done" role="status">
-      {{ i18n.t('storage.resetDone', [name(resetDone)]) }}
-    </p>
-    <ResetSection />
-  </fieldset>
+    <template #after>
+      <p v-if="resetDone" class="shm-settings-group-foot is-done" role="status">
+        {{ i18n.t('storage.resetDone', [name(resetDone)]) }}
+      </p>
+    </template>
+  </SettingsGroup>
+  <ResetSection />
 </template>
 
 <style scoped>
@@ -245,7 +247,6 @@ async function reset(definition: StorageDefinition) {
 
 .shm-storage-table {
   width: 100%;
-  margin-top: 8px;
   border-collapse: collapse;
   font-size: calc(12px * var(--shm-font-scale));
   font-variant-numeric: tabular-nums;
@@ -253,7 +254,7 @@ async function reset(definition: StorageDefinition) {
 
 .shm-storage-table th,
 .shm-storage-table td {
-  padding: 6px 10px 6px 0;
+  padding: 8px 10px 8px 0;
   text-align: left;
   vertical-align: top;
   white-space: nowrap;
@@ -278,9 +279,13 @@ async function reset(definition: StorageDefinition) {
   text-align: right;
 }
 
+.shm-storage-table :is(th, td):first-child {
+  padding-left: 16px;
+}
+
 .shm-storage-table .is-action {
   width: 1%;
-  padding-right: 0;
+  padding-right: 12px;
   vertical-align: middle;
 }
 
@@ -306,10 +311,6 @@ async function reset(definition: StorageDefinition) {
 
 .shm-button.is-icon {
   padding: 0 8px;
-}
-
-.shm-hint.is-done {
-  color: var(--shm-success);
 }
 
 .shm-visually-hidden {
