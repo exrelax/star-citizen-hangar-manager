@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import ManagerList from '@/hangar/components/ManagerList.vue';
-import { FILTER_CATEGORIES, shownFilters } from '@/hangar/filters';
+import { FILTER_CATEGORIES, shownFilters, type FilterStates } from '@/hangar/filters';
+import { highlightClasses } from '@/hangar/highlights';
+import { FILTER_HIGHLIGHTS } from '@/config';
 import { i18n } from '@/i18n';
 import type { Settings } from '@/settings/settings';
 import { computed } from 'vue';
@@ -38,6 +40,10 @@ const sortOptions = computed(() =>
 );
 const setSort = (buyback: BuybackSort) => update({ sort: { ...props.settings.sort, buyback } });
 
+/** What the included filters are about, highlighted in the rows (#216). */
+const highlights = (states: FilterStates<BuybackFilter>) =>
+  highlightClasses(FILTER_HIGHLIGHTS.buyback, states);
+
 const filterLabel = (filter: BuybackFilter) => i18n.t(`filter.${filter}`);
 
 /** Filters whose meaning isn't obvious from the label explain it in their tooltip. */
@@ -61,6 +67,7 @@ const filterHint = (filter: BuybackFilter) => {
     :active="active"
     :sort-options="sortOptions"
     :sort="settings.sort.buyback"
+    :highlights="highlights"
     @update:sort="setSort"
   >
     <template #row="{ entry, autoExpand }">

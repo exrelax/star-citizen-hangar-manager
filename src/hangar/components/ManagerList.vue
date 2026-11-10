@@ -61,6 +61,11 @@ const props = defineProps<{
    * and other filters. "Reset filter" turns it off, and it goes on its own once no entry matches.
    */
   filterRequest?: { matches: (entry: T) => boolean; at: number } | null;
+  /**
+   * The classes that highlight in every row what the included filters are about (#216, see
+   * `highlights.ts`), from their states.
+   */
+  highlights?: (states: ReadonlyMap<F, FilterState>) => readonly string[];
 }>();
 
 const emit = defineEmits<{
@@ -373,7 +378,7 @@ const countLabel = computed(() =>
     </div>
 
     <!-- One grouped list (Modern Hangar) or separate rows (Classic RSI). -->
-    <div v-if="rendered.length" class="shm-rows">
+    <div v-if="rendered.length" class="shm-rows" :class="highlights?.(filterStates)">
       <template v-for="entry in rendered" :key="entry.id">
         <slot name="row" :entry="entry" :auto-expand="entry.id === onlyVisibleId" />
       </template>

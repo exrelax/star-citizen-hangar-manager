@@ -6,6 +6,7 @@ import {
   PLEDGE_FILTER_PREDICATES,
   shownFilters,
   FILTER_CATEGORIES,
+  type FilterStates,
   type PledgeFilter,
 } from '../filters';
 import type { PledgeView } from '../pledge-view';
@@ -16,6 +17,8 @@ import { canSelectPledges } from '../sidebar';
 import { meltReadyIds } from '../use-melt-marks';
 import { clearHangarFilter, hangarViewFilter, type HangarViewFilter } from '../view-filter';
 import { paintRebuys } from '@/store/paint-consultant/use-paint-consultant';
+import { FILTER_HIGHLIGHTS } from '@/config';
+import { highlightClasses } from '../highlights';
 import ManagerList from './ManagerList.vue';
 import PledgeRow from './PledgeRow.vue';
 
@@ -45,6 +48,14 @@ const sortOptions = computed(() =>
   HANGAR_SORTS.map((value) => ({ value, label: i18n.t(`sort.${value}`) })),
 );
 const setSort = (hangar: HangarSort) => update({ sort: { ...props.settings.sort, hangar } });
+
+/** What the included filters and the sorting are about, highlighted in the rows (#216). */
+const highlights = (states: FilterStates<PledgeFilter>) =>
+  highlightClasses(
+    FILTER_HIGHLIGHTS.hangar,
+    states,
+    FILTER_HIGHLIGHTS.sorts[props.settings.sort.hangar],
+  );
 
 /** For the sidebar: it counts the pledges search and filters leave visible. */
 const showVisible = (entries: PledgeView[]) =>
@@ -88,6 +99,7 @@ const filterHint = (filter: PledgeFilter) => {
     :active="active"
     :sort-options="sortOptions"
     :sort="settings.sort.hangar"
+    :highlights="highlights"
     :filter-request="viewFilterRequest"
     @clear-request="clearHangarFilter()"
     @update:sort="setSort"
