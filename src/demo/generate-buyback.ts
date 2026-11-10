@@ -133,6 +133,7 @@ export function generateBuyback(
       ) ?? sorted.at(-1)!;
     return ccuPledge(from, to, random.chance(`ccu:${index}:warbond`, 0.3) ? 'Warbond' : 'Standard');
   });
+  made.push(...unavailableCcus(sorted));
   times(composition.paints, (index) => {
     const entry = random.pick(`paint:${index}`, itemsOf('Paints'));
     return entry && storeItemPledge(entry);
@@ -185,8 +186,9 @@ function withGiftableCases(
   pledges: readonly BuybackPledge[],
   orders: DemoBuyback['orders'],
 ): Record<string, boolean> {
+  // Not on CCUs: one RSI can't sell again is never giftable (#208).
   const cases = pledges.filter(
-    (pledge) => !pledge.title.startsWith('Referral') && pledge.price !== null,
+    (pledge) => !pledge.isUpgrade && !pledge.title.startsWith('Referral') && pledge.price !== null,
   );
   const [
     money,
@@ -230,6 +232,23 @@ function withGiftableCases(
     orders.pledgeOrders[id] = { ...orders.pledgeOrders[sameOrderA!.id]! };
   });
   return giftFlags;
+}
+
+/**
+ * CCUs RSI can't sell again (#208): its base ship now costs more than its target ship, and one
+ * where both cost the same – from the catalog's standard prices, next to the CCUs that can be
+ * bought back.
+ */
+function unavailableCcus(sorted: readonly Ship[]): Omit<BuybackPledge, 'id'>[] {
+  const cheaper = sorted[Math.floor(sorted.length / 3)];
+  const pricier = sorted[Math.floor((sorted.length * 2) / 3)];
+  const ccus =
+    cheaper && pricier && cheaper.msrp < pricier.msrp ? [ccuPledge(pricier, cheaper)] : [];
+  const same = sorted.findIndex(
+    (ship, index) => index > 0 && ship.msrp === sorted[index - 1]!.msrp,
+  );
+  if (same > 0) ccus.push(ccuPledge(sorted[same - 1]!, sorted[same]!));
+  return ccus;
 }
 
 /** A money-paid order of a buy back pledge, placed on `placedAt`. */

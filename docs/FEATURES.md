@@ -200,7 +200,8 @@ information (for screenshots or content creators)** keeps private details off sc
   price, and made-up buy back tokens. Its orders and remembered gift flags show every case of
   "probably giftable" (#205): money only before 2026-10-30 (also a buy back paid with money),
   store credit only, both, money after the date, no known order, a gift flag overruling the order,
-  and two pledges of one order. The hangar's pledges have every
+  and two pledges of one order. Two CCUs can't be bought back (#208): one whose base ship now costs
+  more than its target, one where both cost the same. The hangar's pledges have every
   state (#176): meltable or not, giftable or not, LTI and insurances in years and months (also
   several at once), upgraded ships with made-up "Applied upgrades", protected game access (`SC`,
   `SQ42`, `SC · SQ42`, also a reward without a ship), and orders paid with money, in part with
