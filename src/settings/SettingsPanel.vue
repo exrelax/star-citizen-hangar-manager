@@ -1,24 +1,26 @@
 <script setup lang="ts">
 import AboutSection from './sections/AboutSection.vue';
+import AppearanceSection from './sections/AppearanceSection.vue';
+import DemoSection from './sections/DemoSection.vue';
 import DevelopmentSection from './sections/DevelopmentSection.vue';
 import ExperimentalSection from './sections/ExperimentalSection.vue';
 import FilterSection from './sections/FilterSection.vue';
-import GeneralSection from './sections/GeneralSection.vue';
-import LanguageSection from './sections/LanguageSection.vue';
+import ListsSection from './sections/ListsSection.vue';
 import NotificationsSection from './sections/NotificationsSection.vue';
-import PrivacySection from './sections/PrivacySection.vue';
-import DemoSection from './sections/DemoSection.vue';
 import PaintConsultantSection from './sections/PaintConsultantSection.vue';
-import ShipLinkSection from './sections/ShipLinkSection.vue';
+import PrivacySection from './sections/PrivacySection.vue';
 import SidebarSection from './sections/SidebarSection.vue';
 import SmartUpdateSection from './sections/SmartUpdateSection.vue';
 import StorageSection from './sections/StorageSection.vue';
-import ThemeSection from './sections/ThemeSection.vue';
 import type { Settings } from './settings';
 
 /*
  * The settings tab: one section per group (src/settings/sections). Each gets the settings and
  * reports a change as a patch, which the manager stores.
+ *
+ * The order (#117): first what changes how the manager looks and what it hides, then the lists,
+ * the sidebar and the notifications, then the Paint Discount Consultant, and last what is rarely
+ * needed – the timing of the updates, experimental features, the stored data, about.
  */
 
 defineProps<{ settings: Settings }>();
@@ -28,17 +30,15 @@ const update = (patch: Partial<Settings>) => emit('update', patch);
 
 <template>
   <div class="shm-settings">
-    <LanguageSection :settings="settings" @update="update" />
-    <ThemeSection :settings="settings" @update="update" />
+    <AppearanceSection :settings="settings" @update="update" />
     <PrivacySection :settings="settings" @update="update" />
     <DemoSection :settings="settings" @update="update" />
-    <GeneralSection :settings="settings" @update="update" />
+    <ListsSection :settings="settings" @update="update" />
+    <FilterSection :settings="settings" @update="update" />
     <SidebarSection :settings="settings" @update="update" />
     <NotificationsSection :settings="settings" @update="update" />
     <PaintConsultantSection :settings="settings" @update="update" />
     <SmartUpdateSection :settings="settings" @update="update" />
-    <FilterSection :settings="settings" @update="update" />
-    <ShipLinkSection :settings="settings" @update="update" />
     <ExperimentalSection :settings="settings" @update="update" />
     <StorageSection />
     <AboutSection />

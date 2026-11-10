@@ -41,6 +41,11 @@
   clear: both;
 }
 
+/* A field right below the heading needs no extra space above it. */
+.shm-settings legend.shm-label + .shm-field-label {
+  margin-top: 0;
+}
+
 /* Label of a field inside a group, below the group's heading. */
 .shm-settings .shm-field-label {
   display: block;
@@ -76,6 +81,18 @@
 
 .shm-settings .shm-setting-subgroup > .shm-field-label {
   margin-top: 8px;
+}
+
+/* While the switch above is off, its fields look off too, as its checkboxes do (SettingCheck). */
+.shm-settings .shm-setting-subgroup[aria-disabled='true'] > .shm-field-label,
+.shm-settings .shm-setting-subgroup[aria-disabled='true'] > .shm-number-field,
+.shm-settings .shm-setting-subgroup[aria-disabled='true'] > .shm-hint {
+  opacity: 0.5;
+}
+
+/* The input dims with its field, not twice. */
+.shm-settings .shm-setting-subgroup[aria-disabled='true'] > .shm-number-field .shm-input:disabled {
+  opacity: 1;
 }
 
 /* A checkbox set apart from the field above it (see SettingCheck.vue). */

@@ -123,6 +123,7 @@
     "settings": "Settings"
   },
   "settings": {
+    "appearance": "Language and appearance",
     "language": "Language",
     "languageAuto": "Automatic ($1)",
     "languageHint": "Automatic uses the browser language if the extension is translated into it, English otherwise.",
@@ -134,7 +135,7 @@
     "bulkMeltingHint": "Exchanges all selected pledges of “My Hangar” at once, from the selection box of the sidebar, with your password entered once. Stops at the first pledge RSI refuses.",
     "hideMeltValue": "Hide melt value",
     "hideMeltValueHint": "Hides all $$ amounts: pledge values, discounts, the costs of applied upgrades, the amounts of the orders and the values in the exchange and gift dialogs.",
-    "general": "General",
+    "lists": "My Hangar and Buy Back",
     "smartUpdates": "Smart updates",
     "smartUpdatesHint": "Checks the pledge log, the newest orders and a few pages of the hangar and the buy back for changes, and updates the lists without a full refresh: regularly while the Hangar Manager is open in a visible tab (at the interval below, longer while nothing happens), when it is opened or shown again, when “My Gear” or “Buy Back Pledges” is opened, and right after your own exchange, gift or upgrade there.",
     "smartUpdatesLists": "Check hangar, buy back and orders for changes",
