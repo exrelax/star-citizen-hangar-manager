@@ -517,7 +517,7 @@ Expo, when the Pledge Store usually has new ships and sales. The list is a small
 project website (`data/events.json`), read at most once a day and kept in the browser – data only,
 checked field by field, its texts shown as plain text. Each event shows from a few days before it
 starts until it ends, with its name, start and end, **Upcoming · starts in 3 days** or **Running ·
-ends in 5 days**, and a description and icon if given. Once its notice starts, the sidebar tells it
+ends in 5 days**, and a description and image if given (from the project website too). Once its notice starts, the sidebar tells it
 once (the kind "Events" in the settings).
 
 The **Pledge Store** tab lists the warbond CCUs RSI currently offers – read from RSI's own ship

@@ -9,7 +9,7 @@ import { formatUntil } from '../format-until';
 
 /*
  * The events of the project website whose display period lasts (#69), at the top of the Pledge
- * Store tab: name, period, whether it is upcoming or running, and the description and icon if
+ * Store tab: name, period, whether it is upcoming or running, and the description and image if
  * given. Built from the rows of the manager's lists, so it fits every theme; nothing to expand.
  * Texts are plain text: Vue escapes them.
  */
@@ -45,8 +45,8 @@ const rows = computed(() =>
         <div class="shm-row-summary">
           <span class="shm-thumb shm-event-thumb">
             <img
-              v-if="row.event.icon"
-              :src="row.event.icon"
+              v-if="row.event.image"
+              :src="row.event.image"
               alt=""
               loading="lazy"
               decoding="async"

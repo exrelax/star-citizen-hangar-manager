@@ -25,8 +25,8 @@ export interface StarCitizenEvent {
   displayStart: number;
   displayEnd: number;
   description?: LocalizedText;
-  /** Only from the project website (`EVENTS.iconOrigin`). */
-  icon?: string;
+  /** A 16:9 image, only from the project website (`EVENTS.imageBase`). */
+  image?: string;
 }
 
 /** Upcoming (shown, not started yet) or running. */
@@ -63,12 +63,12 @@ const time = (value: unknown): number | undefined => {
   return Number.isFinite(at) ? at : undefined;
 };
 
-/** An icon URL of the project website, else none. */
-function iconUrl(value: unknown): string | undefined {
+/** An image URL of the project website, else none. */
+function imageUrl(value: unknown): string | undefined {
   if (typeof value !== 'string') return undefined;
   try {
     const url = new URL(value);
-    return url.origin === EVENTS.iconOrigin ? url.href : undefined;
+    return url.href.startsWith(EVENTS.imageBase) ? url.href : undefined;
   } catch {
     return undefined;
   }
@@ -92,7 +92,7 @@ function parseEvent(entry: unknown): StarCitizenEvent | undefined {
     return undefined;
   }
   const description = localizedText(raw.description);
-  const icon = iconUrl(raw.icon);
+  const image = imageUrl(raw.image);
   return {
     id,
     name,
@@ -101,7 +101,7 @@ function parseEvent(entry: unknown): StarCitizenEvent | undefined {
     displayStart,
     displayEnd,
     ...(description && { description }),
-    ...(icon && { icon }),
+    ...(image && { image }),
   };
 }
 
