@@ -222,8 +222,7 @@ information (for screenshots or content creators)** keeps private details off sc
   two of them recent enough for the refund tags), and the dates of applied upgrades follow them:
   after the purchase, in their real order. The newest meltable pledge bought with store credit was
   bought a few hours ago, so marking it to melt shows the countdown; marks set in the demo are kept
-  apart from the real ones. The top right shows a made-up store credit between $0
-  and $100 instead of the account's. The made-up IDs, dates and store credit are derived from a random key
+  apart from the real ones. The top right shows the demo's store credit instead of the account's. The made-up IDs, dates and store credit are derived from a random key
   that exists only in your browser, so they can't be traced back to the real ones.
 
 ---
@@ -761,7 +760,10 @@ In the order of the settings tab:
   (the default) or a selection of your own pledges –, how many pledges of each kind it has, how
   many the buy back has, which states show (refund countdown, protected game access, upgraded
   ships, a pledge bought a few hours ago, marks to melt in a new demo hangar) and how many pledges
-  can't be gifted or melted. **New demo hangar** makes another random one; **Reset demo** puts
+  can't be gifted or melted, and the **store credit of the demo** (#179), shown in the account
+  figures and used by the Paint Discount Consultant, with a quick choice for each of its cases on
+  this demo hangar – same tier, lower tier, not possible, no store credit (a case the hangar can't
+  show is disabled). **New demo hangar** makes another random one; **Reset demo** puts
   these settings back and clears the demo's marks. Changes apply at once.
 - **General**:
   - **Show only the best insurance of upgraded ships** (on by default): after upgrades a pledge

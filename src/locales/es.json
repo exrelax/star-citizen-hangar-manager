@@ -305,6 +305,15 @@
       "done": {
         "newHangar": "Se muestra un nuevo hangar de demo.",
         "reset": "La configuración de la demo vuelve a sus valores por defecto y se borran sus marcas."
+      },
+      "storeCredit": "Crédito de tienda de la demo",
+      "storeCreditHint": "Se muestra en las cifras de la cuenta y lo usa el asesor de descuentos de pinturas en lugar del tuyo. Las opciones rápidas lo ajustan para cada caso del asesor en este hangar de demo.",
+      "creditCases": "Crédito de tienda para un caso del asesor",
+      "creditCase": {
+        "same": "Mismo nivel",
+        "lowerTier": "Nivel inferior",
+        "impossible": "No posible",
+        "none": "Sin crédito"
       }
     }
   },

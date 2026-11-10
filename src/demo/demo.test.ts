@@ -8,7 +8,6 @@ import {
   createFakeIds,
   demoBuyback,
   demoHangar,
-  demoStoreCredit,
   demoPurchaseTime,
   demoUpgradeLog,
   justBoughtOf,
@@ -185,20 +184,6 @@ describe('demoUpgradeLog', () => {
   it('works on the day of purchase, too', () => {
     const log = demoUpgradeLog(entries, 42, '2026-11-03', KEY, now);
     expect(log.every((entry) => entry.appliedAt.startsWith('2026-11-03'))).toBe(true);
-  });
-});
-
-describe('demoStoreCredit', () => {
-  it('is a fixed US dollar amount between 0 and the maximum, in whole cents', () => {
-    const credits = Array.from({ length: 200 }, (_, index) => demoStoreCredit(`key-${index}`));
-    for (const { amount, currency } of credits) {
-      expect(currency).toBe('USD');
-      expect(amount).toBeGreaterThanOrEqual(0);
-      expect(amount).toBeLessThanOrEqual(DEMO.storeCreditMax);
-      expect(Math.round(amount * 100) / 100).toBe(amount);
-    }
-    expect(new Set(credits.map((credit) => credit.amount)).size).toBeGreaterThan(150);
-    expect(demoStoreCredit(KEY)).toEqual(demoStoreCredit(KEY));
   });
 });
 
