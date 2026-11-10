@@ -70,8 +70,10 @@ watch(
 );
 onUnmounted(stopTimer);
 
+// The demo has warbond offers of its own (#130), shown on any account.
+const storeData = computed(() => demoContext.value?.storeData ?? data.value);
 const offers = computed(() =>
-  data.value ? buildWarbondOffers(data.value, props.pledges, props.buyback) : [],
+  storeData.value ? buildWarbondOffers(storeData.value, props.pledges, props.buyback) : [],
 );
 
 const updated = computed(

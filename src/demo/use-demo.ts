@@ -16,6 +16,8 @@ import { demoCatalog, FALLBACK_CATALOG, type DemoCatalog } from './catalog';
 import type { StorageId } from '@/storage/registry';
 import { HANGAR_PAGE_SIZE } from '@/config';
 import { demoStoreNotes } from './demo-store-notes';
+import { demoStoreData } from './demo-store';
+import type { StoreData } from '@/store/warbond';
 import type { StoreItem } from '@/store/items/store-items';
 import { demoKeptPlan, resetDemoPlan, seedDemoPlan } from './demo-consultant';
 import { localToday } from '@/orders/refund';
@@ -137,6 +139,8 @@ export interface DemoContext {
    * account's storages instead of the real ones, and its hangar's page count.
    */
   storage: { counts: Partial<Record<StorageId, number>>; hangarPages: number };
+  /** The warbond CCUs of the Pledge Store tab, with the generated demo (#130). */
+  storeData?: StoreData;
   /** The catalog's items, for the Paint Discount Consultant of the generated demo (#131). */
   storeItems?: readonly StoreItem[];
   /** Buy back tokens shown instead of the account's, with the generated buy back (#177). */
@@ -261,6 +265,7 @@ export function useDemo(
         },
         tokens: account.generatedBuyback.tokens,
         storeItems: catalog.value.items,
+        storeData: demoStoreData(catalog.value, account.account.pledges),
       }),
       events: events.value,
       storage: {
