@@ -221,7 +221,8 @@ information (for screenshots or content creators)** keeps private details off sc
   Development builds also offer an **invisible demo mode** for screenshots (#133, in the
   Development section): the same demo without its badge and with every button looking enabled
   (clicks still do nothing); it ends on its own after 10 minutes, also across reloads, and the
-  normal demo mode with its badge is back. The hangar's pledges have every
+  normal demo mode with its badge is back. The Pledge Store tab shows warbond CCUs of the demo's
+  own, next to its CCUs in the same price range (#130), so every case shows on any account. The hangar's pledges have every
   state (#176): meltable or not, giftable or not, LTI and insurances in years and months (also
   several at once), upgraded ships with made-up "Applied upgrades", protected game access (`SC`,
   `SQ42`, `SC · SQ42`, also a reward without a ship), and orders paid with money, in part with

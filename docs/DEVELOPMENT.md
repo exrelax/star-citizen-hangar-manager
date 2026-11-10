@@ -314,6 +314,42 @@ never sees a mix of old and new data.
 - **Reading in the UI**: `useStored(item)` ([`src/storage/use-stored.ts`](../src/storage/use-stored.ts))
   gives all components one shared, reactive copy of a stored value.
 
+## Demo mode
+
+The demo mode (`src/demo/`) is the tool for screenshots of every feature (#129). It never reveals
+the real account: by default its hangar, buy back, orders and notifications are generated from
+the public catalog (`generate-hangar.ts`, `generate-states.ts`, `generate-buyback.ts`), fixed by a
+random key of this browser, with a bundled catalog before the ships and the Pledge Store were read.
+Its settings section (`DemoSection.vue`) sets the source, the composition, the states and the
+store credit. A development build also has an invisible demo mode (`invisible-demo.ts`).
+
+With the default demo settings it always shows, in both themes (`demo-cases.test.ts` checks it on
+an account without stored data):
+
+- Every tag, filter, sorting and the search of My Hangar: insurance (LTI, years, months, several
+  at once), upgraded with "Applied upgrades", gift, melt, protected game access (`SC`, `SQ42`,
+  `SC · SQ42`, a reward without a ship), discount and above the price, warbond, valuable, rewards.
+- Every state per item: meltable or not, giftable or not, paid with money, in part with store
+  credit or with store credit only, orders with invoices and the refund request, the refund
+  countdown (normal and last days), a pledge bought a few hours ago, marks to melt (waiting and
+  ready); selection and summary, the sidebar boxes.
+- Buy back pledges of each kind with prices of each source (buy back page, ships' standard prices,
+  Pledge Store) and without one; every case of "probably giftable" (#205); CCUs that can't be bought
+  back (#208).
+- The Buy Back Reminder (#194): flight ready ahead and already flight ready, with and without a
+  probable time, within the hour, inside and outside the period; a ship, a CCU and a module; the
+  filter and the sidebar notification.
+- The Pledge Store tab: warbond CCUs with own CCUs in the same price range, the events (#210), and
+  the Paint Discount Consultant (#131): the store credit's quick choices for `same`, `lowerTier`
+  (if the hangar allows it) and `impossible`, a paint bought again with its melt step, paints left
+  to buy, filler paints waiting and ready.
+- Sample notifications: events, new and gone warbond CCUs, changed store items – never a browser
+  notification.
+- The settings without real account data (#132).
+
+A new feature that shows account data or has a new case gets its demo data in `src/demo/` and its
+case in this list.
+
 ## Smart updates
 
 `maybeRunSmartUpdate` ([`src/hangar/sync-state.ts`](../src/hangar/sync-state.ts)) reads the new
