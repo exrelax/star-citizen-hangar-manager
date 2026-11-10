@@ -187,7 +187,8 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   checked by [`src/events/events.ts`](../src/events/events.ts). An event's `image` is a 16:9 image
   (256×144, twice the row's thumbnail) in `site/public/images/events/`, linked with its URL on the
   site; images from elsewhere are ignored, and the dev build shows the working copy's. `phases`
-  lists the parts of an event with their `start` and `name` (e.g. the manufacturer of each IAE day,
+  lists the parts of an event with their `start`, `name` and optional `shortName` for the
+  countdowns ("RSI" for "Roberts Space Industries"; e.g. the manufacturer of each IAE day,
   "Best in Show", the finale); each lasts until the next one or the event's end, and the tab counts
   down to them.
   `name` and `description` are one text, or one per language of the extension –

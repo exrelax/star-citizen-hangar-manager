@@ -426,6 +426,7 @@
     "upcoming": "À venir",
     "running": "En cours",
     "countdownStart": "Commence dans",
+    "startsWith": "avec $1",
     "now": "En ce moment : $1",
     "nextIn": "Ensuite : $1 dans",
     "countdownEnd": "Se termine dans",

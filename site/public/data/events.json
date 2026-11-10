@@ -18,35 +18,43 @@
       "phases": [
         {
           "start": "2026-11-13T16:00:00Z",
-          "name": "Roberts Space Industries"
+          "name": "Roberts Space Industries",
+          "shortName": "RSI"
         },
         {
           "start": "2026-11-14T16:00:00Z",
-          "name": "Origin Jumpworks"
+          "name": "Origin Jumpworks",
+          "shortName": "Origin"
         },
         {
           "start": "2026-11-15T16:00:00Z",
-          "name": "Anvil Aerospace"
+          "name": "Anvil Aerospace",
+          "shortName": "Anvil"
         },
         {
           "start": "2026-11-16T16:00:00Z",
-          "name": "Crusader Industries, Tumbril"
+          "name": "Crusader Industries, Tumbril",
+          "shortName": "Crusader, Tumbril"
         },
         {
           "start": "2026-11-17T16:00:00Z",
-          "name": "Drake Interplanetary"
+          "name": "Drake Interplanetary",
+          "shortName": "Drake"
         },
         {
           "start": "2026-11-18T16:00:00Z",
-          "name": "ARGO Astronautics, Consolidated Outland, Greycat Industrial, Grey's Market"
+          "name": "ARGO Astronautics, Consolidated Outland, Greycat Industrial, Grey's Market",
+          "shortName": "ARGO, CO, Greycat, Grey's"
         },
         {
           "start": "2026-11-19T16:00:00Z",
-          "name": "MISC, Mirai, Kruger Intergalactic"
+          "name": "MISC, Mirai, Kruger Intergalactic",
+          "shortName": "MISC, Mirai, Kruger"
         },
         {
           "start": "2026-11-20T16:00:00Z",
-          "name": "Aegis Dynamics"
+          "name": "Aegis Dynamics",
+          "shortName": "Aegis"
         },
         {
           "start": "2026-11-21T16:00:00Z",

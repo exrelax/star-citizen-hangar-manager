@@ -426,6 +426,7 @@
     "upcoming": "Demnächst",
     "running": "Läuft",
     "countdownStart": "Beginnt in",
+    "startsWith": "mit $1",
     "now": "Jetzt: $1",
     "nextIn": "Als Nächstes: $1 in",
     "countdownEnd": "Endet in",

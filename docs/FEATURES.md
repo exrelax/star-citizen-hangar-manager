@@ -517,7 +517,8 @@ Expo, when the Pledge Store usually has new ships and daily warbond offers. The 
 on the project website (`data/events.json`), read at most once a day and kept in the browser – data
 only, checked field by field, its texts shown as plain text, in the language set. Each event shows
 from a few days before it starts until it ends, with its name, start and end, a description and
-image if given, and a live countdown to its start. While it runs, it shows its current phase (e.g.
+image if given, and a live countdown to its start (with the first phase, e.g. "starts in 3 d
+05:20:26 with RSI"). While it runs, it shows its current phase (e.g.
 the manufacturer of the day), a countdown to the next one (the next manufacturer, "Best in Show",
 the finale) and one to its end. Once its notice starts, the sidebar tells it once (the kind
 "Events" in the settings).
