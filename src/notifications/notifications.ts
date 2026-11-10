@@ -41,6 +41,11 @@ export interface AppNotification {
   /** A list shown when it is expanded, e.g. each changed Pledge Store item. */
   details?: string[];
   /**
+   * What it tells about, to know whether it still matters once checked off (#213): the SKU ids of
+   * new warbond CCUs, the new or repriced Pledge Store items with their price then.
+   */
+  subject?: { warbonds?: number[]; items?: { id: number; price: number }[] };
+  /**
    * Also shown as a browser notification (#155), with this title and text – only for what is worth
    * knowing while no RSI page is open, e.g. new warbond CCUs.
    */

@@ -2,6 +2,7 @@
 import { i18n } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import {
+  browserNotificationsHintDismissedItem,
   browserNotificationsItem,
   browserNotificationsRefusedItem,
   OPEN_NOTIFICATION_PERMISSION,
@@ -13,17 +14,26 @@ import { useStored } from '@/storage/use-stored';
 import {
   demoDismissedPaintsItem,
   dismissedPaintsItem,
+  isPaintNotificationShown,
   restorePaintNotifications,
 } from '@/store/paint-consultant/paint-notification';
+import { maybePaintConsultant } from '@/store/paint-consultant/use-paint-consultant';
+import { EVENTS_VERSION, eventsItem } from '@/events/events-storage';
+import { notificationsItem, updateNotifications } from '@/notifications/notifications';
+import { restorable, withRestored } from '@/notifications/restore';
+import { current, warbondsItem } from '@/ships/ships-storage';
+import { STORE_ITEMS_VERSION, storeItemsItem } from '@/store/items/store-items-storage';
 import { computed, ref } from 'vue';
 import { isKindOn, withKind, type NotificationKind } from '@/notifications/kinds';
 import type { Settings } from '../settings';
 
 /*
  * Notifications: browser notifications, an optional extra for when no RSI page is open (#152,
- * see `notifications/browser-permission.ts`), and the sidebar's "Notifications" box, where the
- * Paint Discount Consultant's one can be dismissed for its paints (#151) – here it is shown again
- * for all of them, on every browser, as the dismissed paints are synced.
+ * see `notifications/browser-permission.ts`), and the sidebar's "Notifications" box. Its
+ * checked-off or dismissed notifications come back here as far as they still matter (#213, see
+ * `notifications/restore.ts`): the stored ones, the Paint Discount Consultant's while paints can
+ * be bought again (dismissed for its paints, #151, synced) and the hint on browser notifications
+ * while they are off.
  */
 
 const props = defineProps<{ settings: Settings }>();
@@ -53,15 +63,53 @@ function setBrowserNotifications(on: boolean) {
   }
 }
 
-const real = useStored(dismissedPaintsItem);
-const demo = useStored(demoDismissedPaintsItem);
-const dismissed = computed(() => (real.value?.length ?? 0) + (demo.value?.length ?? 0) > 0);
-/** Shown below the button once it restored them, until the next dismissal. */
-const restored = ref(false);
+// ---- Checked-off notifications that still matter (#213) ----
+
+const notesStored = useStored(notificationsItem);
+const eventsStored = useStored(eventsItem);
+const warbondsStored = useStored(warbondsItem);
+const itemsStored = useStored(storeItemsItem);
+const realDismissed = useStored(dismissedPaintsItem);
+const demoDismissed = useStored(demoDismissedPaintsItem);
+const hintDismissed = useStored(browserNotificationsHintDismissedItem);
+const consultant = maybePaintConsultant();
+
+/** The stored notifications to open again. */
+const notesToRestore = computed(() =>
+  restorable(notesStored.value ?? [], {
+    events: eventsStored.value?.version === EVENTS_VERSION ? eventsStored.value.events : [],
+    warbonds: current(warbondsStored.value ?? null)?.warbonds ?? [],
+    items: itemsStored.value?.version === STORE_ITEMS_VERSION ? itemsStored.value.items : [],
+    notificationsOff: props.settings.notificationsOff,
+    now: Date.now(),
+  }),
+);
+/** The consultant's notification, dismissed while paints can still be bought again. */
+const paintToRestore = computed(() => {
+  const paints = props.settings.hideMeltValue
+    ? []
+    : (consultant?.result.value?.plan?.own.map((paint) => paint.pledgeId) ?? []);
+  const dismissed = [...(realDismissed.value ?? []), ...(demoDismissed.value ?? [])];
+  return paints.length > 0 && dismissed.length > 0 && !isPaintNotificationShown(paints, dismissed);
+});
+/** The hint on browser notifications, dismissed while they are off. */
+const hintToRestore = computed(() => allowed.value === false && hintDismissed.value === true);
+
+const restoreCount = computed(
+  () => notesToRestore.value.length + Number(paintToRestore.value) + Number(hintToRestore.value),
+);
+/** How many came back with the last click, shown below the button. */
+const restored = ref<number>();
 
 async function restore() {
-  await restorePaintNotifications();
-  restored.value = true;
+  const count = restoreCount.value;
+  const ids = new Set(notesToRestore.value.map((note) => note.id));
+  await Promise.all([
+    updateNotifications((list) => withRestored(list, ids)),
+    paintToRestore.value ? restorePaintNotifications() : undefined,
+    hintToRestore.value ? browserNotificationsHintDismissedItem.setValue(false) : undefined,
+  ]);
+  restored.value = count;
 }
 </script>
 
@@ -123,16 +171,16 @@ async function restore() {
     </SettingCheck>
 
     <p class="shm-field-label">{{ i18n.t('settings.sidebarNotifications') }}</p>
-    <button type="button" class="shm-button" :disabled="!dismissed" @click="restore">
+    <button type="button" class="shm-button" :disabled="!restoreCount" @click="restore">
       <SvgIcon name="rotate-left" />
-      {{ i18n.t('settings.restorePaintNotifications') }}
+      {{ i18n.t('settings.restoreNotifications') }}
     </button>
-    <p class="shm-hint">{{ i18n.t('settings.restorePaintNotificationsHint') }}</p>
-    <p v-if="restored && !dismissed" class="shm-hint is-done" role="status">
-      {{ i18n.t('settings.restorePaintNotificationsDone') }}
+    <p class="shm-hint">{{ i18n.t('settings.restoreNotificationsHint') }}</p>
+    <p v-if="restored && !restoreCount" class="shm-hint is-done" role="status">
+      {{ i18n.t('settings.restoreNotificationsDone', [restored]) }}
     </p>
-    <p v-else-if="!dismissed" class="shm-hint">
-      {{ i18n.t('settings.restorePaintNotificationsNone') }}
+    <p v-else-if="!restoreCount" class="shm-hint">
+      {{ i18n.t('settings.restoreNotificationsNone') }}
     </p>
   </fieldset>
 </template>

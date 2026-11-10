@@ -48,6 +48,12 @@ describe('warbondNote', () => {
     });
   });
 
+  it('keeps the SKUs of the new ones, for showing it again (#213)', () => {
+    const note = warbondNote([warbond(3, 40)], [warbond(1, 170), warbond(2, 100)], ships, 'en', 5);
+    expect(note?.subject).toEqual({ warbonds: [10, 20] });
+    expect(warbondNote([warbond(3, 40)], [], ships, 'en', 5)?.subject).toBeUndefined();
+  });
+
   it('keeps gone ones out of the browser', () => {
     const note = warbondNote([warbond(3, 40)], [], ships, 'en', 5);
     expect(note?.browser).toBeUndefined();
@@ -79,6 +85,12 @@ describe('storeItemsNote', () => {
       'On sale: Armor, $20 → $15',
     ]);
     expect(note?.browser).toBeUndefined();
+    // What still matters later (#213): new and repriced items at their price now.
+    expect(note?.subject?.items).toEqual([
+      { id: 4, price: 8 },
+      { id: 1, price: 12 },
+      { id: 2, price: 15 },
+    ]);
   });
 });
 
