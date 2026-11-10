@@ -852,11 +852,12 @@ const chart = computed(() => {
             :width="CHART.right - CHART.left + 40"
             :height="CHART.height - chart.zero"
           />
+          <!-- At the left of the zone: the right end is the label of the last step ("after 24 h"). -->
           <text
             class="shm-ways-chart-negative-text"
-            :x="CHART.right + 20"
+            :x="CHART.left - 12"
             :y="CHART.height - 8"
-            text-anchor="end"
+            text-anchor="start"
           >
             {{ i18n.t('consultant.ways.chartNotEnough') }}
           </text>
