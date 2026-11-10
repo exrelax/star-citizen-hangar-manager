@@ -88,13 +88,18 @@ const isReading = (id: StorageId) =>
   syncState.storage === id ||
   (isUpgradeTool(id) && (upgradeToolState.loading || isUpgradeTool(syncState.storage ?? '')));
 
+/** The events come from the project website, not from RSI (#69). */
+const fromWebsite = (id: StorageId) => id === 'events';
+
 /** The storage reset last, shown below the table until the next reset. */
 const resetDone = ref<StorageId>();
 
 async function reset(definition: StorageDefinition) {
   const readAgain = i18n.t(
     definition.readAgain === 'auto'
-      ? 'storage.readAgainAuto'
+      ? fromWebsite(definition.id)
+        ? 'storage.readAgainAutoWebsite'
+        : 'storage.readAgainAuto'
       : definition.readAgain === 'never'
         ? 'storage.readAgainNever'
         : 'storage.readAgainRefresh',
@@ -152,7 +157,14 @@ async function reset(definition: StorageDefinition) {
                 <!-- Not for what can't be read from RSI, e.g. the consultant's plan. -->
                 <button
                   v-if="row.definition.readAgain !== 'never'"
-                  v-tooltip="i18n.t('storage.refreshOne', [name(row.definition.id)])"
+                  v-tooltip="
+                    i18n.t(
+                      fromWebsite(row.definition.id)
+                        ? 'storage.refreshOneWebsite'
+                        : 'storage.refreshOne',
+                      [name(row.definition.id)],
+                    )
+                  "
                   type="button"
                   class="shm-button is-icon"
                   :disabled="syncState.running || upgradeToolState.loading"
