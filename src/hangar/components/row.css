@@ -351,6 +351,34 @@
   cursor: help;
 }
 
+/*
+ * An expected price increase (#191): a warning in the buy back (buy it back or use it as a
+ * discount token before), a quieter information in My Hangar; filled on its last day.
+ */
+.shm-badge.is-price-increase {
+  cursor: help;
+}
+
+.shm-badge.is-price-increase.is-warning {
+  color: var(--shm-warning);
+  border-color: color-mix(in srgb, var(--shm-warning) 60%, transparent);
+}
+
+.shm-badge.is-price-increase.is-warning.is-soon {
+  color: var(--shm-text-on-warning);
+  background: var(--shm-warning);
+  border-color: var(--shm-warning);
+}
+
+.shm-badge.is-price-increase.is-info {
+  color: var(--shm-text-strong);
+  border-color: rgb(var(--shm-accent-rgb) / 0.35);
+}
+
+.shm-badge.is-price-increase.is-info.is-soon {
+  border-color: color-mix(in srgb, var(--shm-warning) 60%, transparent);
+}
+
 /* Marked to melt (#97): waiting for RSI's 24 hours, then ready to melt. */
 .shm-badge.is-melt-mark {
   display: inline-flex;

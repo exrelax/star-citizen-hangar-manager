@@ -19,11 +19,18 @@ import {
 import { createAvailabilityCheck } from './buyback-availability';
 import { createBuybackImager } from './buyback-image';
 import { createBuybackPricer } from './buyback-price';
+import { createPriceIncreaseMatcher } from '@/price-increases/price-increase-match';
+import {
+  priceIncreasesItem,
+  storedPriceIncreases,
+  type PriceIncreasesSnapshot,
+} from '@/price-increases/price-increases-storage';
 
 /**
  * Pledges of the stored buy back, kept up to date. The orders, the gift flags and the hangar's
  * pledge ids tell "probably giftable" (#204); the hangar also gives its ship links and, with the
- * ships, the images (#202); the ships and the Pledge Store items give the buy back prices (#185).
+ * ships, the images (#202); the ships and the Pledge Store items give the buy back prices (#185); the expected price
+ * increases of the website mark what will probably cost more soon (#191).
  */
 export function useBuybackPledges() {
   const pledges = shallowRef<BuybackView[]>([]);
@@ -38,6 +45,7 @@ export function useBuybackPledges() {
   let ships: ShipsSnapshot | null = null;
   let storeItems: StoreItemsSnapshot | null = null;
   let giftFlags: GiftFlags = {};
+  let priceIncreases: PriceIncreasesSnapshot | null = null;
 
   const rebuild = () => {
     const current = buyback?.version === BUYBACK_SNAPSHOT_VERSION ? buyback : null;
@@ -59,6 +67,10 @@ export function useBuybackPledges() {
       itemPriceOf: items.length ? createItemPriceLookup(items) : undefined,
       pledges: current?.pledges,
     });
+    const priceIncreaseMatcher = createPriceIncreaseMatcher(
+      storedPriceIncreases(priceIncreases),
+      Date.now(),
+    );
     pledges.value = current
       ? current.pledges.map((pledge, position) =>
           withOrder(
@@ -69,6 +81,7 @@ export function useBuybackPledges() {
               priceOf,
               imageOf,
               availabilityOf,
+              priceIncreaseOf: priceIncreaseMatcher.buyback,
             }),
             orders,
           ),
@@ -102,14 +115,20 @@ export function useBuybackPledges() {
     giftFlags = value;
     rebuild();
   });
+  // The expected price increases of the project website (#195).
+  const unwatchPriceIncreases = priceIncreasesItem.watch((value) => {
+    priceIncreases = value;
+    rebuild();
+  });
   onMounted(async () => {
-    [buyback, hangar, orders, ships, storeItems, giftFlags] = await Promise.all([
+    [buyback, hangar, orders, ships, storeItems, giftFlags, priceIncreases] = await Promise.all([
       buybackSnapshot.getValue(),
       hangarSnapshot.getValue(),
       ordersSnapshot.getValue(),
       shipsItem.getValue(),
       storeItemsItem.getValue(),
       giftFlagsItem.getValue(),
+      priceIncreasesItem.getValue(),
     ]);
     rebuild();
     loaded.value = true;
@@ -121,6 +140,7 @@ export function useBuybackPledges() {
     unwatchShips();
     unwatchStoreItems();
     unwatchGiftFlags();
+    unwatchPriceIncreases();
   });
 
   return { pledges, loaded, syncedAt, tokens };

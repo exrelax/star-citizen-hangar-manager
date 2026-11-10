@@ -12,6 +12,12 @@ import {
   STORE_ITEMS_VERSION,
   type StoreItemsSnapshot,
 } from '@/store/items/store-items-storage';
+import { createPriceIncreaseMatcher } from '@/price-increases/price-increase-match';
+import {
+  priceIncreasesItem,
+  storedPriceIncreases,
+  type PriceIncreasesSnapshot,
+} from '@/price-increases/price-increases-storage';
 
 /**
  * Pledges of the stored hangar snapshot, kept up to date after each sync.
@@ -29,16 +35,23 @@ export function useHangarPledges() {
   let ships: ShipsSnapshot | null = null;
   let orders: OrdersSnapshot | null = null;
   let storeItems: StoreItemsSnapshot | null = null;
+  let priceIncreases: PriceIncreasesSnapshot | null = null;
   const apply = () => {
     const current = snapshot?.version === HANGAR_SNAPSHOT_VERSION ? snapshot : null;
     const prices = shipPricesOf(ships);
     const priceOf = prices.length ? createPriceLookup(prices) : undefined;
     const items = storeItems?.version === STORE_ITEMS_VERSION ? storeItems.items : [];
     const itemPriceOf = items.length ? createItemPriceLookup(items) : undefined;
+    const matcher = createPriceIncreaseMatcher(storedPriceIncreases(priceIncreases), Date.now());
     pledges.value = current
-      ? current.pledges.map((pledge, index) =>
-          withOrder(toPledgeView(pledge, current.shipLinks, index, priceOf, itemPriceOf), orders),
-        )
+      ? current.pledges.map((pledge, index) => {
+          const view = withOrder(
+            toPledgeView(pledge, current.shipLinks, index, priceOf, itemPriceOf),
+            orders,
+          );
+          const priceIncrease = matcher.hangar(pledge);
+          return priceIncrease ? { ...view, priceIncrease } : view;
+        })
       : [];
     syncedAt.value = current?.syncedAt;
     loaded.value = true;
@@ -61,12 +74,18 @@ export function useHangarPledges() {
     storeItems = value;
     apply();
   });
+  // The expected price increases of the project website (#195).
+  const unwatchPriceIncreases = priceIncreasesItem.watch((value) => {
+    priceIncreases = value;
+    apply();
+  });
   onMounted(async () => {
-    [snapshot, ships, orders, storeItems] = await Promise.all([
+    [snapshot, ships, orders, storeItems, priceIncreases] = await Promise.all([
       hangarSnapshot.getValue(),
       shipsItem.getValue(),
       ordersSnapshot.getValue(),
       storeItemsItem.getValue(),
+      priceIncreasesItem.getValue(),
     ]);
     apply();
   });
@@ -75,6 +94,7 @@ export function useHangarPledges() {
     unwatchPrices();
     unwatchOrders();
     unwatchStoreItems();
+    unwatchPriceIncreases();
   });
 
   return { pledges, loaded, syncedAt };

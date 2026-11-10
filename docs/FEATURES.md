@@ -236,6 +236,13 @@ icon and a tooltip that names and explains it:
 
   A full refresh reads the prices of pledges with several items stored before prices were shown.
 
+- **Price increase**: a warning with a countdown on ships, packages, CCUs and related items (e.g.
+  modules) whose price is expected to rise soon – buy them back or use them as a discount token
+  before then. With a probable time it counts the days and, on the last day, hours and minutes;
+  otherwise it shows the day. Its tooltip gives the expected date, the expected flight ready date
+  for ships not flight ready yet and a note, and says that the dates are expected, not confirmed
+  by RSI. The project publishes the expected price increases on its website (`data/price-increases.json`),
+  as RSI rarely lists them in advance.
 - **Buy back tokens**: how many pledges can still be bought back with store credit, as RSI shows
   it above its buy back list, read with every refresh and smart update.
 
@@ -279,6 +286,10 @@ on its own.
   lock is read during a refresh: after updating the extension, a full refresh shows it on every
   protected pledge at once.
 - **Refund countdown** (see [Orders](#orders-invoices-and-refunds)).
+- **Price increase**: a ship whose price is expected to rise soon – e.g. when it becomes flight
+  ready at the IAE – gets a quiet tag with a countdown on its ships, packages, CCUs and related
+  items such as modules: melting it before then means buying it back at the higher price (see
+  [Buy back](#buy-back)).
 
 ---
 
