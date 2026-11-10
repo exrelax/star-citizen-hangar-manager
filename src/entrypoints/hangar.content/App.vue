@@ -35,6 +35,7 @@ import { checkFillerPurchase } from '@/store/paint-consultant/filler-purchase';
 import { providePaintConsultant } from '@/store/paint-consultant/use-paint-consultant';
 import { useSettings } from '@/settings/use-settings';
 import { MANAGER_CONTAINER, useThemeClass } from '@/themes/theme';
+import { invisibleDemoUntilItem, isInvisibleDemo } from '@/demo/invisible-demo';
 import {
   computed,
   inject,
@@ -75,6 +76,14 @@ useThemeClass(inject(MANAGER_CONTAINER, undefined), settings);
 
 // The demo mode (a setting) shows a generated or anonymized hangar (see src/demo).
 const demo = computed(() => settings.value.demoMode);
+// The invisible demo mode for screenshots (#133, development only): no badge, no disabled look.
+const invisibleUntil = useStored(invisibleDemoUntilItem);
+const clock = useNow();
+const invisibleDemo = computed(() =>
+  isInvisibleDemo(invisibleUntil.value, demo.value, clock.value),
+);
+const managerContainer = inject(MANAGER_CONTAINER, undefined);
+watchEffect(() => managerContainer?.classList.toggle('shm-demo-invisible', invisibleDemo.value));
 const demoView = useDemo(demo, hangar.pledges, buyback.pledges, () => settings.value.demo);
 /**
  * The lists wait for the settings: until they are read the demo mode counts as off, and the real
@@ -245,7 +254,11 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
     <h2 class="title">
       {{ i18n.t('manager.title') }}
       <!-- In the header, so every tab shows that the lists are a demo selection. -->
-      <span v-if="demo" v-tooltip="i18n.t('manager.demoBadgeHint')" class="shm-demo-badge">
+      <span
+        v-if="demo && !invisibleDemo"
+        v-tooltip="i18n.t('manager.demoBadgeHint')"
+        class="shm-demo-badge"
+      >
         {{ i18n.t('manager.demoBadge') }}
       </span>
     </h2>

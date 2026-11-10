@@ -260,6 +260,12 @@
   cursor: not-allowed;
 }
 
+/* The invisible demo mode for screenshots (#133): buttons look enabled, clicks still do nothing. */
+.shm-demo-invisible .shm-button:disabled {
+  opacity: 1;
+  cursor: pointer;
+}
+
 .shm-button:not(:disabled):hover,
 .shm-button:not(:disabled):focus-visible {
   color: var(--shm-text-strong);
