@@ -375,8 +375,8 @@ export const FILTERS: {
       shown: ['ships', 'ccus', 'paints', 'gameAccess', 'rewards'],
     },
     features: {
-      order: ['lti', 'warbond', 'probablyGiftable'],
-      shown: ['lti', 'warbond', 'probablyGiftable'],
+      order: ['lti', 'warbond', 'probablyGiftable', 'available'],
+      shown: ['lti', 'warbond', 'probablyGiftable', 'available'],
     },
   },
 };

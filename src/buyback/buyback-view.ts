@@ -13,6 +13,7 @@ import {
   type BuybackPledge,
   type BuybackUpgrade,
 } from './buyback';
+import type { AvailabilityCheck, BuybackUnavailable } from './buyback-availability';
 import type { BuybackImager } from './buyback-image';
 import type { BuybackPrice, BuybackPricer } from './buyback-price';
 import type { GiftableCheck } from './probably-giftable';
@@ -50,6 +51,8 @@ export interface BuybackView {
   isProbablyGiftable: boolean;
   /** What buying it back costs, if known (see `buyback-price.ts`). */
   price?: BuybackPrice;
+  /** Set if RSI can't sell it again, with the reason (see `buyback-availability.ts`). */
+  unavailable?: BuybackUnavailable;
   /** Its detail page was read for the price (a price or none), so it needn't be read again. */
   priceRead: boolean;
   /** Normalized title, ship names and pledge id for the live search. */
@@ -66,10 +69,13 @@ export interface BuybackViewContext {
   priceOf?: BuybackPricer;
   /** The best image of a pledge (see `buyback-image.ts`); without it RSI's own, if real. */
   imageOf?: BuybackImager;
+  /** Whether RSI can sell the pledge again (see `buyback-availability.ts`). */
+  availabilityOf?: AvailabilityCheck;
 }
 
 export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext): BuybackView {
-  const { position, shipLinks = {}, giftable, priceOf, imageOf } = context;
+  const { position, shipLinks = {}, giftable, priceOf, imageOf, availabilityOf } = context;
+  const unavailable = availabilityOf?.(pledge);
   const price = priceOf?.(pledge);
   // The detail page lists the items besides the main one named in "Contained".
   const extraItems = pledge.items ?? [];
@@ -102,6 +108,7 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
       pledge.category === 'game_package' || items.some((item) => GAME_DOWNLOAD.test(item)),
     isProbablyGiftable: giftable?.(pledge.id) ?? false,
     ...(price && { price }),
+    ...(unavailable && { unavailable }),
     priceRead: pledge.price !== undefined,
     searchText: normalizeSearchText([pledge.title, ...shipNames, pledge.id].join(' ')),
   };
@@ -116,13 +123,14 @@ export const BUYBACK_FILTERS = [
   'lti',
   'warbond',
   'probablyGiftable',
+  'available',
   'rewards',
 ] as const;
 export type BuybackFilter = (typeof BUYBACK_FILTERS)[number];
 
 export const BUYBACK_FILTER_CATEGORIES: Record<FilterCategory, readonly BuybackFilter[]> = {
   types: ['ships', 'ccus', 'paints', 'gameAccess', 'rewards'],
-  features: ['lti', 'warbond', 'probablyGiftable'],
+  features: ['lti', 'warbond', 'probablyGiftable', 'available'],
 };
 
 export const BUYBACK_FILTER_PREDICATES: FilterPredicates<BuybackView, BuybackFilter> = {
@@ -133,6 +141,8 @@ export const BUYBACK_FILTER_PREDICATES: FilterPredicates<BuybackView, BuybackFil
   lti: (pledge) => pledge.hasLti,
   warbond: (pledge) => pledge.order !== undefined,
   probablyGiftable: (pledge) => pledge.isProbablyGiftable,
+  // Excluded, it shows the pledges RSI can't sell again (#207).
+  available: (pledge) => !pledge.unavailable,
   // The buy back shows no values, so rewards are recognized by their names.
   rewards: (pledge) => isRewardTitle(pledge.title),
 };

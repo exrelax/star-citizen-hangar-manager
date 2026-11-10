@@ -565,6 +565,11 @@ html .shm-theme-modern .shm-badge.is-off {
   opacity: 0.4;
 }
 
+html .shm-theme-modern .shm-badge.is-unavailable {
+  color: var(--shm-warning);
+  background: color-mix(in srgb, var(--shm-warning) 16%, transparent);
+}
+
 html .shm-theme-modern .shm-badge.is-melt-mark {
   color: var(--shm-warning);
   background: color-mix(in srgb, var(--shm-warning) 16%, transparent);

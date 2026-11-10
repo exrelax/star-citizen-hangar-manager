@@ -90,6 +90,7 @@
     "giftable": "Giftable",
     "meltable": "Meltable",
     "probablyGiftable": "Probably giftable",
+    "available": "Available",
     "ships": "Ships",
     "warbond": "Warbond",
     "valuable": "Valuable",
@@ -105,7 +106,8 @@
       "valuable": "Pledges with a value above $$0.",
       "rewards": "Rewards with a value of $$0: event, referral, Concierge and other rewards.",
       "rewardsByName": "Rewards, recognized by their names: event, referral, Concierge and other rewards.",
-      "discount": "Bought for less than the original price: ships and CCUs compared with RSI's ship prices, paints, gear and more with the Pledge Store. Pledges whose original price isn't known, or that cost more, don't count."
+      "discount": "Bought for less than the original price: ships and CCUs compared with RSI's ship prices, paints, gear and more with the Pledge Store. Pledges whose original price isn't known, or that cost more, don't count.",
+      "available": "Pledges RSI can sell again. Excluded: CCUs whose base ship now costs as much as or more than their target ship – RSI only sells a CCU to a more expensive ship."
     },
     "categories": {
       "types": "Types",
@@ -361,6 +363,8 @@
     "reclaimed": "Melted $1",
     "showInBuyback": "Show in Buy Back (page $1)",
     "probablyGiftableHint": "When bought back with real money (warbond), this item is probably giftable: it was bought before $1 with money only, without store credit, and keeps that status.",
+    "unavailable": "Not available",
+    "unavailableHint": "RSI can’t sell this CCU again: today $1 costs $2 and $3 costs $4. A CCU only goes to a more expensive ship.",
     "showSingleInBuyback": "Show in Buy Back",
     "tokens": "Buy back tokens: $1",
     "tokensLabel": "Buy back tokens",

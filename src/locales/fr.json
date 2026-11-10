@@ -90,6 +90,7 @@
     "giftable": "Offrables",
     "meltable": "Fusionnables",
     "probablyGiftable": "Probablement offrables",
+    "available": "Rachetables",
     "ships": "Vaisseaux",
     "warbond": "Warbond",
     "valuable": "Avec valeur",
@@ -105,7 +106,8 @@
       "valuable": "Pledges d’une valeur supérieure à 0 $$.",
       "rewards": "Récompenses d’une valeur de 0 $$ : événements, parrainage, Concierge et autres récompenses.",
       "rewardsByName": "Récompenses, reconnues à leur nom : événements, parrainage, Concierge et autres récompenses.",
-      "discount": "Acheté moins cher que le prix d’origine : vaisseaux et CCU comparés aux prix des vaisseaux de RSI, peintures, équipement et autres au Pledge Store. Les pledges sans prix d’origine connu ou plus chers ne comptent pas."
+      "discount": "Acheté moins cher que le prix d’origine : vaisseaux et CCU comparés aux prix des vaisseaux de RSI, peintures, équipement et autres au Pledge Store. Les pledges sans prix d’origine connu ou plus chers ne comptent pas.",
+      "available": "Les pledges que RSI peut revendre. Exclus : les CCU dont le vaisseau de départ coûte aujourd’hui autant ou plus que leur vaisseau cible – RSI ne vend un CCU que vers un vaisseau plus cher."
     },
     "categories": {
       "types": "Types",
@@ -361,6 +363,8 @@
     "reclaimed": "Fusionné le $1",
     "showInBuyback": "Afficher dans Buy Back (page $1)",
     "probablyGiftableHint": "Racheté en argent réel (warbond), cet élément est probablement offrable : il a été acheté avant le $1 uniquement avec de l’argent, sans crédit boutique, et garde ce statut.",
+    "unavailable": "Non rachetable",
+    "unavailableHint": "RSI ne peut plus vendre ce CCU : aujourd’hui, $1 coûte $2 et $3 coûte $4. Un CCU ne mène qu’à un vaisseau plus cher.",
     "showSingleInBuyback": "Afficher dans Buy Back",
     "tokens": "Jetons de rachat : $1",
     "tokensLabel": "Jetons de rachat",

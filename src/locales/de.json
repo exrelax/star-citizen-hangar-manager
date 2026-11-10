@@ -90,6 +90,7 @@
     "giftable": "Verschenkbar",
     "meltable": "Schmelzbar",
     "probablyGiftable": "Vermutlich verschenkbar",
+    "available": "Rückkaufbar",
     "ships": "Schiffe",
     "warbond": "Warbond",
     "valuable": "Mit Wert",
@@ -105,7 +106,8 @@
       "valuable": "Pledges mit einem Wert über $$0.",
       "rewards": "Rewards mit einem Wert von $$0: Event-, Referral-, Concierge- und andere Rewards.",
       "rewardsByName": "Rewards, am Namen erkannt: Event-, Referral-, Concierge- und andere Rewards.",
-      "discount": "Günstiger als der Originalpreis gekauft: Schiffe und CCUs verglichen mit RSIs Schiffspreisen, Paints, Gear und mehr mit dem Pledge Store. Pledges ohne bekannten Originalpreis oder mit Aufpreis zählen nicht."
+      "discount": "Günstiger als der Originalpreis gekauft: Schiffe und CCUs verglichen mit RSIs Schiffspreisen, Paints, Gear und mehr mit dem Pledge Store. Pledges ohne bekannten Originalpreis oder mit Aufpreis zählen nicht.",
+      "available": "Pledges, die RSI wieder verkaufen kann. Ausgeschlossen: CCUs, deren Basisschiff heute gleich viel oder mehr kostet als ihr Zielschiff – RSI verkauft ein CCU nur zu einem teureren Schiff."
     },
     "categories": {
       "types": "Typen",
@@ -361,6 +363,8 @@
     "reclaimed": "Eingeschmolzen $1",
     "showInBuyback": "Im Buy Back anzeigen (Seite $1)",
     "probablyGiftableHint": "Bei einem Rückkauf mit echtem Geld (Warbond) ist dieses Item vermutlich verschenkbar: Es wurde vor dem $1 nur mit Geld gekauft, ohne Store Credits, und behält diesen Status.",
+    "unavailable": "Nicht rückkaufbar",
+    "unavailableHint": "RSI kann dieses CCU nicht mehr verkaufen: Heute kostet $1 $2 und $3 $4. Ein CCU führt nur zu einem teureren Schiff.",
     "showSingleInBuyback": "Im Buy Back anzeigen",
     "tokens": "Buy-Back-Tokens: $1",
     "tokensLabel": "Buy-Back-Tokens",

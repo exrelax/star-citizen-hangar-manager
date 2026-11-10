@@ -7,7 +7,8 @@ import { isRewardTitle } from '@/hangar/rewards';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { buybackHref } from '@/hangar/route';
 import { useDemoContext } from '@/demo/use-demo';
-import { i18n } from '@/i18n';
+import { formatUsd } from '@/hangar/discount-format';
+import { i18n, locale } from '@/i18n';
 import type { BuybackLinkMode } from '@/settings/settings';
 import { computed, ref, watch } from 'vue';
 import type { BuybackView } from '../buyback-view';
@@ -36,6 +37,19 @@ const price = computed(() => {
     text: `${RSI_USD.format(value.amount)} USD`,
     hint: i18n.t(`buyback.price.${value.source}`),
   };
+});
+
+/** Why RSI can't sell it again (#207): its CCU's ships at today's prices. */
+const unavailableHint = computed(() => {
+  const reason = props.pledge.unavailable;
+  if (!reason) return undefined;
+  const usd = (value: number) => formatUsd(value, locale.value);
+  return i18n.t('buyback.unavailableHint', [
+    reason.from.name,
+    usd(reason.from.msrp),
+    reason.to.name,
+    usd(reason.to.msrp),
+  ]);
 });
 
 const expanded = ref(!!props.autoExpand);
@@ -170,6 +184,14 @@ const kind = computed(() =>
           {{ insuranceLabel(pledge.insurance) }}
         </span>
         <span
+          v-if="unavailableHint"
+          v-tooltip="unavailableHint"
+          class="shm-badge is-unavailable"
+          tabindex="0"
+        >
+          {{ i18n.t('buyback.unavailable') }}
+        </span>
+        <span
           v-if="pledge.isProbablyGiftable"
           v-tooltip="giftableHint"
           class="shm-badge is-giftable"
@@ -202,11 +224,11 @@ const kind = computed(() =>
           {{ buybackLink.text }}
         </a>
         <button
-          v-tooltip="i18n.t('buyback.addToCart')"
+          v-tooltip="unavailableHint ?? i18n.t('buyback.addToCart')"
           type="button"
           class="shm-button shm-origin-button shm-cart-button"
           :class="{ 'is-busy': addingToCart }"
-          :disabled="addingToCart"
+          :disabled="addingToCart || !!unavailableHint"
           @click="addToCart"
         >
           <SvgIcon name="basket-shopping" />
