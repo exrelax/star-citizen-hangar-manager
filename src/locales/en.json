@@ -360,7 +360,7 @@
     "contains": "Contains: $1",
     "reclaimed": "Melted $1",
     "showInBuyback": "Show in Buy Back (page $1)",
-    "probablyGiftableHint": "When bought back with real money (warbond), this item is probably giftable, as it was originally bought before $1.",
+    "probablyGiftableHint": "When bought back with real money (warbond), this item is probably giftable: it was bought before $1 with money only, without store credit, and keeps that status.",
     "showSingleInBuyback": "Show in Buy Back",
     "tokens": "Buy back tokens: $1",
     "tokensLabel": "Buy back tokens",

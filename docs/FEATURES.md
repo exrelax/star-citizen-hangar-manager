@@ -480,12 +480,15 @@ The **Buy Back** tab lists all melted pledges with the same search and filters (
 Paints, Game access, LTI, Warbond, Probably giftable, Rewards), plus:
 
 - **Probably giftable**: a pledge bought back keeps the giftable status it had when it was
-  melted, and buying back with store credit makes it ungiftable (see RSI's
+  melted, and RSI then offers "Buying as a gift?" at checkout (see RSI's
   [Gifting FAQs](https://support.robertsspaceindustries.com/hc/en-us/articles/115013325608-Gifting-FAQs),
-  "If I use the Buy Back Tool to recover a pledge, can I gift it to someone else?"). So pledges
-  bought before 30 Oct 2026 are probably giftable again when bought back with money (warbond) –
-  "probably", as the extension can't tell whether a pledge was giftable when it was melted (e.g.
-  bought with store credit, or already gifted once).
+  "If I use the Buy Back Tool to recover a pledge, can I gift it to someone else?"). Only pledges
+  bought before 30 Oct 2026 with money alone were giftable: any store credit, a gift received or a
+  later purchase makes them ungiftable. So a pledge is marked if its order – known from the order
+  history, all pledges of one order alike – was paid with money only before that date, without a
+  further request to RSI. For pledges melted from now on the extension keeps RSI's own gift flag
+  from My Hangar, which decides instead. "Probably", as a pledge may have lost the status in other
+  ways (e.g. gifted once already), and buying back with store credit makes it ungiftable.
 - **Buy back tokens**: how many pledges can still be bought back with store credit, as RSI shows
   it above its buy back list – at the top right of the manager, on every tab (see
   [The Hangar Manager page](#the-hangar-manager-page)).

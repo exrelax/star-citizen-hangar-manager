@@ -360,7 +360,7 @@
     "contains": "Contient : $1",
     "reclaimed": "Fusionné le $1",
     "showInBuyback": "Afficher dans Buy Back (page $1)",
-    "probablyGiftableHint": "Racheté en argent réel (warbond), cet élément est probablement offrable, car il a été acheté à l’origine avant le $1.",
+    "probablyGiftableHint": "Racheté en argent réel (warbond), cet élément est probablement offrable : il a été acheté avant le $1 uniquement avec de l’argent, sans crédit boutique, et garde ce statut.",
     "showSingleInBuyback": "Afficher dans Buy Back",
     "tokens": "Jetons de rachat : $1",
     "tokensLabel": "Jetons de rachat",

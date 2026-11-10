@@ -2,6 +2,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import {
+  isPaidWithMoneyOnly,
   anonymizeOrderDetails,
   DEMO_BILL_TO,
   DEMO_PROCESSOR,
@@ -79,12 +80,18 @@ describe('parseLogEntry', () => {
 });
 
 describe('parseBillingPage', () => {
-  const order = (id: string, amount: string) => `
+  const order = (id: string, amount: string, credits?: string) => `
     <li><div class="row pledge"><div class="basic-infos clearfix">
       <div class="col date"><span>Order Placed:</span> October 30, 2026 19:55</div>
       <div class="col amount"><span>Amount:</span> ${amount}</div>
       <div class="col"><span>Order Id:</span> ${id}</div>
-    </div></div></li>`;
+    </div>${
+      credits === undefined
+        ? ''
+        : `<div class="payment-wrapper"><div class="right-section"><div class="s-row">
+            <strong>Items:</strong>$5.00 USD<br>
+            <strong>Credits used:</strong><span class="">${credits}</span></div></div></div>`
+    }</div></li>`;
 
   it('reads id, amount and date of each order and the last page', () => {
     const doc = new DOMParser().parseFromString(
@@ -99,6 +106,33 @@ describe('parseBillingPage', () => {
       ],
       lastPage: 16,
     });
+  });
+
+  it('reads the store credit used (#204)', () => {
+    const doc = new DOMParser().parseFromString(
+      `<ul class="orders-item">${order('A', '$2.00 USD', '$3.00 USD')}${order('B', '$5.95 USD', '$0.00 USD')}</ul>`,
+      'text/html',
+    );
+    expect(parseBillingPage(doc).orders.map((o) => o.creditsUsed)).toEqual([
+      '$3.00 USD',
+      '$0.00 USD',
+    ]);
+  });
+});
+
+describe('isPaidWithMoneyOnly', () => {
+  it('needs money paid and no store credit used', () => {
+    expect(isPaidWithMoneyOnly({ id: 'A', amount: '$5.95 USD', creditsUsed: '$0.00 USD' })).toBe(
+      true,
+    );
+    expect(isPaidWithMoneyOnly({ id: 'A', amount: '$2.00 USD', creditsUsed: '$3.00 USD' })).toBe(
+      false,
+    );
+    expect(isPaidWithMoneyOnly({ id: 'A', amount: '$0.00 USD', creditsUsed: '$5.00 USD' })).toBe(
+      false,
+    );
+    // Stored before the store credit was read: by the amount.
+    expect(isPaidWithMoneyOnly({ id: 'A', amount: '$5.95 USD' })).toBe(true);
   });
 });
 
@@ -336,6 +370,24 @@ describe('order sync', () => {
     )();
     expect(rsi.fetchLogPage).toHaveBeenCalledTimes(3);
     expect(rsi.fetchBillingPage).toHaveBeenCalledTimes(6);
+  });
+
+  it('reads the whole billing list once for orders stored without their store credit', async () => {
+    await (
+      await prepareOrderSync(fakeRsi(6))
+    )();
+    const older = { ...(await ordersSnapshot.getValue())! };
+    delete older.creditsRead;
+    await ordersSnapshot.setValue(older);
+    const rsi = fakeRsi(6);
+    const result = await updateOrders(rsi);
+    expect(rsi.fetchLogPage).toHaveBeenCalledTimes(1);
+    expect(rsi.fetchBillingPage).toHaveBeenCalledTimes(6);
+    expect(result?.snapshot.creditsRead).toBe(true);
+    // Once read, later updates stop at the known orders again.
+    const again = fakeRsi(6);
+    await updateOrders(again);
+    expect(again.fetchBillingPage).toHaveBeenCalledTimes(1);
   });
 
   it('leaves the first full read to the full refresh', async () => {

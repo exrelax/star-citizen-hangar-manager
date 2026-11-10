@@ -360,7 +360,7 @@
     "contains": "Enthält: $1",
     "reclaimed": "Eingeschmolzen $1",
     "showInBuyback": "Im Buy Back anzeigen (Seite $1)",
-    "probablyGiftableHint": "Bei einem Rückkauf mit echtem Geld (Warbond) ist dieses Item vermutlich verschenkbar, da es ursprünglich vor dem $1 gekauft wurde.",
+    "probablyGiftableHint": "Bei einem Rückkauf mit echtem Geld (Warbond) ist dieses Item vermutlich verschenkbar: Es wurde vor dem $1 nur mit Geld gekauft, ohne Store Credits, und behält diesen Status.",
     "showSingleInBuyback": "Im Buy Back anzeigen",
     "tokens": "Buy-Back-Tokens: $1",
     "tokensLabel": "Buy-Back-Tokens",
