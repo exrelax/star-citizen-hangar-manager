@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
-import { notificationsItem } from '@/notifications/notifications';
+import { noteDetails, noteText, notificationsItem } from '@/notifications/notifications';
 import { settingsItem } from '@/settings/settings';
 import type { StoreItem } from './items/store-items';
 import {
@@ -13,6 +13,9 @@ import {
 } from './store-change-notes';
 
 beforeEach(() => fakeBrowser.reset());
+
+/** German amounts have a no-break space before the $ sign. */
+const plain = (text: string) => text.replace(/\u00a0/g, ' ');
 
 const ships = [
   { id: 1, name: 'Zeus MR', msrp: 190 },
@@ -48,6 +51,13 @@ describe('warbondNote', () => {
     });
   });
 
+  it('builds its text in the language shown (#211)', () => {
+    const note = warbondNote([warbond(3, 40)], [warbond(1, 170), warbond(2, 100)], ships, 'en', 5)!;
+    expect(plain(noteText(note, 'de'))).toBe(
+      'Neue Warbond CCUs: Zeus MR (170 $), Cutlass Black (100 $) · Nicht mehr angebotene Warbond CCUs: Aurora Mk I CL (40 $)',
+    );
+  });
+
   it('keeps the SKUs of the new ones, for showing it again (#213)', () => {
     const note = warbondNote([warbond(3, 40)], [warbond(1, 170), warbond(2, 100)], ships, 'en', 5);
     expect(note?.subject).toEqual({ warbonds: [10, 20] });
@@ -78,13 +88,21 @@ describe('storeItemsNote', () => {
       kind: 'storeItems',
       text: '4 changes in the Pledge Store',
     });
-    expect(note?.details).toEqual([
+    expect(noteDetails(note!, 'en')).toEqual([
       'New: Suit ($8)',
       'Gone: Paint',
       'New price: Helmet, $10 → $12',
       'On sale: Armor, $20 → $15',
     ]);
     expect(note?.browser).toBeUndefined();
+    // Built in the language shown (#211).
+    expect(noteText(note!, 'de')).toBe('4 Änderungen im Pledge Store');
+    expect(noteDetails(note!, 'de').map(plain)).toEqual([
+      'Neu: Suit (8 $)',
+      'Entfernt: Paint',
+      'Neuer Preis: Helmet, 10 $ → 12 $',
+      'Im Angebot: Armor, 20 $ → 15 $',
+    ]);
     // What still matters later (#213): new and repriced items at their price now.
     expect(note?.subject?.items).toEqual([
       { id: 4, price: 8 },

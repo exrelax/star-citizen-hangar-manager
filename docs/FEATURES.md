@@ -306,7 +306,9 @@ on its own.
       **Pledge Store items** changed, with the list (new, gone, new price, on sale) to open; both
       with **Show in Pledge Store**. Only new warbond CCUs also show as a browser notification –
       time-limited offers worth knowing while away; a click (or its button in Chrome) opens the
-      Pledge Store tab at the warbond CCUs. An **event** like the Intergalactic Aerospace Expo,
+      Pledge Store tab at the warbond CCUs. Their texts, prices and lists follow the language set,
+      also after a change of the language (only the browser notification keeps the language it
+      was shown in). An **event** like the Intergalactic Aerospace Expo,
       once its notice starts (see [Pledge Store](#pledge-store-current-warbond-ccus)), with **Show
       in Pledge Store** – in the sidebar only.
     - When filler paints of the [Paint Discount Consultant](#paint-discount-consultant) are among

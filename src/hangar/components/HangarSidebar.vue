@@ -20,7 +20,12 @@ import {
 } from '@/notifications/browser-permission';
 import BulkExchangeOverlay from './BulkExchangeOverlay.vue';
 import { REBUY_PLAN_VERSION, rebuyPlanItem } from '@/store/paint-consultant/rebuy-plan-storage';
-import { checkOff, noteText, type AppNotification } from '@/notifications/notifications';
+import {
+  checkOff,
+  noteDetails,
+  noteText,
+  type AppNotification,
+} from '@/notifications/notifications';
 import { useOpenNotifications } from '@/notifications/use-notifications';
 import { meltReadyIds, useMarkedPledges } from '../use-melt-marks';
 import { clearHangarFilter, hangarViewFilter, showHangarFilter } from '../view-filter';
@@ -571,10 +576,12 @@ async function move(box: Box, step: -1 | 1) {
                 <template v-else>{{ noteText(note, locale) }}</template>
                 <time class="shm-sidebar-note">{{ noteTime.format(note.at) }}</time>
                 <!-- Changed Pledge Store items: the count first, the list on demand (#164). -->
-                <details v-if="note.details?.length" class="shm-sidebar-note-details">
+                <details v-if="noteDetails(note, locale).length" class="shm-sidebar-note-details">
                   <summary>{{ i18n.t('notifications.showChanges') }}</summary>
                   <ul>
-                    <li v-for="(line, index) in note.details" :key="index">{{ line }}</li>
+                    <li v-for="(line, index) in noteDetails(note, locale)" :key="index">
+                      {{ line }}
+                    </li>
                   </ul>
                 </details>
                 <button
