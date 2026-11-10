@@ -115,8 +115,11 @@
   min-width: 0;
 }
 
-/* With the weight of an ID (`:not(#shm-none)`): RSI's `#billing .content h3` styles every h3. */
-.shm-settings-title:not(#shm-none) {
+/*
+ * Heavier than RSI's `#billing .content h3`, which styles every h3 (an ID by `:not(#shm-none)`,
+ * two classes).
+ */
+.shm-settings .shm-settings-title:not(#shm-none) {
   margin: 0;
   padding: 0;
   color: var(--shm-accent);
