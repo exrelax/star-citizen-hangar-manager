@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
-import { notificationsItem } from '@/notifications/notifications';
+import { noteText, notificationsItem } from '@/notifications/notifications';
 import { settingsItem } from '@/settings/settings';
 import { EMPTY_META } from '@/storage/meta';
 import type { StarCitizenEvent } from './events';
@@ -98,5 +98,27 @@ describe('maybeRefreshEvents with events of an earlier format', () => {
     await maybeRefreshEvents({ fetch, now: () => NOW + 60_000 });
     expect(fetch).toHaveBeenCalledTimes(1);
     expect((await eventsItem.getValue())?.version).toBe(2);
+  });
+});
+
+describe('event notifications', () => {
+  beforeEach(() => fakeBrowser.reset());
+
+  it('follow the language shown, with name and date', async () => {
+    await maybeRefreshEvents({ fetch: async () => [iae], now: () => NOW });
+    const [note] = await notificationsItem.getValue();
+    const de = noteText(note!, 'de');
+    expect(de).toContain('IAE 2956 (de) beginnt am');
+    expect(de).toContain('13.11.2026');
+    expect(noteText(note!, 'en')).toContain('IAE 2956 starts on');
+  });
+
+  it('give an open one added with only its text a message', async () => {
+    await notificationsItem.setValue([
+      { id: 'events:iae-2956', kind: 'events', text: 'Event: IAE 2956 starts on …', at: NOW },
+    ]);
+    await maybeRefreshEvents({ fetch: async () => [iae], now: () => NOW });
+    const [note] = await notificationsItem.getValue();
+    expect(noteText(note!, 'de')).toContain('beginnt am');
   });
 });

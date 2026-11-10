@@ -9,13 +9,27 @@
  * marked pledges can be melted now (see the sidebar).
  */
 
+import { translate, type Locale, type MessageKey } from '@/i18n';
+
 export const NOTIFICATIONS_KEEP_DONE_MS = 30 * 24 * 60 * 60 * 1000;
+
+/**
+ * A part of a notification's text, put in the language shown: plain text, a text per language
+ * (English always), or a date and time.
+ */
+export type NoteArg =
+  string | { texts: Partial<Record<Locale, string>> & { en: string } } | { at: number };
 
 export interface AppNotification {
   /** Source and subject, e.g. `fillers:4OLB2S5WUG6PX`. */
   id: string;
-  /** The text shown, already in the user's language. */
+  /** The text in the user's language when it was added; shown if there is no `message`. */
   text: string;
+  /**
+   * The text built in the language shown, so it follows a change of the language (events, #69):
+   * a message key and its parts.
+   */
+  message?: { key: MessageKey; args: NoteArg[] };
   /** The pledge it is about, if any: the sidebar links to it. */
   pledgeId?: number;
   /** When it happened, in ms. */
@@ -36,6 +50,25 @@ export interface AppNotification {
 export const notificationsItem = storage.defineItem<AppNotification[]>('local:notifications', {
   fallback: [],
 });
+
+/** A part of a notification's text in the language. */
+function argText(arg: NoteArg, locale: Locale): string {
+  if (typeof arg === 'string') return arg;
+  if ('texts' in arg) return arg.texts[locale] ?? arg.texts.en;
+  return new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' }).format(
+    arg.at,
+  );
+}
+
+/** The text of a notification in the language: built from its message, else as it was added. */
+export function noteText(note: AppNotification, locale: Locale): string {
+  if (!note.message) return note.text;
+  return translate(
+    locale,
+    note.message.key,
+    note.message.args.map((arg) => argText(arg, locale)),
+  );
+}
 
 /** The open notifications, newest first. */
 export const openNotifications = (list: readonly AppNotification[]) =>
