@@ -12,6 +12,7 @@ import {
 import type { DemoCatalog } from './catalog';
 import { generateHangar, usdText, type DemoPledge } from './generate-hangar';
 import { createRandom, type DemoRandom } from './random';
+import { DEFAULT_DEMO_SETTINGS, type DemoSettings, type DemoStates } from './demo-settings';
 
 /*
  * The states of the generated demo pledges (#176), so every tag, filter and action can be shown:
@@ -165,14 +166,19 @@ function ordersOf(pledges: readonly DemoPledge[], random: DemoRandom): OrdersSna
 }
 
 /** The generated hangar of a key with its states and orders. */
-export const generateDemoAccount = (catalog: DemoCatalog, key: string): DemoAccount =>
-  withStates(generateHangar(catalog, key), catalog, key);
+export const generateDemoAccount = (
+  catalog: DemoCatalog,
+  key: string,
+  settings: DemoSettings = DEFAULT_DEMO_SETTINGS,
+): DemoAccount =>
+  withStates(generateHangar(catalog, key, settings.composition), catalog, key, settings.states);
 
 /** Gives the generated pledges their states and orders (#176). */
 export function withStates(
   generated: readonly DemoPledge[],
   catalog: DemoCatalog,
   key: string,
+  states: DemoStates = DEFAULT_DEMO_SETTINGS.states,
 ): DemoAccount {
   const random = createRandom(`${key}:states`);
   const byId = new Map(generated.map((pledge) => [pledge.id, pledge]));
@@ -186,8 +192,9 @@ export function withStates(
     if (pledge.demoKind === 'rewards') return;
     set(pledge, (current) => ({
       ...current,
-      isGiftable: current.isGiftable && !random.chance(`gift:${pledge.id}`, 0.3),
-      isExchangeable: !random.chance(`melt:${pledge.id}`, 0.08),
+      isGiftable:
+        current.isGiftable && !random.chance(`gift:${pledge.id}`, states.notGiftablePercent / 100),
+      isExchangeable: !random.chance(`melt:${pledge.id}`, states.notMeltablePercent / 100),
     }));
   });
   // The newest pledge (a paint, see `generateHangar`) can be melted: it was bought a few hours ago.
@@ -219,7 +226,7 @@ export function withStates(
 
   // Upgraded ships with their applied CCUs.
   ofKind(generated, 'ships')
-    .slice(-DEMO.upgradedPledges)
+    .slice(states.upgraded ? -DEMO.upgradedPledges : generated.length)
     .forEach((pledge, index) => {
       const result = upgraded(byId.get(pledge.id)!, catalog, random, index);
       byId.set(pledge.id, result.pledge);
@@ -227,17 +234,19 @@ export function withStates(
     });
 
   // Protected game access: SC, SQ42 and both, and a reward without a ship.
-  const packages = ofKind(generated, 'packages');
-  set(packages[0], (pledge) => protectedFor(pledge, ['SC']));
-  set(packages[1], (pledge) => protectedFor(pledge, ['SQ42']));
-  set(packages[2], (pledge) => protectedFor(pledge, ['SC', 'SQ42']));
-  set(ofKind(generated, 'rewards')[0], (pledge) => ({
-    ...pledge,
-    title: 'VIP High Admiral',
-    name: 'VIP High Admiral',
-    items: [{ title: 'VIP High Admiral' }],
-    protectedGames: ['SC'],
-  }));
+  if (states.protectedAccess) {
+    const packages = ofKind(generated, 'packages');
+    set(packages[0], (pledge) => protectedFor(pledge, ['SC']));
+    set(packages[1], (pledge) => protectedFor(pledge, ['SQ42']));
+    set(packages[2], (pledge) => protectedFor(pledge, ['SC', 'SQ42']));
+    set(ofKind(generated, 'rewards')[0], (pledge) => ({
+      ...pledge,
+      title: 'VIP High Admiral',
+      name: 'VIP High Admiral',
+      items: [{ title: 'VIP High Admiral' }],
+      protectedGames: ['SC'],
+    }));
+  }
 
   const pledges = generated.map((pledge) => byId.get(pledge.id)!);
   return { pledges, orders: ordersOf(pledges, random), upgradeLogs };

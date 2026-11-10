@@ -268,7 +268,45 @@
     "changelogHint": "Qué ha cambiado en cada versión.",
     "license": "Licencia MIT",
     "licenseHint": "Código abierto, tal cual, sin garantía.",
-    "disclaimer": "Un proyecto no oficial de fans, sin relación con Cloud Imperium Games ni Roberts Space Industries ni respaldado por ellas."
+    "disclaimer": "Un proyecto no oficial de fans, sin relación con Cloud Imperium Games ni Roberts Space Industries ni respaldado por ellas.",
+    "demo": {
+      "title": "Modo demo",
+      "hint": "Lo que muestra el modo demo. Los cambios se aplican al momento y se guardan en la configuración de este navegador.",
+      "source": "Hangar de demo",
+      "sources": {
+        "generated": "Inventado a partir del Pledge Store y del catálogo de naves",
+        "own": "Una selección de mis propios pledges"
+      },
+      "composition": "Pledges de cada tipo",
+      "kinds": {
+        "ships": "Naves sueltas",
+        "packages": "Paquetes de juego",
+        "ccus": "CCU",
+        "paints": "Pinturas",
+        "gear": "Equipo",
+        "addOns": "Add-ons",
+        "packs": "Packs",
+        "rewards": "Recompensas"
+      },
+      "ownHangarPledges": "Pledges en My Hangar",
+      "buybackPledges": "Pledges en el Buy Back",
+      "states": "Estados",
+      "stateChecks": {
+        "refund": "Cuenta atrás del reembolso",
+        "protectedAccess": "Acceso al juego protegido",
+        "upgraded": "Naves mejoradas",
+        "justBought": "Un pledge comprado hace unas horas",
+        "meltMarks": "Marcas para fundir en un nuevo hangar de demo"
+      },
+      "notGiftablePercent": "No regalables",
+      "notMeltablePercent": "No fundibles",
+      "newHangar": "Nuevo hangar de demo",
+      "reset": "Restablecer la demo",
+      "done": {
+        "newHangar": "Se muestra un nuevo hangar de demo.",
+        "reset": "La configuración de la demo vuelve a sus valores por defecto y se borran sus marcas."
+      }
+    }
   },
   "storage": {
     "title": "Datos guardados",

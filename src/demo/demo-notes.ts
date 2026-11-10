@@ -30,3 +30,8 @@ export async function checkOffDemo(ids?: readonly string[]): Promise<void> {
   const done = new Set(ids ?? openNotifications(list).map((note) => note.id));
   await demoNotificationsItem.setValue([...withDone(list, done, Date.now())]);
 }
+
+/** The samples set again with the next visit of the demo. */
+export async function resetDemoNotes(): Promise<void> {
+  await Promise.all([demoNotificationsItem.removeValue(), seededItem.removeValue()]);
+}

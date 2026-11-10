@@ -7,12 +7,13 @@ import { demoMeltMarksItem } from '@/hangar/melt-marks';
 import type { StarCitizenEvent } from '@/events/events';
 import { locale } from '@/i18n';
 import { demoEventNotes, demoEvents } from './demo-events';
-import { seedDemoNotes } from './demo-notes';
+import { resetDemoNotes, seedDemoNotes } from './demo-notes';
 import type { StoreCredit } from '@/account/store-credit';
 import { current, shipsItem } from '@/ships/ships-storage';
 import { STORE_ITEMS_VERSION, storeItemsItem } from '@/store/items/store-items-storage';
 import { useStored } from '@/storage/use-stored';
 import { demoCatalog } from './catalog';
+import { localToday } from '@/orders/refund';
 import type { DemoSettings } from './demo-settings';
 import {
   createFakeIds,
@@ -29,15 +30,37 @@ import type { UpgradeLogEntry } from '@/hangar/upgrade-log';
 /** Random key of the demo, created on first use and kept only in this browser. */
 const demoKeyItem = storage.defineItem<string | null>('local:demo.key', { fallback: null });
 
+const randomKey = () =>
+  [...crypto.getRandomValues(new Uint8Array(16))]
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('');
+
 async function demoKey(): Promise<string> {
   let key = await demoKeyItem.getValue();
   if (!key) {
-    const bytes = crypto.getRandomValues(new Uint8Array(16));
-    key = [...bytes].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+    key = randomKey();
     await demoKeyItem.setValue(key);
   }
   return key;
 }
+
+/**
+ * A new demo hangar (#178): a new key, so another random hangar, buy back and orders appear, with
+ * new marks and sample notifications.
+ */
+export const newDemoHangar = (): Promise<void> => demoKeyItem.setValue(randomKey());
+
+/**
+ * The demo's marks cleared, e.g. with its settings reset (#178); its sample notifications show
+ * again. A new demo hangar's marks are set with the next visit.
+ */
+export async function resetDemoData(): Promise<void> {
+  await Promise.all([demoMeltMarksItem.removeValue(), resetDemoNotes()]);
+  await seedDemoNotes(await demoKey(), demoSampleNotes(Date.now()));
+}
+
+/** The demo's sample notifications (#210, #131), in the language shown. */
+const demoSampleNotes = (now: number) => demoEventNotes(now, locale.value);
 
 /** The demo key the demo's marks were set for, so they are set once per demo hangar. */
 const marksSeededItem = storage.defineItem<string | null>('local:demo.marksSeeded', {
@@ -115,7 +138,10 @@ export function useDemo(
   settings: () => DemoSettings,
 ) {
   const key = shallowRef<string>();
+  // Created on first use; "New demo hangar" in the settings replaces it.
+  const storedKey = useStored(demoKeyItem);
   onMounted(async () => (key.value = await demoKey()));
+  watch(storedKey, (value) => value && (key.value = value));
 
   // The public catalog the generated hangar is made of; a bundled one stands in for what isn't
   // stored yet.
@@ -132,23 +158,26 @@ export function useDemo(
   const ready = computed(() => !active.value || key.value !== undefined);
   const generatedAccount = computed(() =>
     active.value && key.value && generated.value
-      ? generatedDemo(catalog.value, key.value)
+      ? generatedDemo(catalog.value, key.value, localToday(), Date.now(), settings())
       : undefined,
   );
   watch(generatedAccount, (account) => {
-    if (!account || !key.value) return;
+    if (!account || !key.value || !settings().states.meltMarks) return;
     void seedDemoMarks(key.value, account.pledges, justBoughtOf(account.pledges));
   });
   // The demo's own sidebar notifications (#210), once per key.
   watch(
     () => (active.value ? key.value : undefined),
-    (demoKey) => demoKey && void seedDemoNotes(demoKey, demoEventNotes(Date.now(), locale.value)),
+    (demoKey) => demoKey && void seedDemoNotes(demoKey, demoSampleNotes(Date.now())),
     { immediate: true },
   );
   const events = computed(() => (active.value ? demoEvents(Date.now()) : []));
   const demoPledges = computed(() => {
     if (!active.value || !key.value) return [];
-    return generatedAccount.value?.pledges ?? demoHangar(pledges.value, key.value);
+    return (
+      generatedAccount.value?.pledges ??
+      demoHangar(pledges.value, key.value, localToday(), Date.now(), settings().ownHangarPledges)
+    );
   });
   const context = computed<DemoContext | null>(() => {
     if (!active.value || !key.value) return null;
@@ -166,7 +195,7 @@ export function useDemo(
     const demoKey = key.value;
     const upgradeLog: DemoContext['upgradeLog'] = (pledgeId, createdAt, entries) =>
       demoUpgradeLog(entries, pledgeId, createdAt, demoKey);
-    const justBoughtId = justBoughtOf(demoPledges.value);
+    const justBoughtId = settings().states.justBought ? justBoughtOf(demoPledges.value) : undefined;
     const justBought =
       justBoughtId === undefined ? undefined : { pledgeId: justBoughtId, at: demoPurchaseTime() };
     const account = generatedAccount.value;
@@ -204,7 +233,10 @@ export function useDemo(
   });
   const demoBuybackPledges = computed(() => {
     if (!active.value || !key.value) return [];
-    return generatedAccount.value?.buyback ?? demoBuyback(buyback.value, key.value);
+    return (
+      generatedAccount.value?.buyback ??
+      demoBuyback(buyback.value, key.value, settings().buybackPledges)
+    );
   });
   return {
     ready,

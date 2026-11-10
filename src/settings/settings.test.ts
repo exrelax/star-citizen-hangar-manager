@@ -44,7 +44,7 @@ describe('withDefaults', () => {
       spotCheckPages: 2,
       buybackLinkMode: 'single',
       priceIncreaseDays: 14,
-      demo: { source: 'generated' },
+      demo: DEFAULT_SETTINGS.demo,
       theme: 'modern',
       fontSize: 'medium',
       compactView: false,

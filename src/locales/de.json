@@ -268,7 +268,45 @@
     "changelogHint": "Was sich in jeder Version geändert hat.",
     "license": "MIT-Lizenz",
     "licenseHint": "Open Source, ohne Gewähr.",
-    "disclaimer": "Ein inoffizielles Fanprojekt, nicht verbunden mit oder unterstützt von Cloud Imperium Games oder Roberts Space Industries."
+    "disclaimer": "Ein inoffizielles Fanprojekt, nicht verbunden mit oder unterstützt von Cloud Imperium Games oder Roberts Space Industries.",
+    "demo": {
+      "title": "Demo-Modus",
+      "hint": "Was der Demo-Modus zeigt. Änderungen gelten sofort und bleiben in den Einstellungen dieses Browsers.",
+      "source": "Demo-Hangar",
+      "sources": {
+        "generated": "Aus dem Pledge Store und dem Schiffskatalog erfunden",
+        "own": "Eine Auswahl meiner eigenen Pledges"
+      },
+      "composition": "Pledges je Art",
+      "kinds": {
+        "ships": "Einzelschiffe",
+        "packages": "Spielpakete",
+        "ccus": "CCUs",
+        "paints": "Paints",
+        "gear": "Ausrüstung",
+        "addOns": "Add-ons",
+        "packs": "Packs",
+        "rewards": "Rewards"
+      },
+      "ownHangarPledges": "Pledges in My Hangar",
+      "buybackPledges": "Pledges im Buy Back",
+      "states": "Zustände",
+      "stateChecks": {
+        "refund": "Refund-Countdown",
+        "protectedAccess": "Geschützter Spielzugang",
+        "upgraded": "Geupgradete Schiffe",
+        "justBought": "Ein vor wenigen Stunden gekauftes Pledge",
+        "meltMarks": "Markierungen zum Einschmelzen in einem neuen Demo-Hangar"
+      },
+      "notGiftablePercent": "Nicht verschenkbar",
+      "notMeltablePercent": "Nicht einschmelzbar",
+      "newHangar": "Neuer Demo-Hangar",
+      "reset": "Demo zurücksetzen",
+      "done": {
+        "newHangar": "Ein neuer Demo-Hangar wird angezeigt.",
+        "reset": "Die Demo-Einstellungen sind zurückgesetzt, die Markierungen der Demo gelöscht."
+      }
+    }
   },
   "storage": {
     "title": "Gespeicherte Daten",
