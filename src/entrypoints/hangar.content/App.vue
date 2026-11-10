@@ -73,9 +73,9 @@ const neverLoaded = computed(() => loaded.value && !syncedAt.value);
 const { settings, loaded: settingsLoaded, update: updateSettings } = useSettings();
 useThemeClass(inject(MANAGER_CONTAINER, undefined), settings);
 
-// The demo mode (a setting) shows a selection of anonymized pledges (see src/demo).
+// The demo mode (a setting) shows a generated or anonymized hangar (see src/demo).
 const demo = computed(() => settings.value.demoMode);
-const demoView = useDemo(demo, hangar.pledges, buyback.pledges);
+const demoView = useDemo(demo, hangar.pledges, buyback.pledges, () => settings.value.demo);
 /**
  * The lists wait for the settings: until they are read the demo mode counts as off, and the real
  * pledges would show for a moment.

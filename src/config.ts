@@ -323,7 +323,23 @@ export const PLEDGE_STORE = {
  * pledge ids (see `src/demo`).
  */
 export const DEMO = {
-  /** Pledges shown in "My Hangar" and in the buy back. */
+  /**
+   * Made-up ids of the generated demo pledges count down from here (#175): far above RSI's, and
+   * the views show them only as made-up display ids.
+   */
+  idBase: 990_000_000,
+  /** How many pledges of each kind the generated demo hangar has (#175, the demo settings). */
+  composition: {
+    ships: 14,
+    packages: 4,
+    ccus: 30,
+    paints: 30,
+    gear: 8,
+    addOns: 6,
+    packs: 3,
+    rewards: 5,
+  },
+  /** Pledges shown in "My Hangar" and in the buy back (the selection of the own pledges). */
   hangarPledges: 100,
   buybackPledges: 50,
   /** Ships whose pledges are always part of the demo (by the ship's name, not by pledge id). */

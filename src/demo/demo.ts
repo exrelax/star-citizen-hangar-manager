@@ -5,28 +5,22 @@ import { localToday } from '@/orders/refund';
 import type { PledgeView } from '@/hangar/pledge-view';
 import { normalizeSearchText } from '@/hangar/search';
 import type { UpgradeLogEntry } from '@/hangar/upgrade-log';
+import { toPledgeView } from '@/hangar/pledge-view';
+import { createPriceLookup } from '@/hangar/ship-prices';
+import { createItemPriceLookup } from '@/store/items/item-prices';
+import type { DemoCatalog } from './catalog';
+import { generateHangar } from './generate-hangar';
+import { fraction, hash } from './random';
 
 /*
- * The demo view shows a fixed selection of the stored pledges with made-up pledge ids and
- * purchase dates, so screenshots (e.g. for a store listing) don't reveal the real hangar, its ids
- * or when it was bought. Selection, ids and dates are derived from a random key stored only in
- * this browser: they stay the same for every visit, and without the key they can't be traced back
- * to the real ones.
+ * The demo view, e.g. for screenshots, reveals nothing of the real account: by default a hangar
+ * generated from the public catalog (#175, `generate-hangar.ts`), or a fixed selection of the
+ * stored pledges. Either way with made-up pledge ids and purchase dates. Everything is derived
+ * from a random key stored only in this browser: it stays the same for every visit, and without
+ * the key nothing can be traced back to the real account.
  */
 
-/** cyrb53: a fast 53-bit string hash with a good spread. */
-export function hash(text: string): number {
-  let h1 = 0xdeadbeef;
-  let h2 = 0x41c6ce57;
-  for (let index = 0; index < text.length; index++) {
-    const code = text.charCodeAt(index);
-    h1 = Math.imul(h1 ^ code, 2654435761);
-    h2 = Math.imul(h2 ^ code, 1597334677);
-  }
-  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-  return 4294967296 * (2097151 & h2) + (h1 >>> 0);
-}
+export { hash } from './random';
 
 const LETTERS = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
 
@@ -83,7 +77,6 @@ export function demoHangar(
   today = localToday(),
   now = Date.now(),
 ): PledgeView[] {
-  const fakeId = createFakeIds(key);
   // Some upgraded pledges for their "Applied upgrades", in the same fixed random order.
   const upgraded = new Set(
     pickDemo(
@@ -102,6 +95,35 @@ export function demoHangar(
       containsShip(pledge, DEMO.includeShips) ||
       pledge.protectedGames.length > 0,
   );
+  return demoViews(selection, key, today, now);
+}
+
+/**
+ * The generated demo hangar (#175) as the list shows it: the pledges of `generateHangar` with
+ * their discounts against the catalog's prices, made-up display ids and purchase dates.
+ */
+export function generatedHangar(
+  catalog: DemoCatalog,
+  key: string,
+  today = localToday(),
+  now = Date.now(),
+): PledgeView[] {
+  const priceOf = createPriceLookup(catalog.ships.map(({ name, msrp }) => ({ name, price: msrp })));
+  const itemPriceOf = createItemPriceLookup(catalog.items);
+  const views = generateHangar(catalog, key).map((pledge, position) =>
+    toPledgeView(pledge, {}, position, priceOf, itemPriceOf),
+  );
+  return demoViews(views, key, today, now);
+}
+
+/** A demo list with made-up ids (also for the search), purchase dates and pages. */
+function demoViews(
+  selection: readonly PledgeView[],
+  key: string,
+  today: string,
+  now: number,
+): PledgeView[] {
+  const fakeId = createFakeIds(key);
   const justBought = justBoughtOf(selection);
   const dates = demoDates(
     selection,
@@ -246,11 +268,6 @@ export function demoUpgradeLog(
 export function demoStoreCredit(key: string): StoreCredit {
   const cents = Math.floor(fraction(`store-credit:${key}`) * (DEMO.storeCreditMax * 100 + 1));
   return { amount: cents / 100, currency: 'USD' };
-}
-
-/** A number in [0, 1), fixed for `text`. */
-function fraction(text: string): number {
-  return hash(text) / 2 ** 53;
 }
 
 /** The ISO date `days` days after `date` (before it for negative days). */

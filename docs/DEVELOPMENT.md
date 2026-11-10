@@ -339,7 +339,7 @@ src/
   store/                 Pledge Store tab (warbond CCUs) and the stored Pledge Store items
   storage/               Registry of all storages, their metadata and migrations
   ccugame/               Links from CCU Game (ccugame.app) to the manager
-  demo/                  Demo mode: an anonymized selection of the pledges for screenshots
+  demo/                  Demo mode: a generated hangar (or an anonymized selection) for screenshots
   settings/              Extension settings and their tab
   themes/                Themes ("Modern Hangar", "Classic RSI"), font sizes, compact view
   assets/                Images bundled into the code (favicons, icon sprites, logo)

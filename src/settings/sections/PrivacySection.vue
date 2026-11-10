@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DEMO, REFUND_DAYS } from '@/config';
+import { REFUND_DAYS } from '@/config';
 import { i18n } from '@/i18n';
 import SettingCheck from '../SettingCheck.vue';
 import type { Settings } from '../settings';
@@ -34,7 +34,7 @@ const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
     </SettingCheck>
     <SettingCheck
       :checked="settings.demoMode"
-      :hint="i18n.t('settings.demoModeHint', [DEMO.hangarPledges, DEMO.buybackPledges])"
+      :hint="i18n.t('settings.demoModeHint')"
       @change="(demoMode) => emit('update', { demoMode })"
     >
       {{ i18n.t('settings.demoMode') }}
