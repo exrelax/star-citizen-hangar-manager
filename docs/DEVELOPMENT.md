@@ -180,6 +180,11 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   building by [`site/privacy/privacy.ts`](../site/privacy/privacy.ts) – change the policy only
   there. Its `#` heading is the title, the paragraphs before the first `##` section the line below
   it and the summary, each `##` section gets a link at the top.
+- **Data for the extension**: `site/public/` is copied as is, e.g. `data/events.json`, the events
+  of the Pledge Store tab (#69). The store build reads it from the live site at most once a day;
+  the dev build reads the file of the working copy, so new events can be tried before they are
+  deployed – "Stored data" → "Events" in the settings reads it again at once. The format is
+  checked by [`src/events/events.ts`](../src/events/events.ts); icons must be on the site itself.
 - **Previews**: both pages have Open Graph and X tags with the same title and description as the
   page, and `store/social-preview-1280x640.png` as the image. Its URL has to be absolute: the build
   puts it below the site's address (`SITE_URL` in `site/vite.config.ts`).

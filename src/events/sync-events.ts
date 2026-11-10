@@ -11,8 +11,17 @@ import { eventsItem, eventsMeta, EVENTS_VERSION } from './events-storage';
  * period started (`event-notes.ts`).
  */
 
-/** The events of the website's file, checked; throws if it can't be read. */
+/**
+ * The events of the website's file, checked; throws if it can't be read. The development build
+ * reads the file of the working copy instead (`site/public/data/events.json`), so events can be
+ * tried before they go live – without a request to localhost, which Chrome would ask the user to
+ * allow from RSI's page. "Stored data" in the settings reads it again at once.
+ */
 export async function fetchEvents(): Promise<StarCitizenEvent[] | undefined> {
+  if (import.meta.env.DEV) {
+    const local = await import('../../site/public/data/events.json');
+    return parseEvents(local.default);
+  }
   // No cookies: the website needs none, and it is another origin.
   const response = await fetch(EVENTS.url, { credentials: 'omit', cache: 'no-cache' });
   if (!response.ok) throw new Error(`Loading the events failed: HTTP ${response.status}`);
