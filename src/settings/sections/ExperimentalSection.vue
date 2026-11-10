@@ -3,6 +3,7 @@ import SvgIcon from '@/icons/SvgIcon.vue';
 import { i18n } from '@/i18n';
 import { BULK_MELTING_SETTING_ID } from '../anchors';
 import SettingCheck from '../SettingCheck.vue';
+import SettingsGroup from '../SettingsGroup.vue';
 import type { Settings } from '../settings';
 
 /*
@@ -15,12 +16,11 @@ const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
 </script>
 
 <template>
-  <fieldset class="shm-setting">
-    <legend class="shm-label">{{ i18n.t('settings.experimental') }}</legend>
-    <p class="shm-experimental-warning" role="note">
-      <SvgIcon name="triangle-exclamation" />
-      <span>{{ i18n.t('settings.experimentalWarning') }}</span>
-    </p>
+  <p class="shm-experimental-warning" role="note">
+    <SvgIcon name="triangle-exclamation" />
+    <span>{{ i18n.t('settings.experimentalWarning') }}</span>
+  </p>
+  <SettingsGroup>
     <!-- Linked from the sidebar's "Selected" box while it is off. -->
     <SettingCheck
       :id="BULK_MELTING_SETTING_ID"
@@ -38,7 +38,7 @@ const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
     >
       {{ i18n.t('settings.translateRsiTexts') }}
     </SettingCheck>
-  </fieldset>
+  </SettingsGroup>
 </template>
 
 <style scoped>
@@ -47,7 +47,7 @@ const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  margin: 0 0 12px;
+  margin: 0;
   padding: 10px 12px;
   color: var(--shm-text);
   border: 1px solid var(--shm-warning);

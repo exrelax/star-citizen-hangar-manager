@@ -707,24 +707,133 @@ html .shm-theme-modern .shm-ways .shm-way.is-impossible {
   border-color: var(--shm-separator);
 }
 
-/* ---- Settings: grouped sections ---- */
-
-html .shm-theme-modern .shm-setting {
-  background: var(--shm-surface-elevated);
-  border: 0;
-  border-radius: var(--shm-radius-cell);
-}
-
-html .shm-theme-modern .shm-label {
-  color: var(--shm-text-secondary);
-  font-size: calc(13px * var(--shm-font-scale));
-  font-weight: 600;
-  text-transform: none;
-}
+/* ---- Settings: a list of categories, grouped rows like the system settings ---- */
 
 html .shm-theme-modern .shm-settings {
   color: var(--shm-text);
   font-size: calc(14px * var(--shm-font-scale));
+}
+
+html .shm-theme-modern .shm-settings-nav-title,
+html .shm-theme-modern .shm-settings-group-title {
+  color: var(--shm-text-secondary);
+  font-size: calc(12px * var(--shm-font-scale));
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+html .shm-theme-modern .shm-settings-nav-item {
+  color: var(--shm-text);
+  font-weight: 500;
+  border-left: 0;
+  border-radius: var(--shm-radius-control);
+}
+
+html .shm-theme-modern .shm-settings-nav-item[aria-current='page'] {
+  color: var(--shm-text-strong);
+  font-weight: 600;
+  background: var(--shm-segment);
+}
+
+html .shm-theme-modern .shm-settings-nav-item:not([aria-current='page']):hover {
+  background: var(--shm-hover);
+}
+
+html .shm-theme-modern .shm-settings-title {
+  color: var(--shm-text-strong);
+  font-size: calc(22px * var(--shm-font-scale));
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+html .shm-theme-modern .shm-settings-intro,
+html .shm-theme-modern .shm-settings .shm-hint,
+html .shm-theme-modern .shm-settings-group-foot {
+  color: var(--shm-text-secondary);
+}
+
+html .shm-theme-modern .shm-settings .shm-hint {
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+html .shm-theme-modern .shm-settings-rows {
+  overflow: hidden;
+  background: var(--shm-surface-elevated);
+  border: 0;
+}
+
+html .shm-theme-modern .shm-settings-rows.is-danger {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--shm-danger) 30%, transparent);
+}
+
+html .shm-theme-modern .shm-setting-row + .shm-setting-row,
+html .shm-theme-modern .shm-setting-row-status + .shm-setting-row {
+  border-top-color: var(--shm-separator);
+}
+
+html .shm-theme-modern .shm-setting-row-label {
+  font-weight: 500;
+}
+
+html .shm-theme-modern a.shm-setting-row:hover {
+  background: var(--shm-hover);
+}
+
+html .shm-theme-modern .shm-setting-link-icon {
+  color: var(--shm-text);
+  background: var(--shm-fill);
+  border-radius: var(--shm-radius-item);
+}
+
+/* The switch like the system's: a capsule that turns the accent color when on. */
+html .shm-theme-modern .shm-settings .shm-switch {
+  width: 40px;
+  height: 24px;
+  background: var(--shm-fill-strong);
+  border: 0;
+  border-radius: var(--shm-radius-pill);
+}
+
+html .shm-theme-modern .shm-settings .shm-switch::before {
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: var(--shm-radius-pill);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
+}
+
+html .shm-theme-modern .shm-settings .shm-switch:checked {
+  background: var(--shm-accent);
+}
+
+html .shm-theme-modern .shm-settings .shm-switch:checked::before {
+  background: #fff;
+}
+
+html .shm-theme-modern .shm-segmented {
+  background: var(--shm-fill);
+  border: 0;
+  border-radius: var(--shm-radius-group);
+}
+
+html .shm-theme-modern .shm-segment {
+  min-height: 26px;
+  padding: 0 10px;
+  color: var(--shm-text-secondary);
+  font-size: calc(13px * var(--shm-font-scale));
+  font-weight: 500;
+  border-radius: calc(var(--shm-radius-group) - 2px);
+}
+
+html .shm-theme-modern .shm-segment.is-selected {
+  color: var(--shm-text-strong);
+  font-weight: 600;
+  background: var(--shm-segment);
+  box-shadow: var(--shm-segment-raise);
 }
 
 html .shm-theme-modern .shm-select,
@@ -734,6 +843,21 @@ html .shm-theme-modern .shm-input {
   background-color: var(--shm-fill);
   border: 0;
   border-radius: var(--shm-radius-control);
+}
+
+/* The filter lists inside their group: rows with separators instead of outlined cells. */
+html .shm-theme-modern .shm-filter-layout-title {
+  font-size: calc(12px * var(--shm-font-scale));
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+html .shm-theme-modern .shm-filter-layout-item {
+  background: transparent;
+  border-color: var(--shm-separator);
+  border-right: 0;
+  border-left: 0;
 }
 
 /* ---- Overlay: blurred backdrop, rounded sheet ---- */

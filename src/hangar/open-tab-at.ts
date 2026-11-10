@@ -1,3 +1,4 @@
+import { REVEAL_EVENT } from '@/settings/categories';
 import { hashOfTab, type ManagerTab } from './route';
 
 /*
@@ -23,7 +24,12 @@ export function openTabAt(
   let frames = 0;
   const find = () => {
     const element = document.getElementById(elementId);
-    if (element) {
+    // A setting in a category that isn't shown: its category comes first (src/settings/categories.ts).
+    const hidden = element?.closest<HTMLElement>('[data-shm-reveal]');
+    if (element && hidden?.style.display === 'none') {
+      hidden.dispatchEvent(new CustomEvent(REVEAL_EVENT));
+      if (++frames < MAX_FRAMES) requestAnimationFrame(find);
+    } else if (element) {
       settle(element);
       if (highlight) flash(element);
     } else if (++frames < MAX_FRAMES) requestAnimationFrame(find);

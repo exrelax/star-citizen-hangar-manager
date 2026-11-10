@@ -179,8 +179,8 @@ RSI's form for you to review and send yourself.
 
 ### Anonymization for content creators
 
-Sharing your hangar in a screenshot, a stream or a video? The settings group **Hide sensitive
-information (for screenshots or content creators)** keeps private details off screen:
+Sharing your hangar in a screenshot, a stream or a video? The settings categories **Privacy** and
+**Demo mode** keep private details off screen:
 
 - **Hide pledge and order IDs, name and address**: hides every pledge and order ID – also those
   of applied upgrades and in the order details – and blurs your name and billing address in the
@@ -190,7 +190,7 @@ information (for screenshots or content creators)** keeps private details off sc
   the amounts in the order details and the values in the exchange and gift dialogs.
 - **Hide refund period**: hides the refund countdown of purchases paid with money and the
   "Refund Request" button in the order details (off by default).
-- **Demo mode**: shows a hangar generated from the public catalog – the ships of RSI's upgrade
+- **Demo mode** (its own category): shows a hangar generated from the public catalog – the ships of RSI's upgrade
   tool and the items of the Pledge Store, or a small bundled catalog before they are read – instead
   of your own (#175): standalone ships, game packages, CCUs (also warbond), paints, gear, add-ons,
   packs and rewards, with plausible values and discounts, nothing of your hangar – neither the
@@ -758,12 +758,16 @@ it into store credit with the paints you already own:
 
 ## Settings
 
-In the order of the settings tab (#117): first how the manager looks and what it hides, then the
-lists, the sidebar and the notifications, then the Paint Discount Consultant, and last what is
-rarely needed. Settings that depend on a switch sit indented below it and look off while it is
-off.
+The settings tab (#117) lists its categories on the left, in four groups – General (Appearance,
+Privacy, Demo mode), Lists (My Hangar and Buy Back, Filters, Sidebar), Automation (Notifications,
+Paint Discount Consultant, Smart updates) and More (Experimental, Stored data, About) – and shows
+one category at a time on the right, as grouped rows like the system settings: a switch for each
+on/off setting, a segmented control for the theme, selects and number fields for the rest. A
+narrow window shows the categories as a row above. Settings that depend on a switch sit below it
+and look off while it is off. A link to a setting (from the sidebar) opens its category. In the
+order of the list:
 
-- **Language and appearance**:
+- **Appearance**:
   - **Language**: automatic, English, German, French or Spanish. The exchange and gift dialogs
     show RSI's own texts in RSI's English by default, as its wording counts; translating them too
     is an experimental option (see below).
@@ -776,8 +780,10 @@ off.
       gaps, separated by a 1 px border.
     - The exchange and gift dialogs look like RSI's own dialogs in "My Gear" by default (with the
       manager's summary and warnings); an option shows them in the selected theme instead.
-- **Hide sensitive information**: see [Anonymization for content creators](#anonymization-for-content-creators).
-- **Demo mode** (#178, only while the demo mode is on): where the demo hangar comes from – generated
+- **Privacy** (hide sensitive information): see [Anonymization for content creators](#anonymization-for-content-creators).
+- **Demo mode**: the switch of the demo mode (see
+  [Anonymization for content creators](#anonymization-for-content-creators)) and its own settings
+  (#178, dimmed while it is off): where the demo hangar comes from – generated
   (the default) or a selection of your own pledges –, how many pledges of each kind it has, how
   many the buy back has, which states show (refund countdown, protected game access, upgraded
   ships, a pledge bought a few hours ago, marks to melt in a new demo hangar) and how many pledges
@@ -804,7 +810,8 @@ off.
     control.
   - **Reset order** (only while the boxes aren't in their default order): puts the boxes back
     into their default order; which boxes are shown and which are collapsed stays as it is.
-  - **Count the pledges per type in the summary** (off by default): only for the "Summary" box;
+  - **Count the pledges per type in the summary** (off by default, right below the "Summary" box
+    and only while it is shown): only for the "Summary" box;
     the "Selected" box always counts the selected pledges per type.
 - **Notifications**:
   - **Browser notifications** (off by default, only for this browser): also while no RSI page is

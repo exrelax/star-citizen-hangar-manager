@@ -3,6 +3,7 @@ import { isDefaultSidebarOrder, SIDEBAR_BOXES, type SidebarBox } from '@/hangar/
 import { i18n, type MessageKey } from '@/i18n';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import SettingCheck from '../SettingCheck.vue';
+import SettingsGroup from '../SettingsGroup.vue';
 import type { Settings } from '../settings';
 
 /*
@@ -40,8 +41,7 @@ function setBox(box: SidebarBox, shown: boolean) {
 </script>
 
 <template>
-  <fieldset class="shm-setting">
-    <legend class="shm-label">{{ i18n.t('settings.sidebar') }}</legend>
+  <SettingsGroup>
     <SettingCheck
       :checked="settings.sidebar"
       :hint="i18n.t('settings.sidebarShowHint')"
@@ -49,30 +49,23 @@ function setBox(box: SidebarBox, shown: boolean) {
     >
       {{ i18n.t('settings.sidebarShow') }}
     </SettingCheck>
+  </SettingsGroup>
 
-    <!-- The boxes, below the switch they depend on. -->
-    <div
-      class="shm-setting-subgroup"
-      role="group"
-      :aria-label="i18n.t('settings.sidebarBoxes')"
-      :aria-disabled="!settings.sidebar"
-    >
-      <div class="shm-sidebar-boxes-head">
-        <p class="shm-field-label">{{ i18n.t('settings.sidebarBoxes') }}</p>
-        <button
-          v-if="!isDefaultSidebarOrder(settings.sidebarOrder)"
-          v-tooltip="i18n.t('settings.sidebarOrderResetHint')"
-          type="button"
-          class="shm-link-button"
-          :disabled="!settings.sidebar"
-          @click="resetOrder"
-        >
-          {{ i18n.t('settings.sidebarOrderReset') }}
-        </button>
-      </div>
+  <!-- The boxes, below the switch they depend on. -->
+  <SettingsGroup :title="i18n.t('settings.sidebarBoxes')" :disabled="!settings.sidebar">
+    <template v-if="!isDefaultSidebarOrder(settings.sidebarOrder)" #action>
+      <button
+        v-tooltip="i18n.t('settings.sidebarOrderResetHint')"
+        type="button"
+        class="shm-link-button"
+        :disabled="!settings.sidebar"
+        @click="resetOrder"
+      >
+        {{ i18n.t('settings.sidebarOrderReset') }}
+      </button>
+    </template>
+    <template v-for="box in SIDEBAR_BOXES" :key="box">
       <SettingCheck
-        v-for="box in SIDEBAR_BOXES"
-        :key="box"
         :checked="!settings.sidebarHidden.includes(box)"
         :disabled="!settings.sidebar"
         :hint="hint(box)"
@@ -80,52 +73,17 @@ function setBox(box: SidebarBox, shown: boolean) {
       >
         {{ i18n.t(LABELS[box]) }}
       </SettingCheck>
+      <!-- Only for the "Summary" box: right below it. -->
       <SettingCheck
-        class="is-spaced"
+        v-if="box === 'summary'"
+        indented
         :checked="settings.summaryTypes"
-        :disabled="!settings.sidebar"
+        :disabled="!settings.sidebar || settings.sidebarHidden.includes('summary')"
         :hint="i18n.t('settings.summaryTypesHint')"
         @change="(summaryTypes) => emit('update', { summaryTypes })"
       >
         {{ i18n.t('settings.summaryTypes') }}
       </SettingCheck>
-    </div>
-  </fieldset>
+    </template>
+  </SettingsGroup>
 </template>
-
-<style scoped>
-/* The label of the boxes, with the reset of their order at the right edge. */
-.shm-sidebar-boxes-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.shm-settings .shm-sidebar-boxes-head .shm-field-label {
-  margin: 0 0 6px;
-}
-
-/* As the reset of the filter layout (FilterLayoutSetting.vue). */
-.shm-link-button {
-  padding: 0;
-  color: var(--shm-accent);
-  font: inherit;
-  font-size: calc(12px * var(--shm-font-scale));
-  background: none;
-  border: 0;
-  cursor: pointer;
-}
-
-.shm-link-button:hover:not(:disabled),
-.shm-link-button:focus-visible {
-  text-decoration: underline;
-  outline: none;
-}
-
-.shm-link-button:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-</style>

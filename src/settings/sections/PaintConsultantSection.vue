@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { i18n } from '@/i18n';
 import SettingCheck from '../SettingCheck.vue';
+import SettingRow from '../SettingRow.vue';
+import SettingsGroup from '../SettingsGroup.vue';
 import {
   CONSULTANT_LAYOUTS,
   REBOUGHT_DETECTIONS,
@@ -27,8 +29,7 @@ function set<K extends keyof Settings['paintConsultant']>(
 </script>
 
 <template>
-  <fieldset class="shm-setting">
-    <legend class="shm-label">{{ i18n.t('settings.paintConsultant') }}</legend>
+  <SettingsGroup>
     <SettingCheck
       :checked="settings.paintConsultant.useStoreCredit"
       :hint="i18n.t('settings.paintConsultantStoreCreditHint')"
@@ -50,37 +51,42 @@ function set<K extends keyof Settings['paintConsultant']>(
     >
       {{ i18n.t('settings.paintConsultantGiftable') }}
     </SettingCheck>
+  </SettingsGroup>
 
-    <label class="shm-field-label" for="shm-rebought-detection">
-      {{ i18n.t('settings.reboughtDetection') }}
-    </label>
-    <select
-      id="shm-rebought-detection"
-      class="shm-select"
-      :value="settings.paintConsultant.reboughtDetection"
-      @change="
-        set('reboughtDetection', ($event.target as HTMLSelectElement).value as ReboughtDetection)
-      "
+  <SettingsGroup>
+    <SettingRow
+      :label="i18n.t('settings.reboughtDetection')"
+      :hint="i18n.t('settings.reboughtDetectionHint')"
+      for="shm-rebought-detection"
     >
-      <option v-for="mode in REBOUGHT_DETECTIONS" :key="mode" :value="mode">
-        {{ i18n.t(`settings.reboughtDetectionOptions.${mode}`) }}
-      </option>
-    </select>
-    <p class="shm-hint">{{ i18n.t('settings.reboughtDetectionHint') }}</p>
-
-    <label class="shm-field-label" for="shm-consultant-layout">
-      {{ i18n.t('settings.consultantLayout') }}
-    </label>
-    <select
-      id="shm-consultant-layout"
-      class="shm-select"
-      :value="settings.paintConsultant.layout"
-      @change="set('layout', ($event.target as HTMLSelectElement).value as ConsultantLayout)"
+      <select
+        id="shm-rebought-detection"
+        class="shm-select"
+        :value="settings.paintConsultant.reboughtDetection"
+        @change="
+          set('reboughtDetection', ($event.target as HTMLSelectElement).value as ReboughtDetection)
+        "
+      >
+        <option v-for="mode in REBOUGHT_DETECTIONS" :key="mode" :value="mode">
+          {{ i18n.t(`settings.reboughtDetectionOptions.${mode}`) }}
+        </option>
+      </select>
+    </SettingRow>
+    <SettingRow
+      :label="i18n.t('settings.consultantLayout')"
+      :hint="i18n.t('settings.consultantLayoutHint')"
+      for="shm-consultant-layout"
     >
-      <option v-for="layout in CONSULTANT_LAYOUTS" :key="layout" :value="layout">
-        {{ i18n.t(`settings.consultantLayoutOptions.${layout}`) }}
-      </option>
-    </select>
-    <p class="shm-hint">{{ i18n.t('settings.consultantLayoutHint') }}</p>
-  </fieldset>
+      <select
+        id="shm-consultant-layout"
+        class="shm-select"
+        :value="settings.paintConsultant.layout"
+        @change="set('layout', ($event.target as HTMLSelectElement).value as ConsultantLayout)"
+      >
+        <option v-for="layout in CONSULTANT_LAYOUTS" :key="layout" :value="layout">
+          {{ i18n.t(`settings.consultantLayoutOptions.${layout}`) }}
+        </option>
+      </select>
+    </SettingRow>
+  </SettingsGroup>
 </template>

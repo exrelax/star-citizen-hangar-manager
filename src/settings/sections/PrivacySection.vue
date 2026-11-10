@@ -2,15 +2,19 @@
 import { REFUND_DAYS } from '@/config';
 import { i18n } from '@/i18n';
 import SettingCheck from '../SettingCheck.vue';
+import SettingsGroup from '../SettingsGroup.vue';
+import { currentCategory } from '../categories';
 import type { Settings } from '../settings';
+
+/** What to hide for screenshots, streams and videos; a whole made-up hangar is the demo mode. */
 
 defineProps<{ settings: Settings }>();
 const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
 </script>
 
 <template>
-  <fieldset class="shm-setting">
-    <legend class="shm-label">{{ i18n.t('settings.privacy') }}</legend>
+  <p class="shm-settings-intro">{{ i18n.t('settings.privacy') }}</p>
+  <SettingsGroup>
     <SettingCheck
       :checked="settings.hideMeltValue"
       :hint="i18n.t('settings.hideMeltValueHint')"
@@ -32,14 +36,13 @@ const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
     >
       {{ i18n.t('settings.hideRefund') }}
     </SettingCheck>
-    <!-- Not just hiding: a whole made-up hangar instead (#129), set apart from the rest. -->
-    <SettingCheck
-      class="is-spaced"
-      :checked="settings.demoMode"
-      :hint="i18n.t('settings.demoModeHint')"
-      @change="(demoMode) => emit('update', { demoMode })"
-    >
-      {{ i18n.t('settings.demoMode') }}
-    </SettingCheck>
-  </fieldset>
+    <template #after>
+      <p class="shm-settings-group-foot">
+        {{ i18n.t('settings.privacyDemo') }}
+        <button type="button" class="shm-link-button" @click="currentCategory = 'demo'">
+          {{ i18n.t('settings.demo.title') }}
+        </button>
+      </p>
+    </template>
+  </SettingsGroup>
 </template>

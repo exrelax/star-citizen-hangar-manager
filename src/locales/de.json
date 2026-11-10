@@ -123,7 +123,15 @@
     "settings": "Einstellungen"
   },
   "settings": {
-    "appearance": "Sprache und Darstellung",
+    "appearance": "Darstellung",
+    "categoriesLabel": "Kategorien der Settings",
+    "categoryGroups": {
+      "general": "Allgemein",
+      "lists": "Listen",
+      "automation": "Automatisierung",
+      "more": "Mehr"
+    },
+    "layout": "Layout",
     "language": "Sprache",
     "languageAuto": "Automatisch ($1)",
     "languageHint": "Automatisch nutzt die Browsersprache, sofern die Extension in diese übersetzt ist, sonst Englisch.",
@@ -137,6 +145,7 @@
     "hideMeltValueHint": "Blendet alle $$-Beträge aus: Pledge-Werte, Rabatte, die Kosten angewendeter Upgrades, die Beträge der Bestellungen und die Werte in den Dialogen zum Eintauschen und Verschenken.",
     "lists": "My Hangar und Buy Back",
     "smartUpdates": "Intelligente Updates",
+    "smartUpdateSchedule": "Zeitplan",
     "smartUpdatesHint": "Prüft das Pledge-Log, die neuesten Bestellungen und einige Seiten von Hangar und Buy Back auf Änderungen und aktualisiert die Listen ohne vollständigen Abgleich: regelmäßig, solange der Hangar Manager in einem sichtbaren Tab offen ist (im Intervall unten, länger, solange nichts passiert), wenn er geöffnet oder wieder angezeigt wird, wenn „My Gear“ oder „Buy Back Pledges“ geöffnet wird, und direkt nach deinem eigenen Exchange, Gift oder Upgrade dort.",
     "smartUpdatesLists": "Hangar, Buy Back und Bestellungen auf Änderungen prüfen",
     "smartUpdateInterval": "Auf Änderungen prüfen: alle",
@@ -161,6 +170,8 @@
     "priceIncreaseDaysUnit": "Tagen",
     "priceIncreaseDaysHint": "Der Buy-Back-Filter „Preiserhöhung erwartet“ und seine Benachrichtigung zählen erwartete Preiserhöhungen innerhalb so vieler Tage.",
     "privacy": "Sensible Informationen ausblenden (für Screenshots oder Content Creator)",
+    "privacyTitle": "Privatsphäre",
+    "privacyDemo": "Ein ganzer erfundener Hangar statt deines eigenen:",
     "hidePledgeIds": "Pledge- und Order-IDs, Name und Anschrift ausblenden",
     "hidePledgeIdsHint": "Blendet die Pledge-IDs aller Items aus, auch die angewendeter Upgrades, und die Order-IDs. Dein Name und deine Rechnungsanschrift in den Order-Details werden unkenntlich gemacht. Die Suche nach IDs funktioniert weiterhin.",
     "hideRefund": "Refund-Frist ausblenden",
@@ -217,6 +228,7 @@
     "notificationKindPriceIncreasesHint": "Buy-Back-Items, deren Preis voraussichtlich innerhalb des unter „Allgemein“ eingestellten Zeitraums steigt, in der Sidebar; im Browser, sobald weniger als 2 Tage bleiben.",
     "sidebarNotifications": "Sidebar",
     "restoreNotifications": "Abgehakte Benachrichtigungen wieder anzeigen",
+    "restoreNotificationsButton": "Wieder anzeigen",
     "restoreNotificationsHint": "Holt die Sidebar-Benachrichtigungen zurück, die du abgehakt oder weggeklickt hast, soweit sie noch zutreffen: Events, die noch angezeigt werden, neue Warbond-CCUs, die noch angeboten werden, Pledge-Store-Artikel, die noch ihren neuen Preis haben, Paints, die sich noch mit mehr Rabatt neu kaufen lassen, und der Hinweis auf Browser-Benachrichtigungen, solange sie aus sind. Abgeschaltete Arten bleiben verborgen. Die Paint-Benachrichtigung kommt in all deinen Browsern zurück, da weggeklickte Paints synchronisiert werden.",
     "restoreNotificationsDone": "$1 wieder angezeigt.",
     "restoreNotificationsNone": "Keine abgehakte Benachrichtigung trifft noch zu.",
@@ -250,10 +262,12 @@
     },
     "reset": "Zurücksetzen",
     "clearCache": "Alle lokalen Daten löschen",
+    "clearCacheButton": "Löschen",
     "clearCacheHint": "Löscht alles unter „Gespeicherte Daten“, also die ganze Kopie, die die Extension in diesem Browser speichert. Am Hangar auf der RSI-Website ändert sich nichts; die nächste Aktualisierung liest alles neu ein.",
     "clearCacheConfirm": "Alle von der Extension in diesem Browser gespeicherten Daten löschen?\n\nDein Hangar auf der RSI-Website bleibt unverändert.",
     "clearCacheDone": "Gelöscht. „$1“ in „My Hangar“ liest Hangar, Buy Back und Bestellungen neu ein.",
     "resetSettings": "Settings zurücksetzen",
+    "resetSettingsButton": "Zurücksetzen",
     "resetSettingsHint": "Setzt alle Einstellungen auf die Standardwerte zurück, auch auf allen Geräten, mit denen sie synchronisiert werden. Der gespeicherte Hangar bleibt erhalten.",
     "resetSettingsConfirm": "Alle Einstellungen auf die Standardwerte zurücksetzen?",
     "resetSettingsDone": "Die Einstellungen sind wieder auf den Standardwerten.",
@@ -320,8 +334,11 @@
         "separate": "Ein Pledge pro Spiel: SC und SQ42",
         "together": "Ein Pledge für beide Spiele: SC · SQ42",
         "off": "Keiner"
-      }
-    }
+      },
+      "hangar": "Hangar",
+      "resetHint": "Alle Einstellungen der Demo zurück auf ihre Standardwerte; die Markierungen der Demo werden gelöscht."
+    },
+    "on": "An"
   },
   "storage": {
     "title": "Gespeicherte Daten",
