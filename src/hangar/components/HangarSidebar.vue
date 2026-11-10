@@ -547,10 +547,9 @@ async function move(box: Box, step: -1 | 1) {
               <div class="shm-sidebar-actions">
                 <button
                   v-if="settings.bulkMelting"
-                  v-tooltip="demo ? i18n.t('exchange.demo') : i18n.t('consultant.fillers.meltHint')"
+                  v-tooltip="i18n.t('consultant.fillers.meltHint')"
                   type="button"
                   class="shm-button is-danger shm-sidebar-button is-full"
-                  :disabled="!!demo"
                   @click="meltingFillers = true"
                 >
                   <SvgIcon name="triangle-exclamation" />
@@ -764,13 +763,12 @@ async function move(box: Box, step: -1 | 1) {
             {{ i18n.t('summary.hidden', [hiddenSelected]) }}
           </p>
           <div v-if="meltable.length" class="shm-sidebar-actions">
-            <!-- Disabled in the demo: its pledge ids are made up. -->
+            <!-- Opens the dialog in the demo too; there its melt button is disabled. -->
             <button
               v-if="settings.bulkMelting"
-              v-tooltip="demo ? i18n.t('exchange.demo') : i18n.t('bulkExchange.buttonHint')"
+              v-tooltip="i18n.t('bulkExchange.buttonHint')"
               type="button"
               class="shm-button is-danger shm-sidebar-button is-full"
-              :disabled="!!demo"
               @click="bulkExchanging = true"
             >
               <SvgIcon name="triangle-exclamation" />

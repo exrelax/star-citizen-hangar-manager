@@ -83,7 +83,11 @@ const invisibleDemo = computed(() =>
   isInvisibleDemo(invisibleUntil.value, demo.value, clock.value),
 );
 const managerContainer = inject(MANAGER_CONTAINER, undefined);
-watchEffect(() => managerContainer?.classList.toggle('shm-demo-invisible', invisibleDemo.value));
+watchEffect(() => {
+  managerContainer?.classList.toggle('shm-demo-invisible', invisibleDemo.value);
+  // Also for the dialogs, which are teleported to the page's body.
+  document.body.classList.toggle('shm-demo-invisible', invisibleDemo.value);
+});
 const demoView = useDemo(demo, hangar.pledges, buyback.pledges, () => settings.value.demo);
 /**
  * The lists wait for the settings: until they are read the demo mode counts as off, and the real

@@ -213,7 +213,8 @@ information (for screenshots or content creators)** keeps private details off sc
   warbond CCUs, changed items, #131); checking them off in the demo changes nothing real. The
   Paint Discount Consultant has a kept plan of its own (#131), never the account's: a paint bought
   again with its old pledge left to melt, paints melted first and left to buy again, and its
-  filler paints marked to melt – one waiting, one ready, with the sidebar's button disabled. The
+  filler paints marked to melt – one waiting, one ready. Bulk melting opens its dialog in the demo
+  too, with the made-up ids; only its melt button is disabled. The
   settings show no account data meanwhile (#132): "Stored data" shows the demo's numbers of the
   account's data (My Hangar, buy back, orders, store credit, paint plan, events, price increases)
   with made-up sizes and times, and their buttons to read again and delete are disabled, so

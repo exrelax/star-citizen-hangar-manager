@@ -16,6 +16,7 @@ import {
   type ExchangeWarning,
 } from '../exchange';
 import { pledgeKind } from '../pledge-kind';
+import { useDemoContext } from '@/demo/use-demo';
 import type { PledgeView } from '../pledge-view';
 import { useRsiText } from '../rsi-text';
 import { summarize } from '../summary';
@@ -54,7 +55,9 @@ const dialog = useTemplateRef<HTMLElement>('dialog');
 
 const hideValue = computed(() => settings.value.hideMeltValue);
 const money = (amount: number) => (hideValue.value ? HIDDEN : formatUsd(amount, locale.value));
-const pledgeId = (pledge: PledgeView) => (settings.value.hidePledgeIds ? HIDDEN : pledge.id);
+/** The id as the row shows it: in the demo its made-up one. */
+const pledgeId = (pledge: PledgeView) =>
+  settings.value.hidePledgeIds ? HIDDEN : (pledge.displayId ?? pledge.id);
 
 const total = computed(() => summarize(props.pledges));
 /** The pledges per type, always shown (unlike the sidebar, where it is a setting). */
@@ -155,7 +158,11 @@ const ready = computed(
     !submitting.value,
 );
 
+/** The demo shows the dialog, but melts nothing: its pledge ids are made up. */
+const demo = useDemoContext();
+
 async function submit() {
+  if (demo.value) return;
   if (!ready.value) {
     error.value = i18n.t('exchange.missing');
     return;
@@ -412,7 +419,12 @@ onUnmounted(() => {
             <button type="button" class="shm-button" :disabled="submitting" @click="close">
               {{ i18n.t('exchange.cancel') }}
             </button>
-            <button type="submit" class="shm-button is-danger shm-action-submit" :disabled="!ready">
+            <button
+              v-tooltip="demo ? i18n.t('exchange.demo') : undefined"
+              type="submit"
+              class="shm-button is-danger shm-action-submit"
+              :disabled="!ready || !!demo"
+            >
               {{
                 submitting
                   ? i18n.t('bulkExchange.submitting', [exchanged.length + 1, pledges.length])
