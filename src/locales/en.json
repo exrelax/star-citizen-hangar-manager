@@ -876,7 +876,7 @@
     "days": "$1 days",
     "day": "1 day",
     "hours": "$1 h $2 min",
-    "minutes": "$1 min",
+    "fullHours": "$1 h",
     "today": "today",
     "hint": "The price of $1 is expected to rise on $2.",
     "hintBuyback": "Buy it back or use it as a discount token before then.",

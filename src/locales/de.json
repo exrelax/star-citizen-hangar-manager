@@ -876,7 +876,7 @@
     "days": "$1 Tage",
     "day": "1 Tag",
     "hours": "$1 Std. $2 Min.",
-    "minutes": "$1 Min.",
+    "fullHours": "$1 Std.",
     "today": "heute",
     "hint": "Der Preis der $1 steigt voraussichtlich am $2.",
     "hintBuyback": "Kauf das Item vorher zurück oder nutze es vorher als Rabatt-Token.",

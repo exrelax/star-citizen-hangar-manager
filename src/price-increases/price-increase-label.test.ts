@@ -20,10 +20,21 @@ describe('priceIncreaseLabel', () => {
     expect(text(match(), AT - 3 * DAY - 5 * HOUR)).toBe('Price increase: 3 days');
     expect(text(match(), AT - DAY)).toBe('Price increase: 1 day');
     expect(text(match(), AT - 5 * HOUR - 20 * MINUTE)).toBe('Price increase: 5 h 20 min');
-    expect(text(match(), AT - 59 * MINUTE - 30_000)).toBe('Price increase: 1 h 0 min');
-    expect(text(match(), AT - 42 * MINUTE)).toBe('Price increase: 42 min');
-    expect(text(match(), AT - 10_000)).toBe('Price increase: 1 min');
     expect(text(match(), AT - 2 * DAY, 'de')).toBe('Preiserhöhung: 2 Tage');
+  });
+
+  it('leaves out zero minutes', () => {
+    expect(text(match(), AT - 3 * HOUR)).toBe('Price increase: 3 h');
+    expect(text(match(), AT - 3 * HOUR - 30_000, 'de')).toBe('Preiserhöhung: 3 Std.');
+    expect(text(match(), AT - 3 * HOUR + 1000)).toBe('Price increase: 2 h 59 min');
+  });
+
+  it('counts the last hour down in minutes and seconds', () => {
+    expect(text(match(), AT - HOUR)).toBe('Price increase: 1 h');
+    expect(text(match(), AT - HOUR + 1000)).toBe('Price increase: 59:59');
+    expect(text(match(), AT - 46 * MINUTE - 12_000)).toBe('Price increase: 46:12');
+    expect(text(match(), AT - 46 * MINUTE - 11_500)).toBe('Price increase: 46:11');
+    expect(text(match(), AT - 9_000, 'de')).toBe('Preiserhöhung: 00:09');
   });
 
   it('shows only the day without a probable time, "today" on it', () => {

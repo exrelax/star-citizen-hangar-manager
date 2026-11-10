@@ -9,7 +9,8 @@ import { endOf, type ExpectedTime } from './price-increases';
  * as a discount token before –, in My Hangar an information – melting it before means buying it
  * back at the higher price. Every text says the dates are expected.
  *
- * The countdown: with a probable time the days left, on the last day the hours and minutes; with
+ * The countdown: with a probable time the days left, on the last day the hours and minutes
+ * ("3 h 20 min", "3 h" on the full hour) and in the last hour minutes and seconds ("46:12"); with
  * only the day the day itself, "today" on it.
  */
 
@@ -49,13 +50,19 @@ function countdown(time: ExpectedTime, now: number, locale: Locale): string {
     return translate(locale, days === 1 ? 'priceIncrease.day' : 'priceIncrease.days', [days]);
   }
   const hours = Math.floor(left / HOUR);
-  // Rounded up: "1 min" until the time is reached.
-  const minutes = Math.ceil((left - hours * HOUR) / MINUTE);
-  if (minutes === 60) return translate(locale, 'priceIncrease.hours', [hours + 1, 0]);
-  return hours
-    ? translate(locale, 'priceIncrease.hours', [hours, minutes])
-    : translate(locale, 'priceIncrease.minutes', [Math.max(1, minutes)]);
+  const minutes = Math.floor((left - hours * HOUR) / MINUTE);
+  if (hours) {
+    return minutes
+      ? translate(locale, 'priceIncrease.hours', [hours, minutes])
+      : translate(locale, 'priceIncrease.fullHours', [hours]);
+  }
+  // The last hour: a running countdown, e.g. "46:12".
+  const seconds = Math.floor((left % MINUTE) / 1000);
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
+
+/** Less than this left: the countdown shows seconds, so it is updated every second. */
+export const SECONDS_COUNTDOWN_MS = HOUR;
 
 /** The label of an item with an expected price increase; none once it is over. */
 export function priceIncreaseLabel(
