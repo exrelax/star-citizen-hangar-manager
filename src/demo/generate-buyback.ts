@@ -171,7 +171,65 @@ export function generateBuyback(
     const placedAt = meltDate(random, `bought:${pledge.id}`, pledge.reclaimedAt!);
     buybackOrder(orders, pledge.id, placedAt, price || random.int(`paid:${pledge.id}`, 5, 60));
   }
-  return { pledges, orders, giftFlags: {}, tokens: random.int('tokens', 1, 5) };
+  const giftFlags = withGiftableCases(pledges, orders);
+  return { pledges, orders, giftFlags, tokens: random.int('tokens', 1, 5) };
+}
+
+/**
+ * Every case of "probably giftable" (#205), on the newest melted pledges that have a price, each
+ * from made-up orders: money only before the cutoff (also a buy back paid with money), store
+ * credit only, money and store credit, money on or after the cutoff, no known order, RSI's gift
+ * flag remembered (giftable and not, overruling the order), and two pledges of one order.
+ */
+function withGiftableCases(
+  pledges: readonly BuybackPledge[],
+  orders: DemoBuyback['orders'],
+): Record<string, boolean> {
+  const cases = pledges.filter(
+    (pledge) => !pledge.title.startsWith('Referral') && pledge.price !== null,
+  );
+  const [
+    money,
+    buyback,
+    credit,
+    mixed,
+    late,
+    unknown,
+    flaggedYes,
+    flaggedNo,
+    sameOrderA,
+    sameOrderB,
+  ] = cases;
+  const before = '2026-09-14';
+  const after = '2026-11-02';
+  const giftFlags: Record<string, boolean> = {};
+  const set = (pledge: BuybackPledge | undefined, apply: (id: number) => void) => {
+    if (!pledge) return;
+    delete orders.pledgeOrders[pledge.id];
+    apply(pledge.id);
+  };
+  set(money, (id) => buybackOrder(orders, id, before, 40));
+  set(buyback, (id) => {
+    buybackOrder(orders, id, '2025-06-20', 25);
+    orders.pledgeOrders[id]!.buyback = true;
+  });
+  set(credit, (id) => buybackOrder(orders, id, before, 0, 30));
+  set(mixed, (id) => buybackOrder(orders, id, before, 20, 10));
+  set(late, (id) => buybackOrder(orders, id, after, 35));
+  set(unknown, () => undefined);
+  set(flaggedYes, (id) => {
+    buybackOrder(orders, id, after, 0, 15);
+    giftFlags[id] = true;
+  });
+  set(flaggedNo, (id) => {
+    buybackOrder(orders, id, before, 45);
+    giftFlags[id] = false;
+  });
+  set(sameOrderA, (id) => buybackOrder(orders, id, before, 60));
+  set(sameOrderB, (id) => {
+    orders.pledgeOrders[id] = { ...orders.pledgeOrders[sameOrderA!.id]! };
+  });
+  return giftFlags;
 }
 
 /** A money-paid order of a buy back pledge, placed on `placedAt`. */

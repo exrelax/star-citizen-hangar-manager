@@ -197,7 +197,10 @@ information (for screenshots or content creators)** keeps private details off sc
   items nor their number nor the value. It stays the same on every visit. The buy back is
   generated the same way (#177): melted ships, game packages, CCUs, paints, gear, add-ons and
   rewards, some bought with money, with buy back prices of every source and an item without a
-  price, and made-up buy back tokens. The hangar's pledges have every
+  price, and made-up buy back tokens. Its orders and remembered gift flags show every case of
+  "probably giftable" (#205): money only before 2026-10-30 (also a buy back paid with money),
+  store credit only, both, money after the date, no known order, a gift flag overruling the order,
+  and two pledges of one order. The hangar's pledges have every
   state (#176): meltable or not, giftable or not, LTI and insurances in years and months (also
   several at once), upgraded ships with made-up "Applied upgrades", protected game access (`SC`,
   `SQ42`, `SC · SQ42`, also a reward without a ship), and orders paid with money, in part with

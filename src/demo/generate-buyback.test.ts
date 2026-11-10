@@ -42,3 +42,44 @@ describe.each(['key-a', 'key-b', 'key-c'])('the generated buy back of %s', (key)
     }
   });
 });
+
+describe.each(['key-a', 'key-b'])(
+  '"probably giftable" in the generated buy back of %s (#205)',
+  (key) => {
+    const { buyback, generatedBuyback } = generatedDemo(FALLBACK_CATALOG, key, TODAY, NOW);
+    const { orders, pledgeOrders } = generatedBuyback.orders;
+    const giftable = (id: number) => buyback.find((pledge) => pledge.id === id)!.isProbablyGiftable;
+    const cases = generatedBuyback.pledges.filter(
+      (pledge) => !pledge.title.startsWith('Referral') && pledge.price !== null,
+    );
+    const [money, back, credit, mixed, late, unknown, yes, no, sameA, sameB] = cases.map(
+      (pledge) => pledge.id,
+    ) as number[];
+
+    it('marks money only before the cutoff, also a buy back paid with money', () => {
+      expect(giftable(money!)).toBe(true);
+      expect(pledgeOrders[back!]!.buyback).toBe(true);
+      expect(giftable(back!)).toBe(true);
+    });
+
+    it('doesn’t mark store credit, money and store credit, a late order or no order', () => {
+      expect(giftable(credit!)).toBe(false);
+      expect(giftable(mixed!)).toBe(false);
+      expect(orders[pledgeOrders[late!]!.orderId]!.placedAt! >= '2026-10-30').toBe(true);
+      expect(giftable(late!)).toBe(false);
+      expect(pledgeOrders[unknown!]).toBeUndefined();
+      expect(giftable(unknown!)).toBe(false);
+    });
+
+    it('follows the remembered gift flag over the order', () => {
+      expect(giftable(yes!)).toBe(true);
+      expect(giftable(no!)).toBe(false);
+    });
+
+    it('answers the same for two pledges of one order', () => {
+      expect(pledgeOrders[sameA!]!.orderId).toBe(pledgeOrders[sameB!]!.orderId);
+      expect(giftable(sameA!)).toBe(giftable(sameB!));
+      expect(giftable(sameA!)).toBe(true);
+    });
+  },
+);
