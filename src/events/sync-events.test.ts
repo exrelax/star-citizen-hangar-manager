@@ -103,6 +103,10 @@ describe('maybeRefreshEvents with events of an earlier format', () => {
   });
 });
 
+/** The day of `at` as the German notification shows it: on the local clock, like the extension. */
+const germanDay = (at: number) =>
+  new Date(at).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
 describe('event notifications', () => {
   beforeEach(() => fakeBrowser.reset());
 
@@ -111,7 +115,7 @@ describe('event notifications', () => {
     const [note] = await notificationsItem.getValue();
     const de = noteText(note!, 'de');
     expect(de).toContain('IAE 2956 (de) beginnt am');
-    expect(de).toContain('13.11.2026');
+    expect(de).toContain(germanDay(iae.eventStart));
     expect(noteText(note!, 'en')).toContain('IAE 2956 starts on');
   });
 
@@ -138,7 +142,7 @@ describe('event notifications in step with the events', () => {
     const moved = { ...iae, eventStart: Date.parse('2026-11-14T16:00:00Z') };
     await read([moved], NOW + HOUR);
     const [note] = await openNotes();
-    expect(noteText(note!, 'de')).toContain('14.11.2026');
+    expect(noteText(note!, 'de')).toContain(germanDay(moved.eventStart));
   });
 
   it('say the event runs once it started', async () => {
