@@ -8,7 +8,16 @@ import {
   READ_PLEDGE_STORE_IN_BACKGROUND,
   type BackgroundReadResult,
 } from '@/store/background-schedule';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { DEMO } from '@/config';
+import {
+  invisibleDemoUntilItem,
+  startInvisibleDemo,
+  stopInvisibleDemo,
+} from '@/demo/invisible-demo';
+import { useSettings } from '@/settings/use-settings';
+import { useStored } from '@/storage/use-stored';
+import { useNow } from '@/shared/use-now';
 
 /*
  * Tools for developing the extension: development builds only, and not on the styleguide itself
@@ -16,6 +25,24 @@ import { ref } from 'vue';
  */
 const shown = import.meta.env.DEV && !location.pathname.endsWith('/styleguide.html');
 const openStyleguide = () => void browser.runtime.sendMessage(OPEN_STYLEGUIDE);
+
+/**
+ * The invisible demo mode for screenshots (#133): turns the demo mode on without its badge and
+ * disabled look, for `DEMO.invisibleMinutes`; then the normal demo mode is back.
+ */
+const { update } = useSettings();
+const invisibleUntil = useStored(invisibleDemoUntilItem);
+const clock = useNow();
+const invisibleLeft = computed(() => {
+  const until = invisibleUntil.value;
+  // The page's clock lags up to half a minute: rounded, at least one minute while it lasts.
+  return until && until > clock.value ? Math.max(1, Math.round((until - clock.value) / 60_000)) : 0;
+});
+async function toggleInvisibleDemo() {
+  if (invisibleLeft.value) return stopInvisibleDemo();
+  update({ demoMode: true });
+  await startInvisibleDemo();
+}
 
 /** A test read of the Pledge Store by the background script (#163), nothing stored. */
 const backgroundRead = ref<BackgroundReadResult | 'reading'>();
@@ -89,6 +116,22 @@ async function addSampleStoreNotes() {
         <p class="shm-hint">
           New and gone warbond CCUs (also as a browser notification, if allowed) and changed store
           items, in the sidebar's notifications.
+        </p>
+      </li>
+      <li>
+        <a class="shm-link" href="#" @click.prevent="toggleInvisibleDemo">
+          <SvgIcon name="lock-open" />
+          {{
+            invisibleLeft
+              ? `Invisible demo mode: ${invisibleLeft} min left – end now`
+              : 'Invisible demo mode'
+          }}
+        </a>
+        <p class="shm-hint">
+          The demo mode without its badge and with every button looking enabled, for screenshots ({{
+            DEMO.invisibleMinutes
+          }}
+          minutes, then the normal demo mode is back).
         </p>
       </li>
       <li>

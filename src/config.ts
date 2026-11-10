@@ -339,6 +339,8 @@ export const DEMO = {
     packs: 3,
     rewards: 5,
   },
+  /** Minutes the invisible demo mode for screenshots lasts (#133, development builds only). */
+  invisibleMinutes: 10,
   /** How many pledges of each kind the generated buy back has (#177). */
   buybackComposition: {
     ships: 5,

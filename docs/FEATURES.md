@@ -217,7 +217,11 @@ information (for screenshots or content creators)** keeps private details off sc
   account's data (My Hangar, buy back, orders, store credit, paint plan, events, price increases)
   with made-up sizes and times, and their buttons to read again and delete are disabled, so
   nothing real changes; the public data (ships, Pledge Store items) shows as it is. The spot
-  checks count the demo hangar's pages, and "Show checked-off notifications again" is off. The hangar's pledges have every
+  checks count the demo hangar's pages, and "Show checked-off notifications again" is off.
+  Development builds also offer an **invisible demo mode** for screenshots (#133, in the
+  Development section): the same demo without its badge and with every button looking enabled
+  (clicks still do nothing); it ends on its own after 10 minutes, also across reloads, and the
+  normal demo mode with its badge is back. The hangar's pledges have every
   state (#176): meltable or not, giftable or not, LTI and insurances in years and months (also
   several at once), upgraded ships with made-up "Applied upgrades", protected game access (`SC`,
   `SQ42`, `SC · SQ42`, also a reward without a ship), and orders paid with money, in part with
