@@ -74,12 +74,18 @@ export function maybeRefreshEvents({
     const outdated = !!stored && !current;
     if (outdated) await eventsItem.removeValue();
     let events = current?.events ?? [];
+    // Whether `events` are the file's: without, open notifications are not checked off.
+    let known = !!current;
     // Without stored events too only when due: a missing file is tried again after an hour, not on
     // every check. Deleting them in the settings deletes their metadata, so they are read again.
     if (force || outdated || eventsDue(meta, now())) {
-      events = (await readEvents(fetch, now, current ? meta : undefined)) ?? events;
+      const read = await readEvents(fetch, now, current ? meta : undefined);
+      if (read) {
+        events = read;
+        known = true;
+      }
     }
-    await noteShownEvents(events, now());
+    await noteShownEvents(events, now(), { known });
   })().finally(() => (running = undefined));
   return running;
 }

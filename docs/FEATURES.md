@@ -521,7 +521,8 @@ image if given, and a live countdown to its start (with the first phase, e.g. "s
 05:20:26 with RSI"). While it runs, it shows its current phase (e.g.
 the manufacturer of the day), a countdown to the next one (the next manufacturer, "Best in Show",
 the finale) and one to its end. Once its notice starts, the sidebar tells it once (the kind
-"Events" in the settings).
+"Events" in the settings); the notification follows changes of the file, e.g. a moved date, and
+goes away on its own once the event is over.
 
 The **Pledge Store** tab lists the warbond CCUs RSI currently offers – read from RSI's own ship
 upgrade tool and stored in the browser, so the tab shows them at once. CIG changes the Pledge Store
