@@ -981,10 +981,11 @@ async function move(box: Box, step: -1 | 1) {
 
 /*
  * Space below the title like the other boxes' figures (10 px), a little more for the frames, so the
- * first notification doesn't sit right under it.
+ * first notification doesn't sit right under it. The list's margins need the weight of an ID
+ * (`:not(#shm-none)`): RSI's `#billing .content ul { margin: 0 }` resets every list on the page.
  */
 .shm-sidebar-box-content > .shm-sidebar-melt-ready:first-child,
-.shm-sidebar-box-content > .shm-sidebar-notes:first-child {
+.shm-sidebar-box-content > .shm-sidebar-notes:first-child:not(#shm-none) {
   margin-top: 12px;
 }
 
@@ -1023,8 +1024,9 @@ async function move(box: Box, step: -1 | 1) {
   grid-column: 2;
 }
 
+/* Between the notifications as within their list (`gap`); for the list, see the title's space. */
 .shm-sidebar-melt-ready + .shm-sidebar-melt-ready,
-.shm-sidebar-melt-ready + .shm-sidebar-notes {
+.shm-sidebar-melt-ready + .shm-sidebar-notes:not(#shm-none) {
   margin-top: 8px;
 }
 
