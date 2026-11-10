@@ -122,3 +122,51 @@ describe('event notifications', () => {
     expect(noteText(note!, 'de')).toContain('beginnt am');
   });
 });
+
+describe('event notifications in step with the events', () => {
+  beforeEach(() => fakeBrowser.reset());
+
+  const read = (events: StarCitizenEvent[], at: number) =>
+    maybeRefreshEvents({ force: true, fetch: async () => events, now: () => at });
+  const openNotes = async () =>
+    (await notificationsItem.getValue()).filter((note) => note.doneAt === undefined);
+
+  it('take a date moved in the file', async () => {
+    await read([iae], NOW);
+    const moved = { ...iae, eventStart: Date.parse('2026-11-14T16:00:00Z') };
+    await read([moved], NOW + HOUR);
+    const [note] = await openNotes();
+    expect(noteText(note!, 'de')).toContain('14.11.2026');
+  });
+
+  it('say the event runs once it started', async () => {
+    await read([iae], NOW);
+    await read([iae], Date.parse('2026-11-14T00:00:00Z'));
+    const [note] = await openNotes();
+    expect(noteText(note!, 'en')).toContain('is running until');
+  });
+
+  it('are checked off once the event is over or gone from the file', async () => {
+    await read([iae], NOW);
+    await read([iae], Date.parse('2026-11-28T00:00:00Z'));
+    expect(await openNotes()).toEqual([]);
+
+    await fakeBrowser.reset();
+    await read([iae], NOW);
+    await read([], NOW + HOUR);
+    expect(await openNotes()).toEqual([]);
+  });
+
+  it('stay while the events are unknown', async () => {
+    await notificationsItem.setValue([
+      { id: 'events:iae-2956', kind: 'events', text: 'Event: IAE 2956', at: NOW },
+    ]);
+    await maybeRefreshEvents({
+      fetch: async () => {
+        throw new Error('offline');
+      },
+      now: () => NOW,
+    });
+    expect(await openNotes()).toHaveLength(1);
+  });
+});
