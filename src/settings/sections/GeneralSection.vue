@@ -1,10 +1,26 @@
 <script setup lang="ts">
 import { i18n } from '@/i18n';
 import SettingCheck from '../SettingCheck.vue';
-import { BUYBACK_LINK_MODES, type BuybackLinkMode, type Settings } from '../settings';
+import { PRICE_INCREASES } from '@/config';
+import {
+  BUYBACK_LINK_MODES,
+  isPriceIncreaseDays,
+  type BuybackLinkMode,
+  type Settings,
+} from '../settings';
 
-defineProps<{ settings: Settings }>();
+const props = defineProps<{ settings: Settings }>();
 const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
+
+const daysRange = PRICE_INCREASES.periodDays;
+
+/** Stores whole days in range; anything else snaps back to the stored value (#192). */
+function changeDays(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const value = Number(input.value);
+  if (isPriceIncreaseDays(value)) emit('update', { priceIncreaseDays: value });
+  else input.value = String(props.settings.priceIncreaseDays);
+}
 </script>
 
 <template>
@@ -35,5 +51,28 @@ const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
         {{ i18n.t(`settings.buybackLinkOptions.${mode}`) }}
       </option>
     </select>
+
+    <!-- The period of the buy back filter "Price increase expected" and its notification. -->
+    <label class="shm-field-label" for="shm-price-increase-days">
+      {{ i18n.t('settings.priceIncreaseDays') }}
+    </label>
+    <span class="shm-number-field">
+      <input
+        id="shm-price-increase-days"
+        class="shm-input shm-number"
+        type="number"
+        inputmode="numeric"
+        :min="daysRange.min"
+        :max="daysRange.max"
+        step="1"
+        :value="settings.priceIncreaseDays"
+        aria-describedby="shm-price-increase-days-hint"
+        @change="changeDays"
+      />
+      {{ i18n.t('settings.priceIncreaseDaysUnit') }}
+    </span>
+    <p id="shm-price-increase-days-hint" class="shm-hint">
+      {{ i18n.t('settings.priceIncreaseDaysHint') }}
+    </p>
   </fieldset>
 </template>

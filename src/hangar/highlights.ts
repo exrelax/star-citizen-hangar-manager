@@ -21,7 +21,12 @@ export const HANGAR_HIGHLIGHTS = [
 export type HangarHighlight = (typeof HANGAR_HIGHLIGHTS)[number];
 
 /** What the buy back can highlight in a row. */
-export const BUYBACK_HIGHLIGHTS = ['price', 'giftableLabel', 'insuranceBadge'] as const;
+export const BUYBACK_HIGHLIGHTS = [
+  'price',
+  'giftableLabel',
+  'insuranceBadge',
+  'priceIncreaseLabel',
+] as const;
 export type BuybackHighlight = (typeof BUYBACK_HIGHLIGHTS)[number];
 
 /** Filters (and sortings) with the targets they highlight. */

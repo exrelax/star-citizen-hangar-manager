@@ -534,7 +534,8 @@ html .shm-theme-modern .shm-hl-giftBadge .shm-badge.is-gift:not(.is-off),
 html .shm-theme-modern .shm-hl-meltBadge .shm-badge.is-melt:not(.is-off),
 html .shm-theme-modern .shm-hl-insuranceBadge .shm-badge.is-insurance,
 html .shm-theme-modern .shm-hl-gameAccessBadge .shm-badge.is-protected,
-html .shm-theme-modern .shm-hl-giftableLabel .shm-badge.is-giftable {
+html .shm-theme-modern .shm-hl-giftableLabel .shm-badge.is-giftable,
+html .shm-theme-modern .shm-hl-priceIncreaseLabel .shm-badge.is-price-increase {
   font-weight: 650;
   box-shadow: inset 0 0 0 1px currentColor;
 }

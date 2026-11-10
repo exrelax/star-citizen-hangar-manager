@@ -1,6 +1,6 @@
 import { notificationKindsOf, type NotificationKind } from '@/notifications/kinds';
 import { BUYBACK_FILTER_CATEGORIES, type BuybackFilter } from '@/buyback/buyback-view';
-import { FILTERS, FONT_SIZE_SCALES, PLEDGE_STORE, SMART_UPDATE } from '@/config';
+import { FILTERS, FONT_SIZE_SCALES, PLEDGE_STORE, PRICE_INCREASES, SMART_UPDATE } from '@/config';
 import {
   normalizeFilterGroups,
   PLEDGE_FILTER_CATEGORIES,
@@ -106,6 +106,8 @@ export interface Settings {
   /** Hangar pages a smart update checks besides the first and the last one. */
   spotCheckPages: number;
   buybackLinkMode: BuybackLinkMode;
+  /** Days ahead the filter "Price Increase Expected" and its notification look (#192). */
+  priceIncreaseDays: number;
   theme: Theme;
   /** Text size of the manager and its dialogs, the same for both themes. */
   fontSize: FontSize;
@@ -165,6 +167,7 @@ export const DEFAULT_SETTINGS: Settings = {
   smartUpdateMinutes: SMART_UPDATE.checkMinutes.default,
   spotCheckPages: SMART_UPDATE.spotCheckPages.default,
   buybackLinkMode: 'single',
+  priceIncreaseDays: PRICE_INCREASES.periodDays.default,
   theme: 'modern',
   fontSize: 'medium',
   compactView: false,
@@ -205,6 +208,8 @@ export const isRefreshMinutes = isWholeNumberIn(PLEDGE_STORE.refreshMinutes);
 export const isSmartUpdateMinutes = isWholeNumberIn(SMART_UPDATE.checkMinutes);
 /** A number of spot check pages in its range. */
 export const isSpotCheckPages = isWholeNumberIn(SMART_UPDATE.spotCheckPages);
+/** Whole days in the range of the period of expected price increases. */
+export const isPriceIncreaseDays = isWholeNumberIn(PRICE_INCREASES.periodDays);
 
 /** A check that accepts only the given values, e.g. the themes. */
 const oneOf =
@@ -248,6 +253,7 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
     smartUpdateMinutes: pick('smartUpdateMinutes', isSmartUpdateMinutes),
     spotCheckPages: pick('spotCheckPages', isSpotCheckPages),
     buybackLinkMode: pick('buybackLinkMode', oneOf(BUYBACK_LINK_MODES)),
+    priceIncreaseDays: pick('priceIncreaseDays', isPriceIncreaseDays),
     theme: pick('theme', oneOf(THEMES)),
     fontSize: pick('fontSize', oneOf(FONT_SIZES)),
     compactView: pick('compactView', isBoolean),

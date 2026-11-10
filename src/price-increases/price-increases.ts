@@ -123,3 +123,16 @@ export const upcomingPriceIncreases = (
   list
     .filter((increase) => endOf(increase.priceIncreaseAt) > now)
     .sort((a, b) => a.priceIncreaseAt.at - b.priceIncreaseAt.at);
+
+/**
+ * Whether a price increase lies within the next `days` days at `now` and is still ahead – the
+ * period of the buy back filter "Price Increase Expected" and its notification (#192).
+ */
+export const isWithinDays = (
+  increase: ExpectedPriceIncrease | undefined,
+  now: number,
+  days: number,
+): boolean =>
+  !!increase &&
+  endOf(increase.priceIncreaseAt) > now &&
+  increase.priceIncreaseAt.at - now <= days * DAY_MS;

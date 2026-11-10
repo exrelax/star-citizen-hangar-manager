@@ -236,13 +236,6 @@ icon and a tooltip that names and explains it:
 
   A full refresh reads the prices of pledges with several items stored before prices were shown.
 
-- **Price increase**: a warning with a countdown on ships, packages, CCUs and related items (e.g.
-  modules) whose price is expected to rise soon – buy them back or use them as a discount token
-  before then. With a probable time it counts the days and, on the last day, hours and minutes;
-  otherwise it shows the day. Its tooltip gives the expected date, the expected flight ready date
-  for ships not flight ready yet and a note, and says that the dates are expected, not confirmed
-  by RSI. The project publishes the expected price increases on its website (`data/price-increases.json`),
-  as RSI rarely lists them in advance.
 - **Buy back tokens**: how many pledges can still be bought back with store credit, as RSI shows
   it above its buy back list, read with every refresh and smart update.
 
@@ -505,7 +498,8 @@ rules in detail:
 ## Buy back
 
 The **Buy Back** tab lists all melted pledges with the same search and filters (Ships, CCUs,
-Paints, Game access, LTI, Warbond, Probably giftable, Available, Rewards), plus:
+Paints, Game access, LTI, Warbond, Probably giftable, Available, Price increase expected, Rewards),
+plus:
 
 - **Probably giftable**: a pledge bought back keeps the giftable status it had when it was
   melted, and RSI then offers "Buying as a gift?" at checkout (see RSI's
@@ -522,6 +516,15 @@ Paints, Game access, LTI, Warbond, Probably giftable, Available, Rewards), plus:
   bought back: it is labelled, its tooltip compares both ships' prices today, its "To Cart" is
   disabled, and it is never probably giftable. The filter **Available** shows only the pledges RSI
   can sell again, or, excluded, only those it can't.
+- **Price increase**: a warning with a countdown on ships, packages, CCUs and related items (e.g.
+  modules) whose price is expected to rise soon – buy them back or use them as a discount token
+  before then. With a probable time it counts the days and, on the last day, hours and minutes;
+  otherwise it shows the day. Its tooltip gives the expected date, the expected flight ready date
+  for ships not flight ready yet and a note, and says that the dates are expected, not confirmed
+  by RSI. The filter **Price increase expected** shows the pledges whose price is expected to rise
+  within the next 14 days (set in the settings); it is offered only while there are any. The
+  project publishes the expected price increases on its website (`data/price-increases.json`),
+  as RSI rarely lists them in advance.
 - **Buy back tokens**: how many pledges can still be bought back with store credit, as RSI shows
   it above its buy back list – at the top right of the manager, on every tab (see
   [The Hangar Manager page](#the-hangar-manager-page)).
@@ -726,6 +729,8 @@ In the order of the settings tab:
     lists the insurance of every step; only the one that counts (LTI, otherwise the most months)
     is listed.
   - **"Show in Buy Back" opens**: only the pledge, or the list page with the pledge highlighted.
+  - **Price increases within … days** (14 by default, 1 to 90): the period of the buy back filter
+    "Price increase expected" and its notification.
 - **Sidebar**:
   - **Show the sidebar** (on by default) – see [Selection and summary](#selection-and-summary).
   - **Boxes** (all on by default, only while the sidebar is shown): notifications, summary,
