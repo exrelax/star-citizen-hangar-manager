@@ -1,5 +1,7 @@
 import { EVENTS } from '@/config';
-import { LOCALES, type Locale } from '@/i18n';
+import { localizedText, text, time, type LocalizedText } from '@/site-data/site-data';
+
+export { localized, type LocalizedText } from '@/site-data/site-data';
 
 /*
  * Events of Star Citizen (e.g. the Intergalactic Aerospace Expo), loaded from the project website
@@ -10,9 +12,6 @@ import { LOCALES, type Locale } from '@/i18n';
  * Name and description are either one text or one per language of the extension, e.g.
  * `{ "en": "…", "de": "…" }`; English is required and stands in for a language not given.
  */
-
-/** A text per language; English always. */
-export type LocalizedText = Partial<Record<Locale, string>> & { en: string };
 
 export interface StarCitizenEvent {
   /** Stable id, e.g. "iae-2956": the notification of an event is told once. */
@@ -45,37 +44,6 @@ export interface EventPhase {
 
 /** Upcoming (shown, not started yet) or running. */
 export type EventState = 'upcoming' | 'running';
-
-const MAX_TEXT = 500;
-
-const text = (value: unknown, max = MAX_TEXT): string | undefined =>
-  typeof value === 'string' && value.trim() && value.length <= max ? value.trim() : undefined;
-
-/** One text for every language, or one per language with English; else none. */
-function localizedText(value: unknown, max = MAX_TEXT): LocalizedText | undefined {
-  const single = text(value, max);
-  if (single) return { en: single };
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
-  const texts = value as Record<string, unknown>;
-  const en = text(texts.en, max);
-  if (!en) return undefined;
-  const result: LocalizedText = { en };
-  for (const locale of LOCALES) {
-    const translated = text(texts[locale], max);
-    if (translated) result[locale] = translated;
-  }
-  return result;
-}
-
-/** The text in the language, else in English. */
-export const localized = (value: LocalizedText, locale: Locale): string =>
-  value[locale] ?? value.en;
-
-const time = (value: unknown): number | undefined => {
-  if (typeof value !== 'string') return undefined;
-  const at = Date.parse(value);
-  return Number.isFinite(at) ? at : undefined;
-};
 
 /** An image URL of the project website, else none. */
 function imageUrl(value: unknown): string | undefined {

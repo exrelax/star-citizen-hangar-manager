@@ -6,6 +6,7 @@ import { maybeRefreshUpgradeTool, refreshUpgradeTool } from '@/ships/sync-upgrad
 import { maybeRefreshStoreItems, refreshStoreItems } from '@/store/items/sync-store-items';
 import { refreshStoreCredit } from '@/account/sync-store-credit';
 import { maybeRefreshEvents } from '@/events/sync-events';
+import { maybeRefreshPriceIncreases } from '@/price-increases/sync-price-increases';
 import type { StorageId } from '@/storage/registry';
 import { reactive, readonly } from 'vue';
 import { recordCheck, recordSync, type CheckOutcome, type MetaItem } from '@/storage/meta';
@@ -134,7 +135,9 @@ export async function startStorageSync(id: StorageId): Promise<void> {
           ? refreshStoreCredit()
           : id === 'events'
             ? maybeRefreshEvents({ force: true })
-            : refreshUpgradeTool());
+            : id === 'priceIncreases'
+              ? maybeRefreshPriceIncreases({ force: true })
+              : refreshUpgradeTool());
       section.complete(1, 1);
     }
   } catch (error) {
@@ -194,6 +197,8 @@ async function runSmartUpdateIfDue(force: boolean): Promise<void> {
   await maybeRefreshStoreItems();
   // The events of the project website: once a day; tells the ones whose display period started.
   await maybeRefreshEvents();
+  // The expected price increases of the project website (#195): once a day.
+  await maybeRefreshPriceIncreases();
   const settings = withDefaults(await settingsItem.getValue());
   if (!settings.smartUpdates) return;
   const { checkedAt } = await hangarMeta.getValue();

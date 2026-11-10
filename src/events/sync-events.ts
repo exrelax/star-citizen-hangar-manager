@@ -1,14 +1,14 @@
 import { EVENTS } from '@/config';
-import { hashOf, recordCheck, recordSync, type StorageMeta } from '@/storage/meta';
+import { createSiteDataSync, fetchSiteFile, siteDataDue } from '@/site-data/sync-site-data';
+import type { StorageMeta } from '@/storage/meta';
 import { noteShownEvents } from './event-notes';
 import { parseEvents, type StarCitizenEvent } from './events';
-import { eventsItem, eventsMeta, EVENTS_VERSION } from './events-storage';
+import { eventsItem, eventsMeta, EVENTS_VERSION, type EventsSnapshot } from './events-storage';
 
 /*
- * Keeps the stored events of the project website (#69) current: read at most once a day
- * (`EVENTS.refreshMs`), after a failure again after an hour. A file that can't be read or isn't
- * of the known format keeps the stored events. Each run also tells the events whose display
- * period started (`event-notes.ts`).
+ * Keeps the stored events of the project website (#69) current, like every data file of the
+ * website (`site-data/sync-site-data.ts`): at most once a day, after a failure again after an
+ * hour. Each run also tells the events whose display period started (`event-notes.ts`).
  */
 
 /**
@@ -22,10 +22,7 @@ export async function fetchEvents(): Promise<StarCitizenEvent[] | undefined> {
     const local = await import('../../site/public/data/events.json');
     return withLocalImages(parseEvents(local.default));
   }
-  // No cookies: the website needs none, and it is another origin.
-  const response = await fetch(EVENTS.url, { credentials: 'omit', cache: 'no-cache' });
-  if (!response.ok) throw new Error(`Loading the events failed: HTTP ${response.status}`);
-  return parseEvents(await response.json());
+  return parseEvents(await fetchSiteFile(EVENTS.url));
 }
 
 /**
@@ -50,71 +47,32 @@ async function withLocalImages(
 }
 
 /** Whether the events are due to be read again. */
-export function eventsDue(meta: StorageMeta, now: number): boolean {
-  const wait = meta.lastOutcome?.status === 'failed' ? EVENTS.retryMs : EVENTS.refreshMs;
-  return now - meta.checkedAt >= wait;
-}
+export const eventsDue = (meta: StorageMeta, now: number): boolean =>
+  siteDataDue(meta, now, EVENTS);
 
-let running: Promise<void> | undefined;
+const refreshEvents = createSiteDataSync(
+  {
+    name: 'Events',
+    item: eventsItem,
+    meta: eventsMeta,
+    version: EVENTS_VERSION,
+    refreshMs: EVENTS.refreshMs,
+    retryMs: EVENTS.retryMs,
+    fetch: () => fetchEvents(),
+    toSnapshot: (events: StarCitizenEvent[]) => ({ version: EVENTS_VERSION, events }),
+    fromSnapshot: (snapshot: EventsSnapshot) => snapshot.events,
+  },
+  // Without the file's events (never read), open notifications are not checked off.
+  ({ data }, now) => noteShownEvents(data ?? [], now, { known: data !== undefined }),
+);
 
 /** Reads the events if due (`force`: in any case), then tells the newly shown ones. */
-export function maybeRefreshEvents({
-  force = false,
-  fetch = fetchEvents,
-  now = Date.now,
-}: {
-  force?: boolean;
-  fetch?: () => Promise<StarCitizenEvent[] | undefined>;
-  now?: () => number;
-} = {}): Promise<void> {
-  running ??= (async () => {
-    const [stored, meta] = await Promise.all([eventsItem.getValue(), eventsMeta.getValue()]);
-    const current = stored?.version === EVENTS_VERSION ? stored : null;
-    // Stored in an earlier format: removed and read again at once (after a failure, then hourly).
-    const outdated = !!stored && !current;
-    if (outdated) await eventsItem.removeValue();
-    let events = current?.events ?? [];
-    // Whether `events` are the file's: without, open notifications are not checked off.
-    let known = !!current;
-    // Without stored events too only when due: a missing file is tried again after an hour, not on
-    // every check. Deleting them in the settings deletes their metadata, so they are read again.
-    if (force || outdated || eventsDue(meta, now())) {
-      const read = await readEvents(fetch, now, current ? meta : undefined);
-      if (read) {
-        events = read;
-        known = true;
-      }
-    }
-    await noteShownEvents(events, now(), { known });
-  })().finally(() => (running = undefined));
-  return running;
-}
-
-/**
- * Reads and stores the events; the events read, or none if they couldn't be. Without `meta`
- * (nothing current stored) they are stored in any case.
- */
-async function readEvents(
-  fetch: () => Promise<StarCitizenEvent[] | undefined>,
-  now: () => number,
-  meta: StorageMeta | undefined,
-): Promise<StarCitizenEvent[] | undefined> {
-  try {
-    const events = await fetch();
-    if (!events) throw new Error('The events file has an unknown format');
-    const value = { version: EVENTS_VERSION, events };
-    const fingerprint = hashOf(value);
-    const unchanged = meta?.fingerprint === fingerprint;
-    if (!unchanged) await eventsItem.setValue(value);
-    await recordSync(eventsMeta, {
-      at: now(),
-      fingerprint,
-      ...(unchanged && { updatedAt: meta.updatedAt }),
-    });
-    return events;
-  } catch (error) {
-    console.warn('[star-citizen-hangar-manager] Events unavailable', error);
-    await recordCheck(eventsMeta, { status: 'failed' }, { at: now() });
-    return undefined;
-  }
+export async function maybeRefreshEvents(
+  options: {
+    force?: boolean;
+    fetch?: () => Promise<StarCitizenEvent[] | undefined>;
+    now?: () => number;
+  } = {},
+): Promise<void> {
+  await refreshEvents(options);
 }
