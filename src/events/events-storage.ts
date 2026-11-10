@@ -3,9 +3,9 @@ import type { StarCitizenEvent } from './events';
 
 /**
  * Format version of the stored events; others are ignored and read again. 2: texts per language
- * and `image`; 3: `phases`.
+ * and `image`; 3: `phases`; 4: their `shortName`.
  */
-export const EVENTS_VERSION = 3;
+export const EVENTS_VERSION = 4;
 
 export interface EventsSnapshot {
   version: number;

@@ -97,7 +97,7 @@ describe('maybeRefreshEvents with events of an earlier format', () => {
     const fetch = vi.fn(async () => [iae]);
     await maybeRefreshEvents({ fetch, now: () => NOW + 60_000 });
     expect(fetch).toHaveBeenCalledTimes(1);
-    expect((await eventsItem.getValue())?.version).toBe(3);
+    expect((await eventsItem.getValue())?.version).toBe(4);
   });
 });
 

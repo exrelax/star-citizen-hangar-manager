@@ -9,6 +9,7 @@ import {
   eventState,
   localized,
   shownEvents,
+  type EventPhase,
   type StarCitizenEvent,
 } from '../events';
 
@@ -32,9 +33,11 @@ onMounted(() => {
 });
 onUnmounted(() => clearInterval(timer));
 
+/** A countdown: the text before the time, the time, and the text after it. */
 interface Countdown {
   label: string;
   time: string;
+  after?: string;
 }
 
 const rows = computed(() =>
@@ -42,13 +45,23 @@ const rows = computed(() =>
     const state = eventState(event, now.value);
     const name = (text: StarCitizenEvent['name']) => localized(text, locale.value);
     const left = (at: number) => formatCountdown(at - now.value, locale.value);
+    const short = (phase: EventPhase) => name(phase.shortName ?? phase.name);
     const { current, next } = eventProgress(event, now.value);
     const countdowns: Countdown[] =
       state === 'upcoming'
-        ? [{ label: i18n.t('events.countdownStart'), time: left(event.eventStart) }]
+        ? [
+            {
+              label: i18n.t('events.countdownStart'),
+              time: left(event.eventStart),
+              // The first phase, if it starts with the event: "with RSI".
+              ...(next?.start === event.eventStart && {
+                after: i18n.t('events.startsWith', [short(next)]),
+              }),
+            },
+          ]
         : [
             ...(next
-              ? [{ label: i18n.t('events.nextIn', [name(next.name)]), time: left(next.start) }]
+              ? [{ label: i18n.t('events.nextIn', [short(next)]), time: left(next.start) }]
               : []),
             { label: i18n.t('events.countdownEnd'), time: left(event.eventEnd) },
           ];
@@ -98,6 +111,8 @@ const rows = computed(() =>
               <span v-for="countdown in row.countdowns" :key="countdown.label">
                 {{ countdown.label }}
                 <span class="shm-event-countdown">{{ countdown.time }}</span>
+                <!-- The space in the text: Vue drops whitespace between tags across a line break. -->
+                {{ countdown.after ? ` ${countdown.after}` : '' }}
               </span>
             </span>
           </span>

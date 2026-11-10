@@ -115,7 +115,7 @@ describe('phases', () => {
       entry({
         phases: [
           { start: '2026-11-14T16:00:00Z', name: 'Origin Jumpworks' },
-          { start: '2026-11-13T16:00:00Z', name: 'Roberts Space Industries' },
+          { start: '2026-11-13T16:00:00Z', name: 'Roberts Space Industries', shortName: 'RSI' },
           { start: '2026-11-23T16:00:00Z', name: { en: 'Finale', es: 'Final' } },
           { start: '2026-12-01T16:00:00Z', name: 'After the end' },
           { start: 'soon', name: 'No time' },
@@ -130,6 +130,11 @@ describe('phases', () => {
       'Origin Jumpworks',
       'Finale',
     ]);
+  });
+
+  it('keeps a short name if given', () => {
+    expect(event?.phases?.[0]?.shortName).toEqual({ en: 'RSI' });
+    expect(event?.phases?.[1]?.shortName).toBeUndefined();
   });
 
   it('tells the current and the next phase', () => {

@@ -39,6 +39,8 @@ export interface EventPhase {
   /** Epoch milliseconds. */
   start: number;
   name: LocalizedText;
+  /** Shown in the countdowns, e.g. "RSI" for "Roberts Space Industries"; else the name. */
+  shortName?: LocalizedText;
 }
 
 /** Upcoming (shown, not started yet) or running. */
@@ -129,10 +131,11 @@ function parsePhases(value: unknown, eventStart: number, eventEnd: number): Even
       const raw = entry as Record<string, unknown>;
       const start = time(raw.start);
       const name = localizedText(raw.name, 200);
+      const shortName = localizedText(raw.shortName, 60);
       if (start === undefined || !name || start < eventStart || start >= eventEnd) return [];
       if (starts.has(start)) return [];
       starts.add(start);
-      return [{ start, name }];
+      return [{ start, name, ...(shortName && { shortName }) }];
     })
     .sort((a, b) => a.start - b.start);
 }
