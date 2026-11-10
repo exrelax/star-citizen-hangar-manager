@@ -19,7 +19,11 @@ import {
   browserNotificationsItem,
 } from '@/notifications/browser-permission';
 import BulkExchangeOverlay from './BulkExchangeOverlay.vue';
-import { REBUY_PLAN_VERSION, rebuyPlanItem } from '@/store/paint-consultant/rebuy-plan-storage';
+import {
+  demoRebuyPlanItem,
+  REBUY_PLAN_VERSION,
+  rebuyPlanItem,
+} from '@/store/paint-consultant/rebuy-plan-storage';
 import {
   checkOff as checkOffReal,
   noteDetails,
@@ -180,10 +184,13 @@ function selectReady() {
  * The Paint Discount Consultant's filler paints among them (#105): those its order created, by
  * pledge id. They can be melted all at once right here (with bulk melting on). Not in the demo.
  */
-const keptPlan = useStored(rebuyPlanItem);
+const realKeptPlan = useStored(rebuyPlanItem);
+const demoKeptPlan = useStored(demoRebuyPlanItem);
+// The demo's own kept plan (#131), with its filler paints marked.
+const keptPlan = computed(() => (demo.value ? demoKeptPlan.value : realKeptPlan.value));
 const readyFillers = computed(() => {
   const purchase = keptPlan.value?.version === REBUY_PLAN_VERSION && keptPlan.value.purchase;
-  if (demo.value || !purchase) return [];
+  if (!purchase) return [];
   const ids = new Set(purchase.pledgeIds);
   return props.pledges.filter(
     (pledge) => ids.has(pledge.id) && meltReadyIds.value.has(pledge.id) && pledge.isMeltable,
@@ -540,9 +547,10 @@ async function move(box: Box, step: -1 | 1) {
               <div class="shm-sidebar-actions">
                 <button
                   v-if="settings.bulkMelting"
-                  v-tooltip="i18n.t('consultant.fillers.meltHint')"
+                  v-tooltip="demo ? i18n.t('exchange.demo') : i18n.t('consultant.fillers.meltHint')"
                   type="button"
                   class="shm-button is-danger shm-sidebar-button is-full"
+                  :disabled="!!demo"
                   @click="meltingFillers = true"
                 >
                   <SvgIcon name="triangle-exclamation" />

@@ -18,6 +18,8 @@ import { cartLinesOf } from '../paint-consultant/cart';
 import {
   REBUY_PLAN_VERSION,
   rebuyPlanItem,
+  demoRebuyPlanItem,
+  rebuyPlanItemOf,
   storedPlanOf,
 } from '../paint-consultant/rebuy-plan-storage';
 import { usePaintConsultant } from '../paint-consultant/use-paint-consultant';
@@ -393,10 +395,14 @@ const wayCards = computed(() => {
 
 /** Keeps the plan of the way whose paints were put into the cart (#103, #105, #139, #168). */
 async function keepPlan(plan: PaintRebuyPlan | undefined) {
-  if (plan) await rebuyPlanItem.setValue(storedPlanOf(plan, Date.now()));
+  if (plan) await planItem().setValue(storedPlanOf(plan, Date.now()));
 }
 
-const storedPlan = useStored(rebuyPlanItem);
+// The demo has a kept plan of its own (#131), never the account's.
+const realPlan = useStored(rebuyPlanItem);
+const demoPlan = useStored(demoRebuyPlanItem);
+const storedPlan = computed(() => (demo.value ? demoPlan.value : realPlan.value));
+const planItem = () => rebuyPlanItemOf(!!demo.value);
 /** The cart of melting first was filled: only then its own paints may be melted. */
 const cartFilled = computed(() => {
   const stored = storedPlan.value;
