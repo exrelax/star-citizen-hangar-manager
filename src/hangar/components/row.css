@@ -453,7 +453,8 @@
 .shm-hl-meltBadge .shm-badge.is-melt:not(.is-off),
 .shm-hl-insuranceBadge .shm-badge.is-insurance,
 .shm-hl-gameAccessBadge .shm-badge.is-protected,
-.shm-hl-giftableLabel .shm-badge.is-giftable {
+.shm-hl-giftableLabel .shm-badge.is-giftable,
+.shm-hl-priceIncreaseLabel .shm-badge.is-price-increase {
   font-weight: 600;
   border-color: currentColor;
 }

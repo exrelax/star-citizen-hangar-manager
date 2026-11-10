@@ -225,6 +225,11 @@ export const PRICE_INCREASES = {
   url: 'https://exrelax.github.io/star-citizen-hangar-manager/data/price-increases.json',
   /** The format the extension reads; files of other versions are ignored. */
   schemaVersion: 1,
+  /**
+   * The buy back filter "Price Increase Expected" and its notification count price increases
+   * within this many days (a setting; this is its default and its range, #192).
+   */
+  periodDays: { default: 14, min: 1, max: 90 },
 } as const;
 
 /**
@@ -409,6 +414,7 @@ export const FILTER_HIGHLIGHTS: {
   buyback: {
     warbond: ['price'],
     available: ['price'],
+    priceIncrease: ['priceIncreaseLabel'],
     probablyGiftable: ['giftableLabel'],
     lti: ['insuranceBadge'],
   },
@@ -445,8 +451,8 @@ export const FILTERS: {
       shown: ['ships', 'ccus', 'paints', 'gameAccess', 'rewards'],
     },
     features: {
-      order: ['lti', 'warbond', 'probablyGiftable', 'available'],
-      shown: ['lti', 'warbond', 'probablyGiftable', 'available'],
+      order: ['lti', 'warbond', 'probablyGiftable', 'available', 'priceIncrease'],
+      shown: ['lti', 'warbond', 'probablyGiftable', 'available', 'priceIncrease'],
     },
   },
 };

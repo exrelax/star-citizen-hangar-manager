@@ -140,13 +140,14 @@ export const BUYBACK_FILTERS = [
   'warbond',
   'probablyGiftable',
   'available',
+  'priceIncrease',
   'rewards',
 ] as const;
 export type BuybackFilter = (typeof BUYBACK_FILTERS)[number];
 
 export const BUYBACK_FILTER_CATEGORIES: Record<FilterCategory, readonly BuybackFilter[]> = {
   types: ['ships', 'ccus', 'paints', 'gameAccess', 'rewards'],
-  features: ['lti', 'warbond', 'probablyGiftable', 'available'],
+  features: ['lti', 'warbond', 'probablyGiftable', 'available', 'priceIncrease'],
 };
 
 export const BUYBACK_FILTER_PREDICATES: FilterPredicates<BuybackView, BuybackFilter> = {
@@ -159,6 +160,9 @@ export const BUYBACK_FILTER_PREDICATES: FilterPredicates<BuybackView, BuybackFil
   probablyGiftable: (pledge) => pledge.isProbablyGiftable,
   // Excluded, it shows the pledges RSI can't sell again (#207).
   available: (pledge) => !pledge.unavailable,
+  // Any expected price increase; the buy back list narrows it to the period of the settings
+  // (`withinPricePeriod`, #192).
+  priceIncrease: (pledge) => pledge.priceIncrease !== undefined,
   // The buy back shows no values, so rewards are recognized by their names.
   rewards: (pledge) => isRewardTitle(pledge.title),
 };

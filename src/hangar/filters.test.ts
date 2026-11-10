@@ -118,6 +118,19 @@ describe('discount filter', () => {
   });
 });
 
+describe('price increase filter', () => {
+  it('joins the stored buy back layouts of existing users, shown (#192)', () => {
+    const stored = { order: ['available', 'lti'], shown: ['lti', 'available'] };
+    const layout = normalizeFilterLayout(
+      stored,
+      BUYBACK_FILTER_CATEGORIES.features,
+      FILTERS.buyback.features,
+    );
+    expect(layout.order.at(-1)).toBe('priceIncrease');
+    expect(layout.shown).toContain('priceIncrease');
+  });
+});
+
 describe('paint rebuy filter', () => {
   it('is no filter button any more: a stored layout drops it', () => {
     const stored = { order: ['paintRebuy', 'lti'], shown: ['paintRebuy', 'lti'] };

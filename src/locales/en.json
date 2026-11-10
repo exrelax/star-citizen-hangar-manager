@@ -91,6 +91,7 @@
     "meltable": "Meltable",
     "probablyGiftable": "Probably giftable",
     "available": "Available",
+    "priceIncrease": "Price increase expected",
     "ships": "Ships",
     "warbond": "Warbond",
     "valuable": "Valuable",
@@ -107,7 +108,8 @@
       "rewards": "Rewards with a value of $$0: event, referral, Concierge and other rewards.",
       "rewardsByName": "Rewards, recognized by their names: event, referral, Concierge and other rewards.",
       "discount": "Bought for less than the original price: ships and CCUs compared with RSI's ship prices, paints, gear and more with the Pledge Store. Pledges whose original price isn't known, or that cost more, don't count.",
-      "available": "Pledges RSI can sell again. Excluded: CCUs whose base ship now costs as much as or more than their target ship – RSI only sells a CCU to a more expensive ship."
+      "available": "Pledges RSI can sell again. Excluded: CCUs whose base ship now costs as much as or more than their target ship – RSI only sells a CCU to a more expensive ship.",
+      "priceIncrease": "Pledges whose price is expected to rise within the next $1 days (set in the settings), e.g. ships becoming flight ready at the IAE. The dates are expected, not confirmed by RSI."
     },
     "categories": {
       "types": "Types",
@@ -154,6 +156,9 @@
       "single": "Only this pledge",
       "list": "The list page, scrolled to the pledge and highlighted"
     },
+    "priceIncreaseDays": "Price increases within",
+    "priceIncreaseDaysUnit": "days",
+    "priceIncreaseDaysHint": "The buy back filter “Price increase expected” and its notification count expected price increases within this many days.",
     "privacy": "Hide sensitive information (for screenshots or content creators)",
     "hidePledgeIds": "Hide pledge and order IDs, name and address",
     "hidePledgeIdsHint": "Hides the pledge IDs of all items, also those of applied upgrades, and the order IDs. Your name and billing address in the order details are made unreadable. Searching by ID still works.",

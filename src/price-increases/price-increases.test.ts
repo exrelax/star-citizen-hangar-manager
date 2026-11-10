@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import siteFile from '../../site/public/data/price-increases.json';
-import { endOf, parsePriceIncreases, upcomingPriceIncreases } from './price-increases';
+import {
+  endOf,
+  isWithinDays,
+  parsePriceIncreases,
+  upcomingPriceIncreases,
+} from './price-increases';
 
 const file = (priceIncreases: unknown[]) => ({ schemaVersion: 1, priceIncreases });
 const galaxy = { id: 244, name: 'Galaxy' };
@@ -124,5 +129,22 @@ describe('upcomingPriceIncreases', () => {
   it('knows when a point in time is over', () => {
     expect(endOf({ at: 1000 })).toBe(1000);
     expect(endOf({ at: 1000, dayOnly: true })).toBe(1000 + 24 * 60 * 60 * 1000);
+  });
+});
+
+describe('isWithinDays', () => {
+  const now = Date.parse('2026-11-10T12:00:00Z');
+  const at = (iso: string) =>
+    parsePriceIncreases(file([{ ship: galaxy, priceIncreaseAt: iso }]))![0];
+
+  it('counts price increases ahead within the period (#192)', () => {
+    expect(isWithinDays(at('2026-11-13T16:00:00Z'), now, 14)).toBe(true);
+    expect(isWithinDays(at('2026-11-24T12:00:00Z'), now, 14)).toBe(true);
+    expect(isWithinDays(at('2026-11-24T12:01:00Z'), now, 14)).toBe(false);
+    expect(isWithinDays(at('2026-11-13T16:00:00Z'), now, 2)).toBe(false);
+    expect(isWithinDays(at('2026-11-10T11:00:00Z'), now, 14)).toBe(false);
+    // A day counts until it is over.
+    expect(isWithinDays(at('2026-11-10'), now, 14)).toBe(true);
+    expect(isWithinDays(undefined, now, 14)).toBe(false);
   });
 });

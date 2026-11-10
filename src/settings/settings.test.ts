@@ -43,6 +43,7 @@ describe('withDefaults', () => {
       smartUpdateMinutes: 5,
       spotCheckPages: 2,
       buybackLinkMode: 'single',
+      priceIncreaseDays: 14,
       theme: 'modern',
       fontSize: 'medium',
       compactView: false,
@@ -71,6 +72,7 @@ describe('withDefaults', () => {
         fontSize: 'huge',
         compactView: 'no',
         storeRefreshMinutes: 2.5,
+        priceIncreaseDays: 0,
         filters: { hangar: 'all', buyback: { order: 5 } },
         paintConsultant: {
           useStoreCredit: 'yes',

@@ -11,6 +11,8 @@ import { giftableHint } from '../giftable-hint';
 import BuybackRow from './BuybackRow.vue';
 import { BUYBACK_SORTS, sortEntries, type BuybackSort } from '@/hangar/sorting';
 import { useSettings } from '@/settings/use-settings';
+import { isWithinDays } from '@/price-increases/price-increases';
+import { useNow } from '@/shared/use-now';
 
 const props = defineProps<{
   pledges: BuybackView[];
@@ -25,10 +27,25 @@ const displayClasses = computed(() => ({
   'shm-hide-fleetyards': !props.settings.shipLinks.fleetyards,
 }));
 
+/**
+ * "Price Increase Expected" (#192): a price increase within the days of the settings, so it
+ * changes with them and with the time.
+ */
+const now = useNow();
+const predicates = computed(() => ({
+  ...BUYBACK_FILTER_PREDICATES,
+  priceIncrease: (pledge: BuybackView) =>
+    isWithinDays(pledge.priceIncrease?.increase, now.value, props.settings.priceIncreaseDays),
+}));
+/** Offered only while a pledge has a price increase in the period. */
+const hasPriceIncrease = computed(() => props.pledges.some(predicates.value.priceIncrease));
+
 const filterGroups = computed(() =>
   FILTER_CATEGORIES.map((category) => ({
     category,
-    filters: shownFilters(props.settings.filters.buyback[category]),
+    filters: shownFilters(props.settings.filters.buyback[category]).filter(
+      (filter) => filter !== 'priceIncrease' || hasPriceIncrease.value,
+    ),
   })),
 );
 
@@ -49,6 +66,9 @@ const filterLabel = (filter: BuybackFilter) => i18n.t(`filter.${filter}`);
 /** Filters whose meaning isn't obvious from the label explain it in their tooltip. */
 const filterHint = (filter: BuybackFilter) => {
   if (filter === 'probablyGiftable') return giftableHint.value;
+  if (filter === 'priceIncrease') {
+    return i18n.t('filter.hints.priceIncrease', [props.settings.priceIncreaseDays]);
+  }
   if (filter === 'ships' || filter === 'warbond' || filter === 'available') {
     return i18n.t(`filter.hints.${filter}`);
   }
@@ -61,7 +81,7 @@ const filterHint = (filter: BuybackFilter) => {
     :class="displayClasses"
     :entries="sorted"
     :filter-groups="filterGroups"
-    :predicates="BUYBACK_FILTER_PREDICATES"
+    :predicates="predicates"
     :filter-label="filterLabel"
     :filter-hint="filterHint"
     :active="active"

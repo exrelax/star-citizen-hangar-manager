@@ -91,6 +91,7 @@
     "meltable": "Fusionnables",
     "probablyGiftable": "Probablement offrables",
     "available": "Rachetables",
+    "priceIncrease": "Hausse de prix attendue",
     "ships": "Vaisseaux",
     "warbond": "Warbond",
     "valuable": "Avec valeur",
@@ -107,7 +108,8 @@
       "rewards": "Récompenses d’une valeur de 0 $$ : événements, parrainage, Concierge et autres récompenses.",
       "rewardsByName": "Récompenses, reconnues à leur nom : événements, parrainage, Concierge et autres récompenses.",
       "discount": "Acheté moins cher que le prix d’origine : vaisseaux et CCU comparés aux prix des vaisseaux de RSI, peintures, équipement et autres au Pledge Store. Les pledges sans prix d’origine connu ou plus chers ne comptent pas.",
-      "available": "Les pledges que RSI peut revendre. Exclus : les CCU dont le vaisseau de départ coûte aujourd’hui autant ou plus que leur vaisseau cible – RSI ne vend un CCU que vers un vaisseau plus cher."
+      "available": "Les pledges que RSI peut revendre. Exclus : les CCU dont le vaisseau de départ coûte aujourd’hui autant ou plus que leur vaisseau cible – RSI ne vend un CCU que vers un vaisseau plus cher.",
+      "priceIncrease": "Pledges dont le prix devrait augmenter dans les $1 prochains jours (réglable dans les paramètres), p. ex. des vaisseaux qui deviennent flight ready à l’IAE. Les dates sont attendues, pas confirmées par RSI."
     },
     "categories": {
       "types": "Types",
@@ -154,6 +156,9 @@
       "single": "Seulement ce pledge",
       "list": "La page de la liste, défilée jusqu’au pledge et mise en évidence"
     },
+    "priceIncreaseDays": "Hausses de prix dans les",
+    "priceIncreaseDaysUnit": "jours",
+    "priceIncreaseDaysHint": "Le filtre « Hausse de prix attendue » du Buy Back et sa notification comptent les hausses de prix attendues dans ce nombre de jours.",
     "privacy": "Masquer les informations sensibles (pour les captures d’écran ou les créateurs de contenu)",
     "hidePledgeIds": "Masquer les ID de pledge et de commande, le nom et l’adresse",
     "hidePledgeIdsHint": "Masque les ID de pledge de tous les éléments, y compris ceux des améliorations appliquées, ainsi que les ID de commande. Ton nom et ton adresse de facturation dans les détails de commande sont rendus illisibles. La recherche par ID fonctionne toujours.",
