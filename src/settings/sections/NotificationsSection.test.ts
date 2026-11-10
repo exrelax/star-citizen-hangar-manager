@@ -2,7 +2,12 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { createApp, nextTick, type App } from 'vue';
-import { dismissedPaintsItem } from '@/store/paint-consultant/paint-notification';
+import { EVENTS_VERSION, eventsItem } from '@/events/events-storage';
+import {
+  browserNotificationsHintDismissedItem,
+  browserNotificationsItem,
+} from '@/notifications/browser-permission';
+import { notificationsItem } from '@/notifications/notifications';
 import { withDefaults, type Settings } from '../settings';
 import NotificationsSection from './NotificationsSection.vue';
 
@@ -29,23 +34,45 @@ async function render(
 }
 
 describe('NotificationsSection', () => {
-  it('shows dismissed paint notifications again', async () => {
-    await dismissedPaintsItem.setValue([1, 2]);
+  it('shows checked-off notifications again while they still matter (#213)', async () => {
+    const now = Date.now();
+    await eventsItem.setValue({
+      version: EVENTS_VERSION,
+      events: [
+        {
+          id: 'shown',
+          name: { en: 'Shown' },
+          eventStart: now + 60_000,
+          eventEnd: now + 120_000,
+          displayStart: now - 60_000,
+          displayEnd: now + 120_000,
+        },
+      ],
+    });
+    await notificationsItem.setValue([
+      { id: 'events:shown', kind: 'events', text: 'Shown', at: now, doneAt: now },
+      { id: 'events:over', kind: 'events', text: 'Over', at: now, doneAt: now },
+    ]);
+    await browserNotificationsItem.setValue(false);
+    await browserNotificationsHintDismissedItem.setValue(true);
     const root = await render();
     const button = root.querySelector('button')!;
     expect(button.disabled).toBe(false);
 
     button.click();
     await settle();
-    expect(await dismissedPaintsItem.getValue()).toEqual([]);
+    const notes = await notificationsItem.getValue();
+    expect(notes.find((note) => note.id === 'events:shown')?.doneAt).toBeUndefined();
+    expect(notes.find((note) => note.id === 'events:over')?.doneAt).toBe(now);
+    expect(await browserNotificationsHintDismissedItem.getValue()).toBe(false);
     expect(button.disabled).toBe(true);
-    expect(root.querySelector('[role="status"]')?.textContent).toContain('Shown again');
+    expect(root.querySelector('[role="status"]')?.textContent).toContain('2 shown again');
   });
 
-  it('has nothing to show again without dismissed paints', async () => {
+  it('has nothing to show again without checked-off notifications that matter', async () => {
     const root = await render();
     expect(root.querySelector('button')!.disabled).toBe(true);
-    expect(root.textContent).toContain('No paint notification is dismissed');
+    expect(root.textContent).toContain('No checked-off notification still matters');
   });
 
   it('turns the kinds of notifications on and off (#197)', async () => {

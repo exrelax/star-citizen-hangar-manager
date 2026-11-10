@@ -59,6 +59,7 @@ export function warbondNote(
     kind: 'warbonds',
     text,
     at,
+    ...(changes.added.length && { subject: { warbonds: changes.added.map((sku) => sku.skuId) } }),
     ...(added.length && {
       browser: {
         title: translate(locale, 'notifications.browserWarbondsTitle'),
@@ -98,6 +99,11 @@ export function storeItemsNote(
     ),
   ];
   const count = details.length;
+  // What still matters later (#213): the items new or repriced, at their price now.
+  const shown = [...changes.added, ...changes.repriced.map(({ item }) => item)].map((item) => ({
+    id: item.id,
+    price: item.discountedPrice ?? item.price,
+  }));
   return {
     id: `storeItems:${at}`,
     kind: 'storeItems',
@@ -107,6 +113,7 @@ export function storeItemsNote(
         : translate(locale, 'notifications.storeItemsChanged', [count]),
     details,
     at,
+    ...(shown.length && { subject: { items: shown } }),
   };
 }
 

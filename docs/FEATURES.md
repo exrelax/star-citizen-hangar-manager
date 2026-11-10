@@ -295,12 +295,13 @@ on its own.
       with more discount: how many (not with "Hide melt value"). Its **×** dismisses it for exactly
       these paints, kept in the sync storage so it stays dismissed on your other browsers too; it
       comes back with the count of all of them as soon as another paint can be bought again, or
-      with "Show dismissed paint notifications again" in the settings.
+      with "Show checked-off notifications again" in the settings.
     - Until browser notifications are on in this browser: a hint that they can be turned on, with a
       **Settings** button that opens the settings at "Browser notifications". Its **×** removes it
-      for good (synced).
+      (synced) until "Show checked-off notifications again" in the settings.
     - Other notifications, newest first, each removed with the **×** in its top right corner or all
-      at once; removed ones don't come back. Changes in the Pledge Store (#164), found by its
+      at once; removed ones don't come back on their own, only with "Show checked-off
+      notifications again" in the settings, while they still matter. Changes in the Pledge Store (#164), found by its
       schedule around the full hour: **new and gone warbond CCUs** with their prices, and how many
       **Pledge Store items** changed, with the list (new, gone, new price, on sale) to open; both
       with **Show in Pledge Store**. Only new warbond CCUs also show as a browser notification –
@@ -741,9 +742,13 @@ In the order of the settings tab:
     - **Pledge Store**: **Warbond CCUs changed** (in the sidebar, new ones also in the browser),
       **Pledge Store items changed** and **Events** (both in the sidebar only). Turned off, a kind
       adds no notification, and its open ones go – in the sidebar and in the browser.
-  - **Show dismissed paint notifications again**: the Paint Discount Consultant's notification
-    shows again for all paints, also those dismissed with its × (on all browsers, as the dismissed
-    paints are synced).
+  - **Show checked-off notifications again** (#213): brings back the sidebar notifications checked
+    off or dismissed with their ×, as far as they still matter – an event while it is shown, new
+    warbond CCUs while one is still offered, changed Pledge Store items while one of the new or
+    repriced ones still has that price, the Paint Discount Consultant's while paints can still be
+    bought again (on all browsers, as the dismissed paints are synced), and the hint on browser
+    notifications while they are off. Kinds turned off stay hidden; notifications from before this
+    version (without what they were about) don't come back. It says how many came back.
 - **Paint Discount Consultant** (it always buys with store credit, never with new money):
   - **Include my store credit** (on by default): the cart may also be paid with the current store
     credit; off, only with the melt value of the own paints.
