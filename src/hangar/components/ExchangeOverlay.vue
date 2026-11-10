@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDemoContext } from '@/demo/use-demo';
 import { EXCHANGE_ATTENTION_DELAY_MS } from '@/config';
 import { i18n, locale } from '@/i18n';
 import { HIDDEN } from '@/orders/orders';
@@ -93,7 +94,11 @@ const ready = computed(
     !submitting.value,
 );
 
+/** The demo shows the dialog, but changes nothing: its pledge ids are made up. */
+const demo = useDemoContext();
+
 async function submit() {
+  if (demo.value) return;
   if (!ready.value) {
     error.value = i18n.t('exchange.missing');
     return;
@@ -270,7 +275,12 @@ onUnmounted(() => {
             <button type="button" class="shm-button" :disabled="submitting" @click="close">
               {{ i18n.t('exchange.cancel') }}
             </button>
-            <button type="submit" class="shm-button is-danger shm-action-submit" :disabled="!ready">
+            <button
+              v-tooltip="demo ? i18n.t('exchange.demo') : undefined"
+              type="submit"
+              class="shm-button is-danger shm-action-submit"
+              :disabled="!ready || !!demo"
+            >
               {{ submitting ? i18n.t('exchange.submitting') : i18n.t('exchange.submit', [value]) }}
             </button>
           </div>

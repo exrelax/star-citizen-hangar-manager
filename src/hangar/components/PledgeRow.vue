@@ -280,13 +280,12 @@ const toggle = () => {
         >
           {{ i18n.t('pledge.showInMyGear', [pledge.page]) }}
         </a>
-        <!-- Disabled in the demo: its pledge id is made up. -->
+        <!-- Opens the dialog in the demo too; there its exchange button is disabled. -->
         <button
           v-if="pledge.isMeltable"
-          v-tooltip="demo ? i18n.t('exchange.demo') : i18n.t('exchange.buttonHint')"
+          v-tooltip="i18n.t('exchange.buttonHint')"
           type="button"
           class="shm-button shm-origin-button shm-exchange-button is-danger"
-          :disabled="!!demo"
           @click="exchanging = true"
         >
           <SvgIcon name="triangle-exclamation" />
@@ -308,10 +307,9 @@ const toggle = () => {
         </button>
         <button
           v-if="pledge.isGiftable"
-          v-tooltip="demo ? i18n.t('gift.demo') : i18n.t('gift.buttonHint')"
+          v-tooltip="i18n.t('gift.buttonHint')"
           type="button"
           class="shm-button shm-origin-button shm-gift-button"
-          :disabled="!!demo"
           @click="gifting = true"
         >
           <SvgIcon name="gift" />

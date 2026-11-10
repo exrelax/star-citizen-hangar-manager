@@ -785,10 +785,9 @@ const chart = computed(() => {
               <template v-if="cartFilled && ownPledges.length">
                 <template v-if="settings.bulkMelting">
                   <button
-                    v-tooltip="demo ? i18n.t('exchange.demo') : i18n.t('consultant.meltHintReady')"
+                    v-tooltip="i18n.t('consultant.meltHintReady')"
                     type="button"
                     class="shm-button is-danger"
-                    :disabled="!!demo"
                     @click="melting = true"
                   >
                     <SvgIcon name="triangle-exclamation" />

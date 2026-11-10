@@ -316,10 +316,9 @@ const openBulkMeltingSetting = () =>
         <div v-if="reboughtPledges.length" class="shm-consultant-cart">
           <template v-if="settings.bulkMelting">
             <button
-              v-tooltip="demo ? i18n.t('exchange.demo') : i18n.t('consultant.meltOldHint')"
+              v-tooltip="i18n.t('consultant.meltOldHint')"
               type="button"
               class="shm-button is-danger"
-              :disabled="!!demo"
               @click="meltingRebought = true"
             >
               <SvgIcon name="triangle-exclamation" />
@@ -641,15 +640,10 @@ const openBulkMeltingSetting = () =>
           <template v-if="settings.bulkMelting && ownPledges.length">
             <button
               v-tooltip="
-                demo
-                  ? i18n.t('exchange.demo')
-                  : cartFilled
-                    ? i18n.t('consultant.meltHintReady')
-                    : i18n.t('consultant.meltFirstHint')
+                cartFilled ? i18n.t('consultant.meltHintReady') : i18n.t('consultant.meltFirstHint')
               "
               type="button"
               class="shm-button is-danger"
-              :disabled="!!demo"
               @click="melting = true"
             >
               <SvgIcon name="triangle-exclamation" />
