@@ -20,7 +20,7 @@ import {
 } from '@/notifications/browser-permission';
 import BulkExchangeOverlay from './BulkExchangeOverlay.vue';
 import { REBUY_PLAN_VERSION, rebuyPlanItem } from '@/store/paint-consultant/rebuy-plan-storage';
-import { checkOff, type AppNotification } from '@/notifications/notifications';
+import { checkOff, noteText, type AppNotification } from '@/notifications/notifications';
 import { useOpenNotifications } from '@/notifications/use-notifications';
 import { meltReadyIds, useMarkedPledges } from '../use-melt-marks';
 import { clearHangarFilter, hangarViewFilter, showHangarFilter } from '../view-filter';
@@ -567,8 +567,8 @@ async function move(box: Box, step: -1 | 1) {
           <ul v-if="notes.length" class="shm-sidebar-notes">
             <li v-for="note in notes" :key="note.id">
               <span class="shm-sidebar-note-text">
-                <a v-if="noteHref(note)" :href="noteHref(note)">{{ note.text }}</a>
-                <template v-else>{{ note.text }}</template>
+                <a v-if="noteHref(note)" :href="noteHref(note)">{{ noteText(note, locale) }}</a>
+                <template v-else>{{ noteText(note, locale) }}</template>
                 <time class="shm-sidebar-note">{{ noteTime.format(note.at) }}</time>
                 <!-- Changed Pledge Store items: the count first, the list on demand (#164). -->
                 <details v-if="note.details?.length" class="shm-sidebar-note-details">
@@ -591,7 +591,7 @@ async function move(box: Box, step: -1 | 1) {
                 v-tooltip="i18n.t('notifications.checkOff')"
                 type="button"
                 class="shm-sidebar-icon-button shm-sidebar-note-dismiss"
-                :aria-label="`${i18n.t('notifications.checkOff')}: ${note.text}`"
+                :aria-label="`${i18n.t('notifications.checkOff')}: ${noteText(note, locale)}`"
                 @click="checkOff([note.id])"
               >
                 <SvgIcon name="xmark" />

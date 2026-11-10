@@ -23,9 +23,15 @@ export function formatEventTime(at: number, locale: Locale): string {
 /** The notification of a shown event: when it starts, or until when it runs. */
 export function eventNote(event: StarCitizenEvent, locale: Locale, now: number): AppNotification {
   const upcoming = eventState(event, now) === 'upcoming';
+  const key = upcoming ? 'notifications.eventUpcoming' : 'notifications.eventRunning';
   return {
     id: `events:${event.id}`,
     kind: 'events',
+    // Built in the language shown, so name and date follow a change of the language.
+    message: {
+      key,
+      args: [{ texts: event.name }, { at: upcoming ? event.eventStart : event.eventEnd }],
+    },
     text: upcoming
       ? translate(locale, 'notifications.eventUpcoming', [
           localized(event.name, locale),
@@ -50,5 +56,22 @@ export async function noteShownEvents(
   if (!isKindOn(settings.notificationsOff, 'events')) return;
   const locale = resolveLanguage(settings.language);
   const notes = shown.map((event) => eventNote(event, locale, now));
-  await updateNotifications((list) => withAdded(list, notes));
+  await updateNotifications((list) => withAdded(withMessages(list, notes), notes));
+}
+
+/**
+ * `list` with the open event notifications added before they had a `message` (only the text of
+ * the language back then) given one; `list` itself if there are none.
+ */
+function withMessages(
+  list: readonly AppNotification[],
+  notes: readonly AppNotification[],
+): readonly AppNotification[] {
+  const byId = new Map(notes.map((note) => [note.id, note]));
+  const outdated = (note: AppNotification) =>
+    !note.message && note.doneAt === undefined && byId.has(note.id);
+  if (!list.some(outdated)) return list;
+  return list.map((note) =>
+    outdated(note) ? { ...note, message: byId.get(note.id)!.message } : note,
+  );
 }
