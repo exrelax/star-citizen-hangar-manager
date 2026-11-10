@@ -9,7 +9,8 @@ import { toPledgeView } from '@/hangar/pledge-view';
 import { createPriceLookup } from '@/hangar/ship-prices';
 import { createItemPriceLookup } from '@/store/items/item-prices';
 import type { DemoCatalog } from './catalog';
-import { generateHangar } from './generate-hangar';
+import { generateDemoAccount, type DemoAccount } from './generate-states';
+import { withOrder } from '@/orders/orders';
 import { fraction, hash } from './random';
 
 /*
@@ -99,22 +100,32 @@ export function demoHangar(
 }
 
 /**
- * The generated demo hangar (#175) as the list shows it: the pledges of `generateHangar` with
- * their discounts against the catalog's prices, made-up display ids and purchase dates.
+ * The generated demo hangar (#175) as the list shows it: the pledges of `generateDemoAccount`
+ * with their states and orders (#176), their discounts against the catalog's prices, made-up
+ * display ids and purchase dates – and the account they belong to.
  */
-export function generatedHangar(
+export function generatedDemo(
   catalog: DemoCatalog,
   key: string,
   today = localToday(),
   now = Date.now(),
-): PledgeView[] {
+): { pledges: PledgeView[]; account: DemoAccount } {
+  const account = generateDemoAccount(catalog, key);
   const priceOf = createPriceLookup(catalog.ships.map(({ name, msrp }) => ({ name, price: msrp })));
   const itemPriceOf = createItemPriceLookup(catalog.items);
-  const views = generateHangar(catalog, key).map((pledge, position) =>
-    toPledgeView(pledge, {}, position, priceOf, itemPriceOf),
+  const views = account.pledges.map((pledge, position) =>
+    withOrder(toPledgeView(pledge, {}, position, priceOf, itemPriceOf), account.orders),
   );
-  return demoViews(views, key, today, now);
+  return { pledges: demoViews(views, key, today, now), account };
 }
+
+/** The generated demo hangar as the list shows it (see `generatedDemo`). */
+export const generatedHangar = (
+  catalog: DemoCatalog,
+  key: string,
+  today = localToday(),
+  now = Date.now(),
+): PledgeView[] => generatedDemo(catalog, key, today, now).pledges;
 
 /** A demo list with made-up ids (also for the search), purchase dates and pages. */
 function demoViews(

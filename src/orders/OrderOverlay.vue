@@ -63,7 +63,12 @@ onMounted(async () => {
   dialog.value?.focus();
   try {
     const context = demo.value;
-    if (context) {
+    // A generated demo order has a made-up invoice (#176); one of the own selection is loaded
+    // and anonymized.
+    const generated = context?.orderDetails?.(props.order);
+    if (generated) {
+      details.value = generated;
+    } else if (context) {
       const real = context.realOrder(props.order.id);
       if (!real) throw new Error(i18n.t('order.notFound'));
       const anonymized = anonymizeOrderDetails(await fetchOrderDetails(real), context.fakeId);

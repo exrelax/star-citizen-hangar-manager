@@ -26,7 +26,12 @@ async function toggle() {
   if (!open.value || entries.value) return;
   error.value = undefined;
   try {
-    const [log, ships] = await Promise.all([loadUpgradeLog(props.pledgeId), shipsItem.getValue()]);
+    // A generated demo pledge has a made-up log of its own (#176), never RSI's.
+    const generated = demo.value?.generatedUpgradeLog?.(props.pledgeId);
+    const [log, ships] = await Promise.all([
+      generated ?? loadUpgradeLog(props.pledgeId),
+      shipsItem.getValue(),
+    ]);
     const shown = demo.value ? demo.value.upgradeLog(props.pledgeId, props.createdAt, log) : log;
     entries.value = withPrices(shown, createPriceLookup(shipPricesOf(ships)));
   } catch (failure) {
