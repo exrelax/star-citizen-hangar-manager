@@ -190,15 +190,17 @@ export const SMART_UPDATE = {
 /**
  * The data files of the project website (`site/public/data/`), which GitHub Pages serves to any
  * origin, so no host permission is needed; only data, never code. Read at the times of `schedule`
- * (local clock, see `src/site-data/site-data-schedule.ts`): every two hours, hourly from 15:00 to
- * 23:00 and every 15 minutes from 16:00 to 19:30, when CIG usually changes the Pledge Store. After
- * a failure again after `retryMs` at the latest.
+ * (UTC, the same for every user; see `src/site-data/site-data-schedule.ts`): every two hours,
+ * hourly from 14:00 to 22:00 and every 15 minutes from 15:00 to 18:30 – in Central European
+ * (winter) time every two hours, hourly from 15:00 to 23:00 and every 15 minutes from 16:00 to
+ * 19:30, when CIG usually changes the Pledge Store (e.g. 17:00 during the IAE). After a failure
+ * again after `retryMs` at the latest.
  */
 export const SITE_DATA = {
   schedule: [
-    { from: '00:00', to: '23:59', everyMinutes: 120 },
-    { from: '15:00', to: '23:00', everyMinutes: 60 },
-    { from: '16:00', to: '19:30', everyMinutes: 15 },
+    { from: '01:00', to: '23:59', everyMinutes: 120 },
+    { from: '14:00', to: '22:00', everyMinutes: 60 },
+    { from: '15:00', to: '18:30', everyMinutes: 15 },
   ],
   retryMs: 60 * 60 * 1000,
 } as const;

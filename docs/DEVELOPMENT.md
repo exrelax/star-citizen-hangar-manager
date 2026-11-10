@@ -183,8 +183,8 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   it and the summary, each `##` section gets a link at the top.
 - **Data for the extension**: `site/public/` is copied as is, e.g. `data/events.json`, the events
   of the Pledge Store tab (#69). The store build reads it from the live site at the times of `SITE_DATA.schedule` in
-  `src/config.ts` (local clock: every two hours, hourly from 15:00 to 23:00, every 15 minutes from
-  16:00 to 19:30; a missed time is caught up once, a failure retried after an hour);
+  `src/config.ts` (UTC, the same for every user: every two hours, hourly from 14:00 to 22:00, every
+  15 minutes from 15:00 to 18:30 – one hour later in Central European winter time; a missed time is caught up once, a failure retried after an hour);
   the dev build reads the file of the working copy, so new events can be tried before they are
   deployed – "Stored data" → "Events" in the settings reads it again at once. The format is
   checked by [`src/events/events.ts`](../src/events/events.ts). An event's `image` is a 16:9 image

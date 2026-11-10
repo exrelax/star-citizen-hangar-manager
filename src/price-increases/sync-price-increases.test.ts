@@ -4,8 +4,8 @@ import type { ExpectedPriceIncrease } from './price-increases';
 import { priceIncreasesItem, priceIncreasesMeta } from './price-increases-storage';
 import { maybeRefreshPriceIncreases } from './sync-price-increases';
 
-/** 12:30 on the local clock: read at 12:00, next at 14:00 (`SITE_DATA.schedule`). */
-const NOW = new Date(2026, 10, 10, 12, 30).getTime();
+/** 11:30 UTC: read at 11:00, next at 13:00 (`SITE_DATA.schedule`). */
+const NOW = Date.UTC(2026, 10, 10, 11, 30);
 const HOUR = 60 * 60 * 1000;
 
 const galaxy: ExpectedPriceIncrease = {
