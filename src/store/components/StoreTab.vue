@@ -134,21 +134,6 @@ const displayClasses = computed(() => ({
   margin-top: 20px;
 }
 
-.shm-store-title {
-  margin: 0 0 4px;
-  color: var(--shm-text-strong);
-  font-size: calc(16px * var(--shm-font-scale));
-  font-weight: normal;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.shm-store-intro {
-  margin: 0;
-  color: var(--shm-text-muted);
-  font-size: calc(12px * var(--shm-font-scale));
-}
-
 .shm-count {
   display: flex;
   flex-wrap: wrap;
@@ -197,5 +182,25 @@ const displayClasses = computed(() => ({
 .shm-store-state.is-error p {
   margin: 0 0 8px;
   color: var(--shm-danger);
+}
+</style>
+
+<!-- Shared with the events above the warbond CCUs (EventList.vue): not scoped. -->
+<style>
+.shm-store-title {
+  /* Below RSI's fixed top bar when a notification scrolls to it. */
+  scroll-margin-top: 90px;
+  margin: 0 0 4px;
+  color: var(--shm-text-strong);
+  font-size: calc(16px * var(--shm-font-scale));
+  font-weight: normal;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.shm-store-intro {
+  margin: 0;
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
 }
 </style>
