@@ -4,7 +4,8 @@ import type { ExpectedPriceIncrease } from './price-increases';
 import { priceIncreasesItem, priceIncreasesMeta } from './price-increases-storage';
 import { maybeRefreshPriceIncreases } from './sync-price-increases';
 
-const NOW = Date.parse('2026-11-10T12:00:00Z');
+/** 12:30 on the local clock: read at 12:00, next at 14:00 (`SITE_DATA.schedule`). */
+const NOW = new Date(2026, 10, 10, 12, 30).getTime();
 const HOUR = 60 * 60 * 1000;
 
 const galaxy: ExpectedPriceIncrease = {
@@ -15,14 +16,14 @@ const galaxy: ExpectedPriceIncrease = {
 beforeEach(() => fakeBrowser.reset());
 
 describe('maybeRefreshPriceIncreases', () => {
-  it('stores the file and reads it again after a day', async () => {
+  it('stores the file and reads it again at the next time of the schedule', async () => {
     const fetch = vi.fn(async () => [galaxy]);
     await maybeRefreshPriceIncreases({ fetch, now: () => NOW });
     await maybeRefreshPriceIncreases({ fetch, now: () => NOW + HOUR });
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(await priceIncreasesItem.getValue()).toEqual({ version: 1, priceIncreases: [galaxy] });
 
-    await maybeRefreshPriceIncreases({ fetch, now: () => NOW + 25 * HOUR });
+    await maybeRefreshPriceIncreases({ fetch, now: () => NOW + 2 * HOUR });
     expect(fetch).toHaveBeenCalledTimes(2);
   });
 

@@ -159,7 +159,8 @@ Your hangar is nobody else's business. The extension is built so that your data 
   of the extension, so showing the links doesn't contact them.
 - **Events and expected price increases from the project website**: the list of events in the
   Pledge Store tab and the list of ships whose price is expected to rise are read from the
-  project's own website on GitHub Pages, each at most once a day – public files, the same for
+  project's own website on GitHub Pages, every two hours, more often in the afternoon and
+  evening (at most every 15 minutes) – public files, the same for
   everyone; the requests carry nothing but your IP address, like any request.
 
 ### Only your settings sync – through your browser
@@ -525,7 +526,7 @@ Paints, Game access, LTI, Warbond, Probably giftable, Available, Rewards), plus:
 
 **Events** come first while there are any: Star Citizen events like the Intergalactic Aerospace
 Expo, when the Pledge Store usually has new ships and daily warbond offers. The list is a small file
-on the project website (`data/events.json`), read at most once a day and kept in the browser – data
+on the project website (`data/events.json`), read every two hours (more often in the afternoon and evening, when the Pledge Store changes) and kept in the browser – data
 only, checked field by field, its texts shown as plain text, in the language set. Each event shows
 from a few days before it starts until it ends, with its name, start and end, a description and
 image if given, and a live countdown to its start (with the first phase, e.g. "starts in 3 d

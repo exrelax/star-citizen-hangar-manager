@@ -7,8 +7,7 @@ import { eventsItem, eventsMeta, EVENTS_VERSION, type EventsSnapshot } from './e
 
 /*
  * Keeps the stored events of the project website (#69) current, like every data file of the
- * website (`site-data/sync-site-data.ts`): at most once a day, after a failure again after an
- * hour. Each run also tells the events whose display period started (`event-notes.ts`).
+ * website (`site-data/sync-site-data.ts`): at the times of `SITE_DATA.schedule`. Each run also tells the events whose display period started (`event-notes.ts`).
  */
 
 /**
@@ -47,8 +46,7 @@ async function withLocalImages(
 }
 
 /** Whether the events are due to be read again. */
-export const eventsDue = (meta: StorageMeta, now: number): boolean =>
-  siteDataDue(meta, now, EVENTS);
+export const eventsDue = (meta: StorageMeta, now: number): boolean => siteDataDue(meta, now);
 
 const refreshEvents = createSiteDataSync(
   {
@@ -56,8 +54,6 @@ const refreshEvents = createSiteDataSync(
     item: eventsItem,
     meta: eventsMeta,
     version: EVENTS_VERSION,
-    refreshMs: EVENTS.refreshMs,
-    retryMs: EVENTS.retryMs,
     fetch: () => fetchEvents(),
     toSnapshot: (events: StarCitizenEvent[]) => ({ version: EVENTS_VERSION, events }),
     fromSnapshot: (snapshot: EventsSnapshot) => snapshot.events,
