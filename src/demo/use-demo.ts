@@ -4,6 +4,10 @@ import type { Order, OrderDetails } from '@/orders/orders';
 import { demoOrderDetails } from './generate-states';
 import { computed, inject, onMounted, shallowRef, watch, type InjectionKey, type Ref } from 'vue';
 import { demoMeltMarksItem } from '@/hangar/melt-marks';
+import type { StarCitizenEvent } from '@/events/events';
+import { locale } from '@/i18n';
+import { demoEventNotes, demoEvents } from './demo-events';
+import { seedDemoNotes } from './demo-notes';
 import type { StoreCredit } from '@/account/store-credit';
 import { current, shipsItem } from '@/ships/ships-storage';
 import { STORE_ITEMS_VERSION, storeItemsItem } from '@/store/items/store-items-storage';
@@ -80,6 +84,8 @@ export interface DemoContext {
   generatedUpgradeLog?: (pledgeId: number) => UpgradeLogEntry[] | undefined;
   /** The made-up invoice of a generated order (#176); none for an order of the own selection. */
   orderDetails?: (order: Order) => OrderDetails | undefined;
+  /** The events shown in the Pledge Store tab instead of the website's (#210). */
+  events: StarCitizenEvent[];
   /** Buy back tokens shown instead of the account's, with the generated buy back (#177). */
   tokens?: number;
   /** The store credit shown instead of the account's. */
@@ -133,6 +139,13 @@ export function useDemo(
     if (!account || !key.value) return;
     void seedDemoMarks(key.value, account.pledges, justBoughtOf(account.pledges));
   });
+  // The demo's own sidebar notifications (#210), once per key.
+  watch(
+    () => (active.value ? key.value : undefined),
+    (demoKey) => demoKey && void seedDemoNotes(demoKey, demoEventNotes(Date.now(), locale.value)),
+    { immediate: true },
+  );
+  const events = computed(() => (active.value ? demoEvents(Date.now()) : []));
   const demoPledges = computed(() => {
     if (!active.value || !key.value) return [];
     return generatedAccount.value?.pledges ?? demoHangar(pledges.value, key.value);
@@ -184,6 +197,7 @@ export function useDemo(
         },
         tokens: account.generatedBuyback.tokens,
       }),
+      events: events.value,
       storeCredit: demoStoreCredit(demoKey),
       justBought,
     };

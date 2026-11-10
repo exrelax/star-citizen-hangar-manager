@@ -205,7 +205,11 @@ information (for screenshots or content creators)** keeps private details off sc
   expected price increases (#194) fit the generated hangar and buy back, with dates relative to
   now: a ship whose flight ready date is ahead (with its module and a CCU to it), an already
   flight ready one with only the day, one within the hour and one outside the period – so the
-  labels, the filter and the sidebar notification show every case. The hangar's pledges have every
+  labels, the filter and the sidebar notification show every case. The Pledge Store tab shows
+  made-up events (#210) instead of the website's – one running with description, image and
+  phases, one upcoming without – and the sidebar shows sample notifications of its own instead of
+  the real ones, among them those of these events; checking them off in the demo changes nothing
+  real. The hangar's pledges have every
   state (#176): meltable or not, giftable or not, LTI and insurances in years and months (also
   several at once), upgraded ships with made-up "Applied upgrades", protected game access (`SC`,
   `SQ42`, `SC · SQ42`, also a reward without a ship), and orders paid with money, in part with
