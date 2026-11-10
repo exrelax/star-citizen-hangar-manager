@@ -50,7 +50,8 @@ describe.each(['key-a', 'key-b'])(
     const { orders, pledgeOrders } = generatedBuyback.orders;
     const giftable = (id: number) => buyback.find((pledge) => pledge.id === id)!.isProbablyGiftable;
     const cases = generatedBuyback.pledges.filter(
-      (pledge) => !pledge.title.startsWith('Referral') && pledge.price !== null,
+      (pledge) =>
+        !pledge.isUpgrade && !pledge.title.startsWith('Referral') && pledge.price !== null,
     );
     const [money, back, credit, mixed, late, unknown, yes, no, sameA, sameB] = cases.map(
       (pledge) => pledge.id,
@@ -80,6 +81,30 @@ describe.each(['key-a', 'key-b'])(
       expect(pledgeOrders[sameA!]!.orderId).toBe(pledgeOrders[sameB!]!.orderId);
       expect(giftable(sameA!)).toBe(giftable(sameB!));
       expect(giftable(sameA!)).toBe(true);
+    });
+  },
+);
+
+describe.each(['key-a', 'key-b'])(
+  'CCUs RSI can’t sell again in the buy back of %s (#208)',
+  (key) => {
+    const { buyback } = generatedDemo(FALLBACK_CATALOG, key, TODAY, NOW);
+    const unavailable = buyback.filter((pledge) => pledge.unavailable);
+
+    it('has one whose base ship costs more and one where both cost the same', () => {
+      expect(
+        unavailable.some((pledge) => pledge.unavailable!.from.msrp > pledge.unavailable!.to.msrp),
+      ).toBe(true);
+      expect(
+        unavailable.some((pledge) => pledge.unavailable!.from.msrp === pledge.unavailable!.to.msrp),
+      ).toBe(true);
+    });
+
+    it('keeps them apart in the filter "Available", next to CCUs that can be bought back', () => {
+      const available = buyback.filter(BUYBACK_FILTER_PREDICATES.available);
+      expect(available.some((pledge) => pledge.isCcu)).toBe(true);
+      expect(available).not.toEqual(expect.arrayContaining(unavailable));
+      for (const pledge of unavailable) expect(pledge.isProbablyGiftable).toBe(false);
     });
   },
 );
