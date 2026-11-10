@@ -18,7 +18,10 @@ const props = defineProps<{
 const { settings } = useSettings();
 const kind = computed(() => pledgeKind(props.pledge));
 const value = computed(() => (settings.value.hideMeltValue ? HIDDEN : props.pledge.value));
-const pledgeId = computed(() => (settings.value.hidePledgeIds ? HIDDEN : props.pledge.id));
+/** The id as the row shows it: in the demo its made-up one. */
+const pledgeId = computed(() =>
+  settings.value.hidePledgeIds ? HIDDEN : (props.pledge.displayId ?? props.pledge.id),
+);
 </script>
 
 <template>
