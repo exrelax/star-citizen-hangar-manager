@@ -10,11 +10,62 @@
       "displayEnd": "2026-11-27T20:00:00Z",
       "image": "https://exrelax.github.io/star-citizen-hangar-manager/images/events/iae-2956.jpg",
       "description": {
-        "en": "The biggest spaceship show of the year in New Babbage on microTech, with a new manufacturer's ships on display every day. Star Citizen is free to play for the whole event.",
-        "de": "Die größte Raumschiff-Messe des Jahres in New Babbage auf microTech, jeden Tag mit den Schiffen eines anderen Herstellers. Star Citizen ist während des ganzen Events kostenlos spielbar.",
-        "fr": "Le plus grand salon de vaisseaux de l’année, à New Babbage sur microTech, avec chaque jour les vaisseaux d’un autre constructeur. Star Citizen est gratuit pendant tout l’événement.",
-        "es": "La mayor feria de naves del año en New Babbage, en microTech, con las naves de un fabricante distinto cada día. Star Citizen es gratis durante todo el evento."
-      }
+        "en": "Every day until the finale, another manufacturer takes the stage – with new warbond offers in the Pledge Store each day. Star Citizen is free to play for the whole event in New Babbage on microTech.",
+        "de": "Bis zum Finale stellt jeden Tag ein anderer Hersteller aus – mit täglich neuen Warbond-Angeboten im Pledge Store. Star Citizen ist während des ganzen Events in New Babbage auf microTech kostenlos spielbar.",
+        "fr": "Jusqu’à la finale, un nouveau constructeur est à l’honneur chaque jour – avec de nouvelles offres warbond chaque jour dans le Pledge Store. Star Citizen est gratuit pendant tout l’événement, à New Babbage sur microTech.",
+        "es": "Hasta la final, cada día se presenta otro fabricante, con nuevas ofertas warbond cada día en el Pledge Store. Star Citizen es gratis durante todo el evento en New Babbage, en microTech."
+      },
+      "phases": [
+        {
+          "start": "2026-11-13T16:00:00Z",
+          "name": "Roberts Space Industries"
+        },
+        {
+          "start": "2026-11-14T16:00:00Z",
+          "name": "Origin Jumpworks"
+        },
+        {
+          "start": "2026-11-15T16:00:00Z",
+          "name": "Anvil Aerospace"
+        },
+        {
+          "start": "2026-11-16T16:00:00Z",
+          "name": "Crusader Industries, Tumbril"
+        },
+        {
+          "start": "2026-11-17T16:00:00Z",
+          "name": "Drake Interplanetary"
+        },
+        {
+          "start": "2026-11-18T16:00:00Z",
+          "name": "ARGO Astronautics, Consolidated Outland, Greycat Industrial, Grey's Market"
+        },
+        {
+          "start": "2026-11-19T16:00:00Z",
+          "name": "MISC, Mirai, Kruger Intergalactic"
+        },
+        {
+          "start": "2026-11-20T16:00:00Z",
+          "name": "Aegis Dynamics"
+        },
+        {
+          "start": "2026-11-21T16:00:00Z",
+          "name": "Aopoa, Banu, Esperia, Gatac"
+        },
+        {
+          "start": "2026-11-22T16:00:00Z",
+          "name": "Best in Show"
+        },
+        {
+          "start": "2026-11-23T16:00:00Z",
+          "name": {
+            "en": "Finale",
+            "de": "Finale",
+            "fr": "Finale",
+            "es": "Final"
+          }
+        }
+      ]
     }
   ]
 }

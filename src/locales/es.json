@@ -423,11 +423,13 @@
   },
   "events": {
     "title": "Eventos",
-    "intro": "Los eventos de Star Citizen, desde el sitio web del proyecto: el Pledge Store suele tener entonces naves nuevas y ofertas.",
     "upcoming": "Próximamente",
     "running": "En curso",
-    "startsIn": "empieza $1",
-    "endsIn": "termina $1"
+    "countdownStart": "Empieza en",
+    "now": "Ahora: $1",
+    "nextIn": "Después: $1 en",
+    "countdownEnd": "Termina en",
+    "days": "$1 d"
   },
   "consultant": {
     "title": "Asesor de descuentos de pinturas",
