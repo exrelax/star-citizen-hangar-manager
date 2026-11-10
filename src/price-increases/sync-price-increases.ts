@@ -10,8 +10,8 @@ import {
 
 /*
  * Keeps the stored expected price increases of the project website (#195) current, like every
- * data file of the website (`site-data/sync-site-data.ts`): at most once a day, after a failure
- * again after an hour; offline the stored ones stay.
+ * data file of the website (`site-data/sync-site-data.ts`): at the times of
+ * `SITE_DATA.schedule`; offline the stored ones stay.
  */
 
 /**
@@ -33,8 +33,6 @@ const refresh = createSiteDataSync({
   item: priceIncreasesItem,
   meta: priceIncreasesMeta,
   version: PRICE_INCREASES_VERSION,
-  refreshMs: PRICE_INCREASES.refreshMs,
-  retryMs: PRICE_INCREASES.retryMs,
   fetch: () => fetchPriceIncreases(),
   toSnapshot: (priceIncreases: ExpectedPriceIncrease[]) => ({
     version: PRICE_INCREASES_VERSION,

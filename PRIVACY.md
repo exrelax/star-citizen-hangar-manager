@@ -99,7 +99,8 @@ sees or stores your RSI login.
   no pledge data, no IDs, no login, no cookies. Like every request on the internet, they reveal
   your IP address to FleetYards. Turn both ship links off in the settings ("Show links for ships")
   and the extension talks to RSI only.
-- **exrelax.github.io** (this project's website on GitHub Pages): at most once a day, the
+- **exrelax.github.io** (this project's website on GitHub Pages): every two hours, more often in the
+  afternoon and evening (at most every 15 minutes), while an RSI page with the extension is open, the
   extension loads the list of Star Citizen events it shows in the Pledge Store tab
   (`data/events.json`) and the list of ships whose price is expected to rise
   (`data/price-increases.json`), and while the tab shows an event, its image from the same

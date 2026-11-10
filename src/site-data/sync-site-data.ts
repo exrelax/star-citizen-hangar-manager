@@ -1,9 +1,11 @@
+import { SITE_DATA } from '@/config';
 import { hashOf, recordCheck, recordSync, type MetaItem, type StorageMeta } from '@/storage/meta';
+import { lastSiteDataReadTime } from './site-data-schedule';
 
 /*
  * Keeps a stored data file of the project website current – the events (#69), the expected price
- * increases (#195): read at most once a day (`refreshMs`), after a failure again after an hour
- * (`retryMs`). A file that can't be read or isn't of the known format keeps the stored data.
+ * increases (#195): read at the times of `SITE_DATA.schedule` (see `site-data-schedule.ts`),
+ * after a failure again after `SITE_DATA.retryMs` at the latest. A file that can't be read or isn't of the known format keeps the stored data.
  * Stored data of an earlier format (another `version`) is removed and read again at once.
  *
  * GitHub Pages serves the files to any origin, so no host permission is needed. The development
@@ -24,8 +26,6 @@ export interface SiteDataSource<D, S extends { version: number }> {
   meta: MetaItem;
   /** The format of the stored data; other versions are removed and read again. */
   version: number;
-  refreshMs: number;
-  retryMs: number;
   /** The data of the file, checked; `undefined` for a file of another format. */
   fetch: () => Promise<D | undefined>;
   toSnapshot: (data: D) => S;
@@ -40,14 +40,17 @@ export interface SiteDataResult<D> {
   read: boolean;
 }
 
-/** Whether the file is due to be read again. */
+/**
+ * Whether the file is due to be read again: not read since the latest time of the schedule, or
+ * failed at least `retryMs` ago.
+ */
 export function siteDataDue(
   meta: StorageMeta,
   now: number,
-  { refreshMs, retryMs }: { refreshMs: number; retryMs: number },
+  { schedule, retryMs }: Pick<typeof SITE_DATA, 'schedule' | 'retryMs'> = SITE_DATA,
 ): boolean {
-  const wait = meta.lastOutcome?.status === 'failed' ? retryMs : refreshMs;
-  return now - meta.checkedAt >= wait;
+  if (meta.checkedAt < lastSiteDataReadTime(now, schedule)) return true;
+  return meta.lastOutcome?.status === 'failed' && now - meta.checkedAt >= retryMs;
 }
 
 /** Loads a file of the website without cookies (it needs none, and it is another origin). */
@@ -114,10 +117,10 @@ export function createSiteDataSync<D, S extends { version: number }>(
         data: current ? source.fromSnapshot(current) : undefined,
         read: false,
       };
-      // Without stored data too only when due: a missing file is tried again after an hour, not
-      // on every check. Deleting the data in the settings deletes its metadata, so it is read
+      // Without stored data too only when due: a missing file is tried again at the next time of
+      // the schedule, not on every check. Deleting the data in the settings deletes its metadata, so it is read
       // again.
-      if (force || outdated || siteDataDue(meta, now(), source)) {
+      if (force || outdated || siteDataDue(meta, now())) {
         // Without anything current stored, the data is stored in any case.
         const data = await readFile(fetch, now, current ? meta : undefined);
         if (data !== undefined) result = { data, read: true };

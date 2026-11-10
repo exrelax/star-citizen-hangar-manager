@@ -182,7 +182,9 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   there. Its `#` heading is the title, the paragraphs before the first `##` section the line below
   it and the summary, each `##` section gets a link at the top.
 - **Data for the extension**: `site/public/` is copied as is, e.g. `data/events.json`, the events
-  of the Pledge Store tab (#69). The store build reads it from the live site at most once a day;
+  of the Pledge Store tab (#69). The store build reads it from the live site at the times of `SITE_DATA.schedule` in
+  `src/config.ts` (local clock: every two hours, hourly from 15:00 to 23:00, every 15 minutes from
+  16:00 to 19:30; a missed time is caught up once, a failure retried after an hour);
   the dev build reads the file of the working copy, so new events can be tried before they are
   deployed – "Stored data" → "Events" in the settings reads it again at once. The format is
   checked by [`src/events/events.ts`](../src/events/events.ts). An event's `image` is a 16:9 image
@@ -198,7 +200,7 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
 - **Expected price increases**: `data/price-increases.json` lists the ships whose price is
   expected to rise, for the Buy Back Reminder (#195). Every date in it is an assumption, and the
   extension says so. Read like the events, by the same loader
-  ([`src/site-data/sync-site-data.ts`](../src/site-data/sync-site-data.ts)): at most once a day,
+  ([`src/site-data/sync-site-data.ts`](../src/site-data/sync-site-data.ts)): on the same schedule,
   the dev build from the working copy, checked by
   [`src/price-increases/price-increases.ts`](../src/price-increases/price-increases.ts). See
   [below](#editing-the-expected-price-increases) for how to edit it.

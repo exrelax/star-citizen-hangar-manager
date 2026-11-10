@@ -188,10 +188,24 @@ export const SMART_UPDATE = {
 } as const;
 
 /**
+ * The data files of the project website (`site/public/data/`), which GitHub Pages serves to any
+ * origin, so no host permission is needed; only data, never code. Read at the times of `schedule`
+ * (local clock, see `src/site-data/site-data-schedule.ts`): every two hours, hourly from 15:00 to
+ * 23:00 and every 15 minutes from 16:00 to 19:30, when CIG usually changes the Pledge Store. After
+ * a failure again after `retryMs` at the latest.
+ */
+export const SITE_DATA = {
+  schedule: [
+    { from: '00:00', to: '23:59', everyMinutes: 120 },
+    { from: '15:00', to: '23:00', everyMinutes: 60 },
+    { from: '16:00', to: '19:30', everyMinutes: 15 },
+  ],
+  retryMs: 60 * 60 * 1000,
+} as const;
+
+/**
  * The event notices of the Pledge Store tab (#69): a list of events (e.g. the Intergalactic
- * Aerospace Expo) on the project website, which GitHub Pages serves to any origin, so no host
- * permission is needed. Read at most once a day, after a failure again after an hour; only data,
- * never code.
+ * Aerospace Expo) on the project website, read like its other data files (`SITE_DATA`).
  */
 export const EVENTS = {
   url: 'https://exrelax.github.io/star-citizen-hangar-manager/data/events.json',
@@ -199,21 +213,16 @@ export const EVENTS = {
   imageBase: 'https://exrelax.github.io/star-citizen-hangar-manager/',
   /** The format the extension reads; files of other versions are ignored. */
   schemaVersion: 1,
-  refreshMs: 24 * 60 * 60 * 1000,
-  retryMs: 60 * 60 * 1000,
 } as const;
 
 /**
  * The expected price increases of the Buy Back Reminder (#195): ships whose price is expected to
- * rise, on the project website like the events, read the same way (at most once a day, after a
- * failure again after an hour; only data, never code).
+ * rise, on the project website like the events, read the same way (`SITE_DATA`).
  */
 export const PRICE_INCREASES = {
   url: 'https://exrelax.github.io/star-citizen-hangar-manager/data/price-increases.json',
   /** The format the extension reads; files of other versions are ignored. */
   schemaVersion: 1,
-  refreshMs: 24 * 60 * 60 * 1000,
-  retryMs: 60 * 60 * 1000,
 } as const;
 
 /**

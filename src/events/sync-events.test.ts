@@ -7,7 +7,8 @@ import type { StarCitizenEvent } from './events';
 import { eventsItem, eventsMeta } from './events-storage';
 import { eventsDue, maybeRefreshEvents } from './sync-events';
 
-const NOW = Date.parse('2026-11-10T12:00:00Z');
+/** 12:30 on the local clock: read at 12:00, next at 14:00 (`SITE_DATA.schedule`). */
+const NOW = new Date(2026, 10, 10, 12, 30).getTime();
 const HOUR = 60 * 60 * 1000;
 
 const iae: StarCitizenEvent = {
@@ -20,11 +21,11 @@ const iae: StarCitizenEvent = {
 };
 
 describe('eventsDue', () => {
-  it('reads once a day, after a failure again after an hour', () => {
+  it('reads at the times of the schedule, after a failure again after an hour', () => {
     expect(eventsDue(EMPTY_META, NOW)).toBe(true);
-    const read = { ...EMPTY_META, checkedAt: NOW - 2 * HOUR };
+    const read = { ...EMPTY_META, checkedAt: NOW - 20 * 60_000 };
     expect(eventsDue(read, NOW)).toBe(false);
-    expect(eventsDue({ ...read, checkedAt: NOW - 25 * HOUR }, NOW)).toBe(true);
+    expect(eventsDue({ ...read, checkedAt: NOW - 40 * 60_000 }, NOW)).toBe(true);
     const failed = {
       ...read,
       lastOutcome: {
@@ -35,7 +36,8 @@ describe('eventsDue', () => {
         changed: 0,
       },
     };
-    expect(eventsDue(failed, NOW)).toBe(true);
+    expect(eventsDue(failed, NOW)).toBe(false);
+    expect(eventsDue(failed, NOW + 40 * 60_000)).toBe(true);
   });
 });
 
