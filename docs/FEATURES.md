@@ -361,6 +361,13 @@ on its own.
 - **Sorting** at the top right of the list: newest or oldest first, highest or lowest value first,
   or highest discount first. The buy back sorts by date only, as RSI shows no value there. The
   choice is kept per list.
+- **Highlights**: while a filter is included or a sorting chosen, the rows highlight the values it
+  is about, so the list shows at a glance why each entry is there – a stronger color and weight,
+  no boxes of its own. In My Hangar: the value for Giftable, Meltable, Valuable, Warbond and the
+  value sortings, the discount for Discount and its sorting, the Gift and Melt tags, the insurance
+  for LTI, the game access lock for Game access. In the buy back: the price for Warbond and
+  Available, the "Probably giftable" label and the insurance for LTI. Excluded filters highlight
+  nothing. Which filter highlights what is one list in `config.ts` (`FILTER_HIGHLIGHTS`).
 - Thousands of pledges stay fast: rows are drawn while scrolling, in small steps between frames.
 
 ---

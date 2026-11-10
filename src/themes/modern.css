@@ -524,6 +524,21 @@ html .shm-theme-modern .shm-meta .shm-value {
   color: var(--shm-text);
 }
 
+/* Highlighted by a filter or the sorting (#216): the tags take their own color as a thin ring. */
+html .shm-theme-modern .shm-hl-value .shm-meta .shm-value,
+html .shm-theme-modern .shm-hl-price .shm-meta .shm-value:not(.is-loading) {
+  color: var(--shm-text-strong);
+}
+
+html .shm-theme-modern .shm-hl-giftBadge .shm-badge.is-gift:not(.is-off),
+html .shm-theme-modern .shm-hl-meltBadge .shm-badge.is-melt:not(.is-off),
+html .shm-theme-modern .shm-hl-insuranceBadge .shm-badge.is-insurance,
+html .shm-theme-modern .shm-hl-gameAccessBadge .shm-badge.is-protected,
+html .shm-theme-modern .shm-hl-giftableLabel .shm-badge.is-giftable {
+  font-weight: 650;
+  box-shadow: inset 0 0 0 1px currentColor;
+}
+
 /* Tags: quiet by default; color only where it means something (LTI, upgraded, refund, gift). */
 html .shm-theme-modern .shm-badge {
   padding: 2px 8px;

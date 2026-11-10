@@ -178,7 +178,7 @@ const kind = computed(() =>
         <span
           v-if="pledge.insurance"
           v-tooltip="i18n.t('insurance.badgeTitle')"
-          class="shm-badge"
+          class="shm-badge is-insurance"
           :class="{ 'is-lti': pledge.insurance.lifetime }"
         >
           {{ insuranceLabel(pledge.insurance) }}

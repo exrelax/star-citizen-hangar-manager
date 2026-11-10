@@ -227,7 +227,7 @@ const toggle = () => {
         <span
           v-if="pledge.insurance"
           v-tooltip="i18n.t('insurance.badgeTitle')"
-          class="shm-badge"
+          class="shm-badge is-insurance"
           :class="{ 'is-lti': pledge.insurance.lifetime }"
         >
           {{ insuranceLabel(pledge.insurance) }}
@@ -237,14 +237,14 @@ const toggle = () => {
         </span>
         <span
           v-tooltip="i18n.t(pledge.isGiftable ? 'pledge.giftable' : 'pledge.notGiftable')"
-          class="shm-badge"
+          class="shm-badge is-gift"
           :class="{ 'is-off': !pledge.isGiftable }"
         >
           Gift
         </span>
         <span
           v-tooltip="i18n.t(pledge.isMeltable ? 'pledge.meltable' : 'pledge.notMeltable')"
-          class="shm-badge"
+          class="shm-badge is-melt"
           :class="{ 'is-off': !pledge.isMeltable }"
         >
           Melt

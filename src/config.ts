@@ -1,5 +1,7 @@
 import type { BuybackFilter } from '@/buyback/buyback-view';
 import type { FilterGroups, PledgeFilter } from '@/hangar/filters';
+import type { BuybackHighlight, HangarHighlight, HighlightMap } from '@/hangar/highlights';
+import type { HangarSort } from '@/hangar/sorting';
 
 /**
  * Tunable values of the extension in one place.
@@ -360,6 +362,34 @@ export const REFUND_REQUEST_FORM = {
   problemFieldId: '360014846974',
   problemValue: 'other_ship_or_pledge_query',
 } as const;
+
+/**
+ * What a filter set to "include" or a sorting highlights in the rows (#216): the values it is
+ * about, so the list shows why each entry is there. The targets are fixed per list
+ * (`hangar/highlights.ts`).
+ */
+export const FILTER_HIGHLIGHTS: {
+  hangar: HighlightMap<PledgeFilter, HangarHighlight>;
+  buyback: HighlightMap<BuybackFilter, BuybackHighlight>;
+  sorts: HighlightMap<HangarSort, HangarHighlight>;
+} = {
+  hangar: {
+    giftable: ['value', 'giftBadge'],
+    meltable: ['value', 'meltBadge'],
+    valuable: ['value'],
+    warbond: ['value'],
+    discount: ['discount'],
+    lti: ['insuranceBadge'],
+    gameAccess: ['gameAccessBadge'],
+  },
+  buyback: {
+    warbond: ['price'],
+    available: ['price'],
+    probablyGiftable: ['giftableLabel'],
+    lti: ['insuranceBadge'],
+  },
+  sorts: { valueDesc: ['value'], valueAsc: ['value'], discountDesc: ['discount'] },
+};
 
 /**
  * Preset filter buttons of "My Hangar" and the buy back, until the user changes them in the

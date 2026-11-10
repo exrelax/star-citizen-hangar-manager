@@ -406,6 +406,30 @@
   font-size: calc(12px * var(--shm-font-scale));
 }
 
+/*
+ * What an included filter or the sorting is about, highlighted in every row (#216, see
+ * `hangar/highlights.ts`): the list's rows carry a `shm-hl-<target>` class per target. Subtle –
+ * a stronger color and weight on the existing value or tag, no boxes of its own.
+ */
+.shm-hl-value .shm-meta .shm-value,
+.shm-hl-price .shm-meta .shm-value:not(.is-loading) {
+  color: var(--shm-text-strong);
+  font-weight: 600;
+}
+
+.shm-hl-discount .shm-discount {
+  font-weight: 600;
+}
+
+.shm-hl-giftBadge .shm-badge.is-gift:not(.is-off),
+.shm-hl-meltBadge .shm-badge.is-melt:not(.is-off),
+.shm-hl-insuranceBadge .shm-badge.is-insurance,
+.shm-hl-gameAccessBadge .shm-badge.is-protected,
+.shm-hl-giftableLabel .shm-badge.is-giftable {
+  font-weight: 600;
+  border-color: currentColor;
+}
+
 /* Discount next to the pledge value (see ship-prices.ts); a surcharge is shown, too. */
 .shm-discount {
   color: var(--shm-success);
