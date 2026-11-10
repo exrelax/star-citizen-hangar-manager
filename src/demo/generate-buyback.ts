@@ -5,7 +5,7 @@ import type { Ship } from '@/ships/ships';
 import type { StoreItem } from '@/store/items/store-items';
 import type { OrdersSnapshot } from '@/orders/orders';
 import type { DemoCatalog } from './catalog';
-import { usdText } from './generate-hangar';
+import { ccuTargetsOf, usdText } from './generate-hangar';
 import { createRandom, type DemoRandom } from './random';
 
 /*
@@ -93,7 +93,7 @@ export function generateBuyback(
   composition: DemoBuybackComposition = DEMO.buybackComposition,
 ): DemoBuyback {
   const random = createRandom(`${key}:buyback`);
-  const sorted = [...catalog.ships].sort((a, b) => a.msrp - b.msrp);
+  const sorted = ccuTargetsOf(catalog.ships).sort((a, b) => a.msrp - b.msrp);
   const made: Omit<BuybackPledge, 'id'>[] = [];
   const times = (count: number, make: (index: number) => Omit<BuybackPledge, 'id'> | undefined) => {
     for (let index = 0; index < count; index++) {

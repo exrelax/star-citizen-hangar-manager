@@ -10,7 +10,13 @@ import {
   type OrdersSnapshot,
 } from '@/orders/orders';
 import type { DemoCatalog } from './catalog';
-import { generateHangar, usdText, type DemoPledge } from './generate-hangar';
+import {
+  ccuTargetsOf,
+  generateHangar,
+  usdText,
+  warbondDiscount,
+  type DemoPledge,
+} from './generate-hangar';
 import { createRandom, type DemoRandom } from './random';
 import { DEFAULT_DEMO_SETTINGS, type DemoSettings, type DemoStates } from './demo-settings';
 
@@ -65,7 +71,7 @@ function upgraded(
 ): { pledge: DemoPledge; log: UpgradeLogEntry[] } {
   const base = pledge.items.find((item) => item.kind === 'Ship')!;
   const baseShip = catalog.ships.find((ship) => ship.name === base.title);
-  const pricier = [...catalog.ships]
+  const pricier = ccuTargetsOf(catalog.ships)
     .filter((ship) => ship.msrp > (baseShip?.msrp ?? 0))
     .sort((a, b) => a.msrp - b.msrp);
   const steps =
@@ -78,19 +84,18 @@ function upgraded(
   let value = pledge.valueUsd;
   let from = base.title;
   const log = steps.map((ship, step) => {
+    // Each CCU costs the price difference, a warbond CCU less by its warbond discount.
+    const warbond = random.chance(`up:${index}:${step}:wb`, 0.5);
+    const difference = ship.msrp - (step ? steps[step - 1]!.msrp : (baseShip?.msrp ?? value));
     const added = Math.max(
       5,
-      Math.round(
-        ((ship.msrp - (step ? steps[step - 1]!.msrp : (baseShip?.msrp ?? value))) *
-          (random.chance(`up:${index}:${step}:wb`, 0.5) ? 0.7 : 1)) /
-          5,
-      ) * 5,
+      difference - (warbond ? warbondDiscount(random, `up:${index}:${step}:off`, ship.msrp) : 0),
     );
     value += added;
     const entry: UpgradeLogEntry = {
       appliedAt: '',
       ccuId: DEMO.idBase - 50_000 - index * 10 - step,
-      name: `Upgrade - ${from} to ${ship.name} Standard Edition`,
+      name: `Upgrade - ${from} to ${ship.name} ${warbond ? 'Warbond' : 'Standard'} Edition`,
       valueAfter: value,
       ...(step > 0 && { added }),
     };

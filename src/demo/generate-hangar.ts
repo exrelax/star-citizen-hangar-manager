@@ -90,6 +90,23 @@ const GAME_ITEMS: PledgeItem[] = [
   { title: 'Star Citizen Digital Download', kind: 'Digital Download' },
 ];
 
+/** CIG sells CCUs only to ships up to this standard price, in USD. */
+export const CCU_TARGET_MAX = 1000;
+
+/** The ships a CCU can go to: up to `CCU_TARGET_MAX`. */
+export const ccuTargetsOf = (ships: readonly Ship[]) =>
+  ships.filter((ship) => ship.msrp > 0 && ship.msrp <= CCU_TARGET_MAX);
+
+/**
+ * The discount of a warbond CCU to a ship, in USD: always in steps of $5, more for pricier ships –
+ * up to $150 $5–10, up to $250 $15–20, up to $600 $20–40, up to $1,000 $40–100.
+ */
+export function warbondDiscount(random: DemoRandom, label: string, msrp: number): number {
+  const [min, max] =
+    msrp <= 150 ? [5, 10] : msrp <= 250 ? [15, 20] : msrp <= 600 ? [20, 40] : [40, 100];
+  return random.int(label, min / 5, max / 5) * 5;
+}
+
 /** The items of a store category, cheapest ones first left out of nothing. */
 const itemsOf = (catalog: DemoCatalog, category: string) =>
   catalog.items.filter((entry) => entry.category === category && entry.price > 0);
@@ -135,14 +152,17 @@ function gamePackage(random: DemoRandom, catalog: DemoCatalog, index: number): D
 }
 
 function ccu(random: DemoRandom, catalog: DemoCatalog, index: number): DemoPledge {
-  const sorted = [...catalog.ships].sort((a, b) => a.msrp - b.msrp);
+  const sorted = ccuTargetsOf(catalog.ships).sort((a, b) => a.msrp - b.msrp);
   const fromIndex = random.int(`ccu:${index}:from`, 0, sorted.length - 2);
   const from = sorted[fromIndex]!;
   const targets = sorted.filter((ship) => ship.msrp > from.msrp);
   const to = random.pick(`ccu:${index}:to`, targets) ?? sorted[sorted.length - 1]!;
   const price = Math.max(5, to.msrp - from.msrp);
   const warbond = random.chance(`ccu:${index}:warbond`, 0.35);
-  const value = warbond ? roundPrice(price * 0.75) : price;
+  // A warbond CCU costs less by the warbond discount of its target, never less than $5.
+  const value = warbond
+    ? Math.max(5, price - warbondDiscount(random, `ccu:${index}:discount`, to.msrp))
+    : price;
   const title = `Upgrade - ${from.name} to ${to.name} ${warbond ? 'Warbond' : 'Standard'} Edition`;
   return basePledge(title, value, [{ title }], 'ccus', price, {
     upgrade: {
