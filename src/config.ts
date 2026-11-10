@@ -339,6 +339,17 @@ export const DEMO = {
     packs: 3,
     rewards: 5,
   },
+  /** How many pledges of each kind the generated buy back has (#177). */
+  buybackComposition: {
+    ships: 5,
+    packages: 2,
+    ccus: 14,
+    paints: 14,
+    gear: 5,
+    addOns: 3,
+    withoutPrice: 2,
+    rewards: 2,
+  },
   /** Pledges shown in "My Hangar" and in the buy back (the selection of the own pledges). */
   hangarPledges: 100,
   buybackPledges: 50,

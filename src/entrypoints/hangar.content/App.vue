@@ -225,7 +225,7 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
       <!-- The account's figures, on every tab: store credit and buy back tokens (#156). -->
       <AccountFigures
         v-if="listsReady"
-        :tokens="buyback.tokens.value"
+        :tokens="demoView.context.value?.tokens ?? buyback.tokens.value"
         :hide-amounts="settings.hideMeltValue"
       />
       <div class="shm-header-actions">

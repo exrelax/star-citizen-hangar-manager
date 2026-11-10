@@ -10,6 +10,13 @@ import { createPriceLookup } from '@/hangar/ship-prices';
 import { createItemPriceLookup } from '@/store/items/item-prices';
 import type { DemoCatalog } from './catalog';
 import { generateDemoAccount, type DemoAccount } from './generate-states';
+import { generateBuyback, type DemoBuyback } from './generate-buyback';
+import { toBuybackView } from '@/buyback/buyback-view';
+import { createAvailabilityCheck } from '@/buyback/buyback-availability';
+import { createBuybackImager } from '@/buyback/buyback-image';
+import { createBuybackPricer } from '@/buyback/buyback-price';
+import { createGiftableCheck } from '@/buyback/probably-giftable';
+import type { OrdersSnapshot } from '@/orders/orders';
 import { withOrder } from '@/orders/orders';
 import { fraction, hash } from './random';
 
@@ -109,14 +116,65 @@ export function generatedDemo(
   key: string,
   today = localToday(),
   now = Date.now(),
-): { pledges: PledgeView[]; account: DemoAccount } {
+): {
+  pledges: PledgeView[];
+  buyback: BuybackView[];
+  account: DemoAccount;
+  generatedBuyback: DemoBuyback;
+} {
   const account = generateDemoAccount(catalog, key);
+  const generatedBuyback = generateBuyback(catalog, key, today);
+  // One order snapshot for both lists, like the order sync's.
+  const orders: OrdersSnapshot = {
+    ...account.orders,
+    pledgeOrders: { ...account.orders.pledgeOrders, ...generatedBuyback.orders.pledgeOrders },
+    orders: { ...account.orders.orders, ...generatedBuyback.orders.orders },
+  };
   const priceOf = createPriceLookup(catalog.ships.map(({ name, msrp }) => ({ name, price: msrp })));
   const itemPriceOf = createItemPriceLookup(catalog.items);
   const views = account.pledges.map((pledge, position) =>
-    withOrder(toPledgeView(pledge, {}, position, priceOf, itemPriceOf), account.orders),
+    withOrder(toPledgeView(pledge, {}, position, priceOf, itemPriceOf), orders),
   );
-  return { pledges: demoViews(views, key, today, now), account };
+  const pledges = demoViews(views, key, today, now);
+  const buyback = generatedBuybackViews(generatedBuyback, catalog, orders, account, key);
+  return { pledges, buyback, account, generatedBuyback };
+}
+
+/**
+ * The generated buy back (#177) as the list shows it: built like the real one
+ * (`use-buyback-pledges.ts`) – prices of every source, images, availability and "probably
+ * giftable" from the generated orders and gift flags – with made-up display ids.
+ */
+function generatedBuybackViews(
+  generated: DemoBuyback,
+  catalog: DemoCatalog,
+  orders: OrdersSnapshot,
+  account: DemoAccount,
+  key: string,
+): BuybackView[] {
+  const fakeId = createFakeIds(key);
+  const giftable = createGiftableCheck({
+    orders,
+    hangarPledges: account.pledges,
+    giftFlags: generated.giftFlags,
+  });
+  const priceOf = createBuybackPricer({
+    ships: catalog.ships,
+    shipPriceOf: createPriceLookup(catalog.ships.map(({ name, msrp }) => ({ name, price: msrp }))),
+    itemPriceOf: createItemPriceLookup(catalog.items),
+    pledges: generated.pledges,
+  });
+  const imageOf = createBuybackImager({ ships: catalog.ships });
+  const availabilityOf = createAvailabilityCheck(catalog.ships);
+  return generated.pledges.map((pledge, position) =>
+    anonymized(
+      withOrder(
+        toBuybackView(pledge, { position, giftable, priceOf, imageOf, availabilityOf }),
+        orders,
+      ),
+      fakeId,
+    ),
+  );
 }
 
 /** The generated demo hangar as the list shows it (see `generatedDemo`). */
