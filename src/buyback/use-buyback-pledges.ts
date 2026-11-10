@@ -16,6 +16,7 @@ import {
   STORE_ITEMS_VERSION,
   type StoreItemsSnapshot,
 } from '@/store/items/store-items-storage';
+import { createAvailabilityCheck } from './buyback-availability';
 import { createBuybackImager } from './buyback-image';
 import { createBuybackPricer } from './buyback-price';
 
@@ -50,6 +51,7 @@ export function useBuybackPledges() {
     const shipPrices = shipPricesOf(ships);
     const items = storeItems?.version === STORE_ITEMS_VERSION ? storeItems.items : [];
     const catalog = currentShips(ships)?.ships;
+    const availabilityOf = createAvailabilityCheck(catalog);
     const imageOf = createBuybackImager({ ships: catalog, hangarPledges: validHangar?.pledges });
     const priceOf = createBuybackPricer({
       ships: catalog,
@@ -60,7 +62,14 @@ export function useBuybackPledges() {
     pledges.value = current
       ? current.pledges.map((pledge, position) =>
           withOrder(
-            toBuybackView(pledge, { position, shipLinks, giftable, priceOf, imageOf }),
+            toBuybackView(pledge, {
+              position,
+              shipLinks,
+              giftable,
+              priceOf,
+              imageOf,
+              availabilityOf,
+            }),
             orders,
           ),
         )

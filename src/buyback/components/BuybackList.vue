@@ -43,7 +43,9 @@ const filterLabel = (filter: BuybackFilter) => i18n.t(`filter.${filter}`);
 /** Filters whose meaning isn't obvious from the label explain it in their tooltip. */
 const filterHint = (filter: BuybackFilter) => {
   if (filter === 'probablyGiftable') return giftableHint.value;
-  if (filter === 'ships' || filter === 'warbond') return i18n.t(`filter.hints.${filter}`);
+  if (filter === 'ships' || filter === 'warbond' || filter === 'available') {
+    return i18n.t(`filter.hints.${filter}`);
+  }
   return filter === 'rewards' ? i18n.t('filter.hints.rewardsByName') : undefined;
 };
 </script>

@@ -477,7 +477,7 @@ rules in detail:
 ## Buy back
 
 The **Buy Back** tab lists all melted pledges with the same search and filters (Ships, CCUs,
-Paints, Game access, LTI, Warbond, Probably giftable, Rewards), plus:
+Paints, Game access, LTI, Warbond, Probably giftable, Available, Rewards), plus:
 
 - **Probably giftable**: a pledge bought back keeps the giftable status it had when it was
   melted, and RSI then offers "Buying as a gift?" at checkout (see RSI's
@@ -489,6 +489,11 @@ Paints, Game access, LTI, Warbond, Probably giftable, Rewards), plus:
   further request to RSI. For pledges melted from now on the extension keeps RSI's own gift flag
   from My Hangar, which decides instead. "Probably", as a pledge may have lost the status in other
   ways (e.g. gifted once already), and buying back with store credit makes it ungiftable.
+- **Not available**: RSI sells a CCU only from a cheaper ship to a more expensive one, at today's
+  standard prices. A CCU whose base ship now costs as much as its target ship or more can't be
+  bought back: it is labelled, its tooltip compares both ships' prices today, and its "To Cart" is
+  disabled. The filter **Available** shows only the pledges RSI can sell again, or, excluded,
+  only those it can't.
 - **Buy back tokens**: how many pledges can still be bought back with store credit, as RSI shows
   it above its buy back list – at the top right of the manager, on every tab (see
   [The Hangar Manager page](#the-hangar-manager-page)).

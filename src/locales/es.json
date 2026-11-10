@@ -90,6 +90,7 @@
     "giftable": "Regalables",
     "meltable": "Fundibles",
     "probablyGiftable": "Probablemente regalables",
+    "available": "Recomprables",
     "ships": "Naves",
     "warbond": "Warbond",
     "valuable": "Con valor",
@@ -105,7 +106,8 @@
       "valuable": "Pledges con un valor superior a $$0.",
       "rewards": "Recompensas con un valor de $$0: eventos, referidos, Concierge y otras recompensas.",
       "rewardsByName": "Recompensas, reconocidas por su nombre: eventos, referidos, Concierge y otras recompensas.",
-      "discount": "Comprado por menos del precio original: naves y CCU comparados con los precios de naves de RSI, pinturas, equipo y más con la Pledge Store. No cuentan los pledges sin precio original conocido o que costaron más."
+      "discount": "Comprado por menos del precio original: naves y CCU comparados con los precios de naves de RSI, pinturas, equipo y más con la Pledge Store. No cuentan los pledges sin precio original conocido o que costaron más.",
+      "available": "Los pledges que RSI puede volver a vender. Excluidos: los CCU cuya nave base cuesta hoy lo mismo o más que su nave de destino – RSI solo vende un CCU hacia una nave más cara."
     },
     "categories": {
       "types": "Tipos",
@@ -361,6 +363,8 @@
     "reclaimed": "Fundido el $1",
     "showInBuyback": "Mostrar en Buy Back (página $1)",
     "probablyGiftableHint": "Si lo recompras con dinero real (warbond), este elemento probablemente es regalable: se compró antes del $1 solo con dinero, sin crédito de tienda, y mantiene ese estado.",
+    "unavailable": "No recomprable",
+    "unavailableHint": "RSI ya no puede vender este CCU: hoy $1 cuesta $2 y $3 cuesta $4. Un CCU solo lleva a una nave más cara.",
     "showSingleInBuyback": "Mostrar en Buy Back",
     "tokens": "Tokens de recompra: $1",
     "tokensLabel": "Tokens de recompra",
