@@ -395,7 +395,8 @@
       "name": "Einstellungen",
       "content": "Sprache, Theme, Anzeige- und Datenschutzoptionen, Filter, Sortierung",
       "missing": "Alle Einstellungen gehen auf ihre Standardwerte zurück."
-    }
+    },
+    "demoDisabled": "Nicht im Demo-Modus: Diese Zahlen sind die des Demos, deine Daten bleiben unverändert."
   },
   "status": {
     "refreshing": "Wird aktualisiert …",

@@ -24,6 +24,7 @@ import { restorable, withRestored } from '@/notifications/restore';
 import { current, warbondsItem } from '@/ships/ships-storage';
 import { STORE_ITEMS_VERSION, storeItemsItem } from '@/store/items/store-items-storage';
 import { computed, ref } from 'vue';
+import { useDemoContext } from '@/demo/use-demo';
 import { isKindOn, withKind, type NotificationKind } from '@/notifications/kinds';
 import type { Settings } from '../settings';
 import { buybackSnapshot } from '@/buyback/buyback-storage';
@@ -126,12 +127,15 @@ const priceToRestore = computed(() => {
 /** The hint on browser notifications, dismissed while they are off. */
 const hintToRestore = computed(() => allowed.value === false && hintDismissed.value === true);
 
-const restoreCount = computed(
-  () =>
-    notesToRestore.value.length +
-    Number(paintToRestore.value) +
-    Number(priceToRestore.value) +
-    Number(hintToRestore.value),
+// Not in the demo mode (#132): the count would tell the account's notifications.
+const demo = useDemoContext();
+const restoreCount = computed(() =>
+  demo.value
+    ? 0
+    : notesToRestore.value.length +
+      Number(paintToRestore.value) +
+      Number(priceToRestore.value) +
+      Number(hintToRestore.value),
 );
 /** How many came back with the last click, shown below the button. */
 const restored = ref<number>();

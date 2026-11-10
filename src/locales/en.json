@@ -395,7 +395,8 @@
       "name": "Settings",
       "content": "Language, theme, display and privacy options, filters, sorting",
       "missing": "All settings go back to their defaults."
-    }
+    },
+    "demoDisabled": "Not in the demo mode: these numbers are the demo’s, your data stays as it is."
   },
   "status": {
     "refreshing": "Refreshing …",

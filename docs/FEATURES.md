@@ -212,7 +212,12 @@ information (for screenshots or content creators)** keeps private details off sc
   warbond CCUs, changed items, #131); checking them off in the demo changes nothing real. The
   Paint Discount Consultant has a kept plan of its own (#131), never the account's: a paint bought
   again with its old pledge left to melt, paints melted first and left to buy again, and its
-  filler paints marked to melt – one waiting, one ready, with the sidebar's button disabled. The hangar's pledges have every
+  filler paints marked to melt – one waiting, one ready, with the sidebar's button disabled. The
+  settings show no account data meanwhile (#132): "Stored data" shows the demo's numbers of the
+  account's data (My Hangar, buy back, orders, store credit, paint plan, events, price increases)
+  with made-up sizes and times, and their buttons to read again and delete are disabled, so
+  nothing real changes; the public data (ships, Pledge Store items) shows as it is. The spot
+  checks count the demo hangar's pages, and "Show checked-off notifications again" is off. The hangar's pledges have every
   state (#176): meltable or not, giftable or not, LTI and insurances in years and months (also
   several at once), upgraded ships with made-up "Applied upgrades", protected game access (`SC`,
   `SQ42`, `SC · SQ42`, also a reward without a ship), and orders paid with money, in part with

@@ -12,6 +12,7 @@ import { EMPTY_META } from '@/storage/meta';
 import { LOCAL_COPY, type StorageDefinition, type StorageId } from '@/storage/registry';
 import { useStored } from '@/storage/use-stored';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { useDemoContext } from '@/demo/use-demo';
 
 /*
  * What the extension keeps in this browser, one row per storage (see `storage/registry.ts`):
@@ -64,8 +65,41 @@ const amounts = rows.map(({ definition, value, meta }) =>
   }),
 );
 
+/*
+ * The demo mode (#132): the storages of the account show the demo's numbers instead – its entries,
+ * a size for them and made-up times –, and can't be read again or deleted meanwhile, so nothing
+ * real changes. The public data (ships, Pledge Store items) shows as it is.
+ */
+const demo = useDemoContext();
+/** Typical bytes per entry, for a plausible size of the demo's data. */
+const DEMO_BYTES: Partial<Record<StorageId, number>> = {
+  hangar: 1400,
+  buyback: 600,
+  orders: 250,
+  storeCredit: 120,
+  paintPlan: 900,
+  events: 900,
+  priceIncreases: 160,
+};
+/** How long ago the demo's data was read in full, in minutes. */
+const DEMO_SYNCED_AGO: Partial<Record<StorageId, number>> = { storeCredit: 12, paintPlan: 1440 };
+const masked = (id: StorageId) => demo.value?.storage.counts[id] !== undefined;
+
 const view = computed(() =>
   rows.map(({ definition, meta }, index) => {
+    const id = definition.id;
+    const demoCount = demo.value?.storage.counts[id];
+    if (demoCount !== undefined) {
+      return {
+        definition,
+        empty: demoCount === 0,
+        count: numbers.value.format(demoCount),
+        size: formatSize(demoCount * (DEMO_BYTES[id] ?? 200)),
+        syncedAt: now.value - (DEMO_SYNCED_AGO[id] ?? 180) * 60_000,
+        checkedAt: now.value - 4 * 60_000,
+        failed: false,
+      };
+    }
     const amount = amounts[index]!.value;
     const metadata = meta.value ?? EMPTY_META;
     return {
@@ -158,16 +192,20 @@ async function reset(definition: StorageDefinition) {
                 <button
                   v-if="row.definition.readAgain !== 'never'"
                   v-tooltip="
-                    i18n.t(
-                      fromWebsite(row.definition.id)
-                        ? 'storage.refreshOneWebsite'
-                        : 'storage.refreshOne',
-                      [name(row.definition.id)],
-                    )
+                    masked(row.definition.id)
+                      ? i18n.t('storage.demoDisabled')
+                      : i18n.t(
+                          fromWebsite(row.definition.id)
+                            ? 'storage.refreshOneWebsite'
+                            : 'storage.refreshOne',
+                          [name(row.definition.id)],
+                        )
                   "
                   type="button"
                   class="shm-button is-icon"
-                  :disabled="syncState.running || upgradeToolState.loading"
+                  :disabled="
+                    syncState.running || upgradeToolState.loading || masked(row.definition.id)
+                  "
                   :aria-busy="isReading(row.definition.id)"
                   @click="startStorageSync(row.definition.id)"
                 >
@@ -175,10 +213,14 @@ async function reset(definition: StorageDefinition) {
                 </button>
                 <!-- Not during a refresh: it would store the data again right after. -->
                 <button
-                  v-tooltip="i18n.t('storage.resetOne', [name(row.definition.id)])"
+                  v-tooltip="
+                    masked(row.definition.id)
+                      ? i18n.t('storage.demoDisabled')
+                      : i18n.t('storage.resetOne', [name(row.definition.id)])
+                  "
                   type="button"
                   class="shm-button is-danger is-icon"
-                  :disabled="row.empty || syncState.running"
+                  :disabled="row.empty || syncState.running || masked(row.definition.id)"
                   @click="reset(row.definition)"
                 >
                   <SvgIcon name="trash" />

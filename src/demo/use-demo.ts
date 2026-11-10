@@ -13,6 +13,8 @@ import { current, shipsItem } from '@/ships/ships-storage';
 import { STORE_ITEMS_VERSION, storeItemsItem } from '@/store/items/store-items-storage';
 import { useStored } from '@/storage/use-stored';
 import { demoCatalog, FALLBACK_CATALOG, type DemoCatalog } from './catalog';
+import type { StorageId } from '@/storage/registry';
+import { HANGAR_PAGE_SIZE } from '@/config';
 import { demoStoreNotes } from './demo-store-notes';
 import type { StoreItem } from '@/store/items/store-items';
 import { demoKeptPlan, resetDemoPlan, seedDemoPlan } from './demo-consultant';
@@ -130,6 +132,11 @@ export interface DemoContext {
   orderDetails?: (order: Order) => OrderDetails | undefined;
   /** The events shown in the Pledge Store tab instead of the website's (#210). */
   events: StarCitizenEvent[];
+  /**
+   * What the settings show of the stored data in the demo (#132): the demo's numbers of the
+   * account's storages instead of the real ones, and its hangar's page count.
+   */
+  storage: { counts: Partial<Record<StorageId, number>>; hangarPages: number };
   /** The catalog's items, for the Paint Discount Consultant of the generated demo (#131). */
   storeItems?: readonly StoreItem[];
   /** Buy back tokens shown instead of the account's, with the generated buy back (#177). */
@@ -256,6 +263,18 @@ export function useDemo(
         storeItems: catalog.value.items,
       }),
       events: events.value,
+      storage: {
+        counts: {
+          hangar: demoPledges.value.length,
+          buyback: demoBuybackPledges.value.length,
+          orders: [...demoPledges.value, ...demoBuybackPledges.value].filter((p) => p.order).length,
+          storeCredit: 1,
+          paintPlan: 1,
+          events: events.value.length,
+          ...(account && { priceIncreases: account.priceIncreases.length }),
+        },
+        hangarPages: Math.max(1, Math.ceil(demoPledges.value.length / HANGAR_PAGE_SIZE)),
+      },
       // Set in the demo settings (#179).
       storeCredit: { amount: settings().storeCredit, currency: 'USD' },
       justBought,
