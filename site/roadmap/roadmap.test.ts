@@ -57,6 +57,8 @@ const ISSUES: Record<number, unknown[]> = {
     issue(40, { pull_request: {} }),
     issue(25, { labels: [{ name: 'website' }] }),
     issue(41, { labels: [{ name: 'internal' }] }),
+    // The sub-issues of a hidden issue go with it (the demo mode's).
+    sub(42, 41),
     // Sub-issues of an issue of the same milestone: only their parent shows.
     sub(30, 3),
     sub(31, 6, { state: 'closed', closed_at: '2026-11-07T10:00:00Z' }),
@@ -72,6 +74,7 @@ const LATER = [
   sub(12, 11),
   issue(22, { labels: [{ name: 'enhancement' }, { name: 'website' }] }),
   issue(23, { labels: [{ name: 'enhancement' }, { name: 'internal' }] }),
+  sub(24, 23, { labels: [{ name: 'enhancement' }] }),
 ];
 
 const RELEASE = {
