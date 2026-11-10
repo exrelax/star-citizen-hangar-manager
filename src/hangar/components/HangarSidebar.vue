@@ -21,11 +21,13 @@ import {
 import BulkExchangeOverlay from './BulkExchangeOverlay.vue';
 import { REBUY_PLAN_VERSION, rebuyPlanItem } from '@/store/paint-consultant/rebuy-plan-storage';
 import {
-  checkOff,
+  checkOff as checkOffReal,
   noteDetails,
   noteText,
+  openNotifications,
   type AppNotification,
 } from '@/notifications/notifications';
+import { checkOffDemo, demoNotificationsItem } from '@/demo/demo-notes';
 import { useOpenNotifications } from '@/notifications/use-notifications';
 import { meltReadyIds, useMarkedPledges } from '../use-melt-marks';
 import { clearHangarFilter, hangarViewFilter, showHangarFilter } from '../view-filter';
@@ -108,7 +110,13 @@ const types = (summary: PledgeSummary) =>
 
 // ---- Notifications (#142) ----
 
-const notes = useOpenNotifications();
+// The demo has sample notifications of its own (#210, #131), never the real ones.
+const realNotes = useOpenNotifications();
+const demoNotes = useStored(demoNotificationsItem);
+const notes = computed(() =>
+  demo.value ? openNotifications(demoNotes.value ?? []) : realNotes.value,
+);
+const checkOff = (ids?: readonly string[]) => (demo.value ? checkOffDemo(ids) : checkOffReal(ids));
 const marked = useMarkedPledges();
 const now = useNow();
 const titleOf = computed(() => new Map(props.pledges.map((pledge) => [pledge.id, pledge.title])));

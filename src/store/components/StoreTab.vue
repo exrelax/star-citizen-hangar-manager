@@ -20,6 +20,7 @@ import { vTooltip } from '@/shared/tooltip/tooltip';
 import EventList from '@/events/components/EventList.vue';
 import { EVENTS_VERSION, eventsItem } from '@/events/events-storage';
 import { useStored } from '@/storage/use-stored';
+import { useDemoContext } from '@/demo/use-demo';
 
 /*
  * The "Pledge Store" tab: the warbond CCUs RSI currently offers, each with the cheapest ships to
@@ -40,8 +41,14 @@ const { data, fetchedAt, loaded } = useStoreData();
 
 /** The events of the project website (#69): shown above the warbond CCUs while they last. */
 const storedEvents = useStored(eventsItem);
+// The demo shows events of its own (#210), never the website's.
+const demoContext = useDemoContext();
 const events = computed(() =>
-  storedEvents.value?.version === EVENTS_VERSION ? storedEvents.value.events : [],
+  demoContext.value
+    ? demoContext.value.events
+    : storedEvents.value?.version === EVENTS_VERSION
+      ? storedEvents.value.events
+      : [],
 );
 
 // While the tab is shown: right away, then now and then, whether the offers are due.
