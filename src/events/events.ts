@@ -1,23 +1,30 @@
 import { EVENTS } from '@/config';
+import { LOCALES, type Locale } from '@/i18n';
 
 /*
  * Events of Star Citizen (e.g. the Intergalactic Aerospace Expo), loaded from the project website
  * (#69) and shown in the Pledge Store tab while their display period lasts. The file is data only:
  * it is checked here field by field, entries that don't fit are left out silently, and its texts
  * are shown as plain text, never as HTML.
+ *
+ * Name and description are either one text or one per language of the extension, e.g.
+ * `{ "en": "…", "de": "…" }`; English is required and stands in for a language not given.
  */
+
+/** A text per language; English always. */
+export type LocalizedText = Partial<Record<Locale, string>> & { en: string };
 
 export interface StarCitizenEvent {
   /** Stable id, e.g. "iae-2956": the notification of an event is told once. */
   id: string;
-  name: string;
+  name: LocalizedText;
   /** Epoch milliseconds. */
   eventStart: number;
   eventEnd: number;
   /** When the Pledge Store tab shows it, in epoch milliseconds. */
   displayStart: number;
   displayEnd: number;
-  description?: string;
+  description?: LocalizedText;
   /** Only from the project website (`EVENTS.iconOrigin`). */
   icon?: string;
 }
@@ -29,6 +36,26 @@ const MAX_TEXT = 500;
 
 const text = (value: unknown, max = MAX_TEXT): string | undefined =>
   typeof value === 'string' && value.trim() && value.length <= max ? value.trim() : undefined;
+
+/** One text for every language, or one per language with English; else none. */
+function localizedText(value: unknown, max = MAX_TEXT): LocalizedText | undefined {
+  const single = text(value, max);
+  if (single) return { en: single };
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
+  const texts = value as Record<string, unknown>;
+  const en = text(texts.en, max);
+  if (!en) return undefined;
+  const result: LocalizedText = { en };
+  for (const locale of LOCALES) {
+    const translated = text(texts[locale], max);
+    if (translated) result[locale] = translated;
+  }
+  return result;
+}
+
+/** The text in the language, else in English. */
+export const localized = (value: LocalizedText, locale: Locale): string =>
+  value[locale] ?? value.en;
 
 const time = (value: unknown): number | undefined => {
   if (typeof value !== 'string') return undefined;
@@ -52,7 +79,7 @@ function parseEvent(entry: unknown): StarCitizenEvent | undefined {
   if (!entry || typeof entry !== 'object') return undefined;
   const raw = entry as Record<string, unknown>;
   const id = text(raw.id, 100);
-  const name = text(raw.name, 200);
+  const name = localizedText(raw.name, 200);
   const eventStart = time(raw.eventStart);
   const eventEnd = time(raw.eventEnd);
   const displayStart = time(raw.displayStart);
@@ -64,7 +91,7 @@ function parseEvent(entry: unknown): StarCitizenEvent | undefined {
   if (displayStart === undefined || displayEnd === undefined || displayEnd <= displayStart) {
     return undefined;
   }
-  const description = text(raw.description);
+  const description = localizedText(raw.description);
   const icon = iconUrl(raw.icon);
   return {
     id,

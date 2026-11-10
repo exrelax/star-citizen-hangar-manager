@@ -12,7 +12,7 @@ const HOUR = 60 * 60 * 1000;
 
 const iae: StarCitizenEvent = {
   id: 'iae-2956',
-  name: 'IAE 2956',
+  name: { en: 'IAE 2956', de: 'IAE 2956 (de)' },
   eventStart: Date.parse('2026-11-13T16:00:00Z'),
   eventEnd: Date.parse('2026-11-27T20:00:00Z'),
   displayStart: Date.parse('2026-11-06T00:00:00Z'),
@@ -85,5 +85,18 @@ describe('maybeRefreshEvents after a failure', () => {
     expect(fetch).toHaveBeenCalledTimes(1);
     await maybeRefreshEvents({ fetch, now: () => NOW + HOUR });
     expect(fetch).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('maybeRefreshEvents with events of an earlier format', () => {
+  beforeEach(() => fakeBrowser.reset());
+
+  it('reads them again at once', async () => {
+    await maybeRefreshEvents({ fetch: async () => [iae], now: () => NOW });
+    await eventsItem.setValue({ version: 1, events: [] });
+    const fetch = vi.fn(async () => [iae]);
+    await maybeRefreshEvents({ fetch, now: () => NOW + 60_000 });
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect((await eventsItem.getValue())?.version).toBe(2);
   });
 });

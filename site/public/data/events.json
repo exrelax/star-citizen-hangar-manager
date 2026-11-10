@@ -8,7 +8,12 @@
       "eventEnd": "2026-11-27T20:00:00Z",
       "displayStart": "2026-11-06T00:00:00Z",
       "displayEnd": "2026-11-27T20:00:00Z",
-      "description": "The biggest spaceship show of the year in New Babbage on microTech, with a new manufacturer's ships on display every day. Star Citizen is free to play for the whole event."
+      "description": {
+        "en": "The biggest spaceship show of the year in New Babbage on microTech, with a new manufacturer's ships on display every day. Star Citizen is free to play for the whole event.",
+        "de": "Die größte Raumschiff-Messe des Jahres in New Babbage auf microTech, jeden Tag mit den Schiffen eines anderen Herstellers. Star Citizen ist während des ganzen Events kostenlos spielbar.",
+        "fr": "Le plus grand salon de vaisseaux de l’année, à New Babbage sur microTech, avec chaque jour les vaisseaux d’un autre constructeur. Star Citizen est gratuit pendant tout l’événement.",
+        "es": "La mayor feria de naves del año en New Babbage, en microTech, con las naves de un fabricante distinto cada día. Star Citizen es gratis durante todo el evento."
+      }
     }
   ]
 }
