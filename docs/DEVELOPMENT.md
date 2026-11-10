@@ -195,12 +195,56 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   `name` and `description` are one text, or one per language of the extension –
   `{ "en": "…", "de": "…", "fr": "…", "es": "…" }`, English required and shown for a language
   not given.
+- **Expected price increases**: `data/price-increases.json` lists the ships whose price is
+  expected to rise, for the Buy Back Reminder (#195). Every date in it is an assumption, and the
+  extension says so. See [below](#editing-the-expected-price-increases) for how to edit it.
 - **Previews**: both pages have Open Graph and X tags with the same title and description as the
   page, and `store/social-preview-1280x640.png` as the image. Its URL has to be absolute: the build
   puts it below the site's address (`SITE_URL` in `site/vite.config.ts`).
 - **Deployment**: the [website workflow](../.github/workflows/site.yml) builds and deploys the site
   to GitHub Pages on every push to `main` that changes it (or the images it shows), when issues or
   milestones change, daily and by hand via "Run workflow". Pages has to use "GitHub Actions" as its source (repository settings → Pages).
+
+### Editing the expected price increases
+
+Each entry of `priceIncreases` is one ship (the values are an example):
+
+```json
+{
+  "ship": { "id": 244, "name": "Galaxy", "aliases": ["RSI Galaxy"] },
+  "flightReadyAt": "2026-11-13",
+  "priceIncreaseAt": "2026-11-16T16:00:00Z",
+  "relatedItems": [{ "name": "Galaxy Refinery Module" }],
+  "event": "iae-2956",
+  "note": { "en": "Expected with the IAE.", "de": "Erwartet mit der IAE." }
+}
+```
+
+- **`ship.id`** and **`ship.name`** (required): the ship's id and name in RSI's Ship Matrix. Look
+  them up in its public JSON, <https://robertsspaceindustries.com/ship-matrix/index> (search for
+  the name), or take `data-toshipid` of the "Buy Back" button of a CCU to the ship. The upgrade
+  tool and the buy back's CCUs use the same id (#187).
+- **`ship.aliases`** (optional): other names RSI uses for the ship, only where they differ from
+  the Ship Matrix, e.g. "Hercules Starlifter M2" (My Hangar) for "M2 Hercules", "Mercury Star
+  Runner" for "Mercury". Names are compared without case, punctuation and the endings
+  "Standard Edition" and "Warbond Edition", but otherwise exactly: "Galaxy" doesn't match
+  "Galaxy Refinery Module".
+- **`priceIncreaseAt`** (required): when the price is expected to rise. A day (`"2026-11-16"`)
+  if only the day is expected, or a time in UTC (`"2026-11-16T16:00:00Z"`) if the probable time
+  of the Pledge Store update is known, e.g. 17:00 CET during the IAE. With a time the extension
+  counts down to it; with a day it shows only the day, and the entry counts until that day is
+  over (UTC). An entry whose date has passed is ignored, so old entries can stay until the file
+  is cleaned up.
+- **`flightReadyAt`** (optional): when the ship is expected to become flight ready, given the
+  same way. Leave it out for ships that are already flight ready – the Ship Matrix's
+  `production_status` (`flight-ready`, `in-concept`) tells which ones are.
+- **`relatedItems`** (optional): items that belong to the ship and rise with it, e.g. the
+  modules of a modular ship, each with its exact `name` as in the Pledge Store or My Hangar.
+- **`event`** (optional): the `id` of the event in `events.json` the price increase belongs to.
+- **`note`** (optional): a short text for the user, e.g. the source of the assumption; one text
+  or one per language, like an event's `description`.
+
+A ship can have several entries, e.g. one per step if its price rises twice.
 
 ## Configuration
 
