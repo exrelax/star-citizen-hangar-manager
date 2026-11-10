@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { eventState, localized, parseEvents, shownEvents } from './events';
+import { eventProgress, eventState, localized, parseEvents, shownEvents } from './events';
 
 const entry = (overrides: Record<string, unknown> = {}) => ({
   id: 'iae-2956',
@@ -106,5 +106,39 @@ describe('shownEvents and eventState', () => {
   it('tells upcoming from running', () => {
     expect(eventState(events[0]!, Date.parse('2026-11-10T00:00:00Z'))).toBe('upcoming');
     expect(eventState(events[0]!, Date.parse('2026-11-13T16:00:00Z'))).toBe('running');
+  });
+});
+
+describe('phases', () => {
+  const [event] = parseEvents(
+    file(
+      entry({
+        phases: [
+          { start: '2026-11-14T16:00:00Z', name: 'Origin Jumpworks' },
+          { start: '2026-11-13T16:00:00Z', name: 'Roberts Space Industries' },
+          { start: '2026-11-23T16:00:00Z', name: { en: 'Finale', es: 'Final' } },
+          { start: '2026-12-01T16:00:00Z', name: 'After the end' },
+          { start: 'soon', name: 'No time' },
+        ],
+      }),
+    ),
+  )!;
+
+  it('reads the phases within the event, by their start', () => {
+    expect(event?.phases?.map((phase) => phase.name.en)).toEqual([
+      'Roberts Space Industries',
+      'Origin Jumpworks',
+      'Finale',
+    ]);
+  });
+
+  it('tells the current and the next phase', () => {
+    const at = (iso: string) => eventProgress(event!, Date.parse(iso));
+    expect(at('2026-11-10T00:00:00Z').current).toBeUndefined();
+    expect(at('2026-11-10T00:00:00Z').next?.name.en).toBe('Roberts Space Industries');
+    expect(at('2026-11-14T15:59:59Z').current?.name.en).toBe('Roberts Space Industries');
+    expect(at('2026-11-14T16:00:00Z').current?.name.en).toBe('Origin Jumpworks');
+    expect(at('2026-11-14T16:00:00Z').next?.name.en).toBe('Finale');
+    expect(at('2026-11-25T00:00:00Z').next).toBeUndefined();
   });
 });

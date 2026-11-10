@@ -1,36 +1,66 @@
 <script setup lang="ts">
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { i18n, locale } from '@/i18n';
-import { useNow } from '@/shared/use-now';
-import { computed } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { formatCountdown } from '../countdown';
 import { formatEventTime } from '../event-notes';
-import { eventState, localized, shownEvents, type StarCitizenEvent } from '../events';
-import { formatUntil } from '../format-until';
+import {
+  eventProgress,
+  eventState,
+  localized,
+  shownEvents,
+  type StarCitizenEvent,
+} from '../events';
 
 /*
  * The events of the project website whose display period lasts (#69), at the top of the Pledge
- * Store tab: name, period, whether it is upcoming or running, and the description and image if
- * given. Built from the rows of the manager's lists, so it fits every theme; nothing to expand.
- * Texts are plain text: Vue escapes them.
+ * Store tab: name, period, description and image if given, and live countdowns – to the start, or
+ * while it runs to its next phase (e.g. the next manufacturer of the IAE, "Best in Show", the
+ * finale) and its end. Built from the rows of the manager's lists, so it fits every theme; nothing
+ * to expand. Texts are plain text: Vue escapes them.
  */
 
 const props = defineProps<{ events: readonly StarCitizenEvent[] }>();
 
-const now = useNow();
+/** The countdowns tick every second, only while the page is visible. */
+const now = ref(Date.now());
+let timer: ReturnType<typeof setInterval> | undefined;
+onMounted(() => {
+  timer = setInterval(() => {
+    if (document.visibilityState === 'visible') now.value = Date.now();
+  }, 1000);
+});
+onUnmounted(() => clearInterval(timer));
+
+interface Countdown {
+  label: string;
+  time: string;
+}
 
 const rows = computed(() =>
   shownEvents(props.events, now.value).map((event) => {
     const state = eventState(event, now.value);
+    const name = (text: StarCitizenEvent['name']) => localized(text, locale.value);
+    const left = (at: number) => formatCountdown(at - now.value, locale.value);
+    const { current, next } = eventProgress(event, now.value);
+    const countdowns: Countdown[] =
+      state === 'upcoming'
+        ? [{ label: i18n.t('events.countdownStart'), time: left(event.eventStart) }]
+        : [
+            ...(next
+              ? [{ label: i18n.t('events.nextIn', [name(next.name)]), time: left(next.start) }]
+              : []),
+            { label: i18n.t('events.countdownEnd'), time: left(event.eventEnd) },
+          ];
     return {
       event,
-      name: localized(event.name, locale.value),
-      description: event.description && localized(event.description, locale.value),
+      name: name(event.name),
+      description: event.description && name(event.description),
       state,
       period: `${formatEventTime(event.eventStart, locale.value)} – ${formatEventTime(event.eventEnd, locale.value)}`,
-      status:
-        state === 'upcoming'
-          ? i18n.t('events.startsIn', [formatUntil(event.eventStart, now.value, locale.value)])
-          : i18n.t('events.endsIn', [formatUntil(event.eventEnd, now.value, locale.value)]),
+      current:
+        state === 'running' && current ? i18n.t('events.now', [name(current.name)]) : undefined,
+      countdowns,
     };
   }),
 );
@@ -39,7 +69,6 @@ const rows = computed(() =>
 <template>
   <section v-if="rows.length" class="shm-events" aria-labelledby="shm-events-title">
     <h3 id="shm-events-title" class="shm-store-title">{{ i18n.t('events.title') }}</h3>
-    <p class="shm-store-intro">{{ i18n.t('events.intro') }}</p>
     <div class="shm-rows">
       <article v-for="row in rows" :key="row.event.id" class="shm-row shm-event">
         <div class="shm-row-summary">
@@ -63,10 +92,18 @@ const rows = computed(() =>
             <span v-if="row.description" class="shm-event-description">
               {{ row.description }}
             </span>
+            <span v-if="row.current" class="shm-event-current">{{ row.current }}</span>
+            <!-- No live region: reading out every second would be noise. -->
+            <span class="shm-event-countdowns">
+              <span v-for="countdown in row.countdowns" :key="countdown.label">
+                {{ countdown.label }}
+                <span class="shm-event-countdown">{{ countdown.time }}</span>
+              </span>
+            </span>
           </span>
           <span class="shm-badges">
             <span class="shm-badge shm-event-state" :class="`is-${row.state}`">
-              {{ i18n.t(`events.${row.state}`) }} · {{ row.status }}
+              {{ i18n.t(`events.${row.state}`) }}
             </span>
           </span>
         </div>
@@ -105,6 +142,26 @@ const rows = computed(() =>
   color: var(--shm-text-secondary);
   font-size: calc(12px * var(--shm-font-scale));
   line-height: 1.45;
+}
+
+.shm-event-current {
+  color: var(--shm-text);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+.shm-event-countdowns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 18px;
+  color: var(--shm-text-secondary);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+/* The time itself stands out and keeps its width while it ticks. */
+.shm-event-countdown {
+  color: var(--shm-text-strong);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 .shm-event-state.is-running {

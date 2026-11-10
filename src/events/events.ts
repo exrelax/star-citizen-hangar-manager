@@ -27,6 +27,18 @@ export interface StarCitizenEvent {
   description?: LocalizedText;
   /** A 16:9 image, only from the project website (`EVENTS.imageBase`). */
   image?: string;
+  /**
+   * The parts of a running event by their start, e.g. the manufacturer of each day of the IAE,
+   * "Best in Show" and the finale; each lasts until the next one starts or the event ends.
+   */
+  phases?: EventPhase[];
+}
+
+/** A part of an event (see `StarCitizenEvent.phases`). */
+export interface EventPhase {
+  /** Epoch milliseconds. */
+  start: number;
+  name: LocalizedText;
 }
 
 /** Upcoming (shown, not started yet) or running. */
@@ -92,6 +104,7 @@ function parseEvent(entry: unknown): StarCitizenEvent | undefined {
     return undefined;
   }
   const description = localizedText(raw.description);
+  const phases = parsePhases(raw.phases, eventStart, eventEnd);
   const image = imageUrl(raw.image);
   return {
     id,
@@ -102,7 +115,26 @@ function parseEvent(entry: unknown): StarCitizenEvent | undefined {
     displayEnd,
     ...(description && { description }),
     ...(image && { image }),
+    ...(phases.length && { phases }),
   };
+}
+
+/** The phases within the event, by their start; others are left out. */
+function parsePhases(value: unknown, eventStart: number, eventEnd: number): EventPhase[] {
+  if (!Array.isArray(value)) return [];
+  const starts = new Set<number>();
+  return value
+    .flatMap((entry): EventPhase[] => {
+      if (!entry || typeof entry !== 'object') return [];
+      const raw = entry as Record<string, unknown>;
+      const start = time(raw.start);
+      const name = localizedText(raw.name, 200);
+      if (start === undefined || !name || start < eventStart || start >= eventEnd) return [];
+      if (starts.has(start)) return [];
+      starts.add(start);
+      return [{ start, name }];
+    })
+    .sort((a, b) => a.start - b.start);
 }
 
 /**
@@ -127,6 +159,21 @@ export const shownEvents = (events: readonly StarCitizenEvent[], now: number) =>
   events
     .filter((event) => event.displayStart <= now && now < event.displayEnd)
     .sort((a, b) => a.eventStart - b.eventStart);
+
+/** Where a running event stands: its current phase, the next one (if any), and its end. */
+export interface EventProgress {
+  current?: EventPhase;
+  next?: EventPhase;
+}
+
+/** The current and the next phase of an event at `now`. */
+export function eventProgress(event: StarCitizenEvent, now: number): EventProgress {
+  const phases = event.phases ?? [];
+  const index = phases.findIndex((phase) => phase.start > now);
+  const current = index === -1 ? phases.at(-1) : phases[index - 1];
+  const next = index === -1 ? undefined : phases[index];
+  return { ...(current && { current }), ...(next && { next }) };
+}
 
 /** Whether a shown event has started. */
 export const eventState = (event: StarCitizenEvent, now: number): EventState =>

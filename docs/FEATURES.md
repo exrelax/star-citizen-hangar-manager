@@ -513,12 +513,14 @@ Paints, Game access, LTI, Warbond, Probably giftable, Available, Rewards), plus:
 ## Pledge Store: current warbond CCUs
 
 **Events** come first while there are any: Star Citizen events like the Intergalactic Aerospace
-Expo, when the Pledge Store usually has new ships and sales. The list is a small file on the
-project website (`data/events.json`), read at most once a day and kept in the browser – data only,
-checked field by field, its texts shown as plain text. Each event shows from a few days before it
-starts until it ends, with its name, start and end, **Upcoming · starts in 3 days** or **Running ·
-ends in 5 days**, and a description and image if given (from the project website too). Once its notice starts, the sidebar tells it
-once (the kind "Events" in the settings).
+Expo, when the Pledge Store usually has new ships and daily warbond offers. The list is a small file
+on the project website (`data/events.json`), read at most once a day and kept in the browser – data
+only, checked field by field, its texts shown as plain text, in the language set. Each event shows
+from a few days before it starts until it ends, with its name, start and end, a description and
+image if given, and a live countdown to its start. While it runs, it shows its current phase (e.g.
+the manufacturer of the day), a countdown to the next one (the next manufacturer, "Best in Show",
+the finale) and one to its end. Once its notice starts, the sidebar tells it once (the kind
+"Events" in the settings).
 
 The **Pledge Store** tab lists the warbond CCUs RSI currently offers – read from RSI's own ship
 upgrade tool and stored in the browser, so the tab shows them at once. CIG changes the Pledge Store
