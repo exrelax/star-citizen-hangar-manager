@@ -971,6 +971,7 @@
     "hintUpgradeValue": "Upgrade value: $1 now, $2 after.",
     "hintDiscount": "Discount: $1 now, $2 after.",
     "hintStillApplicable": "A CCU you own can still be applied, although RSI doesn’t sell CCUs without upgrade value.",
+    "hintNoLongerAvailable": "From then on RSI can’t sell it back: its base ship will cost as much as its target or more.",
     "flightReady": "Expected to become flight ready on $1.",
     "expected": "These dates are expected, not confirmed by RSI."
   }

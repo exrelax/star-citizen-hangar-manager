@@ -142,8 +142,18 @@ export function priceIncreaseLabel(
         ]),
       );
     }
-    // RSI doesn't sell such CCUs, but one already owned still works.
-    if (amounts.after <= 0) lines.push(translate(locale, 'priceIncrease.hintStillApplicable'));
+    // RSI doesn't sell such CCUs (#207): one already owned still works, one in the buy back can't
+    // be bought back any more.
+    if (amounts.after <= 0) {
+      lines.push(
+        translate(
+          locale,
+          place === 'buyback'
+            ? 'priceIncrease.hintNoLongerAvailable'
+            : 'priceIncrease.hintStillApplicable',
+        ),
+      );
+    }
   }
   // Already flight ready (none given, or over): only the price increase.
   if (flightReadyAt && endOf(flightReadyAt) > now) {

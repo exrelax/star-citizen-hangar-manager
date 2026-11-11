@@ -971,6 +971,7 @@
     "hintUpgradeValue": "Valor de mejora: $1 ahora, $2 después.",
     "hintDiscount": "Descuento: $1 ahora, $2 después.",
     "hintStillApplicable": "Un CCU que ya tienes se puede seguir aplicando, aunque RSI no vende CCU sin valor de mejora.",
+    "hintNoLongerAvailable": "A partir de entonces RSI no puede venderlo de nuevo: su nave base costará lo mismo que su destino o más.",
     "flightReady": "Se espera que sea flight ready el $1.",
     "expected": "Estas fechas son previstas, no confirmadas por RSI."
   }

@@ -577,7 +577,8 @@ plus:
   for ships not flight ready yet and a note, and says that the dates are expected, not confirmed
   by RSI. Where the new price is announced, it shows the change like My Hangar (#251): "Price
   +$20" on a ship, "Upgrade value +$20" on a CCU to it, and a warning "Upgrade value −$20" on a CCU
-  from it. The filter **Price increase expected** shows the pledges whose price is expected to rise
+  from it – once its value falls to $0 or below, RSI can't sell it back any more (see **Not
+  available**). The filter **Price increase expected** shows the pledges whose price is expected to rise
   within the next 14 days (set in the settings); it is offered only while there are any. The
   project publishes the expected price increases on its website (`data/price-increases.json`),
   as RSI rarely lists them in advance.
