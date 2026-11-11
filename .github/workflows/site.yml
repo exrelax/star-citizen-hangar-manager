@@ -2,7 +2,8 @@
 # Runs on pushes to main that change the site, the images it shows or PRIVACY.md (its privacy
 # page), when issues or milestones change (the roadmap is built from them), when a release is
 # published (the current version), daily (for changes of the project board, which trigger no
-# event here) and by hand ("Run workflow"). In the repository settings, Pages → "Build and
+# event here, and for the always available ships of the Star Citizen Wiki, #107) and by hand
+# ("Run workflow"). In the repository settings, Pages → "Build and
 # deployment" → Source has to be set to "GitHub Actions".
 name: Website
 
@@ -67,6 +68,10 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
+      # The always available ships (#107), from the Star Citizen Wiki and RSI's Ship Matrix, into
+      # site/public/data. If a source fails or the list looks broken, this step fails, nothing is
+      # deployed and the last deployment (with the last good file) stays.
+      - run: pnpm site:ships
       # The roadmap reads the issues with this token. The columns of the project board need a token
       # that can read the project: the optional secret ROADMAP_TOKEN (a fine-grained token with
       # read access to projects). Without access, the roadmap groups into open and done and the
