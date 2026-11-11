@@ -2,6 +2,8 @@ import { buybackShipNames, mainItem, type BuybackPledge } from '@/buyback/buybac
 import type { Pledge } from '@/hangar/pledge';
 import { shipKey } from '@/hangar/ship-images';
 import { ccuShips } from '@/hangar/upgrade-log';
+import type { PriceLookup } from '@/hangar/ship-prices';
+import { ccuPriceChange, type CcuPriceChange, type CcuShip } from './ccu-price-change';
 import { upcomingPriceIncreases, type ExpectedPriceIncrease } from './price-increases';
 
 /*
@@ -18,6 +20,11 @@ import { upcomingPriceIncreases, type ExpectedPriceIncrease } from './price-incr
  * "Warbond Edition", but otherwise exactly: "Galaxy" doesn't match "Galaxy Refinery Module", nor
  * "Liberator" the "Valkyrie Liberator Edition". Paints aren't affected: their names hold the
  * ship's name only as a part. Only price increases still ahead count; of several, the next one.
+ *
+ * For the Price Increase Advisor (#250), `hangarCcu` and `buybackCcu` look at a CCU's both ships:
+ * its base ship rising makes it lose upgrade value, its target ship rising gain it (see
+ * `ccu-price-change.ts`). Only CCU pledges count: a pledge with applied upgrades is its current
+ * ship, matched by `hangar` like any ship.
  */
 
 /** Why an item is affected. */
@@ -78,6 +85,19 @@ export function createPriceIncreaseMatcher(
   /** A CCU's target: the ship, or a related item (e.g. a module). */
   const target = (name: string) => next([ship(name, 'ccu'), related(name)]);
 
+  /** A CCU's base ship, by its Ship Matrix id if known, else by name. */
+  const ccuBase = (name: string, id?: number): CcuShip => ({
+    name,
+    increase: (id && byShipId.get(id)) || byShipName.get(nameKey(name)),
+  });
+  /** A CCU's target: the ship (by id, else name), or an item that rises with a ship. */
+  const ccuTarget = (name: string, id?: number): CcuShip => {
+    const increase = (id && byShipId.get(id)) || byShipName.get(nameKey(name));
+    if (increase) return { name, increase };
+    const relatedIncrease = byRelated.get(nameKey(name));
+    return relatedIncrease ? { name, increase: relatedIncrease, related: true } : { name };
+  };
+
   return {
     /** The expected price increase of a pledge of My Hangar, if any. */
     hangar(pledge: Pledge): PriceIncreaseMatch | undefined {
@@ -107,6 +127,37 @@ export function createPriceIncreaseMatcher(
       const shipNames = ships.length ? [...ships, ...(pledge.items ?? [])] : [];
       const names = [mainItem(pledge), ...(pledge.items ?? []), ...titleNames(pledge.title)];
       return next([...shipNames.map((name) => ship(name)), ...names.map(related)]);
+    },
+
+    /**
+     * What the expected price increases mean for a CCU of My Hangar (#250), by the names of its
+     * ships; its value is its melt value.
+     */
+    hangarCcu(pledge: Pledge, priceOf?: PriceLookup): CcuPriceChange | undefined {
+      if (byShipId.size === 0 || !pledge.upgrade) return undefined;
+      const fromTitle = ccuShips(pledge.title);
+      const from = pledge.upgrade.matchItems[0]?.name ?? fromTitle?.from;
+      const to = pledge.upgrade.targetItems[0]?.name ?? fromTitle?.to;
+      if (!from || !to) return undefined;
+      return ccuPriceChange(ccuBase(from), ccuTarget(to), pledge.valueUsd, priceOf);
+    },
+
+    /**
+     * What the expected price increases mean for a CCU of the buy back (#250), by the Ship Matrix
+     * ids of its "Buy Back" button, else the names in its title; `paid` is its buy back price.
+     */
+    buybackCcu(
+      pledge: BuybackPledge,
+      priceOf?: PriceLookup,
+      paid?: number,
+    ): CcuPriceChange | undefined {
+      if (byShipId.size === 0 || !pledge.isUpgrade) return undefined;
+      const names = ccuShips(pledge.title);
+      const ids = pledge.upgrade;
+      if (!names && !ids) return undefined;
+      const from = ccuBase(names?.from ?? '', ids?.fromShipId);
+      const to = ccuTarget(names?.to ?? '', ids?.toShipId);
+      return ccuPriceChange(from, to, paid, priceOf);
     },
   };
 }
