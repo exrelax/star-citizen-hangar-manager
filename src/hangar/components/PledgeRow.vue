@@ -17,6 +17,7 @@ import ExternalLinks from './ExternalLinks.vue';
 import GiftOverlay from './GiftOverlay.vue';
 import ProtectedBadge from './ProtectedBadge.vue';
 import PriceIncreaseBadge from '@/price-increases/components/PriceIncreaseBadge.vue';
+import { openCcuAdvice } from '@/price-increases/ccu-advice-request';
 import UpgradeLog from './UpgradeLog.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { selection } from '../selection';
@@ -317,6 +318,17 @@ const toggle = () => {
           {{ i18n.t('gift.button') }}
         </button>
         <GiftOverlay v-if="gifting" :pledge="pledge" @close="gifting = false" />
+        <!-- A CCU losing upgrade value with a price increase: how to keep its discount (#252). -->
+        <button
+          v-if="pledge.ccuPriceChange?.direction === 'loses'"
+          v-tooltip="i18n.t('ccuAdvice.buttonHint')"
+          type="button"
+          class="shm-button shm-origin-button shm-ccu-advice-button"
+          @click="openCcuAdvice(pledge.id)"
+        >
+          <SvgIcon name="scale-balanced" />
+          {{ i18n.t('ccuAdvice.button') }}
+        </button>
       </div>
       <div class="shm-details-main">
         <OrderInfo v-if="pledge.order" :order="pledge.order" :base="pledge.isUpgraded" refundable />

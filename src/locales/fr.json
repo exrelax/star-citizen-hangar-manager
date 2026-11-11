@@ -976,5 +976,32 @@
     "hintNoLongerAvailable": "Ensuite, RSI ne peut plus le revendre : son vaisseau de base coûtera autant que sa cible, ou plus.",
     "flightReady": "Devrait devenir flight ready le $1.",
     "expected": "Ces dates sont attendues, pas confirmées par RSI."
+  },
+  "ccuAdvice": {
+    "title": "Garder la remise de tes CCU",
+    "intro": "Ces CCU perdent de la valeur d’upgrade quand le prix de leur vaisseau de base augmente. Fondus, ils rendent leur prix en store credit – assez pour des CCU vers le même vaisseau depuis un autre vaisseau de base.",
+    "noShips": "Les vaisseaux de l’outil d’upgrade de RSI ne sont pas encore enregistrés. Ils seront lus au prochain rafraîchissement.",
+    "none": "Aucun CCU de ton hangar ne perd de valeur d’upgrade avec une hausse de prix attendue.",
+    "groupTitle": "$1 × $2 → $3",
+    "increase": "Le prix du $1 devrait augmenter le $2.",
+    "increasePrice": "Le prix du $1 devrait passer de $2 à $3 le $4.",
+    "keep": "Les garder",
+    "keepFigures": "Valeur d’upgrade $1 maintenant, $2 ensuite ; remise $3 maintenant, $4 ensuite.",
+    "keepUnknown": "Sans le nouveau prix, on ne sait pas combien ils perdent.",
+    "standardTitle": "Les fondre et acheter $1 × $2 → $3 en store credit",
+    "warbondTitle": "Ou acheter $1 × $2 → $3 Warbond avec de l’argent",
+    "standardFigures": "$1 chacun, $2 au total ; remise de $3 chacun.",
+    "warbondFigures": "$1 chacun, $2 au total, payé avec de l’argent – RSI ne vend les CCU warbond que contre de l’argent ; remise de $3 chacun.",
+    "meltGivesBack": "Les fondre rend $1 en store credit :",
+    "creditNeeded": "il manque encore $1 de store credit.",
+    "creditNeededHave": "il manque encore $1 de store credit (tu as $2).",
+    "creditCovered": "cela suffit.",
+    "gain": "Remise totale $1 par rapport à les garder.",
+    "noOptions": "L’outil d’upgrade de RSI ne vend actuellement aucun CCU vers le $1.",
+    "giftable": "$1 de ces $2 CCU peuvent être offerts maintenant. Rachetés en store credit, ils ne pourront plus l’être.",
+    "giftableOne": "1 de ces $2 CCU peut être offert maintenant. Racheté en store credit, il ne pourra plus l’être.",
+    "footer": "Une simple suggestion : le Hangar Manager ne fond ni n’achète jamais rien de lui-même. Les prix et dates sont attendus, pas confirmés par RSI.",
+    "button": "Garder la remise",
+    "buttonHint": "Ce CCU perd de la valeur d’upgrade avec une hausse de prix attendue : comment garder sa remise."
   }
 }
