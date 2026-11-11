@@ -220,6 +220,7 @@ Each entry of `priceIncreases` is one ship (the values are an example):
   "ship": { "id": 244, "name": "Galaxy", "aliases": ["RSI Galaxy"] },
   "flightReadyAt": "2026-11-13",
   "priceIncreaseAt": "2026-11-16T16:00:00Z",
+  "price": { "from": 400, "to": 450 },
   "relatedItems": [{ "name": "Galaxy Refinery Module" }],
   "event": "iae-2956",
   "note": { "en": "Expected with the IAE.", "de": "Erwartet mit der IAE." }
@@ -246,6 +247,9 @@ Each entry of `priceIncreases` is one ship (the values are an example):
 - **`flightReadyAt`** (optional): when the ship is expected to become flight ready, given the
   same way. Leave it out for ships that are already flight ready – the Ship Matrix's
   `production_status` (`flight-ready`, `in-concept`) tells which ones are.
+- **`price`** (optional, #249): the ship's standard price before (`from`) and after (`to`) the
+  increase, in USD without taxes, as the Pledge Store shows it. Both positive, `to` above `from`;
+  a price that doesn't fit is left out and the rest of the entry is kept.
 - **`relatedItems`** (optional): items that belong to the ship and rise with it, e.g. the
   modules of a modular ship, each with its exact `name` as in the Pledge Store or My Hangar.
 - **`event`** (optional): the `id` of the event in `events.json` the price increase belongs to.
