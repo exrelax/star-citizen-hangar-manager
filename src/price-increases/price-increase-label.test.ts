@@ -110,6 +110,10 @@ describe('priceIncreaseLabel with the change (#251)', () => {
     expect(hangar.hint).toContain('can still be applied');
     expect(label(undefined, 'hangar', loses, 'de').text).toBe('Upgrade-Wert −20\u00a0$: 9 Tage');
     // Without the new price: the direction only.
+    // In the buy back: RSI can't sell it back once its value is gone (#207).
+    const buyback = label(undefined, 'buyback', loses).hint;
+    expect(buyback).toContain('From then on RSI can’t sell it back');
+    expect(buyback).not.toContain('can still be applied');
     const unknown = label(undefined, 'buyback', { base: prospector, direction: 'loses' });
     expect(unknown.text).toBe('Upgrade value drops: 9 days');
     expect(unknown.hint).not.toContain('Upgrade value:');

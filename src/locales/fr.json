@@ -971,6 +971,7 @@
     "hintUpgradeValue": "Valeur d’upgrade : $1 maintenant, $2 ensuite.",
     "hintDiscount": "Remise : $1 maintenant, $2 ensuite.",
     "hintStillApplicable": "Un CCU que tu possèdes reste applicable, même si RSI ne vend pas de CCU sans valeur d’upgrade.",
+    "hintNoLongerAvailable": "Ensuite, RSI ne peut plus le revendre : son vaisseau de base coûtera autant que sa cible, ou plus.",
     "flightReady": "Devrait devenir flight ready le $1.",
     "expected": "Ces dates sont attendues, pas confirmées par RSI."
   }
