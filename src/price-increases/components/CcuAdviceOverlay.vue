@@ -210,9 +210,13 @@ function onKeydown(event: KeyboardEvent) {
                     }}
                   </span>
                 </template>
-                <strong v-if="option.gain !== undefined" class="shm-ccu-advice-gain">
-                  {{ i18n.t('ccuAdvice.gain', [signed(option.gain)]) }}
-                </strong>
+                <!-- The space before it: line breaks between elements are dropped. -->
+                <template v-if="option.gain !== undefined">
+                  {{ ' '
+                  }}<strong class="shm-ccu-advice-gain">{{
+                    i18n.t('ccuAdvice.gain', [signed(option.gain)])
+                  }}</strong>
+                </template>
               </dd>
             </div>
           </dl>
