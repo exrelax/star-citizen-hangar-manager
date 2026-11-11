@@ -976,5 +976,32 @@
     "hintNoLongerAvailable": "Ab dann kann RSI es nicht mehr zurückverkaufen: Sein Basisschiff kostet dann so viel wie sein Ziel oder mehr.",
     "flightReady": "Voraussichtlich ab $1 flugbereit.",
     "expected": "Diese Termine sind erwartet, nicht von RSI bestätigt."
+  },
+  "ccuAdvice": {
+    "title": "Rabatt deiner CCUs erhalten",
+    "intro": "Diese CCUs verlieren an Upgrade-Wert, wenn der Preis ihres Basisschiffs steigt. Eingeschmolzen geben sie ihren Preis als Store Credits zurück – genug für CCUs zum selben Schiff von einem anderen Basisschiff.",
+    "noShips": "Die Schiffe aus RSIs Upgrade-Tool sind noch nicht gespeichert. Sie werden beim nächsten Refresh gelesen.",
+    "none": "Kein CCU in deinem Hangar verliert durch eine erwartete Preiserhöhung an Upgrade-Wert.",
+    "groupTitle": "$1 × $2 → $3",
+    "increase": "Der Preis der $1 steigt voraussichtlich am $2.",
+    "increasePrice": "Der Preis der $1 steigt voraussichtlich am $4 von $2 auf $3.",
+    "keep": "Behalten",
+    "keepFigures": "Upgrade-Wert jetzt $1, danach $2; Rabatt jetzt $3, danach $4.",
+    "keepUnknown": "Ohne den neuen Preis ist nicht bekannt, wie viel sie verlieren.",
+    "standardTitle": "Einschmelzen und $1 × $2 → $3 mit Store Credits kaufen",
+    "warbondTitle": "Oder $1 × $2 → $3 Warbond mit Geld kaufen",
+    "standardFigures": "Je $1, zusammen $2; Rabatt je $3.",
+    "warbondFigures": "Je $1, zusammen $2, mit Geld bezahlt – RSI verkauft Warbond-CCUs nur gegen Geld; Rabatt je $3.",
+    "meltGivesBack": "Einschmelzen gibt $1 als Store Credits zurück:",
+    "creditNeeded": "Es fehlen noch $1 an Store Credits.",
+    "creditNeededHave": "Es fehlen noch $1 an Store Credits (du hast $2).",
+    "creditCovered": "das reicht.",
+    "gain": "Rabatt insgesamt $1 gegenüber Behalten.",
+    "noOptions": "RSIs Upgrade-Tool verkauft gerade kein CCU zu $1.",
+    "giftable": "$1 dieser $2 CCUs lassen sich jetzt verschenken. Mit Store Credits neu gekauft, lassen sie sich nicht mehr verschenken.",
+    "giftableOne": "1 dieser $2 CCUs lässt sich jetzt verschenken. Mit Store Credits neu gekauft, lässt es sich nicht mehr verschenken.",
+    "footer": "Nur ein Vorschlag: Der Hangar Manager schmilzt und kauft nie etwas von sich aus. Preise und Termine sind erwartet, nicht von RSI bestätigt.",
+    "button": "Rabatt erhalten",
+    "buttonHint": "Dieses CCU verliert durch eine erwartete Preiserhöhung an Upgrade-Wert: so erhältst du seinen Rabatt."
   }
 }

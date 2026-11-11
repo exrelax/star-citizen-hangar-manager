@@ -328,7 +328,15 @@ on its own.
   +$20"); the tooltip gives the old and new price, the upgrade value and the discount now and
   after. A CCU with the ship as **base** loses upgrade value: it gets a warning instead ("Upgrade
   value −$20", without a known price "Upgrade value drops"), also when its value falls to $0 or
-  below – a CCU already owned can still be applied.
+  below – a CCU already owned can still be applied. Its details offer **Keep the discount**
+  (#252): a dialog that compares, per target ship, keeping these CCUs with melting them and buying
+  as many CCUs to the same ship from another base ship that RSI's upgrade tool sells today – a
+  standard CCU with store credit (the one costing the most without costing more than a melted CCU
+  gives back, so the melt value pays for it) and, if the ship is offered as warbond, a warbond CCU
+  with money and its discount. It shows the cost, the store credit needed besides the melt value
+  (and the account's store credit), how much the total discount grows, and how many of the CCUs
+  can be gifted now – bought again with store credit, they can't. Base ships about to rise are
+  left out. A suggestion only: nothing is melted or bought from there.
 
 ---
 

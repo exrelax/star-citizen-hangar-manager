@@ -31,6 +31,8 @@ import TabBar from '@/shared/components/TabBar.vue';
 import { i18n } from '@/i18n';
 import SettingsPanel from '@/settings/SettingsPanel.vue';
 import StoreTab from '@/store/components/StoreTab.vue';
+import CcuAdviceOverlay from '@/price-increases/components/CcuAdviceOverlay.vue';
+import { ccuAdviceRequest, closeCcuAdvice } from '@/price-increases/ccu-advice-request';
 import { checkFillerPurchase } from '@/store/paint-consultant/filler-purchase';
 import { providePaintConsultant } from '@/store/paint-consultant/use-paint-consultant';
 import { useSettings } from '@/settings/use-settings';
@@ -353,6 +355,13 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
   >
     <SettingsPanel :settings="settings" @update="updateSettings" />
   </div>
+  <!-- The advice for CCUs losing value (#252), opened from a CCU's details or the sidebar. -->
+  <CcuAdviceOverlay
+    v-if="ccuAdviceRequest"
+    :pledges="pledges"
+    :pledge-id="ccuAdviceRequest.pledgeId"
+    @close="closeCcuAdvice"
+  />
 </template>
 
 <style scoped>

@@ -976,5 +976,32 @@
     "hintNoLongerAvailable": "A partir de entonces RSI no puede venderlo de nuevo: su nave base costará lo mismo que su destino o más.",
     "flightReady": "Se espera que sea flight ready el $1.",
     "expected": "Estas fechas son previstas, no confirmadas por RSI."
+  },
+  "ccuAdvice": {
+    "title": "Conservar el descuento de tus CCU",
+    "intro": "Estos CCU pierden valor de mejora cuando sube el precio de su nave base. Fundidos, devuelven su precio en store credit, suficiente para CCU hacia la misma nave desde otra nave base.",
+    "noShips": "Las naves de la herramienta de mejoras de RSI aún no están guardadas. Se leerán en la próxima actualización.",
+    "none": "Ningún CCU de tu hangar pierde valor de mejora con una subida de precio prevista.",
+    "groupTitle": "$1 × $2 → $3",
+    "increase": "Se espera que el precio de la $1 suba el $2.",
+    "increasePrice": "Se espera que el precio de la $1 pase de $2 a $3 el $4.",
+    "keep": "Conservarlos",
+    "keepFigures": "Valor de mejora $1 ahora, $2 después; descuento $3 ahora, $4 después.",
+    "keepUnknown": "Sin el nuevo precio no se sabe cuánto pierden.",
+    "standardTitle": "Fundirlos y comprar $1 × $2 → $3 con store credit",
+    "warbondTitle": "O comprar $1 × $2 → $3 Warbond con dinero",
+    "standardFigures": "$1 cada uno, $2 en total; descuento de $3 cada uno.",
+    "warbondFigures": "$1 cada uno, $2 en total, pagado con dinero (RSI solo vende CCU warbond por dinero); descuento de $3 cada uno.",
+    "meltGivesBack": "Fundirlos devuelve $1 en store credit:",
+    "creditNeeded": "faltan $1 de store credit.",
+    "creditNeededHave": "faltan $1 de store credit (tienes $2).",
+    "creditCovered": "es suficiente.",
+    "gain": "Descuento total $1 frente a conservarlos.",
+    "noOptions": "La herramienta de mejoras de RSI no vende ahora ningún CCU hacia la $1.",
+    "giftable": "$1 de estos $2 CCU se pueden regalar ahora. Comprados de nuevo con store credit, ya no se podrán regalar.",
+    "giftableOne": "1 de estos $2 CCU se puede regalar ahora. Comprado de nuevo con store credit, ya no se podrá regalar.",
+    "footer": "Solo una sugerencia: el Hangar Manager nunca funde ni compra nada por sí mismo. Los precios y las fechas son previstos, no confirmados por RSI.",
+    "button": "Conservar el descuento",
+    "buttonHint": "Este CCU pierde valor de mejora con una subida de precio prevista: cómo conservar su descuento."
   }
 }
