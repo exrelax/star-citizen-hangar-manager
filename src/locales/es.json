@@ -954,6 +954,10 @@
   },
   "priceIncrease": {
     "label": "Subida de precio: $1",
+    "labelPrice": "Precio +$1: $2",
+    "labelUpgradeGain": "Valor de mejora +$1: $2",
+    "labelUpgradeLoss": "Valor de mejora −$1: $2",
+    "labelUpgradeDrops": "El valor de mejora baja: $1",
     "days": "$1 días",
     "day": "1 día",
     "hours": "$1 h $2 min",
@@ -962,6 +966,11 @@
     "hint": "Se espera que el precio de la $1 suba el $2.",
     "hintBuyback": "Recompra el artículo o úsalo como token de descuento antes.",
     "hintHangar": "Fundirlo antes significa recomprarlo después al precio más alto.",
+    "hintCcuLoses": "Este CCU pierde valor de mejora cuando suba el precio de la $1, previsto el $2.",
+    "hintPrice": "Se espera que el precio de la $1 pase de $2 a $3.",
+    "hintUpgradeValue": "Valor de mejora: $1 ahora, $2 después.",
+    "hintDiscount": "Descuento: $1 ahora, $2 después.",
+    "hintStillApplicable": "Un CCU que ya tienes se puede seguir aplicando, aunque RSI no vende CCU sin valor de mejora.",
     "flightReady": "Se espera que sea flight ready el $1.",
     "expected": "Estas fechas son previstas, no confirmadas por RSI."
   }

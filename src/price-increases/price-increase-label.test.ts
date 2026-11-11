@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { priceIncreaseLabel } from './price-increase-label';
+import type { CcuPriceChange } from './ccu-price-change';
 import type { PriceIncreaseMatch } from './price-increase-match';
 import type { ExpectedPriceIncrease } from './price-increases';
 
@@ -69,5 +70,64 @@ describe('priceIncreaseLabel', () => {
     expect(later).not.toContain('flugbereit');
     expect(later).toContain('Wer das Item vorher schmilzt');
     expect(later).toContain('Für die IAE angekündigt.');
+  });
+});
+
+describe('priceIncreaseLabel with the change (#251)', () => {
+  const prospector: ExpectedPriceIncrease = {
+    ship: { id: 109, name: 'Prospector' },
+    priceIncreaseAt: { at: AT },
+    price: { from: 155, to: 175 },
+  };
+  const NOW = AT - 9 * DAY;
+  const label = (
+    m: PriceIncreaseMatch | undefined,
+    place: 'buyback' | 'hangar',
+    ccu?: CcuPriceChange,
+    locale: 'en' | 'de' = 'en',
+  ) => priceIncreaseLabel(m, place, NOW, locale, ccu)!;
+
+  it('tells a ship’s price change in the badge and the prices in the tooltip', () => {
+    const ship = label({ increase: prospector, reason: 'ship' }, 'hangar');
+    expect(ship.text).toBe('Price +$20: 9 days');
+    expect(ship.tone).toBe('info');
+    expect(ship.hint).toContain('The price of Prospector is expected to go from $155 to $175.');
+    expect(label({ increase: prospector, reason: 'ship' }, 'buyback').tone).toBe('warning');
+  });
+
+  it('warns of a CCU losing upgrade value, also in My Hangar', () => {
+    const loses: CcuPriceChange = {
+      base: prospector,
+      direction: 'loses',
+      amounts: { before: 20, after: 0, change: -20, discountBefore: 15, discountAfter: -5 },
+    };
+    const hangar = label(undefined, 'hangar', loses);
+    expect(hangar.text).toBe('Upgrade value −$20: 9 days');
+    expect(hangar.tone).toBe('warning');
+    expect(hangar.hint).toContain('This CCU loses upgrade value when the price of Prospector');
+    expect(hangar.hint).toContain('Upgrade value: $20 now, $0 after.');
+    expect(hangar.hint).toContain('Discount: $15 now, -$5 after.');
+    expect(hangar.hint).toContain('can still be applied');
+    expect(label(undefined, 'hangar', loses, 'de').text).toBe('Upgrade-Wert −20\u00a0$: 9 Tage');
+    // Without the new price: the direction only.
+    const unknown = label(undefined, 'buyback', { base: prospector, direction: 'loses' });
+    expect(unknown.text).toBe('Upgrade value drops: 9 days');
+    expect(unknown.hint).not.toContain('Upgrade value:');
+  });
+
+  it('informs of a CCU gaining upgrade value', () => {
+    const gains: CcuPriceChange = {
+      target: prospector,
+      direction: 'gains',
+      amounts: { before: 20, after: 40, change: 20 },
+    };
+    const hangar = label({ increase: prospector, reason: 'ccu' }, 'hangar', gains);
+    expect(hangar.text).toBe('Upgrade value +$20: 9 days');
+    expect(hangar.tone).toBe('info');
+    expect(hangar.hint).not.toContain('can still be applied');
+    // Without amounts the countdown as before.
+    expect(label(undefined, 'hangar', { target: prospector, direction: 'gains' }).text).toBe(
+      'Price increase: 9 days',
+    );
   });
 });

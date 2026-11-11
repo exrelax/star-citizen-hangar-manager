@@ -954,6 +954,10 @@
   },
   "priceIncrease": {
     "label": "Price increase: $1",
+    "labelPrice": "Price +$1: $2",
+    "labelUpgradeGain": "Upgrade value +$1: $2",
+    "labelUpgradeLoss": "Upgrade value −$1: $2",
+    "labelUpgradeDrops": "Upgrade value drops: $1",
     "days": "$1 days",
     "day": "1 day",
     "hours": "$1 h $2 min",
@@ -962,6 +966,11 @@
     "hint": "The price of $1 is expected to rise on $2.",
     "hintBuyback": "Buy it back or use it as a discount token before then.",
     "hintHangar": "Melting it before then means buying it back at the higher price.",
+    "hintCcuLoses": "This CCU loses upgrade value when the price of $1 rises on $2.",
+    "hintPrice": "The price of $1 is expected to go from $2 to $3.",
+    "hintUpgradeValue": "Upgrade value: $1 now, $2 after.",
+    "hintDiscount": "Discount: $1 now, $2 after.",
+    "hintStillApplicable": "A CCU you own can still be applied, although RSI doesn’t sell CCUs without upgrade value.",
     "flightReady": "Expected to become flight ready on $1.",
     "expected": "These dates are expected, not confirmed by RSI."
   }

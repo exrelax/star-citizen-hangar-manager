@@ -17,7 +17,10 @@ import { createBuybackPricer } from '@/buyback/buyback-price';
 import { createGiftableCheck } from '@/buyback/probably-giftable';
 import type { OrdersSnapshot } from '@/orders/orders';
 import { withOrder } from '@/orders/orders';
-import { createPriceIncreaseMatcher } from '@/price-increases/price-increase-match';
+import {
+  createPriceIncreaseMatcher,
+  type PriceIncreaseMatcher,
+} from '@/price-increases/price-increase-match';
 import type { ExpectedPriceIncrease } from '@/price-increases/price-increases';
 import { demoPriceIncreases } from './demo-price-increases';
 import { fraction, hash } from './random';
@@ -155,17 +158,15 @@ export function generatedDemo(
   const views = account.pledges.map((pledge, position) => {
     const view = withOrder(toPledgeView(pledge, {}, position, priceOf, itemPriceOf), orders);
     const priceIncrease = matcher.hangar(pledge);
-    return priceIncrease ? { ...view, priceIncrease } : view;
+    const ccuPriceChange = matcher.hangarCcu(pledge, priceOf);
+    return {
+      ...view,
+      ...(priceIncrease && { priceIncrease }),
+      ...(ccuPriceChange && { ccuPriceChange }),
+    };
   });
   const pledges = demoViews(views, key, today, now, settings.states);
-  const buyback = generatedBuybackViews(
-    generatedBuyback,
-    catalog,
-    orders,
-    account,
-    key,
-    matcher.buyback,
-  );
+  const buyback = generatedBuybackViews(generatedBuyback, catalog, orders, account, key, matcher);
   return { pledges, buyback, account, generatedBuyback, priceIncreases };
 }
 
@@ -192,7 +193,7 @@ function generatedBuybackViews(
   orders: OrdersSnapshot,
   account: DemoAccount,
   key: string,
-  priceIncreaseOf: NonNullable<Parameters<typeof toBuybackView>[1]['priceIncreaseOf']>,
+  matcher: PriceIncreaseMatcher,
 ): BuybackView[] {
   const fakeId = createFakeIds(key);
   const giftable = createGiftableCheck({
@@ -200,9 +201,12 @@ function generatedBuybackViews(
     hangarPledges: account.pledges,
     giftFlags: generated.giftFlags,
   });
+  const shipPriceOf = createPriceLookup(
+    catalog.ships.map(({ name, msrp }) => ({ name, price: msrp })),
+  );
   const priceOf = createBuybackPricer({
     ships: catalog.ships,
-    shipPriceOf: createPriceLookup(catalog.ships.map(({ name, msrp }) => ({ name, price: msrp }))),
+    shipPriceOf,
     itemPriceOf: createItemPriceLookup(catalog.items),
     pledges: generated.pledges,
   });
@@ -217,7 +221,8 @@ function generatedBuybackViews(
           priceOf,
           imageOf,
           availabilityOf,
-          priceIncreaseOf,
+          priceIncreaseOf: matcher.buyback,
+          ccuPriceChangeOf: (ccu, paid) => matcher.buybackCcu(ccu, shipPriceOf, paid),
         }),
         orders,
       ),

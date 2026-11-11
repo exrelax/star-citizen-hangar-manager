@@ -226,8 +226,9 @@ const toggle = () => {
           }}
         </span>
         <PriceIncreaseBadge
-          v-if="pledge.priceIncrease"
+          v-if="pledge.priceIncrease || pledge.ccuPriceChange"
           :match="pledge.priceIncrease"
+          :ccu="pledge.ccuPriceChange"
           place="hangar"
         />
         <span

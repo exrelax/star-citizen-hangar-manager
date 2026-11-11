@@ -50,7 +50,12 @@ export function useHangarPledges() {
             orders,
           );
           const priceIncrease = matcher.hangar(pledge);
-          return priceIncrease ? { ...view, priceIncrease } : view;
+          const ccuPriceChange = matcher.hangarCcu(pledge, priceOf);
+          return {
+            ...view,
+            ...(priceIncrease && { priceIncrease }),
+            ...(ccuPriceChange && { ccuPriceChange }),
+          };
         })
       : [];
     syncedAt.value = current?.syncedAt;
