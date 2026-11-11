@@ -3,6 +3,7 @@ import { runBuybackSmartUpdate } from '@/buyback/run';
 import { prepareBuybackSync } from '@/buyback/sync-buyback';
 import { settingsItem, withDefaults } from '@/settings/settings';
 import { maybeRefreshUpgradeTool, refreshUpgradeTool } from '@/ships/sync-upgrade-tool';
+import { maybeRefreshShipStatus } from '@/ships/ship-status';
 import { maybeRefreshStoreItems, refreshStoreItems } from '@/store/items/sync-store-items';
 import { refreshStoreCredit } from '@/account/sync-store-credit';
 import { maybeRefreshEvents } from '@/events/sync-events';
@@ -137,7 +138,9 @@ export async function startStorageSync(id: StorageId): Promise<void> {
             ? maybeRefreshEvents({ force: true })
             : id === 'priceIncreases'
               ? maybeRefreshPriceIncreases({ force: true })
-              : refreshUpgradeTool());
+              : id === 'shipStatus'
+                ? maybeRefreshShipStatus({ force: true })
+                : refreshUpgradeTool());
       section.complete(1, 1);
     }
   } catch (error) {
@@ -199,6 +202,8 @@ async function runSmartUpdateIfDue(force: boolean): Promise<void> {
   await maybeRefreshEvents();
   // The expected price increases of the project website (#195): once a day.
   await maybeRefreshPriceIncreases();
+  // Which ships are flight ready, from the Ship Matrix (#252): once a day.
+  await maybeRefreshShipStatus();
   const settings = withDefaults(await settingsItem.getValue());
   if (!settings.smartUpdates) return;
   const { checkedAt } = await hangarMeta.getValue();

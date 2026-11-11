@@ -10,6 +10,7 @@ import {
   warbondsItem,
   warbondsMeta,
 } from '@/ships/ships-storage';
+import { shipStatusItem, shipStatusMeta, type ShipStatusSnapshot } from '@/ships/ship-status';
 import type { MetaItem } from './meta';
 import {
   storeCreditItem,
@@ -58,6 +59,7 @@ export type StorageId =
   | 'ships'
   | 'shipsBuyable'
   | 'shipsWarbonds'
+  | 'shipStatus'
   | 'storeItems'
   | 'events'
   | 'priceIncreases'
@@ -169,6 +171,17 @@ export const STORAGES: readonly StorageDefinition[] = [
     readAgain: 'auto',
     // The Pledge Store offers of earlier versions (another format).
     obsoleteKeys: ['local:store.snapshot'],
+  },
+  {
+    id: 'shipStatus',
+    meta: shipStatusMeta,
+    item: shipStatusItem,
+    content: 'The ships still in concept (not flight ready yet), by id',
+    source: "RSI's public Ship Matrix (/ship-matrix/index), once a day",
+    usedBy: ['Price Increase Advisor (CCUs to ships that may rise later)'],
+    kind: 'data',
+    count: (value: ShipStatusSnapshot | null) => value?.count ?? 0,
+    readAgain: 'auto',
   },
   {
     id: 'storeItems',

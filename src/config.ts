@@ -134,6 +134,15 @@ export const UPGRADE_TOOL = {
   maxAgeWithoutSmartUpdatesMs: 24 * 60 * 60 * 1000,
 } as const;
 
+/**
+ * RSI's public Ship Matrix: which ships are flight ready (#252). Its answer is large, so it is
+ * read at most once a day.
+ */
+export const SHIP_MATRIX = {
+  url: 'https://robertsspaceindustries.com/ship-matrix/index',
+  maxAgeMs: 24 * 60 * 60 * 1000,
+} as const;
+
 /** Fleetyards models per request when looking up erkul ids (~60 KB each). */
 export const FLEETYARDS_DETAILS_BATCH_SIZE = 20;
 

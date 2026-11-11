@@ -4,41 +4,44 @@ import { createShipLookup } from '@/store/warbond';
 import type { ExpectedPriceIncrease } from './price-increases';
 
 /*
- * Advice for the CCUs of My Hangar that lose upgrade value with a price increase (#252, part of
- * the Price Increase Advisor #248). Example: the Prospector rises from $155 to $175, so 8 CCUs
- * Prospector → Vulture ($175) bought for $5 each lose their $20 upgrade value. Melted, they give
- * back $5 of store credit each, enough for 8 CCUs Freelancer MAX ($170) → Vulture for $5: the
- * discount grows from −$5 to $0 each.
+ * Advice for the CCUs of My Hangar whose base ship rises in price (#252, part of the Price
+ * Increase Advisor #248): they lose upgrade value, and with it their discount.
  *
- * Per target ship the advice compares keeping the CCUs with buying the same number of CCUs to the
- * same target from another base ship, which the upgrade tool sells today:
- * - **Standard**: paid with store credit, so the melt value pays for it. It costs the difference of
- *   the standard prices and gives no discount. Of the base ships, the one whose CCU costs the most
- *   without costing more than a melted CCU gives back – or, if every CCU costs more, the cheapest.
- * - **Warbond**: only with money (RSI sells warbond CCUs for new money only), but with the
- *   warbond's discount; the base ship is chosen the same way.
- * Base ships whose own price is about to rise are left out. A suggestion only: the extension
- * never melts or buys by itself.
+ * With the new price known, the advice is to melt them before the increase and buy, with the store
+ * credit they give back, as many CCUs **to the ship that rises**: their upgrade value grows with
+ * the increase, so they gain the discount the old ones lose. Example: the Prospector rises from
+ * $155 to $175. 8 CCUs Prospector → Vulture ($175) bought for $5 each have $15 of discount today
+ * and −$5 after. Melted, they give back $5 each – enough for 8 CCUs Freelancer MAX ($150) →
+ * Prospector for $5, whose upgrade value is $25 after the increase: $20 of discount each. Of the
+ * base ships, the one whose CCU costs the most without costing more than a melted CCU gives back
+ * (or, if every CCU costs more, the cheapest); ships about to rise themselves are left out. It is
+ * recommended only if the new CCUs have more discount after the increase than the old ones, and
+ * only while RSI sells standard CCUs to the rising ship (paid with store credit).
+ *
+ * Without the new price nothing is recommended: a CCU with a discount may lose it (a warning), and
+ * a target ship still in concept will probably rise too once it is flight ready (an information).
+ * A suggestion only: the extension never melts or buys by itself.
  */
 
-export type CcuAdviceKind = 'standard' | 'warbond';
-
-export interface CcuAdviceOption {
-  kind: CcuAdviceKind;
-  base: Ship;
-  /** Price of one CCU in USD. */
+/** Buying CCUs to the rising ship instead. */
+export interface CcuSwitch {
+  /** The base ship of the new CCUs. */
+  from: Ship;
+  /** The ship that rises: the target of the new CCUs. */
+  to: Ship;
+  /** Price of one new CCU in USD, before the increase. */
   price: number;
-  /** Upgrade value of one CCU: target's standard price minus base's. */
-  upgradeValue: number;
-  /** Discount of one CCU: `upgradeValue - price`. */
-  discount: number;
   /** Price of all of them. */
   total: number;
-  /** Standard only: store credit needed besides what melting the old CCUs gives back. */
-  storeCreditNeeded?: number;
-  /** Standard only, with a known store credit: whether it is enough. */
+  /** Upgrade value of one new CCU after the increase. */
+  upgradeValueAfter: number;
+  /** Discount of one new CCU after the increase: what the ship rises by. */
+  discountAfter: number;
+  /** Store credit needed besides what melting the old CCUs gives back. */
+  storeCreditNeeded: number;
+  /** With a known store credit: whether it is enough. */
   enoughStoreCredit?: boolean;
-  /** How much the total discount grows compared with keeping the CCUs, if their change is known. */
+  /** How much more discount all new CCUs have after the increase than the old ones. */
   gain?: number;
 }
 
@@ -51,29 +54,40 @@ export interface CcuAdviceKeep {
 }
 
 export interface CcuAdviceGroup {
-  /** The ship whose price rises (the CCUs' base). */
+  /** The increase of the CCUs' base ship. */
   increase: ExpectedPriceIncrease;
+  /** The base ship in the upgrade tool, if found (for its image). */
+  base?: Ship;
   target: Ship;
   /** The CCUs losing value, newest first. */
   ccus: PledgeView[];
   /** What melting all of them gives back in store credit. */
   meltValue: number;
-  /** How many of them can be gifted now – bought again with store credit, they can't. */
+  /** How many of them can be gifted now – bought again with store credit, the new ones can't. */
   giftable: number;
+  /** With the new price known. */
   keep?: CcuAdviceKeep;
-  /** Standard first, then warbond; none if the upgrade tool sells no CCU to the target. */
-  options: CcuAdviceOption[];
+  /** Their discount today from the standard prices, if known (without the new price too). */
+  discountNow?: number;
+  /** The target ship is still in concept: it will probably rise too once it is flight ready. */
+  targetInConcept: boolean;
+  /** The recommendation, with the new price known. */
+  switch?: CcuSwitch;
+  /** With the new price known but no recommendation: why. */
+  noSwitch?: 'notSold' | 'keepIsBetter';
 }
 
 export interface CcuAdviceInput {
-  /** The pledges of My Hangar; only CCUs losing value count. */
+  /** The pledges of My Hangar; only CCUs whose base ship rises count. */
   pledges: readonly PledgeView[];
   /** The upgrade tool: every ship, the SKUs on sale and the warbond editions. */
   ships: readonly Ship[];
   buyable: readonly ShipSku[];
   warbonds: readonly WarbondSku[];
-  /** Ships (by id) whose price is about to rise: no base ship for the advice. */
+  /** Ships (by id) whose price is about to rise: no base ship for new CCUs. */
   risingShipIds?: ReadonlySet<number>;
+  /** Ships (by id) still in concept, from the Ship Matrix. */
+  inConceptShipIds?: ReadonlySet<number>;
   /** The account's store credit in USD, if known. */
   storeCredit?: number;
 }
@@ -83,7 +97,7 @@ const sum = (values: readonly number[]) => cents(values.reduce((total, value) =>
 
 /**
  * The base ship for CCUs to a ship of `price`: the CCU costing the most without costing more than
- * `budget`, else the cheapest one.
+ * `budget` (by name on a tie), else the cheapest one.
  */
 function bestBase(
   ships: readonly Ship[],
@@ -98,40 +112,18 @@ function bestBase(
     )
     // The most expensive base first: its CCU is the cheapest.
     .sort((a, b) => b.msrp - a.msrp || a.name.localeCompare(b.name));
-  // Within the budget: the cheapest base (the most expensive CCU), by name on a tie.
   const withinBudget = candidates.filter((ship) => price - ship.msrp <= budget + 0.005);
   const lowest = withinBudget.at(-1);
   return withinBudget.find((ship) => ship.msrp === lowest?.msrp) ?? candidates[0];
 }
 
-function option(
-  kind: CcuAdviceKind,
-  base: Ship,
-  target: Ship,
-  price: number,
-  group: { count: number; meltValue: number; discountAfter?: number },
-  storeCredit: number | undefined,
-): CcuAdviceOption {
-  const ccuPrice = cents(price - base.msrp);
-  const upgradeValue = cents(target.msrp - base.msrp);
-  const discount = cents(upgradeValue - ccuPrice);
-  const total = cents(ccuPrice * group.count);
-  const result: CcuAdviceOption = { kind, base, price: ccuPrice, upgradeValue, discount, total };
-  if (kind === 'standard') {
-    result.storeCreditNeeded = Math.max(0, cents(total - group.meltValue));
-    if (storeCredit !== undefined)
-      result.enoughStoreCredit = storeCredit >= result.storeCreditNeeded;
-  }
-  if (group.discountAfter !== undefined) {
-    result.gain = cents(discount * group.count - group.discountAfter);
-  }
-  return result;
-}
-
-/** The advice for every target ship of CCUs losing value, the next price increase first. */
+/** The advice for every pair of rising base ship and target, the next price increase first. */
 export function ccuAdvice(input: CcuAdviceInput): CcuAdviceGroup[] {
-  const { ships, buyable, warbonds, risingShipIds = new Set(), storeCredit } = input;
+  const { ships, buyable, warbonds, storeCredit } = input;
+  const risingShipIds = input.risingShipIds ?? new Set<number>();
+  const inConcept = input.inConceptShipIds ?? new Set<number>();
   const lookup = createShipLookup(ships);
+  const byId = new Map(ships.map((ship) => [ship.id, ship]));
   const warbondSkus = new Set(warbonds.map((warbond) => warbond.skuId));
   const groups = new Map<
     string,
@@ -154,9 +146,9 @@ export function ccuAdvice(input: CcuAdviceInput): CcuAdviceGroup[] {
     .map(({ increase, target, ccus }): CcuAdviceGroup => {
       const count = ccus.length;
       const meltValue = sum(ccus.map((ccu) => ccu.valueUsd));
+      const base = byId.get(increase.ship.id) ?? lookup.shipOf(increase.ship.name);
       const amounts = ccus.map((ccu) => ccu.ccuPriceChange?.amounts);
-      const known = amounts.every((amount) => amount !== undefined);
-      const keep: CcuAdviceKeep | undefined = known
+      const keep: CcuAdviceKeep | undefined = amounts.every((amount) => amount !== undefined)
         ? {
             upgradeValueNow: sum(amounts.map((amount) => amount!.before)),
             upgradeValueAfter: sum(amounts.map((amount) => amount!.after)),
@@ -164,32 +156,55 @@ export function ccuAdvice(input: CcuAdviceInput): CcuAdviceGroup[] {
             discountAfter: cents(sum(amounts.map((amount) => amount!.after)) - meltValue),
           }
         : undefined;
-      const perCcu = meltValue / count;
-      // The rising ship itself is never a base.
-      const rising = new Set([...risingShipIds, increase.ship.id]);
-      const stats = { count, meltValue, discountAfter: keep?.discountAfter };
+      // Today's discount from the standard prices, also without the new price.
+      const basePrice = base?.msrp ?? increase.price?.from;
+      const discountNow =
+        keep?.discountNow ??
+        (basePrice !== undefined && target.msrp > basePrice
+          ? cents((target.msrp - basePrice) * count - meltValue)
+          : undefined);
 
-      const options: CcuAdviceOption[] = [];
-      // RSI sells standard CCUs to ships on sale in another edition than the warbond.
-      const onSale = buyable.some((sku) => sku.shipId === target.id && !warbondSkus.has(sku.skuId));
-      const standardBase = onSale && bestBase(ships, target, target.msrp, perCcu, rising);
-      if (standardBase) {
-        options.push(option('standard', standardBase, target, target.msrp, stats, storeCredit));
-      }
-      const warbond = warbonds.find((offer) => offer.shipId === target.id);
-      const warbondBase = warbond && bestBase(ships, target, warbond.price, perCcu, rising);
-      if (warbond && warbondBase) {
-        options.push(option('warbond', warbondBase, target, warbond.price, stats, storeCredit));
-      }
-
-      return {
+      const group: CcuAdviceGroup = {
         increase,
+        ...(base && { base }),
         target,
         ccus,
         meltValue,
         giftable: ccus.filter((ccu) => ccu.isGiftable).length,
         ...(keep && { keep }),
-        options,
+        ...(discountNow !== undefined && { discountNow }),
+        targetInConcept: inConcept.has(target.id),
+      };
+
+      const price = increase.price;
+      if (!price) return group;
+      // RSI sells standard CCUs (with store credit) to ships on sale in another edition.
+      const sold =
+        !!base && buyable.some((sku) => sku.shipId === base.id && !warbondSkus.has(sku.skuId));
+      const rising = new Set([...risingShipIds, increase.ship.id]);
+      const from =
+        base && sold ? bestBase(ships, base, price.from, meltValue / count, rising) : undefined;
+      if (!base || !from) return { ...group, noSwitch: 'notSold' };
+
+      const ccuPrice = cents(price.from - from.msrp);
+      const total = cents(ccuPrice * count);
+      const discountAfter = cents(price.to - price.from);
+      const storeCreditNeeded = Math.max(0, cents(total - meltValue));
+      const gain = keep ? cents(discountAfter * count - keep.discountAfter) : undefined;
+      if (gain !== undefined && gain <= 0) return { ...group, noSwitch: 'keepIsBetter' };
+      return {
+        ...group,
+        switch: {
+          from,
+          to: base,
+          price: ccuPrice,
+          total,
+          upgradeValueAfter: cents(price.to - from.msrp),
+          discountAfter,
+          storeCreditNeeded,
+          ...(storeCredit !== undefined && { enoughStoreCredit: storeCredit >= storeCreditNeeded }),
+          ...(gain !== undefined && { gain }),
+        },
       };
     })
     .sort(

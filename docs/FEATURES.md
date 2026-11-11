@@ -329,14 +329,19 @@ on its own.
   after. A CCU with the ship as **base** loses upgrade value: it gets a warning instead ("Upgrade
   value −$20", without a known price "Upgrade value drops"), also when its value falls to $0 or
   below – a CCU already owned can still be applied. Its details offer **Keep the discount**
-  (#252): a dialog that compares, per target ship, keeping these CCUs with melting them and buying
-  as many CCUs to the same ship from another base ship that RSI's upgrade tool sells today – a
-  standard CCU with store credit (the one costing the most without costing more than a melted CCU
-  gives back, so the melt value pays for it) and, if the ship is offered as warbond, a warbond CCU
-  with money and its discount. It shows the cost, the store credit needed besides the melt value
-  (and the account's store credit), how much the total discount grows, and how many of the CCUs
-  can be gifted now – bought again with store credit, they can't. Base ships about to rise are
-  left out. A suggestion only: nothing is melted or bought from there.
+  (#252): a dialog with small images of both ships per pair of base and target ship. With the new
+  price known, it recommends melting these CCUs before the increase and buying as many CCUs **to
+  the rising ship** with the store credit they give back: those gain the discount the old ones
+  lose (e.g. 8 × Prospector → Vulture for $5 each, −$5 of discount after the Prospector rises from
+  $155 to $175, become 8 × Freelancer MAX → Prospector for $5 each, $20 of discount each after).
+  The base ship is the one whose CCU costs the most without costing more than a melted CCU gives
+  back; ships about to rise are left out. It shows the cost, the store credit needed besides the
+  melt value (and the account's), the discount after the increase compared with keeping them, and
+  how many of the old CCUs can be gifted – the new ones, bought with store credit, can't. It
+  recommends nothing where keeping them leaves more discount, or while RSI sells no CCU to the
+  rising ship. Without the new price it only warns that a discount may be lost, and tells when
+  the target ship isn't flight ready yet (from RSI's Ship Matrix), so its price will probably rise
+  too. A suggestion only: nothing is melted or bought from there.
 
 ---
 
@@ -909,7 +914,7 @@ order of the list:
   - **Translate RSI's texts in the exchange and gift dialogs**: RSI's changes to its texts reach
     the translations only later.
 - **Stored data**: a table of everything the extension keeps in this browser – My Hangar, Buy
-  Back, order history, ships, ships on sale, warbond offers, Pledge Store items, events, expected price increases and the store
+  Back, order history, ships, ships on sale, warbond offers, the ships' status (in concept or flight ready, from the Ship Matrix, once a day), Pledge Store items, events, expected price increases and the store
   credit – with the number of entries, the
   size, the last full read and the last check. Each can be read again from RSI on its own (the
   refresh icon; ships, ships on sale and warbond offers are one read) and deleted on its own; the
