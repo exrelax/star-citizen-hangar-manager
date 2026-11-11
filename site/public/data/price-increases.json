@@ -17,6 +17,12 @@
       "flightReadyAt": "2026-11-13T16:00:00Z",
       "priceIncreaseAt": "2026-11-15T16:00:00Z",
       "event": "iae-2956"
+    },
+    {
+      "ship": { "id": 109, "name": "Prospector" },
+      "priceIncreaseAt": "2026-11-19T16:00:00Z",
+      "price": { "from": 155, "to": 175 },
+      "event": "iae-2956"
     }
   ]
 }

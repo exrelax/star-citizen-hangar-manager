@@ -25,6 +25,7 @@ describe('parsePriceIncreases', () => {
             ship: { id: 163, name: 'M2 Hercules', aliases: ['Hercules Starlifter M2'] },
             flightReadyAt: '2026-11-13',
             priceIncreaseAt: '2026-11-16T16:00:00Z',
+            price: { from: 155, to: 175 },
             relatedItems: [{ name: 'Example Module' }],
             event: 'iae-2956',
             note: { en: 'Expected with the IAE.', de: 'Erwartet mit der IAE.' },
@@ -36,6 +37,7 @@ describe('parsePriceIncreases', () => {
         ship: { id: 163, name: 'M2 Hercules', aliases: ['Hercules Starlifter M2'] },
         flightReadyAt: { at: Date.parse('2026-11-13T00:00:00Z'), dayOnly: true },
         priceIncreaseAt: { at: Date.parse('2026-11-16T16:00:00Z') },
+        price: { from: 155, to: 175 },
         relatedItems: [{ name: 'Example Module' }],
         event: 'iae-2956',
         note: { en: 'Expected with the IAE.', de: 'Erwartet mit der IAE.' },
@@ -95,6 +97,30 @@ describe('parsePriceIncreases', () => {
       priceIncreaseAt: { at: Date.parse('2026-11-13T16:00:00Z') },
       relatedItems: [{ name: 'Galaxy Refinery Module' }],
     });
+  });
+
+  it('drops a price that doesn’t fit and keeps the entry (#249)', () => {
+    const at = '2026-11-19T16:00:00Z';
+    const prices = [
+      { from: 175, to: 155 },
+      { from: 155, to: 155 },
+      { from: 0, to: 175 },
+      { from: -5, to: 175 },
+      { from: '155', to: 175 },
+      { from: 155 },
+      { from: 155, to: Infinity },
+      155,
+    ];
+    const list = parsePriceIncreases(
+      file(prices.map((price) => ({ ship: galaxy, priceIncreaseAt: at, price }))),
+    );
+    // One entry per ship and time: the first is kept, without its price.
+    expect(list).toEqual([{ ship: galaxy, priceIncreaseAt: { at: Date.parse(at) } }]);
+    for (const price of prices) {
+      expect(
+        parsePriceIncreases(file([{ ship: galaxy, priceIncreaseAt: at, price }]))?.[0],
+      ).toEqual({ ship: galaxy, priceIncreaseAt: { at: Date.parse(at) } });
+    }
   });
 
   it('reads a ship once per time', () => {

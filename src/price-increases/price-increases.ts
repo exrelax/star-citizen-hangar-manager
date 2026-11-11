@@ -28,12 +28,20 @@ export interface ExpectedPriceIncrease {
   priceIncreaseAt: ExpectedTime;
   /** Left out for ships that are already flight ready. */
   flightReadyAt?: ExpectedTime;
+  /** The ship's standard price before and after the increase, in USD without taxes (#249). */
+  price?: ExpectedPrice;
   /** Items that rise with the ship, e.g. its modules, by their exact names. */
   relatedItems?: { name: string }[];
   /** The id of the event (#69) the price increase belongs to. */
   event?: string;
   /** A short text for the user, e.g. the source of the assumption. */
   note?: LocalizedText;
+}
+
+/** Old and new price of an expected price increase, in USD without taxes. */
+export interface ExpectedPrice {
+  from: number;
+  to: number;
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -53,6 +61,16 @@ function expectedTime(value: unknown): ExpectedTime | undefined {
   const at = Date.parse(dayOnly ? `${value}T00:00:00Z` : value);
   if (!Number.isFinite(at)) return undefined;
   return dayOnly ? { at, dayOnly } : { at };
+}
+
+const isPrice = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isFinite(value) && value > 0;
+
+/** Old and new price, both positive and the new one higher, else none. */
+function expectedPrice(value: unknown): ExpectedPrice | undefined {
+  const raw = record(value);
+  if (!raw || !isPrice(raw.from) || !isPrice(raw.to) || raw.to <= raw.from) return undefined;
+  return { from: raw.from, to: raw.to };
 }
 
 /** When a point in time is over: a time at once, a day at its end (UTC). */
@@ -81,6 +99,7 @@ function parseEntry(entry: unknown): ExpectedPriceIncrease | undefined {
   if (!name || !priceIncreaseAt) return undefined;
   const aliases = names(ship.aliases, MAX_ALIASES).filter((alias) => alias !== name);
   const flightReadyAt = expectedTime(raw.flightReadyAt);
+  const price = expectedPrice(raw.price);
   const relatedItems = names(
     Array.isArray(raw.relatedItems) ? raw.relatedItems.map((item) => record(item)?.name) : [],
     MAX_RELATED,
@@ -91,6 +110,7 @@ function parseEntry(entry: unknown): ExpectedPriceIncrease | undefined {
     ship: { id, name, ...(aliases.length && { aliases }) },
     priceIncreaseAt,
     ...(flightReadyAt && { flightReadyAt }),
+    ...(price && { price }),
     ...(relatedItems.length && { relatedItems }),
     ...(event && { event }),
     ...(note && { note }),
