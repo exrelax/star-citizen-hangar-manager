@@ -92,6 +92,7 @@
     "probablyGiftable": "Probablement offrables",
     "available": "Rachetables",
     "priceIncrease": "Hausse de prix attendue",
+    "priceChange": "Changement de prix à venir",
     "ships": "Vaisseaux",
     "warbond": "Warbond",
     "valuable": "Avec valeur",
@@ -109,7 +110,8 @@
       "rewardsByName": "Récompenses, reconnues à leur nom : événements, parrainage, Concierge et autres récompenses.",
       "discount": "Acheté moins cher que le prix d’origine : vaisseaux et CCU comparés aux prix des vaisseaux de RSI, peintures, équipement et autres au Pledge Store. Les pledges sans prix d’origine connu ou plus chers ne comptent pas.",
       "available": "Les pledges que RSI peut revendre. Exclus : les CCU dont le vaisseau de départ coûte aujourd’hui autant ou plus que leur vaisseau cible – RSI ne vend un CCU que vers un vaisseau plus cher.",
-      "priceIncrease": "Pledges dont le prix devrait augmenter dans les $1 prochains jours (réglable dans les paramètres), p. ex. des vaisseaux qui deviennent flight ready à l’IAE. Les dates sont attendues, pas confirmées par RSI."
+      "priceIncrease": "Pledges dont le prix devrait augmenter dans les $1 prochains jours (réglable dans les paramètres), p. ex. des vaisseaux qui deviennent flight ready à l’IAE, et les CCU depuis un tel vaisseau, qui perdent de la valeur d’upgrade. Les dates sont attendues, pas confirmées par RSI.",
+      "priceChange": "Pledges dont la valeur change avec une hausse de prix attendue dans les $1 prochains jours (réglable dans les paramètres) : vaisseaux et éléments dont le prix augmente, CCU vers eux (ils gagnent de la valeur d’upgrade) et CCU depuis eux (ils en perdent). Les dates sont attendues, pas confirmées par RSI."
     },
     "categories": {
       "types": "Types",
@@ -168,7 +170,7 @@
     },
     "priceIncreaseDays": "Hausses de prix dans les",
     "priceIncreaseDaysUnit": "jours",
-    "priceIncreaseDaysHint": "Le filtre « Hausse de prix attendue » du Buy Back et sa notification comptent les hausses de prix attendues dans ce nombre de jours.",
+    "priceIncreaseDaysHint": "Le filtre « Hausse de prix attendue » du Buy Back, le filtre « Changement de prix à venir » de My Hangar et la notification comptent les hausses de prix attendues dans ce nombre de jours.",
     "privacy": "Masquer les informations sensibles (pour les captures d’écran ou les créateurs de contenu)",
     "privacyTitle": "Confidentialité",
     "privacyDemo": "Un hangar entièrement inventé à la place du tien :",

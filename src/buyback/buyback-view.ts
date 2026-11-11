@@ -18,6 +18,7 @@ import type { BuybackImager } from './buyback-image';
 import type { BuybackPrice, BuybackPricer } from './buyback-price';
 import type { GiftableCheck } from './probably-giftable';
 import type { CcuPriceChange } from '@/price-increases/ccu-price-change';
+import { hasPriceChange } from '@/price-increases/price-change-filter';
 import type { PriceIncreaseMatch } from '@/price-increases/price-increase-match';
 
 /** What the buy back list shows for a pledge. */
@@ -170,7 +171,8 @@ export const BUYBACK_FILTER_PREDICATES: FilterPredicates<BuybackView, BuybackFil
   available: (pledge) => !pledge.unavailable,
   // Any expected price increase; the buy back list narrows it to the period of the settings
   // (`withinPricePeriod`, #192).
-  priceIncrease: (pledge) => pledge.priceIncrease !== undefined,
+  // Also CCUs whose base ship rises (#256); the list limits it to the period of the settings.
+  priceIncrease: hasPriceChange,
   // The buy back shows no values, so rewards are recognized by their names.
   rewards: (pledge) => isRewardTitle(pledge.title),
 };

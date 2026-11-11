@@ -413,7 +413,9 @@ on its own.
   - **Features** – what it has: LTI, Warbond (bought with money, i.e. with an order ID),
     Giftable, Meltable, Valuable (worth more than $0) and Discount (bought for less than the
     original price, see [Discounts](#discounts); pledges whose original price isn't known, or
-    that cost more, don't count).
+    that cost more, don't count) and Price change ahead (#256: a price increase expected within
+    the period of the settings changes its value – ships and items whose price rises, CCUs to
+    them and CCUs from them; offered only while there are any).
 - **Include or exclude**: each click on a filter cycles through off → only pledges with it →
   only pledges without it ("−Rewards" hides all rewards). All active filters combine with "and";
   one click on "Reset filters" turns them all off.
@@ -426,8 +428,9 @@ on its own.
   is about, so the list shows at a glance why each entry is there – a stronger color and weight,
   no boxes of its own. In My Hangar: the value for Giftable, Meltable, Valuable, Warbond and the
   value sortings, the discount for Discount and its sorting, the Gift and Melt tags, the insurance
-  for LTI, the game access lock for Game access. In the buy back: the price for Warbond and
-  Available, the "Probably giftable" label and the insurance for LTI. Excluded filters highlight
+  for LTI, the game access lock for Game access, the price increase tag for Price change ahead.
+  In the buy back: the price for Warbond and Available, the "Probably giftable" label, the price
+  increase tag for Price increase expected and the insurance for LTI. Excluded filters highlight
   nothing. Which filter highlights what is one list in `config.ts` (`FILTER_HIGHLIGHTS`).
 - Thousands of pledges stay fast: rows are drawn while scrolling, in small steps between frames.
 
@@ -579,7 +582,7 @@ plus:
   +$20" on a ship, "Upgrade value +$20" on a CCU to it, and a warning "Upgrade value −$20" on a CCU
   from it – once its value falls to $0 or below, RSI can't sell it back any more (see **Not
   available**). The filter **Price increase expected** shows the pledges whose price is expected to rise
-  within the next 14 days (set in the settings); it is offered only while there are any. The
+  within the next 14 days (set in the settings), and the CCUs from such a ship (#256); it is offered only while there are any. The
   project publishes the expected price increases on its website (`data/price-increases.json`),
   as RSI rarely lists them in advance.
 - **Buy back tokens**: how many pledges can still be bought back with store credit, as RSI shows
@@ -807,7 +810,7 @@ order of the list:
   - **Show links for ships**: erkul.games and FleetYards.net, each on or off.
   - **"Show in Buy Back" opens**: only the pledge, or the list page with the pledge highlighted.
   - **Price increases within … days** (14 by default, 1 to 90): the period of the buy back filter
-    "Price increase expected" and its notification.
+    "Price increase expected", My Hangar's filter "Price change ahead" and the notification.
 - **Filters**: order and selection of the filter buttons, separately for My Hangar and Buy Back
   and for types and features – drag a filter (or use its arrows) to move it within its group,
   uncheck it to hide its button.

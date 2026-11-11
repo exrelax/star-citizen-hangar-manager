@@ -444,6 +444,7 @@ export const FILTER_HIGHLIGHTS: {
     discount: ['discount'],
     lti: ['insuranceBadge'],
     gameAccess: ['gameAccessBadge'],
+    priceChange: ['priceIncreaseLabel'],
   },
   buyback: {
     warbond: ['price'],
@@ -475,8 +476,8 @@ export const FILTERS: {
       shown: ['ships', 'ccus', 'paints', 'gameAccess', 'rewards'],
     },
     features: {
-      order: ['lti', 'warbond', 'giftable', 'meltable', 'valuable', 'discount'],
-      shown: ['lti', 'warbond', 'giftable', 'meltable', 'valuable', 'discount'],
+      order: ['lti', 'warbond', 'giftable', 'meltable', 'valuable', 'discount', 'priceChange'],
+      shown: ['lti', 'warbond', 'giftable', 'meltable', 'valuable', 'discount', 'priceChange'],
     },
   },
   buyback: {
