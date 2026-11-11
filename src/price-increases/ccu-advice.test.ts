@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import type { Pledge } from '@/hangar/pledge';
 import { toPledgeView, type PledgeView } from '@/hangar/pledge-view';
 import { createPriceLookup } from '@/hangar/ship-prices';
-import type { Ship, ShipSku, WarbondSku } from '@/ships/ships';
-import { ccuAdvice } from './ccu-advice';
+import type { Ship, ShipSku } from '@/ships/ships';
+import { ccuAdvice, type CcuAdviceInput } from './ccu-advice';
 import { createPriceIncreaseMatcher } from './price-increase-match';
 import type { ExpectedPriceIncrease } from './price-increases';
 
@@ -15,21 +15,26 @@ const prospector: ExpectedPriceIncrease = {
   priceIncreaseAt: { at: Date.parse('2026-11-19T16:00:00Z') },
   price: { from: 155, to: 175 },
 };
+/** Becomes flight ready: rises by an unknown amount. */
+const liberator: ExpectedPriceIncrease = {
+  ship: { id: 8, name: 'Liberator' },
+  priceIncreaseAt: { at: Date.parse('2026-11-15T16:00:00Z') },
+};
 
 const ships: Ship[] = [
   { id: 1, name: 'Prospector', msrp: 155 },
   { id: 2, name: 'Vulture', msrp: 175 },
-  { id: 3, name: 'Freelancer MAX', msrp: 170 },
+  { id: 3, name: 'Freelancer MAX', msrp: 150 },
   { id: 4, name: 'Cutlass Black', msrp: 135 },
   { id: 5, name: 'Sabre', msrp: 170 },
-  { id: 6, name: 'Arrow', msrp: 75 },
+  { id: 6, name: 'F7C-M Super Hornet Mk I', msrp: 180 },
+  { id: 7, name: 'Merchantman', msrp: 650 },
+  { id: 8, name: 'Liberator', msrp: 575 },
+  { id: 9, name: 'Polaris', msrp: 750 },
 ];
-const buyable: ShipSku[] = [
-  { shipId: 2, skuId: 20, title: 'Standard Edition', price: 175 },
-  { shipId: 5, skuId: 50, title: 'Standard Edition', price: 170 },
-];
+const buyable: ShipSku[] = [{ shipId: 1, skuId: 10, title: 'Standard Edition', price: 155 }];
 const priceOf = createPriceLookup(ships.map(({ name, msrp }) => ({ name, price: msrp })));
-const matcher = createPriceIncreaseMatcher([prospector], NOW);
+const matcher = createPriceIncreaseMatcher([prospector, liberator], NOW);
 
 let nextId = 1;
 const ccu = (from: string, to: string, valueUsd: number, isGiftable = false): PledgeView => {
@@ -62,101 +67,94 @@ const ccu = (from: string, to: string, valueUsd: number, isGiftable = false): Pl
   return { ...toPledgeView(pledge), ...(change && { ccuPriceChange: change }) };
 };
 
-const eight = Array.from({ length: 8 }, () => ccu('Prospector', 'Vulture', 5));
+const advice = (pledges: PledgeView[], extra: Partial<CcuAdviceInput> = {}) =>
+  ccuAdvice({ pledges, ships, buyable, warbonds: [], storeCredit: 0, ...extra });
+const eight = Array.from({ length: 8 }, () => ccu('Prospector', 'Vulture', 5, true));
 
 describe('ccuAdvice (#252)', () => {
-  it('suggests CCUs from another base ship for the melt value, as in the example', () => {
-    const [group] = ccuAdvice({ pledges: eight, ships, buyable, warbonds: [], storeCredit: 0 });
+  it('recommends CCUs to the rising ship for the melt value, as in the example', () => {
+    const [group] = advice(eight);
+    expect(group?.base?.name).toBe('Prospector');
     expect(group?.target.name).toBe('Vulture');
-    expect(group?.increase).toBe(prospector);
-    expect(group?.ccus).toHaveLength(8);
     expect(group?.meltValue).toBe(40);
+    expect(group?.giftable).toBe(8);
     expect(group?.keep).toEqual({
       upgradeValueNow: 160,
       upgradeValueAfter: 0,
       discountNow: 120,
       discountAfter: -40,
     });
-    expect(group?.options).toEqual([
-      {
-        kind: 'standard',
-        base: ships[2],
-        price: 5,
-        upgradeValue: 5,
-        discount: 0,
-        total: 40,
-        storeCreditNeeded: 0,
-        enoughStoreCredit: true,
-        gain: 40,
-      },
-    ]);
-  });
-
-  it('takes the cheapest CCU when every one costs more than the melt value', () => {
-    const cheap = Array.from({ length: 2 }, () => ccu('Prospector', 'Vulture', 2));
-    const [group] = ccuAdvice({ pledges: cheap, ships, buyable, warbonds: [], storeCredit: 4 });
-    expect(group?.options[0]).toMatchObject({
-      base: { name: 'Freelancer MAX' },
+    // 8 × Freelancer MAX → Prospector for $5: $25 upgrade value, $20 discount each after.
+    expect(group?.switch).toEqual({
+      from: ships[2],
+      to: ships[0],
       price: 5,
-      total: 10,
-      storeCreditNeeded: 6,
+      total: 40,
+      upgradeValueAfter: 25,
+      discountAfter: 20,
+      storeCreditNeeded: 0,
+      enoughStoreCredit: true,
+      gain: 200,
+    });
+  });
+
+  it('also recommends it where the old CCUs keep some value, if the new ones have more discount', () => {
+    // $25 upgrade value for $3: $22 discount today, $5 upgrade value and $2 discount after.
+    const hornets = Array.from({ length: 5 }, () =>
+      ccu('Prospector', 'F7C-M Super Hornet Mk I', 3),
+    );
+    const [group] = advice(hornets);
+    expect(group?.keep?.discountAfter).toBe(10);
+    // Every CCU to the Prospector costs more than $3: the cheapest one, $5 from the Freelancer MAX.
+    expect(group?.switch).toMatchObject({
+      from: { name: 'Freelancer MAX' },
+      price: 5,
+      total: 25,
+      storeCreditNeeded: 10,
       enoughStoreCredit: false,
+      gain: 90,
     });
   });
 
-  it('offers a warbond CCU, paid with money, with its discount', () => {
-    const warbonds: WarbondSku[] = [{ shipId: 2, skuId: 21, price: 160 }];
-    const [group] = ccuAdvice({
-      pledges: eight,
-      ships,
-      buyable: [...buyable, { shipId: 2, skuId: 21, title: 'Warbond Edition', price: 160 }],
-      warbonds,
-    });
-    const warbond = group?.options.find((option) => option.kind === 'warbond');
-    // From the Cutlass Black ($135): $25 for an upgrade value of $40.
-    expect(warbond).toEqual({
-      kind: 'warbond',
-      base: ships[3],
-      price: 25,
-      upgradeValue: 40,
-      discount: 15,
-      total: 200,
-      gain: 160,
-    });
-    expect(warbond?.storeCreditNeeded).toBeUndefined();
+  it('keeps the CCUs when they still have more discount after the increase', () => {
+    // A $1 Prospector → Polaris CCU keeps a huge discount.
+    const [group] = advice([ccu('Prospector', 'Polaris', 1)]);
+    expect(group?.switch).toBeUndefined();
+    expect(group?.noSwitch).toBe('keepIsBetter');
   });
 
-  it('leaves out base ships about to rise and targets RSI doesn’t sell', () => {
-    const rising = new Set([3]);
-    const [group] = ccuAdvice({
-      pledges: eight,
-      ships,
-      buyable,
-      warbonds: [],
-      risingShipIds: rising,
-    });
-    // Without the Freelancer MAX the Sabre ($170) is next.
-    expect(group?.options[0]?.base.name).toBe('Sabre');
-    const [notSold] = ccuAdvice({ pledges: eight, ships, buyable: [], warbonds: [] });
-    expect(notSold?.options).toEqual([]);
+  it('recommends nothing while RSI sells no CCU to the rising ship', () => {
+    const [group] = advice(eight, { buyable: [] });
+    expect(group?.switch).toBeUndefined();
+    expect(group?.noSwitch).toBe('notSold');
   });
 
-  it('counts the giftable CCUs and ignores CCUs that don’t lose value', () => {
+  it('leaves out base ships about to rise themselves', () => {
+    const [group] = advice(eight, { risingShipIds: new Set([3]) });
+    expect(group?.switch?.from.name).toBe('Cutlass Black');
+  });
+
+  it('only informs and warns without the new price', () => {
+    const [group] = advice([ccu('Liberator', 'Merchantman', 50)], {
+      inConceptShipIds: new Set([7, 8]),
+    });
+    expect(group?.increase).toBe(liberator);
+    expect(group?.keep).toBeUndefined();
+    expect(group?.switch).toBeUndefined();
+    expect(group?.noSwitch).toBeUndefined();
+    // $75 upgrade value for $50 today: a discount that may be lost.
+    expect(group?.discountNow).toBe(25);
+    expect(group?.targetInConcept).toBe(true);
+  });
+
+  it('ignores CCUs that don’t lose value and groups by target', () => {
     const pledges = [
-      ccu('Prospector', 'Vulture', 5, true),
-      ccu('Prospector', 'Vulture', 5),
+      ...eight,
       ccu('Cutlass Black', 'Prospector', 15),
       ccu('Arrow', 'Sabre', 90),
+      ccu('Prospector', 'Sabre', 5),
     ];
-    const groups = ccuAdvice({ pledges, ships, buyable, warbonds: [] });
-    expect(groups).toHaveLength(1);
-    expect(groups[0]?.giftable).toBe(1);
-  });
-
-  it('groups by target ship', () => {
-    const pledges = [...eight, ccu('Prospector', 'Sabre', 5)];
-    const groups = ccuAdvice({ pledges, ships, buyable, warbonds: [] });
-    expect(groups.map((group) => [group.target.name, group.ccus.length])).toEqual([
+    expect(advice(pledges).map((group) => [group.target.name, group.ccus.length])).toEqual([
       ['Sabre', 1],
       ['Vulture', 8],
     ]);
