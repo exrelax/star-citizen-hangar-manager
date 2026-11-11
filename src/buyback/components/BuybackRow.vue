@@ -177,8 +177,9 @@ const kind = computed(() =>
 
       <span class="shm-badges">
         <PriceIncreaseBadge
-          v-if="pledge.priceIncrease"
+          v-if="pledge.priceIncrease || pledge.ccuPriceChange"
           :match="pledge.priceIncrease"
+          :ccu="pledge.ccuPriceChange"
           place="buyback"
         />
         <span

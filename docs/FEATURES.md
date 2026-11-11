@@ -323,7 +323,12 @@ on its own.
 - **Price increase**: a ship whose price is expected to rise soon – e.g. when it becomes flight
   ready at the IAE – gets a quiet tag with a countdown on its ships, packages, CCUs and related
   items such as modules: melting it before then means buying it back at the higher price (see
-  [Buy back](#buy-back)).
+  [Buy back](#buy-back)). Where the new price is announced (#251), the tag tells the change: a
+  ship's price ("Price +$20"), a CCU's upgrade value with the ship as target ("Upgrade value
+  +$20"); the tooltip gives the old and new price, the upgrade value and the discount now and
+  after. A CCU with the ship as **base** loses upgrade value: it gets a warning instead ("Upgrade
+  value −$20", without a known price "Upgrade value drops"), also when its value falls to $0 or
+  below – a CCU already owned can still be applied.
 
 ---
 
@@ -570,7 +575,9 @@ plus:
   minutes and seconds (`46:12`);
   otherwise it shows the day. Its tooltip gives the expected date, the expected flight ready date
   for ships not flight ready yet and a note, and says that the dates are expected, not confirmed
-  by RSI. The filter **Price increase expected** shows the pledges whose price is expected to rise
+  by RSI. Where the new price is announced, it shows the change like My Hangar (#251): "Price
+  +$20" on a ship, "Upgrade value +$20" on a CCU to it, and a warning "Upgrade value −$20" on a CCU
+  from it. The filter **Price increase expected** shows the pledges whose price is expected to rise
   within the next 14 days (set in the settings); it is offered only while there are any. The
   project publishes the expected price increases on its website (`data/price-increases.json`),
   as RSI rarely lists them in advance.

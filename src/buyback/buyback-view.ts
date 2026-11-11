@@ -17,6 +17,7 @@ import type { AvailabilityCheck, BuybackUnavailable } from './buyback-availabili
 import type { BuybackImager } from './buyback-image';
 import type { BuybackPrice, BuybackPricer } from './buyback-price';
 import type { GiftableCheck } from './probably-giftable';
+import type { CcuPriceChange } from '@/price-increases/ccu-price-change';
 import type { PriceIncreaseMatch } from '@/price-increases/price-increase-match';
 
 /** What the buy back list shows for a pledge. */
@@ -58,6 +59,8 @@ export interface BuybackView {
   priceRead: boolean;
   /** Its expected price increase, if any (#190, see `price-increase-match.ts`). */
   priceIncrease?: PriceIncreaseMatch;
+  /** A CCU whose base or target ship is expected to rise (#250, see `ccu-price-change.ts`). */
+  ccuPriceChange?: CcuPriceChange;
   /** Normalized title, ship names and pledge id for the live search. */
   searchText: string;
 }
@@ -76,6 +79,8 @@ export interface BuybackViewContext {
   availabilityOf?: AvailabilityCheck;
   /** The expected price increase of a pledge (see `price-increase-match.ts`). */
   priceIncreaseOf?: (pledge: BuybackPledge) => PriceIncreaseMatch | undefined;
+  /** What expected price increases mean for a CCU; `paid` is its buy back price (#250). */
+  ccuPriceChangeOf?: (pledge: BuybackPledge, paid?: number) => CcuPriceChange | undefined;
 }
 
 export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext): BuybackView {
@@ -87,10 +92,12 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
     imageOf,
     availabilityOf,
     priceIncreaseOf,
+    ccuPriceChangeOf,
   } = context;
   const unavailable = availabilityOf?.(pledge);
   const priceIncrease = priceIncreaseOf?.(pledge);
   const price = priceOf?.(pledge);
+  const ccuPriceChange = ccuPriceChangeOf?.(pledge, price?.amount);
   // The detail page lists the items besides the main one named in "Contained".
   const extraItems = pledge.items ?? [];
   const main = mainItem(pledge);
@@ -125,6 +132,7 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
     ...(price && { price }),
     ...(unavailable && { unavailable }),
     ...(priceIncrease && { priceIncrease }),
+    ...(ccuPriceChange && { ccuPriceChange }),
     priceRead: pledge.price !== undefined,
     searchText: normalizeSearchText([pledge.title, ...shipNames, pledge.id].join(' ')),
   };

@@ -1,3 +1,4 @@
+import type { CcuPriceChange } from '@/price-increases/ccu-price-change';
 import type { PriceIncreaseMatch } from '@/price-increases/price-increase-match';
 import { HANGAR_PAGE_SIZE } from '@/config';
 import type { Game, Pledge, PledgeItem, PledgeUpgrade } from './pledge';
@@ -80,6 +81,8 @@ export interface PledgeView {
   searchText: string;
   /** Its expected price increase, if any (#190, see `price-increase-match.ts`). */
   priceIncrease?: PriceIncreaseMatch;
+  /** A CCU whose base or target ship is expected to rise (#250, see `ccu-price-change.ts`). */
+  ccuPriceChange?: CcuPriceChange;
 }
 
 /** Items that grant access to the game, e.g. in VIP packages. */

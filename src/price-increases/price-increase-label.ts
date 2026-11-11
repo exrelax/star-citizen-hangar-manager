@@ -1,7 +1,9 @@
+import { formatUsd } from '@/hangar/discount-format';
 import { translate, type Locale } from '@/i18n';
 import { localized } from '@/site-data/site-data';
+import type { CcuPriceChange } from './ccu-price-change';
 import type { PriceIncreaseMatch } from './price-increase-match';
-import { endOf, type ExpectedTime } from './price-increases';
+import { endOf, type ExpectedPriceIncrease, type ExpectedTime } from './price-increases';
 
 /*
  * The label of an item whose price is expected to rise (#191): a countdown to the price increase
@@ -12,6 +14,10 @@ import { endOf, type ExpectedTime } from './price-increases';
  * The countdown: with a probable time the days left, on the last day the hours and minutes
  * ("3 h 20 min", "3 h" on the full hour) and in the last hour minutes and seconds ("46:12"); with
  * only the day the day itself, "today" on it.
+ *
+ * With the Price Increase Advisor (#251) the label also tells the change where it is known (#249,
+ * #250): a ship's price ("Price +$20"), a CCU's upgrade value ("Upgrade value +$20"). A CCU whose
+ * base ship rises loses upgrade value: a warning in both places ("Upgrade value −$20").
  */
 
 /** Where the label is shown. */
@@ -20,6 +26,10 @@ export type PriceIncreasePlace = 'buyback' | 'hangar';
 export interface PriceIncreaseLabel {
   text: string;
   hint: string;
+  /** A warning (act before) or an information. */
+  tone: 'warning' | 'info';
+  /** The time it counts down to. */
+  at: ExpectedTime;
   /** Less than a day left: shown more prominently. */
   soon: boolean;
 }
@@ -64,25 +74,77 @@ function countdown(time: ExpectedTime, now: number, locale: Locale): string {
 /** Less than this left: the countdown shows seconds, so it is updated every second. */
 export const SECONDS_COUNTDOWN_MS = HOUR;
 
-/** The label of an item with an expected price increase; none once it is over. */
+/** The increase a CCU's label counts down to: the one that decides the direction. */
+function ccuIncrease(ccu: CcuPriceChange): ExpectedPriceIncrease | undefined {
+  if (ccu.direction === 'loses') return ccu.base ?? ccu.target;
+  if (ccu.direction === 'gains') return ccu.target ?? ccu.base;
+  const both = [ccu.base, ccu.target].filter((increase) => !!increase);
+  return both.sort((a, b) => a.priceIncreaseAt.at - b.priceIncreaseAt.at)[0];
+}
+
+/**
+ * The label of an item with an expected price increase – its `match` (#190) and, for a CCU, the
+ * change of its upgrade value (`ccu`, #250); none once it is over.
+ */
 export function priceIncreaseLabel(
-  { increase }: PriceIncreaseMatch,
+  match: PriceIncreaseMatch | undefined,
   place: PriceIncreasePlace,
   now: number,
   locale: Locale,
+  ccu?: CcuPriceChange,
 ): PriceIncreaseLabel | undefined {
-  const { priceIncreaseAt, flightReadyAt, note, ship } = increase;
+  const increase = (ccu && ccuIncrease(ccu)) ?? match?.increase;
+  if (!increase) return undefined;
+  const { priceIncreaseAt, flightReadyAt, note, ship, price } = increase;
   if (endOf(priceIncreaseAt) <= now) return undefined;
-  const lines = [
-    translate(locale, 'priceIncrease.hint', [
-      ship.name,
-      formatExpectedTime(priceIncreaseAt, locale),
-    ]),
-    translate(
-      locale,
-      place === 'buyback' ? 'priceIncrease.hintBuyback' : 'priceIncrease.hintHangar',
-    ),
-  ];
+  const usd = (value: number) => formatUsd(value, locale);
+  const when = formatExpectedTime(priceIncreaseAt, locale);
+  const left = countdown(priceIncreaseAt, now, locale);
+  const loses = ccu?.direction === 'loses';
+  const amounts = ccu?.amounts;
+
+  const lines: string[] = [];
+  if (loses) {
+    lines.push(translate(locale, 'priceIncrease.hintCcuLoses', [ship.name, when]));
+  } else {
+    for (const rising of ccu?.direction === 'mixed' ? [ccu.base!, ccu.target!] : [increase]) {
+      lines.push(
+        translate(locale, 'priceIncrease.hint', [
+          rising.ship.name,
+          formatExpectedTime(rising.priceIncreaseAt, locale),
+        ]),
+      );
+    }
+    lines.push(
+      translate(
+        locale,
+        place === 'buyback' ? 'priceIncrease.hintBuyback' : 'priceIncrease.hintHangar',
+      ),
+    );
+  }
+  if (price) {
+    lines.push(
+      translate(locale, 'priceIncrease.hintPrice', [ship.name, usd(price.from), usd(price.to)]),
+    );
+  }
+  if (amounts) {
+    lines.push(
+      translate(locale, 'priceIncrease.hintUpgradeValue', [
+        usd(amounts.before),
+        usd(amounts.after),
+      ]),
+    );
+    if (amounts.discountBefore !== undefined && amounts.discountAfter !== undefined) {
+      lines.push(
+        translate(locale, 'priceIncrease.hintDiscount', [
+          usd(amounts.discountBefore),
+          usd(amounts.discountAfter),
+        ]),
+      );
+    }
+    // RSI doesn't sell such CCUs, but one already owned still works.
+    if (amounts.after <= 0) lines.push(translate(locale, 'priceIncrease.hintStillApplicable'));
+  }
   // Already flight ready (none given, or over): only the price increase.
   if (flightReadyAt && endOf(flightReadyAt) > now) {
     lines.push(
@@ -91,9 +153,25 @@ export function priceIncreaseLabel(
   }
   if (note) lines.push(localized(note, locale));
   lines.push(translate(locale, 'priceIncrease.expected'));
+
+  let text: string;
+  if (loses) {
+    text = amounts
+      ? translate(locale, 'priceIncrease.labelUpgradeLoss', [usd(-amounts.change), left])
+      : translate(locale, 'priceIncrease.labelUpgradeDrops', [left]);
+  } else if (ccu?.direction === 'gains' && amounts) {
+    text = translate(locale, 'priceIncrease.labelUpgradeGain', [usd(amounts.change), left]);
+  } else if (!ccu && match?.reason === 'ship' && price) {
+    text = translate(locale, 'priceIncrease.labelPrice', [usd(price.to - price.from), left]);
+  } else {
+    text = translate(locale, 'priceIncrease.label', [left]);
+  }
+
   return {
-    text: translate(locale, 'priceIncrease.label', [countdown(priceIncreaseAt, now, locale)]),
+    text,
     hint: lines.join(' '),
+    tone: loses || place === 'buyback' ? 'warning' : 'info',
+    at: priceIncreaseAt,
     soon: priceIncreaseAt.dayOnly ? now >= priceIncreaseAt.at : priceIncreaseAt.at - now < DAY,
   };
 }

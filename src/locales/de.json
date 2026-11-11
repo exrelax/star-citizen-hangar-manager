@@ -954,6 +954,10 @@
   },
   "priceIncrease": {
     "label": "Preiserhöhung: $1",
+    "labelPrice": "Preis +$1: $2",
+    "labelUpgradeGain": "Upgrade-Wert +$1: $2",
+    "labelUpgradeLoss": "Upgrade-Wert −$1: $2",
+    "labelUpgradeDrops": "Upgrade-Wert sinkt: $1",
     "days": "$1 Tage",
     "day": "1 Tag",
     "hours": "$1 Std. $2 Min.",
@@ -962,6 +966,11 @@
     "hint": "Der Preis der $1 steigt voraussichtlich am $2.",
     "hintBuyback": "Kauf das Item vorher zurück oder nutze es vorher als Rabatt-Token.",
     "hintHangar": "Wer das Item vorher schmilzt, kauft es danach zum höheren Preis zurück.",
+    "hintCcuLoses": "Dieser CCU verliert an Upgrade-Wert, wenn der Preis der $1 voraussichtlich am $2 steigt.",
+    "hintPrice": "Der Preis der $1 steigt voraussichtlich von $2 auf $3.",
+    "hintUpgradeValue": "Upgrade-Wert: jetzt $1, danach $2.",
+    "hintDiscount": "Rabatt: jetzt $1, danach $2.",
+    "hintStillApplicable": "Ein CCU, den du besitzt, lässt sich weiter anwenden, auch wenn RSI CCUs ohne Upgrade-Wert nicht verkauft.",
     "flightReady": "Voraussichtlich ab $1 flugbereit.",
     "expected": "Diese Termine sind erwartet, nicht von RSI bestätigt."
   }

@@ -61,9 +61,10 @@ export function useBuybackPledges() {
     const catalog = currentShips(ships)?.ships;
     const availabilityOf = createAvailabilityCheck(catalog);
     const imageOf = createBuybackImager({ ships: catalog, hangarPledges: validHangar?.pledges });
+    const shipPriceOf = shipPrices.length ? createPriceLookup(shipPrices) : undefined;
     const priceOf = createBuybackPricer({
       ships: catalog,
-      shipPriceOf: shipPrices.length ? createPriceLookup(shipPrices) : undefined,
+      shipPriceOf,
       itemPriceOf: items.length ? createItemPriceLookup(items) : undefined,
       pledges: current?.pledges,
     });
@@ -82,6 +83,8 @@ export function useBuybackPledges() {
               imageOf,
               availabilityOf,
               priceIncreaseOf: priceIncreaseMatcher.buyback,
+              ccuPriceChangeOf: (ccu, paid) =>
+                priceIncreaseMatcher.buybackCcu(ccu, shipPriceOf, paid),
             }),
             orders,
           ),
