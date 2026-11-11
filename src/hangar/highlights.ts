@@ -17,6 +17,7 @@ export const HANGAR_HIGHLIGHTS = [
   'meltBadge',
   'insuranceBadge',
   'gameAccessBadge',
+  'priceIncreaseLabel',
 ] as const;
 export type HangarHighlight = (typeof HANGAR_HIGHLIGHTS)[number];
 

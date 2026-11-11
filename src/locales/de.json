@@ -92,6 +92,7 @@
     "probablyGiftable": "Vermutlich verschenkbar",
     "available": "Rückkaufbar",
     "priceIncrease": "Preiserhöhung erwartet",
+    "priceChange": "Preisänderung erwartet",
     "ships": "Schiffe",
     "warbond": "Warbond",
     "valuable": "Mit Wert",
@@ -109,7 +110,8 @@
       "rewardsByName": "Rewards, am Namen erkannt: Event-, Referral-, Concierge- und andere Rewards.",
       "discount": "Günstiger als der Originalpreis gekauft: Schiffe und CCUs verglichen mit RSIs Schiffspreisen, Paints, Gear und mehr mit dem Pledge Store. Pledges ohne bekannten Originalpreis oder mit Aufpreis zählen nicht.",
       "available": "Pledges, die RSI wieder verkaufen kann. Ausgeschlossen: CCUs, deren Basisschiff heute gleich viel oder mehr kostet als ihr Zielschiff – RSI verkauft ein CCU nur zu einem teureren Schiff.",
-      "priceIncrease": "Pledges, deren Preis voraussichtlich in den nächsten $1 Tagen steigt (einstellbar in den Einstellungen), z. B. Schiffe, die zur IAE flugbereit werden. Die Termine sind erwartet, nicht von RSI bestätigt."
+      "priceIncrease": "Pledges, deren Preis voraussichtlich in den nächsten $1 Tagen steigt (einstellbar in den Einstellungen), z. B. Schiffe, die zur IAE flugbereit werden, und CCUs von einem solchen Schiff, die an Upgrade-Wert verlieren. Die Termine sind erwartet, nicht von RSI bestätigt.",
+      "priceChange": "Pledges, deren Wert sich mit einer Preiserhöhung in den nächsten $1 Tagen ändert (einstellbar in den Einstellungen): Schiffe und Items, deren Preis steigt, CCUs zu ihnen (sie gewinnen Upgrade-Wert) und CCUs von ihnen (sie verlieren ihn). Die Termine sind erwartet, nicht von RSI bestätigt."
     },
     "categories": {
       "types": "Typen",
@@ -168,7 +170,7 @@
     },
     "priceIncreaseDays": "Preiserhöhungen innerhalb von",
     "priceIncreaseDaysUnit": "Tagen",
-    "priceIncreaseDaysHint": "Der Buy-Back-Filter „Preiserhöhung erwartet“ und seine Benachrichtigung zählen erwartete Preiserhöhungen innerhalb so vieler Tage.",
+    "priceIncreaseDaysHint": "Der Buy-Back-Filter „Preiserhöhung erwartet“, der Filter „Preisänderung erwartet“ in My Hangar und die Benachrichtigung zählen erwartete Preiserhöhungen innerhalb so vieler Tage.",
     "privacy": "Sensible Informationen ausblenden (für Screenshots oder Content Creator)",
     "privacyTitle": "Privatsphäre",
     "privacyDemo": "Ein ganzer erfundener Hangar statt deines eigenen:",

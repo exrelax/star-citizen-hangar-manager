@@ -11,7 +11,7 @@ import { giftableHint } from '../giftable-hint';
 import BuybackRow from './BuybackRow.vue';
 import { BUYBACK_SORTS, sortEntries, type BuybackSort } from '@/hangar/sorting';
 import { useSettings } from '@/settings/use-settings';
-import { isWithinDays } from '@/price-increases/price-increases';
+import { hasPriceChangeWithin } from '@/price-increases/price-change-filter';
 import { buybackFilterRequest } from '../buyback-filter-request';
 import { useNow } from '@/shared/use-now';
 
@@ -30,13 +30,13 @@ const displayClasses = computed(() => ({
 
 /**
  * "Price Increase Expected" (#192): a price increase within the days of the settings, so it
- * changes with them and with the time.
+ * changes with them and with the time; also of a CCU's base ship (#256).
  */
 const now = useNow();
 const predicates = computed(() => ({
   ...BUYBACK_FILTER_PREDICATES,
   priceIncrease: (pledge: BuybackView) =>
-    isWithinDays(pledge.priceIncrease?.increase, now.value, props.settings.priceIncreaseDays),
+    hasPriceChangeWithin(pledge, now.value, props.settings.priceIncreaseDays),
 }));
 /** Offered only while a pledge has a price increase in the period. */
 const hasPriceIncrease = computed(() => props.pledges.some(predicates.value.priceIncrease));

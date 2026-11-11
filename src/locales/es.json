@@ -92,6 +92,7 @@
     "probablyGiftable": "Probablemente regalables",
     "available": "Recomprables",
     "priceIncrease": "Subida de precio prevista",
+    "priceChange": "Cambio de precio previsto",
     "ships": "Naves",
     "warbond": "Warbond",
     "valuable": "Con valor",
@@ -109,7 +110,8 @@
       "rewardsByName": "Recompensas, reconocidas por su nombre: eventos, referidos, Concierge y otras recompensas.",
       "discount": "Comprado por menos del precio original: naves y CCU comparados con los precios de naves de RSI, pinturas, equipo y más con la Pledge Store. No cuentan los pledges sin precio original conocido o que costaron más.",
       "available": "Los pledges que RSI puede volver a vender. Excluidos: los CCU cuya nave base cuesta hoy lo mismo o más que su nave de destino – RSI solo vende un CCU hacia una nave más cara.",
-      "priceIncrease": "Pledges cuyo precio se espera que suba en los próximos $1 días (ajustable en la configuración), p. ej. naves que pasan a flight ready en la IAE. Las fechas son previstas, no confirmadas por RSI."
+      "priceIncrease": "Pledges cuyo precio se espera que suba en los próximos $1 días (ajustable en la configuración), p. ej. naves que pasan a flight ready en la IAE, y los CCU desde una nave así, que pierden valor de mejora. Las fechas son previstas, no confirmadas por RSI.",
+      "priceChange": "Pledges cuyo valor cambia con una subida de precio prevista en los próximos $1 días (ajustable en la configuración): naves y artículos cuyo precio sube, CCU hacia ellos (ganan valor de mejora) y CCU desde ellos (lo pierden). Las fechas son previstas, no confirmadas por RSI."
     },
     "categories": {
       "types": "Tipos",
@@ -168,7 +170,7 @@
     },
     "priceIncreaseDays": "Subidas de precio en los próximos",
     "priceIncreaseDaysUnit": "días",
-    "priceIncreaseDaysHint": "El filtro «Subida de precio prevista» del Buy Back y su notificación cuentan las subidas de precio previstas en este número de días.",
+    "priceIncreaseDaysHint": "El filtro «Subida de precio prevista» del Buy Back, el filtro «Cambio de precio previsto» de My Hangar y la notificación cuentan las subidas de precio previstas en este número de días.",
     "privacy": "Ocultar información sensible (para capturas de pantalla o creadores de contenido)",
     "privacyTitle": "Privacidad",
     "privacyDemo": "Un hangar inventado en lugar del tuyo:",

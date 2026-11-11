@@ -17,6 +17,8 @@ import { canSelectPledges } from '../sidebar';
 import { meltReadyIds } from '../use-melt-marks';
 import { clearHangarFilter, hangarViewFilter, type HangarViewFilter } from '../view-filter';
 import { paintRebuys } from '@/store/paint-consultant/use-paint-consultant';
+import { hasPriceChangeWithin } from '@/price-increases/price-change-filter';
+import { useNow } from '@/shared/use-now';
 import { FILTER_HIGHLIGHTS } from '@/config';
 import { highlightClasses } from '../highlights';
 import ManagerList from './ManagerList.vue';
@@ -35,10 +37,24 @@ const displayClasses = computed(() => ({
   'shm-hide-select': !canSelectPledges(props.settings),
 }));
 
+/**
+ * "Price change ahead" (#256): a price change within the days of the Buy Back Reminder, so it
+ * changes with them and with the time; offered only while a pledge has one.
+ */
+const now = useNow();
+const predicates = computed(() => ({
+  ...PLEDGE_FILTER_PREDICATES,
+  priceChange: (pledge: PledgeView) =>
+    hasPriceChangeWithin(pledge, now.value, props.settings.priceIncreaseDays),
+}));
+const hasPriceChange = computed(() => props.pledges.some(predicates.value.priceChange));
+
 const filterGroups = computed(() =>
   FILTER_CATEGORIES.map((category) => ({
     category,
-    filters: shownFilters(props.settings.filters.hangar[category]),
+    filters: shownFilters(props.settings.filters.hangar[category]).filter(
+      (filter) => filter !== 'priceChange' || hasPriceChange.value,
+    ),
   })),
 );
 
@@ -83,6 +99,9 @@ const HINTS: Partial<Record<PledgeFilter, MessageKey>> = {
   rewards: 'filter.hints.rewards',
 };
 const filterHint = (filter: PledgeFilter) => {
+  if (filter === 'priceChange') {
+    return i18n.t('filter.hints.priceChange', [props.settings.priceIncreaseDays]);
+  }
   const hint = HINTS[filter];
   return hint && i18n.t(hint);
 };
@@ -93,7 +112,7 @@ const filterHint = (filter: PledgeFilter) => {
     :class="displayClasses"
     :entries="sorted"
     :filter-groups="filterGroups"
-    :predicates="PLEDGE_FILTER_PREDICATES"
+    :predicates="predicates"
     :filter-label="filterLabel"
     :filter-hint="filterHint"
     :active="active"

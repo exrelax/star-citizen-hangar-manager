@@ -113,7 +113,7 @@ describe('discount filter', () => {
       PLEDGE_FILTER_CATEGORIES.features,
       FILTERS.hangar.features,
     );
-    expect(layout.order.slice(-2)).toEqual(['meltable', 'discount']);
+    expect(layout.order.slice(-3)).toEqual(['meltable', 'discount', 'priceChange']);
     expect(layout.shown).toEqual(expect.arrayContaining(['discount']));
   });
 });
@@ -128,6 +128,19 @@ describe('price increase filter', () => {
     );
     expect(layout.order.at(-1)).toBe('priceIncrease');
     expect(layout.shown).toContain('priceIncrease');
+  });
+});
+
+describe('price change filter', () => {
+  it('joins the stored hangar layouts of existing users, shown (#256)', () => {
+    const stored = { order: ['discount', 'lti'], shown: ['lti', 'discount'] };
+    const layout = normalizeFilterLayout(
+      stored,
+      PLEDGE_FILTER_CATEGORIES.features,
+      FILTERS.hangar.features,
+    );
+    expect(layout.order.at(-1)).toBe('priceChange');
+    expect(layout.shown).toContain('priceChange');
   });
 });
 
