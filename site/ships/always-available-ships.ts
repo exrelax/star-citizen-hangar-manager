@@ -28,6 +28,13 @@ const OUTPUT = fileURLToPath(
   new URL('../public/data/always-available-ships.json', import.meta.url),
 );
 
+/**
+ * Names the build and how to reach the project, as wikis ask of automated requests (e.g. to
+ * contact before blocking it).
+ */
+export const USER_AGENT =
+  'StarCitizenHangarManager-SiteBuild/1.0 (+https://github.com/exrelax/star-citizen-hangar-manager)';
+
 /** Fewer ships than this: the source is broken. */
 export const MIN_SHIPS = 20;
 /** Fewer than this share of the ships the file had: the source is broken. */
@@ -145,7 +152,7 @@ export const serialize = (file: AlwaysAvailableShipsFile): string =>
 
 async function fetchJson(url: string): Promise<unknown> {
   const response = await fetch(url, {
-    headers: { 'User-Agent': 'hangar-manager-site-build', Accept: 'application/json' },
+    headers: { 'User-Agent': USER_AGENT, Accept: 'application/json' },
   });
   if (!response.ok) throw new Error(`${url}: HTTP ${response.status}`);
   return response.json();
