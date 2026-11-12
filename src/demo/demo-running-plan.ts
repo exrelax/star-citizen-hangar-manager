@@ -105,6 +105,26 @@ function fillersOf(paints: ReturnType<typeof hangarFillers>) {
   return [...bySku.values()];
 }
 
+/** The demo hangar's paint bought again with more discount (`generate-states.ts`): old and copy. */
+const boughtAgainPair = (pledges: readonly PledgeView[], storePaints: readonly StorePaint[]) =>
+  findRebought(ownPaintsOf(pledges, storePaints)).sort(
+    (a, b) => b.copy.discount - a.copy.discount,
+  )[0];
+
+/**
+ * The demo hangar with the copy of the paint bought again dated today: at the stage "old paints
+ * left to melt" the plan bought it a few hours ago, so the card's dates agree. Other stages keep
+ * the hangar's dates.
+ */
+export function withCopyBoughtToday(
+  pledges: readonly PledgeView[],
+  items: readonly StoreItem[],
+  today: string,
+): PledgeView[] {
+  const copyId = boughtAgainPair(pledges, storePaintsOf(items))?.copy.pledgeId;
+  return pledges.map((pledge) => (pledge.id === copyId ? { ...pledge, createdAt: today } : pledge));
+}
+
 /**
  * The demo's running plan at a stage; undefined without the paints it needs (the catalog has none
  * the store sells on their own, or the hangar no single paint for the fillers).
@@ -119,14 +139,18 @@ export function demoRunningPlan(
     marked?: readonly number[];
     /** Pledges that are no fillers, e.g. a marked paint ready to melt while the fillers wait. */
     avoid?: readonly number[];
+    /**
+     * The demo's store credit (its setting, #179): what the account has now at this stage, so the
+     * card agrees with the consultant's head. A stage it can't show (e.g. "not enough" with more
+     * than the cart costs) sets a credit of its own (`inputs.credit`), which the demo then shows.
+     */
+    credit?: number;
   },
 ): DemoRunningPlan | undefined {
   if (stage === 'none') return { plan: null, inputs: { cart: null } };
   const { pledges, now } = input;
   const storePaints = storePaintsOf(input.items);
-  const pair = findRebought(ownPaintsOf(pledges, storePaints)).sort(
-    (a, b) => b.copy.discount - a.copy.discount,
-  )[0];
+  const pair = boughtAgainPair(pledges, storePaints);
   const skip = new Set([
     ...(pair ? [pair.old.pledgeId, pair.copy.pledgeId] : []),
     ...(input.avoid ?? []),
@@ -159,7 +183,8 @@ export function demoRunningPlan(
         version: REBUY_PLAN_VERSION,
         way: 'buy',
         at,
-        creditAtStart: usd(cents(cartCost) + 150),
+        // Paid already: the credit of now plus what the cart cost.
+        creditAtStart: usd(cents(cartCost) + cents(input.credit ?? 1.5)),
         tier,
         own: [
           {
@@ -181,7 +206,7 @@ export function demoRunningPlan(
           foundAt: now - 3 * HOUR,
         },
       },
-      inputs: { cart: [], credit: 1.5 },
+      inputs: { cart: [], credit: input.credit ?? 1.5 },
     };
   }
 
@@ -193,22 +218,53 @@ export function demoRunningPlan(
       .filter((pledge) => (pledge.createdAt ?? '') >= since)
       .map((pledge) => storeNameOf(pledge.title)),
   );
-  const melted = storePaints
+  const candidates = storePaints
     .filter((paint) => !fillerSkus.has(paint.id) && !inHangar.has(storeNameOf(paint.name)))
-    .sort((a, b) => b.price - a.price || a.name.localeCompare(b.name))
-    .slice(0, 2);
-  if (!melted.length) return undefined;
+    .sort((a, b) => b.price - a.price || a.name.localeCompare(b.name));
+  if (!candidates.length) return undefined;
+  const costWith = (own: readonly StorePaint[]) =>
+    costOf(
+      [...own, ...fillerPaints.map((paint) => paint.storePaint)].map((paint) => paint.price),
+      tierFor(own.length + fillerIds.length),
+    );
+  // Before paying, the demo's store credit has to pay the cart: the priciest two paints it pays.
+  const budget = stage === 'cart' || stage === 'pay' ? input.credit : undefined;
+  const affordable =
+    budget === undefined
+      ? 0
+      : candidates.findIndex((_, index) => costWith(candidates.slice(index, index + 2)) <= budget);
+  const melted = candidates.slice(Math.max(0, affordable), Math.max(0, affordable) + 2);
   const tier = tierFor(melted.length + fillerIds.length);
-  const cartCost = costOf(
-    [...melted, ...fillerPaints.map((paint) => paint.storePaint)].map((paint) => paint.price),
-    tier,
-  );
+  const cartCost = costWith(melted);
+  const freed = melted.reduce((sum, paint) => sum + cents(paint.price * 0.8), 0);
+  /** The store credit of now at this stage: the demo's where it fits, else the stage's own. */
+  const creditNow = (() => {
+    const own = input.credit;
+    switch (stage) {
+      case 'credit':
+        // Not enough: the demo's if it is less than the cart, else $6.60 short.
+        return own !== undefined && own < cartCost ? own : usd(Math.max(0, cents(cartCost) - 660));
+      case 'cart':
+      case 'pay':
+        return own !== undefined && own >= cartCost ? own : usd(cents(cartCost) + 2920);
+      default:
+        // Paid already: any credit fits.
+        return own ?? usd(Math.max(0, cents(cartCost) - 500) + 290);
+    }
+  })();
+  const paid = stage === 'wait' || stage === 'fillers';
+  // At the start: before the own paints were melted and, once paid, before the cart was paid. The
+  // stage "not enough" started with enough – the credit was spent elsewhere since.
+  const creditAtStart =
+    stage === 'credit'
+      ? usd(Math.max(0, cents(cartCost) - freed))
+      : usd(Math.max(0, cents(creditNow) - freed + (paid ? cents(cartCost) : 0)));
   const at = now - (stage === 'fillers' ? 27 : 4) * HOUR;
   const plan: StoredRebuyPlan = {
     version: REBUY_PLAN_VERSION,
     way: 'melt',
     at,
-    creditAtStart: usd(Math.max(0, cents(cartCost) - 500)),
+    creditAtStart,
     tier,
     own: melted.map((paint, index) => {
       const meltValue = usd(cents(paint.price * 0.8));
@@ -226,7 +282,6 @@ export function demoRunningPlan(
     cartCost,
   };
   const lines = planLinesOf(plan, input.items).map(({ skuId, qty }) => ({ skuId, qty }));
-  const enough = usd(cents(cartCost) + 2920);
 
   switch (stage) {
     case 'cart': {
@@ -235,12 +290,12 @@ export function demoRunningPlan(
       const cart: CartLine[] = lines.flatMap((line) =>
         missing.has(line.skuId) ? (line.qty > 1 ? [{ ...line, qty: line.qty - 1 }] : []) : [line],
       );
-      return { plan, inputs: { cart, credit: enough } };
+      return { plan, inputs: { cart, credit: creditNow } };
     }
     case 'credit':
-      return { plan, inputs: { cart: lines, credit: usd(Math.max(0, cents(cartCost) - 660)) } };
+      return { plan, inputs: { cart: lines, credit: creditNow } };
     case 'pay':
-      return { plan, inputs: { cart: lines, credit: enough } };
+      return { plan, inputs: { cart: lines, credit: creditNow } };
     default: {
       // Paid: 2 hours 18 minutes ago (`wait`), or 25 hours ago (`fillers`).
       const paidAt = now - (stage === 'wait' ? 2 * HOUR + 18 * 60 * 1000 : 25 * HOUR);
@@ -255,7 +310,7 @@ export function demoRunningPlan(
             foundAt: paidAt,
           },
         },
-        inputs: { cart: [], credit: usd(cents(plan.creditAtStart!) + 290) },
+        inputs: { cart: [], credit: creditNow },
       };
     }
   }
@@ -341,6 +396,9 @@ export function demoCompletedPlans(items: readonly StoreItem[], now: number): Co
   return [melt, buy];
 }
 
+/** Raised when the builders change what a stage holds, so stored demo plans are set again. */
+const SEED_REVISION = 2;
+
 /** The demo key and stage the running plan was set for. */
 const seededItem = storage.defineItem<string | null>('local:demo.consultantRunSeeded', {
   fallback: null,
@@ -356,7 +414,7 @@ export async function seedDemoRunningPlan(
   running: DemoRunningPlan | undefined,
   completed: readonly CompletedPaintPlan[],
 ): Promise<void> {
-  const seed = `${key}:${stage}`;
+  const seed = `${SEED_REVISION}:${key}:${stage}`;
   if ((await seededItem.getValue()) === seed) return;
   await Promise.all([
     demoRebuyPlanItem.setValue(running?.plan ?? null),
