@@ -559,7 +559,7 @@
     "colSeen": "Seen",
     "colPrice": "Price",
     "colEvent": "Event",
-    "viewCurrent": "Current Warbond CCUs",
+    "viewCurrent": "Current Discount CCUs",
     "viewHistory": "Warbond CCU History",
     "historyIntro": "Warbond offers RSI no longer sells, as the Hangar Manager saw them in this browser. No public record of past offers exists, so the list grows over time.",
     "historyCount": "$1 expired offers",

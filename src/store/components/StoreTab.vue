@@ -97,7 +97,10 @@ const updated = computed(
     i18n.t('store.fetchedAt', [formatRelativeTime(fetchedAt.value, now.value, locale.value)]),
 );
 
-/** The current warbond CCUs or the expired ones of the history (#297); the current at first. */
+/**
+ * The current discount CCUs – the warbond CCUs and the CCUs to secure (#305) – or the expired
+ * warbond CCUs of the history (#297); the current at first.
+ */
 type WarbondView = 'current' | 'history';
 const view = ref<WarbondView>('current');
 /** The history is built once it was shown, then kept (v-show), like the manager's tabs. */
@@ -184,6 +187,24 @@ const displayClasses = computed(() => ({
         </div>
         <p v-if="!offers.length" class="shm-store-state">{{ i18n.t('store.empty') }}</p>
       </template>
+
+      <!-- The CCUs to secure before a price increase (#253): CCUs with a discount now too (#305). -->
+      <section
+        v-if="secure.length"
+        class="shm-store-secure"
+        aria-labelledby="shm-store-secure-title"
+      >
+        <h3 id="shm-store-secure-title" class="shm-store-title">
+          {{ i18n.t('ccusToSecure.title') }}
+        </h3>
+        <p class="shm-store-intro">
+          {{ i18n.t('ccusToSecure.intro') }}
+          <template v-if="secureNote">{{ i18n.t(secureNote) }}</template>
+        </p>
+        <div class="shm-rows">
+          <SecureRow v-for="offer in secure" :key="offer.ship.id" :offer="offer" />
+        </div>
+      </section>
     </div>
 
     <div
@@ -202,20 +223,6 @@ const displayClasses = computed(() => ({
         :settings="settings"
       />
     </div>
-
-    <!-- The CCUs to secure before a price increase (#253), set apart below the warbond CCUs. -->
-    <section v-if="secure.length" class="shm-store-secure" aria-labelledby="shm-store-secure-title">
-      <h3 id="shm-store-secure-title" class="shm-store-title">
-        {{ i18n.t('ccusToSecure.title') }}
-      </h3>
-      <p class="shm-store-intro">
-        {{ i18n.t('ccusToSecure.intro') }}
-        <template v-if="secureNote">{{ i18n.t(secureNote) }}</template>
-      </p>
-      <div class="shm-rows">
-        <SecureRow v-for="offer in secure" :key="offer.ship.id" :offer="offer" />
-      </div>
-    </section>
 
     <PaintConsultant :settings="settings" :active="active" />
   </section>

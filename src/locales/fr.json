@@ -559,7 +559,7 @@
     "colSeen": "Vue",
     "colPrice": "Prix",
     "colEvent": "Événement",
-    "viewCurrent": "CCU warbond actuels",
+    "viewCurrent": "CCU à prix réduit actuels",
     "viewHistory": "Historique des CCU warbond",
     "historyIntro": "Les offres warbond que RSI ne vend plus, telles que le Hangar Manager les a vues dans ce navigateur. Aucune liste publique des offres passées n'existe, la liste s'allonge donc avec le temps.",
     "historyCount": "$1 offres expirées",

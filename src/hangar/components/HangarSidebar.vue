@@ -77,7 +77,7 @@ import {
   hangarFilterStates,
   includeHangarFilter,
 } from '../hangar-filter-request';
-import { openCurrentWarbonds } from '@/store/open-current-warbonds';
+import { openCcusToSecure, openCurrentWarbonds } from '@/store/open-current-warbonds';
 
 /*
  * The sidebar below RSI's page navigation on the left on every tab (App.vue teleports it there),
@@ -363,7 +363,7 @@ function toggleAdvisorFilter() {
   if (advisorFiltered.value) clearHangarFilterInclude('priceChange');
   else includeHangarFilter('priceChange');
 }
-const openSecureSection = () => openTabAt('store', 'shm-store-secure-title', { highlight: true });
+const openSecureSection = openCcusToSecure;
 
 function dismissPaintNote() {
   void dismissedItem().setValue(dismissedOf(rebuyIds.value));
