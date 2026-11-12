@@ -740,7 +740,11 @@
     "paid": "Payé",
     "paidHint": "Ce que cette amélioration a ajouté à la valeur du pledge, c.-à-d. ce qu’elle a réellement coûté",
     "discount": "Remise",
-    "discountHint": "Différence de prix entre les deux vaisseaux moins le coût de l’amélioration. Inconnue pour la première amélioration : RSI n’enregistre pas la valeur d’avant."
+    "discountHint": "Différence de prix entre les deux vaisseaux moins le coût de l’amélioration. Pour la première amélioration avec le pledge de base : RSI n’enregistre pas la valeur d’avant.",
+    "withBaseHint": "Le pledge de base et la première amélioration ensemble",
+    "withBase": "La première amélioration avec le pledge de base ($2) : le prix du $1 moins la valeur après la première amélioration. RSI n’enregistre pas la valeur d’avant, on ne peut donc pas les séparer.",
+    "withBaseUnknown": "La remise du pledge de base et de la première amélioration est inconnue : le prix du vaisseau cible manque.",
+    "total": "Total"
   },
   "insurance": {
     "year": "1 an",

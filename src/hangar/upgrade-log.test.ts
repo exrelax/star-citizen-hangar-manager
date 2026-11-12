@@ -1,7 +1,14 @@
 // @vitest-environment happy-dom
 import { describe, expect, it, vi } from 'vitest';
 import { createPriceLookup } from './ship-prices';
-import { ccuShips, loadUpgradeLog, parseLogDate, parseUpgradeLog, withPrices } from './upgrade-log';
+import {
+  ccuShips,
+  loadUpgradeLog,
+  parseLogDate,
+  parseUpgradeLog,
+  totalDiscount,
+  withPrices,
+} from './upgrade-log';
 
 // As rendered by RSI's `/api/account/upgradeLog`, newest first.
 const row = (date: string, text: string) =>
@@ -93,16 +100,26 @@ describe('withPrices', () => {
     { name: 'Spartan', price: 80 },
   ]);
 
-  it('adds the target ship price and the discount of each CCU after the first', () => {
+  it('adds the target ship price and the discount of each CCU', () => {
     const [first, second] = withPrices(parseUpgradeLog(html), priceOf);
-    // The first CCU's cost is unknown, so its discount is, too.
-    expect(first).toMatchObject({ targetPrice: 60, discount: undefined });
+    // The first CCU with the base pledge (#241): the 300i ($60) for a value of $55.
+    expect(first).toMatchObject({ targetPrice: 60, discount: 5, withBase: true });
     // 300i ($60) → Spartan ($80) would cost $20; it added $5 to the pledge.
     expect(second).toMatchObject({ targetPrice: 80, added: 5, discount: 15 });
+    expect(second).not.toHaveProperty('withBase');
+  });
+
+  it('adds up to the discount against the last target ship', () => {
+    const entries = withPrices(parseUpgradeLog(html), priceOf);
+    // The Spartan ($80) for a value of $60.
+    expect(totalDiscount(entries)).toBe(20);
+    expect(totalDiscount(withPrices(parseUpgradeLog(html), createPriceLookup([])))).toBeUndefined();
+    expect(totalDiscount([])).toBeUndefined();
   });
 
   it('leaves the prices out for ships it does not know', () => {
-    const [, second] = withPrices(parseUpgradeLog(html), createPriceLookup([]));
+    const [first, second] = withPrices(parseUpgradeLog(html), createPriceLookup([]));
+    expect(first).toMatchObject({ targetPrice: undefined, discount: undefined });
     expect(second).toMatchObject({ targetPrice: undefined, discount: undefined });
   });
 });

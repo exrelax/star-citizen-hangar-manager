@@ -740,7 +740,11 @@
     "paid": "Bezahlt",
     "paidHint": "Was dieses Upgrade zum Pledge-Wert hinzugefügt hat, also was es wirklich gekostet hat",
     "discount": "Rabatt",
-    "discountHint": "Preisdifferenz der beiden Schiffe minus Kosten des Upgrades. Für das erste Upgrade unbekannt: RSI protokolliert den Wert davor nicht."
+    "discountHint": "Preisdifferenz der beiden Schiffe minus Kosten des Upgrades. Für das erste Upgrade zusammen mit dem Basis-Pledge: RSI protokolliert den Wert davor nicht.",
+    "withBaseHint": "Basis-Pledge und erstes Upgrade zusammen",
+    "withBase": "Das erste Upgrade zusammen mit dem Basis-Pledge ($2): Preis der $1 minus Wert nach dem ersten Upgrade. RSI protokolliert den Wert davor nicht, daher lassen sich beide nicht trennen.",
+    "withBaseUnknown": "Der Rabatt von Basis-Pledge und erstem Upgrade ist nicht bekannt: Der Preis des Zielschiffs fehlt.",
+    "total": "Gesamt"
   },
   "insurance": {
     "year": "1 Jahr",
