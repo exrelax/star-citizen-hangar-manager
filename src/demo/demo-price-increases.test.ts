@@ -50,14 +50,11 @@ describe.each(['key-a', 'key-b', 'key-c'])(
   'the Price Increase Advisor of the demo %s (#255)',
   (key) => {
     const buyable = new Set(FALLBACK_CATALOG.ships.map((ship) => ship.id));
-    const { pledges, priceIncreases } = generatedDemo(
-      FALLBACK_CATALOG,
-      key,
-      TODAY,
-      NOW,
-      DEFAULT_DEMO_SETTINGS,
-      buyable,
-    );
+    const {
+      pledges,
+      priceIncreases,
+      account: demoAccount,
+    } = generatedDemo(FALLBACK_CATALOG, key, TODAY, NOW, DEFAULT_DEMO_SETTINGS, buyable);
     const known = priceIncreases.filter((entry) => entry.price);
 
     it('has price increases with a known new price inside the period', () => {
@@ -89,6 +86,17 @@ describe.each(['key-a', 'key-b', 'key-c'])(
         ),
       ).toBe(true);
       expect(pledges.some((pledge) => hasPriceChangeWithin(pledge, NOW, 14))).toBe(true);
+    });
+
+    it('needs store credit for the CCU to the rising ship: melting covers less than it costs', () => {
+      const ship = demoAccount.pledges.find((pledge) => pledge.demoPivot === 'ship')!.items[0]!
+        .title;
+      const msrp = FALLBACK_CATALOG.ships.find((entry) => entry.name === ship)!.msrp;
+      const below = Math.max(
+        ...FALLBACK_CATALOG.ships.filter((entry) => entry.msrp < msrp).map((entry) => entry.msrp),
+      );
+      const from = demoAccount.pledges.find((pledge) => pledge.demoPivot === 'ccuFrom')!;
+      expect(from.valueUsd).toBeLessThan(msrp - below);
     });
 
     it('gives the sidebar a notification with affected CCUs and one to secure a CCU', () => {
