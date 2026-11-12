@@ -42,7 +42,7 @@ const set = (patch: Partial<DemoSettings>) => emit('update', { demo: { ...demo()
 const setStates = (patch: Partial<DemoStates>) => set({ states: { ...demo().states, ...patch } });
 
 const KINDS = Object.keys(DEFAULT_DEMO_SETTINGS.composition) as (keyof DemoComposition)[];
-const STATE_CHECKS = ['refund', 'upgraded', 'justBought', 'meltMarks'] as const;
+const STATE_CHECKS = ['refund', 'upgraded', 'justBought', 'meltMarks', 'runningEvent'] as const;
 
 /** A whole number in range is stored; anything else snaps back to the stored value. */
 function number(event: Event, isValid: (value: unknown) => value is number, stored: number) {

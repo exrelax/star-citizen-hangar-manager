@@ -6,6 +6,13 @@ import { demoCatalog } from './catalog';
 import { generatedDemo, justBoughtOf } from './demo';
 import { demoEvents } from './demo-events';
 import { demoStoreData } from './demo-store';
+import {
+  historyEntries,
+  periodStart,
+  runningEvent,
+  withinPeriod,
+  type HistoryPeriod,
+} from '@/store/warbond-history-view';
 import { creditForCases } from './demo-store-credit';
 
 /*
@@ -70,6 +77,37 @@ describe('the default demo on an empty account (#130)', () => {
     expect(earlier.some((sighting) => !sighting.events)).toBe(true);
     expect(offers.some((offer) => offer.history.events.length > 0)).toBe(true);
     expect(earlier.every((sighting) => sighting.price < sighting.msrp)).toBe(true);
+  });
+
+  it('shows expired offers in each period of the warbond history, with and without an event (#297)', () => {
+    const data = demoStoreData(catalog, account.pledges, NOW, demoEvents(NOW));
+    const expired = historyEntries(data.history, data.ships);
+    const event = runningEvent(demoEvents(NOW), NOW);
+    expect(event).toBeDefined();
+    const count = (period: HistoryPeriod) =>
+      withinPeriod(expired, periodStart(period, NOW, event)).length;
+    expect(count('event')).toBeGreaterThan(0);
+    expect(count('days30')).toBeGreaterThan(count('event'));
+    expect(count('days90')).toBeGreaterThan(count('days30'));
+    expect(count('days180')).toBeGreaterThan(count('days90'));
+    expect(expired.length).toBeGreaterThan(count('days180'));
+    expect(expired.some((entry) => entry.sighting.events?.length)).toBe(true);
+    expect(expired.some((entry) => !entry.sighting.events)).toBe(true);
+    // Current offers never show in the history.
+    const current = new Set(data.warbonds.map((target) => `${target.skuId}|${target.price}`));
+    expect(
+      expired.some(
+        (entry) =>
+          entry.sighting.lastSeen === data.history!.lastReadAt &&
+          current.has(`${entry.sighting.skuId}|${entry.sighting.price}`),
+      ),
+    ).toBe(false);
+
+    // Without a running event (demo settings) there is no event period.
+    const upcoming = demoEvents(NOW).filter((candidate) => NOW < candidate.eventStart);
+    const quiet = demoStoreData(catalog, account.pledges, NOW, upcoming);
+    expect(runningEvent(upcoming, NOW)).toBeUndefined();
+    expect(historyEntries(quiet.history, quiet.ships).length).toBe(expired.length);
   });
 
   it('shows the events and every case of the Paint Discount Consultant', () => {
