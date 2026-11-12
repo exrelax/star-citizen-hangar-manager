@@ -96,6 +96,21 @@ const when = computed(() => formatExpectedTime(props.offer.increase.priceIncreas
               : i18n.t('ccusToSecure.gainUnknownHint', [when])
           }}
         </p>
+        <!-- Confirmed by CIG or expected, and where it comes from, if the file says (#275). -->
+        <p class="shm-hint">
+          {{
+            i18n.t(offer.increase.confirmed ? 'priceIncrease.confirmed' : 'priceIncrease.expected')
+          }}
+          <a
+            v-if="offer.increase.source"
+            class="shm-secure-source"
+            :href="offer.increase.source"
+            target="_blank"
+            rel="noopener noreferrer"
+            >{{ i18n.t('priceIncrease.source') }}
+            <SvgIcon name="square-up-right" />
+          </a>
+        </p>
         <p v-if="!offer.bases.length" class="shm-hint">
           {{ i18n.t('ccusToSecure.noBases', [offer.ship.name]) }}
         </p>
@@ -125,6 +140,16 @@ const when = computed(() => formatExpectedTime(props.offer.increase.priceIncreas
 .shm-warbond-upgrade {
   flex: none;
   white-space: nowrap;
+}
+
+.shm-secure-source {
+  color: var(--shm-accent);
+  text-decoration: none;
+}
+
+.shm-secure-source:hover,
+.shm-secure-source:focus-visible {
+  text-decoration: underline;
 }
 
 /* No buttons under the image here: the content spans both columns. */

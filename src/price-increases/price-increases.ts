@@ -1,11 +1,19 @@
 import { PRICE_INCREASES } from '@/config';
-import { fileList, localizedText, record, text, type LocalizedText } from '@/site-data/site-data';
+import {
+  fileList,
+  httpsUrl,
+  localizedText,
+  record,
+  text,
+  type LocalizedText,
+} from '@/site-data/site-data';
 
 /*
  * The expected price increases of the Buy Back Reminder (#195), loaded from the project website
  * (`data/price-increases.json`, see "Editing the expected price increases" in DEVELOPMENT.md).
  * Each entry is a ship whose price is expected to rise, identified by its Ship Matrix id, its
- * name and other names RSI uses for it (#187). Every date is an assumption.
+ * name and other names RSI uses for it (#187). Every date is an assumption, unless the entry is
+ * `confirmed` by CIG (#275).
  */
 
 /** A point in time of the file: a day, or a time if the probable time is known. */
@@ -36,6 +44,10 @@ export interface ExpectedPriceIncrease {
   event?: string;
   /** A short text for the user, e.g. the source of the assumption. */
   note?: LocalizedText;
+  /** Confirmed by CIG, not only expected (#275). */
+  confirmed?: true;
+  /** Where it comes from, e.g. a Comm-Link or a post on Spectrum: an https URL (#275). */
+  source?: string;
 }
 
 /** Old and new price of an expected price increase, in USD without taxes. */
@@ -106,6 +118,7 @@ function parseEntry(entry: unknown): ExpectedPriceIncrease | undefined {
   ).map((itemName) => ({ name: itemName }));
   const event = text(raw.event, 100);
   const note = localizedText(raw.note);
+  const source = httpsUrl(raw.source);
   return {
     ship: { id, name, ...(aliases.length && { aliases }) },
     priceIncreaseAt,
@@ -114,6 +127,8 @@ function parseEntry(entry: unknown): ExpectedPriceIncrease | undefined {
     ...(relatedItems.length && { relatedItems }),
     ...(event && { event }),
     ...(note && { note }),
+    ...(raw.confirmed === true && { confirmed: true as const }),
+    ...(source && { source }),
   };
 }
 

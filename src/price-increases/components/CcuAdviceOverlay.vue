@@ -280,7 +280,28 @@ function onKeydown(event: KeyboardEvent) {
                     ])
                   : i18n.t('ccuAdvice.eventUnknown', [event.increase.ship.name])
               }}</strong>
-              <span>{{ i18n.t('ccuAdvice.eventWhen', [when(event)]) }}</span>
+              <span>
+                {{
+                  i18n.t(
+                    event.increase.confirmed
+                      ? 'ccuAdvice.eventWhenConfirmed'
+                      : 'ccuAdvice.eventWhen',
+                    [when(event)],
+                  )
+                }}
+                <!-- Where it comes from, if the file says (#275). -->
+                <template v-if="event.increase.source">
+                  ·
+                  <a
+                    class="shm-kd-source"
+                    :href="event.increase.source"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >{{ i18n.t('priceIncrease.source') }}
+                    <SvgIcon name="square-up-right" />
+                  </a>
+                </template>
+              </span>
             </div>
             <PriceIncreaseBadge :match="badge(event)" place="buyback" />
           </div>
@@ -716,6 +737,16 @@ function onKeydown(event: KeyboardEvent) {
   color: var(--shm-text-strong);
   font-size: calc(15px * var(--shm-font-scale));
   font-weight: 600;
+}
+
+.shm-ccu-advice .shm-kd-source {
+  color: var(--shm-accent);
+  text-decoration: none;
+}
+
+.shm-ccu-advice .shm-kd-source:hover,
+.shm-ccu-advice .shm-kd-source:focus-visible {
+  text-decoration: underline;
 }
 
 .shm-ccu-advice .shm-kd-price-text span {

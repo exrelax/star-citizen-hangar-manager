@@ -87,13 +87,18 @@ const future = computed(() => {
   const amount = `${money(Math.abs(value.amount))}${share}`;
   return {
     text: `→ ${sign}${amount}`,
-    title: i18n.t(value.amount < 0 ? 'pledge.futureSurchargeTitle' : 'pledge.futureDiscountTitle', [
-      formatExpectedTime(value.increase.priceIncreaseAt, locale.value),
-      value.increase.ship.name,
-      money(value.original),
-      money(props.pledge.discount?.original ?? value.original),
-      amount,
-    ]),
+    title: i18n.t(
+      `pledge.${value.amount < 0 ? 'futureSurchargeTitle' : 'futureDiscountTitle'}${
+        value.increase.confirmed ? 'Confirmed' : ''
+      }` as 'pledge.futureDiscountTitle',
+      [
+        formatExpectedTime(value.increase.priceIncreaseAt, locale.value),
+        value.increase.ship.name,
+        money(value.original),
+        money(props.pledge.discount?.original ?? value.original),
+        amount,
+      ],
+    ),
   };
 });
 

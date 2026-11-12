@@ -123,6 +123,25 @@ describe('parsePriceIncreases', () => {
     }
   });
 
+  it('reads whether CIG confirmed it, and an https source (#275)', () => {
+    const at = '2026-11-13';
+    const source = 'https://robertsspaceindustries.com/comm-link/transmission/1';
+    expect(
+      parsePriceIncreases(
+        file([{ ship: galaxy, priceIncreaseAt: at, confirmed: true, source }]),
+      )?.[0],
+    ).toMatchObject({ confirmed: true, source });
+    for (const wrong of [
+      { confirmed: 'yes' },
+      { source: 'http://example.com' },
+      { source: 'nope' },
+    ]) {
+      const [entry] = parsePriceIncreases(file([{ ship: galaxy, priceIncreaseAt: at, ...wrong }]))!;
+      expect(entry).not.toHaveProperty('confirmed');
+      expect(entry).not.toHaveProperty('source');
+    }
+  });
+
   it('reads a ship once per time', () => {
     const list = parsePriceIncreases(
       file([

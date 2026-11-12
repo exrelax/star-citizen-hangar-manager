@@ -102,14 +102,23 @@ export function priceIncreaseLabel(
   const left = countdown(priceIncreaseAt, now, locale);
   const loses = ccu?.direction === 'loses';
   const amounts = ccu?.amounts;
+  // Confirmed by CIG (#275): every increase it tells about.
+  const told = ccu?.direction === 'mixed' ? [ccu.base!, ccu.target!] : [increase];
+  const confirmed = told.every((rising) => rising.confirmed);
 
   const lines: string[] = [];
   if (loses) {
-    lines.push(translate(locale, 'priceIncrease.hintCcuLoses', [ship.name, when]));
+    lines.push(
+      translate(
+        locale,
+        confirmed ? 'priceIncrease.hintCcuLosesConfirmed' : 'priceIncrease.hintCcuLoses',
+        [ship.name, when],
+      ),
+    );
   } else {
-    for (const rising of ccu?.direction === 'mixed' ? [ccu.base!, ccu.target!] : [increase]) {
+    for (const rising of told) {
       lines.push(
-        translate(locale, 'priceIncrease.hint', [
+        translate(locale, rising.confirmed ? 'priceIncrease.hintConfirmed' : 'priceIncrease.hint', [
           rising.ship.name,
           formatExpectedTime(rising.priceIncreaseAt, locale),
         ]),
@@ -124,7 +133,11 @@ export function priceIncreaseLabel(
   }
   if (price) {
     lines.push(
-      translate(locale, 'priceIncrease.hintPrice', [ship.name, usd(price.from), usd(price.to)]),
+      translate(
+        locale,
+        increase.confirmed ? 'priceIncrease.hintPriceConfirmed' : 'priceIncrease.hintPrice',
+        [ship.name, usd(price.from), usd(price.to)],
+      ),
     );
   }
   if (amounts) {
@@ -162,7 +175,7 @@ export function priceIncreaseLabel(
     );
   }
   if (note) lines.push(localized(note, locale));
-  lines.push(translate(locale, 'priceIncrease.expected'));
+  lines.push(translate(locale, confirmed ? 'priceIncrease.confirmed' : 'priceIncrease.expected'));
 
   let text: string;
   if (loses) {

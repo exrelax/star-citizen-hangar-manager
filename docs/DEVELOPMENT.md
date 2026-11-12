@@ -248,7 +248,9 @@ Each entry of `priceIncreases` is one ship (the values are an example):
   "price": { "from": 400, "to": 450 },
   "relatedItems": [{ "name": "Galaxy Refinery Module" }],
   "event": "iae-2956",
-  "note": { "en": "Expected with the IAE.", "de": "Erwartet mit der IAE." }
+  "note": { "en": "Expected with the IAE.", "de": "Erwartet mit der IAE." },
+  "confirmed": true,
+  "source": "https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/…"
 }
 ```
 
@@ -280,6 +282,13 @@ Each entry of `priceIncreases` is one ship (the values are an example):
 - **`event`** (optional): the `id` of the event in `events.json` the price increase belongs to.
 - **`note`** (optional): a short text for the user, e.g. the source of the assumption; one text
   or one per language, like an event's `description`.
+- **`confirmed`** (optional, #275): `true` once CIG has confirmed the price increase, e.g. in a
+  Comm-Link or on Spectrum. The extension then speaks of it as confirmed instead of expected
+  (labels' tooltips, the "Keep the discount" dialog, the CCUs to secure in the Pledge Store tab).
+  Leave it out while it is only expected.
+- **`source`** (optional, #275): where the price increase comes from, as an `https` URL, e.g. the
+  Comm-Link or Spectrum post. The "Keep the discount" dialog and the CCUs to secure link to it.
+  Anything else is left out.
 
 A ship can have several entries, e.g. one per step if its price rises twice.
 
