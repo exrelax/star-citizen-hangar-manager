@@ -18,6 +18,7 @@ import { cartLinesOf } from '../paint-consultant/cart';
 import PaintCartButton from './PaintCartButton.vue';
 import PaintConsultantChoose from './PaintConsultantChoose.vue';
 import PaintConsultantWays from './PaintConsultantWays.vue';
+import PaintProbablyRebought from './PaintProbablyRebought.vue';
 import {
   REBUY_PLAN_VERSION,
   rebuyPlanItem,
@@ -202,7 +203,7 @@ const openBulkMeltingSetting = () =>
     aria-labelledby="shm-consultant-title"
   >
     <div class="shm-consultant-head">
-      <div>
+      <div class="shm-consultant-head-text">
         <!-- Styled like the warbond title above (`shm-store-title`, modern.css). -->
         <h3 id="shm-consultant-title" class="shm-store-title shm-consultant-title">
           {{ i18n.t('consultant.title') }}
@@ -433,27 +434,7 @@ const openBulkMeltingSetting = () =>
       </div>
 
       <!-- A guess without a kept plan: shown to check, nothing is done with it. -->
-      <div v-if="probablyRebought.length" class="shm-consultant-note is-info" role="note">
-        <p>
-          {{
-            probablyRebought.length === 1
-              ? i18n.t('consultant.probablyReboughtOne')
-              : i18n.t('consultant.probablyRebought', [probablyRebought.length])
-          }}
-        </p>
-        <ul>
-          <li v-for="{ old, copy } in probablyRebought" :key="old.pledgeId">
-            {{
-              i18n.t('consultant.probablyReboughtItem', [
-                old.storePaint.name,
-                percent(old.discount),
-                percent(copy.discount),
-                copy.boughtOn ?? '–',
-              ])
-            }}
-          </li>
-        </ul>
-      </div>
+      <PaintProbablyRebought v-if="probablyRebought.length && !choose" :pairs="probablyRebought" />
 
       <p v-if="!plan && !result?.next && !rebought.length" class="shm-consultant-state">
         {{ i18n.t('consultant.nothing') }}
@@ -698,6 +679,12 @@ const openBulkMeltingSetting = () =>
           </button>
         </div>
       </div>
+      <!-- Choosing a way (#246): the guess at the end, below the plan. -->
+      <PaintProbablyRebought
+        v-if="probablyRebought.length && choose"
+        :pairs="probablyRebought"
+        end
+      />
     </template>
   </section>
 </template>
@@ -722,15 +709,23 @@ const openBulkMeltingSetting = () =>
 .shm-consultant.is-ways .shm-consultant-head {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 8px 16px;
 }
 
+/* The title and intro take the room left; the store credit and the option stay on the right. */
+.shm-consultant.is-ways .shm-consultant-head-text {
+  flex: 1 1 280px;
+  min-width: 0;
+}
+
 .shm-consultant-head-side {
   display: flex;
+  flex: none;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-end;
   gap: 8px 16px;
 }
 
