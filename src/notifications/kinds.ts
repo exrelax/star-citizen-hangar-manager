@@ -9,6 +9,8 @@
  *   only.
  * - `priceIncreases`: buy back pledges whose price is expected to rise within the period of the
  *   settings (#193), in the sidebar, and in the browser once less than two days are left.
+ * - `priceAdvisor`: the Price Increase Advisor's notifications (#254), CCUs of the hangar losing
+ *   value by a price increase within that period, in the sidebar only.
  * Only the kinds turned off are stored, so a kind added later starts on.
  */
 
@@ -18,6 +20,7 @@ export const NOTIFICATION_KINDS = [
   'storeItems',
   'events',
   'priceIncreases',
+  'priceAdvisor',
 ] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 

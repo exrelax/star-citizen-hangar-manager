@@ -44,6 +44,7 @@ describe('withDefaults', () => {
       spotCheckPages: 2,
       buybackLinkMode: 'single',
       priceIncreaseDays: 14,
+      priceAdvisorSecureHint: true,
       demo: DEFAULT_SETTINGS.demo,
       theme: 'modern',
       fontSize: 'medium',

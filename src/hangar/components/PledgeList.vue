@@ -16,6 +16,7 @@ import { visiblePledgeIds } from '../selection';
 import { canSelectPledges } from '../sidebar';
 import { meltReadyIds } from '../use-melt-marks';
 import { clearHangarFilter, hangarViewFilter, type HangarViewFilter } from '../view-filter';
+import { hangarFilterRequest } from '../hangar-filter-request';
 import { paintRebuys } from '@/store/paint-consultant/use-paint-consultant';
 import { hasPriceChangeWithin } from '@/price-increases/price-change-filter';
 import { useNow } from '@/shared/use-now';
@@ -120,6 +121,7 @@ const filterHint = (filter: PledgeFilter) => {
     :sort="settings.sort.hangar"
     :highlights="highlights"
     :filter-request="viewFilterRequest"
+    :include-request="hangarFilterRequest"
     @clear-request="clearHangarFilter()"
     @update:sort="setSort"
     @visible="showVisible"

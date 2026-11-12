@@ -42,6 +42,14 @@ import {
   priceIncreasesItem,
   storedPriceIncreases,
 } from '@/price-increases/price-increases-storage';
+import {
+  advisorNoteKey,
+  demoDismissedAdvisorNotesItem,
+  dismissedAdvisorNotesItem,
+  hasDismissedAhead,
+  restoreAdvisorNotes,
+} from '@/price-increases/advisor-notes';
+import { upcomingPriceIncreases } from '@/price-increases/price-increases';
 
 /*
  * Notifications: browser notifications, an optional extra for when no RSI page is open (#152,
@@ -126,6 +134,22 @@ const priceToRestore = computed(() => {
   const dismissed = [...(realPriceDismissed.value ?? []), ...(demoPriceDismissed.value ?? [])];
   return ids.length > 0 && dismissed.length > 0 && !isPriceIncreaseNoteShown(ids, dismissed);
 });
+/** The Price Increase Advisor's notifications (#254), dismissed for a price increase still ahead. */
+const realAdvisorDismissed = useStored(dismissedAdvisorNotesItem);
+const demoAdvisorDismissed = useStored(demoDismissedAdvisorNotesItem);
+const advisorToRestore = computed(() => {
+  if (!kindOn('priceAdvisor')) return false;
+  const ahead = new Set(
+    upcomingPriceIncreases(
+      storedPriceIncreases(priceIncreasesStored.value ?? null),
+      Date.now(),
+    ).map(advisorNoteKey),
+  );
+  return hasDismissedAhead(
+    [...(realAdvisorDismissed.value ?? []), ...(demoAdvisorDismissed.value ?? [])],
+    ahead,
+  );
+});
 /** The hint on browser notifications, dismissed while they are off. */
 const hintToRestore = computed(() => allowed.value === false && hintDismissed.value === true);
 
@@ -137,6 +161,7 @@ const restoreCount = computed(() =>
     : notesToRestore.value.length +
       Number(paintToRestore.value) +
       Number(priceToRestore.value) +
+      Number(advisorToRestore.value) +
       Number(hintToRestore.value),
 );
 /** How many came back with the last click, shown below the button. */
@@ -149,6 +174,7 @@ async function restore() {
     updateNotifications((list) => withRestored(list, ids)),
     paintToRestore.value ? restorePaintNotifications() : undefined,
     priceToRestore.value ? restorePriceIncreaseNotes() : undefined,
+    advisorToRestore.value ? restoreAdvisorNotes() : undefined,
     hintToRestore.value ? browserNotificationsHintDismissedItem.setValue(false) : undefined,
   ]);
   restored.value = count;
@@ -221,6 +247,27 @@ async function restore() {
       @change="(on) => setKind('priceIncreases', on)"
     >
       {{ i18n.t('settings.notificationKindPriceIncreases') }}
+    </SettingCheck>
+  </SettingsGroup>
+
+  <!-- My Hangar: its CCUs losing value by an expected price increase (#254), in the sidebar;
+       without such CCUs optionally a hint to secure a CCU to the ship. -->
+  <SettingsGroup :title="i18n.t('settings.hangarNotifications')">
+    <SettingCheck
+      :checked="kindOn('priceAdvisor')"
+      :hint="i18n.t('settings.notificationKindPriceAdvisorHint')"
+      @change="(on) => setKind('priceAdvisor', on)"
+    >
+      {{ i18n.t('settings.notificationKindPriceAdvisor') }}
+    </SettingCheck>
+    <SettingCheck
+      indented
+      :checked="settings.priceAdvisorSecureHint"
+      :disabled="!kindOn('priceAdvisor')"
+      :hint="i18n.t('settings.priceAdvisorSecureHintHint')"
+      @change="(on) => emit('update', { priceAdvisorSecureHint: on })"
+    >
+      {{ i18n.t('settings.priceAdvisorSecureHint') }}
     </SettingCheck>
   </SettingsGroup>
 

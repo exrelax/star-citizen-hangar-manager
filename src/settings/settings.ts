@@ -109,6 +109,11 @@ export interface Settings {
   buybackLinkMode: BuybackLinkMode;
   /** Days ahead the filter "Price Increase Expected" and its notification look (#192). */
   priceIncreaseDays: number;
+  /**
+   * The Price Increase Advisor's hint in the sidebar that a CCU to a rising ship can still be
+   * bought at the old price, while the hangar has no CCU losing value by it (#254).
+   */
+  priceAdvisorSecureHint: boolean;
   theme: Theme;
   /** Text size of the manager and its dialogs, the same for both themes. */
   fontSize: FontSize;
@@ -171,6 +176,7 @@ export const DEFAULT_SETTINGS: Settings = {
   spotCheckPages: SMART_UPDATE.spotCheckPages.default,
   buybackLinkMode: 'single',
   priceIncreaseDays: PRICE_INCREASES.periodDays.default,
+  priceAdvisorSecureHint: true,
   theme: 'modern',
   fontSize: 'medium',
   compactView: false,
@@ -258,6 +264,7 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
     spotCheckPages: pick('spotCheckPages', isSpotCheckPages),
     buybackLinkMode: pick('buybackLinkMode', oneOf(BUYBACK_LINK_MODES)),
     priceIncreaseDays: pick('priceIncreaseDays', isPriceIncreaseDays),
+    priceAdvisorSecureHint: pick('priceAdvisorSecureHint', isBoolean),
     theme: pick('theme', oneOf(THEMES)),
     fontSize: pick('fontSize', oneOf(FONT_SIZES)),
     compactView: pick('compactView', isBoolean),

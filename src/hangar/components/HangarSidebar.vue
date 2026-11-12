@@ -59,6 +59,19 @@ import {
   isPriceIncreaseNoteShown,
   pledgesWithinDays,
 } from '@/price-increases/price-increase-notes';
+import {
+  advisorNoteKey,
+  advisorNotes,
+  demoDismissedAdvisorNotesItem,
+  dismissedAdvisorNotesItem,
+  withDismissed,
+  type AdvisorNote,
+} from '@/price-increases/advisor-notes';
+import { useCcusToSecure } from '@/price-increases/use-ccus-to-secure';
+import { upcomingPriceIncreases } from '@/price-increases/price-increases';
+import { formatExpectedTime } from '@/price-increases/price-increase-label';
+import { openCcuAdvice } from '@/price-increases/ccu-advice-request';
+import { includeHangarFilter } from '../hangar-filter-request';
 
 /*
  * The sidebar below RSI's page navigation on the left on every tab (App.vue teleports it there),
@@ -142,6 +155,7 @@ const noteCount = computed(
     (readyCount.value ? 1 : 0) +
     (paintNoteCount.value ? 1 : 0) +
     (priceNoteCount.value ? 1 : 0) +
+    advisorShown.value.length +
     (showBrowserHint.value ? 1 : 0),
 );
 const noteTime = computed(
@@ -277,6 +291,67 @@ function dismissPriceNote() {
   );
 }
 const showPriceIncreases = () => showBuybackFilter('priceIncrease');
+
+/*
+ * The Price Increase Advisor (#254): per price increase within that period, the CCUs of the hangar
+ * losing value by it, or – without such CCUs – that a CCU to the ship can still be bought at the
+ * old price. Each is dismissed for its price increase (see `advisor-notes.ts`).
+ */
+const secure = useCcusToSecure(
+  () => props.pledges,
+  () => props.buyback,
+  now,
+);
+const realAdvisorDismissed = useStored(dismissedAdvisorNotesItem);
+const demoAdvisorDismissed = useStored(demoDismissedAdvisorNotesItem);
+const advisorShown = computed((): AdvisorNote[] => {
+  const dismissed = demo.value ? demoAdvisorDismissed.value : realAdvisorDismissed.value;
+  // Not before the dismissed ones are read: they would show for a moment.
+  if (!dismissed || !isKindOn(props.settings.notificationsOff, 'priceAdvisor')) return [];
+  return advisorNotes({
+    ccus: props.pledges.filter((pledge) => pledge.isCcu),
+    secure: secure.value,
+    now: now.value,
+    days: props.settings.priceIncreaseDays,
+    secureHint: props.settings.priceAdvisorSecureHint,
+    dismissed,
+  });
+});
+function dismissAdvisorNote(note: AdvisorNote) {
+  const item = demo.value ? demoDismissedAdvisorNotesItem : dismissedAdvisorNotesItem;
+  const dismissed = (demo.value ? demoAdvisorDismissed.value : realAdvisorDismissed.value) ?? [];
+  // The keys of the increases still ahead, of the hangar's CCUs and of the CCUs to secure.
+  const ahead = new Set(
+    upcomingPriceIncreases(
+      [
+        ...props.pledges.flatMap((pledge) => pledge.ccuPriceChange?.base ?? []),
+        ...secure.value.map((offer) => offer.increase),
+      ],
+      now.value,
+    ).map(advisorNoteKey),
+  );
+  void item.setValue(withDismissed(dismissed, note.key, ahead));
+}
+const advisorWhen = (note: AdvisorNote) =>
+  formatExpectedTime(note.increase.priceIncreaseAt, locale.value);
+function advisorText(note: AdvisorNote) {
+  const ship = note.increase.ship.name;
+  if (note.kind === 'secure')
+    return i18n.t('notifications.advisorSecure', [ship, advisorWhen(note)]);
+  const count = note.ccuIds.length;
+  const args = [number.value.format(count), ship, advisorWhen(note)];
+  if (note.loss === undefined) {
+    return count === 1
+      ? i18n.t('notifications.advisorLosingOne', args)
+      : i18n.t('notifications.advisorLosing', args);
+  }
+  const loss = money.value.format(note.loss);
+  return count === 1
+    ? i18n.t('notifications.advisorLossOne', [...args, loss])
+    : i18n.t('notifications.advisorLoss', [...args, loss]);
+}
+const showAdvisorCcus = () => includeHangarFilter('priceChange');
+const openSecureSection = () => openTabAt('store', 'shm-store-secure-title', { highlight: true });
 
 function dismissPaintNote() {
   void dismissedItem().setValue(dismissedOf(rebuyIds.value));
@@ -631,6 +706,56 @@ async function move(box: Box, step: -1 | 1) {
               >
                 <SvgIcon name="filter" />
                 {{ i18n.t('notifications.showReady') }}
+              </button>
+            </div>
+          </div>
+          <div
+            v-for="note in advisorShown"
+            :key="note.key"
+            class="shm-sidebar-melt-ready is-dismissable"
+            role="status"
+          >
+            <SvgIcon :name="note.kind === 'losing' ? 'triangle-exclamation' : 'circle-info'" />
+            <p>{{ advisorText(note) }}</p>
+            <button
+              v-tooltip="i18n.t('notifications.dismissAdvisorHint')"
+              type="button"
+              class="shm-sidebar-icon-button shm-sidebar-note-dismiss"
+              :aria-label="i18n.t('notifications.dismiss')"
+              @click="dismissAdvisorNote(note)"
+            >
+              <SvgIcon name="xmark" />
+            </button>
+            <div v-mark-wrapped class="shm-sidebar-actions">
+              <template v-if="note.kind === 'losing'">
+                <button
+                  v-tooltip="i18n.t('notifications.showAdvisorHint')"
+                  type="button"
+                  class="shm-button shm-sidebar-button"
+                  @click="showAdvisorCcus"
+                >
+                  <SvgIcon name="filter" />
+                  {{ i18n.t('notifications.showReady') }}
+                </button>
+                <button
+                  v-tooltip="i18n.t('notifications.openAdvisorHint')"
+                  type="button"
+                  class="shm-button shm-sidebar-button"
+                  @click="openCcuAdvice(note.ccuIds[0])"
+                >
+                  <SvgIcon name="scale-balanced" />
+                  {{ i18n.t('ccuAdvice.button') }}
+                </button>
+              </template>
+              <button
+                v-else
+                v-tooltip="i18n.t('notifications.showSecureHint')"
+                type="button"
+                class="shm-button shm-sidebar-button"
+                @click="openSecureSection"
+              >
+                <SvgIcon name="basket-shopping" />
+                {{ i18n.t('notifications.showInStore') }}
               </button>
             </div>
           </div>
