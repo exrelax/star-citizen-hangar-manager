@@ -48,6 +48,9 @@ const words = (name: string) =>
 /** Items listed next to ships that are no ship themselves (CCU extras, modules). */
 const NOT_A_SHIP = /\b(paint|livery|poster|coin|reservation|insurance|module|kit)\b/i;
 
+/** The marks of ship names ("Mk IV"), by their roman numeral. */
+const ROMAN: Record<string, number> = { i: 1, ii: 2, iii: 3, iv: 4, v: 5, vi: 6, vii: 7, viii: 8 };
+
 /** Hangar names of ships that the upgrade tool lists under a different name. */
 const ALIASES: Record<string, string> = {
   '600i exploration module': '600i Explorer',
@@ -57,7 +60,9 @@ const ALIASES: Record<string, string> = {
 /**
  * Finds the price of a ship by its hangar name. Names mostly match; otherwise:
  * - Names without a mark mean the Mk I: RSI renamed ships to "… Mk I" when a Mk II came out
- *   ("F7C-S Hornet Ghost" is the "F7C-S Hornet Ghost Mk I").
+ *   ("F7C-S Hornet Ghost" is the "F7C-S Hornet Ghost Mk I"). Some got their mark inside the name,
+ *   and not always Mk I ("Constellation Andromeda" is the "Constellation Mk IV Andromeda", since
+ *   the Mk V came out): the ship that is the name with a mark added, the lowest mark if several.
  * - One name is usually a shorter form of the other: "Mercury" for "Mercury Star Runner", "C2
  *   Hercules" for "Hercules Starlifter C2", or the other way round "F7C-M Hornet Heartseeker Mk I"
  *   for "F7C-M Super Hornet Heartseeker Mk I". Of the ships whose words all appear in the name (or
@@ -68,6 +73,16 @@ const ALIASES: Record<string, string> = {
 export function createPriceLookup(ships: readonly ShipPrice[]) {
   const entries = ships.map((ship) => ({ ship, words: words(ship.name) }));
   const exact = new Map(entries.map((entry) => [entry.words.join(' '), entry.ship]));
+  // The ships with a mark, by their name without it: "constellation andromeda" → Mk IV.
+  const unmarked = new Map<string, { ship: ShipPrice; mark: number }>();
+  for (const entry of entries) {
+    const at = entry.words.indexOf('mk');
+    const mark = at >= 0 ? ROMAN[entry.words[at + 1] ?? ''] : undefined;
+    if (mark === undefined) continue;
+    const key = entry.words.filter((_, index) => index !== at && index !== at + 1).join(' ');
+    const known = unmarked.get(key);
+    if (!known || mark < known.mark) unmarked.set(key, { ship: entry.ship, mark });
+  }
 
   return (name: string): ShipPrice | undefined => {
     const alias = ALIASES[words(name).join(' ')];
@@ -76,7 +91,10 @@ export function createPriceLookup(ships: readonly ShipPrice[]) {
     const nameWords = words(name);
     const match =
       exact.get(nameWords.join(' ')) ??
-      (nameWords.includes('mk') ? undefined : exact.get([...nameWords, 'mk', 'i'].join(' ')));
+      (nameWords.includes('mk')
+        ? undefined
+        : (exact.get([...nameWords, 'mk', 'i'].join(' ')) ??
+          unmarked.get(nameWords.join(' '))?.ship));
     if (match) return match;
 
     const present = new Set(nameWords);

@@ -15,6 +15,8 @@ const priceOf = createPriceLookup([
   { name: 'Guardian', price: 250 },
   { name: 'Guardian QI', price: 260 },
   { name: 'Constellation Mk V Centaurus', price: 300 },
+  { name: 'Constellation Mk IV Andromeda', price: 240 },
+  { name: 'Constellation Mk IV Taurus', price: 210 },
   { name: 'Mercury', price: 260 },
   { name: 'C2 Hercules', price: 400 },
   { name: 'M2 Hercules', price: 520 },
@@ -56,6 +58,13 @@ describe('createPriceLookup', () => {
 
   it('takes the Mk I for names without a mark', () => {
     expect(priceOf('F7C-S Hornet Ghost')?.price).toBe(140);
+  });
+
+  it('finds ships whose mark was added inside the name, also another than Mk I', () => {
+    // RSI's logs still name them as before the Mk V came out.
+    expect(priceOf('Constellation Andromeda')?.name).toBe('Constellation Mk IV Andromeda');
+    expect(priceOf('Constellation Taurus')?.price).toBe(210);
+    expect(priceOf('Constellation Centaurus')?.price).toBe(300);
   });
 
   it('prefers the base name over longer variants that fit as well', () => {
