@@ -195,3 +195,23 @@ export function demoNotOnSaleShip(
     .sort((a, b) => a.msrp - b.msrp || a.name.localeCompare(b.name));
   return candidates[Math.floor(candidates.length / 2)];
 }
+
+/**
+ * The ships of the website's price increases (#310) RSI doesn't sell CCUs to right now, still
+ * ahead: with the real Pledge Store data, the demo buy back has CCUs to them, so they show among
+ * the CCUs to secure (#311). Only while it is known which ships RSI sells CCUs to.
+ */
+export function realNotOnSaleShips(
+  catalog: DemoCatalog,
+  increases: readonly ExpectedPriceIncrease[],
+  now: number,
+  buyable?: ReadonlySet<number>,
+): Ship[] {
+  if (!buyable?.size) return [];
+  const targets = new Map(ccuTargetsOf(catalog.ships).map((ship) => [ship.id, ship]));
+  const ships = increases
+    .filter((increase) => increase.priceIncreaseAt.at > now && !buyable.has(increase.ship.id))
+    .map((increase) => targets.get(increase.ship.id))
+    .filter((ship) => ship !== undefined);
+  return [...new Set(ships)];
+}

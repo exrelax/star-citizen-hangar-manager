@@ -228,7 +228,8 @@ Sharing your hangar in a screenshot, a stream or a video? The settings categorie
   own, next to its CCUs in the same price range (#130), so every case shows on any account; with
   the demo setting **Show real Pledge Store data** (#310) it shows the real warbond CCUs, their
   history, the events and the CCUs to secure before a price increase instead – public data –,
-  still counted against the demo hangar and buy back. The hangar's pledges have every
+  still counted against the demo hangar and buy back, whose CCUs then also lead to the real ships
+  RSI sells no CCUs to before their price increase. The hangar's pledges have every
   state (#176): meltable or not, giftable or not, LTI and insurances in years and months (also
   several at once), upgraded ships with made-up "Applied upgrades", protected game access – one
   pledge per game like RSI's, by the demo settings `SC` on a reward without a ship and `SQ42` on a

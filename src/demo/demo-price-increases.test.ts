@@ -4,7 +4,10 @@ import { pledgesWithinDays } from '@/price-increases/price-increase-notes';
 import { isWithinDays } from '@/price-increases/price-increases';
 import { FALLBACK_CATALOG } from './catalog';
 import { generatedDemo } from './demo';
-import { demoNotOnSaleShip } from './demo-price-increases';
+import { demoNotOnSaleShip, realNotOnSaleShips } from './demo-price-increases';
+import { ccuTargetsOf } from './generate-hangar';
+import type { Ship } from '@/ships/ships';
+import type { ExpectedPriceIncrease } from '@/price-increases/price-increases';
 import { DEFAULT_DEMO_SETTINGS } from './demo-settings';
 import type { PledgeView } from '@/hangar/pledge-view';
 import { advisorNotes } from '@/price-increases/advisor-notes';
@@ -164,5 +167,59 @@ describe.each(['key-a', 'key-b'])('the CCUs to secure from the demo buy back %s 
 
   it('keeps the CCUs to secure of a ship on sale', () => {
     expect(secure.some((entry) => entry.skuId && entry.bases.length)).toBe(true);
+  });
+});
+
+describe('the demo buy back with the real Pledge Store data (#310)', () => {
+  const onSale = new Set(
+    FALLBACK_CATALOG.ships.filter((_, index) => index % 2 === 0).map((ship) => ship.id),
+  );
+  const demoShip = demoNotOnSaleShip(FALLBACK_CATALOG, onSale);
+  // A ship of the website's price increases RSI doesn't sell CCUs to (like the Galaxy before it
+  // is flight ready), another one already past.
+  const [ahead, past] = ccuTargetsOf(FALLBACK_CATALOG.ships)
+    .filter((ship) => !onSale.has(ship.id) && ship.id !== demoShip?.id)
+    .sort((a, b) => b.msrp - a.msrp);
+  const increaseOf = (ship: Ship, at: number): ExpectedPriceIncrease => ({
+    ship: { id: ship.id, name: ship.name },
+    priceIncreaseAt: { at },
+  });
+  const real = [increaseOf(ahead!, NOW + 30 * HOUR), increaseOf(past!, NOW - HOUR)];
+  const { buyback } = generatedDemo(
+    FALLBACK_CATALOG,
+    'key-a',
+    TODAY,
+    NOW,
+    DEFAULT_DEMO_SETTINGS,
+    onSale,
+    real,
+  );
+  const secure = ccusToSecure({
+    increases: real,
+    ships: FALLBACK_CATALOG.ships,
+    buyable: [...onSale].map((id) => ({
+      shipId: id,
+      skuId: id,
+      title: 'Standard Edition',
+      price: 1,
+    })),
+    warbonds: [],
+    buyback,
+    now: NOW,
+  });
+
+  it('has CCUs to the website’s ships not on sale, so they show among the CCUs to secure', () => {
+    expect(realNotOnSaleShips(FALLBACK_CATALOG, real, NOW, onSale)).toEqual([ahead]);
+    expect(secure.map((offer) => offer.ship.id)).toEqual([ahead!.id]);
+    expect(secure[0]?.buyback?.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('keeps the demo’s own ship not on sale', () => {
+    const titles = buyback.map((pledge) => pledge.title);
+    expect(titles.some((title) => title.includes(`to ${demoShip!.name} `))).toBe(true);
+  });
+
+  it('adds nothing while it isn’t known which ships RSI sells CCUs to', () => {
+    expect(realNotOnSaleShips(FALLBACK_CATALOG, real, NOW, undefined)).toEqual([]);
   });
 });

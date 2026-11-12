@@ -10,6 +10,10 @@ import { demoEventNotes, demoEvents } from './demo-events';
 import { resetDemoNotes, seedDemoNotes } from './demo-notes';
 import type { StoreCredit } from '@/account/store-credit';
 import { buyableShipsItem, current, shipsItem } from '@/ships/ships-storage';
+import {
+  priceIncreasesItem,
+  storedPriceIncreases,
+} from '@/price-increases/price-increases-storage';
 import type { ExpectedPriceIncrease } from '@/price-increases/price-increases';
 import { demoDismissedAdvisorNotesItem } from '@/price-increases/advisor-notes';
 import { STORE_ITEMS_VERSION, storeItemsItem } from '@/store/items/store-items-storage';
@@ -210,10 +214,24 @@ export function useDemo(
     return skus && new Set(skus.map((sku) => sku.shipId));
   });
 
+  // With the real Pledge Store data, the buy back has CCUs to its ships not on sale (#310).
+  const storedIncreases = useStored(priceIncreasesItem);
+  const realIncreases = computed(() =>
+    settings().realStoreData ? storedPriceIncreases(storedIncreases.value ?? null) : [],
+  );
+
   const ready = computed(() => !active.value || key.value !== undefined);
   const generatedAccount = computed(() =>
     active.value && key.value && generated.value
-      ? generatedDemo(catalog.value, key.value, localToday(), Date.now(), settings(), buyable.value)
+      ? generatedDemo(
+          catalog.value,
+          key.value,
+          localToday(),
+          Date.now(),
+          settings(),
+          buyable.value,
+          realIncreases.value,
+        )
       : undefined,
   );
   watch([generatedAccount, demoResets], ([account]) => {
