@@ -6,6 +6,7 @@ import {
   type WarbondSighting,
 } from '@/store/warbond-history';
 import type { DemoCatalog } from './catalog';
+import { demoEvents } from './demo-events';
 import { CCU_TARGET_MAX, warbondDiscount, type DemoPledge } from './generate-hangar';
 import { createRandom } from './random';
 
@@ -42,9 +43,10 @@ const DEMO_EVENTS = {
 } satisfies Record<string, SightingEvent>;
 
 /**
- * The demo's history of warbond offers (#4), made up for its offers: the first seen for days during
- * an event, with earlier offers at two events and one without; the second with one earlier offer
- * at another price and no event; the third seen for the first time today, never before.
+ * The demo's history of warbond offers (#4), made up for its offers: the first seen since the
+ * demo's running event began, with earlier offers at two events and one without; the second seen
+ * for two days without an event, with one earlier offer at another price; the third seen for the
+ * first time during the event, never before.
  */
 export function demoWarbondHistory(
   warbonds: readonly WarbondTarget[],
@@ -69,6 +71,10 @@ export function demoWarbondHistory(
   /** An earlier, higher warbond price: still below the standard price. */
   const higher = (target: WarbondTarget, by: number) =>
     Math.min(target.price + by, target.ship.msrp - 5);
+  // The demo's running event, as the Pledge Store tab shows it.
+  const expo = demoEvents(now).find((event) => event.eventStart <= now && now < event.eventEnd);
+  const running = expo && [{ id: expo.id, name: expo.name }];
+  const sinceExpo = expo ? (now - expo.eventStart) / DAY : 0.04;
   const [first, second, third] = warbonds;
   const sightings: WarbondSighting[] = [];
   if (first) {
@@ -76,16 +82,16 @@ export function demoWarbondHistory(
       sighting(first, first.price, 372, 360, [DEMO_EVENTS.iae]),
       sighting(first, higher(first, 10), 190, 181, [DEMO_EVENTS.invictus]),
       sighting(first, higher(first, 5), 64, 62),
-      sighting(first, first.price, 3, 0, [DEMO_EVENTS.iae]),
+      sighting(first, first.price, sinceExpo, 0, running),
     );
   }
   if (second) {
     sightings.push(
       sighting(second, second.price - 5, 120, 113),
-      sighting(second, second.price, 2, 0, [DEMO_EVENTS.iae]),
+      sighting(second, second.price, 2, 0),
     );
   }
-  if (third) sightings.push(sighting(third, third.price, 0.1, 0));
+  if (third) sightings.push(sighting(third, third.price, sinceExpo / 2, 0, running));
   sightings.sort((a, b) => a.firstSeen - b.firstSeen);
   return { version: WARBOND_HISTORY_VERSION, lastReadAt: now, sightings };
 }
