@@ -323,7 +323,7 @@ const toggle = () => {
           v-if="pledge.ccuPriceChange?.direction === 'loses'"
           v-tooltip="i18n.t('ccuAdvice.buttonHint')"
           type="button"
-          class="shm-button shm-origin-button shm-ccu-advice-button"
+          class="shm-button is-warning shm-origin-button shm-ccu-advice-button"
           @click="openCcuAdvice(pledge.id)"
         >
           <SvgIcon name="scale-balanced" />

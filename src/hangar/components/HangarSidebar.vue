@@ -758,7 +758,7 @@ async function move(box: Box, step: -1 | 1) {
                 <button
                   v-tooltip="i18n.t('notifications.openAdvisorHint')"
                   type="button"
-                  class="shm-button shm-sidebar-button"
+                  class="shm-button is-warning shm-sidebar-button"
                   @click="openCcuAdvice(note.ccuIds[0])"
                 >
                   <SvgIcon name="scale-balanced" />
