@@ -47,10 +47,15 @@ const { data, fetchedAt, loaded } = useStoreData();
 
 /** The events of the project website (#69): shown above the warbond CCUs while they last. */
 const storedEvents = useStored(eventsItem);
-// The demo shows events of its own (#210), never the website's.
+// The demo shows events of its own (#210) – the website's only with the real Pledge Store data.
 const demoContext = useDemoContext();
+/**
+ * The demo with the real Pledge Store data (#310): the real offers, history, events and price
+ * increases – public data –, counted against the demo hangar and buy back.
+ */
+const realInDemo = computed(() => !!demoContext.value && props.settings.demo.realStoreData);
 const events = computed(() =>
-  demoContext.value
+  demoContext.value && !realInDemo.value
     ? demoContext.value.events
     : storedEvents.value?.version === EVENTS_VERSION
       ? storedEvents.value.events
@@ -77,7 +82,9 @@ watch(
 onUnmounted(stopTimer);
 
 // The demo has warbond offers of its own (#130), shown on any account.
-const storeData = computed(() => demoContext.value?.storeData ?? data.value);
+const storeData = computed(() =>
+  realInDemo.value ? data.value : (demoContext.value?.storeData ?? data.value),
+);
 const offers = computed(() =>
   storeData.value ? buildWarbondOffers(storeData.value, props.pledges, props.buyback) : [],
 );
@@ -87,6 +94,7 @@ const secure = useCcusToSecure(
   () => props.pledges,
   () => props.buyback,
   now,
+  () => realInDemo.value,
 );
 /** Whether their price increases are expected or confirmed by CIG (#275). */
 const secureNote = computed(() => confirmationNote(secure.value.map((offer) => offer.increase)));

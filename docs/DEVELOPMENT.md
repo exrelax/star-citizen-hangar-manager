@@ -390,7 +390,9 @@ an account without stored data):
 - The Pledge Store tab: warbond CCUs with own CCUs in the same price range, the events (#210), and
   the Paint Discount Consultant (#131): the store credit's quick choices for `same`, `lowerTier`
   (if the hangar allows it) and `impossible`, a paint bought again with its melt step, paints left
-  to buy, filler paints waiting and ready.
+  to buy, filler paints waiting and ready. With the demo setting "Show real Pledge Store data"
+  (#310), the real warbond CCUs, history, events and price increases instead, with the counts of
+  the demo hangar and buy back.
 - Sample notifications: events, new and gone warbond CCUs, changed store items – never a browser
   notification.
 - The settings without real account data (#132).

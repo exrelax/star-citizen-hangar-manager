@@ -358,6 +358,8 @@
       },
       "newPlan": "Un plan nuevo del asesor de descuentos de pinturas",
       "completedPlans": "Planes terminados del asesor de descuentos de pinturas",
+      "realStoreData": "Mostrar los datos reales del Pledge Store",
+      "realStoreDataHint": "Muestra en la pestaña Pledge Store los CCU warbond reales, su historial, los eventos y las naves cuyo precio se espera que suba, en lugar de los de la demo. Lo que vende RSI es público; lo que posees sigue saliendo del hangar y del buy back de la demo.",
       "runningPlanStage": "Fase del plan en curso",
       "runningPlanStages": {
         "cart": "Fundir primero: faltan pinturas en el carrito",

@@ -241,6 +241,18 @@ async function reset() {
     </SettingRow>
   </SettingsGroup>
 
+  <!-- The Pledge Store tab with the real, public offers (#310). -->
+  <SettingsGroup :disabled="off">
+    <SettingCheck
+      :checked="settings.demo.realStoreData"
+      :disabled="off"
+      :hint="i18n.t('settings.demo.realStoreDataHint')"
+      @change="(on) => set({ realStoreData: on })"
+    >
+      {{ i18n.t('settings.demo.realStoreData') }}
+    </SettingCheck>
+  </SettingsGroup>
+
   <SettingsGroup :disabled="off">
     <SettingRow :label="i18n.t('settings.demo.runningPlanStage')" for="shm-demo-plan-stage">
       <select

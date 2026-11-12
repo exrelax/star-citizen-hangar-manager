@@ -358,6 +358,8 @@
       },
       "newPlan": "A new plan of the Paint Discount Consultant",
       "completedPlans": "Completed plans of the Paint Discount Consultant",
+      "realStoreData": "Show real Pledge Store data",
+      "realStoreDataHint": "Shows the real warbond CCUs, their history, the events and the ships expected to rise in price in the Pledge Store tab instead of the demo’s. What RSI sells is public; what you own still comes from the demo hangar and buy back.",
       "runningPlanStage": "Stage of the running plan",
       "runningPlanStages": {
         "cart": "Melt first: paints missing in the cart",

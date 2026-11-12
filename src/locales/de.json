@@ -358,6 +358,8 @@
       },
       "newPlan": "Ein neuer Plan des Paint-Rabatt-Beraters",
       "completedPlans": "Abgeschlossene Pläne des Paint-Rabatt-Beraters",
+      "realStoreData": "Echte Pledge Store Daten zeigen",
+      "realStoreDataHint": "Zeigt im Pledge Store Tab die echten Warbond CCUs, ihre Historie, die Events und die Schiffe mit erwarteter Preiserhöhung statt der Demo-Daten. Was RSI verkauft, ist öffentlich; was du besitzt, kommt weiterhin aus dem Demo-Hangar und dem Buy Back.",
       "runningPlanStage": "Stand des laufenden Plans",
       "runningPlanStages": {
         "cart": "Erst einschmelzen: Paints fehlen im Warenkorb",

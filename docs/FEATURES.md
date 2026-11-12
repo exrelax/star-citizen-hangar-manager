@@ -225,7 +225,10 @@ Sharing your hangar in a screenshot, a stream or a video? The settings categorie
   Development section): the same demo without its badge and with every button looking enabled
   (clicks still do nothing); it ends on its own after 10 minutes, also across reloads, and the
   normal demo mode with its badge is back. The Pledge Store tab shows warbond CCUs of the demo's
-  own, next to its CCUs in the same price range (#130), so every case shows on any account. The hangar's pledges have every
+  own, next to its CCUs in the same price range (#130), so every case shows on any account; with
+  the demo setting **Show real Pledge Store data** (#310) it shows the real warbond CCUs, their
+  history, the events and the CCUs to secure before a price increase instead – public data –,
+  still counted against the demo hangar and buy back. The hangar's pledges have every
   state (#176): meltable or not, giftable or not, LTI and insurances in years and months (also
   several at once), upgraded ships with made-up "Applied upgrades", protected game access – one
   pledge per game like RSI's, by the demo settings `SC` on a reward without a ship and `SQ42` on a

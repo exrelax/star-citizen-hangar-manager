@@ -358,6 +358,8 @@
       },
       "newPlan": "Un nouveau plan du conseiller de remises sur les peintures",
       "completedPlans": "Plans terminés du conseiller de remises sur les peintures",
+      "realStoreData": "Afficher les vraies données du Pledge Store",
+      "realStoreDataHint": "Affiche dans l’onglet Pledge Store les vrais CCU warbond, leur historique, les événements et les vaisseaux dont le prix devrait augmenter, au lieu de ceux de la démo. Ce que RSI vend est public ; ce que vous possédez vient toujours du hangar et du buy back de la démo.",
       "runningPlanStage": "Étape du plan en cours",
       "runningPlanStages": {
         "cart": "Fondre d'abord : peintures manquantes dans le panier",
