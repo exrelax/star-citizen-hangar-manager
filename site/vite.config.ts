@@ -23,8 +23,8 @@ import { fetchRoadmap, renderRoadmap, renderVersion } from './roadmap/roadmap.ts
  * `privacy/privacy.ts`), so the policy has a single source.
  *
  * `public/` is copied as is: the data the extension loads from the site (`data/events.json`, the
- * event notices of the Pledge Store, #69; `data/always-available-ships.json`, #107, written by
- * `pnpm site:ships` before the build), at URLs that never change.
+ * event notices of the Pledge Store, #69; `data/ships.json`, #107, written by `pnpm site:ships`
+ * before the build), at URLs that never change.
  */
 const root = fileURLToPath(new URL('.', import.meta.url));
 const repository = fileURLToPath(new URL('..', import.meta.url));

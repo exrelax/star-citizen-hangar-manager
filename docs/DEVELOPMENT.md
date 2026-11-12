@@ -204,17 +204,28 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   the dev build from the working copy, checked by
   [`src/price-increases/price-increases.ts`](../src/price-increases/price-increases.ts). See
   [below](#editing-the-expected-price-increases) for how to edit it.
-- **Always available ships** (#107): `data/always-available-ships.json` lists the ships that are
-  always available in the Pledge Store, for the CCU Consultant (#106) and the Price Increase
-  Advisor (#263). [`site/ships/always-available-ships.ts`](../site/ships/always-available-ships.ts)
-  writes it (`pnpm site:ships`, run by the website workflow before every build, so at least daily):
-  from the Star Citizen Wiki's structured data – the Bucket table `vehicle` behind its
-  [List of pledge vehicles](https://starcitizen.tools/List_of_pledge_vehicles), pledge availability
-  "Always available", read with `api.php?action=bucket` – matched by name to the ids of RSI's Ship
-  Matrix (the upgrade tool's ids); names it can't match are listed in the log. If a source fails or
-  the list looks broken (fewer than 20 ships or far fewer than before), the step fails and the
-  last deployment stays. The wiki's content is CC BY-SA 4.0: the file names source and license,
-  and the site's footer gives the attribution. The committed file is the fallback for local builds.
+- **Ships** (#107): `data/ships.json` lists every ship of RSI's Ship Matrix with its slowly
+  changing facts and their history: the production status (Ship Matrix), whether it is always
+  available in the Pledge Store and its standard price (Star Citizen Wiki), for the CCU Consultant
+  (#106), the Price Increase Advisor (#263) and the extension's ship status (#109). Each fact is a
+  list of periods (`{ value, from, to }`; `alwaysAvailable` only the periods in which it was), the
+  open one is the current value; `revision` counts the runs that changed anything. The dates are
+  the days a run first saw a value, not the days RSI changed it; the first run started every
+  period on 2026-11-12. Prices that change within hours (warbond, sales) are left out: the
+  extension reads them live from RSI's upgrade tool.
+  [`site/ships/ships.ts`](../site/ships/ships.ts) writes it (`pnpm site:ships`), run by the website
+  workflow before every build, so at least daily. It continues the committed file, and the
+  workflow commits a changed file back to `main` (as `github-actions[bot]`), so the history lives
+  in the repository. The wiki is read from its structured data – the Bucket table `vehicle`
+  behind its [List of pledge vehicles](https://starcitizen.tools/List_of_pledge_vehicles), with
+  `api.php?action=bucket` – and its vehicles are matched to the Ship Matrix ids by name; a ship
+  keeps the wiki vehicle it was matched with (`wikiName`), so a dropped name never moves to a
+  variant. Vehicles that match no ship are listed in the log. If a source fails or looks broken
+  (far fewer ships or always available ships than before, e.g. a throttled wiki), the step fails
+  and the last deployment stays; a fact a source doesn't give for a ship keeps its period. The
+  wiki's content is CC BY-SA 4.0: the file names both sources and the license, and the site's
+  footer gives the attribution. The file is one ship per line (left out of Prettier), so each
+  change shows as a changed line.
 - **Previews**: both pages have Open Graph and X tags with the same title and description as the
   page, and `store/social-preview-1280x640.png` as the image. Its URL has to be absolute: the build
   puts it below the site's address (`SITE_URL` in `site/vite.config.ts`).
