@@ -86,11 +86,13 @@ describe('the default demo on an empty account (#130)', () => {
     expect(event).toBeDefined();
     const count = (period: HistoryPeriod) =>
       withinPeriod(expired, periodStart(period, NOW, event)).length;
-    expect(count('event')).toBeGreaterThan(0);
+    expect(count('event')).toBe(3);
     expect(count('days30')).toBeGreaterThan(count('event'));
-    expect(count('days90')).toBeGreaterThan(count('days30'));
-    expect(count('days180')).toBeGreaterThan(count('days90'));
+    expect(count('days90')).toBe(6);
+    expect(count('days180')).toBe(10);
     expect(expired.length).toBeGreaterThan(count('days180'));
+    // From several manufacturers' ships, for the search.
+    expect(new Set(expired.map((entry) => entry.sighting.shipId)).size).toBeGreaterThan(8);
     expect(expired.some((entry) => entry.sighting.events?.length)).toBe(true);
     expect(expired.some((entry) => !entry.sighting.events)).toBe(true);
     // Current offers never show in the history.
