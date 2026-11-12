@@ -16,7 +16,7 @@ import { visiblePledgeIds } from '../selection';
 import { canSelectPledges } from '../sidebar';
 import { meltReadyIds } from '../use-melt-marks';
 import { clearHangarFilter, hangarViewFilter, type HangarViewFilter } from '../view-filter';
-import { hangarFilterRequest } from '../hangar-filter-request';
+import { hangarFilterRequest, hangarFilterStates } from '../hangar-filter-request';
 import { paintRebuys } from '@/store/paint-consultant/use-paint-consultant';
 import { hasPriceChangeWithin } from '@/price-increases/price-change-filter';
 import { useNow } from '@/shared/use-now';
@@ -78,6 +78,10 @@ const highlights = (states: FilterStates<PledgeFilter>) =>
 const showVisible = (entries: PledgeView[]) =>
   (visiblePledgeIds.value = new Set(entries.map((entry) => entry.id)));
 onUnmounted(() => (visiblePledgeIds.value = null));
+/** For the sidebar's filter toggles (#254). */
+const showFilterStates = (states: FilterStates<PledgeFilter>) =>
+  (hangarFilterStates.value = states);
+onUnmounted(() => (hangarFilterStates.value = new Map()));
 
 const filterLabel = (filter: PledgeFilter) => i18n.t(`filter.${filter}`);
 
@@ -125,6 +129,7 @@ const filterHint = (filter: PledgeFilter) => {
     @clear-request="clearHangarFilter()"
     @update:sort="setSort"
     @visible="showVisible"
+    @filter-states="showFilterStates"
   >
     <template #row="{ entry, autoExpand }">
       <PledgeRow :pledge="entry" :auto-expand="autoExpand" />

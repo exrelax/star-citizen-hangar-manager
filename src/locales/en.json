@@ -933,7 +933,7 @@
     "advisorLosing": "$1 CCUs lose upgrade value with the expected price increase of the $2 ($3)",
     "advisorLosingOne": "1 CCU loses upgrade value with the expected price increase of the $2 ($3)",
     "advisorSecure": "The price of the $1 is expected to rise ($2). A CCU to it can still be bought at the old price.",
-    "showAdvisorHint": "Shows the CCUs in My Hangar with the filter “Price change ahead”.",
+    "showAdvisorHint": "Shows the CCUs in My Hangar with the filter “Price change ahead”; this button or “Reset filters” shows all again.",
     "openAdvisorHint": "How to keep the discount of these CCUs.",
     "showSecureHint": "Shows the cheapest CCUs to the ship in the Pledge Store tab.",
     "dismissAdvisorHint": "Removes this notification for this price increase. A new or moved price increase shows again.",

@@ -933,7 +933,7 @@
     "advisorLosing": "$1 CCU pierden valor de mejora con la subida de precio prevista de la $2 ($3)",
     "advisorLosingOne": "1 CCU pierde valor de mejora con la subida de precio prevista de la $2 ($3)",
     "advisorSecure": "Se espera que suba el precio de la $1 ($2). Aún se puede comprar un CCU a ella al precio anterior.",
-    "showAdvisorHint": "Muestra los CCU en My Hangar con el filtro «Cambio de precio previsto».",
+    "showAdvisorHint": "Muestra los CCU en My Hangar con el filtro «Cambio de precio previsto»; este botón o «Restablecer filtros» vuelve a mostrar todos.",
     "openAdvisorHint": "Cómo conservar el descuento de estos CCU.",
     "showSecureHint": "Muestra los CCU más baratos a la nave en la pestaña Pledge Store.",
     "dismissAdvisorHint": "Quita esta notificación para esta subida de precio. Una subida nueva o aplazada vuelve a mostrarse.",

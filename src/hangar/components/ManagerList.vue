@@ -63,9 +63,10 @@ const props = defineProps<{
   filterRequest?: { matches: (entry: T) => boolean; at: number } | null;
   /**
    * A filter button turned on from outside (e.g. the sidebar's notification about expected price
-   * increases, #193): each new request (`at`) includes only this filter, without search.
+   * increases, #193): each new request (`at`) includes only this filter, without search. With
+   * `clear` it turns just this filter off again (the sidebar's toggle, #254).
    */
-  includeRequest?: { filter: F; at: number } | null;
+  includeRequest?: { filter: F; at: number; clear?: boolean } | null;
   /**
    * The classes that highlight in every row what the included filters are about (#216, see
    * `highlights.ts`), from their states.
@@ -79,6 +80,8 @@ const emit = defineEmits<{
   'clear-request': [];
   /** The entries search and filters leave visible, whenever they change. */
   visible: [entries: T[]];
+  /** The states of the filter buttons, whenever they change (e.g. for the sidebar's toggles). */
+  'filter-states': [states: ReadonlyMap<F, FilterState>];
 }>();
 
 defineSlots<{
@@ -164,6 +167,13 @@ watch(
   () => props.includeRequest,
   (request) => {
     if (!request) return;
+    if (request.clear) {
+      if (!filterStates.value.has(request.filter)) return;
+      const next = new Map(filterStates.value);
+      next.delete(request.filter);
+      filterStates.value = next;
+      return;
+    }
     query.value = '';
     clearRequested();
     filterStates.value = new Map([[request.filter, 'include']]);
@@ -235,6 +245,7 @@ const matching = computed(() =>
 );
 
 watch(matching, (entries) => emit('visible', entries), { immediate: true });
+watch(filterStates, (states) => emit('filter-states', states), { immediate: true });
 
 /** Id of the only entry shown, which then opens on its own; undefined for more or none. */
 const onlyVisibleId = computed(() =>
