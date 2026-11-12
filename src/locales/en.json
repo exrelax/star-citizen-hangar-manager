@@ -21,7 +21,8 @@
     "syncProgress": "Reading RSI pages: $1 of $2 ($3)",
     "syncProgressSection": "Reading $1: page $2 of $3 ($4 of everything)",
     "demoBadge": "Demo",
-    "demoBadgeHint": "Demo mode: a selection of your pledges with made-up pledge IDs. Turn it off in the settings.",
+    "demoBadgeHint": "Demo mode: the lists show made-up pledge IDs and data. Click to open the demo settings, e.g. to adjust the demo or turn it off.",
+    "demoBadgeLabel": "Demo mode: open the demo settings",
     "storeCreditHint": "The account's store credit, as RSI shows it at the last refresh or check. Hidden while “Hide melt value” is on.",
     "clearSearch": "Clear search"
   },

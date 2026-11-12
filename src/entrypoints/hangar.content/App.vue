@@ -50,6 +50,8 @@ import {
   watchEffect,
 } from 'vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
+import { openTabAt } from '@/hangar/open-tab-at';
+import { DEMO_SETTINGS_ID } from '@/settings/anchors';
 
 /** Icon of each tab, before its label. */
 const TAB_ICONS: Record<ManagerTab, { icon: IconName; iconSet?: IconSet }> = {
@@ -79,6 +81,8 @@ useThemeClass(inject(MANAGER_CONTAINER, undefined), settings);
 // The demo mode (a setting) shows a generated or anonymized hangar (see src/demo).
 const demo = computed(() => settings.value.demoMode);
 // The invisible demo mode for screenshots (#133, development only): no badge, no disabled look.
+/** The "Demo" label opens the demo settings (#278). */
+const openDemoSettings = () => openTabAt('settings', DEMO_SETTINGS_ID, { highlight: true });
 const invisibleUntil = useStored(invisibleDemoUntilItem);
 const clock = useNow();
 const invisibleDemo = computed(() =>
@@ -260,13 +264,17 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
     <h2 class="title">
       {{ i18n.t('manager.title') }}
       <!-- In the header, so every tab shows that the lists are a demo selection. -->
-      <span
+      <!-- Opens the demo settings, to adjust the demo or turn it off (#278). -->
+      <button
         v-if="demo && !invisibleDemo"
         v-tooltip="i18n.t('manager.demoBadgeHint')"
+        type="button"
         class="shm-demo-badge"
+        :aria-label="i18n.t('manager.demoBadgeLabel')"
+        @click="openDemoSettings"
       >
         {{ i18n.t('manager.demoBadge') }}
-      </span>
+      </button>
     </h2>
     <p class="shm-intro">{{ i18n.t('manager.intro') }}</p>
     <div class="separator"></div>
@@ -412,9 +420,23 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
   line-height: calc(18px * var(--shm-font-scale));
   letter-spacing: 0.08em;
   vertical-align: 3px;
+  /* A button with the label's look: the title's font, no button frame. */
+  font-family: inherit;
+  font-weight: inherit;
+  text-transform: inherit;
   background: var(--shm-warning);
+  border: 0;
   border-radius: var(--shm-radius-small);
-  cursor: help;
+  cursor: pointer;
+}
+
+.shm-demo-badge:hover {
+  filter: brightness(1.1);
+}
+
+.shm-demo-badge:focus-visible {
+  outline: 2px solid var(--shm-accent);
+  outline-offset: 2px;
 }
 
 .shm-manager-tabs {
