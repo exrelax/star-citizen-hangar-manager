@@ -418,6 +418,11 @@
       "content": "Offres warbond vues jusqu'ici, avec prix, dates et événements",
       "missing": "Il ne peut pas être relu : l'onglet Pledge Store n'affiche aucune offre antérieure tant que de nouvelles ne sont pas vues."
     },
+    "warbondHistorySite": {
+      "name": "Historique warbond du site",
+      "content": "Offres warbond antérieures du site du projet, avec prix, dates et événements",
+      "missing": "D'ici là, le Warbond CCU History n'affiche que les offres vues dans ce navigateur."
+    },
     "shipStatus": {
       "name": "Statut des vaisseaux",
       "content": "Quels vaisseaux sont flight ready et lesquels sont encore en concept",

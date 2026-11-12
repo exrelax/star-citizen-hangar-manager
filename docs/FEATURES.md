@@ -933,7 +933,7 @@ order of the list:
   - **Translate RSI's texts in the exchange and gift dialogs**: RSI's changes to its texts reach
     the translations only later.
 - **Stored data**: a table of everything the extension keeps in this browser – My Hangar, Buy
-  Back, order history, ships, ships on sale, warbond offers, the ships' status (in concept or flight ready, from the Ship Matrix, at the same minutes as the Pledge Store items, once a day without smart updates), the ships' facts of the project website (status, always available and standard price with their history, once a day; a copy bundled with the extension counts until then), Pledge Store items, events, expected price increases and the store
+  Back, order history, ships, ships on sale, warbond offers, the ships' status (in concept or flight ready, from the Ship Matrix, at the same minutes as the Pledge Store items, once a day without smart updates), the ships' facts of the project website (status, always available and standard price with their history, once a day; a copy bundled with the extension counts until then), Pledge Store items, events, expected price increases, earlier warbond offers of the project website (once a day) and the store
   credit – with the number of entries, the
   size, the last full read and the last check. Each can be read again from RSI on its own (the
   refresh icon; ships, ships on sale and warbond offers are one read) and deleted on its own; the

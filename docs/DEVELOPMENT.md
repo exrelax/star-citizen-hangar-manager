@@ -204,6 +204,15 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   the dev build from the working copy, checked by
   [`src/price-increases/price-increases.ts`](../src/price-increases/price-increases.ts). See
   [below](#editing-the-expected-price-increases) for how to edit it.
+- **Warbond history**: `data/warbond-history.json` lists earlier warbond offers (`offers`: the
+  ship's upgrade tool `id` and `name`, an optional `skuId`, `price`, `msrp`, `firstSeen`,
+  `lastSeen` as ISO dates, optional `events` with `id` and `name`), offers seen before a browser
+  read the Pledge Store. The extension adds them to the history of the browser where it shows it –
+  the "Warbond CCU History" and the earlier offers of a current warbond CCU – and never stores them
+  into it; an offer the browser saw itself (same ship and price, overlapping dates) is shown once.
+  Read like the events, by the same loader, but at most once a day; the dev build reads the
+  working copy on every check. Checked by
+  [`src/store/site-warbond-history.ts`](../src/store/site-warbond-history.ts).
 - **Ships** (#107): `data/ships.json` lists every ship of RSI's Ship Matrix with its slowly
   changing facts and their history: the production status (Ship Matrix), whether it is always
   available in the Pledge Store and its standard price (Star Citizen Wiki), for the CCU Consultant

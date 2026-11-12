@@ -418,6 +418,11 @@
       "content": "Ofertas warbond vistas hasta ahora, con precio, fechas y eventos",
       "missing": "No se puede volver a leer: la pestaña Pledge Store no muestra ofertas anteriores hasta que se vean nuevas."
     },
+    "warbondHistorySite": {
+      "name": "Historial warbond del sitio",
+      "content": "Ofertas warbond anteriores del sitio del proyecto, con precio, fechas y eventos",
+      "missing": "Hasta entonces, el Warbond CCU History solo muestra las ofertas vistas en este navegador."
+    },
     "shipStatus": {
       "name": "Estado de las naves",
       "content": "Qué naves son flight ready y cuáles siguen en concepto",

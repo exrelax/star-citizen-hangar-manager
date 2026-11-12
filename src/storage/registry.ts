@@ -31,7 +31,12 @@ import {
   completedPlansItem,
   type CompletedPlansSnapshot,
 } from '@/store/paint-consultant/completed-plans';
-import { warbondHistoryItem } from '@/store/warbond-history-storage';
+import {
+  siteWarbondHistoryItem,
+  siteWarbondHistoryMeta,
+  warbondHistoryItem,
+  type SiteWarbondHistorySnapshot,
+} from '@/store/warbond-history-storage';
 import type { WarbondHistorySnapshot } from '@/store/warbond-history';
 import { eventsItem, eventsMeta, type EventsSnapshot } from '@/events/events-storage';
 import {
@@ -70,6 +75,7 @@ export type StorageId =
   | 'shipsBuyable'
   | 'shipsWarbonds'
   | 'warbondHistory'
+  | 'warbondHistorySite'
   | 'shipStatus'
   | 'shipFacts'
   | 'storeItems'
@@ -194,6 +200,17 @@ export const STORAGES: readonly StorageDefinition[] = [
     kind: 'data',
     count: (value: WarbondHistorySnapshot | null) => value?.sightings.length ?? 0,
     readAgain: 'never',
+  },
+  {
+    id: 'warbondHistorySite',
+    meta: siteWarbondHistoryMeta,
+    item: siteWarbondHistoryItem,
+    content: 'Earlier warbond offers: ship, price, standard price, first and last seen, events',
+    source: 'The project website (GitHub Pages, data/warbond-history.json)',
+    usedBy: ['Pledge Store (Warbond CCU History, earlier offers)'],
+    kind: 'data',
+    count: (value: SiteWarbondHistorySnapshot | null) => value?.offers.length ?? 0,
+    readAgain: 'auto',
   },
   {
     id: 'shipStatus',
