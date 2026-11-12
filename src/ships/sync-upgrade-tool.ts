@@ -6,6 +6,7 @@ import { hashOf, recordCheck, recordSync, type MetaItem } from '@/storage/meta';
 import { reactive, readonly } from 'vue';
 import { upgradeToolMaxAgeMs } from '@/store/refresh-schedule';
 import { noteWarbondChanges } from '@/store/store-change-notes';
+import { recordWarbondHistory } from '@/store/record-warbond-history';
 import { fetchUpgradeTool } from './fetch-upgrade-tool';
 import type { UpgradeToolData } from './ships';
 import {
@@ -131,6 +132,8 @@ async function readUpgradeTool(
       ships,
       at,
     );
+    // Every offer seen goes into the history (#4).
+    await recordWarbondHistory(warbonds, ships, at);
     return 'read';
   } catch (cause) {
     if (cause instanceof RsiSignedOutError) return 'signedOut';

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { formatDiscount, formatPercent, formatUsd } from '@/hangar/discount-format';
 import SvgIcon from '@/icons/SvgIcon.vue';
+import { localized } from '@/events/events';
 import { i18n, locale } from '@/i18n';
 import { computed, ref } from 'vue';
 import { ownedCounts, type WarbondOffer } from '../warbond';
+import type { SightingEvent } from '../warbond-history';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import BaseShipsTable from './BaseShipsTable.vue';
 // Shared, unscoped styles of the store's tables; a plain import, as `<style src>` of the same file
@@ -36,6 +38,38 @@ const owned = computed(() =>
 
 /** The hangar's CCUs to this very ship, and its other CCUs that can't be chained with it. */
 const counts = computed(() => ownedCounts(props.offer));
+
+const dates = computed(() => new Intl.DateTimeFormat(locale.value, { dateStyle: 'medium' }));
+const eventNames = (events: readonly SightingEvent[]) =>
+  events.map((event) => localized(event.name, locale.value)).join(', ');
+
+/** Since when the offer is seen, during which events (#4). */
+const since = computed(() => {
+  const { since, events } = props.offer.history;
+  if (since === undefined) return undefined;
+  const date = dates.value.format(since);
+  return events.length
+    ? i18n.t('store.historySinceEvent', [date, eventNames(events)])
+    : i18n.t('store.historySince', [date]);
+});
+
+/** The earlier offers of the ship, formatted once. */
+const earlier = computed(() =>
+  props.offer.history.earlier.map((sighting) => {
+    const discount = sighting.msrp - sighting.price;
+    return {
+      key: `${sighting.skuId}|${sighting.firstSeen}`,
+      seen: dates.value.formatRange(sighting.firstSeen, sighting.lastSeen),
+      price: usd(sighting.price),
+      msrp: usd(sighting.msrp),
+      discount:
+        sighting.msrp > 0
+          ? `−${usd(discount)} (${formatPercent((discount / sighting.msrp) * 100, locale.value)})`
+          : '',
+      events: eventNames(sighting.events ?? []),
+    };
+  }),
+);
 </script>
 
 <template>
@@ -159,6 +193,37 @@ const counts = computed(() => ownedCounts(props.offer));
                   {{ ccu.shown.text }}
                 </span>
               </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4 class="shm-warbond-heading">{{ i18n.t('store.historyTitle') }}</h4>
+        <p class="shm-hint">
+          <template v-if="since">{{ since }} </template>{{ i18n.t('store.historyHint') }}
+        </p>
+        <p v-if="!earlier.length" class="shm-hint">{{ i18n.t('store.historyNone') }}</p>
+        <table v-else class="shm-warbond-table is-small">
+          <thead>
+            <tr>
+              <th scope="col">{{ i18n.t('store.colSeen') }}</th>
+              <th scope="col" class="is-number">{{ i18n.t('store.colPrice') }}</th>
+              <th scope="col" class="is-number">{{ i18n.t('store.colDiscount') }}</th>
+              <th scope="col">{{ i18n.t('store.colEvent') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="sighting in earlier" :key="sighting.key">
+              <td>{{ sighting.seen }}</td>
+              <td class="is-number">
+                {{ sighting.price }}
+                <s v-tooltip="i18n.t('store.msrpHint')" class="shm-warbond-msrp">
+                  {{ sighting.msrp }}
+                </s>
+              </td>
+              <td class="is-number">
+                <span class="shm-discount">{{ sighting.discount }}</span>
+              </td>
+              <td :class="{ 'is-muted': !sighting.events }">{{ sighting.events || '–' }}</td>
             </tr>
           </tbody>
         </table>

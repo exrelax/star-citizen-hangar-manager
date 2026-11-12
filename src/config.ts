@@ -344,6 +344,8 @@ export const PLEDGE_STORE = {
   backgroundCheckMinutes: 0.5,
   /** How often an open Pledge Store tab looks whether its offers are due. */
   dueCheckMs: 60 * 1000,
+  /** Sightings of warbond offers kept in the history at the most (#4); the oldest go first. */
+  historyMax: 2000,
 } as const;
 
 /**
