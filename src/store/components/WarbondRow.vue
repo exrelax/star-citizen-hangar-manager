@@ -6,6 +6,9 @@ import { computed, ref } from 'vue';
 import { ownedCounts, type WarbondOffer } from '../warbond';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import BaseShipsTable from './BaseShipsTable.vue';
+// Shared, unscoped styles of the store's tables; a plain import, as `<style src>` of the same file
+// in several components breaks the build.
+import './store-table.css';
 
 const props = defineProps<{ offer: WarbondOffer }>();
 
@@ -158,7 +161,6 @@ const counts = computed(() => ownedCounts(props.offer));
 </template>
 
 <style src="@/hangar/components/row.css"></style>
-<style src="./store-table.css"></style>
 
 <style scoped>
 .shm-warbond-price {
