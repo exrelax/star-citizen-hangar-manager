@@ -11,7 +11,8 @@ import { i18n, locale } from '@/i18n';
 import type { Settings } from '@/settings/settings';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { useSettings } from '@/settings/use-settings';
-import { computed, provide, ref } from 'vue';
+import TabBar from '@/shared/components/TabBar.vue';
+import { computed, provide, ref, watch } from 'vue';
 // The switch, shared with the settings (#245).
 import '@/shared/styles/switch.css';
 import { refreshStoreItems } from '../items/sync-store-items';
@@ -25,6 +26,12 @@ import PaintCompletedPlans from './PaintCompletedPlans.vue';
 import PaintRunningPlan from './PaintRunningPlan.vue';
 import { REPLACES_RUNNING_PLAN, useRunningPlan } from '../paint-consultant/use-running-plan';
 import {
+  consultantTabRequest,
+  consultantTabsOf,
+  shownTabOf,
+  type ConsultantTab,
+} from '../paint-consultant/consultant-tabs';
+import {
   currentPlanOf,
   rebuyPlanItem,
   demoRebuyPlanItem,
@@ -36,8 +43,8 @@ import {
  * The Paint Discount Consultant (#95) in the Pledge Store tab: which own paints to melt and buy
  * again together with cheap filler paints at a higher volume discount, what the cart costs and
  * how much store credit it frees (see `paint-consultant/calculation.ts`). It explains every step
- * with the real values and says honestly that melt value turns into store credit. A running plan
- * shows as one card of steps above the new plan, completed plans below it (#245).
+ * with the real values and says honestly that melt value turns into store credit. The running
+ * plan (one card of steps, #245), a new plan and the completed plans are tabs of their own (#244).
  */
 
 const props = defineProps<{
@@ -60,6 +67,56 @@ const running = useRunningPlan({ settings: () => props.settings, active: () => !
 const runningView = computed(() => running.view.value);
 // A new plan's cart replaces the running plan: its cart buttons ask first.
 provide(REPLACES_RUNNING_PLAN, () => !!running.plan.value);
+
+// ---- The tabs (#244) ----
+
+/** Something to show as a new plan: a plan, or a guess at paints bought again to check. */
+const hasNewPlan = computed(() => !!result.value?.plan || probablyRebought.value.length > 0);
+const tabs = computed(() =>
+  consultantTabsOf({
+    running: !!runningView.value,
+    new: hasNewPlan.value,
+    completed: running.completed.value.length > 0,
+  }),
+);
+/** Chosen by the user or a link; untouched, the running plan comes first, then a new plan. */
+const chosen = ref<ConsultantTab>();
+const tab = computed(() => shownTabOf(tabs.value, chosen.value));
+const tabLabels = computed<Record<ConsultantTab, string>>(() => ({
+  running: i18n.t('consultant.tabs.running'),
+  new: i18n.t('consultant.tabs.new'),
+  completed: i18n.t('consultant.tabs.completed'),
+}));
+const TAB_ICONS = { running: 'route', new: 'plus', completed: 'circle-check' } as const;
+const tabItems = computed(() =>
+  tabs.value.map((id) => ({ id, label: tabLabels.value[id], icon: TAB_ICONS[id] })),
+);
+/** The panel's tab semantics, only while there are tabs. */
+const panelOf = (id: ConsultantTab) =>
+  tabs.value.length > 1
+    ? {
+        id: `shm-consultant-panel-${id}`,
+        role: 'tabpanel',
+        'aria-labelledby': `shm-consultant-tab-${id}`,
+      }
+    : {};
+// A plan just kept (its cart filled, its paints melted) is shown as the running one.
+watch(
+  () => !!runningView.value,
+  (now, before) => {
+    if (now && !before) chosen.value = 'running';
+  },
+);
+// A link to a part of the consultant (the sidebar's box, a mark in My Hangar).
+watch(
+  consultantTabRequest,
+  (request) => {
+    if (!request) return;
+    chosen.value = request.tab;
+    consultantTabRequest.value = undefined;
+  },
+  { immediate: true },
+);
 
 const options = computed(() => props.settings.paintConsultant);
 /** The ways as cards – one to choose (the default, #246) or both side by side – or in tables. */
@@ -156,8 +213,6 @@ async function keepPlanMelted() {
   if (!cartFilled.value) await keepPlan();
 }
 
-/** Paints bought again already (#139): the running plan has them as its step to melt. */
-const rebought = computed(() => result.value?.rebought ?? []);
 /** Pairs that look bought again without a kept plan (`reboughtDetection: 'guess'`). */
 const probablyRebought = computed(() => result.value?.probablyRebought ?? []);
 
@@ -224,284 +279,322 @@ const openBulkMeltingSetting = () =>
       </button>
     </div>
     <template v-else>
-      <label v-if="!ways" class="shm-consultant-option">
-        <input
-          type="checkbox"
-          :checked="options.skipGiftable"
-          @change="setSkipGiftable(($event.target as HTMLInputElement).checked)"
+      <!-- Running plan, new plan, completed plans (#244): tabs, or one heading for a single one. -->
+      <TabBar
+        v-if="tabs.length > 1"
+        class="shm-consultant-tabs"
+        :items="tabItems"
+        :selected="tab!"
+        :label="i18n.t('consultant.title')"
+        panels="shm-consultant"
+        @select="chosen = $event"
+      />
+      <h4 v-else-if="tab" class="shm-consultant-section-title">{{ tabLabels[tab] }}</h4>
+
+      <div
+        v-if="tabs.includes('running')"
+        v-show="tab === 'running'"
+        v-bind="panelOf('running')"
+        class="shm-consultant-panel"
+      >
+        <PaintRunningPlan v-if="runningView" :running="running" :pledges="pledges" />
+      </div>
+
+      <div
+        v-if="tabs.includes('new') || !tab"
+        v-show="tab === 'new' || !tab"
+        v-bind="panelOf('new')"
+        class="shm-consultant-panel"
+      >
+        <label v-if="!ways" class="shm-consultant-option">
+          <input
+            type="checkbox"
+            :checked="options.skipGiftable"
+            @change="setSkipGiftable(($event.target as HTMLInputElement).checked)"
+          />
+          <span>
+            {{ i18n.t('consultant.skipGiftable') }}
+            <span class="shm-consultant-option-hint">{{
+              i18n.t('consultant.skipGiftableHint')
+            }}</span>
+          </span>
+        </label>
+
+        <p v-if="result?.giftableSkipped" class="shm-consultant-note is-info">
+          {{ i18n.t('consultant.giftableSkipped', [result.giftableSkipped]) }}
+        </p>
+        <p v-if="creditUnknown" class="shm-consultant-note">
+          {{ i18n.t('consultant.noCredit') }}
+        </p>
+
+        <!-- A guess without a kept plan: shown to check, nothing is done with it. -->
+        <PaintProbablyRebought
+          v-if="probablyRebought.length && !choose"
+          :pairs="probablyRebought"
         />
-        <span>
-          {{ i18n.t('consultant.skipGiftable') }}
-          <span class="shm-consultant-option-hint">{{
-            i18n.t('consultant.skipGiftableHint')
-          }}</span>
-        </span>
-      </label>
-      <!-- The running plan (#245): one list of steps, never mixed with the new plan. -->
-      <PaintRunningPlan v-if="runningView" :running="running" :pledges="pledges" />
-      <h4 v-if="runningView" class="shm-consultant-section-title">
-        {{ i18n.t('consultant.run.newPlanTitle') }}
-      </h4>
 
-      <p v-if="result?.giftableSkipped" class="shm-consultant-note is-info">
-        {{ i18n.t('consultant.giftableSkipped', [result.giftableSkipped]) }}
-      </p>
-      <p v-if="creditUnknown" class="shm-consultant-note">{{ i18n.t('consultant.noCredit') }}</p>
+        <!-- Nothing to show in any tab: why there is no new plan. -->
+        <p v-if="!plan && !result?.next" class="shm-consultant-state">
+          {{ i18n.t('consultant.nothing') }}
+        </p>
+        <p v-else-if="!plan && result?.next" class="shm-consultant-state">
+          {{
+            i18n.t('consultant.notEnough', [
+              usd(result.next.missing),
+              percent(result.next.tier.percent),
+              result.next.tier.paints,
+            ])
+          }}
+        </p>
 
-      <!-- A guess without a kept plan: shown to check, nothing is done with it. -->
-      <PaintProbablyRebought v-if="probablyRebought.length && !choose" :pairs="probablyRebought" />
+        <PaintConsultantChoose
+          v-if="plan && choose"
+          :plan="plan"
+          :buy-first="result?.buyFirst"
+          :credit="storeCredit"
+          :next="result?.next"
+          :settings="settings"
+        />
+        <PaintConsultantWays
+          v-else-if="plan && ways"
+          :plan="plan"
+          :buy-first="result?.buyFirst"
+          :credit="storeCredit"
+          :next="result?.next"
+          :settings="settings"
+        />
+        <div v-else-if="plan" class="shm-consultant-plan">
+          <dl class="shm-consultant-totals">
+            <div>
+              <dt>{{ i18n.t('consultant.tier') }}</dt>
+              <dd>
+                {{ i18n.t('consultant.tierValue', [percent(plan.tier.percent), plan.tier.paints]) }}
+              </dd>
+            </div>
+            <div>
+              <dt v-tooltip="i18n.t('consultant.freedHint')" class="has-hint">
+                {{ i18n.t('consultant.freed') }}
+              </dt>
+              <dd class="is-gain">
+                {{
+                  i18n.t('consultant.freedValue', [usd(plan.storeCreditFreed), percent(freedShare)])
+                }}
+              </dd>
+            </div>
+            <div>
+              <dt v-tooltip="i18n.t('consultant.neededHint')" class="has-hint">
+                {{ i18n.t('consultant.needed') }}
+              </dt>
+              <dd>{{ usd(plan.storeCreditNeeded) }}</dd>
+            </div>
+            <div v-if="result?.next">
+              <dt>{{ i18n.t('consultant.next') }}</dt>
+              <dd>
+                {{
+                  i18n.t('consultant.nextValue', [
+                    usd(result.next.missing),
+                    percent(result.next.tier.percent),
+                  ])
+                }}
+              </dd>
+            </div>
+          </dl>
 
-      <p v-if="!plan && !result?.next && !rebought.length" class="shm-consultant-state">
-        {{ i18n.t('consultant.nothing') }}
-      </p>
-      <p v-else-if="!plan && result?.next" class="shm-consultant-state">
-        {{
-          i18n.t('consultant.notEnough', [
-            usd(result.next.missing),
-            percent(result.next.tier.percent),
-            result.next.tier.paints,
-          ])
-        }}
-      </p>
-
-      <PaintConsultantChoose
-        v-if="plan && choose"
-        :plan="plan"
-        :buy-first="result?.buyFirst"
-        :credit="storeCredit"
-        :next="result?.next"
-        :settings="settings"
-      />
-      <PaintConsultantWays
-        v-else-if="plan && ways"
-        :plan="plan"
-        :buy-first="result?.buyFirst"
-        :credit="storeCredit"
-        :next="result?.next"
-        :settings="settings"
-      />
-      <div v-else-if="plan" class="shm-consultant-plan">
-        <dl class="shm-consultant-totals">
-          <div>
-            <dt>{{ i18n.t('consultant.tier') }}</dt>
-            <dd>
-              {{ i18n.t('consultant.tierValue', [percent(plan.tier.percent), plan.tier.paints]) }}
-            </dd>
-          </div>
-          <div>
-            <dt v-tooltip="i18n.t('consultant.freedHint')" class="has-hint">
-              {{ i18n.t('consultant.freed') }}
-            </dt>
-            <dd class="is-gain">
+          <!-- The calculation with the real values. -->
+          <ol class="shm-consultant-steps">
+            <li>
               {{
-                i18n.t('consultant.freedValue', [usd(plan.storeCreditFreed), percent(freedShare)])
-              }}
-            </dd>
-          </div>
-          <div>
-            <dt v-tooltip="i18n.t('consultant.neededHint')" class="has-hint">
-              {{ i18n.t('consultant.needed') }}
-            </dt>
-            <dd>{{ usd(plan.storeCreditNeeded) }}</dd>
-          </div>
-          <div v-if="result?.next">
-            <dt>{{ i18n.t('consultant.next') }}</dt>
-            <dd>
-              {{
-                i18n.t('consultant.nextValue', [
-                  usd(result.next.missing),
-                  percent(result.next.tier.percent),
-                ])
-              }}
-            </dd>
-          </div>
-        </dl>
-
-        <!-- The calculation with the real values. -->
-        <ol class="shm-consultant-steps">
-          <li>
-            {{
-              plan.fillers.length
-                ? i18n.t('consultant.cart', [
-                    usd(ownTotal),
-                    usd(fillerTotal),
-                    factor(plan.tier.percent),
-                    usd(plan.cartCost),
-                  ])
-                : i18n.t('consultant.cartOwnOnly', [
-                    usd(ownTotal),
-                    factor(plan.tier.percent),
-                    usd(plan.cartCost),
-                  ])
-            }}
-          </li>
-          <li>
-            {{ i18n.t('consultant.payment', [usd(plan.meltValue), usd(plan.storeCreditNeeded)]) }}
-          </li>
-          <li>
-            {{
-              plan.fillers.length
-                ? i18n.t('consultant.result', [
-                    usd(fillerMelt),
-                    usd(plan.storeCreditFreed),
-                    usd(plan.meltValue),
-                    usd(meltAfter),
-                  ])
-                : i18n.t('consultant.resultOwnOnly', [
-                    usd(plan.storeCreditFreed),
-                    usd(plan.meltValue),
-                    usd(meltAfter),
-                  ])
-            }}
-          </li>
-        </ol>
-
-        <h4 class="shm-consultant-subtitle">
-          {{ i18n.t('consultant.ownTitle', [plan.own.length]) }}
-        </h4>
-        <div class="shm-consultant-table-wrap">
-          <table class="shm-consultant-table">
-            <thead>
-              <tr>
-                <th scope="col">{{ i18n.t('consultant.colPaint') }}</th>
-                <th scope="col" class="is-number">{{ i18n.t('consultant.colPrice') }}</th>
-                <th
-                  v-tooltip="i18n.t('consultant.meltHint')"
-                  scope="col"
-                  class="is-number has-hint"
-                >
-                  {{ i18n.t('consultant.colMelt') }}
-                </th>
-                <th scope="col" class="is-number">{{ i18n.t('consultant.colCart') }}</th>
-                <th scope="col" class="is-number">{{ i18n.t('consultant.colDiscount') }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="paint in plan.own" :key="paint.pledgeId">
-                <th scope="row">
-                  {{ paint.storePaint.name }}
-                  <span
-                    v-if="paint.giftable"
-                    v-tooltip="i18n.t('consultant.giftableTagHint')"
-                    class="shm-consultant-tag"
-                  >
-                    {{ i18n.t('consultant.giftableTag') }}
-                  </span>
-                </th>
-                <td class="is-number">{{ usd(paint.storePaint.price) }}</td>
-                <td class="is-number">{{ usd(paint.meltValue) }}</td>
-                <td class="is-number">{{ usd(inCart(paint.storePaint.price)) }}</td>
-                <td class="is-number">
-                  {{
-                    i18n.t('consultant.discountChange', [
-                      percent(paint.discount),
-                      percent(plan.tier.percent),
+                plan.fillers.length
+                  ? i18n.t('consultant.cart', [
+                      usd(ownTotal),
+                      usd(fillerTotal),
+                      factor(plan.tier.percent),
+                      usd(plan.cartCost),
                     ])
-                  }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                  : i18n.t('consultant.cartOwnOnly', [
+                      usd(ownTotal),
+                      factor(plan.tier.percent),
+                      usd(plan.cartCost),
+                    ])
+              }}
+            </li>
+            <li>
+              {{ i18n.t('consultant.payment', [usd(plan.meltValue), usd(plan.storeCreditNeeded)]) }}
+            </li>
+            <li>
+              {{
+                plan.fillers.length
+                  ? i18n.t('consultant.result', [
+                      usd(fillerMelt),
+                      usd(plan.storeCreditFreed),
+                      usd(plan.meltValue),
+                      usd(meltAfter),
+                    ])
+                  : i18n.t('consultant.resultOwnOnly', [
+                      usd(plan.storeCreditFreed),
+                      usd(plan.meltValue),
+                      usd(meltAfter),
+                    ])
+              }}
+            </li>
+          </ol>
 
-        <template v-if="plan.fillers.length">
           <h4 class="shm-consultant-subtitle">
-            {{ i18n.t('consultant.fillerTitle', [fillerCount]) }}
+            {{ i18n.t('consultant.ownTitle', [plan.own.length]) }}
           </h4>
           <div class="shm-consultant-table-wrap">
             <table class="shm-consultant-table">
               <thead>
                 <tr>
                   <th scope="col">{{ i18n.t('consultant.colPaint') }}</th>
-                  <th scope="col" class="is-number">{{ i18n.t('consultant.colCount') }}</th>
                   <th scope="col" class="is-number">{{ i18n.t('consultant.colPrice') }}</th>
+                  <th
+                    v-tooltip="i18n.t('consultant.meltHint')"
+                    scope="col"
+                    class="is-number has-hint"
+                  >
+                    {{ i18n.t('consultant.colMelt') }}
+                  </th>
                   <th scope="col" class="is-number">{{ i18n.t('consultant.colCart') }}</th>
+                  <th scope="col" class="is-number">{{ i18n.t('consultant.colDiscount') }}</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="filler in plan.fillers" :key="filler.paint.id">
-                  <th scope="row">{{ filler.paint.name }}</th>
-                  <td class="is-number">{{ filler.quantity }}</td>
-                  <td class="is-number">{{ usd(filler.paint.price) }}</td>
+                <tr v-for="paint in plan.own" :key="paint.pledgeId">
+                  <th scope="row">
+                    {{ paint.storePaint.name }}
+                    <span
+                      v-if="paint.giftable"
+                      v-tooltip="i18n.t('consultant.giftableTagHint')"
+                      class="shm-consultant-tag"
+                    >
+                      {{ i18n.t('consultant.giftableTag') }}
+                    </span>
+                  </th>
+                  <td class="is-number">{{ usd(paint.storePaint.price) }}</td>
+                  <td class="is-number">{{ usd(paint.meltValue) }}</td>
+                  <td class="is-number">{{ usd(inCart(paint.storePaint.price)) }}</td>
                   <td class="is-number">
-                    {{ usd(inCart(filler.paint.price * filler.quantity)) }}
+                    {{
+                      i18n.t('consultant.discountChange', [
+                        percent(paint.discount),
+                        percent(plan.tier.percent),
+                      ])
+                    }}
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-        </template>
 
-        <h4 class="shm-consultant-subtitle">{{ i18n.t('consultant.beforeTitle') }}</h4>
-        <ul class="shm-consultant-notes">
-          <li>{{ i18n.t('consultant.stepOrder') }}</li>
-          <li>{{ i18n.t('consultant.stepCredit') }}</li>
-          <li>
-            {{ i18n.t('consultant.stepCooldown') }}
-            <a :href="COOLDOWN_SOURCE" target="_blank" rel="noopener noreferrer">
-              {{ i18n.t('consultant.cooldownSource') }}
-            </a>
-          </li>
-          <li>{{ i18n.t('consultant.stepPacks') }}</li>
-        </ul>
-
-        <!-- Fills RSI's cart; the user checks it and pays there – nothing is checked out here. -->
-        <div class="shm-consultant-cart">
-          <PaintCartButton :lines="planLines" @filled="keepPlan" />
-
-          <!-- Bulk melting (experimental): the own paints at once, after the cart was filled. -->
-          <template v-if="settings.bulkMelting && ownPledges.length">
-            <button
-              v-tooltip="
-                cartFilled ? i18n.t('consultant.meltHintReady') : i18n.t('consultant.meltFirstHint')
-              "
-              type="button"
-              class="shm-button is-danger"
-              @click="melting = true"
-            >
-              <SvgIcon name="triangle-exclamation" />
-              {{
-                cartFilled
-                  ? i18n.t('consultant.meltOwn', [ownPledges.length])
-                  : i18n.t('consultant.meltFirst', [ownPledges.length])
-              }}
-            </button>
-            <!-- Way 2 (#168): melting before buying needs its own acknowledgement. -->
-            <BulkExchangeOverlay
-              v-if="melting"
-              :pledges="ownPledges"
-              :hangar="pledges"
-              :skipped="0"
-              :extra-consent="
-                cartFilled
-                  ? i18n.t('consultant.meltConsent')
-                  : i18n.t('consultant.meltFirstConsent')
-              "
-              @exchanged="keepPlanMelted"
-              @close="melting = false"
-            />
+          <template v-if="plan.fillers.length">
+            <h4 class="shm-consultant-subtitle">
+              {{ i18n.t('consultant.fillerTitle', [fillerCount]) }}
+            </h4>
+            <div class="shm-consultant-table-wrap">
+              <table class="shm-consultant-table">
+                <thead>
+                  <tr>
+                    <th scope="col">{{ i18n.t('consultant.colPaint') }}</th>
+                    <th scope="col" class="is-number">{{ i18n.t('consultant.colCount') }}</th>
+                    <th scope="col" class="is-number">{{ i18n.t('consultant.colPrice') }}</th>
+                    <th scope="col" class="is-number">{{ i18n.t('consultant.colCart') }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="filler in plan.fillers" :key="filler.paint.id">
+                    <th scope="row">{{ filler.paint.name }}</th>
+                    <td class="is-number">{{ filler.quantity }}</td>
+                    <td class="is-number">{{ usd(filler.paint.price) }}</td>
+                    <td class="is-number">
+                      {{ usd(inCart(filler.paint.price * filler.quantity)) }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </template>
-          <!-- Off: points to the experimental setting, as the sidebar's "Selected" box does. -->
-          <button
-            v-else-if="ownPledges.length"
-            v-tooltip="i18n.t('bulkExchange.disabledHint')"
-            type="button"
-            class="shm-button"
-            @click="openBulkMeltingSetting"
-          >
-            <SvgIcon name="gear" />
-            {{ i18n.t('bulkExchange.disabled') }}
-          </button>
-        </div>
-      </div>
-      <!-- Choosing a way (#246): the guess at the end, below the plan. -->
-      <PaintProbablyRebought
-        v-if="probablyRebought.length && choose"
-        :pairs="probablyRebought"
-        end
-      />
 
-      <PaintCompletedPlans v-if="running.completed.value.length" :plans="running.completed.value" />
+          <h4 class="shm-consultant-subtitle">{{ i18n.t('consultant.beforeTitle') }}</h4>
+          <ul class="shm-consultant-notes">
+            <li>{{ i18n.t('consultant.stepOrder') }}</li>
+            <li>{{ i18n.t('consultant.stepCredit') }}</li>
+            <li>
+              {{ i18n.t('consultant.stepCooldown') }}
+              <a :href="COOLDOWN_SOURCE" target="_blank" rel="noopener noreferrer">
+                {{ i18n.t('consultant.cooldownSource') }}
+              </a>
+            </li>
+            <li>{{ i18n.t('consultant.stepPacks') }}</li>
+          </ul>
+
+          <!-- Fills RSI's cart; the user checks it and pays there – nothing is checked out here. -->
+          <div class="shm-consultant-cart">
+            <PaintCartButton :lines="planLines" @filled="keepPlan" />
+
+            <!-- Bulk melting (experimental): the own paints at once, after the cart was filled. -->
+            <template v-if="settings.bulkMelting && ownPledges.length">
+              <button
+                v-tooltip="
+                  cartFilled
+                    ? i18n.t('consultant.meltHintReady')
+                    : i18n.t('consultant.meltFirstHint')
+                "
+                type="button"
+                class="shm-button is-danger"
+                @click="melting = true"
+              >
+                <SvgIcon name="triangle-exclamation" />
+                {{
+                  cartFilled
+                    ? i18n.t('consultant.meltOwn', [ownPledges.length])
+                    : i18n.t('consultant.meltFirst', [ownPledges.length])
+                }}
+              </button>
+              <!-- Way 2 (#168): melting before buying needs its own acknowledgement. -->
+              <BulkExchangeOverlay
+                v-if="melting"
+                :pledges="ownPledges"
+                :hangar="pledges"
+                :skipped="0"
+                :extra-consent="
+                  cartFilled
+                    ? i18n.t('consultant.meltConsent')
+                    : i18n.t('consultant.meltFirstConsent')
+                "
+                @exchanged="keepPlanMelted"
+                @close="melting = false"
+              />
+            </template>
+            <!-- Off: points to the experimental setting, as the sidebar's "Selected" box does. -->
+            <button
+              v-else-if="ownPledges.length"
+              v-tooltip="i18n.t('bulkExchange.disabledHint')"
+              type="button"
+              class="shm-button"
+              @click="openBulkMeltingSetting"
+            >
+              <SvgIcon name="gear" />
+              {{ i18n.t('bulkExchange.disabled') }}
+            </button>
+          </div>
+        </div>
+        <!-- Choosing a way (#246): the guess at the end, below the plan. -->
+        <PaintProbablyRebought
+          v-if="probablyRebought.length && choose"
+          :pairs="probablyRebought"
+          end
+        />
+      </div>
+
+      <div
+        v-if="tabs.includes('completed')"
+        v-show="tab === 'completed'"
+        v-bind="panelOf('completed')"
+        class="shm-consultant-panel"
+      >
+        <PaintCompletedPlans :plans="running.completed.value" />
+      </div>
     </template>
   </section>
 </template>
@@ -792,9 +885,14 @@ const openBulkMeltingSetting = () =>
   gap: 8px;
 }
 
-/* "New plan" below the running plan: as the headings of the warbond CCUs. */
+/* The tabs below the title (#244), as the warbond CCUs' (StoreTab.vue). */
+.shm-consultant-tabs {
+  margin: 12px 0 16px;
+}
+
+/* A single tab's heading instead of the tabs: as the headings of the warbond CCUs. */
 .shm-consultant .shm-consultant-section-title {
-  margin: 24px 2px 0;
+  margin: 16px 2px 12px;
   color: var(--shm-accent);
   font-size: calc(12px * var(--shm-font-scale));
   font-weight: normal;

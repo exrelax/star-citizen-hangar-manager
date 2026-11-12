@@ -859,8 +859,12 @@
       "discard": "Descartar el plan",
       "discardConfirm": "¿Descartar el plan en curso? No cambia nada en tu hangar ni en tu carrito, y los pledges marcados para fundir siguen marcados. Las pinturas que fundiste primero y aún no has recomprado dejan de seguirse.",
       "replaceConfirm": "Hay un plan en curso. Llenar el carrito para este plan nuevo lo descarta: sus pinturas que fundiste primero y aún no has recomprado dejan de seguirse.",
-      "replace": "Descartarlo y llenar el carrito",
-      "newPlanTitle": "Plan nuevo"
+      "replace": "Descartarlo y llenar el carrito"
+    },
+    "tabs": {
+      "running": "Plan en curso",
+      "new": "Plan nuevo",
+      "completed": "Planes terminados"
     },
     "completed": {
       "title": "Planes terminados",

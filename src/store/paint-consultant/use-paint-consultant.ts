@@ -1,7 +1,6 @@
 import { storeCreditItem, STORE_CREDIT_VERSION } from '@/account/store-credit-storage';
 import type { StoreCredit } from '@/account/store-credit';
 import type { PledgeView } from '@/hangar/pledge-view';
-import { openTabAt } from '@/hangar/open-tab-at';
 import type { Settings } from '@/settings/settings';
 import { useStored } from '@/storage/use-stored';
 import {
@@ -201,7 +200,4 @@ export function maybePaintConsultant(): PaintConsultantState | undefined {
   return inject(KEY, undefined);
 }
 
-/** Shows the consultant: switches to the Pledge Store tab and scrolls to it. */
-export function openPaintConsultant(): void {
-  openTabAt('store', 'shm-consultant-title');
-}
+export { openPaintConsultant } from './consultant-tabs';

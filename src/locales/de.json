@@ -859,8 +859,12 @@
       "discard": "Plan verwerfen",
       "discardConfirm": "Laufenden Plan verwerfen? An deinem Hangar und Warenkorb ändert sich nichts, und zum Einschmelzen markierte Pledges bleiben markiert. Paints, die du zuerst eingeschmolzen und noch nicht neu gekauft hast, verfolgt der Berater dann nicht mehr.",
       "replaceConfirm": "Ein Plan läuft gerade. Den Warenkorb für diesen neuen Plan zu füllen verwirft ihn – Paints daraus, die du zuerst eingeschmolzen und noch nicht neu gekauft hast, verfolgt der Berater dann nicht mehr.",
-      "replace": "Verwerfen und Warenkorb füllen",
-      "newPlanTitle": "Neuer Plan"
+      "replace": "Verwerfen und Warenkorb füllen"
+    },
+    "tabs": {
+      "running": "Laufender Plan",
+      "new": "Neuer Plan",
+      "completed": "Abgeschlossene Pläne"
     },
     "completed": {
       "title": "Abgeschlossene Pläne",

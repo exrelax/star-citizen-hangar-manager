@@ -239,7 +239,7 @@ const toggle = () => {
           v-tooltip="rebuyText.hint"
           type="button"
           class="shm-badge is-rebuy"
-          @click.stop="openPaintConsultant"
+          @click.stop="openPaintConsultant(rebuy?.kind === 'melt' ? 'running' : 'new')"
         >
           {{ rebuyText.label }}
         </button>

@@ -988,7 +988,7 @@ async function move(box: Box, step: -1 | 1) {
             <button
               type="button"
               class="shm-button shm-sidebar-button"
-              @click="openPaintConsultant"
+              @click="openPaintConsultant(meltNow.length ? 'running' : 'new')"
             >
               <SvgIcon name="user-tie" />
               {{ i18n.t('consultant.boxOpen') }}

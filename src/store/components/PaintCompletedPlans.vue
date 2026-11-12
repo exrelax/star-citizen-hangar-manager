@@ -8,10 +8,10 @@ import type { CompletedPaint, CompletedPaintPlan } from '../paint-consultant/com
 import { paintsAtOf, signedUsd, wayTitleOf } from '../paint-consultant/running-plan-texts';
 
 /*
- * The plans of the Paint Discount Consultant that ended on their own (#245), newest first: what
- * each gained at a glance, and opened what was melted and bought, the discount reached and the
- * store credit and melt value before and after. Which ones are open is kept only while shown; the
- * newest one starts open.
+ * The plans of the Paint Discount Consultant that ended on their own (#245), newest first, in a
+ * tab of their own (#244): what each gained at a glance, and opened what was melted and bought,
+ * the discount reached and the store credit and melt value before and after. Which ones are open
+ * is kept only while shown; the newest one starts open.
  */
 
 const props = defineProps<{ plans: readonly CompletedPaintPlan[] }>();
@@ -96,13 +96,9 @@ const valueOf = (paint: CompletedPaint, gain: boolean) =>
 </script>
 
 <template>
-  <section class="shm-completed" aria-labelledby="shm-completed-title">
-    <div class="shm-completed-head">
-      <h4 id="shm-completed-title" class="shm-completed-title">
-        {{ i18n.t('consultant.completed.title') }}
-      </h4>
-      <span class="shm-completed-total shm-ways-mono">{{ total }}</span>
-    </div>
+  <!-- Titled by the consultant's tab or heading (#244). -->
+  <section class="shm-completed" :aria-label="i18n.t('consultant.completed.title')">
+    <p class="shm-completed-total shm-ways-mono">{{ total }}</p>
     <ul class="shm-completed-list">
       <li
         v-for="(plan, index) in plans"
@@ -229,7 +225,6 @@ const valueOf = (paint: CompletedPaint, gain: boolean) =>
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 24px;
   color: var(--shm-text);
   font-size: calc(13px * var(--shm-font-scale));
   line-height: 1.45;
@@ -239,26 +234,9 @@ const valueOf = (paint: CompletedPaint, gain: boolean) =>
   color: var(--shm-success);
 }
 
-.shm-completed-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 4px 12px;
-  padding: 0 2px;
-}
-
-/* As the headings of the warbond CCUs. */
-.shm-completed .shm-completed-title {
+.shm-completed .shm-completed-total {
   margin: 0;
-  color: var(--shm-accent);
-  font-size: calc(12px * var(--shm-font-scale));
-  font-weight: normal;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.shm-completed-total {
+  padding: 0 2px;
   color: var(--shm-text-faint);
   font-size: calc(12px * var(--shm-font-scale));
 }
