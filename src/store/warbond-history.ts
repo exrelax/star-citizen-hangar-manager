@@ -4,9 +4,9 @@ import type { Ship, WarbondSku } from '@/ships/ships';
 
 /*
  * The warbond offers seen so far (#4): every read of the upgrade tool adds the offers it finds,
- * with price, standard price, first and last time seen, and the events running meanwhile. No
- * public source of past warbond offers exists, so the history grows only while the Hangar Manager
- * reads the Pledge Store, and is kept in this browser only.
+ * with price, standard price, first and last time seen, and the events running meanwhile. It grows
+ * only while the Hangar Manager reads the Pledge Store, and is kept in this browser only; earlier
+ * offers of the project website are added where it is shown (`site-warbond-history.ts`).
  *
  * A sighting lasts as long as the offer is found by consecutive reads with the same SKU and
  * price. An offer missing in one read and found again later – or found with another price – is a

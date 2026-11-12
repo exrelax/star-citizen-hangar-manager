@@ -418,6 +418,11 @@
       "content": "Bisher gesehene Warbond-Angebote mit Preis, Daten und Events",
       "missing": "Sie lässt sich nicht neu einlesen: Der Tab Pledge Store zeigt keine früheren Angebote, bis neue gesehen werden."
     },
+    "warbondHistorySite": {
+      "name": "Warbond-Historie der Website",
+      "content": "Frühere Warbond-Angebote von der Projekt-Website mit Preis, Daten und Events",
+      "missing": "Bis dahin zeigt die Warbond CCU History nur die Angebote, die dieser Browser gesehen hat."
+    },
     "shipStatus": {
       "name": "Schiffsstatus",
       "content": "Welche Schiffe flugbereit und welche noch im Konzept sind",

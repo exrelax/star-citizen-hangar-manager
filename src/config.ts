@@ -246,6 +246,18 @@ export const EVENTS = {
 } as const;
 
 /**
+ * Earlier warbond offers of the project website (`data/warbond-history.json`): offers seen before
+ * the Hangar Manager read the Pledge Store, shown with the history of this browser (#4, #297).
+ * Changing rarely: read at most once a day.
+ */
+export const WARBOND_HISTORY_SITE = {
+  url: 'https://exrelax.github.io/star-citizen-hangar-manager/data/warbond-history.json',
+  /** The format the extension reads; files of other versions are ignored. */
+  schemaVersion: 1,
+  maxAgeMs: 24 * 60 * 60 * 1000,
+} as const;
+
+/**
  * The expected price increases of the Buy Back Reminder (#195): ships whose price is expected to
  * rise, on the project website like the events, read the same way (`SITE_DATA`).
  */

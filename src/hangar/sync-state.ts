@@ -5,6 +5,7 @@ import { settingsItem, withDefaults } from '@/settings/settings';
 import { maybeRefreshUpgradeTool, refreshUpgradeTool } from '@/ships/sync-upgrade-tool';
 import { maybeRefreshShipStatus } from '@/ships/ship-status';
 import { maybeRefreshShipFacts } from '@/ships/sync-ship-facts';
+import { maybeRefreshSiteWarbondHistory } from '@/store/sync-site-warbond-history';
 import { maybeRefreshStoreItems, refreshStoreItems } from '@/store/items/sync-store-items';
 import { refreshStoreCredit } from '@/account/sync-store-credit';
 import { maybeRefreshEvents } from '@/events/sync-events';
@@ -150,7 +151,9 @@ export async function startStorageSync(id: StorageId): Promise<void> {
                 ? maybeRefreshShipStatus({ force: true })
                 : id === 'shipFacts'
                   ? maybeRefreshShipFacts({ force: true })
-                  : refreshUpgradeTool());
+                  : id === 'warbondHistorySite'
+                    ? maybeRefreshSiteWarbondHistory({ force: true })
+                    : refreshUpgradeTool());
       section.complete(1, 1);
     }
   } catch (error) {
@@ -217,6 +220,8 @@ async function runSmartUpdateIfDue(force: boolean): Promise<void> {
   await maybeRefreshShipStatus();
   // The ships' facts of the project website (#109): once a day.
   await maybeRefreshShipFacts();
+  // The earlier warbond offers of the project website: once a day.
+  await maybeRefreshSiteWarbondHistory();
   const settings = withDefaults(await settingsItem.getValue());
   if (!settings.smartUpdates) return;
   const { checkedAt } = await hangarMeta.getValue();

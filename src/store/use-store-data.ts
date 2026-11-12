@@ -4,16 +4,23 @@ import type { ShipsSnapshot, WarbondsSnapshot } from '@/ships/ships-storage';
 import { computed, onMounted, onUnmounted, ref, shallowRef } from 'vue';
 import type { StoreData, WarbondTarget } from './warbond';
 import { WARBOND_HISTORY_VERSION, type WarbondHistorySnapshot } from './warbond-history';
-import { warbondHistoryItem } from './warbond-history-storage';
+import { withSiteSightings } from './site-warbond-history';
+import {
+  siteWarbondHistoryItem,
+  storedSiteWarbondHistory,
+  warbondHistoryItem,
+} from './warbond-history-storage';
 
 /**
  * The stored ships and warbond editions of the upgrade tool (see `src/ships`) and the warbond
- * offers seen so far (#4), as the Pledge Store tab uses them, kept up to date after each refresh.
+ * offers seen so far (#4) with the earlier ones of the project website, as the Pledge Store tab
+ * uses them, kept up to date after each refresh.
  */
 export function useStoreData() {
   const ships = shallowRef<ShipsSnapshot | null>(null);
   const warbonds = shallowRef<WarbondsSnapshot | null>(null);
   const history = shallowRef<WarbondHistorySnapshot | null>(null);
+  const site = useStored(siteWarbondHistoryItem);
   const meta = useStored(warbondsMeta);
   /** Set once the stored data was read (there may be none). */
   const loaded = ref(false);
@@ -44,7 +51,8 @@ export function useStoreData() {
       const ship = byId.get(shipId);
       return ship ? [{ ship, skuId, price }] : [];
     });
-    const seen = history.value?.version === WARBOND_HISTORY_VERSION ? history.value : undefined;
+    const own = history.value?.version === WARBOND_HISTORY_VERSION ? history.value : undefined;
+    const seen = withSiteSightings(own, storedSiteWarbondHistory(site.value ?? null));
     return { ships: shipList.ships, warbonds: targets, ...(seen && { history: seen }) };
   });
 

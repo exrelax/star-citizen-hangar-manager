@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "offers": [
+    {
+      "ship": { "id": 328, "name": "Sabre Raven EX" },
+      "price": 165,
+      "msrp": 185,
+      "firstSeen": "2026-10-08T00:00:00+02:00",
+      "lastSeen": "2026-11-10T17:00:00+01:00",
+      "events": [
+        { "id": "sabre-raven-release-patch-4.10.2", "name": "Sabre Raven Release - Patch 4.10.2" }
+      ]
+    }
+  ]
+}
