@@ -53,6 +53,11 @@ const since = computed(() => {
     : i18n.t('store.historySince', [date]);
 });
 
+/** Since when, then what the history is: one text, so the space between them stays. */
+const historyIntro = computed(() =>
+  [since.value, i18n.t('store.historyHint')].filter(Boolean).join(' '),
+);
+
 /** The earlier offers of the ship, formatted once. */
 const earlier = computed(() =>
   props.offer.history.earlier.map((sighting) => {
@@ -198,9 +203,7 @@ const earlier = computed(() =>
         </table>
 
         <h4 class="shm-warbond-heading">{{ i18n.t('store.historyTitle') }}</h4>
-        <p class="shm-hint">
-          <template v-if="since">{{ since }} </template>{{ i18n.t('store.historyHint') }}
-        </p>
+        <p class="shm-hint">{{ historyIntro }}</p>
         <p v-if="!earlier.length" class="shm-hint">{{ i18n.t('store.historyNone') }}</p>
         <table v-else class="shm-warbond-table is-small">
           <thead>
