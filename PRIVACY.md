@@ -103,8 +103,9 @@ sees or stores your RSI login.
   afternoon and evening (at most every 15 minutes), while an RSI page with the extension is open, the
   extension loads the list of Star Citizen events it shows in the Pledge Store tab
   (`data/events.json`) and the list of ships whose price is expected to rise
-  (`data/price-increases.json`), and while the tab shows an event, its image from the same
-  website. All are public files, the same for everyone; the requests send no data, no cookies, nothing about
+  (`data/price-increases.json`), once a day the ships' facts (`data/ships.json`: production
+  status, always available, standard price), and while the tab shows an event, its image from the
+  same website. All are public files, the same for everyone; the requests send no data, no cookies, nothing about
   your account. Like every request on the internet, they reveal your IP address to GitHub (see
   [This website](#this-website)).
 - **ccugame.app**: on CCU Game's pages, the extension adds links to the Hangar Manager. It only

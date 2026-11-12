@@ -225,7 +225,10 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   and the last deployment stays; a fact a source doesn't give for a ship keeps its period. The
   wiki's content is CC BY-SA 4.0: the file names both sources and the license, and the site's
   footer gives the attribution. The file is one ship per line (left out of Prettier), so each
-  change shows as a changed line.
+  change shows as a changed line. The extension reads it once a day
+  ([`src/ships/sync-ship-facts.ts`](../src/ships/sync-ship-facts.ts), #109; the development build
+  from the working copy) and bundles the committed file as the fallback for the first start and
+  offline; `useShipFacts()` answers e.g. whether a ship is always available.
 - **Previews**: both pages have Open Graph and X tags with the same title and description as the
   page, and `store/social-preview-1280x640.png` as the image. Its URL has to be absolute: the build
   puts it below the site's address (`SITE_URL` in `site/vite.config.ts`).

@@ -124,7 +124,8 @@ const isReading = (id: StorageId) =>
   (isUpgradeTool(id) && (upgradeToolState.loading || isUpgradeTool(syncState.storage ?? '')));
 
 /** The events (#69) and the expected price increases (#195) come from the project website. */
-const fromWebsite = (id: StorageId) => id === 'events' || id === 'priceIncreases';
+const fromWebsite = (id: StorageId) =>
+  id === 'events' || id === 'priceIncreases' || id === 'shipFacts';
 
 /** The storage reset last, shown below the table until the next reset. */
 const resetDone = ref<StorageId>();

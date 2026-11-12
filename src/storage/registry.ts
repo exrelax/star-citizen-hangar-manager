@@ -11,6 +11,7 @@ import {
   warbondsMeta,
 } from '@/ships/ships-storage';
 import { shipStatusItem, shipStatusMeta, type ShipStatusSnapshot } from '@/ships/ship-status';
+import { shipFactsItem, shipFactsMeta, type ShipFactsSnapshot } from '@/ships/sync-ship-facts';
 import type { MetaItem } from './meta';
 import {
   storeCreditItem,
@@ -60,6 +61,7 @@ export type StorageId =
   | 'shipsBuyable'
   | 'shipsWarbonds'
   | 'shipStatus'
+  | 'shipFacts'
   | 'storeItems'
   | 'events'
   | 'priceIncreases'
@@ -181,6 +183,17 @@ export const STORAGES: readonly StorageDefinition[] = [
     usedBy: ['Price Increase Advisor (CCUs to ships that may rise later)'],
     kind: 'data',
     count: (value: ShipStatusSnapshot | null) => value?.count ?? 0,
+    readAgain: 'auto',
+  },
+  {
+    id: 'shipFacts',
+    meta: shipFactsMeta,
+    item: shipFactsItem,
+    content: 'Every ship: production status, always available, standard price, with their history',
+    source: 'Project website (data/ships.json, from the Ship Matrix and the Star Citizen Wiki)',
+    usedBy: ['Price Increase Advisor', 'CCU Consultant (always available base ships)'],
+    kind: 'data',
+    count: (value: ShipFactsSnapshot | null) => value?.facts.ships.length ?? 0,
     readAgain: 'auto',
   },
   {

@@ -215,6 +215,18 @@ export const SITE_DATA = {
 } as const;
 
 /**
+ * The ships' facts of the project website (#107, #109): status, "always available" and standard
+ * price of every ship with their history (`data/ships.json`). Larger than the other files and
+ * changing rarely: read at most once a day. A copy is bundled for the first start and offline.
+ */
+export const SHIP_FACTS = {
+  url: 'https://exrelax.github.io/star-citizen-hangar-manager/data/ships.json',
+  /** The format the extension reads; files of other versions are ignored. */
+  schemaVersion: 1,
+  maxAgeMs: 24 * 60 * 60 * 1000,
+} as const;
+
+/**
  * The event notices of the Pledge Store tab (#69): a list of events (e.g. the Intergalactic
  * Aerospace Expo) on the project website, read like its other data files (`SITE_DATA`).
  */
