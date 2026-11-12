@@ -125,6 +125,16 @@ onMounted(() => {
 });
 onUnmounted(() => removeEventListener('keydown', onKeydown));
 
+/** That giftable CCUs lose it when melted: one, all, or some of the group. */
+function giftableText(group: CcuAdviceGroup) {
+  const total = group.ccus.length;
+  if (total === 1) return i18n.t('ccuAdvice.giftableSingle');
+  if (group.giftable === total) return i18n.t('ccuAdvice.giftableAll', [total]);
+  return group.giftable === 1
+    ? i18n.t('ccuAdvice.giftableOne', [group.giftable, total])
+    : i18n.t('ccuAdvice.giftable', [group.giftable, total]);
+}
+
 function onKeydown(event: KeyboardEvent) {
   if (event.key === 'Escape') emit('close');
 }
@@ -302,12 +312,7 @@ function onKeydown(event: KeyboardEvent) {
             </template>
             <p v-if="group.giftable" class="shm-ccu-advice-note is-warning-note" role="note">
               <SvgIcon name="triangle-exclamation" />
-              <span>{{
-                i18n.t(group.giftable === 1 ? 'ccuAdvice.giftableOne' : 'ccuAdvice.giftable', [
-                  group.giftable,
-                  group.ccus.length,
-                ])
-              }}</span>
+              <span>{{ giftableText(group) }}</span>
             </p>
           </div>
           <p v-else-if="group.noSwitch" class="shm-ccu-advice-note">

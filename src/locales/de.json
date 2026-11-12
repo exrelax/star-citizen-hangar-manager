@@ -1037,6 +1037,8 @@
     "targetInConcept": "Die $1 ist noch nicht flugbereit: Ihr Preis steigt vermutlich ebenfalls, sobald sie es ist.",
     "giftable": "$1 dieser $2 CCUs lassen sich jetzt verschenken; die neuen, mit Store Credits gekauft, lassen sich nicht verschenken.",
     "giftableOne": "1 dieser $2 CCUs lässt sich jetzt verschenken; die neuen, mit Store Credits gekauft, lassen sich nicht verschenken.",
+    "giftableSingle": "Dieses CCU lässt sich jetzt verschenken; das neue, mit Store Credits gekauft, lässt sich nicht verschenken.",
+    "giftableAll": "Alle $1 CCUs lassen sich jetzt verschenken; die neuen, mit Store Credits gekauft, lassen sich nicht verschenken.",
     "footer": "Nur ein Vorschlag: Der Hangar Manager schmilzt und kauft nie etwas von sich aus. Preise und Termine sind erwartet, nicht von RSI bestätigt.",
     "button": "Rabatt erhalten",
     "buttonHint": "Dieses CCU verliert durch eine erwartete Preiserhöhung an Upgrade-Wert: so erhältst du seinen Rabatt."
