@@ -1017,7 +1017,7 @@
     "baseAlwaysAvailable": "Le $1 est le prochain vaisseau sous le $2 toujours disponible dans le Pledge Store : tu peux y accéder quand tu veux pour appliquer ces CCU.",
     "baseOnSale": "Le $1 est le prochain vaisseau sous le $2 en vente en ce moment. Il ne sera peut-être pas toujours disponible : y accéder plus tard pour appliquer ces CCU pourrait être plus difficile.",
     "holdings": "Tu as $1 × $2 dans ton hangar, $3 CCU vers lui dans ton hangar et $4 dans le Buy Back.",
-    "alternatives": "Alternatives moins chères",
+    "alternatives": "Le CCU recommandé et des alternatives moins chères",
     "colCcu": "CCU",
     "colPrice": "Prix",
     "colHangarShips": "Vaisseaux au hangar",
