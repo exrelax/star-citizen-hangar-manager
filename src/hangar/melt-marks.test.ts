@@ -1,6 +1,15 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { MELT_COOLDOWN_MS } from '@/config';
-import { formatTimeLeft, marksInHangar, meltableAt, toggledMarks } from './melt-marks';
+import {
+  demoMeltMarksItem,
+  formatTimeLeft,
+  marksInHangar,
+  meltableAt,
+  meltMarksItem,
+  setMeltMarks,
+  toggledMarks,
+} from './melt-marks';
 
 /** The later of the UTC and the local reading of a time without a time zone. */
 const latest = (...parts: [number, number, number, number, number]) =>
@@ -63,5 +72,25 @@ describe('formatTimeLeft', () => {
     expect(formatTimeLeft(2 * 60 * 60_000, 'en')).toBe('2 hr');
     expect(formatTimeLeft(11 * 60_000 + 1, 'en')).toBe('12 min');
     expect(formatTimeLeft(0, 'en')).toBe('< 1 min');
+  });
+});
+
+describe('setMeltMarks (#274)', () => {
+  beforeEach(() => fakeBrowser.reset());
+
+  it('marks all the pledges, keeping the time of marks already set, and unmarks them', async () => {
+    await meltMarksItem.setValue({ 1: 100, 9: 900 });
+    await setMeltMarks([1, 2, 3], true);
+    const marks = await meltMarksItem.getValue();
+    expect(marks[1]).toBe(100);
+    expect(Object.keys(marks).sort()).toEqual(['1', '2', '3', '9']);
+    await setMeltMarks([1, 2, 3], false);
+    expect(await meltMarksItem.getValue()).toEqual({ 9: 900 });
+  });
+
+  it('keeps the demo’s marks apart', async () => {
+    await setMeltMarks([5], true, true);
+    expect(Object.keys(await demoMeltMarksItem.getValue())).toEqual(['5']);
+    expect(await meltMarksItem.getValue()).toEqual({});
   });
 });
