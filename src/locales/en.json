@@ -1017,7 +1017,7 @@
     "baseAlwaysAvailable": "The $1 is the next ship below the $2 that is always available in the Pledge Store, so you can get onto it whenever you want to apply these CCUs.",
     "baseOnSale": "The $1 is the next ship below the $2 on sale right now. It may not always be available, so getting onto it later to apply these CCUs could be harder.",
     "holdings": "You have $1 × $2 in your hangar, $3 CCUs to it in your hangar and $4 in the buy back.",
-    "alternatives": "Cheaper alternatives",
+    "alternatives": "The recommended CCU and cheaper alternatives",
     "colCcu": "CCU",
     "colPrice": "Price",
     "colHangarShips": "Ships in hangar",

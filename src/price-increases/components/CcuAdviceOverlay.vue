@@ -68,6 +68,8 @@ const risingShipIds = computed(
 
 /** Whether a ship is always available, from the website's ship facts (#109, #263). */
 const shipFacts = useShipFacts();
+/** Marked in the alternatives, like the Pledge Store tab's base ship tables (#273). */
+const alwaysAvailable = (id: number) => shipFacts.value?.isAlwaysAvailable(id) === true;
 
 const groups = computed((): CcuAdviceGroup[] | undefined => {
   const shipList = current(ships.value ?? null)?.ships;
@@ -274,7 +276,8 @@ function onKeydown(event: KeyboardEvent) {
                 ])
               }}
             </p>
-            <!-- Cheaper CCUs from base ships between the recommended one and the rising ship. -->
+            <!-- The recommended CCU, then the cheaper ones from base ships between it and the rising
+                 ship (#273): only the recommended base ship can be always available. -->
             <template v-if="group.switch.alternatives.length">
               <p class="shm-ccu-advice-text">
                 <strong>{{ i18n.t('ccuAdvice.alternatives') }}</strong>
@@ -285,6 +288,13 @@ function onKeydown(event: KeyboardEvent) {
                     <tr>
                       <th scope="col">{{ i18n.t('ccuAdvice.colCcu') }}</th>
                       <th scope="col" class="is-number">{{ i18n.t('ccuAdvice.colPrice') }}</th>
+                      <th
+                        v-tooltip="i18n.t('store.colAlwaysAvailableHint')"
+                        scope="col"
+                        class="is-center"
+                      >
+                        {{ i18n.t('store.colAlwaysAvailable') }}
+                      </th>
                       <th scope="col" class="is-number">
                         {{ i18n.t('ccuAdvice.colHangarShips') }}
                       </th>
@@ -295,13 +305,25 @@ function onKeydown(event: KeyboardEvent) {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="alternative in group.switch.alternatives" :key="alternative.from.id">
+                    <tr
+                      v-for="alternative in [group.switch, ...group.switch.alternatives]"
+                      :key="alternative.from.id"
+                      :class="{ 'is-recommended': alternative === group.switch }"
+                    >
                       <th scope="row">
                         {{
                           i18n.t('ccuAdvice.ccuName', [alternative.from.name, group.switch.to.name])
                         }}
                       </th>
                       <td class="is-number">{{ usd(alternative.price) }}</td>
+                      <td class="is-center">
+                        <SvgIcon
+                          v-if="alwaysAvailable(alternative.from.id)"
+                          name="check"
+                          class="shm-always-available"
+                          :label="i18n.t('store.colAlwaysAvailable')"
+                        />
+                      </td>
                       <td class="is-number">{{ alternative.holdings.hangarShips }}</td>
                       <td class="is-number">{{ alternative.holdings.hangarCcus }}</td>
                       <td class="is-number">{{ alternative.holdings.buybackCcus }}</td>
@@ -410,6 +432,20 @@ function onKeydown(event: KeyboardEvent) {
 
 .shm-ccu-advice .shm-ccu-advice-table .is-number {
   text-align: right;
+}
+
+.shm-ccu-advice .shm-ccu-advice-table .is-center {
+  text-align: center;
+}
+
+/* The recommended CCU, above the cheaper alternatives. */
+.shm-ccu-advice .shm-ccu-advice-table tr.is-recommended > * {
+  color: var(--shm-text-strong);
+}
+
+/* A base ship always available in the Pledge Store, as in its tables (store-table.css). */
+.shm-ccu-advice .shm-ccu-advice-table .shm-always-available {
+  color: var(--shm-success);
 }
 
 .shm-ccu-advice .shm-ccu-advice-holdings {

@@ -1017,7 +1017,7 @@
     "baseAlwaysAvailable": "La $1 es la siguiente nave por debajo de la $2 siempre disponible en la Pledge Store: puedes conseguirla cuando quieras para aplicar estos CCU.",
     "baseOnSale": "La $1 es la siguiente nave por debajo de la $2 a la venta ahora mismo. Puede que no siempre esté disponible, así que conseguirla más tarde para aplicar estos CCU podría ser más difícil.",
     "holdings": "Tienes $1 × $2 en tu hangar, $3 CCU hacia ella en tu hangar y $4 en el Buy Back.",
-    "alternatives": "Alternativas más baratas",
+    "alternatives": "El CCU recomendado y alternativas más baratas",
     "colCcu": "CCU",
     "colPrice": "Precio",
     "colHangarShips": "Naves en el hangar",
