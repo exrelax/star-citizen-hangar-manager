@@ -834,7 +834,6 @@ html .shm-theme-modern .shm-run-actions > .shm-run-ghost:not(:disabled):focus-vi
   background: var(--shm-fill-strong);
 }
 
-html .shm-theme-modern .shm-completed .shm-completed-title,
 html .shm-theme-modern .shm-consultant .shm-consultant-section-title {
   color: var(--shm-text-secondary);
   font-size: calc(13px * var(--shm-font-scale));

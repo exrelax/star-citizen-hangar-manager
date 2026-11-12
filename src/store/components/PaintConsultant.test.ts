@@ -215,9 +215,21 @@ describe('PaintConsultant', () => {
     expect(text(steps[1] as HTMLElement)).toContain('Bulk melting disabled');
     // The old blocks are gone: the running plan is one list of steps.
     expect(root.querySelector('.shm-consultant-rebought')).toBeNull();
-    // The old pledge isn't planned again: the new plan has the other four, below its heading.
-    expect(text(root.querySelector('.shm-consultant-section-title')!)).toBe('New plan');
-    expect(text(root)).toContain('Your paints to melt and buy again (4)');
+    // The running plan and the new plan are tabs (#244), the running one shown first.
+    const tabs = [...root.querySelectorAll('.shm-consultant-tabs .shm-tab')];
+    expect(tabs.map((tab) => text(tab).trim())).toEqual(['Running plan', 'New plan']);
+    expect(tabs[0]!.getAttribute('aria-selected')).toBe('true');
+    expect(root.querySelector('.shm-consultant-section-title')).toBeNull();
+    // The old pledge isn't planned again: the new plan has the other four, in its hidden tab.
+    const newPanel = root.querySelector<HTMLElement>('#shm-consultant-panel-new')!;
+    expect(newPanel.style.display).toBe('none');
+    expect(text(newPanel)).toContain('Your paints to melt and buy again (4)');
+    (tabs[1] as HTMLElement).click();
+    await nextTick();
+    expect(newPanel.style.display).toBe('');
+    expect(root.querySelector<HTMLElement>('#shm-consultant-panel-running')!.style.display).toBe(
+      'none',
+    );
   });
 
   it('shows a pair without a kept plan only as a guess, with that setting', async () => {
@@ -268,7 +280,9 @@ describe('PaintConsultant', () => {
     // Without a running plan the cart button doesn't ask.
     const free = await render(pledges, choose);
     expect(free.querySelector('.shm-run')).toBeNull();
-    expect(free.querySelector('.shm-consultant-section-title')).toBeNull();
+    // A single tab: its heading instead of tabs (#244).
+    expect(free.querySelector('.shm-consultant-tabs')).toBeNull();
+    expect(text(free.querySelector('.shm-consultant-section-title')!)).toBe('New plan');
     app?.unmount();
 
     await storePlan([pledges[0]!.id], Date.now(), 'buy');

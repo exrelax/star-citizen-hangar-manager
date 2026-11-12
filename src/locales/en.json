@@ -859,8 +859,12 @@
       "discard": "Discard plan",
       "discardConfirm": "Discard the running plan? Nothing in your hangar or cart changes, and pledges marked to melt stay marked. Paints you melted first and haven’t bought again are no longer tracked.",
       "replaceConfirm": "A plan is running. Filling the cart for this new plan discards it – paints of it you melted first and haven’t bought again are no longer tracked.",
-      "replace": "Discard it and fill the cart",
-      "newPlanTitle": "New plan"
+      "replace": "Discard it and fill the cart"
+    },
+    "tabs": {
+      "running": "Running plan",
+      "new": "New plan",
+      "completed": "Completed plans"
     },
     "completed": {
       "title": "Completed plans",

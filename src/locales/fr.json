@@ -859,8 +859,12 @@
       "discard": "Abandonner le plan",
       "discardConfirm": "Abandonner le plan en cours ? Rien ne change dans votre hangar ni votre panier, et les pledges marqués à fondre le restent. Les peintures fondues d’abord et pas encore rachetées ne sont plus suivies.",
       "replaceConfirm": "Un plan est en cours. Remplir le panier pour ce nouveau plan l’abandonne – ses peintures fondues d’abord et pas encore rachetées ne sont plus suivies.",
-      "replace": "L’abandonner et remplir le panier",
-      "newPlanTitle": "Nouveau plan"
+      "replace": "L’abandonner et remplir le panier"
+    },
+    "tabs": {
+      "running": "Plan en cours",
+      "new": "Nouveau plan",
+      "completed": "Plans terminés"
     },
     "completed": {
       "title": "Plans terminés",
