@@ -22,7 +22,9 @@
       "ship": { "id": 109, "name": "Prospector" },
       "priceIncreaseAt": "2026-11-19T16:00:00Z",
       "price": { "from": 155, "to": 175 },
-      "event": "iae-2956"
+      "event": "iae-2956",
+      "confirmed": true,
+      "source": "https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/iae-2956-faq-choose-your-adventure"
     }
   ]
 }
