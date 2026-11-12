@@ -15,6 +15,12 @@ import {
   type SidebarBox,
 } from '@/hangar/sidebar';
 import { BUYBACK_SORTS, HANGAR_SORTS, type BuybackSort, type HangarSort } from '@/hangar/sorting';
+import {
+  DEFAULT_HISTORY_PERIOD,
+  HISTORY_PERIODS,
+  HISTORY_SORTS,
+  type HistoryChoice,
+} from '@/store/warbond-history-view';
 import { isLocale, type Locale } from '@/i18n';
 
 /** `auto`: the browser's language if there is a translation for it, English otherwise. */
@@ -132,6 +138,8 @@ export interface Settings {
     hangar: HangarSort;
     buyback: BuybackSort;
   };
+  /** Order and period of the Pledge Store tab's Warbond CCU History (#297). */
+  warbondHistory: HistoryChoice;
   /** The Paint Discount Consultant (see `store/paint-consultant`); it only uses store credit. */
   paintConsultant: {
     /** The cart may also be paid with the current store credit, not only with the melt values. */
@@ -185,6 +193,7 @@ export const DEFAULT_SETTINGS: Settings = {
     buyback: normalizeFilterGroups(FILTERS.buyback, BUYBACK_FILTER_CATEGORIES, FILTERS.buyback),
   },
   sort: { hangar: 'newest', buyback: 'newest' },
+  warbondHistory: { sort: 'date', period: DEFAULT_HISTORY_PERIOD },
   paintConsultant: {
     useStoreCredit: true,
     useFillers: true,
@@ -284,6 +293,7 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
       hangar: valid(stored?.sort?.hangar, oneOf(HANGAR_SORTS), DEFAULT_SETTINGS.sort.hangar),
       buyback: valid(stored?.sort?.buyback, oneOf(BUYBACK_SORTS), DEFAULT_SETTINGS.sort.buyback),
     },
+    warbondHistory: warbondHistoryOf(stored?.warbondHistory),
     paintConsultant: {
       useStoreCredit: valid(
         stored?.paintConsultant?.useStoreCredit,
@@ -322,4 +332,15 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
 /** Back to the defaults: the stored settings are removed, `withDefaults` then gives the defaults. */
 export async function resetSettings(): Promise<void> {
   await settingsItem.removeValue();
+}
+
+/** The stored order and period of the Warbond CCU History, the defaults for invalid parts. */
+function warbondHistoryOf(stored: Partial<HistoryChoice> | undefined): HistoryChoice {
+  const defaults = DEFAULT_SETTINGS.warbondHistory;
+  const eventId = stored?.eventId;
+  return {
+    sort: valid(stored?.sort, oneOf(HISTORY_SORTS), defaults.sort),
+    period: valid(stored?.period, oneOf(HISTORY_PERIODS), defaults.period),
+    ...(typeof eventId === 'string' && eventId.length <= 100 && { eventId }),
+  };
 }

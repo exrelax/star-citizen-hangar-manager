@@ -3,7 +3,8 @@ import type { StarCitizenEvent } from '@/events/events';
 import type { Ship } from '@/ships/ships';
 import { WARBOND_HISTORY_VERSION, type WarbondSighting } from './warbond-history';
 import {
-  defaultHistoryPeriod,
+  chosenPeriod,
+  currentHistoryChoice,
   historyEntries,
   historyPeriods,
   periodStart,
@@ -102,8 +103,27 @@ describe('periods', () => {
     expect(runningEvent([IAE], NOW + 2 * DAY)).toBeUndefined();
     expect(historyPeriods(IAE)).toEqual(['event', 'days30', 'days90', 'days180']);
     expect(historyPeriods(undefined)).toEqual(['days30', 'days90', 'days180']);
-    expect(defaultHistoryPeriod(IAE)).toBe('event');
-    expect(defaultHistoryPeriod(undefined)).toBe('days90');
+  });
+
+  it('selects the period of a new event and goes back to 90 days once it is over', () => {
+    const stored = { sort: 'discount' as const, period: 'days30' as const };
+    const during = currentHistoryChoice(stored, IAE);
+    expect(during).toEqual({ sort: 'discount', period: 'event', eventId: 'iae' });
+    // Unchanged while the event runs: the same object, nothing to store.
+    expect(currentHistoryChoice(during, IAE)).toBe(during);
+    // Another period chosen during the event is kept until it ends.
+    const chosen = chosenPeriod(during, 'days180', IAE);
+    expect(currentHistoryChoice(chosen, IAE)).toBe(chosen);
+    expect(currentHistoryChoice(chosen, undefined)).toBe(chosen);
+    // After the event, its period goes back to 90 days; other periods stay.
+    expect(currentHistoryChoice(during, undefined)).toEqual({ sort: 'discount', period: 'days90' });
+    expect(currentHistoryChoice(stored, undefined)).toBe(stored);
+    // The next event selects its period again.
+    const next = { ...IAE, id: 'invictus' };
+    expect(currentHistoryChoice(chosen, next)).toMatchObject({
+      period: 'event',
+      eventId: 'invictus',
+    });
   });
 
   it('keeps the offers last seen within the period', () => {

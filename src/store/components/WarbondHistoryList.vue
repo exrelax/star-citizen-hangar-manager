@@ -5,10 +5,13 @@ import { i18n } from '@/i18n';
 import SelectMenu from '@/shared/components/SelectMenu.vue';
 import type { Ship } from '@/ships/ships';
 import { useShipFacts } from '@/ships/use-ship-facts';
-import { computed, ref, watch } from 'vue';
+import type { Settings } from '@/settings/settings';
+import { useSettings } from '@/settings/use-settings';
+import { computed, watch } from 'vue';
 import type { WarbondHistorySnapshot } from '../warbond-history';
 import {
-  defaultHistoryPeriod,
+  chosenPeriod,
+  currentHistoryChoice,
   historyEntries,
   historyPeriods,
   HISTORY_SORTS,
@@ -34,6 +37,7 @@ const props = defineProps<{
   now: number;
   /** The tab is shown: only then the list owns the search parameter of the URL. */
   active: boolean;
+  settings: Settings;
 }>();
 
 const shipFacts = useShipFacts();
@@ -42,20 +46,30 @@ const all = computed(() =>
 );
 
 const event = computed(() => runningEvent(props.events, props.now));
-const period = ref<HistoryPeriod>(defaultHistoryPeriod(event.value));
-// An event that begins or ends selects its default again.
+
+/*
+ * Order and period are kept in the settings. A new event selects its period at first; once the
+ * event is over, the event period goes back to 90 days on its own (`currentHistoryChoice`).
+ */
+const { update } = useSettings();
+const choice = computed(() => currentHistoryChoice(props.settings.warbondHistory, event.value));
 watch(
-  () => event.value?.id,
-  () => (period.value = defaultHistoryPeriod(event.value)),
+  choice,
+  (next) => next !== props.settings.warbondHistory && void update({ warbondHistory: next }),
+  { immediate: true },
 );
+const period = computed(() => choice.value.period);
+const sort = computed(() => choice.value.sort);
+const setPeriod = (next: HistoryPeriod) =>
+  update({ warbondHistory: chosenPeriod(choice.value, next, event.value) });
+const setSort = (next: HistorySort) => update({ warbondHistory: { ...choice.value, sort: next } });
+
 const periodOptions = computed(() =>
   historyPeriods(event.value).map((value) => ({
     value,
     label: i18n.t(`store.historyPeriods.${value}`),
   })),
 );
-
-const sort = ref<HistorySort>('date');
 const sortOptions = computed(() =>
   HISTORY_SORTS.map((value) => ({ value, label: i18n.t(`store.historySorts.${value}`) })),
 );
@@ -85,14 +99,15 @@ const entries = computed(() =>
         searchPlaceholder: 'store.historySearch',
         noResults: 'store.historyNoResults',
       }"
-      @update:sort="sort = $event"
+      @update:sort="setSort"
     >
       <template #side>
         <SelectMenu
-          v-model="period"
+          :model-value="period"
           :options="periodOptions"
           :label="i18n.t('store.historyPeriod')"
           icon="clock-rotate-left"
+          @update:model-value="setPeriod"
         />
       </template>
       <template #row="{ entry }">
