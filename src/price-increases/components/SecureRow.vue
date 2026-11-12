@@ -13,6 +13,8 @@ import PriceIncreaseBadge from './PriceIncreaseBadge.vue';
  * A ship whose price is expected to rise, in the Pledge Store tab (#253): its price now and after,
  * the countdown, RSI's upgrade dialog with it as target, and – opened – the cheapest CCUs to it,
  * each gaining the price increase as discount. Laid out like the warbond CCUs (WarbondRow.vue).
+ * A ship RSI doesn't sell CCUs to right now (#311) shows the buy back's CCUs to it instead, and
+ * no upgrade dialog.
  */
 const props = defineProps<{ offer: SecureOffer }>();
 
@@ -27,6 +29,10 @@ function toggleFrom(event: MouseEvent) {
 const usd = (value: number) => formatUsd(value, locale.value);
 const match = computed(() => ({ increase: props.offer.increase, reason: 'ship' as const }));
 const when = computed(() => formatExpectedTime(props.offer.increase.priceIncreaseAt, locale.value));
+/** Not on sale (#311): how many CCUs to it the buy back has. */
+const buybackCount = computed(
+  () => props.offer.buyback?.reduce((sum, group) => sum + group.count, 0) ?? 0,
+);
 </script>
 
 <template>
@@ -51,6 +57,9 @@ const when = computed(() => formatExpectedTime(props.offer.increase.priceIncreas
             {{ usd(offer.increase.price.from) }} → {{ usd(offer.increase.price.to) }}
           </span>
           <span v-else class="shm-secure-price">{{ usd(offer.price) }}</span>
+          <span v-if="offer.buyback" class="shm-secure-buyback">
+            {{ i18n.t('ccusToSecure.notOnSale', [buybackCount]) }}
+          </span>
         </span>
       </span>
 
@@ -60,6 +69,7 @@ const when = computed(() => formatExpectedTime(props.offer.increase.priceIncreas
 
       <!-- RSI's own opener (a click handler on the page): its overlay, with this ship as target. -->
       <a
+        v-if="offer.skuId"
         v-tooltip="i18n.t('ccusToSecure.openUpgradeHint', [offer.ship.name])"
         href="#"
         class="shm-button shm-warbond-upgrade js-open-ship-upgrades"
@@ -87,9 +97,20 @@ const when = computed(() => formatExpectedTime(props.offer.increase.priceIncreas
     <div v-if="expanded" class="shm-details shm-warbond-details">
       <div class="shm-details-main">
         <h4 class="shm-warbond-heading">
-          {{ i18n.t('ccusToSecure.cheapestTitle', [offer.ship.name]) }}
+          {{
+            i18n.t(offer.buyback ? 'ccusToSecure.buybackTitle' : 'ccusToSecure.cheapestTitle', [
+              offer.ship.name,
+            ])
+          }}
         </h4>
-        <p class="shm-hint">
+        <p v-if="offer.buyback" class="shm-hint">
+          {{
+            offer.gain
+              ? i18n.t('ccusToSecure.buybackGainHint', [offer.ship.name, usd(offer.gain), when])
+              : i18n.t('ccusToSecure.buybackGainUnknownHint', [offer.ship.name, when])
+          }}
+        </p>
+        <p v-else class="shm-hint">
           {{
             offer.gain
               ? i18n.t('ccusToSecure.gainHint', [usd(offer.gain), when])
@@ -111,7 +132,13 @@ const when = computed(() => formatExpectedTime(props.offer.increase.priceIncreas
             <SvgIcon name="square-up-right" />
           </a>
         </p>
-        <p v-if="!offer.bases.length" class="shm-hint">
+        <BaseShipsTable
+          v-if="offer.buyback"
+          :bases="[]"
+          :buyback="offer.buyback"
+          :target="{ shipId: offer.ship.id, skuId: 0, name: offer.ship.name }"
+        />
+        <p v-else-if="!offer.bases.length || !offer.skuId" class="shm-hint">
           {{ i18n.t('ccusToSecure.noBases', [offer.ship.name]) }}
         </p>
         <BaseShipsTable
@@ -130,6 +157,10 @@ const when = computed(() => formatExpectedTime(props.offer.increase.priceIncreas
 .shm-secure-price {
   color: var(--shm-text-strong);
   font-variant-numeric: tabular-nums;
+}
+
+.shm-secure-buyback {
+  color: var(--shm-text-muted);
 }
 
 .shm-secure .shm-main {

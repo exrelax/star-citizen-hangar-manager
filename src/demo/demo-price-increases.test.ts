@@ -4,6 +4,7 @@ import { pledgesWithinDays } from '@/price-increases/price-increase-notes';
 import { isWithinDays } from '@/price-increases/price-increases';
 import { FALLBACK_CATALOG } from './catalog';
 import { generatedDemo } from './demo';
+import { demoNotOnSaleShip } from './demo-price-increases';
 import { DEFAULT_DEMO_SETTINGS } from './demo-settings';
 import type { PledgeView } from '@/hangar/pledge-view';
 import { advisorNotes } from '@/price-increases/advisor-notes';
@@ -125,3 +126,43 @@ describe.each(['key-a', 'key-b', 'key-c'])(
     });
   },
 );
+
+describe.each(['key-a', 'key-b'])('the CCUs to secure from the demo buy back %s (#311)', (key) => {
+  // Every other ship of the catalog is on sale.
+  const onSale = FALLBACK_CATALOG.ships.filter((_, index) => index % 2 === 0);
+  const { buyback, priceIncreases } = generatedDemo(
+    FALLBACK_CATALOG,
+    key,
+    TODAY,
+    NOW,
+    DEFAULT_DEMO_SETTINGS,
+    new Set(onSale.map((ship) => ship.id)),
+  );
+  const secure = ccusToSecure({
+    increases: priceIncreases,
+    ships: FALLBACK_CATALOG.ships,
+    buyable: onSale.map((ship) => ({
+      shipId: ship.id,
+      skuId: ship.id,
+      title: 'Standard Edition',
+      price: ship.msrp,
+    })),
+    warbonds: [],
+    buyback,
+    now: NOW,
+  });
+
+  it('has a ship not on sale with CCUs from several base ships, one without a price', () => {
+    const ship = demoNotOnSaleShip(FALLBACK_CATALOG, new Set(onSale.map((entry) => entry.id)));
+    const offer = secure.find((entry) => entry.ship.id === ship?.id);
+    expect(offer?.skuId).toBeUndefined();
+    expect(offer?.buyback?.length).toBe(3);
+    expect(offer?.buyback?.some((group) => group.count === 2)).toBe(true);
+    expect(offer?.buyback?.at(-1)?.price).toBeUndefined();
+    expect(offer?.buyback?.slice(0, 2).every((group) => group.price)).toBe(true);
+  });
+
+  it('keeps the CCUs to secure of a ship on sale', () => {
+    expect(secure.some((entry) => entry.skuId && entry.bases.length)).toBe(true);
+  });
+});

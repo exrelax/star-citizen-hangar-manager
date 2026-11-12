@@ -19,6 +19,7 @@ import { ccuTargetsOf, type DemoPledge } from './generate-hangar';
  * - a ship RSI sells CCUs to without a CCU from it in My Hangar: the Pledge Store tab's CCUs to
  *   secure and the sidebar's hint.
  * The first one is confirmed by CIG, with a source, the second only expected (#275).
+ * And a ship RSI doesn't sell CCUs to right now, with CCUs to it in the buy back (#311).
  */
 
 const HOUR = 60 * 60 * 1000;
@@ -58,8 +59,10 @@ export function demoPriceIncreases(
   now: number,
   /** The ships RSI sells CCUs to (the upgrade tool's), if known: for the CCUs to secure. */
   buyable?: ReadonlySet<number>,
+  /** A ship not on sale with CCUs to it in the buy back (`demoNotOnSaleShip`, #311). */
+  notOnSale?: Ship,
 ): ExpectedPriceIncrease[] {
-  const used = new Set<string>();
+  const used = new Set<string>(notOnSale ? [notOnSale.name] : []);
   /** The first of the candidates not used yet, else any ship of the catalog not used yet. */
   const free = (...candidates: (Ship | undefined)[]): Ship | undefined =>
     [...candidates, ...catalog.ships].find((ship) => ship && !used.has(ship.name));
@@ -156,6 +159,15 @@ export function demoPriceIncreases(
           },
         ]
       : []),
+    ...(notOnSale
+      ? [
+          {
+            ship: { id: notOnSale.id, name: notOnSale.name },
+            priceIncreaseAt: at(now, 7, 5),
+            price: risenPrice(notOnSale),
+          },
+        ]
+      : []),
     ...(secureShip
       ? [
           {
@@ -166,4 +178,20 @@ export function demoPriceIncreases(
         ]
       : []),
   ];
+}
+
+/**
+ * A ship RSI doesn't sell CCUs to right now (#311), for the CCUs to secure from the buy back: of
+ * the catalog's ships in the middle of the price range, with cheaper ones to start from. Only
+ * while it is known which ships RSI sells CCUs to.
+ */
+export function demoNotOnSaleShip(
+  catalog: DemoCatalog,
+  buyable?: ReadonlySet<number>,
+): Ship | undefined {
+  if (!buyable?.size) return undefined;
+  const candidates = ccuTargetsOf(catalog.ships)
+    .filter((ship) => !buyable.has(ship.id))
+    .sort((a, b) => a.msrp - b.msrp || a.name.localeCompare(b.name));
+  return candidates[Math.floor(candidates.length / 2)];
 }

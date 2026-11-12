@@ -1258,6 +1258,12 @@
     "cheapestTitle": "Cheapest CCUs to the $1",
     "gainHint": "Each CCU bought before $2 gains $1 of discount. The counts show how often you already have each ship – as ship or as target of a CCU – in your hangar and buy back.",
     "gainUnknownHint": "Each CCU bought before $1 gains as much discount as the price rises – how much isn’t known yet. The counts show how often you already have each ship – as ship or as target of a CCU – in your hangar and buy back.",
-    "noBases": "No ship costs less than the $1, so there is no CCU to it."
+    "noBases": "No ship costs less than the $1, so there is no CCU to it.",
+    "notOnSale": "No CCUs on sale · $1 in your buy back",
+    "buybackTitle": "Your buy back’s CCUs to the $1",
+    "buybackGainHint": "RSI doesn’t sell CCUs to the $1 right now, but your buy back has some. Each one bought back before $3 gains $2 of discount.",
+    "buybackGainUnknownHint": "RSI doesn’t sell CCUs to the $1 right now, but your buy back has some. Each one bought back before $2 gains as much discount as the price rises – how much isn’t known yet.",
+    "colBuybackPrice": "Buy back",
+    "noPriceHint": "The buy back price isn’t known yet."
   }
 }
