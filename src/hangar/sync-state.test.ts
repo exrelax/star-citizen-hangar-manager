@@ -17,6 +17,9 @@ vi.mock('@/ships/sync-upgrade-tool', () => ({ maybeRefreshUpgradeTool: vi.fn(asy
 vi.mock('@/store/items/sync-store-items', () => ({
   maybeRefreshStoreItems: vi.fn(async () => {}),
 }));
+// No network in the tests: the Ship Matrix (several MB) and the website's ship facts.
+vi.mock('@/ships/ship-status', () => ({ maybeRefreshShipStatus: vi.fn(async () => {}) }));
+vi.mock('@/ships/sync-ship-facts', () => ({ maybeRefreshShipFacts: vi.fn(async () => {}) }));
 
 const minute = 60_000;
 /** The hangar's last check, `minutes` ago. */
