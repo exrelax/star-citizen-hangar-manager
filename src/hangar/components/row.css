@@ -492,6 +492,11 @@
   color: var(--shm-warning);
 }
 
+/* The discount after an expected price increase (#274), next to today's. */
+.shm-discount.is-future {
+  color: var(--shm-warning);
+}
+
 /*
  * Selecting a pledge (My Hangar, for the sidebar): a round control in the row's top right
  * corner, a check when selected.

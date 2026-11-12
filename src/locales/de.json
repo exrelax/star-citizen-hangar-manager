@@ -51,6 +51,8 @@
     "showInMyGear": "In „My Gear“ anzeigen (Seite $1)",
     "discountTitle": "Originalpreis: $1. Pledge-Wert: $2. Gespart: $3 ($4).",
     "surchargeTitle": "Originalpreis: $1. Pledge-Wert: $2. Das sind $3 ($4) mehr als der Originalpreis.",
+    "futureDiscountTitle": "Ab $1, wenn der Preis der $2 voraussichtlich steigt, beträgt der Originalpreis dieses Pledges $3 (heute $4): Sein Rabatt ist dann $5.",
+    "futureSurchargeTitle": "Ab $1, wenn der Preis der $2 voraussichtlich steigt, beträgt der Originalpreis dieses Pledges $3 (heute $4): Er kostet dann $5 mehr als dieser.",
     "externalLinks": "Externe Links:",
     "openOn": "$1 auf $2 öffnen (neuer Tab)",
     "kinds": {
