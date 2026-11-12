@@ -25,11 +25,7 @@ const percent = (value: number) => formatPercent(value, locale.value);
     <SvgIcon v-if="end" name="triangle-exclamation" />
     <div>
       <p>
-        {{
-          pairs.length === 1
-            ? i18n.t('consultant.probablyReboughtOne')
-            : i18n.t('consultant.probablyRebought', [pairs.length])
-        }}
+        {{ i18n.n('consultant.probablyRebought', pairs.length) }}
       </p>
       <ul>
         <li v-for="{ old, copy } in pairs" :key="old.pledgeId">

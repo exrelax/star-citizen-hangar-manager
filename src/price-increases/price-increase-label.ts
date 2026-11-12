@@ -1,5 +1,5 @@
 import { formatUsd } from '@/hangar/discount-format';
-import { translate, type Locale } from '@/i18n';
+import { translate, translatePlural, type Locale } from '@/i18n';
 import { localized } from '@/site-data/site-data';
 import type { CcuPriceChange } from './ccu-price-change';
 import type { PriceIncreaseMatch } from './price-increase-match';
@@ -69,7 +69,7 @@ function countdown(time: ExpectedTime, now: number, locale: Locale): string {
   const left = Math.max(0, time.at - now);
   if (left >= DAY) {
     const days = Math.floor(left / DAY);
-    return translate(locale, days === 1 ? 'priceIncrease.day' : 'priceIncrease.days', [days]);
+    return translatePlural(locale, 'priceIncrease.days', days);
   }
   const hours = Math.floor(left / HOUR);
   const minutes = Math.floor((left - hours * HOUR) / MINUTE);

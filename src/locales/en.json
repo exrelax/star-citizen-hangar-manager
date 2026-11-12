@@ -14,8 +14,14 @@
     "initialLoadText": "The Hangar Manager reads your hangar, buy back and orders from RSI's website and keeps them in this browser. It doesn't do this on its own – start the first load here.",
     "initialLoad": "Initial Load",
     "initialLoadDuration": "The first load can take a few seconds: about $1 for $2 pledges, about $3 for $4 pledges (hangar and buy back together). The progress shows on the refresh button at the top right.",
-    "count": "$1 pledges",
-    "countFiltered": "$1 of $2 pledges",
+    "count": {
+      "one": "$1 pledge",
+      "other": "$1 pledges"
+    },
+    "countFiltered": {
+      "one": "$1 of $2 pledge",
+      "other": "$1 of $2 pledges"
+    },
     "searchPlaceholder": "Search titles, ships, pledge and order IDs …",
     "noResults": "No pledges match your search.",
     "syncProgress": "Reading RSI pages: $1 of $2 ($3)",
@@ -115,8 +121,14 @@
       "rewardsByName": "Rewards, recognized by their names: event, referral, Concierge and other rewards.",
       "discount": "Bought for less than the original price: ships and CCUs compared with RSI's ship prices, paints, gear and more with the Pledge Store. Pledges whose original price isn't known, or that cost more, don't count.",
       "available": "Pledges RSI can sell again. Excluded: CCUs whose base ship now costs as much as or more than their target ship – RSI only sells a CCU to a more expensive ship.",
-      "priceIncrease": "Pledges whose price is expected to rise within the next $1 days (set in the settings), e.g. ships becoming flight ready at the IAE, and CCUs from such a ship, which lose upgrade value. The dates are expected, not confirmed by RSI.",
-      "priceChange": "Pledges whose value changes with a price increase expected within the next $1 days (set in the settings): ships and items whose price rises, CCUs to them (they gain upgrade value) and CCUs from them (they lose it). The dates are expected, not confirmed by RSI."
+      "priceIncrease": {
+        "one": "Pledges whose price is expected to rise within the next day (set in the settings), e.g. ships becoming flight ready at the IAE, and CCUs from such a ship, which lose upgrade value. The dates are expected, not confirmed by RSI.",
+        "other": "Pledges whose price is expected to rise within the next $1 days (set in the settings), e.g. ships becoming flight ready at the IAE, and CCUs from such a ship, which lose upgrade value. The dates are expected, not confirmed by RSI."
+      },
+      "priceChange": {
+        "one": "Pledges whose value changes with a price increase expected within the next day (set in the settings): ships and items whose price rises, CCUs to them (they gain upgrade value) and CCUs from them (they lose it). The dates are expected, not confirmed by RSI.",
+        "other": "Pledges whose value changes with a price increase expected within the next $1 days (set in the settings): ships and items whose price rises, CCUs to them (they gain upgrade value) and CCUs from them (they lose it). The dates are expected, not confirmed by RSI."
+      }
     },
     "categories": {
       "types": "Types",
@@ -484,10 +496,16 @@
     "stepsTitle": "Last check",
     "stepUnchanged": "no changes",
     "stepUpdated": "$1 new, $2 removed, $3 changed",
-    "stepNewLogEntries": "$1 new log entries",
+    "stepNewLogEntries": {
+      "one": "$1 new log entry",
+      "other": "$1 new log entries"
+    },
     "stepFailed": "failed",
     "stepNeedsFullSync": "too many changes",
-    "stepPages": "$1 pages read"
+    "stepPages": {
+      "one": "$1 page read",
+      "other": "$1 pages read"
+    }
   },
   "ccugame": {
     "openInManager": "Open in Hangar Manager (#$1)",
@@ -522,7 +540,10 @@
     "loading": "Reading the current offers from RSI …",
     "failed": "The offers couldn't be read from RSI: $1",
     "retry": "Try again",
-    "count": "$1 warbond CCUs",
+    "count": {
+      "one": "$1 warbond CCU",
+      "other": "$1 warbond CCUs"
+    },
     "fetchedAt": "Updated $1",
     "updating": "Updating …",
     "refresh": "Refreshes only the Pledge Store data here in the Hangar Manager – not your hangar, buy back or orders",
@@ -567,8 +588,14 @@
     "viewCurrent": "Current Discount CCUs",
     "viewHistory": "Warbond CCU History",
     "historyIntro": "Warbond offers RSI no longer sells, as the Hangar Manager saw them in this browser. No public record of past offers exists, so the list grows over time.",
-    "historyCount": "$1 expired offers",
-    "historyCountFiltered": "$1 of $2 expired offers",
+    "historyCount": {
+      "one": "$1 expired offer",
+      "other": "$1 expired offers"
+    },
+    "historyCountFiltered": {
+      "one": "$1 of $2 expired offer",
+      "other": "$1 of $2 expired offers"
+    },
     "historySearch": "Search ships and manufacturers …",
     "historyNoResults": "No expired offer matches your search.",
     "historyEmpty": "No expired warbond offer seen in this period.",
@@ -643,33 +670,49 @@
     "stepPacks": "Paint packs and pledges with a paint next to other items aren't included yet.",
     "toCart": "Put the $1 paints into the cart",
     "toCartHint": "Puts the own paints and the filler paints of this plan into your RSI cart and opens it. Nothing is bought: you check the cart and pay there.",
-    "cartOccupied": "Your RSI cart already holds $1 items. Other items change the volume discount tier, so the plan wouldn't add up – empty the cart first, or add the paints anyway.",
+    "cartOccupied": {
+      "one": "Your RSI cart already holds $1 item. Other items change the volume discount tier, so the plan wouldn't add up – empty the cart first, or add the paints anyway.",
+      "other": "Your RSI cart already holds $1 items. Other items change the volume discount tier, so the plan wouldn't add up – empty the cart first, or add the paints anyway."
+    },
     "openCart": "Open the cart",
     "addAnyway": "Add anyway",
     "cancel": "Cancel",
     "cartFailed": "RSI refused some paints, so the cart doesn't match the plan. Check it before you melt anything:",
     "cartDone": "The paints are in the cart. Check the final price and every paint there before you melt anything, and pay with store credit only.",
     "cartError": "Reading or filling the cart failed: $1",
-    "meltOwn": "Melt the $1 own paints",
+    "meltOwn": {
+      "one": "Melt the own paint",
+      "other": "Melt the $1 own paints"
+    },
     "meltHintCart": "Put the paints into the cart first, and check it there: only then the own paints can be melted here.",
     "meltHintReady": "Melts the own paints of this plan at once (bulk melting). Opens a dialog first; check the cart before.",
     "meltConsent": "I put the paints of this plan into the cart and checked it there: the final price and that every paint I melt now is in it.",
-    "meltFirst": "Melt the $1 own paints first",
+    "meltFirst": {
+      "one": "Melt the own paint first",
+      "other": "Melt the $1 own paints first"
+    },
     "meltFirstHint": "Melts the own paints before you buy them again (way 2): their store credit is free right away, and the consultant remembers which paints to buy again. Recommended is the other way: put the paints into the cart and buy first.",
     "meltFirstConsent": "I melt these paints before buying them again: I buy them again right away – nothing guarantees the price or that they are still sold until then.",
     "fillerTag": "Filler",
     "skipGiftable": "Leave out giftable paints",
     "skipGiftableHint": "Bought again with store credit, they would no longer be giftable.",
-    "giftableSkipped": "$1 giftable paints that would gain are left out.",
+    "giftableSkipped": {
+      "one": "$1 giftable paint that would gain is left out.",
+      "other": "$1 giftable paints that would gain are left out."
+    },
     "giftableTag": "Giftable",
     "giftableTagHint": "Giftable now; bought again with store credit, it no longer is.",
     "mark": "Rebuy $1 → $2",
     "markHint": "Melt it and buy it again with the volume discount ($1 → $2): $3 of store credit freed. Opens the Paint Discount Consultant.",
-    "probablyRebought": "$1 paints look bought again, but no plan of the consultant confirms it. Check them yourself before you melt anything – they stay in the plan:",
+    "probablyRebought": {
+      "one": "$1 paint looks bought again, but no plan of the consultant confirms it. Check it yourself before you melt anything – it stays in the plan:",
+      "other": "$1 paints look bought again, but no plan of the consultant confirms it. Check them yourself before you melt anything – they stay in the plan:"
+    },
     "probablyReboughtItem": "$1: old pledge with $2, a younger copy with $3 ($4)",
-    "probablyReboughtOne": "1 paint looks bought again, but no plan of the consultant confirms it. Check it yourself before you melt anything – it stays in the plan:",
-    "meltOldOne": "Melt the old paint",
-    "meltOld": "Melt the $1 old paints",
+    "meltOld": {
+      "one": "Melt the old paint",
+      "other": "Melt the $1 old paints"
+    },
     "markMelt": "Melt – bought again at $1",
     "markMeltHint": "This paint was bought again with $1 discount: melt this old pledge for $2 of store credit. Opens the Paint Discount Consultant.",
     "boxMeltNow": "Paints to melt now",
@@ -732,15 +775,22 @@
       "stepPaySub": "Before any paint is melted",
       "stepPayBlockedSub": "You have $1 of $2",
       "missingBalance": "missing $1",
-      "stepBuy": "Buy the $1 paints",
+      "stepBuy": {
+        "one": "Buy the paint",
+        "other": "Buy the $1 paints"
+      },
       "stepBuySub": "At $1 with store credit",
-      "stepMelt": "Melt your $1 old paints",
-      "stepMeltOne": "Melt your old paint",
+      "stepMelt": {
+        "one": "Melt your old paint",
+        "other": "Melt your $1 old paints"
+      },
       "stepMeltTwiceSub": "They are in the hangar twice now",
       "stepMeltAfterSub": "Only after paying",
       "stepMeltFreesSub": "Frees their melt value",
-      "stepFillers": "Melt the $1 filler paints after 24 h",
-      "stepFillersOne": "Melt the filler paint after 24 h",
+      "stepFillers": {
+        "one": "Melt the filler paint after 24 h",
+        "other": "Melt the $1 filler paints after 24 h"
+      },
       "stepFillersSub": "Marked – you get a notification",
       "hintSafe": "Safe: your paints stay in the hangar until the new copies are bought.",
       "hintSafeLower": "Your paints stay in the hangar until the new copies are bought. With $1 it reaches $2.",
@@ -762,12 +812,18 @@
     },
     "fillers": {
       "notificationTitle": "Filler paints can be melted",
-      "ready": "The $1 filler paints of the Paint Discount Consultant can be melted now. Open My Hangar to melt them.",
-      "readyOne": "The filler paint of the Paint Discount Consultant can be melted now. Open My Hangar to melt it.",
-      "amongReady": "$1 of them are filler paints of the Paint Discount Consultant.",
-      "amongReadyOne": "1 of them is a filler paint of the Paint Discount Consultant.",
-      "melt": "Melt the $1 filler paints",
-      "meltOne": "Melt the filler paint",
+      "ready": {
+        "one": "The filler paint of the Paint Discount Consultant can be melted now. Open My Hangar to melt it.",
+        "other": "The $1 filler paints of the Paint Discount Consultant can be melted now. Open My Hangar to melt them."
+      },
+      "amongReady": {
+        "one": "$1 of them is a filler paint of the Paint Discount Consultant.",
+        "other": "$1 of them are filler paints of the Paint Discount Consultant."
+      },
+      "melt": {
+        "one": "Melt the filler paint",
+        "other": "Melt the $1 filler paints"
+      },
       "meltHint": "Melts the filler paints the Paint Discount Consultant's order bought – by their pledge ids, never other copies of the same paint. Opens a dialog first."
     },
     "choose": {
@@ -796,9 +852,10 @@
       "statusAfter24h": "after 24 h",
       "amountDone": "$1 of $2",
       "count": "$1 ×",
-      "stepMeltOwn": "Melt your $1 paints",
-      "stepMeltOwnOne": "Melt your paint",
-      "meltOwnCtaOne": "Melt the own paint",
+      "stepMeltOwn": {
+        "one": "Melt your paint",
+        "other": "Melt your $1 paints"
+      },
       "cartMatchesSub": "$1 – the cart matches the plan",
       "paySub": "In RSI’s cart",
       "payNowSub": "Pay only with store credit – RSI shows the $1 in the cart",
@@ -817,23 +874,31 @@
       "checkCartOk": "All $1 paints are in the cart",
       "checkCartOkSub": "The cart matches the plan",
       "checkCartTotalSub": "Total $1 after $2",
-      "checkCartMissing": "$1 paints are not in the cart",
-      "checkCartMissingOne": "1 paint is not in the cart",
+      "checkCartMissing": {
+        "one": "$1 paint is not in the cart",
+        "other": "$1 paints are not in the cart"
+      },
       "checkCartMissingSub": "$1 of $2 paints are in RSI’s cart",
       "checkCartUnknown": "The cart wasn’t read yet",
       "checkCartUnknownSub": "It is read while the Pledge Store tab is open",
       "checkCartUnread": "The cart couldn’t be read",
-      "checkOtherItems": "The cart holds $1 other items",
-      "checkOtherItemsOne": "The cart holds 1 other item",
+      "checkOtherItems": {
+        "one": "The cart holds $1 other item",
+        "other": "The cart holds $1 other items"
+      },
       "checkOtherItemsSub": "They change the discount tier – remove them in RSI’s cart",
       "checkPrice": "The prices changed",
       "checkPriceSub": "The cart costs $1 instead of $2",
-      "checkUnavailable": "$1 paints are no longer sold on their own",
-      "checkUnavailableOne": "1 paint is no longer sold on its own",
+      "checkUnavailable": {
+        "one": "$1 paint is no longer sold on its own",
+        "other": "$1 paints are no longer sold on their own"
+      },
       "checkCooldownOver": "The 24 hours are over",
       "checkCooldownOverSub": "Since $1",
-      "checkNotMeltable": "$1 paints can’t be melted",
-      "checkNotMeltableOne": "1 paint can’t be melted",
+      "checkNotMeltable": {
+        "one": "$1 paint can’t be melted",
+        "other": "$1 paints can’t be melted"
+      },
       "untilMelt": "until RSI allows melting",
       "cooldownLabel": "24-hour cooldown",
       "countdownNote": "Marked to melt – you get a notification, also in the sidebar",
@@ -852,8 +917,10 @@
       "recalculate": "Recalculate",
       "readCart": "Read the cart again",
       "readCredit": "Read the store credit again",
-      "putMissing": "Put the $1 missing paints into the cart",
-      "putMissingOne": "Put the missing paint into the cart",
+      "putMissing": {
+        "one": "Put the missing paint into the cart",
+        "other": "Put the $1 missing paints into the cart"
+      },
       "pay": "Pay $1 with store credit",
       "goPay": "Go to the cart and pay $1",
       "payHint": "Opens RSI’s cart: check it and pay there, with store credit only. Nothing is bought here.",
@@ -873,21 +940,29 @@
     },
     "completed": {
       "title": "Completed plans",
-      "total": "$1 plans · $2",
-      "totalOne": "1 plan · $1",
+      "total": {
+        "one": "$1 plan · $2",
+        "other": "$1 plans · $2"
+      },
       "resultLabel": "store credit",
-      "own": "$1 own paints",
-      "ownOne": "1 own paint",
-      "fillers": "$1 filler paints",
-      "fillersOne": "1 filler paint",
+      "own": {
+        "one": "$1 own paint",
+        "other": "$1 own paints"
+      },
+      "fillers": {
+        "one": "$1 filler paint",
+        "other": "$1 filler paints"
+      },
       "melted": "Melted",
       "bought": "Bought",
       "freed": "Freed",
       "paid": "Paid",
       "discount": "Discount reached",
       "tierAria": "$1 reached with $2 paints",
-      "meltValue": "Melt value of the $1 paints",
-      "meltValueOne": "Melt value of the paint"
+      "meltValue": {
+        "one": "Melt value of the paint",
+        "other": "Melt value of the $1 paints"
+      }
     }
   },
   "upgradeLog": {
@@ -911,10 +986,14 @@
     "total": "Total"
   },
   "insurance": {
-    "year": "1 year",
-    "years": "$1 years",
-    "month": "1 month",
-    "months": "$1 months",
+    "years": {
+      "one": "$1 year",
+      "other": "$1 years"
+    },
+    "months": {
+      "one": "$1 month",
+      "other": "$1 months"
+    },
     "badgeTitle": "Insurance – of several, only the best one counts"
   },
   "order": {
@@ -935,15 +1014,19 @@
     "invoiceDemo": "Not available in demo mode: the invoice shows the real order."
   },
   "refund": {
-    "days": "Refund: $1 days",
-    "day": "Refund: 1 day",
+    "days": {
+      "one": "Refund: $1 day",
+      "other": "Refund: $1 days"
+    },
     "lastDay": "Refund: last day",
     "hint": "Bought with money on $1: CIG refunds it within $2 days, until $3.",
     "request": "Refund Request",
     "requestHint": "Opens RSI's support form in a new tab, filled in for a refund of order $1.",
     "requestDemo": "Not available in demo mode.",
-    "leftDays": "$1 days left for a refund (until $2)",
-    "leftDay": "1 day left for a refund (until $2)",
+    "leftDays": {
+      "one": "$1 day left for a refund (until $2)",
+      "other": "$1 days left for a refund (until $2)"
+    },
     "leftLastDay": "Last day for a refund: today ($1)"
   },
   "exchange": {
@@ -1004,19 +1087,43 @@
     "buttonHint": "Exchange the selected pledges for store credit (melt them) at once. Opens a dialog first.",
     "disabled": "Bulk melting disabled",
     "disabledHint": "“Bulk melting” is an experimental setting: turn it on to melt the selected pledges at once. Opens the settings at it.",
-    "title": "Exchange $1 pledges",
-    "count": "$1 pledges",
+    "title": {
+      "one": "Exchange $1 pledge",
+      "other": "Exchange $1 pledges"
+    },
+    "count": {
+      "one": "$1 pledge",
+      "other": "$1 pledges"
+    },
     "skipped": "$1 selected can't be exchanged and are left out",
     "listLabel": "Pledges to exchange",
-    "intro": "You are about to exchange $1 pledges. This will remove them, including any upgrades (such as customizations or CCUs), from your account, awarding $2 in store credit. They are exchanged one after the other; the first one RSI refuses stops the rest.",
+    "intro": {
+      "one": "You are about to exchange $1 pledge. This will remove it, including any upgrades (such as customizations or CCUs), from your account, awarding $2 in store credit.",
+      "other": "You are about to exchange $1 pledges. This will remove them, including any upgrades (such as customizations or CCUs), from your account, awarding $2 in store credit. They are exchanged one after the other; the first one RSI refuses stops the rest."
+    },
     "lastGameAccessText": "The selection contains every pledge on your account that gives access to Star Citizen. Without them you can no longer play.",
     "warnings": {
       "lastGameAccess": "The selection takes all your game access",
-      "notBuybackable": "$1 pledges can't be bought back: their exchange is permanent",
-      "upgraded": "$1 pledges with applied upgrades: the CCUs are exchanged with them",
-      "discount": "You give up discounts of $2 on $1 pledges",
-      "giftable": "$1 pledges are giftable now, bought back they no longer are",
-      "refundable": "$1 pledges can still be refunded for money"
+      "notBuybackable": {
+        "one": "$1 pledge can't be bought back: its exchange is permanent",
+        "other": "$1 pledges can't be bought back: their exchange is permanent"
+      },
+      "upgraded": {
+        "one": "$1 pledge with applied upgrades: the CCUs are exchanged with it",
+        "other": "$1 pledges with applied upgrades: the CCUs are exchanged with them"
+      },
+      "discount": {
+        "one": "You give up a discount of $2 on $1 pledge",
+        "other": "You give up discounts of $2 on $1 pledges"
+      },
+      "giftable": {
+        "one": "$1 pledge is giftable now, bought back it no longer is",
+        "other": "$1 pledges are giftable now, bought back they no longer are"
+      },
+      "refundable": {
+        "one": "$1 pledge can still be refunded for money",
+        "other": "$1 pledges can still be refunded for money"
+      }
     },
     "tags": {
       "lastGameAccess": "Last game access",
@@ -1028,11 +1135,20 @@
     },
     "consentWarnings": "I have read the warnings above and still want to exchange these pledges.",
     "consentExperimental": "I exchange these pledges with an experimental feature, at my own risk.",
-    "submit": "Exchange $1 pledges for $2",
+    "submit": {
+      "one": "Exchange $1 pledge for $2",
+      "other": "Exchange $1 pledges for $2"
+    },
     "submitting": "Exchanging $1 of $2 …",
-    "success": "$1 pledges exchanged, your ledger was credited with $2.",
+    "success": {
+      "one": "$1 pledge exchanged, your ledger was credited with $2.",
+      "other": "$1 pledges exchanged, your ledger was credited with $2."
+    },
     "successNote": "They leave the list when you close this dialog; the buy back shows them after the next update.",
-    "failed": "RSI refused “$1”: $2. $3 more pledges were not sent and stay in your hangar."
+    "failed": {
+      "one": "RSI refused “$1”: $2. $3 more pledge was not sent and stays in your hangar.",
+      "other": "RSI refused “$1”: $2. $3 more pledges were not sent and stay in your hangar."
+    }
   },
   "meltMark": {
     "mark": "Mark to melt",
@@ -1063,8 +1179,10 @@
     "storeItemGone": "Gone: $1",
     "storeItemSale": "On sale: $1, $2 → $3",
     "storeItemPrice": "New price: $1, $2 → $3",
-    "storeItemsChanged": "$1 changes in the Pledge Store",
-    "storeItemsChangedOne": "1 change in the Pledge Store",
+    "storeItemsChanged": {
+      "one": "$1 change in the Pledge Store",
+      "other": "$1 changes in the Pledge Store"
+    },
     "showChanges": "Show the changes",
     "showInStore": "Show in Pledge Store",
     "browserMeltReadyTitle": "Pledges can be melted",
@@ -1074,32 +1192,44 @@
     "checkOff": "Done",
     "checkOffAll": "Mark all as done",
     "pending": "Coming up",
-    "meltReady": "$1 marked pledges can be melted now",
-    "meltReadyOne": "1 marked pledge can be melted now",
+    "meltReady": {
+      "one": "$1 marked pledge can be melted now",
+      "other": "$1 marked pledges can be melted now"
+    },
     "showReady": "Show",
     "showReadyHint": "Shows only these pledges in “My Hangar”; this button or “Reset filters” shows all again.",
     "showAll": "Show all",
     "showAllHint": "Turns the filter off: “My Hangar” shows all pledges again.",
     "selectReady": "Select",
     "selectReadyHint": "Selects these pledges: the “Selected” box then offers to melt them all at once (with “Bulk melting” on).",
-    "paintsRebuy": "$1 paints can be bought again with more discount",
-    "paintsRebuyOne": "1 paint can be bought again with more discount",
+    "paintsRebuy": {
+      "one": "$1 paint can be bought again with more discount",
+      "other": "$1 paints can be bought again with more discount"
+    },
     "dismiss": "Dismiss",
     "dismissPaintsHint": "Removes this notification for exactly these paints. It comes back as soon as another paint can be bought again with more discount – then with the count of all of them.",
     "browserHint": "Browser notifications can tell you about changes also while no RSI page is open. Turn them on in the settings.",
     "browserHintOpen": "Settings",
     "browserHintOpenHint": "Opens the settings at “Browser notifications”.",
     "dismissBrowserHintHint": "Removes this hint for good. You can turn browser notifications on in the settings any time.",
-    "count": "$1 notifications",
-    "countOne": "1 notification",
-    "priceIncrease": "$1 buy back items will probably cost more within $2 days",
-    "priceIncreaseOne": "1 buy back item will probably cost more within $2 days",
+    "count": {
+      "one": "$1 notification",
+      "other": "$1 notifications"
+    },
+    "priceIncrease": {
+      "one": "$1 buy back item will probably cost more within $2 days",
+      "other": "$1 buy back items will probably cost more within $2 days"
+    },
     "dismissPriceIncreaseHint": "Removes this notification for exactly these items. It comes back as soon as another item’s price is expected to rise within the period – then with the count of all of them.",
     "showPriceIncreaseHint": "Shows these items in the buy back with the filter “Price increase expected”.",
-    "advisorLoss": "$1 CCUs lose $4 of upgrade value with the expected price increase of the $2 ($3)",
-    "advisorLossOne": "1 CCU loses $4 of upgrade value with the expected price increase of the $2 ($3)",
-    "advisorLosing": "$1 CCUs lose upgrade value with the expected price increase of the $2 ($3)",
-    "advisorLosingOne": "1 CCU loses upgrade value with the expected price increase of the $2 ($3)",
+    "advisorLoss": {
+      "one": "$1 CCU loses $4 of upgrade value with the expected price increase of the $2 ($3)",
+      "other": "$1 CCUs lose $4 of upgrade value with the expected price increase of the $2 ($3)"
+    },
+    "advisorLosing": {
+      "one": "$1 CCU loses upgrade value with the expected price increase of the $2 ($3)",
+      "other": "$1 CCUs lose upgrade value with the expected price increase of the $2 ($3)"
+    },
     "advisorSecure": "The price of the $1 is expected to rise ($2). A CCU to it can still be bought at the old price.",
     "showAdvisorHint": "Shows the CCUs in My Hangar with the filter “Price change ahead”; this button or “Reset filters” shows all again.",
     "openAdvisorHint": "How to keep the discount of these CCUs.",
@@ -1155,8 +1285,10 @@
     "labelUpgradeGain": "Upgrade value +$1: $2",
     "labelUpgradeLoss": "Upgrade value −$1: $2",
     "labelUpgradeDrops": "Upgrade value drops: $1",
-    "days": "$1 days",
-    "day": "1 day",
+    "days": {
+      "one": "$1 day",
+      "other": "$1 days"
+    },
     "hours": "$1 h $2 min",
     "fullHours": "$1 h",
     "today": "today",
@@ -1197,8 +1329,10 @@
     "notSold": "RSI’s upgrade tool sells no CCU to the $1 right now, so there is nothing to recommend.",
     "keepIsBetter": "Keeping them is better: after the price increase they have more discount than new CCUs to the $1 would.",
     "targetInConcept": "The $1 isn’t flight ready yet: its price will probably rise too once it is.",
-    "giftable": "$1 of these $2 CCUs can be gifted now; the new ones, bought with store credit, can’t be gifted.",
-    "giftableOne": "1 of these $2 CCUs can be gifted now; the new ones, bought with store credit, can’t be gifted.",
+    "giftable": {
+      "one": "$1 of these $2 CCUs can be gifted now; the new ones, bought with store credit, can’t be gifted.",
+      "other": "$1 of these $2 CCUs can be gifted now; the new ones, bought with store credit, can’t be gifted."
+    },
     "giftableSingle": "This CCU can be gifted now; the new one, bought with store credit, can’t be gifted.",
     "giftableAll": "All $1 CCUs can be gifted now; the new ones, bought with store credit, can’t be gifted.",
     "footer": "A suggestion only: the Hangar Manager never melts or buys anything on its own.",
@@ -1208,7 +1342,10 @@
     "eventUnknown": "$1 rises in price",
     "eventWhen": "$1 · expected, not confirmed by RSI",
     "eventWhenConfirmed": "$1 · confirmed by CIG",
-    "outcomeTitle": "Discount of your $1 CCUs",
+    "outcomeTitle": {
+      "one": "Discount of your CCU",
+      "other": "Discount of your $1 CCUs"
+    },
     "outcomeLabel": "Discount today $1, if you keep them $2 after the rise, if you swap them $3.",
     "barToday": "Today",
     "barKeep": "If you keep them",
@@ -1228,26 +1365,33 @@
     "colKept": "If kept",
     "colSwapped": "If swapped",
     "colCredit": "Credit",
-    "tableTotal": "$1 CCUs",
+    "tableTotal": {
+      "one": "$1 CCU",
+      "other": "$1 CCUs"
+    },
     "origin": "Opened from this pledge",
     "factValue": "Upgrade value",
     "factValueText": "$1 today → $2 after",
-    "factMelt": "Melt $1 CCUs",
+    "factMelt": {
+      "one": "Melt the CCU",
+      "other": "Melt $1 CCUs"
+    },
     "factMeltText": "+$1 store credit",
     "factBuy": "Buy $1 × $2 → $3",
     "factBuyText": "−$1 · $2 each",
     "riseUnknown": "The $1 rises on $2 – by how much isn’t known yet.",
     "mayBeLost": "may be lost",
-    "mark": "Mark $1 CCUs to melt",
-    "marked": "$1 CCUs marked to melt",
+    "mark": {
+      "one": "Mark the CCU to melt",
+      "other": "Mark $1 CCUs to melt"
+    },
+    "marked": {
+      "one": "CCU marked to melt",
+      "other": "$1 CCUs marked to melt"
+    },
     "markHint": "Marks the CCUs of the recommendation, so My Hangar and the sidebar remind you to melt them.",
     "unmarkHint": "Removes their marks to melt.",
     "outcomeGainRest": "more discount than keeping",
-    "outcomeTitleOne": "Discount of your CCU",
-    "tableTotalOne": "1 CCU",
-    "markOne": "Mark the CCU to melt",
-    "markedOne": "CCU marked to melt",
-    "factMeltOne": "Melt the CCU",
     "stepAlways": "Always available in the Pledge Store.",
     "stepOnSale": "On sale right now, maybe not always."
   },

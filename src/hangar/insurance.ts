@@ -55,7 +55,7 @@ export function insuranceLabel(insurance: Insurance): string {
   const { months } = insurance;
   if (months % 12 === 0) {
     const years = months / 12;
-    return i18n.t(years === 1 ? 'insurance.year' : 'insurance.years', [years]);
+    return i18n.n('insurance.years', years);
   }
-  return i18n.t(months === 1 ? 'insurance.month' : 'insurance.months', [months]);
+  return i18n.n('insurance.months', months);
 }

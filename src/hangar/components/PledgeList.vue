@@ -105,7 +105,7 @@ const HINTS: Partial<Record<PledgeFilter, MessageKey>> = {
 };
 const filterHint = (filter: PledgeFilter) => {
   if (filter === 'priceChange') {
-    return i18n.t('filter.hints.priceChange', [props.settings.priceIncreaseDays]);
+    return i18n.n('filter.hints.priceChange', props.settings.priceIncreaseDays);
   }
   const hint = HINTS[filter];
   return hint && i18n.t(hint);

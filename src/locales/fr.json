@@ -14,8 +14,14 @@
     "initialLoadText": "Le Hangar Manager lit ton hangar, le rachat et les commandes sur le site de RSI et les garde dans ce navigateur. Il ne le fait pas de lui-même – lance le premier chargement ici.",
     "initialLoad": "Premier chargement",
     "initialLoadDuration": "Le premier chargement peut prendre quelques secondes : environ $1 pour $2 pledges, environ $3 pour $4 pledges (hangar et rachat ensemble). La progression s’affiche sur le bouton d’actualisation en haut à droite.",
-    "count": "$1 pledges",
-    "countFiltered": "$1 sur $2 pledges",
+    "count": {
+      "one": "$1 pledge",
+      "other": "$1 pledges"
+    },
+    "countFiltered": {
+      "one": "$1 sur $2 pledge",
+      "other": "$1 sur $2 pledges"
+    },
     "searchPlaceholder": "Rechercher des titres, vaisseaux, ID de pledge et de commande…",
     "noResults": "Aucun pledge ne correspond à ta recherche.",
     "syncProgress": "Lecture des pages RSI : $1 sur $2 ($3)",
@@ -115,8 +121,14 @@
       "rewardsByName": "Récompenses, reconnues à leur nom : événements, parrainage, Concierge et autres récompenses.",
       "discount": "Acheté moins cher que le prix d’origine : vaisseaux et CCU comparés aux prix des vaisseaux de RSI, peintures, équipement et autres au Pledge Store. Les pledges sans prix d’origine connu ou plus chers ne comptent pas.",
       "available": "Les pledges que RSI peut revendre. Exclus : les CCU dont le vaisseau de départ coûte aujourd’hui autant ou plus que leur vaisseau cible – RSI ne vend un CCU que vers un vaisseau plus cher.",
-      "priceIncrease": "Pledges dont le prix devrait augmenter dans les $1 prochains jours (réglable dans les paramètres), p. ex. des vaisseaux qui deviennent flight ready à l’IAE, et les CCU depuis un tel vaisseau, qui perdent de la valeur d’upgrade. Les dates sont attendues, pas confirmées par RSI.",
-      "priceChange": "Pledges dont la valeur change avec une hausse de prix attendue dans les $1 prochains jours (réglable dans les paramètres) : vaisseaux et éléments dont le prix augmente, CCU vers eux (ils gagnent de la valeur d’upgrade) et CCU depuis eux (ils en perdent). Les dates sont attendues, pas confirmées par RSI."
+      "priceIncrease": {
+        "one": "Pledges dont le prix devrait augmenter dans la prochaine journée (réglable dans les paramètres), p. ex. des vaisseaux qui deviennent flight ready à l’IAE, et les CCU depuis un tel vaisseau, qui perdent de la valeur d’upgrade. Les dates sont attendues, pas confirmées par RSI.",
+        "other": "Pledges dont le prix devrait augmenter dans les $1 prochains jours (réglable dans les paramètres), p. ex. des vaisseaux qui deviennent flight ready à l’IAE, et les CCU depuis un tel vaisseau, qui perdent de la valeur d’upgrade. Les dates sont attendues, pas confirmées par RSI."
+      },
+      "priceChange": {
+        "one": "Pledges dont la valeur change avec une hausse de prix attendue dans la prochaine journée (réglable dans les paramètres) : vaisseaux et éléments dont le prix augmente, CCU vers eux (ils gagnent de la valeur d’upgrade) et CCU depuis eux (ils en perdent). Les dates sont attendues, pas confirmées par RSI.",
+        "other": "Pledges dont la valeur change avec une hausse de prix attendue dans les $1 prochains jours (réglable dans les paramètres) : vaisseaux et éléments dont le prix augmente, CCU vers eux (ils gagnent de la valeur d’upgrade) et CCU depuis eux (ils en perdent). Les dates sont attendues, pas confirmées par RSI."
+      }
     },
     "categories": {
       "types": "Types",
@@ -484,10 +496,16 @@
     "stepsTitle": "Dernière vérification",
     "stepUnchanged": "aucun changement",
     "stepUpdated": "$1 nouveaux, $2 supprimés, $3 modifiés",
-    "stepNewLogEntries": "$1 nouvelles entrées du journal",
+    "stepNewLogEntries": {
+      "one": "$1 nouvelle entrée du journal",
+      "other": "$1 nouvelles entrées du journal"
+    },
     "stepFailed": "échec",
     "stepNeedsFullSync": "trop de changements",
-    "stepPages": "$1 pages lues"
+    "stepPages": {
+      "one": "$1 page lue",
+      "other": "$1 pages lues"
+    }
   },
   "ccugame": {
     "openInManager": "Ouvrir dans le Hangar Manager (#$1)",
@@ -522,7 +540,10 @@
     "loading": "Lecture des offres actuelles sur RSI …",
     "failed": "Impossible de lire les offres sur RSI : $1",
     "retry": "Réessayer",
-    "count": "$1 CCU warbond",
+    "count": {
+      "one": "$1 CCU warbond",
+      "other": "$1 CCU warbond"
+    },
     "fetchedAt": "Mis à jour $1",
     "updating": "Mise à jour …",
     "refresh": "Actualise uniquement les données du Pledge Store ici dans le Hangar Manager – pas ton hangar, ton rachat ni tes commandes",
@@ -567,8 +588,14 @@
     "viewCurrent": "CCU à prix réduit actuels",
     "viewHistory": "Historique des CCU warbond",
     "historyIntro": "Les offres warbond que RSI ne vend plus, telles que le Hangar Manager les a vues dans ce navigateur. Aucune liste publique des offres passées n'existe, la liste s'allonge donc avec le temps.",
-    "historyCount": "$1 offres expirées",
-    "historyCountFiltered": "$1 sur $2 offres expirées",
+    "historyCount": {
+      "one": "$1 offre expirée",
+      "other": "$1 offres expirées"
+    },
+    "historyCountFiltered": {
+      "one": "$1 sur $2 offre expirée",
+      "other": "$1 sur $2 offres expirées"
+    },
     "historySearch": "Rechercher vaisseaux et constructeurs …",
     "historyNoResults": "Aucune offre expirée ne correspond à ta recherche.",
     "historyEmpty": "Aucune offre warbond expirée vue sur cette période.",
@@ -643,33 +670,49 @@
     "stepPacks": "Les packs de peintures et les pledges contenant une peinture avec d’autres objets ne sont pas encore pris en compte.",
     "toCart": "Mettre les $1 peintures dans le panier",
     "toCartHint": "Met les peintures propres et les peintures de remplissage de ce plan dans ton panier RSI et l’ouvre. Rien n’est acheté : tu vérifies le panier et tu paies là-bas.",
-    "cartOccupied": "Ton panier RSI contient déjà $1 articles. D’autres articles changent le palier de remise, le plan ne tiendrait donc plus – vide d’abord le panier ou ajoute les peintures quand même.",
+    "cartOccupied": {
+      "one": "Ton panier RSI contient déjà $1 article. D’autres articles changent le palier de remise, le plan ne tiendrait donc plus – vide d’abord le panier ou ajoute les peintures quand même.",
+      "other": "Ton panier RSI contient déjà $1 articles. D’autres articles changent le palier de remise, le plan ne tiendrait donc plus – vide d’abord le panier ou ajoute les peintures quand même."
+    },
     "openCart": "Ouvrir le panier",
     "addAnyway": "Ajouter quand même",
     "cancel": "Annuler",
     "cartFailed": "RSI a refusé certaines peintures, le panier ne correspond donc pas au plan. Vérifie-le avant de fondre quoi que ce soit :",
     "cartDone": "Les peintures sont dans le panier. Vérifie là-bas le prix final et chaque peinture avant de fondre quoi que ce soit, et paie uniquement avec du crédit boutique.",
     "cartError": "La lecture ou le remplissage du panier a échoué : $1",
-    "meltOwn": "Fondre les $1 peintures propres",
+    "meltOwn": {
+      "one": "Fondre la peinture propre",
+      "other": "Fondre les $1 peintures propres"
+    },
     "meltHintCart": "Mets d’abord les peintures dans le panier et vérifie-le là-bas : alors seulement les peintures propres peuvent être fondues ici.",
     "meltHintReady": "Fond en une fois les peintures propres de ce plan (fusion multiple). Ouvre d’abord une boîte de dialogue ; vérifie le panier avant.",
     "meltConsent": "J’ai mis les peintures de ce plan dans le panier et je l’ai vérifié là-bas : le prix final et que chaque peinture que je fonds maintenant s’y trouve.",
-    "meltFirst": "Fondre d’abord les $1 peintures propres",
+    "meltFirst": {
+      "one": "Fondre d’abord la peinture propre",
+      "other": "Fondre d’abord les $1 peintures propres"
+    },
     "meltFirstHint": "Fond les peintures propres avant de les racheter (voie 2) : leur crédit boutique est libre tout de suite, et le conseiller retient quelles peintures racheter. La voie recommandée est l’autre : mettre les peintures dans le panier et acheter d’abord.",
     "meltFirstConsent": "Je fonds ces peintures avant de les racheter : je les rachète tout de suite – d’ici là, rien ne garantit le prix ni qu’elles soient encore vendues.",
     "fillerTag": "Remplissage",
     "skipGiftable": "Ignorer les peintures offrables",
     "skipGiftableHint": "Rachetées en crédit boutique, elles ne pourraient plus être offertes.",
-    "giftableSkipped": "$1 peintures offrables qui y gagneraient sont ignorées.",
+    "giftableSkipped": {
+      "one": "$1 peinture offrable qui y gagnerait est ignorée.",
+      "other": "$1 peintures offrables qui y gagneraient sont ignorées."
+    },
     "giftableTag": "Offrable",
     "giftableTagHint": "Offrable maintenant ; rachetée en crédit boutique, elle ne l’est plus.",
     "mark": "Rachat $1 → $2",
     "markHint": "La fondre et la racheter avec la remise sur volume ($1 → $2) : $3 de crédit boutique libérés. Ouvre le conseiller de remises sur les peintures.",
-    "probablyRebought": "$1 peintures semblent rachetées, mais aucun plan du conseiller ne le confirme. Vérifie-les toi-même avant de fondre quoi que ce soit – elles restent dans le plan :",
+    "probablyRebought": {
+      "one": "$1 peinture semble rachetée, mais aucun plan du conseiller ne le confirme. Vérifie-la toi-même avant de fondre quoi que ce soit – elle reste dans le plan :",
+      "other": "$1 peintures semblent rachetées, mais aucun plan du conseiller ne le confirme. Vérifie-les toi-même avant de fondre quoi que ce soit – elles restent dans le plan :"
+    },
     "probablyReboughtItem": "$1 : ancien pledge avec $2, une copie plus récente avec $3 ($4)",
-    "probablyReboughtOne": "1 peinture semble rachetée, mais aucun plan du conseiller ne le confirme. Vérifie-la toi-même avant de fondre quoi que ce soit – elle reste dans le plan :",
-    "meltOldOne": "Fondre l’ancienne peinture",
-    "meltOld": "Fondre les $1 anciennes peintures",
+    "meltOld": {
+      "one": "Fondre l’ancienne peinture",
+      "other": "Fondre les $1 anciennes peintures"
+    },
     "markMelt": "Fondre – rachetée à $1",
     "markMeltHint": "Cette peinture a été rachetée avec $1 de remise : fonds cet ancien pledge pour $2 de crédit boutique. Ouvre le conseiller de remise sur les peintures.",
     "boxMeltNow": "Peintures à fondre",
@@ -732,15 +775,22 @@
       "stepPaySub": "Avant de fondre une peinture",
       "stepPayBlockedSub": "Vous avez $1 sur $2",
       "missingBalance": "il manque $1",
-      "stepBuy": "Acheter les $1 peintures",
+      "stepBuy": {
+        "one": "Acheter la peinture",
+        "other": "Acheter les $1 peintures"
+      },
       "stepBuySub": "À $1 en crédit boutique",
-      "stepMelt": "Fondre vos $1 anciennes peintures",
-      "stepMeltOne": "Fondre votre ancienne peinture",
+      "stepMelt": {
+        "one": "Fondre votre ancienne peinture",
+        "other": "Fondre vos $1 anciennes peintures"
+      },
       "stepMeltTwiceSub": "Elles sont maintenant deux fois dans le hangar",
       "stepMeltAfterSub": "Seulement après avoir payé",
       "stepMeltFreesSub": "Libère leur valeur de fusion",
-      "stepFillers": "Fondre les $1 peintures de remplissage après 24 h",
-      "stepFillersOne": "Fondre la peinture de remplissage après 24 h",
+      "stepFillers": {
+        "one": "Fondre la peinture de remplissage après 24 h",
+        "other": "Fondre les $1 peintures de remplissage après 24 h"
+      },
       "stepFillersSub": "Marquées – vous recevrez une notification",
       "hintSafe": "Sûr : vos peintures restent dans le hangar jusqu’à l’achat des nouvelles copies.",
       "hintSafeLower": "Vos peintures restent dans le hangar jusqu’à l’achat des nouvelles copies. Avec $1, elle atteint $2.",
@@ -762,12 +812,18 @@
     },
     "fillers": {
       "notificationTitle": "Les peintures de remplissage peuvent être fondues",
-      "ready": "Les $1 peintures de remplissage du conseiller de remises sur les peintures peuvent être fondues maintenant. Ouvrez My Hangar pour les fondre.",
-      "readyOne": "La peinture de remplissage du conseiller de remises sur les peintures peut être fondue maintenant. Ouvrez My Hangar pour la fondre.",
-      "amongReady": "$1 d’entre eux sont des peintures de remplissage du conseiller de remises sur les peintures.",
-      "amongReadyOne": "1 d’entre eux est une peinture de remplissage du conseiller de remises sur les peintures.",
-      "melt": "Fondre les $1 peintures de remplissage",
-      "meltOne": "Fondre la peinture de remplissage",
+      "ready": {
+        "one": "La peinture de remplissage du conseiller de remises sur les peintures peut être fondue maintenant. Ouvrez My Hangar pour la fondre.",
+        "other": "Les $1 peintures de remplissage du conseiller de remises sur les peintures peuvent être fondues maintenant. Ouvrez My Hangar pour les fondre."
+      },
+      "amongReady": {
+        "one": "$1 d’entre eux est une peinture de remplissage du conseiller de remises sur les peintures.",
+        "other": "$1 d’entre eux sont des peintures de remplissage du conseiller de remises sur les peintures."
+      },
+      "melt": {
+        "one": "Fondre la peinture de remplissage",
+        "other": "Fondre les $1 peintures de remplissage"
+      },
       "meltHint": "Fond les peintures de remplissage achetées par la commande du conseiller de remises sur les peintures – d’après leurs ids de pledge, jamais d’autres copies de la même peinture. Ouvre d’abord une boîte de dialogue."
     },
     "choose": {
@@ -796,9 +852,10 @@
       "statusAfter24h": "après 24 h",
       "amountDone": "$1 sur $2",
       "count": "$1 ×",
-      "stepMeltOwn": "Fondre vos $1 peintures",
-      "stepMeltOwnOne": "Fondre votre peinture",
-      "meltOwnCtaOne": "Fondre la peinture propre",
+      "stepMeltOwn": {
+        "one": "Fondre votre peinture",
+        "other": "Fondre vos $1 peintures"
+      },
       "cartMatchesSub": "$1 – le panier correspond au plan",
       "paySub": "Dans le panier de RSI",
       "payNowSub": "Payez uniquement en crédit boutique – RSI affiche les $1 dans le panier",
@@ -817,23 +874,31 @@
       "checkCartOk": "Les $1 peintures sont toutes dans le panier",
       "checkCartOkSub": "Le panier correspond au plan",
       "checkCartTotalSub": "Total $1 après $2",
-      "checkCartMissing": "$1 peintures ne sont pas dans le panier",
-      "checkCartMissingOne": "1 peinture n’est pas dans le panier",
+      "checkCartMissing": {
+        "one": "$1 peinture n’est pas dans le panier",
+        "other": "$1 peintures ne sont pas dans le panier"
+      },
       "checkCartMissingSub": "$1 peintures sur $2 sont dans le panier de RSI",
       "checkCartUnknown": "Le panier n’a pas encore été lu",
       "checkCartUnknownSub": "Il est lu tant que l’onglet « Pledge Store » est ouvert",
       "checkCartUnread": "Le panier n’a pas pu être lu",
-      "checkOtherItems": "Le panier contient $1 autres articles",
-      "checkOtherItemsOne": "Le panier contient 1 autre article",
+      "checkOtherItems": {
+        "one": "Le panier contient $1 autre article",
+        "other": "Le panier contient $1 autres articles"
+      },
       "checkOtherItemsSub": "Ils changent le palier de remise – retirez-les dans le panier de RSI",
       "checkPrice": "Les prix ont changé",
       "checkPriceSub": "Le panier coûte $1 au lieu de $2",
-      "checkUnavailable": "$1 peintures ne sont plus vendues seules",
-      "checkUnavailableOne": "1 peinture n’est plus vendue seule",
+      "checkUnavailable": {
+        "one": "$1 peinture n’est plus vendue seule",
+        "other": "$1 peintures ne sont plus vendues seules"
+      },
       "checkCooldownOver": "Les 24 heures sont passées",
       "checkCooldownOverSub": "Depuis le $1",
-      "checkNotMeltable": "$1 peintures ne peuvent pas être fondues",
-      "checkNotMeltableOne": "1 peinture ne peut pas être fondue",
+      "checkNotMeltable": {
+        "one": "$1 peinture ne peut pas être fondue",
+        "other": "$1 peintures ne peuvent pas être fondues"
+      },
       "untilMelt": "avant que RSI permette la fonte",
       "cooldownLabel": "Délai de 24 heures",
       "countdownNote": "Marquées à fondre – vous recevez une notification, aussi dans la barre latérale",
@@ -852,8 +917,10 @@
       "recalculate": "Recalculer",
       "readCart": "Relire le panier",
       "readCredit": "Relire le crédit boutique",
-      "putMissing": "Mettre les $1 peintures manquantes dans le panier",
-      "putMissingOne": "Mettre la peinture manquante dans le panier",
+      "putMissing": {
+        "one": "Mettre la peinture manquante dans le panier",
+        "other": "Mettre les $1 peintures manquantes dans le panier"
+      },
       "pay": "Payer $1 en crédit boutique",
       "goPay": "Aller au panier et payer $1",
       "payHint": "Ouvre le panier de RSI : vérifiez-le et payez-y, uniquement en crédit boutique. Rien n’est acheté ici.",
@@ -873,21 +940,29 @@
     },
     "completed": {
       "title": "Plans terminés",
-      "total": "$1 plans · $2",
-      "totalOne": "1 plan · $1",
+      "total": {
+        "one": "$1 plan · $2",
+        "other": "$1 plans · $2"
+      },
       "resultLabel": "crédit boutique",
-      "own": "$1 peintures propres",
-      "ownOne": "1 peinture propre",
-      "fillers": "$1 peintures de remplissage",
-      "fillersOne": "1 peinture de remplissage",
+      "own": {
+        "one": "$1 peinture propre",
+        "other": "$1 peintures propres"
+      },
+      "fillers": {
+        "one": "$1 peinture de remplissage",
+        "other": "$1 peintures de remplissage"
+      },
       "melted": "Fondues",
       "bought": "Achetées",
       "freed": "Libéré",
       "paid": "Payé",
       "discount": "Remise atteinte",
       "tierAria": "$1 atteints avec $2 peintures",
-      "meltValue": "Valeur de fonte des $1 peintures",
-      "meltValueOne": "Valeur de fonte de la peinture"
+      "meltValue": {
+        "one": "Valeur de fonte de la peinture",
+        "other": "Valeur de fonte des $1 peintures"
+      }
     }
   },
   "upgradeLog": {
@@ -911,10 +986,14 @@
     "total": "Total"
   },
   "insurance": {
-    "year": "1 an",
-    "years": "$1 ans",
-    "month": "1 mois",
-    "months": "$1 mois",
+    "years": {
+      "one": "$1 an",
+      "other": "$1 ans"
+    },
+    "months": {
+      "one": "$1 mois",
+      "other": "$1 mois"
+    },
     "badgeTitle": "Assurance – parmi plusieurs, seule la meilleure compte"
   },
   "order": {
@@ -935,15 +1014,19 @@
     "invoiceDemo": "Non disponible en mode démo : la facture montre la vraie commande."
   },
   "refund": {
-    "days": "Remboursement : $1 jours",
-    "day": "Remboursement : 1 jour",
+    "days": {
+      "one": "Remboursement : $1 jour",
+      "other": "Remboursement : $1 jours"
+    },
     "lastDay": "Remboursement : dernier jour",
     "hint": "Acheté en argent le $1 : CIG le rembourse sous $2 jours, jusqu’au $3.",
     "request": "Refund Request",
     "requestHint": "Ouvre le formulaire d’assistance de RSI dans un nouvel onglet, rempli pour le remboursement de la commande $1.",
     "requestDemo": "Non disponible en mode démo.",
-    "leftDays": "Encore $1 jours pour un remboursement (jusqu’au $2)",
-    "leftDay": "Encore 1 jour pour un remboursement (jusqu’au $2)",
+    "leftDays": {
+      "one": "Encore $1 jour pour un remboursement (jusqu’au $2)",
+      "other": "Encore $1 jours pour un remboursement (jusqu’au $2)"
+    },
     "leftLastDay": "Dernier jour pour un remboursement : aujourd’hui ($1)"
   },
   "exchange": {
@@ -1004,19 +1087,43 @@
     "buttonHint": "Échange les pledges sélectionnés contre du crédit boutique (les fondre) à la fois. Ouvre d’abord une boîte de dialogue.",
     "disabled": "Fusion multiple désactivée",
     "disabledHint": "« Fondre plusieurs pledges à la fois » est un paramètre expérimental : active-le pour fondre les pledges sélectionnés en une fois. Ouvre les paramètres à cet endroit.",
-    "title": "Fondre $1 pledges",
-    "count": "$1 pledges",
+    "title": {
+      "one": "Fondre $1 pledge",
+      "other": "Fondre $1 pledges"
+    },
+    "count": {
+      "one": "$1 pledge",
+      "other": "$1 pledges"
+    },
     "skipped": "$1 sélectionnés ne peuvent pas être fondus et sont ignorés",
     "listLabel": "Pledges à fondre",
-    "intro": "Vous êtes sur le point de fondre $1 pledges. Ils seront retirés de votre compte, y compris leurs améliorations (personnalisations ou CCU), et vous recevrez $2 en crédit boutique. Ils sont fondus l’un après l’autre ; le premier refusé par RSI arrête les suivants.",
+    "intro": {
+      "one": "Vous êtes sur le point de fondre $1 pledge. Il sera retiré de votre compte, y compris ses améliorations (personnalisations ou CCU), et vous recevrez $2 en crédit boutique.",
+      "other": "Vous êtes sur le point de fondre $1 pledges. Ils seront retirés de votre compte, y compris leurs améliorations (personnalisations ou CCU), et vous recevrez $2 en crédit boutique. Ils sont fondus l’un après l’autre ; le premier refusé par RSI arrête les suivants."
+    },
     "lastGameAccessText": "La sélection contient tous les pledges de votre compte qui donnent accès à Star Citizen. Sans eux, vous ne pourrez plus jouer.",
     "warnings": {
       "lastGameAccess": "La sélection vous retire tout accès au jeu",
-      "notBuybackable": "$1 pledges ne peuvent pas être rachetés : leur fonte est définitive",
-      "upgraded": "$1 pledges avec des améliorations appliquées : les CCU sont fondus avec eux",
-      "discount": "Vous renoncez à des réductions de $2 sur $1 pledges",
-      "giftable": "$1 pledges peuvent être offerts maintenant, rachetés ils ne le peuvent plus",
-      "refundable": "$1 pledges peuvent encore être remboursés en argent"
+      "notBuybackable": {
+        "one": "$1 pledge ne peut pas être racheté : sa fonte est définitive",
+        "other": "$1 pledges ne peuvent pas être rachetés : leur fonte est définitive"
+      },
+      "upgraded": {
+        "one": "$1 pledge avec des améliorations appliquées : les CCU sont fondus avec lui",
+        "other": "$1 pledges avec des améliorations appliquées : les CCU sont fondus avec eux"
+      },
+      "discount": {
+        "one": "Vous renoncez à une réduction de $2 sur $1 pledge",
+        "other": "Vous renoncez à des réductions de $2 sur $1 pledges"
+      },
+      "giftable": {
+        "one": "$1 pledge peut être offert maintenant, racheté il ne le peut plus",
+        "other": "$1 pledges peuvent être offerts maintenant, rachetés ils ne le peuvent plus"
+      },
+      "refundable": {
+        "one": "$1 pledge peut encore être remboursé en argent",
+        "other": "$1 pledges peuvent encore être remboursés en argent"
+      }
     },
     "tags": {
       "lastGameAccess": "Dernier accès au jeu",
@@ -1028,11 +1135,20 @@
     },
     "consentWarnings": "J’ai lu les avertissements ci-dessus et je veux quand même fondre ces pledges.",
     "consentExperimental": "Je fonds ces pledges avec une fonction expérimentale, à mes risques.",
-    "submit": "Fondre $1 pledges pour $2",
+    "submit": {
+      "one": "Fondre $1 pledge pour $2",
+      "other": "Fondre $1 pledges pour $2"
+    },
     "submitting": "Fonte de $1 sur $2 …",
-    "success": "$1 pledges fondus, votre compte a été crédité de $2.",
+    "success": {
+      "one": "$1 pledge fondu, votre compte a été crédité de $2.",
+      "other": "$1 pledges fondus, votre compte a été crédité de $2."
+    },
     "successNote": "Ils quittent la liste à la fermeture de cette boîte de dialogue ; le rachat les affiche après la prochaine mise à jour.",
-    "failed": "RSI a refusé « $1 » : $2. $3 autres pledges n’ont pas été envoyés et restent dans votre hangar."
+    "failed": {
+      "one": "RSI a refusé « $1 » : $2. $3 autre pledge n’a pas été envoyé et reste dans votre hangar.",
+      "other": "RSI a refusé « $1 » : $2. $3 autres pledges n’ont pas été envoyés et restent dans votre hangar."
+    }
   },
   "meltMark": {
     "mark": "Marquer pour fondre",
@@ -1063,8 +1179,10 @@
     "storeItemGone": "Retiré : $1",
     "storeItemSale": "En promotion : $1, $2 → $3",
     "storeItemPrice": "Nouveau prix : $1, $2 → $3",
-    "storeItemsChanged": "$1 changements dans le Pledge Store",
-    "storeItemsChangedOne": "1 changement dans le Pledge Store",
+    "storeItemsChanged": {
+      "one": "$1 changement dans le Pledge Store",
+      "other": "$1 changements dans le Pledge Store"
+    },
     "showChanges": "Afficher les changements",
     "showInStore": "Afficher dans le Pledge Store",
     "browserMeltReadyTitle": "Des pledges peuvent être fondus",
@@ -1074,32 +1192,44 @@
     "checkOff": "Terminé",
     "checkOffAll": "Tout marquer comme terminé",
     "pending": "À venir",
-    "meltReady": "$1 pledges marqués peuvent être fondus maintenant",
-    "meltReadyOne": "1 pledge marqué peut être fondu maintenant",
+    "meltReady": {
+      "one": "$1 pledge marqué peut être fondu maintenant",
+      "other": "$1 pledges marqués peuvent être fondus maintenant"
+    },
     "showReady": "Afficher",
     "showReadyHint": "N’affiche que ces pledges dans « My Hangar » ; ce bouton ou « Réinitialiser les filtres » les affiche tous à nouveau.",
     "showAll": "Tout afficher",
     "showAllHint": "Désactive le filtre : « My Hangar » affiche à nouveau tous les pledges.",
     "selectReady": "Sélectionner",
     "selectReadyHint": "Sélectionne ces pledges : l’encadré « Sélection » propose alors de tous les fondre à la fois (avec « Fondre plusieurs pledges à la fois » activé).",
-    "paintsRebuy": "$1 peintures peuvent être rachetées avec plus de remise",
-    "paintsRebuyOne": "1 peinture peut être rachetée avec plus de remise",
+    "paintsRebuy": {
+      "one": "$1 peinture peut être rachetée avec plus de remise",
+      "other": "$1 peintures peuvent être rachetées avec plus de remise"
+    },
     "dismiss": "Masquer",
     "dismissPaintsHint": "Retire cette notification pour exactement ces peintures. Elle revient dès qu’une autre peinture peut être rachetée avec plus de remise – alors avec le nombre de toutes.",
     "browserHint": "Les notifications du navigateur te signalent les changements même quand aucune page RSI n’est ouverte. Active-les dans les paramètres.",
     "browserHintOpen": "Paramètres",
     "browserHintOpenHint": "Ouvre les paramètres à « Notifications du navigateur ».",
     "dismissBrowserHintHint": "Retire ce rappel définitivement. Tu peux activer les notifications du navigateur à tout moment dans les paramètres.",
-    "count": "$1 notifications",
-    "countOne": "1 notification",
-    "priceIncrease": "$1 éléments du Buy Back coûteront probablement plus cher d’ici $2 jours",
-    "priceIncreaseOne": "1 élément du Buy Back coûtera probablement plus cher d’ici $2 jours",
+    "count": {
+      "one": "$1 notification",
+      "other": "$1 notifications"
+    },
+    "priceIncrease": {
+      "one": "$1 élément du Buy Back coûtera probablement plus cher d’ici $2 jours",
+      "other": "$1 éléments du Buy Back coûteront probablement plus cher d’ici $2 jours"
+    },
     "dismissPriceIncreaseHint": "Retire cette notification pour exactement ces éléments. Elle revient dès que le prix d’un autre élément devrait augmenter dans la période – alors avec le nombre de tous.",
     "showPriceIncreaseHint": "Affiche ces éléments dans le Buy Back avec le filtre « Hausse de prix attendue ».",
-    "advisorLoss": "$1 CCU perdent $4 de valeur d’upgrade avec la hausse de prix attendue du $2 ($3)",
-    "advisorLossOne": "1 CCU perd $4 de valeur d’upgrade avec la hausse de prix attendue du $2 ($3)",
-    "advisorLosing": "$1 CCU perdent de la valeur d’upgrade avec la hausse de prix attendue du $2 ($3)",
-    "advisorLosingOne": "1 CCU perd de la valeur d’upgrade avec la hausse de prix attendue du $2 ($3)",
+    "advisorLoss": {
+      "one": "$1 CCU perd $4 de valeur d’upgrade avec la hausse de prix attendue du $2 ($3)",
+      "other": "$1 CCU perdent $4 de valeur d’upgrade avec la hausse de prix attendue du $2 ($3)"
+    },
+    "advisorLosing": {
+      "one": "$1 CCU perd de la valeur d’upgrade avec la hausse de prix attendue du $2 ($3)",
+      "other": "$1 CCU perdent de la valeur d’upgrade avec la hausse de prix attendue du $2 ($3)"
+    },
     "advisorSecure": "Le prix du $1 devrait augmenter ($2). Un CCU vers lui peut encore être acheté à l’ancien prix.",
     "showAdvisorHint": "Affiche les CCU dans My Hangar avec le filtre « Changement de prix à venir » ; ce bouton ou « Réinitialiser les filtres » les affiche tous à nouveau.",
     "openAdvisorHint": "Comment garder la remise de ces CCU.",
@@ -1155,8 +1285,10 @@
     "labelUpgradeGain": "Valeur d’upgrade +$1 : $2",
     "labelUpgradeLoss": "Valeur d’upgrade −$1 : $2",
     "labelUpgradeDrops": "Valeur d’upgrade en baisse : $1",
-    "days": "$1 jours",
-    "day": "1 jour",
+    "days": {
+      "one": "$1 jour",
+      "other": "$1 jours"
+    },
     "hours": "$1 h $2 min",
     "fullHours": "$1 h",
     "today": "aujourd’hui",
@@ -1197,8 +1329,10 @@
     "notSold": "L’outil d’upgrade de RSI ne vend actuellement aucun CCU vers le $1, il n’y a donc rien à recommander.",
     "keepIsBetter": "Mieux vaut les garder : après la hausse de prix, ils ont plus de remise que n’en auraient de nouveaux CCU vers le $1.",
     "targetInConcept": "Le $1 n’est pas encore flight ready : son prix augmentera probablement aussi quand il le sera.",
-    "giftable": "$1 de ces $2 CCU peuvent être offerts maintenant ; les nouveaux, achetés en store credit, ne pourront pas l’être.",
-    "giftableOne": "1 de ces $2 CCU peut être offert maintenant ; les nouveaux, achetés en store credit, ne pourront pas l’être.",
+    "giftable": {
+      "one": "$1 de ces $2 CCU peut être offert maintenant ; les nouveaux, achetés en store credit, ne pourront pas l’être.",
+      "other": "$1 de ces $2 CCU peuvent être offerts maintenant ; les nouveaux, achetés en store credit, ne pourront pas l’être."
+    },
     "giftableSingle": "Ce CCU peut être offert maintenant ; le nouveau, acheté en store credit, ne pourra pas l’être.",
     "giftableAll": "Les $1 CCU peuvent être offerts maintenant ; les nouveaux, achetés en store credit, ne pourront pas l’être.",
     "footer": "Une simple suggestion : le Hangar Manager ne fond ni n’achète jamais rien de lui-même.",
@@ -1208,7 +1342,10 @@
     "eventUnknown": "Le $1 devient plus cher",
     "eventWhen": "$1 · attendu, pas confirmé par RSI",
     "eventWhenConfirmed": "$1 · confirmé par CIG",
-    "outcomeTitle": "Remise de tes $1 CCU",
+    "outcomeTitle": {
+      "one": "Remise de ton CCU",
+      "other": "Remise de tes $1 CCU"
+    },
     "outcomeLabel": "Remise aujourd’hui $1, si tu les gardes $2 après la hausse, si tu les échanges $3.",
     "barToday": "Aujourd’hui",
     "barKeep": "Si tu les gardes",
@@ -1228,26 +1365,33 @@
     "colKept": "Gardés",
     "colSwapped": "Échangés",
     "colCredit": "Crédit",
-    "tableTotal": "$1 CCU",
+    "tableTotal": {
+      "one": "$1 CCU",
+      "other": "$1 CCU"
+    },
     "origin": "Ouvert depuis ce pledge",
     "factValue": "Valeur d’upgrade",
     "factValueText": "$1 aujourd’hui → $2 après",
-    "factMelt": "Fondre $1 CCU",
+    "factMelt": {
+      "one": "Fondre le CCU",
+      "other": "Fondre $1 CCU"
+    },
     "factMeltText": "+$1 de store credit",
     "factBuy": "Acheter $1 × $2 → $3",
     "factBuyText": "−$1 · $2 chacun",
     "riseUnknown": "Le $1 devient plus cher le $2 ; de combien, on ne le sait pas encore.",
     "mayBeLost": "peut être perdue",
-    "mark": "Marquer $1 CCU à fondre",
-    "marked": "$1 CCU marqués à fondre",
+    "mark": {
+      "one": "Marquer le CCU à fondre",
+      "other": "Marquer $1 CCU à fondre"
+    },
+    "marked": {
+      "one": "CCU marqué à fondre",
+      "other": "$1 CCU marqués à fondre"
+    },
     "markHint": "Marque les CCU de la recommandation pour que My Hangar et la barre latérale te rappellent de les fondre.",
     "unmarkHint": "Retire leurs marques à fondre.",
     "outcomeGainRest": "de remise en plus que les garder",
-    "outcomeTitleOne": "Remise de ton CCU",
-    "tableTotalOne": "1 CCU",
-    "markOne": "Marquer le CCU à fondre",
-    "markedOne": "CCU marqué à fondre",
-    "factMeltOne": "Fondre le CCU",
     "stepAlways": "Toujours disponible dans le Pledge Store.",
     "stepOnSale": "En vente maintenant, peut-être pas toujours."
   },

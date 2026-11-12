@@ -35,9 +35,7 @@ function toggle(plan: CompletedPaintPlan, index: number) {
 const total = computed(() => {
   const sum = Math.round(props.plans.reduce((acc, plan) => acc + plan.result * 100, 0)) / 100;
   const result = signedUsd(sum, format.value);
-  return props.plans.length === 1
-    ? i18n.t('consultant.completed.totalOne', [result])
-    : i18n.t('consultant.completed.total', [props.plans.length, result]);
+  return i18n.n('consultant.completed.total', props.plans.length, [props.plans.length, result]);
 });
 
 const dates = computed(
@@ -46,18 +44,8 @@ const dates = computed(
 
 function metaOf(plan: CompletedPaintPlan) {
   const parts = [dates.value.formatRange(plan.startedAt, plan.completedAt)];
-  parts.push(
-    plan.ownCount === 1
-      ? i18n.t('consultant.completed.ownOne')
-      : i18n.t('consultant.completed.own', [plan.ownCount]),
-  );
-  if (plan.fillerCount) {
-    parts.push(
-      plan.fillerCount === 1
-        ? i18n.t('consultant.completed.fillersOne')
-        : i18n.t('consultant.completed.fillers', [plan.fillerCount]),
-    );
-  }
+  parts.push(i18n.n('consultant.completed.own', plan.ownCount));
+  if (plan.fillerCount) parts.push(i18n.n('consultant.completed.fillers', plan.fillerCount));
   return parts.join(' · ');
 }
 
@@ -201,11 +189,7 @@ const valueOf = (paint: CompletedPaint, gain: boolean) =>
               </div>
               <div>
                 <dt>
-                  {{
-                    plan.ownCount === 1
-                      ? i18n.t('consultant.completed.meltValueOne')
-                      : i18n.t('consultant.completed.meltValue', [plan.ownCount])
-                  }}
+                  {{ i18n.n('consultant.completed.meltValue', plan.ownCount) }}
                 </dt>
                 <dd class="shm-ways-mono is-muted">
                   {{ change(usd(plan.meltBefore), usd(plan.meltAfter)) }}

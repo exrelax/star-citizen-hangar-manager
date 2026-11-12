@@ -88,13 +88,13 @@ const summedWarnings = computed(() => {
       if (warning.kind === 'discount') discount += warning.discount.amount;
     }
   }
-  const order: Kind[] = ['notBuybackable', 'upgraded', 'discount', 'giftable', 'refundable'];
+  const order = ['notBuybackable', 'upgraded', 'discount', 'giftable', 'refundable'] as const;
   const summed = order
     .filter((kind) => counts.has(kind))
     .map((kind) => ({
-      kind,
+      kind: kind as Kind,
       danger: kind !== 'giftable' && kind !== 'refundable',
-      title: i18n.t(`bulkExchange.warnings.${kind}`, [
+      title: i18n.n(`bulkExchange.warnings.${kind}`, counts.get(kind)!, [
         counts.get(kind)!,
         money(Math.round(discount * 100) / 100),
       ]),
@@ -243,11 +243,11 @@ onUnmounted(() => {
         class="shm-overlay-dialog shm-action-dialog"
         role="dialog"
         aria-modal="true"
-        :aria-label="i18n.t('bulkExchange.title', [pledges.length])"
+        :aria-label="i18n.n('bulkExchange.title', pledges.length)"
         tabindex="-1"
       >
         <header class="shm-overlay-header">
-          <h3>{{ i18n.t('bulkExchange.title', [pledges.length]) }}</h3>
+          <h3>{{ i18n.n('bulkExchange.title', pledges.length) }}</h3>
           <button
             v-tooltip="i18n.t('order.close')"
             type="button"
@@ -264,7 +264,7 @@ onUnmounted(() => {
         <div class="shm-action-summary">
           <div class="shm-action-item">
             <strong class="shm-action-title">
-              {{ i18n.t('bulkExchange.count', [pledges.length]) }}
+              {{ i18n.n('bulkExchange.count', pledges.length) }}
             </strong>
             <!-- What kind of pledges they are, e.g. "2 Ships · 1 CCU · 1 Paint". -->
             <span v-if="types" class="shm-bulk-types">{{ types }}</span>
@@ -323,12 +323,17 @@ onUnmounted(() => {
         <!-- The outcome: all exchanged, or stopped at the pledge RSI refused. -->
         <template v-if="finished">
           <p v-if="exchanged.length" class="shm-action-success" role="status">
-            {{ i18n.t('bulkExchange.success', [exchanged.length, money(exchangedValue.value)]) }}
+            {{
+              i18n.n('bulkExchange.success', exchanged.length, [
+                exchanged.length,
+                money(exchangedValue.value),
+              ])
+            }}
             <span>{{ i18n.t('bulkExchange.successNote') }}</span>
           </p>
           <p v-if="failed" class="shm-action-error" role="alert">
             {{
-              i18n.t('bulkExchange.failed', [
+              i18n.n('bulkExchange.failed', notSent, [
                 failedPledge?.title ?? String(failed.id),
                 failed.message,
                 notSent,
@@ -372,7 +377,9 @@ onUnmounted(() => {
           </ul>
 
           <!-- RSI's texts of the dialog, for all pledges. -->
-          <p>{{ i18n.t('bulkExchange.intro', [pledges.length, money(total.value)]) }}</p>
+          <p>
+            {{ i18n.n('bulkExchange.intro', pledges.length, [pledges.length, money(total.value)]) }}
+          </p>
           <p v-if="!allBuybackable" class="shm-exchange-final">
             {{ rsi('exchange.notBuybackable') }}
           </p>
@@ -428,7 +435,10 @@ onUnmounted(() => {
               {{
                 submitting
                   ? i18n.t('bulkExchange.submitting', [exchanged.length + 1, pledges.length])
-                  : i18n.t('bulkExchange.submit', [pledges.length, money(total.value)])
+                  : i18n.n('bulkExchange.submit', pledges.length, [
+                      pledges.length,
+                      money(total.value),
+                    ])
               }}
             </button>
           </div>

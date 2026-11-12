@@ -321,7 +321,7 @@ const openBulkMeltingSetting = () =>
         </label>
 
         <p v-if="result?.giftableSkipped" class="shm-consultant-note is-info">
-          {{ i18n.t('consultant.giftableSkipped', [result.giftableSkipped]) }}
+          {{ i18n.n('consultant.giftableSkipped', result.giftableSkipped) }}
         </p>
         <p v-if="creditUnknown" class="shm-consultant-note">
           {{ i18n.t('consultant.noCredit') }}
@@ -546,9 +546,10 @@ const openBulkMeltingSetting = () =>
               >
                 <SvgIcon name="triangle-exclamation" />
                 {{
-                  cartFilled
-                    ? i18n.t('consultant.meltOwn', [ownPledges.length])
-                    : i18n.t('consultant.meltFirst', [ownPledges.length])
+                  i18n.n(
+                    cartFilled ? 'consultant.meltOwn' : 'consultant.meltFirst',
+                    ownPledges.length,
+                  )
                 }}
               </button>
               <!-- Way 2 (#168): melting before buying needs its own acknowledgement. -->

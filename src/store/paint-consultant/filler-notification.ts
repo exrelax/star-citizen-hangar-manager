@@ -7,7 +7,7 @@ import {
 import { hangarSnapshot } from '@/hangar/hangar-storage';
 import { meltableAt } from '@/hangar/melt-marks';
 import { HANGAR_SNAPSHOT_VERSION } from '@/hangar/pledge';
-import { translate } from '@/i18n';
+import { translate, translatePlural } from '@/i18n';
 import { browserNotificationsItem } from '@/notifications/browser-permission';
 import { isKindOn } from '@/notifications/kinds';
 import { resolveLanguage } from '@/settings/language';
@@ -72,10 +72,7 @@ export async function notifyFillers(): Promise<void> {
       type: 'basic',
       iconUrl: browser.runtime.getURL('/icon/128.png'),
       title: translate(locale, 'consultant.fillers.notificationTitle'),
-      message:
-        left === 1
-          ? translate(locale, 'consultant.fillers.readyOne')
-          : translate(locale, 'consultant.fillers.ready', [left]),
+      message: translatePlural(locale, 'consultant.fillers.ready', left),
     });
   }
   // Read again: the plan may have changed (or ended) while the notification was shown.

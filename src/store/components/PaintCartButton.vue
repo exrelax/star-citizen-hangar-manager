@@ -128,7 +128,7 @@ function report(failure: unknown) {
   />
 
   <div v-if="state === 'occupied'" class="shm-consultant-note" role="alert">
-    <p>{{ i18n.t('consultant.cartOccupied', [itemsBefore]) }}</p>
+    <p>{{ i18n.n('consultant.cartOccupied', itemsBefore) }}</p>
     <div class="shm-consultant-cart-actions">
       <button type="button" class="shm-button" @click="openCart">
         <SvgIcon name="square-up-right" />

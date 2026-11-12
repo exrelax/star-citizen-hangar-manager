@@ -257,7 +257,7 @@ const toggle = () => {
           {{
             refund.daysLeft === 0
               ? i18n.t('refund.lastDay')
-              : i18n.t(refund.daysLeft === 1 ? 'refund.day' : 'refund.days', [refund.daysLeft])
+              : i18n.n('refund.days', refund.daysLeft)
           }}
         </span>
         <PriceIncreaseBadge

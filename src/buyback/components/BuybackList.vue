@@ -68,7 +68,7 @@ const filterLabel = (filter: BuybackFilter) => i18n.t(`filter.${filter}`);
 const filterHint = (filter: BuybackFilter) => {
   if (filter === 'probablyGiftable') return giftableHint.value;
   if (filter === 'priceIncrease') {
-    return i18n.t('filter.hints.priceIncrease', [props.settings.priceIncreaseDays]);
+    return i18n.n('filter.hints.priceIncrease', props.settings.priceIncreaseDays);
   }
   if (filter === 'ships' || filter === 'warbond' || filter === 'available') {
     return i18n.t(`filter.hints.${filter}`);

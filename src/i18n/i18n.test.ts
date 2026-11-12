@@ -3,7 +3,7 @@ import de from '@/locales/de.json';
 import en from '@/locales/en.json';
 import es from '@/locales/es.json';
 import fr from '@/locales/fr.json';
-import { browserLocale, matchLocale, translate } from './index';
+import { browserLocale, matchLocale, translate, translatePlural } from './index';
 
 describe('matchLocale', () => {
   it('matches by base language', () => {
@@ -29,10 +29,29 @@ describe('translate', () => {
   });
 
   it('fills in substitutions and unescapes dollar signs', () => {
-    expect(translate('en', 'manager.countFiltered', [3, 986])).toBe('3 of 986 pledges');
+    expect(translate('en', 'settings.smartUpdates')).toBe('Smart updates');
     expect(translate('en', 'settings.hideMeltValueHint')).toBe(
       'Hides all $ amounts: pledge values, discounts, the costs of applied upgrades, the amounts of the orders and the values in the exchange and gift dialogs.',
     );
+  });
+});
+
+describe('translatePlural (#300)', () => {
+  it('chooses the singular for one, else the plural, by the rules of the language', () => {
+    expect(translatePlural('en', 'manager.count', 1)).toBe('1 pledge');
+    expect(translatePlural('en', 'manager.count', 2)).toBe('2 pledges');
+    expect(translatePlural('en', 'manager.count', 0)).toBe('0 pledges');
+    expect(translatePlural('de', 'store.historyCount', 1)).toBe('1 abgelaufenes Angebot');
+    expect(translatePlural('de', 'store.historyCount', 4)).toBe('4 abgelaufene Angebote');
+    // French counts 0 like 1, Spanish doesn't.
+    expect(translatePlural('fr', 'insurance.years', 0)).toBe('0 an');
+    expect(translatePlural('es', 'insurance.years', 0)).toBe('0 años');
+  });
+
+  it('fills in the substitutions given, the count deciding the form', () => {
+    expect(translatePlural('en', 'manager.countFiltered', 986, [3, 986])).toBe('3 of 986 pledges');
+    expect(translatePlural('en', 'manager.countFiltered', 1, [1, 1])).toBe('1 of 1 pledge');
+    expect(translatePlural('en', 'consultant.fillers.melt', 1)).toBe('Melt the filler paint');
   });
 });
 

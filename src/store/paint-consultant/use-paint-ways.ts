@@ -296,15 +296,12 @@ export function usePaintWays(props: PaintWaysProps) {
                 : i18n.t('consultant.ways.stepPaySub'),
             }
           : {
-              title: i18n.t('consultant.ways.stepBuy', [countOf(plan)]),
+              title: i18n.n('consultant.ways.stepBuy', countOf(plan)),
               sub: i18n.t('consultant.ways.stepBuySub', [percent(plan.tier.percent)]),
             };
       case 'melt':
         return {
-          title:
-            own === 1
-              ? i18n.t('consultant.ways.stepMeltOne')
-              : i18n.t('consultant.ways.stepMelt', [own]),
+          title: i18n.n('consultant.ways.stepMelt', own),
           sub: i18n.t(
             way.kind === 'melt'
               ? 'consultant.ways.stepMeltFreesSub'
@@ -315,10 +312,7 @@ export function usePaintWays(props: PaintWaysProps) {
         };
       case 'fillers':
         return {
-          title:
-            way.fillerCount === 1
-              ? i18n.t('consultant.ways.stepFillersOne')
-              : i18n.t('consultant.ways.stepFillers', [way.fillerCount]),
+          title: i18n.n('consultant.ways.stepFillers', way.fillerCount),
           sub: i18n.t('consultant.ways.stepFillersSub'),
         };
     }

@@ -138,11 +138,11 @@ const signed = (value: number) =>
 const money = (value: number) =>
   hidden.value ? '–' : `${value < 0 ? '−' : ''}${formatUsd(Math.abs(value), locale.value)}`;
 const count = (value: number) => new Intl.NumberFormat(locale.value).format(value);
-/** A text with a count, its own wording for one ("1 CCU", not "1 CCUs"). */
+/** A text with a count, in the singular or plural ("1 CCU", not "1 CCUs", #300). */
 const plural = (
   key: 'outcomeTitle' | 'factMelt' | 'tableTotal' | 'mark' | 'marked',
   value: number,
-) => (value === 1 ? i18n.t(`ccuAdvice.${key}One`) : i18n.t(`ccuAdvice.${key}`, [count(value)]));
+) => i18n.n(`ccuAdvice.${key}`, value, [count(value)]);
 
 const when = (event: AdviceEvent) =>
   formatExpectedTime(event.increase.priceIncreaseAt, locale.value);
@@ -183,9 +183,7 @@ function bars(event: AdviceEvent) {
 function giftableText(giftable: number, total: number) {
   if (total === 1) return i18n.t('ccuAdvice.giftableSingle');
   if (giftable === total) return i18n.t('ccuAdvice.giftableAll', [total]);
-  return giftable === 1
-    ? i18n.t('ccuAdvice.giftableOne', [giftable, total])
-    : i18n.t('ccuAdvice.giftable', [giftable, total]);
+  return i18n.n('ccuAdvice.giftable', giftable, [giftable, total]);
 }
 
 /** Why a group gets no recommendation, in one sentence. */

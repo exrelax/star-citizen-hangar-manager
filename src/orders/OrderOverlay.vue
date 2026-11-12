@@ -52,10 +52,7 @@ const refundLeft = computed(() => {
   const window = refund.value;
   if (!window) return undefined;
   if (window.daysLeft === 0) return i18n.t('refund.leftLastDay', [window.until]);
-  return i18n.t(window.daysLeft === 1 ? 'refund.leftDay' : 'refund.leftDays', [
-    window.daysLeft,
-    window.until,
-  ]);
+  return i18n.n('refund.leftDays', window.daysLeft, [window.daysLeft, window.until]);
 });
 
 onMounted(async () => {
