@@ -9,17 +9,19 @@ import {
 } from '@/store/warbond-history';
 import type { DemoCatalog } from './catalog';
 import { demoEvents } from './demo-events';
-import { CCU_TARGET_MAX, warbondDiscount, type DemoPledge } from './generate-hangar';
+import type { Pledge } from '@/hangar/pledge';
+import { CCU_TARGET_MAX, warbondDiscount } from './generate-hangar';
 import { createRandom } from './random';
 
 /*
  * The warbond CCUs of the demo's Pledge Store tab (#130): offers of its own instead of the
- * Pledge Store's, so the tab shows them on any account – for ships the demo hangar has CCUs to,
- * so own CCUs in the same price range show next to them.
+ * Pledge Store's, so the tab shows them on any account and with either source of the demo hangar
+ * (#298) – for ships the demo hangar has CCUs to, so own CCUs in the same price range show next to
+ * them, else for the most expensive ships of the catalog in range.
  */
 export function demoStoreData(
   catalog: DemoCatalog,
-  hangar: readonly DemoPledge[],
+  hangar: readonly Pick<Pledge, 'upgrade'>[],
   now = Date.now(),
   events: readonly StarCitizenEvent[] = demoEvents(now),
 ): StoreData {
@@ -28,7 +30,13 @@ export function demoStoreData(
   ]
     .map((name) => catalog.ships.find((ship) => ship.name === name))
     .filter((ship) => ship !== undefined && ship.msrp >= 60 && ship.msrp <= CCU_TARGET_MAX)
-    .slice(0, 3) as Ship[];
+    .slice(0, CURRENT_OFFERS) as Ship[];
+  // A hangar with fewer CCUs in range (e.g. the own pledges as source, #298): other ships fill up.
+  const inRange = (ship: Ship) => ship.msrp >= 60 && ship.msrp <= CCU_TARGET_MAX;
+  for (const ship of [...catalog.ships].sort((a, b) => b.msrp - a.msrp || a.id - b.id)) {
+    if (targets.length >= CURRENT_OFFERS) break;
+    if (inRange(ship) && !targets.includes(ship)) targets.push(ship);
+  }
   const random = createRandom('demo-store');
   const offerOf = (ship: Ship): WarbondTarget => ({
     ship,
@@ -39,7 +47,7 @@ export function demoStoreData(
   // Other ships for the expired offers of the history (#297), in a fixed order.
   // Spread over the catalog, so they come from several manufacturers for the search.
   const others = catalog.ships
-    .filter((ship) => !targets.includes(ship) && ship.msrp >= 60 && ship.msrp <= CCU_TARGET_MAX)
+    .filter((ship) => !targets.includes(ship) && inRange(ship))
     .sort((a, b) => a.id - b.id);
   const step = Math.max(1, Math.floor(others.length / EXPIRED_OFFERS));
   const expired = others
@@ -54,6 +62,9 @@ export function demoStoreData(
 }
 
 const DAY = 24 * 60 * 60 * 1000;
+
+/** The demo's current warbond offers. */
+const CURRENT_OFFERS = 3;
 
 /** Expired offers of other ships than the current ones in the demo's history (#297). */
 const EXPIRED_OFFERS = 8;

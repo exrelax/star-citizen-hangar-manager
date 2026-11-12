@@ -142,7 +142,7 @@ const displayClasses = computed(() => ({
       <p class="shm-store-intro">{{ i18n.t('store.warbondIntro') }}</p>
 
       <p
-        v-if="!data && (!loaded || upgradeToolState.loading)"
+        v-if="!storeData && (!loaded || upgradeToolState.loading)"
         class="shm-store-state"
         role="status"
       >
@@ -159,7 +159,7 @@ const displayClasses = computed(() => ({
           {{ i18n.t('store.retry') }}
         </button>
       </div>
-      <template v-if="data">
+      <template v-if="storeData">
         <p class="shm-count">
           <span>{{ i18n.t('store.count', [offers.length]) }}</span>
           <span class="shm-store-updated">

@@ -143,8 +143,8 @@ export interface DemoContext {
    * account's storages instead of the real ones, and its hangar's page count.
    */
   storage: { counts: Partial<Record<StorageId, number>>; hangarPages: number };
-  /** The warbond CCUs of the Pledge Store tab, with the generated demo (#130). */
-  storeData?: StoreData;
+  /** The warbond CCUs and their history in the Pledge Store tab (#130, #297), with either source. */
+  storeData: StoreData;
   /** The catalog's items, for the Paint Discount Consultant of the generated demo (#131). */
   storeItems?: readonly StoreItem[];
   /** Buy back tokens shown instead of the account's, with the generated buy back (#177). */
@@ -287,9 +287,10 @@ export function useDemo(
         },
         tokens: account.generatedBuyback.tokens,
         storeItems: catalog.value.items,
-        storeData: demoStoreData(catalog.value, account.account.pledges, Date.now(), events.value),
         priceIncreases: account.priceIncreases,
       }),
+      // With either source (#298): never the Pledge Store's real offers or this browser's history.
+      storeData: demoStoreData(catalog.value, demoPledges.value, Date.now(), events.value),
       events: events.value,
       storage: {
         counts: {
