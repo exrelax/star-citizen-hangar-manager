@@ -71,7 +71,11 @@ import { useCcusToSecure } from '@/price-increases/use-ccus-to-secure';
 import { upcomingPriceIncreases } from '@/price-increases/price-increases';
 import { formatExpectedTime } from '@/price-increases/price-increase-label';
 import { openCcuAdvice } from '@/price-increases/ccu-advice-request';
-import { includeHangarFilter } from '../hangar-filter-request';
+import {
+  clearHangarFilterInclude,
+  hangarFilterStates,
+  includeHangarFilter,
+} from '../hangar-filter-request';
 
 /*
  * The sidebar below RSI's page navigation on the left on every tab (App.vue teleports it there),
@@ -350,7 +354,12 @@ function advisorText(note: AdvisorNote) {
     ? i18n.t('notifications.advisorLossOne', [...args, loss])
     : i18n.t('notifications.advisorLoss', [...args, loss]);
 }
-const showAdvisorCcus = () => includeHangarFilter('priceChange');
+/** "Price change ahead" is on in My Hangar: the button turns it off again, like the others. */
+const advisorFiltered = computed(() => hangarFilterStates.value.get('priceChange') === 'include');
+function toggleAdvisorFilter() {
+  if (advisorFiltered.value) clearHangarFilterInclude('priceChange');
+  else includeHangarFilter('priceChange');
+}
 const openSecureSection = () => openTabAt('store', 'shm-store-secure-title', { highlight: true });
 
 function dismissPaintNote() {
@@ -729,13 +738,22 @@ async function move(box: Box, step: -1 | 1) {
             <div v-mark-wrapped class="shm-sidebar-actions">
               <template v-if="note.kind === 'losing'">
                 <button
-                  v-tooltip="i18n.t('notifications.showAdvisorHint')"
+                  v-tooltip="
+                    i18n.t(
+                      advisorFiltered
+                        ? 'notifications.showAllHint'
+                        : 'notifications.showAdvisorHint',
+                    )
+                  "
                   type="button"
                   class="shm-button shm-sidebar-button"
-                  @click="showAdvisorCcus"
+                  :aria-pressed="advisorFiltered"
+                  @click="toggleAdvisorFilter"
                 >
-                  <SvgIcon name="filter" />
-                  {{ i18n.t('notifications.showReady') }}
+                  <SvgIcon :name="advisorFiltered ? 'filter-circle-xmark' : 'filter'" />
+                  {{
+                    i18n.t(advisorFiltered ? 'notifications.showAll' : 'notifications.showReady')
+                  }}
                 </button>
                 <button
                   v-tooltip="i18n.t('notifications.openAdvisorHint')"

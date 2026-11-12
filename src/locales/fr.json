@@ -933,7 +933,7 @@
     "advisorLosing": "$1 CCU perdent de la valeur d’upgrade avec la hausse de prix attendue du $2 ($3)",
     "advisorLosingOne": "1 CCU perd de la valeur d’upgrade avec la hausse de prix attendue du $2 ($3)",
     "advisorSecure": "Le prix du $1 devrait augmenter ($2). Un CCU vers lui peut encore être acheté à l’ancien prix.",
-    "showAdvisorHint": "Affiche les CCU dans My Hangar avec le filtre « Changement de prix à venir ».",
+    "showAdvisorHint": "Affiche les CCU dans My Hangar avec le filtre « Changement de prix à venir » ; ce bouton ou « Réinitialiser les filtres » les affiche tous à nouveau.",
     "openAdvisorHint": "Comment garder la remise de ces CCU.",
     "showSecureHint": "Affiche les CCU les moins chers vers le vaisseau dans l’onglet Pledge Store.",
     "dismissAdvisorHint": "Retire cette notification pour cette hausse de prix. Une hausse nouvelle ou déplacée s’affiche à nouveau.",
