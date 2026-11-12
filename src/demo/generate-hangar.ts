@@ -35,6 +35,11 @@ export interface DemoPledge extends Pledge {
   demoKind: DemoPledgeKind;
   /** The standard price of what it contains, for plausible values and states. */
   standardPrice: number;
+  /**
+   * Its part in the Price Increase Advisor's chain (#255, `demoPivotShip`): the ship, the CCU to
+   * it, the CCU from it.
+   */
+  demoPivot?: 'ship' | 'ccuTo' | 'ccuFrom';
 }
 
 const USD = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
@@ -123,8 +128,28 @@ function paidValue(random: DemoRandom, label: string, price: number): number {
   return roundPrice(price * 1.1);
 }
 
-function standaloneShip(random: DemoRandom, catalog: DemoCatalog, index: number): DemoPledge {
-  const ship = random.pick(`ship:${index}`, catalog.ships)!;
+/**
+ * The ship of the Price Increase Advisor's chain (#255): in the hangar as a ship, as the target of
+ * one CCU and the base of another, so a price increase of it shows each case. A ship CCUs go to
+ * with cheaper and pricier ones around it, else none.
+ */
+export function demoPivotShip(random: DemoRandom, catalog: DemoCatalog): Ship | undefined {
+  const sorted = ccuTargetsOf(catalog.ships).sort((a, b) => a.msrp - b.msrp);
+  const inner = sorted.filter(
+    (ship) => ship.msrp > sorted[0]!.msrp && ship.msrp < sorted[sorted.length - 1]!.msrp,
+  );
+  return random.pick('pivot', inner);
+}
+
+function standaloneShip(
+  random: DemoRandom,
+  catalog: DemoCatalog,
+  index: number,
+  pivot?: Ship,
+): DemoPledge {
+  // The first ship is the pivot (#255).
+  const isPivot = index === 0 && !!pivot;
+  const ship = (isPivot && pivot) || random.pick(`ship:${index}`, catalog.ships)!;
   const label = `ship:${index}`;
   const value = paidValue(random, label, ship.msrp);
   return basePledge(
@@ -133,7 +158,11 @@ function standaloneShip(random: DemoRandom, catalog: DemoCatalog, index: number)
     [shipItem(ship), insuranceItem('120 Month Insurance')],
     'ships',
     ship.msrp,
-    { category: 'standalone_ship', isUpgradeable: true },
+    {
+      category: 'standalone_ship',
+      isUpgradeable: true,
+      ...(isPivot && { demoPivot: 'ship' as const }),
+    },
   );
 }
 
@@ -151,12 +180,23 @@ function gamePackage(random: DemoRandom, catalog: DemoCatalog, index: number): D
   );
 }
 
-function ccu(random: DemoRandom, catalog: DemoCatalog, index: number): DemoPledge {
+function ccu(random: DemoRandom, catalog: DemoCatalog, index: number, pivot?: Ship): DemoPledge {
   const sorted = ccuTargetsOf(catalog.ships).sort((a, b) => a.msrp - b.msrp);
-  const fromIndex = random.int(`ccu:${index}:from`, 0, sorted.length - 2);
-  const from = sorted[fromIndex]!;
-  const targets = sorted.filter((ship) => ship.msrp > from.msrp);
-  const to = random.pick(`ccu:${index}:to`, targets) ?? sorted[sorted.length - 1]!;
+  let from: Ship;
+  let to: Ship;
+  const isPivot = !!pivot && index < 2;
+  if (pivot && isPivot) {
+    // The first CCU goes to the pivot, the second from it (#255).
+    const cheaper = sorted.filter((ship) => ship.msrp < pivot.msrp);
+    const pricier = sorted.filter((ship) => ship.msrp > pivot.msrp);
+    from = index === 0 ? random.pick(`ccu:${index}:from`, cheaper)! : pivot;
+    to = index === 0 ? pivot : random.pick(`ccu:${index}:to`, pricier)!;
+  } else {
+    const fromIndex = random.int(`ccu:${index}:from`, 0, sorted.length - 2);
+    from = sorted[fromIndex]!;
+    const targets = sorted.filter((ship) => ship.msrp > from.msrp);
+    to = random.pick(`ccu:${index}:to`, targets) ?? sorted[sorted.length - 1]!;
+  }
   const price = Math.max(5, to.msrp - from.msrp);
   const warbond = random.chance(`ccu:${index}:warbond`, 0.35);
   // A warbond CCU costs less by the warbond discount of its target, never less than $5.
@@ -165,6 +205,7 @@ function ccu(random: DemoRandom, catalog: DemoCatalog, index: number): DemoPledg
     : price;
   const title = `Upgrade - ${from.name} to ${to.name} ${warbond ? 'Warbond' : 'Standard'} Edition`;
   return basePledge(title, value, [{ title }], 'ccus', price, {
+    ...(isPivot && { demoPivot: index === 0 ? ('ccuTo' as const) : ('ccuFrom' as const) }),
     upgrade: {
       matchItems: [{ id: from.id, name: from.name }],
       targetItems: [{ id: to.id, name: to.name }],
@@ -253,9 +294,12 @@ export function generateHangar(
       if (pledge) pledges.push(pledge);
     }
   };
-  times(composition.ships, (index) => standaloneShip(random, catalog, index));
+  // The Price Increase Advisor's chain (#255): only with a ship and two CCUs.
+  const pivot =
+    composition.ships > 0 && composition.ccus > 1 ? demoPivotShip(random, catalog) : undefined;
+  times(composition.ships, (index) => standaloneShip(random, catalog, index, pivot));
   times(composition.packages, (index) => gamePackage(random, catalog, index));
-  times(composition.ccus, (index) => ccu(random, catalog, index));
+  times(composition.ccus, (index) => ccu(random, catalog, index, pivot));
   times(composition.paints, (index) =>
     storePledge(random, catalog, 'Paints', 'Skin', 'paints', index),
   );

@@ -9,7 +9,9 @@ import { locale } from '@/i18n';
 import { demoEventNotes, demoEvents } from './demo-events';
 import { resetDemoNotes, seedDemoNotes } from './demo-notes';
 import type { StoreCredit } from '@/account/store-credit';
-import { current, shipsItem } from '@/ships/ships-storage';
+import { buyableShipsItem, current, shipsItem } from '@/ships/ships-storage';
+import type { ExpectedPriceIncrease } from '@/price-increases/price-increases';
+import { demoDismissedAdvisorNotesItem } from '@/price-increases/advisor-notes';
 import { STORE_ITEMS_VERSION, storeItemsItem } from '@/store/items/store-items-storage';
 import { useStored } from '@/storage/use-stored';
 import { demoCatalog, FALLBACK_CATALOG, type DemoCatalog } from './catalog';
@@ -61,7 +63,7 @@ const demoResets = shallowRef(0);
 
 /**
  * The demo back to its start (#178): its marks, its consultant's kept plan and its sample
- * notifications as a new demo hangar has them.
+ * notifications as a new demo hangar has them, and the Price Increase Advisor's ones shown again.
  */
 export async function resetDemoData(): Promise<void> {
   await Promise.all([
@@ -69,6 +71,8 @@ export async function resetDemoData(): Promise<void> {
     marksSeededItem.removeValue(),
     resetDemoPlan(),
     resetDemoNotes(),
+    // The Price Increase Advisor's notifications closed with × (#255).
+    demoDismissedAdvisorNotesItem.removeValue(),
   ]);
   demoResets.value++;
 }
@@ -148,6 +152,11 @@ export interface DemoContext {
   /** The store credit shown instead of the account's. */
   storeCredit: StoreCredit;
   /**
+   * The expected price increases of the generated demo (#194, #255) instead of the website's, for
+   * what works them out from the storage: the CCUs to secure (#253, #254).
+   */
+  priceIncreases?: readonly ExpectedPriceIncrease[];
+  /**
    * The pledge shown as bought a few hours ago (see `justBoughtOf`) and its made-up purchase time
    * ("2026-11-08T15:00"), for the countdown of a mark to melt.
    */
@@ -188,11 +197,17 @@ export function useDemo(
     ),
   );
   const generated = computed(() => settings().source === 'generated');
+  // The ships RSI sells CCUs to: the demo's price increase for the CCUs to secure is one (#255).
+  const buyableShips = useStored(buyableShipsItem);
+  const buyable = computed(() => {
+    const skus = current(buyableShips.value ?? null)?.skus;
+    return skus && new Set(skus.map((sku) => sku.shipId));
+  });
 
   const ready = computed(() => !active.value || key.value !== undefined);
   const generatedAccount = computed(() =>
     active.value && key.value && generated.value
-      ? generatedDemo(catalog.value, key.value, localToday(), Date.now(), settings())
+      ? generatedDemo(catalog.value, key.value, localToday(), Date.now(), settings(), buyable.value)
       : undefined,
   );
   watch([generatedAccount, demoResets], ([account]) => {
@@ -266,6 +281,7 @@ export function useDemo(
         tokens: account.generatedBuyback.tokens,
         storeItems: catalog.value.items,
         storeData: demoStoreData(catalog.value, account.account.pledges),
+        priceIncreases: account.priceIncreases,
       }),
       events: events.value,
       storage: {

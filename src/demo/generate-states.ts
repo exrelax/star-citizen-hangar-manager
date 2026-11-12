@@ -208,6 +208,11 @@ export function withStates(
   set(anyPaint[1], (pledge) => ({ ...pledge, isGiftable: false }));
   set(anyPaint[2], (pledge) => ({ ...pledge, isGiftable: true, isExchangeable: true }));
   set(ofKind(generated, 'gear')[0], (pledge) => ({ ...pledge, isExchangeable: false }));
+  // The CCU from the Price Increase Advisor's ship (#255): giftable, for the advice's trade-off.
+  set(
+    generated.find((pledge) => pledge.demoPivot === 'ccuFrom'),
+    (pledge) => ({ ...pledge, isGiftable: true, isExchangeable: true }),
+  );
 
   // Insurances of the ships: LTI, years and months.
   ofKind(generated, 'ships').forEach((pledge, index) =>
@@ -230,7 +235,9 @@ export function withStates(
     );
 
   // Upgraded ships with their applied CCUs.
+  // Not the Price Increase Advisor's ship (#255): it stays itself.
   ofKind(generated, 'ships')
+    .filter((pledge) => !pledge.demoPivot)
     .slice(states.upgraded ? -DEMO.upgradedPledges : generated.length)
     .forEach((pledge, index) => {
       const result = upgraded(byId.get(pledge.id)!, catalog, random, index);
