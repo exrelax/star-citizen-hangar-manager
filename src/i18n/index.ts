@@ -18,12 +18,30 @@ export const LOCALES = Object.keys(MESSAGES) as Locale[];
 export const FALLBACK_LOCALE: Locale = 'en';
 
 type Messages = { [key: string]: string | Messages };
+/**
+ * A message with a count (#300): one text per plural category of `Intl.PluralRules` – `one` and
+ * `other` always, the others where a language needs them.
+ */
+type PluralForms = { one: string; other: string };
 type Leaves<T, Prefix extends string = ''> = {
-  [K in keyof T & string]: T[K] extends string ? `${Prefix}${K}` : Leaves<T[K], `${Prefix}${K}.`>;
+  [K in keyof T & string]: T[K] extends string
+    ? `${Prefix}${K}`
+    : T[K] extends PluralForms
+      ? never
+      : Leaves<T[K], `${Prefix}${K}.`>;
+}[keyof T & string];
+type Plurals<T, Prefix extends string = ''> = {
+  [K in keyof T & string]: T[K] extends string
+    ? never
+    : T[K] extends PluralForms
+      ? `${Prefix}${K}`
+      : Plurals<T[K], `${Prefix}${K}.`>;
 }[keyof T & string];
 
 /** Dotted path of a message, e.g. "manager.title". */
 export type MessageKey = Leaves<typeof en>;
+/** Dotted path of a message with plural forms, e.g. "manager.count" (#300). */
+export type PluralKey = Plurals<typeof en>;
 
 export function isLocale(value: unknown): value is Locale {
   return LOCALES.includes(value as Locale);
@@ -50,16 +68,46 @@ export function translate(
   substitutions: readonly (string | number)[] = [],
 ): string {
   const message = lookup(MESSAGES[locale], key) ?? lookup(MESSAGES[FALLBACK_LOCALE], key) ?? key;
+  return fill(message, substitutions);
+}
+
+/**
+ * The form of a message with a count (#300) by the plural rules of the locale (`Intl.PluralRules`),
+ * e.g. "1 pledge" and "2 pledges"; a form the locale doesn't have falls back to `other`, a
+ * message missing in the locale to English. The substitutions are the count unless given.
+ */
+export function translatePlural(
+  locale: Locale,
+  key: PluralKey,
+  count: number,
+  substitutions: readonly (string | number)[] = [count],
+): string {
+  const category = new Intl.PluralRules(locale).select(count);
+  const formsOf = (messages: Messages) => {
+    const forms = lookupNode(messages, key);
+    return typeof forms === 'object' ? forms : undefined;
+  };
+  const forms = formsOf(MESSAGES[locale]) ?? formsOf(MESSAGES[FALLBACK_LOCALE]);
+  const message = forms?.[category] ?? forms?.other;
+  return typeof message === 'string' ? fill(message, substitutions) : key;
+}
+
+function fill(message: string, substitutions: readonly (string | number)[]): string {
   return message.replace(/\$(\$|[1-9])/g, (_, token: string) =>
     token === '$' ? '$' : String(substitutions[Number(token) - 1] ?? ''),
   );
 }
 
-function lookup(messages: Messages, key: string): string | undefined {
+function lookupNode(messages: Messages, key: string): string | Messages | undefined {
   let node: string | Messages | undefined = messages;
   for (const part of key.split('.')) {
     node = typeof node === 'object' ? node[part] : undefined;
   }
+  return node;
+}
+
+function lookup(messages: Messages, key: string): string | undefined {
+  const node = lookupNode(messages, key);
   return typeof node === 'string' ? node : undefined;
 }
 
@@ -76,4 +124,7 @@ export function setLocale(next: Locale) {
 export const i18n = {
   t: (key: MessageKey, substitutions?: readonly (string | number)[]) =>
     translate(current.value, key, substitutions),
+  /** A message with a count (#300): its singular or plural form; the count is `$1` unless given. */
+  n: (key: PluralKey, count: number, substitutions?: readonly (string | number)[]) =>
+    translatePlural(current.value, key, count, substitutions),
 };

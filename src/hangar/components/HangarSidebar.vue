@@ -347,15 +347,9 @@ function advisorText(note: AdvisorNote) {
     return i18n.t('notifications.advisorSecure', [ship, advisorWhen(note)]);
   const count = note.ccuIds.length;
   const args = [number.value.format(count), ship, advisorWhen(note)];
-  if (note.loss === undefined) {
-    return count === 1
-      ? i18n.t('notifications.advisorLosingOne', args)
-      : i18n.t('notifications.advisorLosing', args);
-  }
+  if (note.loss === undefined) return i18n.n('notifications.advisorLosing', count, args);
   const loss = money.value.format(note.loss);
-  return count === 1
-    ? i18n.t('notifications.advisorLossOne', [...args, loss])
-    : i18n.t('notifications.advisorLoss', [...args, loss]);
+  return i18n.n('notifications.advisorLoss', count, [...args, loss]);
 }
 /** "Price change ahead" is on in My Hangar: the button turns it off again, like the others. */
 const advisorFiltered = computed(() => hangarFilterStates.value.get('priceChange') === 'include');
@@ -574,9 +568,7 @@ async function move(box: Box, step: -1 | 1) {
         :badge="box === 'notifications' && noteCount ? number.format(noteCount) : undefined"
         :badge-label="
           box === 'notifications' && noteCount
-            ? i18n.t(noteCount === 1 ? 'notifications.countOne' : 'notifications.count', [
-                number.format(noteCount),
-              ])
+            ? i18n.n('notifications.count', noteCount, [number.format(noteCount)])
             : undefined
         "
         :dragging="box === dragged"
@@ -590,12 +582,7 @@ async function move(box: Box, step: -1 | 1) {
           <div v-if="readyCount" class="shm-sidebar-melt-ready" role="status">
             <SvgIcon name="recycle" />
             <p>
-              {{
-                i18n.t(
-                  readyCount === 1 ? 'notifications.meltReadyOne' : 'notifications.meltReady',
-                  [number.format(readyCount)],
-                )
-              }}
+              {{ i18n.n('notifications.meltReady', readyCount, [number.format(readyCount)]) }}
             </p>
             <div v-mark-wrapped class="shm-sidebar-actions">
               <button
@@ -626,9 +613,9 @@ async function move(box: Box, step: -1 | 1) {
             <template v-if="readyFillers.length">
               <p class="shm-sidebar-note">
                 {{
-                  readyFillers.length === 1
-                    ? i18n.t('consultant.fillers.amongReadyOne')
-                    : i18n.t('consultant.fillers.amongReady', [number.format(readyFillers.length)])
+                  i18n.n('consultant.fillers.amongReady', readyFillers.length, [
+                    number.format(readyFillers.length),
+                  ])
                 }}
               </p>
               <div class="shm-sidebar-actions">
@@ -640,11 +627,7 @@ async function move(box: Box, step: -1 | 1) {
                   @click="meltingFillers = true"
                 >
                   <SvgIcon name="triangle-exclamation" />
-                  {{
-                    readyFillers.length === 1
-                      ? i18n.t('consultant.fillers.meltOne')
-                      : i18n.t('consultant.fillers.melt', [readyFillers.length])
-                  }}
+                  {{ i18n.n('consultant.fillers.melt', readyFillers.length) }}
                 </button>
                 <button
                   v-else
@@ -670,12 +653,7 @@ async function move(box: Box, step: -1 | 1) {
             <SvgIcon name="paintbrush" />
             <p>
               {{
-                i18n.t(
-                  paintNoteCount === 1
-                    ? 'notifications.paintsRebuyOne'
-                    : 'notifications.paintsRebuy',
-                  [number.format(paintNoteCount)],
-                )
+                i18n.n('notifications.paintsRebuy', paintNoteCount, [number.format(paintNoteCount)])
               }}
             </p>
             <button
@@ -692,12 +670,10 @@ async function move(box: Box, step: -1 | 1) {
             <SvgIcon name="triangle-exclamation" />
             <p>
               {{
-                i18n.t(
-                  priceNoteCount === 1
-                    ? 'notifications.priceIncreaseOne'
-                    : 'notifications.priceIncrease',
-                  [number.format(priceNoteCount), settings.priceIncreaseDays],
-                )
+                i18n.n('notifications.priceIncrease', priceNoteCount, [
+                  number.format(priceNoteCount),
+                  settings.priceIncreaseDays,
+                ])
               }}
             </p>
             <button

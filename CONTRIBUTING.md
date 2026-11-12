@@ -64,6 +64,10 @@ manager and made-up pledges – the quickest way to check a visual change.
 - **Translations** – add every new text to all locale files (`en`, `de`, `fr`, `es`). A test checks
   that all locales have the same keys and placeholders. If you can't translate a text, add the
   English text and mention it in the pull request.
+- **Counts** – a text with a count gets one form per plural category, e.g.
+  `"count": { "one": "$1 pledge", "other": "$1 pledges" }`, and is shown with
+  `i18n.n(key, count)`, which picks the form by the language's plural rules (`Intl.PluralRules`).
+  Add other forms (`few`, `many`, …) where a language needs them.
 - **RSI's own texts** in the exchange and gift dialogs stay in RSI's English wording by default;
   translations of them are optional (see the setting "Translate RSI's texts" under "Experimental").
 - **Icons** – add an SVG to `src/assets/svg-sprites/<set>/` and run `pnpm svg-sprite`; for the

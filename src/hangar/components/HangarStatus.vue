@@ -98,7 +98,7 @@ function stepResult(id: (typeof steps)[number]['id'], outcome: CheckOutcome) {
       return i18n.t('status.stepNeedsFullSync');
     case 'updated':
       return id === 'orders'
-        ? i18n.t('status.stepNewLogEntries', [outcome.added])
+        ? i18n.n('status.stepNewLogEntries', outcome.added)
         : i18n.t('status.stepUpdated', [outcome.added, outcome.removed, outcome.changed]);
     default:
       return i18n.t('status.stepUnchanged');
@@ -111,7 +111,7 @@ const details = computed(() => {
     const outcome = meta.value?.lastOutcome;
     if (!outcome) return [];
     const pages =
-      outcome.pages === undefined ? '' : ` · ${i18n.t('status.stepPages', [outcome.pages])}`;
+      outcome.pages === undefined ? '' : ` · ${i18n.n('status.stepPages', outcome.pages)}`;
     return [
       `${i18n.t(`storage.${id}.name`)}: ${stepResult(id, outcome)}${pages} (${ago(outcome.at)})`,
     ];

@@ -164,7 +164,7 @@ const displayClasses = computed(() => ({
       </div>
       <template v-if="storeData">
         <p class="shm-count">
-          <span>{{ i18n.t('store.count', [offers.length]) }}</span>
+          <span>{{ i18n.n('store.count', offers.length) }}</span>
           <span class="shm-store-updated">
             <span v-if="upgradeToolState.loading">{{ i18n.t('store.updating') }}</span>
             <span v-else-if="updated">{{ updated }}</span>

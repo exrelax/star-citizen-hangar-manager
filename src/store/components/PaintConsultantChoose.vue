@@ -272,7 +272,7 @@ const paintCards = computed(() =>
                   @click="melting = true"
                 >
                   <SvgIcon name="triangle-exclamation" />
-                  {{ i18n.t('consultant.meltOwn', [ownPledges.length]) }}
+                  {{ i18n.n('consultant.meltOwn', ownPledges.length) }}
                 </button>
                 <BulkExchangeOverlay
                   v-if="melting"

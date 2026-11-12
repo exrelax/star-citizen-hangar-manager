@@ -14,8 +14,14 @@
     "initialLoadText": "Der Hangar Manager liest deinen Hangar, das Buy Back und die Bestellungen von der RSI-Website und speichert sie in diesem Browser. Das macht er nicht von selbst – starte das erste Laden hier.",
     "initialLoad": "Initial Load",
     "initialLoadDuration": "Das erstmalige Laden kann einige Sekunden dauern: ca. $1 für $2 Pledges, ca. $3 für $4 Pledges (Hangar und Buy Back zusammen). Den Fortschritt zeigt der Refresh-Button oben rechts.",
-    "count": "$1 Pledges",
-    "countFiltered": "$1 von $2 Pledges",
+    "count": {
+      "one": "$1 Pledge",
+      "other": "$1 Pledges"
+    },
+    "countFiltered": {
+      "one": "$1 von $2 Pledge",
+      "other": "$1 von $2 Pledges"
+    },
     "searchPlaceholder": "Titel, Schiffe, Pledge- und Order-IDs durchsuchen …",
     "noResults": "Keine Pledges passen zu deiner Suche.",
     "syncProgress": "Lese RSI-Seiten: $1 von $2 ($3)",
@@ -115,8 +121,14 @@
       "rewardsByName": "Rewards, am Namen erkannt: Event-, Referral-, Concierge- und andere Rewards.",
       "discount": "Günstiger als der Originalpreis gekauft: Schiffe und CCUs verglichen mit RSIs Schiffspreisen, Paints, Gear und mehr mit dem Pledge Store. Pledges ohne bekannten Originalpreis oder mit Aufpreis zählen nicht.",
       "available": "Pledges, die RSI wieder verkaufen kann. Ausgeschlossen: CCUs, deren Basisschiff heute gleich viel oder mehr kostet als ihr Zielschiff – RSI verkauft ein CCU nur zu einem teureren Schiff.",
-      "priceIncrease": "Pledges, deren Preis voraussichtlich in den nächsten $1 Tagen steigt (einstellbar in den Einstellungen), z. B. Schiffe, die zur IAE flugbereit werden, und CCUs von einem solchen Schiff, die an Upgrade-Wert verlieren. Die Termine sind erwartet, nicht von RSI bestätigt.",
-      "priceChange": "Pledges, deren Wert sich mit einer Preiserhöhung in den nächsten $1 Tagen ändert (einstellbar in den Einstellungen): Schiffe und Items, deren Preis steigt, CCUs zu ihnen (sie gewinnen Upgrade-Wert) und CCUs von ihnen (sie verlieren ihn). Die Termine sind erwartet, nicht von RSI bestätigt."
+      "priceIncrease": {
+        "one": "Pledges, deren Preis voraussichtlich innerhalb des nächsten Tages steigt (einstellbar in den Einstellungen), z. B. Schiffe, die zur IAE flugbereit werden, und CCUs von einem solchen Schiff, die an Upgrade-Wert verlieren. Die Termine sind erwartet, nicht von RSI bestätigt.",
+        "other": "Pledges, deren Preis voraussichtlich in den nächsten $1 Tagen steigt (einstellbar in den Einstellungen), z. B. Schiffe, die zur IAE flugbereit werden, und CCUs von einem solchen Schiff, die an Upgrade-Wert verlieren. Die Termine sind erwartet, nicht von RSI bestätigt."
+      },
+      "priceChange": {
+        "one": "Pledges, deren Wert sich mit einer Preiserhöhung innerhalb des nächsten Tages ändert (einstellbar in den Einstellungen): Schiffe und Items, deren Preis steigt, CCUs zu ihnen (sie gewinnen Upgrade-Wert) und CCUs von ihnen (sie verlieren ihn). Die Termine sind erwartet, nicht von RSI bestätigt.",
+        "other": "Pledges, deren Wert sich mit einer Preiserhöhung in den nächsten $1 Tagen ändert (einstellbar in den Einstellungen): Schiffe und Items, deren Preis steigt, CCUs zu ihnen (sie gewinnen Upgrade-Wert) und CCUs von ihnen (sie verlieren ihn). Die Termine sind erwartet, nicht von RSI bestätigt."
+      }
     },
     "categories": {
       "types": "Typen",
@@ -484,10 +496,16 @@
     "stepsTitle": "Letzte Prüfung",
     "stepUnchanged": "keine Änderungen",
     "stepUpdated": "$1 neu, $2 entfernt, $3 geändert",
-    "stepNewLogEntries": "$1 neue Log-Einträge",
+    "stepNewLogEntries": {
+      "one": "$1 neuer Log-Eintrag",
+      "other": "$1 neue Log-Einträge"
+    },
     "stepFailed": "fehlgeschlagen",
     "stepNeedsFullSync": "zu viele Änderungen",
-    "stepPages": "$1 Seiten gelesen"
+    "stepPages": {
+      "one": "$1 Seite gelesen",
+      "other": "$1 Seiten gelesen"
+    }
   },
   "ccugame": {
     "openInManager": "Im Hangar Manager öffnen (#$1)",
@@ -522,7 +540,10 @@
     "loading": "Aktuelle Angebote werden von RSI gelesen …",
     "failed": "Die Angebote konnten nicht von RSI gelesen werden: $1",
     "retry": "Erneut versuchen",
-    "count": "$1 Warbond CCUs",
+    "count": {
+      "one": "$1 Warbond CCU",
+      "other": "$1 Warbond CCUs"
+    },
     "fetchedAt": "Aktualisiert $1",
     "updating": "Wird aktualisiert …",
     "refresh": "Aktualisiert nur die Pledge-Store-Daten hier im Hangar Manager – nicht deinen Hangar, Buy Back oder deine Bestellungen",
@@ -567,8 +588,14 @@
     "viewCurrent": "Aktuelle Discount CCUs",
     "viewHistory": "Warbond CCU Historie",
     "historyIntro": "Warbond-Angebote, die RSI nicht mehr verkauft, so wie der Hangar Manager sie in diesem Browser gesehen hat. Eine öffentliche Liste früherer Angebote gibt es nicht, daher wächst die Liste mit der Zeit.",
-    "historyCount": "$1 abgelaufene Angebote",
-    "historyCountFiltered": "$1 von $2 abgelaufenen Angeboten",
+    "historyCount": {
+      "one": "$1 abgelaufenes Angebot",
+      "other": "$1 abgelaufene Angebote"
+    },
+    "historyCountFiltered": {
+      "one": "$1 von $2 abgelaufenen Angebot",
+      "other": "$1 von $2 abgelaufenen Angeboten"
+    },
     "historySearch": "Schiffe und Hersteller suchen …",
     "historyNoResults": "Kein abgelaufenes Angebot passt zu deiner Suche.",
     "historyEmpty": "In diesem Zeitraum wurde kein abgelaufenes Warbond-Angebot gesehen.",
@@ -643,33 +670,49 @@
     "stepPacks": "Paint-Pakete und Pledges mit einem Paint neben anderen Items sind noch nicht enthalten.",
     "toCart": "Die $1 Paints in den Warenkorb legen",
     "toCartHint": "Legt die eigenen Paints und die Füll-Paints dieses Plans in deinen RSI-Warenkorb und öffnet ihn. Gekauft wird nichts: Du prüfst den Warenkorb und bezahlst dort.",
-    "cartOccupied": "Dein RSI-Warenkorb enthält schon $1 Artikel. Andere Artikel ändern die Rabattstufe, dann geht der Plan nicht auf – leere den Warenkorb zuerst oder lege die Paints trotzdem hinein.",
+    "cartOccupied": {
+      "one": "Dein RSI-Warenkorb enthält schon $1 Artikel. Andere Artikel ändern die Rabattstufe, dann geht der Plan nicht auf – leere den Warenkorb zuerst oder lege die Paints trotzdem hinein.",
+      "other": "Dein RSI-Warenkorb enthält schon $1 Artikel. Andere Artikel ändern die Rabattstufe, dann geht der Plan nicht auf – leere den Warenkorb zuerst oder lege die Paints trotzdem hinein."
+    },
     "openCart": "Warenkorb öffnen",
     "addAnyway": "Trotzdem hinzufügen",
     "cancel": "Abbrechen",
     "cartFailed": "RSI hat einige Paints abgelehnt, daher passt der Warenkorb nicht zum Plan. Prüfe ihn, bevor du etwas einschmilzt:",
     "cartDone": "Die Paints liegen im Warenkorb. Prüfe dort den Endpreis und jedes Paint, bevor du etwas einschmilzt, und bezahle nur mit Store Credits.",
     "cartError": "Lesen oder Füllen des Warenkorbs fehlgeschlagen: $1",
-    "meltOwn": "Die $1 eigenen Paints einschmelzen",
+    "meltOwn": {
+      "one": "Das eigene Paint einschmelzen",
+      "other": "Die $1 eigenen Paints einschmelzen"
+    },
     "meltHintCart": "Lege die Paints zuerst in den Warenkorb und prüfe ihn dort: Erst dann lassen sich die eigenen Paints hier einschmelzen.",
     "meltHintReady": "Schmilzt die eigenen Paints dieses Plans auf einmal ein (Mehrfach-Einschmelzen). Öffnet zuerst einen Dialog; prüfe vorher den Warenkorb.",
     "meltConsent": "Ich habe die Paints dieses Plans in den Warenkorb gelegt und ihn dort geprüft: den Endpreis und dass jedes Paint, das ich jetzt einschmelze, darin liegt.",
-    "meltFirst": "Die $1 eigenen Paints zuerst einschmelzen",
+    "meltFirst": {
+      "one": "Das eigene Paint zuerst einschmelzen",
+      "other": "Die $1 eigenen Paints zuerst einschmelzen"
+    },
     "meltFirstHint": "Schmilzt die eigenen Paints ein, bevor du sie neu kaufst (Weg 2): Ihre Store Credits sind sofort frei, und der Berater merkt sich, welche Paints neu zu kaufen sind. Empfohlen ist der andere Weg: Paints in den Warenkorb legen und zuerst kaufen.",
     "meltFirstConsent": "Ich schmelze diese Paints ein, bevor ich sie neu kaufe: Ich kaufe sie gleich danach – bis dahin garantiert nichts den Preis oder dass sie noch verkauft werden.",
     "fillerTag": "Füll-Paint",
     "skipGiftable": "Verschenkbare Paints auslassen",
     "skipGiftableHint": "Mit Store Credits zurückgekauft, wären sie nicht mehr verschenkbar.",
-    "giftableSkipped": "$1 verschenkbare Paints, die profitieren würden, sind ausgelassen.",
+    "giftableSkipped": {
+      "one": "$1 verschenkbares Paint, das profitieren würde, ist ausgelassen.",
+      "other": "$1 verschenkbare Paints, die profitieren würden, sind ausgelassen."
+    },
     "giftableTag": "Verschenkbar",
     "giftableTagHint": "Jetzt verschenkbar; mit Store Credits zurückgekauft, nicht mehr.",
     "mark": "Rückkauf $1 → $2",
     "markHint": "Einschmelzen und mit dem Mengenrabatt zurückkaufen ($1 → $2): $3 Store Credits werden frei. Öffnet den Paint-Rabatt-Berater.",
-    "probablyRebought": "$1 Paints sehen neu gekauft aus, aber kein Plan des Beraters bestätigt das. Prüfe sie selbst, bevor du etwas einschmilzt – sie bleiben im Plan:",
+    "probablyRebought": {
+      "one": "$1 Paint sieht neu gekauft aus, aber kein Plan des Beraters bestätigt das. Prüfe es selbst, bevor du etwas einschmilzt – es bleibt im Plan:",
+      "other": "$1 Paints sehen neu gekauft aus, aber kein Plan des Beraters bestätigt das. Prüfe sie selbst, bevor du etwas einschmilzt – sie bleiben im Plan:"
+    },
     "probablyReboughtItem": "$1: altes Pledge mit $2, eine jüngere Kopie mit $3 ($4)",
-    "probablyReboughtOne": "1 Paint sieht neu gekauft aus, aber kein Plan des Beraters bestätigt das. Prüfe es selbst, bevor du etwas einschmilzt – es bleibt im Plan:",
-    "meltOldOne": "Das alte Paint einschmelzen",
-    "meltOld": "Die $1 alten Paints einschmelzen",
+    "meltOld": {
+      "one": "Das alte Paint einschmelzen",
+      "other": "Die $1 alten Paints einschmelzen"
+    },
     "markMelt": "Einschmelzen – neu gekauft mit $1",
     "markMeltHint": "Dieses Paint wurde mit $1 Rabatt neu gekauft: Schmilz dieses alte Pledge für $2 Store Credits ein. Öffnet den Paint-Rabatt-Berater.",
     "boxMeltNow": "Paints jetzt einschmelzen",
@@ -732,15 +775,22 @@
       "stepPaySub": "Bevor ein Paint eingeschmolzen ist",
       "stepPayBlockedSub": "Du hast $1 von $2",
       "missingBalance": "$1 fehlen",
-      "stepBuy": "Die $1 Paints kaufen",
+      "stepBuy": {
+        "one": "Das Paint kaufen",
+        "other": "Die $1 Paints kaufen"
+      },
       "stepBuySub": "Zu $1 mit Store Credits",
-      "stepMelt": "Deine $1 alten Paints einschmelzen",
-      "stepMeltOne": "Dein altes Paint einschmelzen",
+      "stepMelt": {
+        "one": "Dein altes Paint einschmelzen",
+        "other": "Deine $1 alten Paints einschmelzen"
+      },
       "stepMeltTwiceSub": "Sie sind jetzt doppelt im Hangar",
       "stepMeltAfterSub": "Erst nach dem Bezahlen",
       "stepMeltFreesSub": "Macht ihren Schmelzwert frei",
-      "stepFillers": "Die $1 Füll-Paints nach 24 h einschmelzen",
-      "stepFillersOne": "Das Füll-Paint nach 24 h einschmelzen",
+      "stepFillers": {
+        "one": "Das Füll-Paint nach 24 h einschmelzen",
+        "other": "Die $1 Füll-Paints nach 24 h einschmelzen"
+      },
       "stepFillersSub": "Markiert – du bekommst eine Benachrichtigung",
       "hintSafe": "Sicher: Deine Paints bleiben im Hangar, bis die neuen Exemplare gekauft sind.",
       "hintSafeLower": "Deine Paints bleiben im Hangar, bis die neuen Exemplare gekauft sind. Mit $1 reicht es für $2.",
@@ -762,12 +812,18 @@
     },
     "fillers": {
       "notificationTitle": "Füll-Paints können eingeschmolzen werden",
-      "ready": "Die $1 Füll-Paints des Paint-Rabatt-Beraters können jetzt eingeschmolzen werden. Öffne My Hangar, um sie einzuschmelzen.",
-      "readyOne": "Das Füll-Paint des Paint-Rabatt-Beraters kann jetzt eingeschmolzen werden. Öffne My Hangar, um es einzuschmelzen.",
-      "amongReady": "$1 davon sind Füll-Paints des Paint-Rabatt-Beraters.",
-      "amongReadyOne": "1 davon ist ein Füll-Paint des Paint-Rabatt-Beraters.",
-      "melt": "Die $1 Füll-Paints einschmelzen",
-      "meltOne": "Das Füll-Paint einschmelzen",
+      "ready": {
+        "one": "Das Füll-Paint des Paint-Rabatt-Beraters kann jetzt eingeschmolzen werden. Öffne My Hangar, um es einzuschmelzen.",
+        "other": "Die $1 Füll-Paints des Paint-Rabatt-Beraters können jetzt eingeschmolzen werden. Öffne My Hangar, um sie einzuschmelzen."
+      },
+      "amongReady": {
+        "one": "$1 davon ist ein Füll-Paint des Paint-Rabatt-Beraters.",
+        "other": "$1 davon sind Füll-Paints des Paint-Rabatt-Beraters."
+      },
+      "melt": {
+        "one": "Das Füll-Paint einschmelzen",
+        "other": "Die $1 Füll-Paints einschmelzen"
+      },
       "meltHint": "Schmilzt die Füll-Paints ein, die die Order des Paint-Rabatt-Beraters gekauft hat – nach ihren Pledge-IDs, nie andere Exemplare desselben Paints. Öffnet zuerst einen Dialog."
     },
     "choose": {
@@ -796,9 +852,10 @@
       "statusAfter24h": "nach 24 h",
       "amountDone": "$1 von $2",
       "count": "$1 ×",
-      "stepMeltOwn": "Deine $1 Paints einschmelzen",
-      "stepMeltOwnOne": "Dein Paint einschmelzen",
-      "meltOwnCtaOne": "Das eigene Paint einschmelzen",
+      "stepMeltOwn": {
+        "one": "Dein Paint einschmelzen",
+        "other": "Deine $1 Paints einschmelzen"
+      },
       "cartMatchesSub": "$1 – der Warenkorb passt zum Plan",
       "paySub": "Im Warenkorb von RSI",
       "payNowSub": "Nur mit Store Credits bezahlen – RSI zeigt die $1 im Warenkorb",
@@ -817,23 +874,31 @@
       "checkCartOk": "Alle $1 Paints sind im Warenkorb",
       "checkCartOkSub": "Der Warenkorb passt zum Plan",
       "checkCartTotalSub": "Gesamt $1 nach $2",
-      "checkCartMissing": "$1 Paints sind nicht im Warenkorb",
-      "checkCartMissingOne": "1 Paint ist nicht im Warenkorb",
+      "checkCartMissing": {
+        "one": "$1 Paint ist nicht im Warenkorb",
+        "other": "$1 Paints sind nicht im Warenkorb"
+      },
       "checkCartMissingSub": "$1 von $2 Paints sind im Warenkorb von RSI",
       "checkCartUnknown": "Der Warenkorb wurde noch nicht gelesen",
       "checkCartUnknownSub": "Er wird gelesen, solange der Tab „Pledge Store“ offen ist",
       "checkCartUnread": "Der Warenkorb ließ sich nicht lesen",
-      "checkOtherItems": "Im Warenkorb liegen $1 andere Artikel",
-      "checkOtherItemsOne": "Im Warenkorb liegt 1 anderer Artikel",
+      "checkOtherItems": {
+        "one": "Im Warenkorb liegt $1 anderer Artikel",
+        "other": "Im Warenkorb liegen $1 andere Artikel"
+      },
       "checkOtherItemsSub": "Sie ändern die Rabattstufe – entferne sie im Warenkorb von RSI",
       "checkPrice": "Die Preise haben sich geändert",
       "checkPriceSub": "Der Warenkorb kostet $1 statt $2",
-      "checkUnavailable": "$1 Paints gibt es nicht mehr einzeln",
-      "checkUnavailableOne": "1 Paint gibt es nicht mehr einzeln",
+      "checkUnavailable": {
+        "one": "$1 Paint gibt es nicht mehr einzeln",
+        "other": "$1 Paints gibt es nicht mehr einzeln"
+      },
       "checkCooldownOver": "Die 24 Stunden sind vorbei",
       "checkCooldownOverSub": "Seit $1",
-      "checkNotMeltable": "$1 Paints lassen sich nicht einschmelzen",
-      "checkNotMeltableOne": "1 Paint lässt sich nicht einschmelzen",
+      "checkNotMeltable": {
+        "one": "$1 Paint lässt sich nicht einschmelzen",
+        "other": "$1 Paints lassen sich nicht einschmelzen"
+      },
       "untilMelt": "bis RSI das Einschmelzen erlaubt",
       "cooldownLabel": "24 Stunden Wartezeit",
       "countdownNote": "Zum Einschmelzen markiert – du bekommst eine Benachrichtigung, auch in der Seitenleiste",
@@ -852,8 +917,10 @@
       "recalculate": "Neu berechnen",
       "readCart": "Warenkorb neu lesen",
       "readCredit": "Store Credits neu lesen",
-      "putMissing": "Die $1 fehlenden Paints in den Warenkorb legen",
-      "putMissingOne": "Das fehlende Paint in den Warenkorb legen",
+      "putMissing": {
+        "one": "Das fehlende Paint in den Warenkorb legen",
+        "other": "Die $1 fehlenden Paints in den Warenkorb legen"
+      },
       "pay": "$1 mit Store Credits bezahlen",
       "goPay": "Zum Warenkorb und $1 bezahlen",
       "payHint": "Öffnet den Warenkorb von RSI: Prüfe ihn und bezahle dort, nur mit Store Credits. Hier wird nichts gekauft.",
@@ -873,21 +940,29 @@
     },
     "completed": {
       "title": "Abgeschlossene Pläne",
-      "total": "$1 Pläne · $2",
-      "totalOne": "1 Plan · $1",
+      "total": {
+        "one": "$1 Plan · $2",
+        "other": "$1 Pläne · $2"
+      },
       "resultLabel": "Store Credits",
-      "own": "$1 eigene Paints",
-      "ownOne": "1 eigenes Paint",
-      "fillers": "$1 Füll-Paints",
-      "fillersOne": "1 Füll-Paint",
+      "own": {
+        "one": "$1 eigenes Paint",
+        "other": "$1 eigene Paints"
+      },
+      "fillers": {
+        "one": "$1 Füll-Paint",
+        "other": "$1 Füll-Paints"
+      },
       "melted": "Eingeschmolzen",
       "bought": "Gekauft",
       "freed": "Freigegeben",
       "paid": "Bezahlt",
       "discount": "Erreichter Rabatt",
       "tierAria": "$1 mit $2 Paints erreicht",
-      "meltValue": "Schmelzwert der $1 Paints",
-      "meltValueOne": "Schmelzwert des Paints"
+      "meltValue": {
+        "one": "Schmelzwert des Paints",
+        "other": "Schmelzwert der $1 Paints"
+      }
     }
   },
   "upgradeLog": {
@@ -911,10 +986,14 @@
     "total": "Gesamt"
   },
   "insurance": {
-    "year": "1 Jahr",
-    "years": "$1 Jahre",
-    "month": "1 Monat",
-    "months": "$1 Monate",
+    "years": {
+      "one": "$1 Jahr",
+      "other": "$1 Jahre"
+    },
+    "months": {
+      "one": "$1 Monat",
+      "other": "$1 Monate"
+    },
     "badgeTitle": "Versicherung – von mehreren zählt nur die beste"
   },
   "order": {
@@ -935,15 +1014,19 @@
     "invoiceDemo": "Im Demo-Modus nicht verfügbar: Die Rechnung zeigt die echte Order."
   },
   "refund": {
-    "days": "Refund: $1 Tage",
-    "day": "Refund: 1 Tag",
+    "days": {
+      "one": "Refund: $1 Tag",
+      "other": "Refund: $1 Tage"
+    },
     "lastDay": "Refund: letzter Tag",
     "hint": "Am $1 mit Geld gekauft: CIG erstattet den Kauf innerhalb von $2 Tagen, bis zum $3.",
     "request": "Refund Request",
     "requestHint": "Öffnet RSIs Support-Formular in einem neuen Tab, ausgefüllt für einen Refund der Order $1.",
     "requestDemo": "Im Demo-Modus nicht verfügbar.",
-    "leftDays": "Noch $1 Tage für einen Refund (bis $2)",
-    "leftDay": "Noch 1 Tag für einen Refund (bis $2)",
+    "leftDays": {
+      "one": "Noch $1 Tag für einen Refund (bis $2)",
+      "other": "Noch $1 Tage für einen Refund (bis $2)"
+    },
     "leftLastDay": "Letzter Tag für einen Refund: heute ($1)"
   },
   "exchange": {
@@ -1004,19 +1087,43 @@
     "buttonHint": "Die ausgewählten Pledges auf einmal gegen Store Credits tauschen (einschmelzen). Öffnet zuerst einen Dialog.",
     "disabled": "Mehrfach-Einschmelzen aus",
     "disabledHint": "„Mehrere Pledges auf einmal einschmelzen“ ist eine experimentelle Einstellung: Schalte sie ein, um die ausgewählten Pledges auf einmal einzuschmelzen. Öffnet die Einstellungen an dieser Stelle.",
-    "title": "$1 Pledges einschmelzen",
-    "count": "$1 Pledges",
+    "title": {
+      "one": "$1 Pledge einschmelzen",
+      "other": "$1 Pledges einschmelzen"
+    },
+    "count": {
+      "one": "$1 Pledge",
+      "other": "$1 Pledges"
+    },
     "skipped": "$1 ausgewählte lassen sich nicht einschmelzen und bleiben außen vor",
     "listLabel": "Einzuschmelzende Pledges",
-    "intro": "Du bist dabei, $1 Pledges einzuschmelzen. Dadurch werden sie einschließlich aller Upgrades (z. B. Anpassungen oder CCUs) von deinem Konto entfernt, und du erhältst $2 als Store Credits. Sie werden nacheinander eingeschmolzen; lehnt RSI eines ab, stoppen die übrigen.",
+    "intro": {
+      "one": "Du bist dabei, $1 Pledge einzuschmelzen. Dadurch wird es einschließlich aller Upgrades (z. B. Anpassungen oder CCUs) von deinem Konto entfernt, und du erhältst $2 als Store Credits.",
+      "other": "Du bist dabei, $1 Pledges einzuschmelzen. Dadurch werden sie einschließlich aller Upgrades (z. B. Anpassungen oder CCUs) von deinem Konto entfernt, und du erhältst $2 als Store Credits. Sie werden nacheinander eingeschmolzen; lehnt RSI eines ab, stoppen die übrigen."
+    },
     "lastGameAccessText": "Die Auswahl enthält alle Pledges deines Kontos, die Zugang zu Star Citizen geben. Ohne sie kannst du nicht mehr spielen.",
     "warnings": {
       "lastGameAccess": "Die Auswahl nimmt dir jeden Spielzugang",
-      "notBuybackable": "$1 Pledges lassen sich nicht zurückkaufen: Ihr Einschmelzen ist endgültig",
-      "upgraded": "$1 Pledges mit angewendeten Upgrades: Die CCUs werden mit eingeschmolzen",
-      "discount": "Du gibst Rabatte von $2 auf $1 Pledges auf",
-      "giftable": "$1 Pledges sind jetzt verschenkbar, zurückgekauft nicht mehr",
-      "refundable": "$1 Pledges lassen sich noch gegen Geld erstatten"
+      "notBuybackable": {
+        "one": "$1 Pledge lässt sich nicht zurückkaufen: Sein Einschmelzen ist endgültig",
+        "other": "$1 Pledges lassen sich nicht zurückkaufen: Ihr Einschmelzen ist endgültig"
+      },
+      "upgraded": {
+        "one": "$1 Pledge mit angewendeten Upgrades: Die CCUs werden mit eingeschmolzen",
+        "other": "$1 Pledges mit angewendeten Upgrades: Die CCUs werden mit eingeschmolzen"
+      },
+      "discount": {
+        "one": "Du gibst einen Rabatt von $2 auf $1 Pledge auf",
+        "other": "Du gibst Rabatte von $2 auf $1 Pledges auf"
+      },
+      "giftable": {
+        "one": "$1 Pledge ist jetzt verschenkbar, zurückgekauft nicht mehr",
+        "other": "$1 Pledges sind jetzt verschenkbar, zurückgekauft nicht mehr"
+      },
+      "refundable": {
+        "one": "$1 Pledge lässt sich noch gegen Geld erstatten",
+        "other": "$1 Pledges lassen sich noch gegen Geld erstatten"
+      }
     },
     "tags": {
       "lastGameAccess": "Letzter Spielzugang",
@@ -1028,11 +1135,20 @@
     },
     "consentWarnings": "Ich habe die Warnungen oben gelesen und möchte diese Pledges trotzdem einschmelzen.",
     "consentExperimental": "Ich schmelze diese Pledges mit einer experimentellen Funktion ein, auf eigene Gefahr.",
-    "submit": "$1 Pledges für $2 einschmelzen",
+    "submit": {
+      "one": "$1 Pledge für $2 einschmelzen",
+      "other": "$1 Pledges für $2 einschmelzen"
+    },
     "submitting": "Schmelze $1 von $2 ein …",
-    "success": "$1 Pledges eingeschmolzen, deinem Konto wurden $2 gutgeschrieben.",
+    "success": {
+      "one": "$1 Pledge eingeschmolzen, deinem Konto wurden $2 gutgeschrieben.",
+      "other": "$1 Pledges eingeschmolzen, deinem Konto wurden $2 gutgeschrieben."
+    },
     "successNote": "Sie verschwinden aus der Liste, wenn du diesen Dialog schließt; das Buy Back zeigt sie nach dem nächsten Update.",
-    "failed": "RSI hat „$1“ abgelehnt: $2. $3 weitere Pledges wurden nicht gesendet und bleiben in deinem Hangar."
+    "failed": {
+      "one": "RSI hat „$1“ abgelehnt: $2. $3 weiteres Pledge wurde nicht gesendet und bleibt in deinem Hangar.",
+      "other": "RSI hat „$1“ abgelehnt: $2. $3 weitere Pledges wurden nicht gesendet und bleiben in deinem Hangar."
+    }
   },
   "meltMark": {
     "mark": "Zum Einschmelzen merken",
@@ -1063,8 +1179,10 @@
     "storeItemGone": "Entfernt: $1",
     "storeItemSale": "Im Angebot: $1, $2 → $3",
     "storeItemPrice": "Neuer Preis: $1, $2 → $3",
-    "storeItemsChanged": "$1 Änderungen im Pledge Store",
-    "storeItemsChangedOne": "1 Änderung im Pledge Store",
+    "storeItemsChanged": {
+      "one": "$1 Änderung im Pledge Store",
+      "other": "$1 Änderungen im Pledge Store"
+    },
     "showChanges": "Änderungen anzeigen",
     "showInStore": "Im Pledge Store anzeigen",
     "browserMeltReadyTitle": "Pledges können eingeschmolzen werden",
@@ -1074,32 +1192,44 @@
     "checkOff": "Erledigt",
     "checkOffAll": "Alle als erledigt markieren",
     "pending": "Demnächst",
-    "meltReady": "$1 gemerkte Pledges lassen sich jetzt einschmelzen",
-    "meltReadyOne": "1 gemerktes Pledge lässt sich jetzt einschmelzen",
+    "meltReady": {
+      "one": "$1 gemerktes Pledge lässt sich jetzt einschmelzen",
+      "other": "$1 gemerkte Pledges lassen sich jetzt einschmelzen"
+    },
     "showReady": "Anzeigen",
     "showReadyHint": "Zeigt in „My Hangar“ nur diese Pledges; dieser Button oder „Filter zurücksetzen“ zeigt wieder alle.",
     "showAll": "Alle anzeigen",
     "showAllHint": "Schaltet den Filter ab: „My Hangar“ zeigt wieder alle Pledges.",
     "selectReady": "Auswählen",
     "selectReadyHint": "Wählt diese Pledges aus: Die Box „Ausgewählt“ bietet dann an, alle auf einmal einzuschmelzen (wenn „Mehrere Pledges auf einmal einschmelzen“ an ist).",
-    "paintsRebuy": "$1 Paints lassen sich mit mehr Rabatt zurückkaufen",
-    "paintsRebuyOne": "1 Paint lässt sich mit mehr Rabatt zurückkaufen",
+    "paintsRebuy": {
+      "one": "$1 Paint lässt sich mit mehr Rabatt zurückkaufen",
+      "other": "$1 Paints lassen sich mit mehr Rabatt zurückkaufen"
+    },
     "dismiss": "Ausblenden",
     "dismissPaintsHint": "Entfernt diese Benachrichtigung für genau diese Paints. Sie erscheint wieder, sobald sich ein weiteres Paint mit mehr Rabatt zurückkaufen lässt – dann mit der Anzahl aller.",
     "browserHint": "Browser-Benachrichtigungen informieren dich über Änderungen, auch wenn keine RSI-Seite offen ist. Schalte sie in den Einstellungen ein.",
     "browserHintOpen": "Einstellungen",
     "browserHintOpenHint": "Öffnet die Einstellungen bei „Browser-Benachrichtigungen“.",
     "dismissBrowserHintHint": "Entfernt diesen Hinweis dauerhaft. Browser-Benachrichtigungen kannst du jederzeit in den Einstellungen einschalten.",
-    "count": "$1 Benachrichtigungen",
-    "countOne": "1 Benachrichtigung",
-    "priceIncrease": "$1 Buy-Back-Items werden voraussichtlich innerhalb von $2 Tagen teurer",
-    "priceIncreaseOne": "1 Buy-Back-Item wird voraussichtlich innerhalb von $2 Tagen teurer",
+    "count": {
+      "one": "$1 Benachrichtigung",
+      "other": "$1 Benachrichtigungen"
+    },
+    "priceIncrease": {
+      "one": "$1 Buy-Back-Item wird voraussichtlich innerhalb von $2 Tagen teurer",
+      "other": "$1 Buy-Back-Items werden voraussichtlich innerhalb von $2 Tagen teurer"
+    },
     "dismissPriceIncreaseHint": "Entfernt diese Benachrichtigung für genau diese Items. Sie kommt zurück, sobald der Preis eines weiteren Items voraussichtlich innerhalb des Zeitraums steigt – dann mit der Anzahl aller.",
     "showPriceIncreaseHint": "Zeigt diese Items im Buy Back mit dem Filter „Preiserhöhung erwartet“.",
-    "advisorLoss": "$1 CCUs verlieren $4 Upgrade-Wert durch die erwartete Preiserhöhung der $2 ($3)",
-    "advisorLossOne": "1 CCU verliert $4 Upgrade-Wert durch die erwartete Preiserhöhung der $2 ($3)",
-    "advisorLosing": "$1 CCUs verlieren Upgrade-Wert durch die erwartete Preiserhöhung der $2 ($3)",
-    "advisorLosingOne": "1 CCU verliert Upgrade-Wert durch die erwartete Preiserhöhung der $2 ($3)",
+    "advisorLoss": {
+      "one": "$1 CCU verliert $4 Upgrade-Wert durch die erwartete Preiserhöhung der $2 ($3)",
+      "other": "$1 CCUs verlieren $4 Upgrade-Wert durch die erwartete Preiserhöhung der $2 ($3)"
+    },
+    "advisorLosing": {
+      "one": "$1 CCU verliert Upgrade-Wert durch die erwartete Preiserhöhung der $2 ($3)",
+      "other": "$1 CCUs verlieren Upgrade-Wert durch die erwartete Preiserhöhung der $2 ($3)"
+    },
     "advisorSecure": "Der Preis der $1 steigt voraussichtlich ($2). Ein CCU dorthin lässt sich noch zum alten Preis kaufen.",
     "showAdvisorHint": "Zeigt die CCUs in My Hangar mit dem Filter „Preisänderung erwartet“; dieser Button oder „Filter zurücksetzen“ zeigt wieder alle.",
     "openAdvisorHint": "So erhältst du den Rabatt dieser CCUs.",
@@ -1155,8 +1285,10 @@
     "labelUpgradeGain": "Upgrade-Wert +$1: $2",
     "labelUpgradeLoss": "Upgrade-Wert −$1: $2",
     "labelUpgradeDrops": "Upgrade-Wert sinkt: $1",
-    "days": "$1 Tage",
-    "day": "1 Tag",
+    "days": {
+      "one": "$1 Tag",
+      "other": "$1 Tage"
+    },
     "hours": "$1 Std. $2 Min.",
     "fullHours": "$1 Std.",
     "today": "heute",
@@ -1197,8 +1329,10 @@
     "notSold": "RSIs Upgrade-Tool verkauft gerade kein CCU zur $1, daher gibt es keine Empfehlung.",
     "keepIsBetter": "Behalten ist besser: Nach der Preiserhöhung haben sie mehr Rabatt, als neue CCUs zur $1 hätten.",
     "targetInConcept": "Die $1 ist noch nicht flugbereit: Ihr Preis steigt vermutlich ebenfalls, sobald sie es ist.",
-    "giftable": "$1 dieser $2 CCUs lassen sich jetzt verschenken; die neuen, mit Store Credits gekauft, lassen sich nicht verschenken.",
-    "giftableOne": "1 dieser $2 CCUs lässt sich jetzt verschenken; die neuen, mit Store Credits gekauft, lassen sich nicht verschenken.",
+    "giftable": {
+      "one": "$1 dieser $2 CCUs lässt sich jetzt verschenken; die neuen, mit Store Credits gekauft, lassen sich nicht verschenken.",
+      "other": "$1 dieser $2 CCUs lassen sich jetzt verschenken; die neuen, mit Store Credits gekauft, lassen sich nicht verschenken."
+    },
     "giftableSingle": "Dieses CCU lässt sich jetzt verschenken; das neue, mit Store Credits gekauft, lässt sich nicht verschenken.",
     "giftableAll": "Alle $1 CCUs lassen sich jetzt verschenken; die neuen, mit Store Credits gekauft, lassen sich nicht verschenken.",
     "footer": "Nur ein Vorschlag: Der Hangar Manager schmilzt und kauft nie etwas von sich aus.",
@@ -1208,7 +1342,10 @@
     "eventUnknown": "Die $1 wird teurer",
     "eventWhen": "$1 · erwartet, nicht von RSI bestätigt",
     "eventWhenConfirmed": "$1 · von CIG bestätigt",
-    "outcomeTitle": "Rabatt deiner $1 CCUs",
+    "outcomeTitle": {
+      "one": "Rabatt deines CCUs",
+      "other": "Rabatt deiner $1 CCUs"
+    },
     "outcomeLabel": "Rabatt heute $1, behalten nach der Preiserhöhung $2, getauscht $3.",
     "barToday": "Heute",
     "barKeep": "Behalten",
@@ -1228,26 +1365,33 @@
     "colKept": "Behalten",
     "colSwapped": "Getauscht",
     "colCredit": "Credits",
-    "tableTotal": "$1 CCUs",
+    "tableTotal": {
+      "one": "$1 CCU",
+      "other": "$1 CCUs"
+    },
     "origin": "Von diesem Pledge aus geöffnet",
     "factValue": "Upgrade-Wert",
     "factValueText": "$1 heute → $2 danach",
-    "factMelt": "$1 CCUs einschmelzen",
+    "factMelt": {
+      "one": "Das CCU einschmelzen",
+      "other": "$1 CCUs einschmelzen"
+    },
     "factMeltText": "+$1 Store Credits",
     "factBuy": "$1 × $2 → $3 kaufen",
     "factBuyText": "−$1 · je $2",
     "riseUnknown": "Die $1 wird am $2 teurer – um wie viel, ist noch nicht bekannt.",
     "mayBeLost": "kann verloren gehen",
-    "mark": "$1 CCUs zum Einschmelzen merken",
-    "marked": "$1 CCUs zum Einschmelzen gemerkt",
+    "mark": {
+      "one": "Das CCU zum Einschmelzen merken",
+      "other": "$1 CCUs zum Einschmelzen merken"
+    },
+    "marked": {
+      "one": "CCU zum Einschmelzen gemerkt",
+      "other": "$1 CCUs zum Einschmelzen gemerkt"
+    },
     "markHint": "Merkt die CCUs der Empfehlung, damit My Hangar und die Sidebar dich ans Einschmelzen erinnern.",
     "unmarkHint": "Entfernt ihre Merker zum Einschmelzen.",
     "outcomeGainRest": "mehr Rabatt als Behalten",
-    "outcomeTitleOne": "Rabatt deines CCUs",
-    "tableTotalOne": "1 CCU",
-    "markOne": "Das CCU zum Einschmelzen merken",
-    "markedOne": "CCU zum Einschmelzen gemerkt",
-    "factMeltOne": "Das CCU einschmelzen",
     "stepAlways": "Im Pledge Store immer kaufbar.",
     "stepOnSale": "Gerade kaufbar, vielleicht nicht immer."
   },

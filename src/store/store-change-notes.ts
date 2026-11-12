@@ -124,10 +124,7 @@ export function storeItemsNote(
     id: `storeItems:${at}`,
     kind: 'storeItems',
     text: '',
-    message:
-      count === 1
-        ? { key: 'notifications.storeItemsChangedOne', args: [] }
-        : { key: 'notifications.storeItemsChanged', args: [count] },
+    message: { key: 'notifications.storeItemsChanged', count, args: [count] },
     detailMessages,
     at,
     ...(shown.length && { subject: { items: shown } }),

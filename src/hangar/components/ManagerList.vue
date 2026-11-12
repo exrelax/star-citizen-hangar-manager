@@ -9,7 +9,7 @@ import {
   LIST_RENDER_STEP,
   SEARCH_URL_SYNC_DELAY_MS,
 } from '@/config';
-import { i18n, type MessageKey } from '@/i18n';
+import { i18n, type MessageKey, type PluralKey } from '@/i18n';
 import {
   computed,
   nextTick,
@@ -73,11 +73,14 @@ const props = defineProps<{
    */
   highlights?: (states: ReadonlyMap<F, FilterState>) => readonly string[];
   /** Texts of a list of other entries than pledges (e.g. warbond offers); pledges' by default. */
-  texts?: Partial<Record<ListText, MessageKey>>;
+  texts?: Partial<Record<CountText, PluralKey> & Record<ListText, MessageKey>>;
 }>();
 
-type ListText = 'count' | 'countFiltered' | 'searchPlaceholder' | 'noResults';
+/** The counts, in the singular and plural (#300). */
+type CountText = 'count' | 'countFiltered';
+type ListText = 'searchPlaceholder' | 'noResults';
 const textOf = (key: ListText): MessageKey => props.texts?.[key] ?? `manager.${key}`;
+const countTextOf = (key: CountText): PluralKey => props.texts?.[key] ?? `manager.${key}`;
 
 const emit = defineEmits<{
   'update:sort': [sort: S];
@@ -304,8 +307,11 @@ onUnmounted(() => {
 
 const countLabel = computed(() =>
   visibleIds.value
-    ? i18n.t(textOf('countFiltered'), [visibleIds.value.size, props.entries.length])
-    : i18n.t(textOf('count'), [props.entries.length]),
+    ? i18n.n(countTextOf('countFiltered'), props.entries.length, [
+        visibleIds.value.size,
+        props.entries.length,
+      ])
+    : i18n.n(countTextOf('count'), props.entries.length),
 );
 </script>
 

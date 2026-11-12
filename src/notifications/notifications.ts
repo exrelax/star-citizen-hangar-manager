@@ -10,7 +10,7 @@
  */
 
 import { formatUsd } from '@/hangar/discount-format';
-import { translate, type Locale, type MessageKey } from '@/i18n';
+import { translate, translatePlural, type Locale, type MessageKey, type PluralKey } from '@/i18n';
 
 export const NOTIFICATIONS_KEEP_DONE_MS = 30 * 24 * 60 * 60 * 1000;
 
@@ -28,10 +28,15 @@ export type NoteArg =
   | { names: { name: string; usd?: number }[] };
 
 /** A text built in the language shown: a message key and its parts. */
-export interface NoteMessage {
-  key: MessageKey;
-  args: NoteArg[];
-}
+export type NoteMessage =
+  | { key: MessageKey; args: NoteArg[] }
+  /** A text with a count, in the singular or plural (#300). */
+  | { key: PluralKey; count: number; args: NoteArg[] };
+
+/** Keys of singular texts stored before #300, with their plural text now. */
+const LEGACY_SINGULAR: Record<string, PluralKey> = {
+  'notifications.storeItemsChangedOne': 'notifications.storeItemsChanged',
+};
 
 export interface AppNotification {
   /** Source and subject, e.g. `fillers:4OLB2S5WUG6PX`. */
@@ -112,12 +117,12 @@ function argText(arg: NoteArg, locale: Locale): string | number {
 }
 
 /** A message in the language. */
-export const messageText = (message: NoteMessage, locale: Locale): string =>
-  translate(
-    locale,
-    message.key,
-    message.args.map((arg) => argText(arg, locale)),
-  );
+export function messageText(message: NoteMessage, locale: Locale): string {
+  const args = message.args.map((arg) => argText(arg, locale));
+  if ('count' in message) return translatePlural(locale, message.key, message.count, args);
+  const legacy = LEGACY_SINGULAR[message.key];
+  return legacy ? translatePlural(locale, legacy, 1, [1]) : translate(locale, message.key, args);
+}
 
 /** The text of a notification in the language: built from its message, else as it was added. */
 export function noteText(note: AppNotification, locale: Locale): string {

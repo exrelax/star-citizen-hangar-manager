@@ -64,7 +64,7 @@ function warningText(warning: ExchangeWarning) {
     const left =
       daysLeft === 0
         ? i18n.t('refund.leftLastDay', [until])
-        : i18n.t(daysLeft === 1 ? 'refund.leftDay' : 'refund.leftDays', [daysLeft, until]);
+        : i18n.n('refund.leftDays', daysLeft, [daysLeft, until]);
     return i18n.t('exchange.warnings.refundable.text', [left]);
   }
   return i18n.t(`exchange.warnings.${warning.kind}.text`);

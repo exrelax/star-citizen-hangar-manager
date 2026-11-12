@@ -59,26 +59,19 @@ export const paintsAtOf = (count: number, percent: number, f: RunFormat) =>
   i18n.t('consultant.ways.stepCartSub', [count, percentOf(percent, f)]);
 
 export function stepTitleOf(step: RunStep): string {
-  const one = step.count === 1;
   switch (step.kind) {
     case 'buy':
-      return i18n.t('consultant.ways.stepBuy', [step.count]);
+      return i18n.n('consultant.ways.stepBuy', step.count);
     case 'meltOld':
-      return one
-        ? i18n.t('consultant.ways.stepMeltOne')
-        : i18n.t('consultant.ways.stepMelt', [step.count]);
+      return i18n.n('consultant.ways.stepMelt', step.count);
     case 'meltOwn':
-      return one
-        ? i18n.t('consultant.run.stepMeltOwnOne')
-        : i18n.t('consultant.run.stepMeltOwn', [step.count]);
+      return i18n.n('consultant.run.stepMeltOwn', step.count);
     case 'cart':
       return i18n.t('consultant.ways.stepCartCheck');
     case 'pay':
       return i18n.t('consultant.ways.stepPay');
     case 'fillers':
-      return one
-        ? i18n.t('consultant.fillers.meltOne')
-        : i18n.t('consultant.fillers.melt', [step.count]);
+      return i18n.n('consultant.fillers.melt', step.count);
   }
 }
 
@@ -176,10 +169,7 @@ export function checkOf(
         };
       }
       return {
-        title:
-          num(v.missing) === 1
-            ? i18n.t('consultant.run.checkCartMissingOne')
-            : i18n.t('consultant.run.checkCartMissing', [num(v.missing)]),
+        title: i18n.n('consultant.run.checkCartMissing', num(v.missing)),
         sub: i18n.t('consultant.run.checkCartMissingSub', [num(v.inCart), num(v.total)]),
       };
     case 'cartUnknown':
@@ -191,10 +181,7 @@ export function checkOf(
       return { title: i18n.t('consultant.run.checkCartUnread'), sub: str(v.reason) };
     case 'otherItems':
       return {
-        title:
-          num(v.count) === 1
-            ? i18n.t('consultant.run.checkOtherItemsOne')
-            : i18n.t('consultant.run.checkOtherItems', [num(v.count)]),
+        title: i18n.n('consultant.run.checkOtherItems', num(v.count)),
         sub: i18n.t('consultant.run.checkOtherItemsSub'),
       };
     case 'credit':
@@ -236,10 +223,7 @@ export function checkOf(
       };
     case 'unavailable':
       return {
-        title:
-          num(v.count) === 1
-            ? i18n.t('consultant.run.checkUnavailableOne')
-            : i18n.t('consultant.run.checkUnavailable', [num(v.count)]),
+        title: i18n.n('consultant.run.checkUnavailable', num(v.count)),
         sub: str(v.names),
       };
     case 'cooldownOver':
@@ -249,10 +233,7 @@ export function checkOf(
       };
     case 'notMeltable':
       return {
-        title:
-          num(v.count) === 1
-            ? i18n.t('consultant.run.checkNotMeltableOne')
-            : i18n.t('consultant.run.checkNotMeltable', [num(v.count)]),
+        title: i18n.n('consultant.run.checkNotMeltable', num(v.count)),
         sub: str(v.names),
       };
   }
@@ -320,9 +301,7 @@ export function actionLabelOf(action: RunAction, total: number, f: RunFormat): s
   switch (action.kind) {
     case 'fillCart':
       if (action.count === total) return i18n.t('consultant.toCart', [action.count]);
-      return action.count === 1
-        ? i18n.t('consultant.run.putMissingOne')
-        : i18n.t('consultant.run.putMissing', [action.count]);
+      return i18n.n('consultant.run.putMissing', action.count);
     case 'pay':
       return action.enabled
         ? i18n.t('consultant.run.goPay', [usdOf(action.amount, f)])
@@ -331,18 +310,14 @@ export function actionLabelOf(action: RunAction, total: number, f: RunFormat): s
       return i18n.t('consultant.openCart');
     case 'melt': {
       const count = action.pledgeIds.length;
-      const label =
+      const label = i18n.n(
         action.target === 'fillers'
-          ? count === 1
-            ? i18n.t('consultant.fillers.meltOne')
-            : i18n.t('consultant.fillers.melt', [count])
+          ? 'consultant.fillers.melt'
           : action.target === 'old'
-            ? count === 1
-              ? i18n.t('consultant.meltOldOne')
-              : i18n.t('consultant.meltOld', [count])
-            : count === 1
-              ? i18n.t('consultant.run.meltOwnCtaOne')
-              : i18n.t('consultant.meltOwn', [count]);
+            ? 'consultant.meltOld'
+            : 'consultant.meltOwn',
+        count,
+      );
       return action.amount > 0
         ? i18n.t('consultant.run.withAmount', [label, signedUsd(action.amount, f)])
         : label;
