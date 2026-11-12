@@ -402,6 +402,11 @@
       "content": "Naves ofrecidas ahora como edición warbond",
       "missing": "Hasta entonces la Pledge Store no muestra ofertas."
     },
+    "warbondHistory": {
+      "name": "Historial warbond",
+      "content": "Ofertas warbond vistas hasta ahora, con precio, fechas y eventos",
+      "missing": "No se puede volver a leer: la pestaña Pledge Store no muestra ofertas anteriores hasta que se vean nuevas."
+    },
     "shipStatus": {
       "name": "Estado de las naves",
       "content": "Qué naves son flight ready y cuáles siguen en concepto",
@@ -529,7 +534,15 @@
     "colShipPrices": "Precios de naves",
     "colCount": "Cantidad",
     "colValue": "Valor",
-    "colDiscount": "Descuento"
+    "colDiscount": "Descuento",
+    "historyTitle": "Ofertas anteriores",
+    "historySince": "Vista desde el $1.",
+    "historySinceEvent": "Vista desde el $1, durante $2.",
+    "historyHint": "El Hangar Manager recuerda las ofertas warbond que ve, solo en este navegador. No existe un registro público de ofertas pasadas, así que la lista crece con el tiempo.",
+    "historyNone": "Todavía no se ha visto ninguna oferta anterior de esta nave.",
+    "colSeen": "Vista",
+    "colPrice": "Precio",
+    "colEvent": "Evento"
   },
   "events": {
     "title": "Eventos",

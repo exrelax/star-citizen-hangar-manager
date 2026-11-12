@@ -402,6 +402,11 @@
       "content": "Vaisseaux actuellement proposés en édition warbond",
       "missing": "D’ici là, le Pledge Store n’affiche aucune offre."
     },
+    "warbondHistory": {
+      "name": "Historique warbond",
+      "content": "Offres warbond vues jusqu'ici, avec prix, dates et événements",
+      "missing": "Il ne peut pas être relu : l'onglet Pledge Store n'affiche aucune offre antérieure tant que de nouvelles ne sont pas vues."
+    },
     "shipStatus": {
       "name": "Statut des vaisseaux",
       "content": "Quels vaisseaux sont flight ready et lesquels sont encore en concept",
@@ -529,7 +534,15 @@
     "colShipPrices": "Prix des vaisseaux",
     "colCount": "Nombre",
     "colValue": "Valeur",
-    "colDiscount": "Remise"
+    "colDiscount": "Remise",
+    "historyTitle": "Offres précédentes",
+    "historySince": "Vue depuis le $1.",
+    "historySinceEvent": "Vue depuis le $1, pendant $2.",
+    "historyHint": "Le Hangar Manager retient les offres warbond qu'il voit, dans ce navigateur uniquement. Aucune liste publique des offres passées n'existe, la liste s'allonge donc avec le temps.",
+    "historyNone": "Aucune offre précédente de ce vaisseau vue pour l'instant.",
+    "colSeen": "Vue",
+    "colPrice": "Prix",
+    "colEvent": "Événement"
   },
   "events": {
     "title": "Événements",

@@ -61,6 +61,17 @@ describe('the default demo on an empty account (#130)', () => {
     expect(offers.some((offer) => offer.owned.length > 0)).toBe(true);
   });
 
+  it('shows offers with and without earlier ones, with and without an event (#4)', () => {
+    const offers = buildWarbondOffers(demoStoreData(catalog, account.pledges), pledges, buyback);
+    expect(offers.every((offer) => offer.history.since !== undefined)).toBe(true);
+    expect(offers.some((offer) => offer.history.earlier.length === 0)).toBe(true);
+    const earlier = offers.flatMap((offer) => offer.history.earlier);
+    expect(earlier.some((sighting) => sighting.events?.length)).toBe(true);
+    expect(earlier.some((sighting) => !sighting.events)).toBe(true);
+    expect(offers.some((offer) => offer.history.events.length > 0)).toBe(true);
+    expect(earlier.every((sighting) => sighting.price < sighting.msrp)).toBe(true);
+  });
+
   it('shows the events and every case of the Paint Discount Consultant', () => {
     expect(demoEvents(NOW)).toHaveLength(2);
     const cases = creditForCases(pledges, catalog.items, {

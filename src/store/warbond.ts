@@ -3,6 +3,7 @@ import type { BuybackView } from '@/buyback/buyback-view';
 import type { PledgeView } from '@/hangar/pledge-view';
 import { createPriceLookup, type PledgeDiscount, type ShipPrice } from '@/hangar/ship-prices';
 import type { Ship } from '@/ships/ships';
+import { offerHistory, type OfferHistory, type WarbondHistorySnapshot } from './warbond-history';
 
 /*
  * Warbond CCUs of the pledge store. RSI's ship upgrade tool lists a "Warbond Edition" SKU for some
@@ -29,6 +30,8 @@ export interface WarbondTarget {
 export interface StoreData {
   ships: Ship[];
   warbonds: WarbondTarget[];
+  /** The warbond offers seen so far (#4), if any. */
+  history?: WarbondHistorySnapshot;
 }
 
 /** How often a ship is in the hangar and the buy back: as ship, and as target of a CCU. */
@@ -68,6 +71,8 @@ export interface WarbondOffer {
   bases: BaseShip[];
   /** CCUs of the hangar overlapping the span of every warbond CCU (warbond price to msrp). */
   owned: OwnedCcu[];
+  /** Since when it is offered, and the earlier offers of its ship (#4). */
+  history: OfferHistory;
 }
 
 const NO_HOLDINGS: Holdings = { hangarShips: 0, hangarCcus: 0, buybackShips: 0, buybackCcus: 0 };
@@ -218,6 +223,11 @@ export function buildWarbondOffers(
         owned: ownedCcusInRange(hangar, lookup.priceOf, {
           low: target.price,
           high: target.ship.msrp,
+        }),
+        history: offerHistory(data.history, {
+          shipId: target.ship.id,
+          skuId: target.skuId,
+          price: target.price,
         }),
       };
     })

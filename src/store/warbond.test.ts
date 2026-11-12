@@ -12,6 +12,7 @@ import {
   type WarbondTarget,
 } from './warbond';
 import type { Ship } from '@/ships/ships';
+import { recordWarbondOffers } from './warbond-history';
 
 const ship = (id: number, name: string, msrp: number): Ship => ({ id, name, msrp });
 
@@ -178,6 +179,30 @@ describe('buildWarbondOffers', () => {
     expect(first!.owned.map((entry) => entry.ids)).toEqual([[21]]);
     // From $110 to $260, it overlaps the Vulture's span from $165 to $175.
     expect(second!.owned.map((entry) => entry.ids)).toEqual([[20]]);
+  });
+
+  it('attaches the history of each offer (#4)', () => {
+    const at = Date.parse('2026-11-01T12:00:00Z');
+    let history = recordWarbondOffers(
+      null,
+      [{ shipId: 6, skuId: 16688, price: 160 }],
+      SHIPS,
+      [],
+      at,
+    );
+    history = recordWarbondOffers(history, [], SHIPS, [], at + 1);
+    history = recordWarbondOffers(
+      history,
+      [{ shipId: 6, skuId: 16688, price: 165 }],
+      SHIPS,
+      [],
+      at + 2,
+    );
+    const offers = buildWarbondOffers({ ships: SHIPS, warbonds: [vulture, eclipse], history }, []);
+    const byName = new Map(offers.map((offer) => [offer.target.ship.name, offer.history]));
+    expect(byName.get('Vulture')).toMatchObject({ since: at + 2 });
+    expect(byName.get('Vulture')!.earlier.map((sighting) => sighting.price)).toEqual([160]);
+    expect(byName.get('Eclipse')).toEqual({ events: [], earlier: [] });
   });
 });
 

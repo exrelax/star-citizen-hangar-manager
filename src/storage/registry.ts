@@ -24,6 +24,8 @@ import {
   type StoreItemsSnapshot,
 } from '@/store/items/store-items-storage';
 import { rebuyPlanItem, type StoredRebuyPlan } from '@/store/paint-consultant/rebuy-plan-storage';
+import { warbondHistoryItem } from '@/store/warbond-history-storage';
+import type { WarbondHistorySnapshot } from '@/store/warbond-history';
 import { eventsItem, eventsMeta, type EventsSnapshot } from '@/events/events-storage';
 import {
   priceIncreasesItem,
@@ -60,6 +62,7 @@ export type StorageId =
   | 'ships'
   | 'shipsBuyable'
   | 'shipsWarbonds'
+  | 'warbondHistory'
   | 'shipStatus'
   | 'shipFacts'
   | 'storeItems'
@@ -173,6 +176,16 @@ export const STORAGES: readonly StorageDefinition[] = [
     readAgain: 'auto',
     // The Pledge Store offers of earlier versions (another format).
     obsoleteKeys: ['local:store.snapshot'],
+  },
+  {
+    id: 'warbondHistory',
+    item: warbondHistoryItem,
+    content: 'Warbond offers seen so far: ship, price, standard price, first and last seen, events',
+    source: 'Every read of the ship upgrade tool of RSI, since the Hangar Manager was installed',
+    usedBy: ['Pledge Store (earlier offers)'],
+    kind: 'data',
+    count: (value: WarbondHistorySnapshot | null) => value?.sightings.length ?? 0,
+    readAgain: 'never',
   },
   {
     id: 'shipStatus',

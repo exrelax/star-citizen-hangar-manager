@@ -3,6 +3,7 @@ import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { UPGRADE_TOOL } from '@/config';
 import { settingsItem } from '@/settings/settings';
 import { RsiSignedOutError } from '@/shared/rsi-api';
+import { warbondHistoryItem } from '@/store/warbond-history-storage';
 import type { UpgradeToolData } from './ships';
 import {
   buyableShipsItem,
@@ -46,6 +47,15 @@ describe('refreshUpgradeTool', () => {
     // A refresh (no maximum age) reads in any case.
     await refreshUpgradeTool({ fetchData, now: () => now });
     expect(fetchData).toHaveBeenCalledTimes(2);
+  });
+
+  it('adds the warbond offers of every read to the history', async () => {
+    await refreshUpgradeTool({ fetchData: async () => DATA, now: () => START });
+    await refreshUpgradeTool({ fetchData: async () => DATA, now: () => START + MINUTE });
+    expect(await warbondHistoryItem.getValue()).toMatchObject({
+      lastReadAt: START + MINUTE,
+      sightings: [{ shipId: 1, skuId: 10, price: 240, msrp: 260, firstSeen: START }],
+    });
   });
 
   it('is due as soon as one of the storages is missing or of another format', async () => {
