@@ -2,3 +2,4 @@
 .wxt
 coverage
 pnpm-lock.yaml
+site/public/data/ships.json

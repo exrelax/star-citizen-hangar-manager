@@ -20,7 +20,7 @@
     "zip:firefox": "wxt zip -b firefox",
     "site:dev": "vite --config site/vite.config.ts",
     "site:build": "vite build --config site/vite.config.ts",
-    "site:ships": "node site/ships/always-available-ships.ts",
+    "site:ships": "node site/ships/ships.ts",
     "site:preview": "vite preview --config site/vite.config.ts",
     "compile": "vue-tsc --noEmit",
     "lint": "eslint .",
