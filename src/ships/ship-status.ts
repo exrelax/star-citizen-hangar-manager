@@ -1,12 +1,15 @@
 import { SHIP_MATRIX } from '@/config';
+import { settingsItem, withDefaults } from '@/settings/settings';
 import { defineMeta, hashOf, recordCheck, recordSync } from '@/storage/meta';
+import { lastReadTime } from '@/store/refresh-schedule';
 
 /*
  * The production status of the ships from RSI's public Ship Matrix (#252): which ships are flight
  * ready and which are still in concept. A ship in concept usually becomes more expensive once it
  * is flight ready, so a CCU to it may gain value later (see the advice in `ccu-advice.ts`). The
- * Ship Matrix uses the upgrade tool's ship ids. Its answer is large (several MB), so it is read
- * at most once a day, and only id and status are kept.
+ * Ship Matrix uses the upgrade tool's ship ids. It is read on the cycle of the Pledge Store items
+ * (`SHIP_MATRIX.readAtMinutes`, once a day without smart updates); its answer is large (several
+ * MB), so only id and status are kept.
  */
 
 export type ProductionStatus = 'flight-ready' | 'in-concept';
@@ -60,8 +63,19 @@ async function fetchShipStatus(): Promise<ShipStatusSnapshot> {
 let running: Promise<void> | undefined;
 
 /**
- * Reads the Ship Matrix if its status is missing or older than `SHIP_MATRIX.maxAgeMs` (`force`:
- * in any case). A failure keeps the stored status.
+ * How old the stored status may be at `now`: with smart updates, read since the latest of
+ * `SHIP_MATRIX.readAtMinutes` (like the Pledge Store items); without, a day.
+ */
+export async function shipStatusMaxAgeMs(now: number): Promise<number> {
+  const settings = withDefaults(await settingsItem.getValue());
+  return settings.smartUpdates
+    ? now - lastReadTime(now, SHIP_MATRIX.readAtMinutes)
+    : SHIP_MATRIX.maxAgeWithoutSmartUpdatesMs;
+}
+
+/**
+ * Reads the Ship Matrix if its status is missing or due (see `shipStatusMaxAgeMs`; `force`: in any
+ * case). A failure keeps the stored status.
  */
 export function maybeRefreshShipStatus({
   force = false,
@@ -77,7 +91,8 @@ export function maybeRefreshShipStatus({
       shipStatusItem.getValue(),
       shipStatusMeta.getValue(),
     ]);
-    const due = !currentShipStatus(stored) || now() - meta.checkedAt >= SHIP_MATRIX.maxAgeMs;
+    const due =
+      !currentShipStatus(stored) || now() - meta.checkedAt >= (await shipStatusMaxAgeMs(now()));
     if (!force && !due) return;
     try {
       const status = await fetchStatus();

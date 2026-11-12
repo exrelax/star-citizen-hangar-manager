@@ -205,7 +205,8 @@ async function runSmartUpdateIfDue(force: boolean): Promise<void> {
   await maybeRefreshEvents();
   // The expected price increases of the project website (#195): once a day.
   await maybeRefreshPriceIncreases();
-  // Which ships are flight ready, from the Ship Matrix (#252): once a day.
+  // Which ships are flight ready, from the Ship Matrix (#252): at the minutes of the Pledge Store
+  // items (`SHIP_MATRIX`), once a day without smart updates.
   await maybeRefreshShipStatus();
   // The ships' facts of the project website (#109): once a day.
   await maybeRefreshShipFacts();

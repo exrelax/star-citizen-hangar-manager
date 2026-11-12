@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
+import { DEFAULT_SETTINGS, settingsItem } from '@/settings/settings';
 import {
   createShipStatusLookup,
   maybeRefreshShipStatus,
@@ -34,15 +35,32 @@ describe('parseShipMatrix (#252)', () => {
 describe('maybeRefreshShipStatus', () => {
   beforeEach(() => fakeBrowser.reset());
 
-  it('reads once a day, and in any case when forced', async () => {
+  it('reads at the minutes of the Pledge Store items, and in any case when forced', async () => {
+    // Local time, like the schedule: read at 12:01, due again at 12:05.
+    const at = (minute: number) => new Date(2026, 10, 12, 12, minute).getTime();
+    const fetchStatus = vi.fn(async () => status);
+    await maybeRefreshShipStatus({ fetchStatus, now: () => at(1) });
+    expect(await shipStatusItem.getValue()).toEqual(status);
+    await maybeRefreshShipStatus({ fetchStatus, now: () => at(4) });
+    expect(fetchStatus).toHaveBeenCalledTimes(1);
+    await maybeRefreshShipStatus({ fetchStatus, now: () => at(5) });
+    expect(fetchStatus).toHaveBeenCalledTimes(2);
+    // Between 12:10 and 12:30 nothing is due.
+    await maybeRefreshShipStatus({ fetchStatus, now: () => at(11) });
+    await maybeRefreshShipStatus({ fetchStatus, now: () => at(29) });
+    expect(fetchStatus).toHaveBeenCalledTimes(3);
+    await maybeRefreshShipStatus({ fetchStatus, force: true, now: () => at(29) });
+    expect(fetchStatus).toHaveBeenCalledTimes(4);
+  });
+
+  it('reads once a day without smart updates', async () => {
+    await settingsItem.setValue({ ...DEFAULT_SETTINGS, smartUpdates: false });
     const fetchStatus = vi.fn(async () => status);
     await maybeRefreshShipStatus({ fetchStatus, now: () => 1000 });
-    expect(await shipStatusItem.getValue()).toEqual(status);
-    await maybeRefreshShipStatus({ fetchStatus, now: () => 1000 + DAY / 2 });
+    await maybeRefreshShipStatus({ fetchStatus, now: () => 1000 + DAY - 1 });
     expect(fetchStatus).toHaveBeenCalledTimes(1);
     await maybeRefreshShipStatus({ fetchStatus, now: () => 1000 + DAY });
-    await maybeRefreshShipStatus({ fetchStatus, force: true, now: () => 1000 + DAY });
-    expect(fetchStatus).toHaveBeenCalledTimes(3);
+    expect(fetchStatus).toHaveBeenCalledTimes(2);
   });
 
   it('keeps the stored status when reading fails', async () => {
