@@ -396,6 +396,11 @@
       "content": "Qué naves son flight ready y cuáles siguen en concepto",
       "missing": "Hasta entonces, el consejo para los CCU no puede decir qué naves destino podrían subir más tarde."
     },
+    "shipFacts": {
+      "name": "Datos de las naves",
+      "content": "Estado, «siempre disponible» y precio estándar de cada nave, desde la web del proyecto",
+      "missing": "Hasta entonces vale la copia incluida en la extensión."
+    },
     "storeItems": {
       "name": "Artículos de la Pledge Store",
       "content": "Naves, equipo, packs, pinturas y más con categoría, precio, imagen y enlace",

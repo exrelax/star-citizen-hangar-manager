@@ -396,6 +396,11 @@
       "content": "Quels vaisseaux sont flight ready et lesquels sont encore en concept",
       "missing": "D’ici là, le conseil pour les CCU ne peut pas dire quels vaisseaux cibles pourraient augmenter plus tard."
     },
+    "shipFacts": {
+      "name": "Données des vaisseaux",
+      "content": "Statut, « toujours disponible » et prix standard de chaque vaisseau, depuis le site du projet",
+      "missing": "D’ici là, la copie fournie avec l’extension fait foi."
+    },
     "storeItems": {
       "name": "Articles du Pledge Store",
       "content": "Vaisseaux, équipement, packs, peintures et plus avec catégorie, prix, image et lien",

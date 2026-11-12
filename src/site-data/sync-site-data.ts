@@ -30,6 +30,11 @@ export interface SiteDataSource<D, S extends { version: number }> {
   fetch: () => Promise<D | undefined>;
   toSnapshot: (data: D) => S;
   fromSnapshot: (snapshot: S) => D;
+  /**
+   * Read once the last read is this old, instead of at the times of `SITE_DATA.schedule` (e.g. a
+   * larger file that changes rarely); a failed read is tried again after `SITE_DATA.retryMs`.
+   */
+  maxAgeMs?: number;
 }
 
 /** The data after a refresh. */
@@ -41,16 +46,22 @@ export interface SiteDataResult<D> {
 }
 
 /**
- * Whether the file is due to be read again: not read since the latest time of the schedule, or
- * failed at least `retryMs` ago.
+ * Whether the file is due to be read again: not read since the latest time of the schedule (or,
+ * with `maxAgeMs`, for that long), or failed at least `retryMs` ago.
  */
 export function siteDataDue(
   meta: StorageMeta,
   now: number,
   { schedule, retryMs }: Pick<typeof SITE_DATA, 'schedule' | 'retryMs'> = SITE_DATA,
+  maxAgeMs?: number,
 ): boolean {
+  const failed = meta.lastOutcome?.status === 'failed';
+  if (maxAgeMs !== undefined) {
+    const age = now - meta.checkedAt;
+    return failed ? age >= Math.min(retryMs, maxAgeMs) : age >= maxAgeMs;
+  }
   if (meta.checkedAt < lastSiteDataReadTime(now, schedule)) return true;
-  return meta.lastOutcome?.status === 'failed' && now - meta.checkedAt >= retryMs;
+  return failed && now - meta.checkedAt >= retryMs;
 }
 
 /** Loads a file of the website without cookies (it needs none, and it is another origin). */
@@ -120,7 +131,7 @@ export function createSiteDataSync<D, S extends { version: number }>(
       // Without stored data too only when due: a missing file is tried again at the next time of
       // the schedule, not on every check. Deleting the data in the settings deletes its metadata, so it is read
       // again.
-      if (force || outdated || siteDataDue(meta, now())) {
+      if (force || outdated || siteDataDue(meta, now(), SITE_DATA, source.maxAgeMs)) {
         // Without anything current stored, the data is stored in any case.
         const data = await readFile(fetch, now, current ? meta : undefined);
         if (data !== undefined) result = { data, read: true };

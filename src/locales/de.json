@@ -396,6 +396,11 @@
       "content": "Welche Schiffe flugbereit und welche noch im Konzept sind",
       "missing": "Bis dahin kann die Empfehlung für CCUs nicht sagen, welche Zielschiffe später teurer werden könnten."
     },
+    "shipFacts": {
+      "name": "Schiffsdaten",
+      "content": "Status, „immer kaufbar“ und Standardpreis aller Schiffe, von der Projekt-Website",
+      "missing": "Bis dahin gilt die mit der Extension mitgelieferte Kopie."
+    },
     "storeItems": {
       "name": "Pledge-Store-Artikel",
       "content": "Schiffe, Gear, Packs, Paints und mehr mit Kategorie, Preis, Bild und Link",

@@ -396,6 +396,11 @@
       "content": "Which ships are flight ready and which are still in concept",
       "missing": "Until then the advice for CCUs can’t tell which target ships may rise later."
     },
+    "shipFacts": {
+      "name": "Ship facts",
+      "content": "Status, “always available” and standard price of every ship, from the project website",
+      "missing": "Until then the copy bundled with the extension counts."
+    },
     "storeItems": {
       "name": "Pledge Store items",
       "content": "Ships, gear, packs, paints and more with category, price, image and link",
