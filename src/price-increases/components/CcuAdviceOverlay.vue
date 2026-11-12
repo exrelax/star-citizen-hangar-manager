@@ -2,7 +2,10 @@
 import { storeCreditItem, STORE_CREDIT_VERSION } from '@/account/store-credit-storage';
 import { useDemoContext } from '@/demo/use-demo';
 import { formatUsd } from '@/hangar/discount-format';
+import type { BuybackView } from '@/buyback/buyback-view';
 import type { PledgeView } from '@/hangar/pledge-view';
+import { useShipFacts } from '@/ships/use-ship-facts';
+import { createShipLookup, holdingsByShip } from '@/store/warbond';
 import { i18n, locale } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { useSettings } from '@/settings/use-settings';
@@ -12,7 +15,7 @@ import { buyableShipsItem, current, shipsItem, warbondsItem } from '@/ships/ship
 import { useStored } from '@/storage/use-stored';
 import { fontScaleStyle, themeClasses } from '@/themes/theme';
 import { computed, onMounted, onUnmounted, useTemplateRef } from 'vue';
-import { ccuAdvice, type CcuAdviceGroup } from '../ccu-advice';
+import { ccuAdvice, type BaseHoldings, type CcuAdviceGroup } from '../ccu-advice';
 import { formatExpectedTime } from '../price-increase-label';
 import CcuShips from './CcuShips.vue';
 
@@ -24,7 +27,11 @@ import CcuShips from './CcuShips.vue';
  * A suggestion only: nothing is melted or bought from here.
  */
 
-const props = defineProps<{ pledges: readonly PledgeView[]; pledgeId?: number }>();
+const props = defineProps<{
+  pledges: readonly PledgeView[];
+  buyback: readonly BuybackView[];
+  pledgeId?: number;
+}>();
 const emit = defineEmits<{ close: [] }>();
 
 const { settings } = useSettings();
@@ -59,9 +66,15 @@ const risingShipIds = computed(
     ),
 );
 
+/** Whether a ship is always available, from the website's ship facts (#109, #263). */
+const shipFacts = useShipFacts();
+
 const groups = computed((): CcuAdviceGroup[] | undefined => {
   const shipList = current(ships.value ?? null)?.ships;
   if (!shipList) return undefined;
+  // How many of each base ship, CCUs to it and buy back CCUs to it the user has.
+  const holdings = holdingsByShip(createShipLookup(shipList), props.pledges, props.buyback);
+  const facts = shipFacts.value;
   const all = ccuAdvice({
     pledges: props.pledges,
     ships: shipList,
@@ -70,6 +83,15 @@ const groups = computed((): CcuAdviceGroup[] | undefined => {
     risingShipIds: risingShipIds.value,
     inConceptShipIds: new Set(currentShipStatus(shipStatus.value)?.inConcept ?? []),
     storeCredit: storeCredit.value,
+    isAlwaysAvailable: (id) => facts?.isAlwaysAvailable(id),
+    holdingsOf: (id) => {
+      const held = holdings.get(id);
+      return {
+        hangarShips: held?.hangarShips ?? 0,
+        hangarCcus: held?.hangarCcus ?? 0,
+        buybackCcus: held?.buybackCcus ?? 0,
+      };
+    },
   });
   // The group of the CCU it was opened from first, then the recommendations.
   const rank = (group: CcuAdviceGroup) =>
@@ -85,6 +107,8 @@ const usd = (value: number) =>
   settings.value.hideMeltValue ? '–' : formatUsd(value, locale.value);
 
 const baseName = (group: CcuAdviceGroup) => group.increase.ship.name;
+const holdingsText = (ship: string, held: BaseHoldings) =>
+  i18n.t('ccuAdvice.holdings', [held.hangarShips, ship, held.hangarCcus, held.buybackCcus]);
 const when = (group: CcuAdviceGroup) =>
   formatExpectedTime(group.increase.priceIncreaseAt, locale.value);
 /** The day of the increase, e.g. "Nov 19, 2026": melt and buy before it. */
@@ -196,6 +220,20 @@ function onKeydown(event: KeyboardEvent) {
                 ])
               }}</strong>
             </div>
+            <!-- Why this base ship (#263), and what the user has of it. -->
+            <p v-if="group.switch.choice !== 'any'" class="shm-ccu-advice-text">
+              {{
+                i18n.t(
+                  group.switch.choice === 'alwaysAvailable'
+                    ? 'ccuAdvice.baseAlwaysAvailable'
+                    : 'ccuAdvice.baseOnSale',
+                  [group.switch.from.name, group.switch.to.name],
+                )
+              }}
+            </p>
+            <p class="shm-ccu-advice-text shm-ccu-advice-holdings">
+              {{ holdingsText(group.switch.from.name, group.switch.holdings) }}
+            </p>
             <p class="shm-ccu-advice-text">
               {{
                 i18n.t('ccuAdvice.switchFigures', [
@@ -225,6 +263,42 @@ function onKeydown(event: KeyboardEvent) {
                 ])
               }}
             </p>
+            <!-- Cheaper CCUs from base ships between the recommended one and the rising ship. -->
+            <template v-if="group.switch.alternatives.length">
+              <p class="shm-ccu-advice-text">
+                <strong>{{ i18n.t('ccuAdvice.alternatives') }}</strong>
+              </p>
+              <div class="shm-ccu-advice-scroll">
+                <table class="shm-ccu-advice-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">{{ i18n.t('ccuAdvice.colCcu') }}</th>
+                      <th scope="col" class="is-number">{{ i18n.t('ccuAdvice.colPrice') }}</th>
+                      <th scope="col" class="is-number">
+                        {{ i18n.t('ccuAdvice.colHangarShips') }}
+                      </th>
+                      <th scope="col" class="is-number">{{ i18n.t('ccuAdvice.colHangarCcus') }}</th>
+                      <th scope="col" class="is-number">
+                        {{ i18n.t('ccuAdvice.colBuybackCcus') }}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="alternative in group.switch.alternatives" :key="alternative.from.id">
+                      <th scope="row">
+                        {{
+                          i18n.t('ccuAdvice.ccuName', [alternative.from.name, group.switch.to.name])
+                        }}
+                      </th>
+                      <td class="is-number">{{ usd(alternative.price) }}</td>
+                      <td class="is-number">{{ alternative.holdings.hangarShips }}</td>
+                      <td class="is-number">{{ alternative.holdings.hangarCcus }}</td>
+                      <td class="is-number">{{ alternative.holdings.buybackCcus }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </template>
             <p v-if="group.giftable" class="shm-ccu-advice-note is-warning-note" role="note">
               <SvgIcon name="triangle-exclamation" />
               <span>{{
@@ -292,6 +366,48 @@ function onKeydown(event: KeyboardEvent) {
 
 .shm-ccu-advice .shm-ccu-advice-text {
   margin: 8px 0 0;
+}
+
+/* The cheaper alternatives: a small table, scrolling sideways where it doesn't fit. */
+.shm-ccu-advice .shm-ccu-advice-scroll {
+  margin-top: 6px;
+  overflow-x: auto;
+}
+
+.shm-ccu-advice .shm-ccu-advice-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.shm-ccu-advice .shm-ccu-advice-table th,
+.shm-ccu-advice .shm-ccu-advice-table td {
+  padding: 5px 12px 5px 0;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.shm-ccu-advice .shm-ccu-advice-table thead th {
+  color: var(--shm-text-muted);
+  font-weight: 400;
+  border-bottom: 1px solid rgb(var(--shm-accent-rgb) / 0.2);
+}
+
+.shm-ccu-advice .shm-ccu-advice-table tbody th {
+  color: var(--shm-text);
+  font-weight: 400;
+}
+
+.shm-ccu-advice .shm-ccu-advice-table tbody tr + tr > * {
+  border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.1);
+}
+
+.shm-ccu-advice .shm-ccu-advice-table .is-number {
+  text-align: right;
+}
+
+.shm-ccu-advice .shm-ccu-advice-holdings {
+  color: var(--shm-text-muted);
 }
 
 /* The recommendation: set apart from what keeping them means. */

@@ -334,8 +334,13 @@ on its own.
   the rising ship** with the store credit they give back: those gain the discount the old ones
   lose (e.g. 8 × Prospector → Vulture for $5 each, −$5 of discount after the Prospector rises from
   $155 to $175, become 8 × Freelancer MAX → Prospector for $5 each, $20 of discount each after).
-  The base ship is the one whose CCU costs the most without costing more than a melted CCU gives
-  back; ships about to rise are left out. It shows the cost, the store credit needed besides the
+  The base ship is one you can always get onto later to apply the CCU (#263): the next ship below
+  the rising one that is always available in the Pledge Store (the project website's ship facts),
+  with a note saying so; without such data or ship, the next one on sale right now, with a note
+  that it may not always be; ships about to rise are left out. Cheaper CCUs from the base ships
+  in between are listed below as alternatives in a small table. For the recommended base ship and
+  every alternative it tells how many of the ship you have in My Hangar, and how many CCUs to it in
+  My Hangar and in the buy back. It shows the cost, the store credit needed besides the
   melt value (and the account's), the discount after the increase compared with keeping them, and
   how many of the old CCUs can be gifted – the new ones, bought with store credit, can't. It
   recommends nothing where keeping them leaves more discount, or while RSI sells no CCU to the

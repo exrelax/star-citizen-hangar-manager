@@ -12,9 +12,15 @@ import type { ExpectedPriceIncrease } from './price-increases';
  * the increase, so they gain the discount the old ones lose. Example: the Prospector rises from
  * $155 to $175. 8 CCUs Prospector → Vulture ($175) bought for $5 each have $15 of discount today
  * and −$5 after. Melted, they give back $5 each – enough for 8 CCUs Freelancer MAX ($150) →
- * Prospector for $5, whose upgrade value is $25 after the increase: $20 of discount each. Of the
- * base ships, the one whose CCU costs the most without costing more than a melted CCU gives back
- * (or, if every CCU costs more, the cheapest); ships about to rise themselves are left out. It is
+ * Prospector for $5, whose upgrade value is $25 after the increase: $20 of discount each.
+ *
+ * The base ship of the new CCUs (#263) is one the user can always get onto later, to apply the
+ * CCU: the most expensive ship below the rising one that is always available in the Pledge Store
+ * (the website's ship facts, #109). Without such a ship, the most expensive one on sale right now,
+ * with a note that it may not be later; without any on sale, simply the most expensive one. The
+ * base ships between it and the rising ship (cheaper CCUs) are the alternatives. For each, the
+ * advice counts how many of the base ship, CCUs to it and buy back CCUs to it the user has. Ships
+ * about to rise themselves are left out. It is
  * recommended only if the new CCUs have more discount after the increase than the old ones, and
  * only while RSI sells standard CCUs to the rising ship (paid with store credit).
  *
@@ -23,10 +29,33 @@ import type { ExpectedPriceIncrease } from './price-increases';
  * A suggestion only: the extension never melts or buys by itself.
  */
 
+/** How the recommended base ship was chosen. */
+export type CcuBaseChoice = 'alwaysAvailable' | 'onSale' | 'any';
+
+/** What the user has of a base ship: the ship in My Hangar, CCUs to it there and in the buy back. */
+export interface BaseHoldings {
+  hangarShips: number;
+  hangarCcus: number;
+  buybackCcus: number;
+}
+
+/** A cheaper CCU to the rising ship, from a base ship that isn't always available. */
+export interface CcuAlternative {
+  from: Ship;
+  /** Price of one CCU in USD, before the increase. */
+  price: number;
+  holdings: BaseHoldings;
+}
+
 /** Buying CCUs to the rising ship instead. */
 export interface CcuSwitch {
   /** The base ship of the new CCUs. */
   from: Ship;
+  /** How it was chosen: always available, on sale right now, or neither known. */
+  choice: CcuBaseChoice;
+  holdings: BaseHoldings;
+  /** Cheaper CCUs from the base ships between `from` and the rising ship, cheapest first. */
+  alternatives: CcuAlternative[];
   /** The ship that rises: the target of the new CCUs. */
   to: Ship;
   /** Price of one new CCU in USD, before the increase. */
@@ -90,36 +119,40 @@ export interface CcuAdviceInput {
   inConceptShipIds?: ReadonlySet<number>;
   /** The account's store credit in USD, if known. */
   storeCredit?: number;
+  /** Whether a ship (by id) is always available in the Pledge Store; `undefined`: unknown. */
+  isAlwaysAvailable?: (id: number) => boolean | undefined;
+  /** What the user has of a ship (by id), see `BaseHoldings`. */
+  holdingsOf?: (id: number) => BaseHoldings;
 }
 
 const cents = (value: number) => Math.round(value * 100) / 100;
 const sum = (values: readonly number[]) => cents(values.reduce((total, value) => total + value, 0));
 
+const NO_HOLDINGS: BaseHoldings = { hangarShips: 0, hangarCcus: 0, buybackCcus: 0 };
+
 /**
- * The base ship for CCUs to a ship of `price`: the CCU costing the most without costing more than
- * `budget` (by name on a tie), else the cheapest one.
+ * The base ship for CCUs to the rising ship and the alternatives (see above): `candidates` are the
+ * ships below its price, the most expensive (the cheapest CCU) first.
  */
-function bestBase(
-  ships: readonly Ship[],
-  target: Ship,
-  price: number,
-  budget: number,
-  rising: ReadonlySet<number>,
-): Ship | undefined {
-  const candidates = ships
-    .filter(
-      (ship) => ship.id !== target.id && !rising.has(ship.id) && ship.msrp > 0 && ship.msrp < price,
-    )
-    // The most expensive base first: its CCU is the cheapest.
-    .sort((a, b) => b.msrp - a.msrp || a.name.localeCompare(b.name));
-  const withinBudget = candidates.filter((ship) => price - ship.msrp <= budget + 0.005);
-  const lowest = withinBudget.at(-1);
-  return withinBudget.find((ship) => ship.msrp === lowest?.msrp) ?? candidates[0];
+export function chooseBase(
+  candidates: readonly Ship[],
+  isAlwaysAvailable: (id: number) => boolean | undefined,
+  isOnSale: (id: number) => boolean,
+): { from: Ship; choice: CcuBaseChoice; cheaper: Ship[] } | undefined {
+  const always = candidates.find((ship) => isAlwaysAvailable(ship.id) === true);
+  const onSale = always ? undefined : candidates.find((ship) => isOnSale(ship.id));
+  const from = always ?? onSale ?? candidates[0];
+  if (!from) return undefined;
+  const choice: CcuBaseChoice = always ? 'alwaysAvailable' : onSale ? 'onSale' : 'any';
+  return { from, choice, cheaper: candidates.filter((ship) => ship.msrp > from.msrp) };
 }
 
 /** The advice for every pair of rising base ship and target, the next price increase first. */
 export function ccuAdvice(input: CcuAdviceInput): CcuAdviceGroup[] {
   const { ships, buyable, warbonds, storeCredit } = input;
+  const isAlwaysAvailable = input.isAlwaysAvailable ?? (() => undefined);
+  const holdingsOf = input.holdingsOf ?? (() => NO_HOLDINGS);
+  const onSale = new Set(buyable.map((sku) => sku.shipId));
   const risingShipIds = input.risingShipIds ?? new Set<number>();
   const inConcept = input.inConceptShipIds ?? new Set<number>();
   const lookup = createShipLookup(ships);
@@ -182,9 +215,19 @@ export function ccuAdvice(input: CcuAdviceInput): CcuAdviceGroup[] {
       const sold =
         !!base && buyable.some((sku) => sku.shipId === base.id && !warbondSkus.has(sku.skuId));
       const rising = new Set([...risingShipIds, increase.ship.id]);
-      const from =
-        base && sold ? bestBase(ships, base, price.from, meltValue / count, rising) : undefined;
-      if (!base || !from) return { ...group, noSwitch: 'notSold' };
+      const candidates = ships
+        .filter(
+          (ship) =>
+            ship.id !== base?.id && !rising.has(ship.id) && ship.msrp > 0 && ship.msrp < price.from,
+        )
+        // The most expensive base first: its CCU is the cheapest.
+        .sort((a, b) => b.msrp - a.msrp || a.name.localeCompare(b.name));
+      const chosen =
+        base && sold
+          ? chooseBase(candidates, isAlwaysAvailable, (id) => onSale.has(id))
+          : undefined;
+      if (!base || !chosen) return { ...group, noSwitch: 'notSold' };
+      const { from, choice } = chosen;
 
       const ccuPrice = cents(price.from - from.msrp);
       const total = cents(ccuPrice * count);
@@ -196,6 +239,14 @@ export function ccuAdvice(input: CcuAdviceInput): CcuAdviceGroup[] {
         ...group,
         switch: {
           from,
+          choice,
+          holdings: holdingsOf(from.id),
+          // Cheapest first.
+          alternatives: chosen.cheaper.map((ship) => ({
+            from: ship,
+            price: cents(price.from - ship.msrp),
+            holdings: holdingsOf(ship.id),
+          })),
           to: base,
           price: ccuPrice,
           total,
