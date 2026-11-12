@@ -91,6 +91,25 @@ export async function toggleMeltMark(pledgeId: number, demo = false): Promise<vo
   await item.setValue(toggledMarks(await item.getValue(), pledgeId, Date.now()));
 }
 
+/**
+ * Marks all the pledges, or unmarks them (the CCUs of the price increase advice, #274); a mark
+ * already set keeps its time. In the demo's own marks while it is on.
+ */
+export async function setMeltMarks(
+  pledgeIds: readonly number[],
+  marked: boolean,
+  demo = false,
+): Promise<void> {
+  const item = demo ? demoMeltMarksItem : meltMarksItem;
+  const marks = { ...(await item.getValue()) };
+  const now = Date.now();
+  for (const id of pledgeIds) {
+    if (!marked) delete marks[id];
+    else marks[id] ??= now;
+  }
+  await item.setValue(marks);
+}
+
 /** Drops the marks of pledges that are gone from the stored hangar (melted, gifted, …). */
 export async function pruneMeltMarks(): Promise<void> {
   const [marks, snapshot] = await Promise.all([

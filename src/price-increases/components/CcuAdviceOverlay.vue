@@ -4,6 +4,8 @@ import { useDemoContext } from '@/demo/use-demo';
 import { formatUsd } from '@/hangar/discount-format';
 import type { BuybackView } from '@/buyback/buyback-view';
 import type { PledgeView } from '@/hangar/pledge-view';
+import { setMeltMarks } from '@/hangar/melt-marks';
+import { useMarkedPledges } from '@/hangar/use-melt-marks';
 import { useShipFacts } from '@/ships/use-ship-facts';
 import { createShipLookup, holdingsByShip } from '@/store/warbond';
 import { i18n, locale } from '@/i18n';
@@ -14,17 +16,21 @@ import { createShipStatusLookup, shipStatusItem } from '@/ships/ship-status';
 import { buyableShipsItem, current, shipsItem, warbondsItem } from '@/ships/ships-storage';
 import { useStored } from '@/storage/use-stored';
 import { fontScaleStyle, themeClasses } from '@/themes/theme';
-import { computed, onMounted, onUnmounted, useTemplateRef } from 'vue';
-import { ccuAdvice, type BaseHoldings, type CcuAdviceGroup } from '../ccu-advice';
+import { computed, onMounted, onUnmounted, reactive, useTemplateRef } from 'vue';
+import { adviceEvents, type AdviceEvent, type AdviceRow } from '../advice-events';
+import { ccuAdvice, type CcuAdviceGroup } from '../ccu-advice';
 import { formatExpectedTime } from '../price-increase-label';
 import CcuShips from './CcuShips.vue';
+import PriceIncreaseBadge from './PriceIncreaseBadge.vue';
 
 /*
  * The advice for the CCUs of My Hangar whose base ship rises in price (#252, see `ccu-advice.ts`),
- * per pair of base and target ship: what keeping them means, and – with the new price known – the
- * recommendation to melt them and buy CCUs to the rising ship with the store credit, with the cost
- * and the discount after the increase. Without the new price only a warning and an information.
- * A suggestion only: nothing is melted or bought from here.
+ * laid out per rising ship (#274, `advice-events.ts`): the price increase with its countdown, the
+ * discount today, if kept and if swapped, the steps of the recommendation – melt them and buy CCUs
+ * to the rising ship with the store credit –, and the CCUs per target, each opening its figures.
+ * CCUs without a recommendation (the new price unknown, not sold, keeping is better) get a note of
+ * their own. A suggestion only: nothing is melted or bought from here; the CCUs of the
+ * recommendations can be marked to melt (#97).
  */
 
 const props = defineProps<{
@@ -77,7 +83,7 @@ const groups = computed((): CcuAdviceGroup[] | undefined => {
   // How many of each base ship, CCUs to it and buy back CCUs to it the user has.
   const holdings = holdingsByShip(createShipLookup(shipList), props.pledges, props.buyback);
   const facts = shipFacts.value;
-  const all = ccuAdvice({
+  return ccuAdvice({
     pledges: props.pledges,
     ships: shipList,
     buyable: current(buyable.value ?? null)?.skus ?? [],
@@ -96,46 +102,121 @@ const groups = computed((): CcuAdviceGroup[] | undefined => {
       };
     },
   });
-  // The group of the CCU it was opened from first, then the recommendations.
-  const rank = (group: CcuAdviceGroup) =>
-    group.ccus.some((ccu) => ccu.id === props.pledgeId) ? 0 : group.switch ? 1 : 2;
-  return all
-    .map((group, index) => ({ group, index }))
-    .sort((a, b) => rank(a.group) - rank(b.group) || a.index - b.index)
-    .map(({ group }) => group);
 });
 
-// "Hide sensitive information": the amounts are the account's, so none is shown.
-const usd = (value: number) =>
-  settings.value.hideMeltValue ? '–' : formatUsd(value, locale.value);
+/** Per rising ship, the one of the CCU it was opened from first. */
+const events = computed(() =>
+  groups.value ? adviceEvents(groups.value, storeCredit.value, props.pledgeId) : undefined,
+);
 
-const baseName = (group: CcuAdviceGroup) => group.increase.ship.name;
-const holdingsText = (ship: string, held: BaseHoldings) =>
-  i18n.t('ccuAdvice.holdings', [held.hangarShips, ship, held.hangarCcus, held.buybackCcus]);
-const when = (group: CcuAdviceGroup) =>
-  formatExpectedTime(group.increase.priceIncreaseAt, locale.value);
+// "Hide sensitive information": the amounts are the account's, so none is shown.
+const hidden = computed(() => settings.value.hideMeltValue);
+const usd = (value: number) => (hidden.value ? '–' : formatUsd(value, locale.value));
+/** "+$55", "−$145"; "$0" without a sign. */
+const signed = (value: number) =>
+  hidden.value
+    ? '–'
+    : value === 0
+      ? formatUsd(0, locale.value)
+      : `${value > 0 ? '+' : '−'}${formatUsd(Math.abs(value), locale.value)}`;
+/** "−$145" for a negative amount, else "$620". */
+const money = (value: number) =>
+  hidden.value ? '–' : `${value < 0 ? '−' : ''}${formatUsd(Math.abs(value), locale.value)}`;
+const count = (value: number) => new Intl.NumberFormat(locale.value).format(value);
+/** A text with a count, its own wording for one ("1 CCU", not "1 CCUs"). */
+const plural = (
+  key: 'outcomeTitle' | 'factMelt' | 'tableTotal' | 'mark' | 'marked',
+  value: number,
+) => (value === 1 ? i18n.t(`ccuAdvice.${key}One`) : i18n.t(`ccuAdvice.${key}`, [count(value)]));
+
+const when = (event: AdviceEvent) =>
+  formatExpectedTime(event.increase.priceIncreaseAt, locale.value);
 /** The day of the increase, e.g. "Nov 19, 2026": melt and buy before it. */
-const day = (group: CcuAdviceGroup) =>
+const day = (event: AdviceEvent) =>
   new Intl.DateTimeFormat(locale.value, {
     dateStyle: 'medium',
-    ...(group.increase.priceIncreaseAt.dayOnly && { timeZone: 'UTC' }),
-  }).format(group.increase.priceIncreaseAt.at);
+    ...(event.increase.priceIncreaseAt.dayOnly && { timeZone: 'UTC' }),
+  }).format(event.increase.priceIncreaseAt.at);
+const badge = (event: AdviceEvent) => ({ increase: event.increase, reason: 'ship' as const });
+
+/** The bars of the discount: today, if kept, if swapped, on one scale with 0. */
+function bars(event: AdviceEvent) {
+  const outcome = event.outcome!;
+  const values = [outcome.today, outcome.kept, outcome.swapped];
+  const min = Math.min(0, ...values);
+  const span = Math.max(0, ...values) - min || 1;
+  const percent = (value: number) => `${((value - min) / span) * 100}%`;
+  const bar = (key: string, value: number, tone: string) => ({
+    key,
+    label: i18n.t(`ccuAdvice.${key}` as 'ccuAdvice.barToday'),
+    value,
+    tone,
+    left: percent(Math.min(0, value)),
+    width: `${(Math.abs(value) / span) * 100}%`,
+  });
+  return {
+    zero: percent(0),
+    list: [
+      bar('barToday', outcome.today, 'is-neutral'),
+      bar('barKeep', outcome.kept, outcome.kept < 0 ? 'is-loss' : 'is-neutral'),
+      bar('barSwap', outcome.swapped, 'is-gain'),
+    ],
+  };
+}
+
+/** That giftable CCUs lose it when melted: one, all, or some of them. */
+function giftableText(giftable: number, total: number) {
+  if (total === 1) return i18n.t('ccuAdvice.giftableSingle');
+  if (giftable === total) return i18n.t('ccuAdvice.giftableAll', [total]);
+  return giftable === 1
+    ? i18n.t('ccuAdvice.giftableOne', [giftable, total])
+    : i18n.t('ccuAdvice.giftable', [giftable, total]);
+}
+
+/** Why a group gets no recommendation, in one sentence. */
+function noteOf(group: CcuAdviceGroup, event: AdviceEvent): string {
+  const ship = event.increase.ship.name;
+  const parts = [
+    group.increase.price
+      ? i18n.t(group.noSwitch === 'notSold' ? 'ccuAdvice.notSold' : 'ccuAdvice.keepIsBetter', [
+          ship,
+        ])
+      : i18n.t('ccuAdvice.riseUnknown', [ship, when(event)]),
+  ];
+  if (group.targetInConcept) parts.push(i18n.t('ccuAdvice.targetInConcept', [group.target.name]));
+  return parts.join(' ');
+}
+/** What a group without recommendation may lose: its discount today, if it has one. */
+const atStake = (group: CcuAdviceGroup) =>
+  !group.increase.price && group.discountNow !== undefined && group.discountNow > 0
+    ? group.discountNow
+    : undefined;
+
+// The rows open and closed, by key; the one of the CCU it was opened from is open.
+const opened = reactive(new Map<string, boolean>());
+const isOpen = (row: AdviceRow) => opened.get(row.key) ?? row.origin;
+const toggle = (row: AdviceRow) => opened.set(row.key, !isOpen(row));
+
+// ---- Mark to melt (#97): all CCUs of the recommendations ----
+
+const marked = useMarkedPledges();
+const recommendedIds = computed(() =>
+  (events.value ?? []).flatMap((event) =>
+    event.rows.flatMap((row) => row.group.ccus.map((ccu) => ccu.id)),
+  ),
+);
+const allMarked = computed(
+  () => recommendedIds.value.length > 0 && recommendedIds.value.every((id) => marked.value.has(id)),
+);
+function toggleMarks() {
+  void setMeltMarks(recommendedIds.value, !allMarked.value, !!demo.value);
+}
 
 onMounted(() => {
   addEventListener('keydown', onKeydown);
   dialog.value?.focus();
 });
 onUnmounted(() => removeEventListener('keydown', onKeydown));
-
-/** That giftable CCUs lose it when melted: one, all, or some of the group. */
-function giftableText(group: CcuAdviceGroup) {
-  const total = group.ccus.length;
-  if (total === 1) return i18n.t('ccuAdvice.giftableSingle');
-  if (group.giftable === total) return i18n.t('ccuAdvice.giftableAll', [total]);
-  return group.giftable === 1
-    ? i18n.t('ccuAdvice.giftableOne', [group.giftable, total])
-    : i18n.t('ccuAdvice.giftable', [group.giftable, total]);
-}
 
 function onKeydown(event: KeyboardEvent) {
   if (event.key === 'Escape') emit('close');
@@ -159,8 +240,11 @@ function onKeydown(event: KeyboardEvent) {
         aria-labelledby="shm-ccu-advice-title"
         tabindex="-1"
       >
-        <header class="shm-overlay-header">
-          <h3 id="shm-ccu-advice-title">{{ i18n.t('ccuAdvice.title') }}</h3>
+        <header class="shm-overlay-header shm-kd-header">
+          <div>
+            <h3 id="shm-ccu-advice-title">{{ i18n.t('ccuAdvice.title') }}</h3>
+            <p class="shm-kd-intro">{{ i18n.t('ccuAdvice.intro') }}</p>
+          </div>
           <button
             v-tooltip="i18n.t('order.close')"
             type="button"
@@ -171,335 +255,912 @@ function onKeydown(event: KeyboardEvent) {
             ×
           </button>
         </header>
-        <p class="shm-overlay-note">{{ i18n.t('ccuAdvice.intro') }}</p>
 
-        <p v-if="!groups" class="shm-overlay-note shm-ccu-advice-empty">
-          {{ i18n.t('ccuAdvice.noShips') }}
-        </p>
-        <p v-else-if="!groups.length" class="shm-overlay-note shm-ccu-advice-empty">
-          {{ i18n.t('ccuAdvice.none') }}
-        </p>
+        <p v-if="!events" class="shm-overlay-note">{{ i18n.t('ccuAdvice.noShips') }}</p>
+        <p v-else-if="!events.length" class="shm-overlay-note">{{ i18n.t('ccuAdvice.none') }}</p>
 
         <section
-          v-for="group in groups"
-          :key="`${group.increase.ship.id}>${group.target.id}`"
-          class="shm-ccu-advice-group"
+          v-for="event in events"
+          :key="event.key"
+          class="shm-kd-event"
+          :aria-label="event.increase.ship.name"
         >
-          <div class="shm-ccu-advice-head">
-            <CcuShips :from="group.base" :to="group.target" />
-            <h4>
-              {{
-                i18n.t('ccuAdvice.groupTitle', [
-                  group.ccus.length,
-                  baseName(group),
-                  group.target.name,
-                ])
-              }}
-            </h4>
-          </div>
-          <p class="shm-ccu-advice-text">
-            {{
-              group.increase.price
-                ? i18n.t('ccuAdvice.increasePrice', [
-                    baseName(group),
-                    usd(group.increase.price.from),
-                    usd(group.increase.price.to),
-                    when(group),
-                  ])
-                : i18n.t('ccuAdvice.increase', [baseName(group), when(group)])
-            }}
-            <template v-if="group.keep">
-              {{
-                i18n.t('ccuAdvice.keepFigures', [
-                  usd(group.keep.upgradeValueNow),
-                  usd(group.keep.upgradeValueAfter),
-                  usd(group.keep.discountNow),
-                  usd(group.keep.discountAfter),
-                ])
-              }}
-            </template>
-          </p>
-
-          <!-- With the new price: the recommendation, or why there is none. -->
-          <div v-if="group.switch" class="shm-ccu-advice-switch">
-            <div class="shm-ccu-advice-head">
-              <CcuShips :from="group.switch.from" :to="group.switch.to" />
+          <!-- The price increase, with its countdown. -->
+          <div class="shm-kd-price">
+            <span class="shm-kd-price-icon" aria-hidden="true">
+              <SvgIcon name="arrow-up" />
+            </span>
+            <div class="shm-kd-price-text">
               <strong>{{
-                i18n.t('ccuAdvice.switchTitle', [
-                  day(group),
-                  group.ccus.length,
-                  group.switch.from.name,
-                  group.switch.to.name,
-                ])
+                event.increase.price
+                  ? i18n.t('ccuAdvice.eventPrice', [
+                      event.increase.ship.name,
+                      usd(event.increase.price.from),
+                      usd(event.increase.price.to),
+                    ])
+                  : i18n.t('ccuAdvice.eventUnknown', [event.increase.ship.name])
               }}</strong>
+              <span>{{ i18n.t('ccuAdvice.eventWhen', [when(event)]) }}</span>
             </div>
-            <!-- Why this base ship (#263), and what the user has of it. -->
-            <p v-if="group.switch.choice !== 'any'" class="shm-ccu-advice-text">
-              {{
-                i18n.t(
-                  group.switch.choice === 'alwaysAvailable'
-                    ? 'ccuAdvice.baseAlwaysAvailable'
-                    : 'ccuAdvice.baseOnSale',
-                  [group.switch.from.name, group.switch.to.name],
-                )
-              }}
-            </p>
-            <p class="shm-ccu-advice-text shm-ccu-advice-holdings">
-              {{ holdingsText(group.switch.from.name, group.switch.holdings) }}
-            </p>
-            <p class="shm-ccu-advice-text">
-              {{
-                i18n.t('ccuAdvice.switchFigures', [
-                  usd(group.switch.price),
-                  usd(group.switch.total),
-                  usd(group.switch.upgradeValueAfter),
-                  usd(group.switch.discountAfter),
-                ])
-              }}
-              {{ i18n.t('ccuAdvice.meltGivesBack', [usd(group.meltValue)]) }}
-              <span :class="{ 'is-warning': group.switch.enoughStoreCredit === false }">{{
-                group.switch.storeCreditNeeded
-                  ? storeCredit === undefined || settings.hideMeltValue
-                    ? i18n.t('ccuAdvice.creditNeeded', [usd(group.switch.storeCreditNeeded)])
-                    : i18n.t('ccuAdvice.creditNeededHave', [
-                        usd(group.switch.storeCreditNeeded),
-                        usd(storeCredit),
-                      ])
-                  : i18n.t('ccuAdvice.creditCovered')
-              }}</span>
-            </p>
-            <p v-if="group.keep" class="shm-ccu-advice-gain">
-              {{
-                i18n.t('ccuAdvice.switchGain', [
-                  usd(group.switch.discountAfter * group.ccus.length),
-                  usd(group.keep.discountAfter),
-                ])
-              }}
-            </p>
-            <!-- The recommended CCU, then the cheaper ones from base ships between it and the rising
-                 ship (#273): only the recommended base ship can be always available. -->
-            <template v-if="group.switch.alternatives.length">
-              <p class="shm-ccu-advice-text">
-                <strong>{{ i18n.t('ccuAdvice.alternatives') }}</strong>
-              </p>
-              <div class="shm-ccu-advice-scroll">
-                <table class="shm-ccu-advice-table">
+            <PriceIncreaseBadge :match="badge(event)" place="buyback" />
+          </div>
+
+          <template v-if="event.plan">
+            <div class="shm-kd-cards">
+              <!-- What the discount does: today, if kept, if swapped. -->
+              <section v-if="event.outcome" class="shm-kd-card">
+                <h4>{{ plural('outcomeTitle', event.outcome.ccus) }}</h4>
+                <div
+                  v-if="!hidden"
+                  class="shm-kd-bars"
+                  role="img"
+                  :aria-label="
+                    i18n.t('ccuAdvice.outcomeLabel', [
+                      money(event.outcome.today),
+                      money(event.outcome.kept),
+                      money(event.outcome.swapped),
+                    ])
+                  "
+                >
+                  <div v-for="bar in bars(event).list" :key="bar.key" class="shm-kd-bar">
+                    <span class="shm-kd-bar-label" :class="{ 'is-strong': bar.tone === 'is-gain' }">
+                      {{ bar.label }}
+                    </span>
+                    <span class="shm-kd-bar-track" aria-hidden="true">
+                      <span class="shm-kd-bar-zero" :style="{ left: bars(event).zero }"></span>
+                      <span
+                        class="shm-kd-bar-fill"
+                        :class="bar.tone"
+                        :style="{ left: bar.left, width: bar.width }"
+                      ></span>
+                    </span>
+                    <span class="shm-kd-bar-value" :class="bar.tone">{{ money(bar.value) }}</span>
+                  </div>
+                </div>
+                <div class="shm-kd-card-foot">
+                  <span>
+                    {{ i18n.t('ccuAdvice.outcomeGain') }}
+                    <strong class="is-gain">{{
+                      usd(event.outcome.swapped - event.outcome.kept)
+                    }}</strong>
+                    {{ i18n.t('ccuAdvice.outcomeGainRest') }}
+                  </span>
+                  <span>
+                    {{ i18n.t('ccuAdvice.outcomeCredit') }}
+                    <strong :class="event.outcome.credit >= 0 ? 'is-gain' : 'is-loss'">{{
+                      signed(event.outcome.credit)
+                    }}</strong>
+                  </span>
+                </div>
+              </section>
+
+              <!-- How to keep it: the steps of the recommendation. -->
+              <section class="shm-kd-card">
+                <h4>{{ i18n.t('ccuAdvice.howTitle') }}</h4>
+                <ol class="shm-kd-steps">
+                  <li>
+                    <span class="shm-kd-step-number">1</span>
+                    <span>
+                      <strong>{{ i18n.t('ccuAdvice.stepMelt', [day(event)]) }}</strong>
+                      <span>{{ i18n.t('ccuAdvice.stepMeltSub') }}</span>
+                    </span>
+                  </li>
+                  <li>
+                    <span class="shm-kd-step-number">2</span>
+                    <span>
+                      <strong>{{
+                        i18n.t('ccuAdvice.stepBuy', [event.plan.from.name, event.plan.to.name])
+                      }}</strong>
+                      <span>
+                        {{
+                          i18n.t('ccuAdvice.stepBuySub', [
+                            usd(event.plan.price),
+                            usd(event.plan.total),
+                          ])
+                        }}
+                        <template v-if="event.plan.choice !== 'any'">{{
+                          i18n.t(
+                            event.plan.choice === 'alwaysAvailable'
+                              ? 'ccuAdvice.stepAlways'
+                              : 'ccuAdvice.stepOnSale',
+                          )
+                        }}</template>
+                        {{
+                          i18n.t('ccuAdvice.holdings', [
+                            event.plan.holdings.hangarShips,
+                            event.plan.from.name,
+                            event.plan.holdings.hangarCcus,
+                            event.plan.holdings.buybackCcus,
+                          ])
+                        }}
+                      </span>
+                    </span>
+                  </li>
+                  <li>
+                    <span class="shm-kd-step-number is-gain">3</span>
+                    <span>
+                      <strong>{{
+                        i18n.t('ccuAdvice.stepGain', [usd(event.plan.discountAfter)])
+                      }}</strong>
+                      <span>{{ i18n.t('ccuAdvice.stepGainSub', [event.plan.to.name]) }}</span>
+                    </span>
+                  </li>
+                </ol>
+                <p
+                  class="shm-kd-note"
+                  :class="{ 'is-warning': event.plan.enoughStoreCredit === false }"
+                  role="note"
+                >
+                  <SvgIcon
+                    :name="
+                      event.plan.enoughStoreCredit === false
+                        ? 'triangle-exclamation'
+                        : 'circle-info'
+                    "
+                  />
+                  <span>{{
+                    event.plan.storeCreditNeeded
+                      ? storeCredit === undefined || hidden
+                        ? i18n.t('ccuAdvice.creditNeeded', [usd(event.plan.storeCreditNeeded)])
+                        : i18n.t('ccuAdvice.creditNeededHave', [
+                            usd(event.plan.storeCreditNeeded),
+                            usd(storeCredit),
+                          ])
+                      : i18n.t('ccuAdvice.creditCovered')
+                  }}</span>
+                </p>
+                <p v-if="event.plan.giftable" class="shm-kd-note is-warning" role="note">
+                  <SvgIcon name="gift" />
+                  <span>{{ giftableText(event.plan.giftable, event.plan.ccus) }}</span>
+                </p>
+              </section>
+            </div>
+
+            <!-- The CCUs per target, each opening its figures. -->
+            <section class="shm-kd-list">
+              <div class="shm-kd-list-head">
+                <h4>{{ i18n.t('ccuAdvice.tableTitle', [event.increase.ship.name]) }}</h4>
+                <span>{{ i18n.t('ccuAdvice.tableSorted') }}</span>
+              </div>
+              <div class="shm-kd-table-scroll">
+                <table class="shm-kd-table">
                   <thead>
                     <tr>
                       <th scope="col">{{ i18n.t('ccuAdvice.colCcu') }}</th>
-                      <th scope="col" class="is-number">{{ i18n.t('ccuAdvice.colPrice') }}</th>
-                      <th
-                        v-tooltip="i18n.t('store.colAlwaysAvailableHint')"
-                        scope="col"
-                        class="is-center"
-                      >
-                        {{ i18n.t('store.colAlwaysAvailable') }}
-                      </th>
-                      <th scope="col" class="is-number">
-                        {{ i18n.t('ccuAdvice.colHangarShips') }}
-                      </th>
-                      <th scope="col" class="is-number">{{ i18n.t('ccuAdvice.colHangarCcus') }}</th>
-                      <th scope="col" class="is-number">
-                        {{ i18n.t('ccuAdvice.colBuybackCcus') }}
+                      <th scope="col" class="is-number">{{ i18n.t('ccuAdvice.colToday') }}</th>
+                      <th scope="col" class="is-number">{{ i18n.t('ccuAdvice.colKept') }}</th>
+                      <th scope="col" class="is-number">{{ i18n.t('ccuAdvice.colSwapped') }}</th>
+                      <th scope="col" class="is-number">{{ i18n.t('ccuAdvice.colCredit') }}</th>
+                      <th scope="col">
+                        <span class="shm-kd-sr">{{ i18n.t('pledge.toggleDetails') }}</span>
                       </th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <tr
-                      v-for="alternative in [group.switch, ...group.switch.alternatives]"
-                      :key="alternative.from.id"
-                      :class="{ 'is-recommended': alternative === group.switch }"
-                    >
+                  <tbody
+                    v-for="row in event.rows"
+                    :key="row.key"
+                    :class="{ 'is-origin': row.origin, 'is-open': isOpen(row) }"
+                  >
+                    <tr class="shm-kd-row" @click="toggle(row)">
                       <th scope="row">
-                        {{
-                          i18n.t('ccuAdvice.ccuName', [alternative.from.name, group.switch.to.name])
-                        }}
+                        <span class="shm-kd-ccu">
+                          <CcuShips :from="row.group.base" :to="row.group.target" />
+                          <span class="shm-kd-ccu-name">
+                            <span
+                              ><span class="shm-kd-muted"
+                                >{{ count(row.group.ccus.length) }} ×</span
+                              >
+                              {{ row.group.target.name }}</span
+                            >
+                            <small v-if="row.origin">{{ i18n.t('ccuAdvice.origin') }}</small>
+                          </span>
+                        </span>
                       </th>
-                      <td class="is-number">{{ usd(alternative.price) }}</td>
-                      <td class="is-center">
-                        <SvgIcon
-                          v-if="alwaysAvailable(alternative.from.id)"
-                          name="check"
-                          class="shm-always-available"
-                          :label="i18n.t('store.colAlwaysAvailable')"
-                        />
+                      <td class="is-number">
+                        {{ row.today === undefined ? '' : money(row.today) }}
                       </td>
-                      <td class="is-number">{{ alternative.holdings.hangarShips }}</td>
-                      <td class="is-number">{{ alternative.holdings.hangarCcus }}</td>
-                      <td class="is-number">{{ alternative.holdings.buybackCcus }}</td>
+                      <td class="is-number" :class="{ 'is-loss': (row.kept ?? 0) < 0 }">
+                        {{ row.kept === undefined ? '' : money(row.kept) }}
+                      </td>
+                      <td class="is-number is-gain is-strong">{{ money(row.swapped) }}</td>
+                      <td class="is-number" :class="{ 'is-gain': row.credit > 0 }">
+                        {{ signed(row.credit) }}
+                      </td>
+                      <td class="shm-kd-chevron-cell">
+                        <button
+                          type="button"
+                          class="shm-kd-chevron"
+                          :aria-expanded="isOpen(row)"
+                          :aria-label="i18n.t('pledge.toggleDetails')"
+                          @click.stop="toggle(row)"
+                        >
+                          <SvgIcon name="chevron-down" />
+                        </button>
+                      </td>
+                    </tr>
+                    <tr v-if="isOpen(row)" class="shm-kd-facts-row">
+                      <td colspan="6">
+                        <div class="shm-kd-facts">
+                          <span v-if="row.group.keep">
+                            <small>{{ i18n.t('ccuAdvice.factValue') }}</small>
+                            {{
+                              i18n.t('ccuAdvice.factValueText', [
+                                usd(row.group.keep.upgradeValueNow),
+                                usd(row.group.keep.upgradeValueAfter),
+                              ])
+                            }}
+                          </span>
+                          <span>
+                            <small>{{ plural('factMelt', row.group.ccus.length) }}</small>
+                            <span class="is-gain">{{
+                              i18n.t('ccuAdvice.factMeltText', [usd(row.group.meltValue)])
+                            }}</span>
+                          </span>
+                          <span>
+                            <small>{{
+                              i18n.t('ccuAdvice.factBuy', [
+                                count(row.group.ccus.length),
+                                event.plan.from.name,
+                                event.plan.to.name,
+                              ])
+                            }}</small>
+                            {{
+                              i18n.t('ccuAdvice.factBuyText', [
+                                usd(event.plan.price * row.group.ccus.length),
+                                usd(event.plan.price),
+                              ])
+                            }}
+                          </span>
+                        </div>
+                      </td>
                     </tr>
                   </tbody>
+                  <tfoot>
+                    <tr>
+                      <th scope="row">
+                        {{ plural('tableTotal', event.plan.ccus) }}
+                      </th>
+                      <td class="is-number">
+                        {{ event.outcome ? money(event.outcome.today) : '' }}
+                      </td>
+                      <td class="is-number" :class="{ 'is-loss': (event.outcome?.kept ?? 0) < 0 }">
+                        {{ event.outcome ? money(event.outcome.kept) : '' }}
+                      </td>
+                      <td class="is-number is-gain">{{ money(event.plan.swapped) }}</td>
+                      <td class="is-number" :class="event.plan.credit >= 0 ? 'is-gain' : 'is-loss'">
+                        {{ signed(event.plan.credit) }}
+                      </td>
+                      <td></td>
+                    </tr>
+                  </tfoot>
                 </table>
               </div>
-            </template>
-            <p v-if="group.giftable" class="shm-ccu-advice-note is-warning-note" role="note">
-              <SvgIcon name="triangle-exclamation" />
-              <span>{{ giftableText(group) }}</span>
-            </p>
-          </div>
-          <p v-else-if="group.noSwitch" class="shm-ccu-advice-note">
-            <SvgIcon name="circle-info" />
-            <span>{{
-              i18n.t(
-                group.noSwitch === 'notSold' ? 'ccuAdvice.notSold' : 'ccuAdvice.keepIsBetter',
-                [baseName(group)],
-              )
-            }}</span>
-          </p>
 
-          <!-- Without the new price: nothing to recommend, only what may happen. -->
-          <template v-if="!group.increase.price">
-            <p
-              v-if="group.discountNow !== undefined && group.discountNow > 0"
-              class="shm-ccu-advice-note is-warning-note"
-              role="note"
-            >
-              <SvgIcon name="triangle-exclamation" />
-              <span>{{ i18n.t('ccuAdvice.mayLoseDiscount', [usd(group.discountNow)]) }}</span>
-            </p>
-            <p v-else class="shm-ccu-advice-note">
-              <SvgIcon name="circle-info" />
-              <span>{{ i18n.t('ccuAdvice.unknownAmount') }}</span>
-            </p>
+              <!-- The recommended CCU and cheaper ones from ships between it and the rising ship
+                   (#263, #273): only the recommended base ship can be always available. -->
+              <details v-if="event.plan.alternatives.length" class="shm-kd-alternatives">
+                <summary>{{ i18n.t('ccuAdvice.alternatives') }}</summary>
+                <div class="shm-kd-table-scroll">
+                  <table class="shm-kd-table is-plain">
+                    <thead>
+                      <tr>
+                        <th scope="col">{{ i18n.t('ccuAdvice.colCcu') }}</th>
+                        <th scope="col" class="is-number">{{ i18n.t('ccuAdvice.colPrice') }}</th>
+                        <th
+                          v-tooltip="i18n.t('store.colAlwaysAvailableHint')"
+                          scope="col"
+                          class="is-center"
+                        >
+                          {{ i18n.t('store.colAlwaysAvailable') }}
+                        </th>
+                        <th scope="col" class="is-number">
+                          {{ i18n.t('ccuAdvice.colHangarShips') }}
+                        </th>
+                        <th scope="col" class="is-number">
+                          {{ i18n.t('ccuAdvice.colHangarCcus') }}
+                        </th>
+                        <th scope="col" class="is-number">
+                          {{ i18n.t('ccuAdvice.colBuybackCcus') }}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        v-for="alternative in [event.plan, ...event.plan.alternatives]"
+                        :key="alternative.from.id"
+                        :class="{ 'is-strong': alternative === event.plan }"
+                      >
+                        <th scope="row">
+                          {{
+                            i18n.t('ccuAdvice.ccuName', [alternative.from.name, event.plan.to.name])
+                          }}
+                        </th>
+                        <td class="is-number">{{ usd(alternative.price) }}</td>
+                        <td class="is-center">
+                          <SvgIcon
+                            v-if="alwaysAvailable(alternative.from.id)"
+                            name="check"
+                            class="is-gain"
+                            :label="i18n.t('store.colAlwaysAvailable')"
+                          />
+                        </td>
+                        <td class="is-number">{{ alternative.holdings.hangarShips }}</td>
+                        <td class="is-number">{{ alternative.holdings.hangarCcus }}</td>
+                        <td class="is-number">{{ alternative.holdings.buybackCcus }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </details>
+            </section>
           </template>
-          <p v-if="group.targetInConcept" class="shm-ccu-advice-note">
-            <SvgIcon name="circle-info" />
-            <span>{{ i18n.t('ccuAdvice.targetInConcept', [group.target.name]) }}</span>
-          </p>
+
+          <!-- CCUs without a recommendation: what may happen. -->
+          <section v-for="group in event.others" :key="group.target.id" class="shm-kd-other">
+            <CcuShips :from="group.base" :to="group.target" />
+            <div class="shm-kd-other-text">
+              <h5>
+                <span class="shm-kd-muted">{{ count(group.ccus.length) }} ×</span>
+                {{ i18n.t('ccuAdvice.ccuName', [event.increase.ship.name, group.target.name]) }}
+              </h5>
+              <span>{{ noteOf(group, event) }}</span>
+            </div>
+            <span v-if="atStake(group) !== undefined" class="shm-kd-other-amount">
+              <strong>{{ usd(atStake(group)!) }}</strong>
+              <small>{{ i18n.t('ccuAdvice.mayBeLost') }}</small>
+            </span>
+          </section>
         </section>
 
-        <p class="shm-overlay-note shm-ccu-advice-footer">{{ i18n.t('ccuAdvice.footer') }}</p>
+        <footer class="shm-kd-footer">
+          <span class="shm-kd-footer-note">
+            <SvgIcon name="circle-info" />
+            {{ i18n.t('ccuAdvice.footer') }}
+          </span>
+          <button
+            v-if="recommendedIds.length"
+            v-tooltip="i18n.t(allMarked ? 'ccuAdvice.unmarkHint' : 'ccuAdvice.markHint')"
+            type="button"
+            class="shm-button shm-kd-mark"
+            :aria-pressed="allMarked"
+            @click="toggleMarks"
+          >
+            <SvgIcon :name="allMarked ? 'check' : 'recycle'" />
+            {{
+              allMarked
+                ? plural('marked', recommendedIds.length)
+                : plural('mark', recommendedIds.length)
+            }}
+          </button>
+        </footer>
       </section>
     </div>
   </Teleport>
 </template>
 
 <style>
-.shm-ccu-advice .shm-ccu-advice-group {
-  margin-top: 18px;
-  padding-top: 14px;
-  border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.15);
+/* Wider than the other dialogs: two cards side by side and a table of five columns. */
+.shm-ccu-advice.shm-overlay-dialog {
+  width: min(948px, 100%);
 }
 
-.shm-ccu-advice .shm-ccu-advice-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 12px;
-}
-
-.shm-ccu-advice .shm-ccu-advice-head h4 {
-  margin: 0;
-}
-
-.shm-ccu-advice .shm-ccu-advice-text {
-  margin: 8px 0 0;
-}
-
-/* The cheaper alternatives: a small table, scrolling sideways where it doesn't fit. */
-.shm-ccu-advice .shm-ccu-advice-scroll {
-  margin-top: 6px;
-  overflow-x: auto;
-}
-
-.shm-ccu-advice .shm-ccu-advice-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-variant-numeric: tabular-nums;
-}
-
-.shm-ccu-advice .shm-ccu-advice-table th,
-.shm-ccu-advice .shm-ccu-advice-table td {
-  padding: 5px 12px 5px 0;
-  text-align: left;
-  white-space: nowrap;
-}
-
-.shm-ccu-advice .shm-ccu-advice-table thead th {
-  color: var(--shm-text-muted);
-  font-weight: 400;
-  border-bottom: 1px solid rgb(var(--shm-accent-rgb) / 0.2);
-}
-
-.shm-ccu-advice .shm-ccu-advice-table tbody th {
-  color: var(--shm-text);
-  font-weight: 400;
-}
-
-.shm-ccu-advice .shm-ccu-advice-table tbody tr + tr > * {
-  border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.1);
-}
-
-.shm-ccu-advice .shm-ccu-advice-table .is-number {
-  text-align: right;
-}
-
-.shm-ccu-advice .shm-ccu-advice-table .is-center {
-  text-align: center;
-}
-
-/* The recommended CCU, above the cheaper alternatives. */
-.shm-ccu-advice .shm-ccu-advice-table tr.is-recommended > * {
-  color: var(--shm-text-strong);
-}
-
-/* A base ship always available in the Pledge Store, as in its tables (store-table.css). */
-.shm-ccu-advice .shm-ccu-advice-table .shm-always-available {
+.shm-ccu-advice .is-gain {
   color: var(--shm-success);
 }
 
-.shm-ccu-advice .shm-ccu-advice-holdings {
-  color: var(--shm-text-muted);
+.shm-ccu-advice .is-loss {
+  color: var(--shm-danger);
 }
 
-/* The recommendation: set apart from what keeping them means. */
-.shm-ccu-advice .shm-ccu-advice-switch {
-  margin-top: 12px;
-  padding: 12px 14px;
-  background: rgb(var(--shm-accent-rgb) / 0.06);
-  border: 1px solid rgb(var(--shm-accent-rgb) / 0.2);
-  border-radius: var(--shm-radius-control);
-}
-
-.shm-ccu-advice .shm-ccu-advice-switch strong {
-  color: var(--shm-text-strong);
+.shm-ccu-advice .is-strong {
   font-weight: 600;
 }
 
-.shm-ccu-advice .shm-ccu-advice-gain {
-  margin: 6px 0 0;
-  color: var(--shm-success);
+.shm-ccu-advice .shm-kd-muted {
+  color: var(--shm-text-muted);
 }
 
-.shm-ccu-advice .is-warning {
+.shm-ccu-advice .shm-kd-header {
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.shm-ccu-advice .shm-kd-intro {
+  margin: 4px 0 0;
+  color: var(--shm-text-muted);
+}
+
+/* ---- One rising ship ---- */
+
+.shm-ccu-advice .shm-kd-event {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.shm-ccu-advice .shm-kd-event + .shm-kd-event {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.15);
+}
+
+.shm-ccu-advice .shm-kd-price {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--shm-warning) 10%, transparent);
+  border-radius: var(--shm-radius-group);
+}
+
+.shm-ccu-advice .shm-kd-price-icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   color: var(--shm-warning);
+  background: color-mix(in srgb, var(--shm-warning) 18%, transparent);
+  border-radius: var(--shm-radius-control);
 }
 
-.shm-ccu-advice .shm-ccu-advice-note {
+.shm-ccu-advice .shm-kd-price-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.shm-ccu-advice .shm-kd-price-text strong {
+  color: var(--shm-text-strong);
+  font-size: calc(15px * var(--shm-font-scale));
+  font-weight: 600;
+}
+
+.shm-ccu-advice .shm-kd-price-text span {
+  color: var(--shm-text-muted);
+}
+
+/* ---- The two cards ---- */
+
+.shm-ccu-advice .shm-kd-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  /* Each card as tall as its content: the bars need less room than the steps. */
+  align-items: start;
+}
+
+.shm-ccu-advice .shm-kd-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: rgb(var(--shm-accent-rgb) / 0.07);
+  border-radius: var(--shm-radius-group);
+}
+
+.shm-ccu-advice .shm-kd-card h4,
+.shm-ccu-advice .shm-kd-list h4 {
+  margin: 0;
+}
+
+.shm-ccu-advice .shm-kd-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.shm-ccu-advice .shm-kd-bar {
+  display: grid;
+  grid-template-columns: 118px minmax(0, 1fr) 70px;
+  gap: 10px;
+  align-items: center;
+}
+
+.shm-ccu-advice .shm-kd-bar-label {
+  color: var(--shm-text-muted);
+}
+
+.shm-ccu-advice .shm-kd-bar-label.is-strong {
+  color: var(--shm-text-strong);
+}
+
+.shm-ccu-advice .shm-kd-bar-track {
+  position: relative;
+  height: 20px;
+}
+
+.shm-ccu-advice .shm-kd-bar-zero {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 1px;
+  background: rgb(var(--shm-accent-rgb) / 0.35);
+}
+
+.shm-ccu-advice .shm-kd-bar-fill {
+  position: absolute;
+  top: 3px;
+  height: 14px;
+  background: var(--shm-text-muted);
+  border-radius: var(--shm-radius-small);
+}
+
+.shm-ccu-advice .shm-kd-bar-fill.is-loss {
+  background: var(--shm-danger);
+}
+
+.shm-ccu-advice .shm-kd-bar-fill.is-gain {
+  background: var(--shm-success);
+}
+
+.shm-ccu-advice .shm-kd-bar-value {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.shm-ccu-advice .shm-kd-card-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin-top: auto;
+  padding-top: 12px;
+  color: var(--shm-text-muted);
+  border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.15);
+}
+
+.shm-ccu-advice .shm-kd-card-foot strong {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.shm-ccu-advice .shm-kd-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shm-ccu-advice .shm-kd-steps li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.shm-ccu-advice .shm-kd-steps li > span:last-child {
+  display: flex;
+  flex-direction: column;
+}
+
+.shm-ccu-advice .shm-kd-steps strong {
+  color: var(--shm-text-strong);
+  font-weight: 500;
+}
+
+.shm-ccu-advice .shm-kd-steps li > span:last-child > span {
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+.shm-ccu-advice .shm-kd-step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  color: var(--shm-text-strong);
+  font-size: calc(12px * var(--shm-font-scale));
+  font-weight: 700;
+  background: rgb(var(--shm-accent-rgb) / 0.2);
+  border-radius: var(--shm-radius-pill);
+}
+
+.shm-ccu-advice .shm-kd-step-number.is-gain {
+  background: rgb(var(--shm-success-rgb) / 0.2);
+}
+
+.shm-ccu-advice .shm-kd-note {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  margin: 10px 0 0;
-  color: var(--shm-text);
+  margin: 0;
+  padding: 8px 10px;
+  font-size: calc(12px * var(--shm-font-scale));
+  background: rgb(var(--shm-accent-rgb) / 0.08);
+  border-radius: var(--shm-radius-control);
 }
 
-.shm-ccu-advice .shm-ccu-advice-note .shm-icon {
+.shm-ccu-advice .shm-kd-note .shm-icon {
   flex: none;
   margin-top: 2px;
   color: var(--shm-accent);
 }
 
-.shm-ccu-advice .shm-ccu-advice-note.is-warning-note .shm-icon {
+.shm-ccu-advice .shm-kd-note.is-warning {
+  background: color-mix(in srgb, var(--shm-warning) 10%, transparent);
+}
+
+.shm-ccu-advice .shm-kd-note.is-warning .shm-icon {
   color: var(--shm-warning);
 }
 
-.shm-ccu-advice .shm-ccu-advice-empty {
-  margin-top: 14px;
+/* ---- The CCUs per target ---- */
+
+.shm-ccu-advice .shm-kd-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.shm-ccu-advice .shm-ccu-advice-footer {
-  margin-top: 20px;
+.shm-ccu-advice .shm-kd-list-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 4px;
+}
+
+.shm-ccu-advice .shm-kd-list-head > span {
   color: var(--shm-text-muted);
   font-size: calc(12px * var(--shm-font-scale));
+}
+
+.shm-ccu-advice .shm-kd-table-scroll {
+  overflow-x: auto;
+  background: rgb(var(--shm-accent-rgb) / 0.07);
+  border-radius: var(--shm-radius-group);
+}
+
+.shm-ccu-advice .shm-kd-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.shm-ccu-advice .shm-kd-table :is(th, td) {
+  padding: 8px 12px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.shm-ccu-advice .shm-kd-table :is(th, td):first-child {
+  padding-left: 16px;
+}
+
+.shm-ccu-advice .shm-kd-table thead th {
+  color: var(--shm-text-muted);
+  font-size: calc(11px * var(--shm-font-scale));
+  font-weight: 600;
+}
+
+.shm-ccu-advice .shm-kd-table tbody th {
+  color: var(--shm-text);
+  font-weight: 500;
+}
+
+.shm-ccu-advice .shm-kd-table tbody :is(th, td) {
+  border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.12);
+}
+
+.shm-ccu-advice .shm-kd-table .is-number {
+  text-align: right;
+}
+
+.shm-ccu-advice .shm-kd-table .is-center {
+  text-align: center;
+}
+
+.shm-ccu-advice .shm-kd-row {
+  cursor: pointer;
+}
+
+.shm-ccu-advice tbody.is-origin {
+  background: rgb(var(--shm-accent-rgb) / 0.08);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .shm-ccu-advice .shm-kd-row:hover {
+    background: rgb(var(--shm-accent-rgb) / 0.07);
+  }
+}
+
+.shm-ccu-advice .shm-kd-ccu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.shm-ccu-advice .shm-kd-ccu .shm-ccu-ship {
+  width: 34px;
+  height: 22px;
+}
+
+.shm-ccu-advice .shm-kd-ccu-name {
+  display: flex;
+  flex-direction: column;
+}
+
+.shm-ccu-advice .shm-kd-ccu-name small {
+  color: var(--shm-accent);
+  font-size: calc(11px * var(--shm-font-scale));
+  font-weight: 400;
+}
+
+.shm-ccu-advice .shm-kd-chevron-cell {
+  width: 28px;
+  padding-left: 0;
+}
+
+.shm-ccu-advice .shm-kd-chevron {
+  display: flex;
+  padding: 4px;
+  color: var(--shm-text-muted);
+  background: none;
+  border: 0;
+  border-radius: var(--shm-radius-small);
+  cursor: pointer;
+}
+
+.shm-ccu-advice .shm-kd-chevron .shm-icon {
+  transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.shm-ccu-advice .shm-kd-chevron[aria-expanded='true'] .shm-icon {
+  transform: rotate(180deg);
+}
+
+.shm-ccu-advice .shm-kd-chevron:focus-visible {
+  outline: 2px solid var(--shm-accent);
+  outline-offset: 2px;
+}
+
+.shm-ccu-advice .shm-kd-table tbody .shm-kd-facts-row td {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.shm-ccu-advice .shm-kd-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+  padding-left: 88px;
+  white-space: normal;
+  animation: shm-kd-in 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.shm-ccu-advice .shm-kd-facts > span {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 10px;
+  background: rgb(0 0 0 / 0.25);
+  border-radius: var(--shm-radius-control);
+}
+
+.shm-ccu-advice .shm-kd-facts small {
+  color: var(--shm-text-muted);
+  font-size: calc(11px * var(--shm-font-scale));
+}
+
+@keyframes shm-kd-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.shm-ccu-advice .shm-kd-table tfoot :is(th, td) {
+  font-weight: 600;
+  border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.22);
+}
+
+.shm-ccu-advice .shm-kd-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+/* The alternatives (#273): on demand, below the CCUs. */
+.shm-ccu-advice .shm-kd-alternatives summary {
+  padding: 4px;
+  color: var(--shm-accent);
+  cursor: pointer;
+}
+
+.shm-ccu-advice .shm-kd-alternatives .shm-kd-table-scroll {
+  margin-top: 6px;
+}
+
+.shm-ccu-advice .shm-kd-table.is-plain tbody th {
+  font-weight: 400;
+}
+
+/* ---- Without a recommendation ---- */
+
+.shm-ccu-advice .shm-kd-other {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.18);
+  border-radius: var(--shm-radius-group);
+}
+
+.shm-ccu-advice .shm-kd-other .shm-ccu-ship {
+  width: 34px;
+  height: 22px;
+}
+
+.shm-ccu-advice .shm-kd-other-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+.shm-ccu-advice .shm-kd-other-text h5 {
+  margin: 0;
+  color: var(--shm-text-strong);
+  font-size: calc(14px * var(--shm-font-scale));
+  font-weight: 500;
+}
+
+.shm-ccu-advice .shm-kd-other-amount {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-end;
+  font-variant-numeric: tabular-nums;
+}
+
+.shm-ccu-advice .shm-kd-other-amount small {
+  color: var(--shm-warning);
+}
+
+/* ---- Footer ---- */
+
+.shm-ccu-advice .shm-kd-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.15);
+}
+
+.shm-ccu-advice .shm-kd-footer-note {
+  display: flex;
+  flex: 1;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 240px;
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+.shm-ccu-advice .shm-kd-footer-note .shm-icon {
+  flex: none;
+  margin-top: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shm-ccu-advice .shm-kd-chevron .shm-icon {
+    transition: none;
+  }
+
+  .shm-ccu-advice .shm-kd-facts {
+    animation: none;
+  }
 }
 </style>
