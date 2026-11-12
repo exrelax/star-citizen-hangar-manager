@@ -20,6 +20,7 @@ export const ICON_NAMES = {
     'box',
     'btc',
     'bug',
+    'check',
     'chevron-down',
     'chevron-left',
     'chevron-right',

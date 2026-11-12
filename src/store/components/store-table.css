@@ -52,3 +52,12 @@
 .shm-warbond-table.is-small {
   font-size: calc(11px * var(--shm-font-scale));
 }
+
+.shm-warbond-table .is-center {
+  text-align: center;
+}
+
+/* A ship always available in the Pledge Store (BaseShipsTable.vue). */
+.shm-warbond-table .shm-always-available {
+  color: var(--shm-success);
+}
