@@ -1037,6 +1037,8 @@
     "targetInConcept": "La $1 aún no es flight ready: su precio probablemente también subirá cuando lo sea.",
     "giftable": "$1 de estos $2 CCU se pueden regalar ahora; los nuevos, comprados con store credit, no se podrán regalar.",
     "giftableOne": "1 de estos $2 CCU se puede regalar ahora; los nuevos, comprados con store credit, no se podrán regalar.",
+    "giftableSingle": "Este CCU se puede regalar ahora; el nuevo, comprado con store credit, no se podrá regalar.",
+    "giftableAll": "Los $1 CCU se pueden regalar ahora; los nuevos, comprados con store credit, no se podrán regalar.",
     "footer": "Solo una sugerencia: el Hangar Manager nunca funde ni compra nada por sí mismo. Los precios y las fechas son previstos, no confirmados por RSI.",
     "button": "Conservar el descuento",
     "buttonHint": "Este CCU pierde valor de mejora con una subida de precio prevista: cómo conservar su descuento."
