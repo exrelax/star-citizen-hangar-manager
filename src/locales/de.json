@@ -1023,5 +1023,14 @@
     "footer": "Nur ein Vorschlag: Der Hangar Manager schmilzt und kauft nie etwas von sich aus. Preise und Termine sind erwartet, nicht von RSI bestätigt.",
     "button": "Rabatt erhalten",
     "buttonHint": "Dieses CCU verliert durch eine erwartete Preiserhöhung an Upgrade-Wert: so erhältst du seinen Rabatt."
+  },
+  "ccusToSecure": {
+    "title": "CCUs vor einer Preiserhöhung sichern",
+    "intro": "Schiffe, deren Preis voraussichtlich bald steigt. Ein jetzt gekauftes CCU auf so ein Schiff behält seinen Preis, gewinnt mit der Preiserhöhung aber an Upgrade-Wert – das ist der Rabatt. Termine und Preise sind erwartet, nicht von RSI bestätigt.",
+    "openUpgradeHint": "Öffnet RSIs Dialog für Schiffs-Upgrades mit der $1 als Ziel",
+    "cheapestTitle": "Günstigste CCUs zur $1",
+    "gainHint": "Jedes vor dem $2 gekaufte CCU gewinnt $1 Rabatt. Die Zahlen zeigen, wie oft du jedes Schiff schon hast – als Schiff oder als Ziel eines CCUs – in Hangar und Buy Back.",
+    "gainUnknownHint": "Jedes vor dem $1 gekaufte CCU gewinnt so viel Rabatt, wie der Preis steigt – wie viel, ist noch nicht bekannt. Die Zahlen zeigen, wie oft du jedes Schiff schon hast – als Schiff oder als Ziel eines CCUs – in Hangar und Buy Back.",
+    "noBases": "Kein Schiff kostet weniger als die $1, daher gibt es kein CCU dorthin."
   }
 }

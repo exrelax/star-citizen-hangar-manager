@@ -12,7 +12,14 @@ import {
   upgradeToolState,
 } from '@/ships/sync-upgrade-tool';
 import { useStoreData } from '../use-store-data';
-import { buildWarbondOffers } from '../warbond';
+import { buildWarbondOffers, createShipLookup, holdingsByShip } from '../warbond';
+import { buyableShipsItem, current, shipsItem, warbondsItem } from '@/ships/ships-storage';
+import { ccusToSecure } from '@/price-increases/ccus-to-secure';
+import {
+  priceIncreasesItem,
+  storedPriceIncreases,
+} from '@/price-increases/price-increases-storage';
+import SecureRow from '@/price-increases/components/SecureRow.vue';
 import RefreshIcon from '@/hangar/components/RefreshIcon.vue';
 import WarbondRow from './WarbondRow.vue';
 import PaintConsultant from './PaintConsultant.vue';
@@ -76,6 +83,28 @@ const offers = computed(() =>
   storeData.value ? buildWarbondOffers(storeData.value, props.pledges, props.buyback) : [],
 );
 
+/**
+ * The CCUs to secure before a price increase (#253): from the stored upgrade tool and the
+ * website's expected price increases – public data, also in the demo mode –, with the counts of
+ * the shown hangar and buy back.
+ */
+const storedShips = useStored(shipsItem);
+const storedBuyable = useStored(buyableShipsItem);
+const storedWarbonds = useStored(warbondsItem);
+const storedIncreases = useStored(priceIncreasesItem);
+const secure = computed(() => {
+  const ships = current(storedShips.value ?? null)?.ships;
+  if (!ships) return [];
+  return ccusToSecure({
+    increases: storedPriceIncreases(storedIncreases.value ?? null),
+    ships,
+    buyable: current(storedBuyable.value ?? null)?.skus ?? [],
+    warbonds: current(storedWarbonds.value ?? null)?.warbonds ?? [],
+    holdings: holdingsByShip(createShipLookup(ships), props.pledges, props.buyback),
+    now: now.value,
+  });
+});
+
 const updated = computed(
   () =>
     fetchedAt.value !== undefined &&
@@ -134,6 +163,17 @@ const displayClasses = computed(() => ({
       <p v-if="!offers.length" class="shm-store-state">{{ i18n.t('store.empty') }}</p>
     </template>
 
+    <!-- The CCUs to secure before a price increase (#253), set apart below the warbond CCUs. -->
+    <section v-if="secure.length" class="shm-store-secure" aria-labelledby="shm-store-secure-title">
+      <h3 id="shm-store-secure-title" class="shm-store-title">
+        {{ i18n.t('ccusToSecure.title') }}
+      </h3>
+      <p class="shm-store-intro">{{ i18n.t('ccusToSecure.intro') }}</p>
+      <div class="shm-rows">
+        <SecureRow v-for="offer in secure" :key="offer.ship.id" :offer="offer" />
+      </div>
+    </section>
+
     <PaintConsultant :settings="settings" />
   </section>
 </template>
@@ -181,6 +221,11 @@ const displayClasses = computed(() => ({
 
 .shm-store-refresh:disabled {
   cursor: progress;
+}
+
+/* Clearly apart from the warbond CCUs above. */
+.shm-store-secure {
+  margin-top: 32px;
 }
 
 .shm-store-state {

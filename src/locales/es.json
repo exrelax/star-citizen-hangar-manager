@@ -1023,5 +1023,14 @@
     "footer": "Solo una sugerencia: el Hangar Manager nunca funde ni compra nada por sí mismo. Los precios y las fechas son previstos, no confirmados por RSI.",
     "button": "Conservar el descuento",
     "buttonHint": "Este CCU pierde valor de mejora con una subida de precio prevista: cómo conservar su descuento."
+  },
+  "ccusToSecure": {
+    "title": "CCU que conviene asegurar antes de una subida de precio",
+    "intro": "Naves cuyo precio se espera que suba pronto. Un CCU hacia una de ellas comprado ahora mantiene su precio pero gana valor de mejora con la subida: ese es el descuento. Las fechas y precios son previstos, no confirmados por RSI.",
+    "openUpgradeHint": "Abre el diálogo de mejoras de nave de RSI con la $1 como destino",
+    "cheapestTitle": "CCU más baratos hacia la $1",
+    "gainHint": "Cada CCU comprado antes del $2 gana $1 de descuento. Los números muestran cuántas veces ya tienes cada nave – como nave o como destino de un CCU – en tu hangar y el Buy Back.",
+    "gainUnknownHint": "Cada CCU comprado antes del $1 gana tanto descuento como suba el precio; aún no se sabe cuánto. Los números muestran cuántas veces ya tienes cada nave – como nave o como destino de un CCU – en tu hangar y el Buy Back.",
+    "noBases": "Ninguna nave cuesta menos que la $1, así que no hay CCU hacia ella."
   }
 }

@@ -1023,5 +1023,14 @@
     "footer": "A suggestion only: the Hangar Manager never melts or buys anything on its own. Prices and dates are expected, not confirmed by RSI.",
     "button": "Keep the discount",
     "buttonHint": "This CCU loses upgrade value with an expected price increase: how to keep its discount."
+  },
+  "ccusToSecure": {
+    "title": "CCUs to secure before a price increase",
+    "intro": "Ships whose price is expected to rise soon. A CCU to such a ship bought now keeps its price but gains upgrade value with the increase – that is the discount. The dates and prices are expected, not confirmed by RSI.",
+    "openUpgradeHint": "Opens RSI’s ship upgrade dialog with the $1 as target",
+    "cheapestTitle": "Cheapest CCUs to the $1",
+    "gainHint": "Each CCU bought before $2 gains $1 of discount. The counts show how often you already have each ship – as ship or as target of a CCU – in your hangar and buy back.",
+    "gainUnknownHint": "Each CCU bought before $1 gains as much discount as the price rises – how much isn’t known yet. The counts show how often you already have each ship – as ship or as target of a CCU – in your hangar and buy back.",
+    "noBases": "No ship costs less than the $1, so there is no CCU to it."
   }
 }
