@@ -135,12 +135,19 @@ export const UPGRADE_TOOL = {
 } as const;
 
 /**
- * RSI's public Ship Matrix: which ships are flight ready (#252). Its answer is large, so it is
- * read at most once a day.
+ * RSI's public Ship Matrix: which ships are flight ready (#252). For now read on the cycle of the
+ * Pledge Store items (`STORE_ITEMS`), when CIG changes the store and ships become flight ready,
+ * but defined on its own, so it can change apart from them. Its answer is large (about 5 MB).
  */
 export const SHIP_MATRIX = {
   url: 'https://robertsspaceindustries.com/ship-matrix/index',
-  maxAgeMs: 24 * 60 * 60 * 1000,
+  /**
+   * Smart updates read it at these minutes of every hour (local clock, see
+   * `src/store/refresh-schedule.ts`). Without smart updates once a day
+   * (`maxAgeWithoutSmartUpdatesMs`).
+   */
+  readAtMinutes: [0, 5, 10, 30, 35],
+  maxAgeWithoutSmartUpdatesMs: 24 * 60 * 60 * 1000,
 } as const;
 
 /** Fleetyards models per request when looking up erkul ids (~60 KB each). */
