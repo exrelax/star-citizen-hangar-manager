@@ -131,14 +131,20 @@ function paidValue(random: DemoRandom, label: string, price: number): number {
 /**
  * The ship of the Price Increase Advisor's chain (#255): in the hangar as a ship, as the target of
  * one CCU and the base of another, so a price increase of it shows each case. A ship CCUs go to
- * with cheaper and pricier ones around it, else none.
+ * with cheaper and pricier ones around it – one RSI sells CCUs to (`buyable`, if known), so the
+ * advice recommends CCUs to it –, else none.
  */
-export function demoPivotShip(random: DemoRandom, catalog: DemoCatalog): Ship | undefined {
+export function demoPivotShip(
+  random: DemoRandom,
+  catalog: DemoCatalog,
+  buyable?: ReadonlySet<number>,
+): Ship | undefined {
   const sorted = ccuTargetsOf(catalog.ships).sort((a, b) => a.msrp - b.msrp);
   const inner = sorted.filter(
     (ship) => ship.msrp > sorted[0]!.msrp && ship.msrp < sorted[sorted.length - 1]!.msrp,
   );
-  return random.pick('pivot', inner);
+  const sold = buyable ? inner.filter((ship) => buyable.has(ship.id)) : [];
+  return random.pick('pivot', sold.length ? sold : inner);
 }
 
 function standaloneShip(
@@ -285,6 +291,8 @@ export function generateHangar(
   catalog: DemoCatalog,
   key: string,
   composition: DemoComposition = DEMO.composition,
+  /** The ships RSI sells CCUs to, if known (#255, `demoPivotShip`). */
+  buyable?: ReadonlySet<number>,
 ): DemoPledge[] {
   const random = createRandom(`${key}:hangar`);
   const pledges: DemoPledge[] = [];
@@ -296,7 +304,9 @@ export function generateHangar(
   };
   // The Price Increase Advisor's chain (#255): only with a ship and two CCUs.
   const pivot =
-    composition.ships > 0 && composition.ccus > 1 ? demoPivotShip(random, catalog) : undefined;
+    composition.ships > 0 && composition.ccus > 1
+      ? demoPivotShip(random, catalog, buyable)
+      : undefined;
   times(composition.ships, (index) => standaloneShip(random, catalog, index, pivot));
   times(composition.packages, (index) => gamePackage(random, catalog, index));
   times(composition.ccus, (index) => ccu(random, catalog, index, pivot));

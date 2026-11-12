@@ -134,7 +134,7 @@ export function generatedDemo(
   generatedBuyback: DemoBuyback;
   priceIncreases: ExpectedPriceIncrease[];
 } {
-  const account = generateDemoAccount(catalog, key, settings);
+  const account = generateDemoAccount(catalog, key, settings, buyable);
   const generatedBuyback = generateBuyback(
     catalog,
     key,
