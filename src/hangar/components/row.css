@@ -288,6 +288,23 @@
   border-color: var(--shm-danger);
 }
 
+/*
+ * Actions about an expected price increase ("Keep the discount", #252): in the warning color of
+ * its badge (`is-price-increase.is-warning`), so they stand out.
+ */
+.shm-button.is-warning {
+  color: var(--shm-warning);
+  background: color-mix(in srgb, var(--shm-warning) 12%, transparent);
+  border-color: color-mix(in srgb, var(--shm-warning) 60%, transparent);
+}
+
+.shm-button.is-warning:not(:disabled):hover,
+.shm-button.is-warning:not(:disabled):focus-visible {
+  color: var(--shm-text-strong);
+  background: color-mix(in srgb, var(--shm-warning) 35%, transparent);
+  border-color: var(--shm-warning);
+}
+
 /* The buttons under the image. */
 .shm-details-side {
   display: flex;

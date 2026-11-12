@@ -685,6 +685,17 @@ html .shm-theme-modern .shm-button.is-danger:not(:disabled):focus-visible {
   background: color-mix(in srgb, var(--shm-danger) 25%, transparent);
 }
 
+html .shm-theme-modern .shm-button.is-warning {
+  color: var(--shm-warning);
+  background: color-mix(in srgb, var(--shm-warning) 16%, transparent);
+}
+
+html .shm-theme-modern .shm-button.is-warning:not(:disabled):hover,
+html .shm-theme-modern .shm-button.is-warning:not(:disabled):focus-visible {
+  color: var(--shm-warning);
+  background: color-mix(in srgb, var(--shm-warning) 28%, transparent);
+}
+
 /* ---- Paint Discount Consultant, both ways side by side: grouped surfaces without outlines ---- */
 
 html .shm-theme-modern .shm-ways-panel:not(.shm-way),
