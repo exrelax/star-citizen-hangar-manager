@@ -50,7 +50,11 @@ async function storeExample(credit = 1) {
   return own.map((paintItem) => paint(100 + paintItem.id, paintItem.name, 5));
 }
 
-async function render(pledges: ReturnType<typeof paint>[], settings: Partial<Settings> = {}) {
+async function render(
+  pledges: ReturnType<typeof paint>[],
+  settings: Partial<Settings> = {},
+  withoutNewPlan = false,
+) {
   const root = document.createElement('div');
   // The tests below see the table layout unless they ask for the cards.
   const all = {
@@ -65,6 +69,7 @@ async function render(pledges: ReturnType<typeof paint>[], settings: Partial<Set
         pledges: () => pledges,
         settings: () => all,
         demoStoreCredit: () => undefined,
+        demoWithoutNewPlan: () => withoutNewPlan,
       });
       return () => h(PaintConsultant, { settings: all });
     },
@@ -230,6 +235,25 @@ describe('PaintConsultant', () => {
     expect(root.querySelector<HTMLElement>('#shm-consultant-panel-running')!.style.display).toBe(
       'none',
     );
+  });
+
+  it('shows a single tab as a heading, and none without a plan (#244, #306)', async () => {
+    const pledges = await storeExample();
+    const copy = { ...paint(999, 'Own 0 Paint', 3.25), createdAt: '2026-11-09' };
+    await storePlan([pledges[0]!.id], new Date(2026, 10, 9).getTime(), 'buy');
+    // The demo without a new plan: only the running plan, under its heading.
+    const running = await render([...pledges, copy], {}, true);
+    expect(running.querySelector('.shm-consultant-tabs')).toBeNull();
+    expect(text(running.querySelector('.shm-consultant-section-title')!)).toBe('Running plan');
+    expect(running.querySelector('.shm-run')).not.toBeNull();
+    app?.unmount();
+
+    // No plan of any kind: no tab, no heading, the reason instead.
+    await rebuyPlanItem.setValue(null);
+    const none = await render(pledges, {}, true);
+    expect(none.querySelector('.shm-consultant-tabs')).toBeNull();
+    expect(none.querySelector('.shm-consultant-section-title')).toBeNull();
+    expect(none.querySelector('.shm-consultant-state')).not.toBeNull();
   });
 
   it('shows a pair without a kept plan only as a guess, with that setting', async () => {

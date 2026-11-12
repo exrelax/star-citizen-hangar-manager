@@ -55,6 +55,12 @@ export interface DemoSettings {
   storeCredit: number;
   /** The stage of the Paint Discount Consultant's running plan the demo shows (#303). */
   runningPlanStage: RunningPlanStage;
+  /**
+   * Whether the consultant has a new plan and completed plans (#306): with the stage of the running
+   * plan, each set of its tabs shows – all three, two, a single one with its heading, none.
+   */
+  newPlan: boolean;
+  completedPlans: boolean;
 }
 
 /** The range of each kind's number and of the list sizes. */
@@ -82,6 +88,8 @@ export const DEFAULT_DEMO_SETTINGS: DemoSettings = {
   },
   storeCredit: 50,
   runningPlanStage: 'cart',
+  newPlan: true,
+  completedPlans: true,
 };
 
 const wholeIn =
@@ -144,5 +152,7 @@ export function demoSettingsOf(stored: Partial<DemoSettings> | null | undefined)
     runningPlanStage: RUNNING_PLAN_STAGES.includes(stored?.runningPlanStage as RunningPlanStage)
       ? stored!.runningPlanStage!
       : defaults.runningPlanStage,
+    newPlan: valid(stored?.newPlan, isBoolean, defaults.newPlan),
+    completedPlans: valid(stored?.completedPlans, isBoolean, defaults.completedPlans),
   };
 }

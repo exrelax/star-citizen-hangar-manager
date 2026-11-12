@@ -356,6 +356,8 @@
         "impossible": "Nicht möglich",
         "none": "Keine Store Credits"
       },
+      "newPlan": "Ein neuer Plan des Paint-Rabatt-Beraters",
+      "completedPlans": "Abgeschlossene Pläne des Paint-Rabatt-Beraters",
       "runningPlanStage": "Stand des laufenden Plans",
       "runningPlanStages": {
         "cart": "Erst einschmelzen: Paints fehlen im Warenkorb",

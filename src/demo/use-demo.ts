@@ -270,10 +270,11 @@ export function useDemo(
     const hangar = pledgeList.reduce((hash, { id }) => (hash * 31 + id) | 0, pledgeList.length);
     return {
       // The demo hangar, catalog and store credit it was made of: changing them sets the plan again.
-      seed: `${key.value}:${hangar}:${items.length}:${settings().storeCredit}`,
+      seed: `${key.value}:${hangar}:${items.length}:${settings().storeCredit}:${settings().completedPlans}`,
       stage,
       plan,
-      completed: demoCompletedPlans(items, now),
+      // Without completed plans the consultant has no tab for them (#306).
+      completed: settings().completedPlans ? demoCompletedPlans(items, now) : [],
     };
   });
   watch([running, demoResets], ([demo]) => {

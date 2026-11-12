@@ -356,6 +356,8 @@
         "impossible": "No posible",
         "none": "Sin crédito"
       },
+      "newPlan": "Un plan nuevo del asesor de descuentos de pinturas",
+      "completedPlans": "Planes terminados del asesor de descuentos de pinturas",
       "runningPlanStage": "Fase del plan en curso",
       "runningPlanStages": {
         "cart": "Fundir primero: faltan pinturas en el carrito",

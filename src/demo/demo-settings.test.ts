@@ -32,6 +32,15 @@ describe('demoSettingsOf (#178)', () => {
     expect(demoSettingsOf({ runningPlanStage: 'later' as never }).runningPlanStage).toBe('cart');
     expect(demoSettingsOf({ runningPlanStage: 3 as never }).runningPlanStage).toBe('cart');
   });
+
+  it('has a new plan and completed plans by default, each to turn off (#306)', () => {
+    expect(DEFAULT_DEMO_SETTINGS).toMatchObject({ newPlan: true, completedPlans: true });
+    expect(demoSettingsOf({ newPlan: false, completedPlans: false })).toMatchObject({
+      newPlan: false,
+      completedPlans: false,
+    });
+    expect(demoSettingsOf({ newPlan: 'no' as never }).newPlan).toBe(true);
+  });
 });
 
 describe('the demo settings in the generated demo', () => {

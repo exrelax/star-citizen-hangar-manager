@@ -145,6 +145,7 @@ const consultant = providePaintConsultant({
   settings: () => settings.value,
   demoStoreCredit: () => demoView.context.value?.storeCredit,
   demoStoreItems: () => demoView.context.value?.storeItems,
+  demoWithoutNewPlan: () => !!demoView.context.value && !settings.value.demo.newPlan,
 });
 // Its running plan (#105, #245): checked against the real hangar and orders – the purchase found,
 // the fillers marked to melt, melted paints noted, the plan completed. Never in the demo.

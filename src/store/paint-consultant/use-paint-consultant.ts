@@ -77,6 +77,7 @@ export function providePaintConsultant({
   settings,
   demoStoreCredit,
   demoStoreItems = () => undefined,
+  demoWithoutNewPlan = () => false,
 }: {
   pledges: () => readonly PledgeView[];
   settings: () => Settings;
@@ -87,6 +88,8 @@ export function providePaintConsultant({
    * kept plan instead of the account's.
    */
   demoStoreItems?: () => readonly StoreItem[] | undefined;
+  /** The demo has no new plan (#306): no tab "New plan", nor its marks and sidebar box. */
+  demoWithoutNewPlan?: () => boolean;
 }): PaintConsultantState {
   const storedItems = useStored(storeItemsItem);
   const storeItems = computed(
@@ -121,19 +124,22 @@ export function providePaintConsultant({
 
   const storeCredit = computed(() => (options.value.useStoreCredit ? (credit.value ?? 0) : 0));
 
-  const result = computed(() =>
-    storeItems.value
-      ? planPaintRebuy({
-          pledges: pledges(),
-          storeItems: storeItems.value,
-          storeCredit: storeCredit.value,
-          useFillers: options.value.useFillers,
-          skipGiftable: options.value.skipGiftable,
-          keptPlan: keptPlan.value,
-          guessRebought: options.value.reboughtDetection === 'guess',
-        })
-      : undefined,
-  );
+  const result = computed(() => {
+    if (!storeItems.value) return undefined;
+    const planned = planPaintRebuy({
+      pledges: pledges(),
+      storeItems: storeItems.value,
+      storeCredit: storeCredit.value,
+      useFillers: options.value.useFillers,
+      skipGiftable: options.value.skipGiftable,
+      keptPlan: keptPlan.value,
+      guessRebought: options.value.reboughtDetection === 'guess',
+    });
+    // Only what belongs to the running plan is left (paints bought again, #139).
+    return demoWithoutNewPlan()
+      ? { rebought: planned.rebought, probablyRebought: [], giftableSkipped: 0 }
+      : planned;
+  });
 
   // Melted first (#168): what of the kept plan is left to buy, with the store credit there is now.
   const pending = computed(() => {
