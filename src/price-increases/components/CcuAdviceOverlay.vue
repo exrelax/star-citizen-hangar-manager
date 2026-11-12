@@ -104,6 +104,16 @@ const groups = computed((): CcuAdviceGroup[] | undefined => {
   });
 });
 
+/** The image of a rising ship, from the ship list: the price increases name only its id. */
+const shipImages = computed(
+  () =>
+    new Map(
+      (current(ships.value ?? null)?.ships ?? []).flatMap((ship) =>
+        ship.image ? [[ship.id, ship.image] as const] : [],
+      ),
+    ),
+);
+
 /** Per rising ship, the one of the CCU it was opened from first. */
 const events = computed(() =>
   groups.value ? adviceEvents(groups.value, storeCredit.value, props.pledgeId) : undefined,
@@ -275,6 +285,14 @@ function onKeydown(event: KeyboardEvent) {
             <span class="shm-kd-price-icon" aria-hidden="true">
               <SvgIcon name="arrow-up" />
             </span>
+            <img
+              v-if="shipImages.get(event.increase.ship.id)"
+              class="shm-kd-price-ship"
+              :src="shipImages.get(event.increase.ship.id)"
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />
             <div class="shm-kd-price-text">
               <strong>{{
                 event.increase.price
@@ -730,6 +748,15 @@ function onKeydown(event: KeyboardEvent) {
   color: var(--shm-warning);
   background: color-mix(in srgb, var(--shm-warning) 18%, transparent);
   border-radius: var(--shm-radius-control);
+}
+
+.shm-ccu-advice .shm-kd-price-ship {
+  display: block;
+  flex: none;
+  width: 64px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: var(--shm-radius-small);
 }
 
 .shm-ccu-advice .shm-kd-price-text {
