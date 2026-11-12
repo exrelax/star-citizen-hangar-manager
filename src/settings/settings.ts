@@ -193,7 +193,7 @@ export const DEFAULT_SETTINGS: Settings = {
     buyback: normalizeFilterGroups(FILTERS.buyback, BUYBACK_FILTER_CATEGORIES, FILTERS.buyback),
   },
   sort: { hangar: 'newest', buyback: 'newest' },
-  warbondHistory: { sort: 'date', period: DEFAULT_HISTORY_PERIOD },
+  warbondHistory: { sort: 'newest', period: DEFAULT_HISTORY_PERIOD },
   paintConsultant: {
     useStoreCredit: true,
     useFillers: true,

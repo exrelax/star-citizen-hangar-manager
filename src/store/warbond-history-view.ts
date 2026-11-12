@@ -22,7 +22,15 @@ const PERIOD_DAYS: Record<Exclude<HistoryPeriod, 'event'>, number> = {
 /** The period without a running event. */
 export const DEFAULT_HISTORY_PERIOD: HistoryPeriod = 'days90';
 
-export const HISTORY_SORTS = ['date', 'standardPrice', 'discount'] as const;
+/** Each order in both directions, named like those of the hangar (`hangar/sorting.ts`). */
+export const HISTORY_SORTS = [
+  'newest',
+  'oldest',
+  'priceDesc',
+  'priceAsc',
+  'discountDesc',
+  'discountAsc',
+] as const;
 export type HistorySort = (typeof HISTORY_SORTS)[number];
 
 /** An expired offer as the history view lists it. */
@@ -140,14 +148,30 @@ const byName = (a: HistoryEntry, b: HistoryEntry) =>
 const byDate = (a: HistoryEntry, b: HistoryEntry) =>
   b.sighting.lastSeen - a.sighting.lastSeen || b.sighting.firstSeen - a.sighting.firstSeen;
 
-/** Sorted, the highest first: newest, most expensive ship, biggest discount. */
+type Compare = (a: HistoryEntry, b: HistoryEntry) => number;
+
+/** Each order from the lowest; the ties of both directions in the same order (newest, name). */
+const ASCENDING: Record<'date' | 'price' | 'discount', Compare> = {
+  date: (a, b) =>
+    a.sighting.lastSeen - b.sighting.lastSeen || a.sighting.firstSeen - b.sighting.firstSeen,
+  price: (a, b) => a.sighting.msrp - b.sighting.msrp,
+  discount: (a, b) => a.discount - b.discount || a.percent - b.percent,
+};
+
+const SORTS: Record<HistorySort, { by: keyof typeof ASCENDING; descending: boolean }> = {
+  newest: { by: 'date', descending: true },
+  oldest: { by: 'date', descending: false },
+  priceDesc: { by: 'price', descending: true },
+  priceAsc: { by: 'price', descending: false },
+  discountDesc: { by: 'discount', descending: true },
+  discountAsc: { by: 'discount', descending: false },
+};
+
+/** Sorted by date, the ship's standard price or the discount, in either direction. */
 export function sortHistory(entries: readonly HistoryEntry[], sort: HistorySort): HistoryEntry[] {
-  const compare = {
-    date: (a: HistoryEntry, b: HistoryEntry) => byDate(a, b) || byName(a, b),
-    standardPrice: (a: HistoryEntry, b: HistoryEntry) =>
-      b.sighting.msrp - a.sighting.msrp || byName(a, b) || byDate(a, b),
-    discount: (a: HistoryEntry, b: HistoryEntry) =>
-      b.discount - a.discount || b.percent - a.percent || byDate(a, b) || byName(a, b),
-  }[sort];
-  return [...entries].sort(compare);
+  const { by, descending } = SORTS[sort];
+  const compare = ASCENDING[by];
+  return [...entries].sort(
+    (a, b) => (descending ? compare(b, a) : compare(a, b)) || byDate(a, b) || byName(a, b),
+  );
 }
