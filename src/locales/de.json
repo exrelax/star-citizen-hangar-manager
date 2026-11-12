@@ -508,6 +508,8 @@
     "colCcu": "CCU",
     "colFrom": "Von",
     "colShipPrice": "Schiff",
+    "colAlwaysAvailable": "Immer kaufbar",
+    "colAlwaysAvailableHint": "Im Pledge Store immer kaufbar: Du kommst später jederzeit auf das Schiff, um das CCU anzuwenden. Quelle: Star Citizen Wiki, über die Projekt-Website.",
     "colHangarShips": "Hangar Schiffe",
     "colHangarCcus": "Hangar CCUs",
     "colBuybackShips": "Buy Back Schiffe",

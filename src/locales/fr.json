@@ -508,6 +508,8 @@
     "colCcu": "CCU",
     "colFrom": "Depuis",
     "colShipPrice": "Vaisseau",
+    "colAlwaysAvailable": "Toujours disponible",
+    "colAlwaysAvailableHint": "Toujours disponible dans le Pledge Store : tu peux accéder au vaisseau plus tard pour appliquer le CCU. Source : Star Citizen Wiki, via le site du projet.",
     "colHangarShips": "Vaisseaux hangar",
     "colHangarCcus": "CCU hangar",
     "colBuybackShips": "Vaisseaux rachat",
