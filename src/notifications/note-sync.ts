@@ -7,7 +7,7 @@ import { translate } from '@/i18n';
 import { resolveLanguage } from '@/settings/language';
 import { settingsItem, withDefaults } from '@/settings/settings';
 import { browserNotificationsItem } from './browser-permission';
-import { checkOff, notificationsItem, type AppNotification } from './notifications';
+import { checkOff, hasStoreLink, notificationsItem, type AppNotification } from './notifications';
 
 /*
  * The sidebar's notifications that can be checked off and the browser notifications in step
@@ -49,7 +49,8 @@ export async function showNoteInBrowser(
     title: note.browser.title,
     message: note.browser.text,
     // The button (Chrome) does what the click does: Firefox shows none and refuses the option.
-    ...(!import.meta.env.FIREFOX && { buttons: [{ title: showStore }] }),
+    // Only where the Pledge Store tab shows the change (#276).
+    ...(!import.meta.env.FIREFOX && hasStoreLink(note) && { buttons: [{ title: showStore }] }),
   });
 }
 
@@ -84,6 +85,13 @@ export async function showNewNotesInBrowser(
   ]);
 }
 
+/** Opens the Hangar Manager for a browser notification: at what it tells, if the tab shows it. */
+export async function openForNote(browserId: string): Promise<void> {
+  const id = noteIdOf(browserId);
+  const note = (await notificationsItem.getValue()).find((entry) => entry.id === id);
+  await openHangarManager(note && hasStoreLink(note) ? 'showWarbonds' : 'open');
+}
+
 /** Wires both directions (call it in the background script). */
 export function watchNotesInStep(): void {
   // Checked off in the sidebar (or gone): away in the browser too.
@@ -101,13 +109,10 @@ export function watchNotesInStep(): void {
   void notificationsItem.getValue().then((list) => {
     open = new Set(list.filter((note) => note.doneAt === undefined).map((note) => note.id));
   });
-  // A click (or its button): so far only new warbond CCUs show in the browser, so the Pledge
-  // Store tab at them.
-  onNotificationClick(
-    PREFIX,
-    () => void openHangarManager('showWarbonds'),
-    () => void openHangarManager('showWarbonds'),
-  );
+  // A click (or its button): the Pledge Store tab at the warbond CCUs where it shows the change
+  // (#276), else just the manager.
+  const openFor = (browserId: string) => void openForNote(browserId);
+  onNotificationClick(PREFIX, openFor, (_index, browserId) => openFor(browserId));
   // Closed in the browser: checked off in the sidebar.
   onNotificationClosed(PREFIX, (browserId) => {
     const id = noteIdOf(browserId);

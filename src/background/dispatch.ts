@@ -52,19 +52,20 @@ export function onNotificationClosed(id: string, handler: (id: string) => void):
   listenToNotificationClicks();
 }
 
-const clickHandlers = new Map<string, () => void>();
-const buttonHandlers = new Map<string, ((index: number) => void) | undefined>();
+const clickHandlers = new Map<string, (id: string) => void>();
+const buttonHandlers = new Map<string, ((index: number, id: string) => void) | undefined>();
 let listeningToClicks = false;
 
 /**
- * Runs `handler` on a click on the notification `id`. Without the `notifications` permission
+ * Runs `handler` on a click on the notification `id` (or a prefix, see `handlerOf`), with the id
+ * of the notification clicked. Without the `notifications` permission
  * there is nothing to listen to yet: `listenToNotificationClicks` is called again once it is
  * granted.
  */
 export function onNotificationClick(
   id: string,
-  handler: () => void,
-  onButton?: (index: number) => void,
+  handler: (id: string) => void,
+  onButton?: (index: number, id: string) => void,
 ): void {
   clickHandlers.set(id, handler);
   buttonHandlers.set(id, onButton);
@@ -86,7 +87,7 @@ export function listenToNotificationClicks(): void {
   browser.notifications.onClicked.addListener((id) => {
     const handler = handlerOf(clickHandlers, id);
     if (!handler) return;
-    handler();
+    handler(id);
     void browser.notifications.clear(id);
   });
   // Closed by the user (×, swiped away): the sidebar follows (#155).
@@ -101,7 +102,7 @@ export function listenToNotificationClicks(): void {
   browser.notifications.onButtonClicked?.addListener((id, index) => {
     const handler = handlerOf(buttonHandlers, id);
     if (!handler) return;
-    handler(index);
+    handler(index, id);
     void browser.notifications.clear(id);
   });
 }
