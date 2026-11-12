@@ -79,11 +79,16 @@ const DEMO_BYTES: Partial<Record<StorageId, number>> = {
   orders: 250,
   storeCredit: 120,
   paintPlan: 900,
+  paintHistory: 700,
   events: 900,
   priceIncreases: 160,
 };
 /** How long ago the demo's data was read in full, in minutes. */
-const DEMO_SYNCED_AGO: Partial<Record<StorageId, number>> = { storeCredit: 12, paintPlan: 1440 };
+const DEMO_SYNCED_AGO: Partial<Record<StorageId, number>> = {
+  storeCredit: 12,
+  paintPlan: 1440,
+  paintHistory: 1440,
+};
 const masked = (id: StorageId) => demo.value?.storage.counts[id] !== undefined;
 
 const view = computed(() =>

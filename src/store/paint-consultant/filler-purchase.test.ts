@@ -1,18 +1,9 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import { fakeBrowser } from 'wxt/testing/fake-browser';
-import { meltMarksItem } from '@/hangar/melt-marks';
+import { describe, expect, it } from 'vitest';
 import { ORDERS_SNAPSHOT_VERSION, type OrdersSnapshot } from '@/orders/orders';
 import type { StoreItem } from '../items/store-items';
 import type { PaintPledge } from './calculation';
-import {
-  checkFillerPurchase,
-  findFillerPurchase,
-  isFillerCheckOpen,
-  withFillerMarks,
-} from './filler-purchase';
-import { REBUY_PLAN_VERSION, rebuyPlanItem, type StoredRebuyPlan } from './rebuy-plan-storage';
-
-beforeEach(() => fakeBrowser.reset());
+import { findPlanPurchase, isPurchaseCheckOpen, withFillerMarks } from './filler-purchase';
+import { REBUY_PLAN_VERSION, type StoredRebuyPlan } from './rebuy-plan-storage';
 
 const item = (id: number, name: string, price: number): StoreItem => ({
   id,
@@ -31,6 +22,7 @@ const storeItems = [
 const PLAN_AT = new Date(2026, 10, 9, 10, 0).getTime();
 const plan: StoredRebuyPlan = {
   version: REBUY_PLAN_VERSION,
+  way: 'buy',
   at: PLAN_AT,
   tier: { paints: 5, percent: 25 },
   own: [{ pledgeId: 100, title: 'Paints - Lynx - Moonrise Paint', skuId: 1, meltValue: 5 }],
@@ -83,9 +75,9 @@ function ordersOf(amount = '$0.00 USD', createdAt = '2026-11-09T11:30'): OrdersS
 
 const NOW = PLAN_AT + 3 * 60 * 60 * 1000;
 
-describe('findFillerPurchase', () => {
-  it("finds the plan's order and only the filler pledges it created", () => {
-    const purchase = findFillerPurchase({
+describe('findPlanPurchase', () => {
+  it("finds the plan's order, the new copy and only the filler pledges it created", () => {
+    const purchase = findPlanPurchase({
       plan,
       pledges,
       orders: ordersOf(),
@@ -97,33 +89,59 @@ describe('findFillerPurchase', () => {
       boughtAt: '2026-11-09T11:30',
       // Not the older Timberline (50), not the own paint bought again (201).
       pledgeIds: [202, 203, 204],
+      ownPledgeIds: [201],
+      skus: { 201: 1, 202: 20, 203: 20, 204: 21 },
       foundAt: NOW,
     });
   });
 
+  it('finds the order of a plan without fillers by its new copies (#245)', () => {
+    const purchase = findPlanPurchase({
+      plan: { ...plan, fillers: [] },
+      pledges,
+      orders: ordersOf(),
+      storeItems,
+      now: NOW,
+    });
+    expect(purchase).toMatchObject({ orderId: 'ORDER1', pledgeIds: [], ownPledgeIds: [201] });
+  });
+
+  it('needs a new copy for a plan without fillers', () => {
+    const noCopy = pledges.filter((pledge) => pledge.id !== 201);
+    expect(
+      findPlanPurchase({
+        plan: { ...plan, fillers: [] },
+        pledges: noCopy,
+        orders: ordersOf(),
+        storeItems,
+        now: NOW,
+      }),
+    ).toBeUndefined();
+  });
+
   it('ignores an order paid with money', () => {
     const orders = ordersOf('$8.93 USD');
-    expect(findFillerPurchase({ plan, pledges, orders, storeItems, now: NOW })).toBeUndefined();
+    expect(findPlanPurchase({ plan, pledges, orders, storeItems, now: NOW })).toBeUndefined();
   });
 
   it('ignores orders before the plan was made', () => {
     const orders = ordersOf('$0.00 USD', '2026-11-08T23:00');
     const before = pledges.map((pledge) => ({ ...pledge, createdAt: '2026-11-08' }));
     expect(
-      findFillerPurchase({ plan, pledges: before, orders, storeItems, now: NOW }),
+      findPlanPurchase({ plan, pledges: before, orders, storeItems, now: NOW }),
     ).toBeUndefined();
   });
 
   it('needs a paint of the plan of its own in the order', () => {
     const fillersOnly = pledges.filter((pledge) => pledge.id !== 201);
     expect(
-      findFillerPurchase({ plan, pledges: fillersOnly, orders: ordersOf(), storeItems, now: NOW }),
+      findPlanPurchase({ plan, pledges: fillersOnly, orders: ordersOf(), storeItems, now: NOW }),
     ).toBeUndefined();
   });
 
   it('takes no more fillers of a paint than the plan bought', () => {
     const one = { ...plan, fillers: [{ ...plan.fillers[0]!, quantity: 1 }] };
-    const purchase = findFillerPurchase({
+    const purchase = findPlanPurchase({
       plan: one,
       pledges,
       orders: ordersOf(),
@@ -144,23 +162,13 @@ describe('withFillerMarks', () => {
   });
 });
 
-describe('checkFillerPurchase', () => {
-  it('keeps the purchase with the plan and marks the fillers to melt', async () => {
-    await rebuyPlanItem.setValue(plan);
-    await checkFillerPurchase({ pledges, orders: ordersOf(), storeItems, now: NOW });
-    const kept = await rebuyPlanItem.getValue();
-    expect(kept?.purchase?.pledgeIds).toEqual([202, 203, 204]);
-    expect(await meltMarksItem.getValue()).toEqual({ 202: NOW, 203: NOW, 204: NOW });
-    expect(isFillerCheckOpen(kept)).toBe(false);
-  });
-
-  it('stops looking after a few days without an order, but keeps the plan', async () => {
-    await rebuyPlanItem.setValue(plan);
-    const later = PLAN_AT + 8 * 24 * 60 * 60 * 1000;
-    await checkFillerPurchase({ pledges: [], orders: ordersOf(), storeItems, now: later });
-    const kept = await rebuyPlanItem.getValue();
-    expect(kept?.checkEndedAt).toBe(later);
-    expect(kept?.own).toEqual(plan.own);
-    expect(await meltMarksItem.getValue()).toEqual({});
+describe('isPurchaseCheckOpen', () => {
+  it('looks for the order until it is found, also after the days to give up', () => {
+    expect(isPurchaseCheckOpen(plan)).toBe(true);
+    expect(isPurchaseCheckOpen({ ...plan, checkEndedAt: 1 })).toBe(true);
+    expect(
+      isPurchaseCheckOpen({ ...plan, purchase: { orderId: 'O', pledgeIds: [], foundAt: 0 } }),
+    ).toBe(false);
+    expect(isPurchaseCheckOpen(null)).toBe(false);
   });
 });

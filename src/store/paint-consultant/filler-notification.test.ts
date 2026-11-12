@@ -19,6 +19,7 @@ beforeEach(() => {
 const BOUGHT = new Date(2026, 10, 9, 11, 30).getTime();
 const plan: StoredRebuyPlan = {
   version: REBUY_PLAN_VERSION,
+  way: 'buy',
   at: BOUGHT - 60_000,
   tier: { paints: 5, percent: 25 },
   own: [],

@@ -443,6 +443,11 @@
       "content": "Le plan du conseiller de remise sur les peintures dont les peintures ont été mises dans le panier : propres et de remplissage",
       "missing": "D’ici là, le conseiller ne sait pas quelles peintures de remplissage ont été achetées."
     },
+    "paintHistory": {
+      "name": "Plans de peintures terminés",
+      "content": "Les plans terminés du conseiller de remise sur les peintures : peintures fondues et achetées, crédit boutique avant et après",
+      "missing": "Ils ne peuvent pas être relus : le conseiller n’affiche aucun plan terminé jusqu’à la fin du prochain."
+    },
     "settings": {
       "name": "Paramètres",
       "content": "Langue, thème, options d’affichage et de confidentialité, filtres, tri",

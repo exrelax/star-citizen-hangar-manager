@@ -443,6 +443,11 @@
       "content": "The Paint Discount Consultant's plan whose paints were put into the cart: own and filler paints",
       "missing": "Until then the consultant doesn't know which filler paints were bought."
     },
+    "paintHistory": {
+      "name": "Completed paint plans",
+      "content": "The Paint Discount Consultant's completed plans: paints melted and bought, store credit before and after",
+      "missing": "It can't be read again: the consultant shows no completed plans until the next one ends."
+    },
     "settings": {
       "name": "Settings",
       "content": "Language, theme, display and privacy options, filters, sorting",

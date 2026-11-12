@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { describe, expect, it, vi } from 'vitest';
-import { addLinesToCart, addToCart, cartLinesOf, readCart } from './cart';
+import { addLinesToCart, addToCart, cartCheckOf, cartLinesOf, readCart } from './cart';
 import { storedPlanOf } from './rebuy-plan-storage';
 import type { PaintRebuyPlan } from './calculation';
 
@@ -126,18 +126,60 @@ describe('addLinesToCart', () => {
 });
 
 describe('storedPlanOf', () => {
-  it('keeps the own paints and the probable filler paints', () => {
-    const stored = storedPlanOf(plan, 1000);
+  it('keeps the own paints with their prices, the probable filler paints and the way', () => {
+    const stored = storedPlanOf(plan, 1000, 'melt', 12.5);
     expect(stored.at).toBe(1000);
+    expect(stored.way).toBe('melt');
+    expect(stored.creditAtStart).toBe(12.5);
     expect(stored.tier).toEqual({ paints: 10, percent: 35 });
     expect(stored.own).toEqual([
-      { pledgeId: 1, title: 'Paints - A', skuId: 11, meltValue: 5 },
-      { pledgeId: 2, title: 'Paints - A', skuId: 11, meltValue: 5 },
-      { pledgeId: 3, title: 'Paints - B', skuId: 12, meltValue: 22 },
+      { pledgeId: 1, title: 'Paints - A', skuId: 11, meltValue: 5, price: 5 },
+      { pledgeId: 2, title: 'Paints - A', skuId: 11, meltValue: 5, price: 5 },
+      { pledgeId: 3, title: 'Paints - B', skuId: 12, meltValue: 22, price: 22 },
     ]);
     expect(stored.fillers).toEqual([
       { skuId: 20, name: 'Cheap', quantity: 5, price: 3 },
       { skuId: 21, name: 'Cheaper', quantity: 2, price: 3 },
     ]);
+  });
+});
+
+describe('cartCheckOf', () => {
+  const lines = cartLinesOf(plan);
+
+  it('matches a cart that holds exactly the plan', () => {
+    const check = cartCheckOf(
+      lines,
+      lines.map(({ skuId, qty }) => ({ skuId, qty })),
+    );
+    expect(check).toMatchObject({
+      complete: true,
+      matches: true,
+      others: 0,
+      inCart: 10,
+      total: 10,
+    });
+    expect(check.missing).toEqual([]);
+  });
+
+  it('tells what is missing, and items beyond the plan', () => {
+    const check = cartCheckOf(lines, [
+      { skuId: 11, qty: 2 },
+      { skuId: 20, qty: 7 },
+      { skuId: 99, qty: 1 },
+    ]);
+    expect(check.missing).toEqual([
+      { skuId: 12, name: 'B', qty: 1 },
+      { skuId: 21, name: 'Cheaper', qty: 2 },
+    ]);
+    // Two Cheap more than planned and one other item.
+    expect(check.others).toBe(3);
+    expect(check).toMatchObject({ complete: false, matches: false, inCart: 7, total: 10 });
+  });
+
+  it('counts an empty cart as missing everything', () => {
+    const check = cartCheckOf(lines, []);
+    expect(check.missing).toEqual(lines);
+    expect(check.inCart).toBe(0);
   });
 });

@@ -39,6 +39,52 @@ export function cartLinesOf(plan: {
   return [...lines.values()];
 }
 
+/** How RSI's cart compares with the lines a plan needs (#245). */
+export interface CartCheck {
+  /** Each line of the plan with how many of it are in the cart (at most as many as it needs). */
+  lines: { line: PaintCartLine; inCart: number }[];
+  /** What is missing of the plan's lines, to put into the cart. */
+  missing: PaintCartLine[];
+  /** Items in the cart beyond the plan – other SKUs or more of one: they change the tier. */
+  others: number;
+  /** Paints of the plan in the cart, and how many it needs. */
+  inCart: number;
+  total: number;
+  /** Every paint of the plan is in the cart. */
+  complete: boolean;
+  /** The cart holds exactly the plan. */
+  matches: boolean;
+}
+
+/** Compares RSI's cart with the plan's lines; RSI's cart can't tell an item's kind. */
+export function cartCheckOf(
+  planLines: readonly PaintCartLine[],
+  cart: readonly CartLine[],
+): CartCheck {
+  const inCart = new Map<number, number>();
+  for (const line of cart) inCart.set(line.skuId, (inCart.get(line.skuId) ?? 0) + line.qty);
+  const lines = planLines.map((line) => {
+    const count = Math.min(line.qty, inCart.get(line.skuId) ?? 0);
+    inCart.set(line.skuId, (inCart.get(line.skuId) ?? 0) - count);
+    return { line, inCart: count };
+  });
+  const missing = lines
+    .filter(({ line, inCart: count }) => count < line.qty)
+    .map(({ line, inCart: count }) => ({ ...line, qty: line.qty - count }));
+  const others = [...inCart.values()].reduce((sum, qty) => sum + Math.max(0, qty), 0);
+  const total = planLines.reduce((sum, line) => sum + line.qty, 0);
+  const found = lines.reduce((sum, { inCart: count }) => sum + count, 0);
+  return {
+    lines,
+    missing,
+    others,
+    inCart: found,
+    total,
+    complete: !missing.length,
+    matches: !missing.length && !others,
+  };
+}
+
 interface GraphqlAnswer<T> {
   data?: T;
   errors?: { message: string; extensions?: { details?: unknown } }[];

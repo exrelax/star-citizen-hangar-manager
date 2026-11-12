@@ -443,6 +443,11 @@
       "content": "Der Plan des Paint-Rabatt-Beraters, dessen Paints in den Warenkorb gelegt wurden: eigene und Füll-Paints",
       "missing": "Bis dahin weiß der Berater nicht, welche Füll-Paints gekauft wurden."
     },
+    "paintHistory": {
+      "name": "Abgeschlossene Paint-Pläne",
+      "content": "Die abgeschlossenen Pläne des Paint-Rabatt-Beraters: eingeschmolzene und gekaufte Paints, Store Credits vorher und nachher",
+      "missing": "Sie lassen sich nicht neu einlesen: Der Berater zeigt keine abgeschlossenen Pläne, bis der nächste endet."
+    },
     "settings": {
       "name": "Einstellungen",
       "content": "Sprache, Theme, Anzeige- und Datenschutzoptionen, Filter, Sortierung",
