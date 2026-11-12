@@ -114,8 +114,11 @@ export function generateBuyback(
   key: string,
   today: string,
   composition: DemoBuybackComposition = DEMO.buybackComposition,
-  /** A ship RSI doesn't sell CCUs to right now, with CCUs to it to add (#311). */
-  notOnSale?: Ship,
+  /**
+   * Ships RSI doesn't sell CCUs to right now, with CCUs to each to add (#311): the demo's own and,
+   * with the real Pledge Store data, those of the website's price increases (#310).
+   */
+  notOnSale: readonly Ship[] = [],
 ): DemoBuyback {
   const random = createRandom(`${key}:buyback`);
   const sorted = ccuTargetsOf(catalog.ships).sort((a, b) => a.msrp - b.msrp);
@@ -159,7 +162,7 @@ export function generateBuyback(
     return ccuPledge(from, to, random.chance(`ccu:${index}:warbond`, 0.3) ? 'Warbond' : 'Standard');
   });
   made.push(...unavailableCcus(sorted));
-  if (notOnSale) made.push(...ccusToNotOnSale(sorted, notOnSale));
+  for (const ship of notOnSale) made.push(...ccusToNotOnSale(sorted, ship));
   times(composition.paints, (index) => {
     const entry = random.pick(`paint:${index}`, itemsOf('Paints'));
     return entry && storeItemPledge(entry);

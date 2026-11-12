@@ -392,7 +392,7 @@ an account without stored data):
   (if the hangar allows it) and `impossible`, a paint bought again with its melt step, paints left
   to buy, filler paints waiting and ready. With the demo setting "Show real Pledge Store data"
   (#310), the real warbond CCUs, history, events and price increases instead, with the counts of
-  the demo hangar and buy back.
+  the demo hangar and buy back, which then also has CCUs to the real ships not on sale.
 - Sample notifications: events, new and gone warbond CCUs, changed store items – never a browser
   notification.
 - The settings without real account data (#132).

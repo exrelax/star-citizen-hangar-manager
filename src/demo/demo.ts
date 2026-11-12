@@ -22,7 +22,7 @@ import {
   type PriceIncreaseMatcher,
 } from '@/price-increases/price-increase-match';
 import type { ExpectedPriceIncrease } from '@/price-increases/price-increases';
-import { demoNotOnSaleShip, demoPriceIncreases } from './demo-price-increases';
+import { demoNotOnSaleShip, demoPriceIncreases, realNotOnSaleShips } from './demo-price-increases';
 import { fraction, hash } from './random';
 import { DEFAULT_DEMO_SETTINGS, type DemoSettings, type DemoStates } from './demo-settings';
 import type { DemoBuybackComposition } from './generate-buyback';
@@ -127,6 +127,8 @@ export function generatedDemo(
   settings: DemoSettings = DEFAULT_DEMO_SETTINGS,
   /** The ships RSI sells CCUs to, if known (#255). */
   buyable?: ReadonlySet<number>,
+  /** The website's price increases, with the real Pledge Store data (#310). */
+  realIncreases: readonly ExpectedPriceIncrease[] = [],
 ): {
   pledges: PledgeView[];
   buyback: BuybackView[];
@@ -137,12 +139,16 @@ export function generatedDemo(
   const account = generateDemoAccount(catalog, key, settings, buyable);
   // A ship RSI doesn't sell CCUs to, with CCUs to it in the buy back (#311).
   const notOnSale = demoNotOnSaleShip(catalog, buyable);
+  // With the real Pledge Store data also to the website's ships not on sale (#310).
+  const realNotOnSale = realNotOnSaleShips(catalog, realIncreases, now, buyable).filter(
+    (ship) => ship.id !== notOnSale?.id,
+  );
   const generatedBuyback = generateBuyback(
     catalog,
     key,
     today,
     buybackComposition(settings.buybackPledges),
-    notOnSale,
+    [...(notOnSale ? [notOnSale] : []), ...realNotOnSale],
   );
   // One order snapshot for both lists, like the order sync's.
   const orders: OrdersSnapshot = {
