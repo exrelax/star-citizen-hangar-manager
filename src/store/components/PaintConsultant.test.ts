@@ -5,7 +5,7 @@ import { createApp, h, nextTick, type App } from 'vue';
 import { storeCreditItem, STORE_CREDIT_VERSION } from '@/account/store-credit-storage';
 import type { Pledge } from '@/hangar/pledge';
 import { toPledgeView } from '@/hangar/pledge-view';
-import { DEFAULT_SETTINGS, type Settings } from '@/settings/settings';
+import { DEFAULT_SETTINGS, settingsItem, type Settings } from '@/settings/settings';
 import { storeItemsItem, STORE_ITEMS_VERSION } from '../items/store-items-storage';
 import type { StoreItem } from '../items/store-items';
 import { providePaintConsultant } from '../paint-consultant/use-paint-consultant';
@@ -79,10 +79,10 @@ async function render(pledges: ReturnType<typeof paint>[], settings: Partial<Set
 }
 
 /** The plan kept when the paints were put into the cart (#103). */
-const storePlan = (pledgeIds: number[], at = Date.now()) =>
+const storePlan = (pledgeIds: number[], at = Date.now(), way: 'buy' | 'melt' = 'melt') =>
   rebuyPlanItem.setValue({
     version: REBUY_PLAN_VERSION,
-    way: 'melt',
+    way,
     at,
     tier: { paints: 10, percent: 35 },
     own: pledgeIds.map((pledgeId) => ({ pledgeId, title: '', skuId: 1, meltValue: 5 })),
@@ -90,7 +90,7 @@ const storePlan = (pledgeIds: number[], at = Date.now()) =>
     cartCost: 0,
   });
 
-const text = (root: HTMLElement) => root.textContent?.replace(/\s+/g, ' ') ?? '';
+const text = (root: Element) => root.textContent?.replace(/\s+/g, ' ') ?? '';
 
 describe('PaintConsultant', () => {
   it('shows the plan with the real values', async () => {
@@ -195,20 +195,28 @@ describe('PaintConsultant', () => {
     });
   });
 
-  it('shows paints bought again with the melt step left open (#139)', async () => {
+  it('shows paints bought again as the running plan with the melt step left (#139, #245)', async () => {
     const pledges = await storeExample();
     // The first own paint ($5) was bought again with 35 %: a younger copy for $3.25.
     const copy = paint(999, 'Own 0 Paint', 3.25);
-    // Confirmed by the plan kept when its paints were put into the cart.
-    await storePlan([pledges[0]!.id], new Date(2026, 10, 9).getTime());
+    // Confirmed by the plan kept when its paints were put into the cart (buying first).
+    await storePlan([pledges[0]!.id], new Date(2026, 10, 9).getTime(), 'buy');
     const root = await render([...pledges, { ...copy, createdAt: '2026-11-09' }]);
-    const section = root.querySelector('.shm-consultant-rebought');
-    expect(section?.textContent).toContain('Bought again, left to melt (1)');
-    expect(section?.textContent).toContain('Bought with the volume discount on 2026-11-09');
-    expect(section?.textContent).toContain('Melt the old paint without the discount: $5');
+    const card = root.querySelector('.shm-run')!;
+    expect(text(card.querySelector('.shm-run-title')!)).toBe('Running plan · Buy first');
+    const steps = [...card.querySelectorAll('.shm-run-step')];
+    expect(steps.map((step) => step.className)).toEqual([
+      'shm-run-step is-done',
+      'shm-run-step is-current has-body',
+    ]);
+    expect(text(steps[1] as HTMLElement)).toContain('Melt your old paint');
+    expect(text(steps[1] as HTMLElement)).toContain('Only the copies bought before');
     // Bulk melting is off by default: a button leads to the setting.
-    expect(section?.textContent).toContain('Bulk melting disabled');
-    // The old pledge isn't planned again: the plan has the other four.
+    expect(text(steps[1] as HTMLElement)).toContain('Bulk melting disabled');
+    // The old blocks are gone: the running plan is one list of steps.
+    expect(root.querySelector('.shm-consultant-rebought')).toBeNull();
+    // The old pledge isn't planned again: the new plan has the other four, below its heading.
+    expect(text(root.querySelector('.shm-consultant-section-title')!)).toBe('New plan');
     expect(text(root)).toContain('Your paints to melt and buy again (4)');
   });
 
@@ -227,21 +235,74 @@ describe('PaintConsultant', () => {
     expect(text(guessing)).toContain('1 paint looks bought again');
   });
 
-  it('lists the paints melted first that are left to buy again (#168)', async () => {
+  it('shows the paints melted first with the cart left to fill (#168, #245)', async () => {
     const pledges = await storeExample(40);
     // Two own paints of a kept plan are gone from the hangar: melted first.
     await storePlan(pledges.map((pledge) => pledge.id));
-    const root = await render(pledges.slice(2));
-    const section = root.querySelector('.shm-consultant-pending');
-    expect(section?.textContent).toContain('Melted, left to buy again (2)');
-    // $40 of store credit: 2 × $5 + 8 cheap paints × $3 at 35 % = $22.10.
-    expect(section?.textContent).toContain(
-      'Buy them again with 35% discount: 10 paints for $22.10',
-    );
-    expect(section?.querySelector('.shm-consultant-cart button')?.textContent).toContain(
-      'Put the 10 paints into the cart',
+    const root = await render(pledges.slice(2), { bulkMelting: true });
+    const card = root.querySelector('.shm-run')!;
+    expect(text(card.querySelector('.shm-run-title')!)).toBe('Running plan · Melt first');
+    const current = card.querySelector<HTMLElement>('[aria-current="step"]')!;
+    // Step 1 is partly done: two melted, three left.
+    expect(text(current)).toContain('Melt your 5 paints');
+    expect(current.querySelectorAll('.shm-run-paint.is-ok')).toHaveLength(2);
+    expect(current.querySelectorAll('.shm-run-paint.is-melt')).toHaveLength(3);
+    expect(text(current)).toContain('Melt the 3 own paints');
+    expect(root.querySelector('.shm-consultant-pending')).toBeNull();
+  });
+
+  it('hides the running plan while the melt value is hidden', async () => {
+    const pledges = await storeExample();
+    await storePlan(pledges.map((pledge) => pledge.id));
+    const root = await render(pledges, { hideMeltValue: true });
+    expect(root.querySelector('.shm-run')).toBeNull();
+  });
+
+  it('asks before a new plan’s cart replaces the running plan (#245)', async () => {
+    const pledges = await storeExample(40);
+    const choose = { paintConsultant: DEFAULT_SETTINGS.paintConsultant };
+    const cartButton = (root: HTMLElement) =>
+      [...root.querySelectorAll<HTMLButtonElement>('.shm-choose-detail button')].find((b) =>
+        b.textContent?.includes('into the cart'),
+      )!;
+    // Without a running plan the cart button doesn't ask.
+    const free = await render(pledges, choose);
+    expect(free.querySelector('.shm-run')).toBeNull();
+    expect(free.querySelector('.shm-consultant-section-title')).toBeNull();
+    app?.unmount();
+
+    await storePlan([pledges[0]!.id], Date.now(), 'buy');
+    const root = await render(pledges, choose);
+    cartButton(root).click();
+    await nextTick();
+    const confirm = root.querySelector('.shm-choose-detail .shm-consultant-confirm')!;
+    expect(text(confirm)).toContain('Filling the cart for this new plan discards it');
+    expect(cartButton(root).disabled).toBe(true);
+    [...confirm.querySelectorAll('button')].find((b) => b.textContent?.includes('Cancel'))!.click();
+    await nextTick();
+    expect(root.querySelector('.shm-consultant-confirm')).toBeNull();
+    expect(cartButton(root).disabled).toBe(false);
+  });
+
+  it('has the option to leave out giftable paints as a switch next to the title', async () => {
+    const root = await render(await storeExample(40), {
+      paintConsultant: DEFAULT_SETTINGS.paintConsultant,
+    });
+    const toggle = root.querySelector<HTMLInputElement>(
+      '.shm-consultant-head-side input[role="switch"]',
+    )!;
+    expect(toggle.classList.contains('shm-switch')).toBe(true);
+    expect(toggle.checked).toBe(DEFAULT_SETTINGS.paintConsultant.skipGiftable);
+    expect(text(toggle.closest('label')!)).toBe('Leave out giftable paints');
+    toggle.checked = !toggle.checked;
+    toggle.dispatchEvent(new Event('change'));
+    await new Promise((resolve) => setTimeout(resolve));
+    const stored = await settingsItem.getValue();
+    expect(stored?.paintConsultant?.skipGiftable).toBe(
+      !DEFAULT_SETTINGS.paintConsultant.skipGiftable,
     );
   });
+
   describe('both ways side by side', () => {
     const cards = {
       paintConsultant: { ...DEFAULT_SETTINGS.paintConsultant, layout: 'ways' as const },

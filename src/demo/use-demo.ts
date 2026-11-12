@@ -22,6 +22,7 @@ import { demoStoreData } from './demo-store';
 import type { StoreData } from '@/store/warbond';
 import type { StoreItem } from '@/store/items/store-items';
 import { demoKeptPlan, resetDemoPlan, seedDemoPlan } from './demo-consultant';
+import { resetDemoRunningPlan } from './demo-running-plan';
 import { localToday } from '@/orders/refund';
 import type { DemoSettings } from './demo-settings';
 import {
@@ -70,6 +71,7 @@ export async function resetDemoData(): Promise<void> {
     demoMeltMarksItem.removeValue(),
     marksSeededItem.removeValue(),
     resetDemoPlan(),
+    resetDemoRunningPlan(),
     resetDemoNotes(),
     // The Price Increase Advisor's notifications closed with × (#255).
     demoDismissedAdvisorNotesItem.removeValue(),
