@@ -2,6 +2,9 @@
 import { formatUsd } from '@/hangar/discount-format';
 import { i18n, locale } from '@/i18n';
 import type { BaseShip } from '../warbond';
+// Shared, unscoped styles of the store's tables; a plain import, as `<style src>` of the same file
+// in several components breaks the build.
+import './store-table.css';
 
 /**
  * The ships to start CCUs from, cheapest CCU first: the CCU's price, the ship and its standard
@@ -49,5 +52,3 @@ const count = (value: number) => (value ? String(value) : '–');
     </tbody>
   </table>
 </template>
-
-<style src="./store-table.css"></style>
