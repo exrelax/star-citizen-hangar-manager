@@ -61,6 +61,12 @@ export interface DemoSettings {
    */
   newPlan: boolean;
   completedPlans: boolean;
+  /**
+   * The Pledge Store tab shows the real warbond CCUs, their history, the events and the CCUs to
+   * secure before a price increase (#310) – public data – instead of the demo's; what is owned
+   * still comes from the demo hangar and buy back.
+   */
+  realStoreData: boolean;
 }
 
 /** The range of each kind's number and of the list sizes. */
@@ -90,6 +96,7 @@ export const DEFAULT_DEMO_SETTINGS: DemoSettings = {
   runningPlanStage: 'cart',
   newPlan: true,
   completedPlans: true,
+  realStoreData: false,
 };
 
 const wholeIn =
@@ -154,5 +161,6 @@ export function demoSettingsOf(stored: Partial<DemoSettings> | null | undefined)
       : defaults.runningPlanStage,
     newPlan: valid(stored?.newPlan, isBoolean, defaults.newPlan),
     completedPlans: valid(stored?.completedPlans, isBoolean, defaults.completedPlans),
+    realStoreData: valid(stored?.realStoreData, isBoolean, defaults.realStoreData),
   };
 }

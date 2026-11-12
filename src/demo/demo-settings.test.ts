@@ -41,6 +41,12 @@ describe('demoSettingsOf (#178)', () => {
     });
     expect(demoSettingsOf({ newPlan: 'no' as never }).newPlan).toBe(true);
   });
+
+  it('shows the demo’s Pledge Store data by default, the real one when turned on (#310)', () => {
+    expect(DEFAULT_DEMO_SETTINGS.realStoreData).toBe(false);
+    expect(demoSettingsOf({ realStoreData: true }).realStoreData).toBe(true);
+    expect(demoSettingsOf({ realStoreData: 'yes' as never }).realStoreData).toBe(false);
+  });
 });
 
 describe('the demo settings in the generated demo', () => {
