@@ -5,7 +5,15 @@ import { hangarMeta } from '@/hangar/hangar-storage';
 import type { Settings } from '@/settings/settings';
 import { useStored } from '@/storage/use-stored';
 import { useNow } from '@/shared/use-now';
-import { computed, onScopeDispose, shallowRef, watch, type ComputedRef, type Ref } from 'vue';
+import {
+  computed,
+  onScopeDispose,
+  shallowRef,
+  watch,
+  type ComputedRef,
+  type InjectionKey,
+  type Ref,
+} from 'vue';
 import { storeItemsMeta } from '../items/store-items-storage';
 import { cartCheckOf, readCart } from './cart';
 import {
@@ -43,6 +51,13 @@ import { usePaintConsultant } from './use-paint-consultant';
  * here; the rest – the purchase, pledges gone, the end of the plan – by `checkRunningPlan`.
  * Needs `providePaintConsultant` above.
  */
+
+/**
+ * Whether filling RSI's cart replaces a running plan (#245): provided by the consultant for the
+ * cart buttons of a new plan, which ask first then (`PaintCartButton`); the running plan's own
+ * buttons provide `() => false`.
+ */
+export const REPLACES_RUNNING_PLAN: InjectionKey<() => boolean> = Symbol('shm-replaces-plan');
 
 /** Waits this long for more triggers before reading the cart once. */
 const CART_READ_DELAY_MS = 400;

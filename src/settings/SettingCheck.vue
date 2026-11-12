@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useId } from 'vue';
+import '@/shared/styles/switch.css';
 
 /**
  * A setting that is on or off, as a row of a group (see SettingsGroup.vue): its label (the slot)

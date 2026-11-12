@@ -728,6 +728,150 @@ html .shm-theme-modern .shm-ways .shm-choose-way.is-on {
   box-shadow: inset 0 0 0 2px var(--shm-way);
 }
 
+/* ---- Paint Discount Consultant: the running plan and the completed plans (#245) ---- */
+
+html .shm-theme-modern .shm-run {
+  background: var(--shm-surface-elevated);
+  border-color: transparent;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--shm-way) 45%, transparent);
+}
+
+html .shm-theme-modern .shm-run .shm-run-title {
+  color: var(--shm-text);
+  font-size: calc(16px * var(--shm-font-scale));
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+html .shm-theme-modern .shm-run-result-value {
+  font-weight: 700;
+}
+
+html .shm-theme-modern .shm-run-bar,
+html .shm-theme-modern .shm-run-bar-fill {
+  border-radius: 3px;
+}
+
+html .shm-theme-modern .shm-run-rail-part {
+  border-radius: 2px;
+}
+
+html .shm-theme-modern .shm-run-rail-part:not(.is-done, .is-current, .is-wait) {
+  background: var(--shm-fill-strong);
+}
+
+html .shm-theme-modern .shm-run-step.is-current,
+html .shm-theme-modern .shm-run-step.is-wait.has-body {
+  background: var(--shm-hover);
+}
+
+html .shm-theme-modern .shm-run-dot {
+  box-shadow: inset 0 0 0 1.5px var(--shm-outline);
+}
+
+html .shm-theme-modern .shm-run-step.is-done .shm-run-step-title {
+  color: var(--shm-tag-text);
+}
+
+html .shm-theme-modern .shm-run-countdown {
+  background: var(--shm-tag);
+  border: 0;
+}
+
+html .shm-theme-modern .shm-run-bar {
+  height: 6px;
+  background: var(--shm-fill-strong);
+}
+
+html .shm-theme-modern .shm-run-bar-fill {
+  background: var(--shm-text-secondary);
+}
+
+html .shm-theme-modern .shm-run-countdown-left {
+  font-weight: 700;
+}
+
+html .shm-theme-modern .shm-run-check,
+html .shm-theme-modern .shm-run-paints,
+html .shm-theme-modern .shm-completed-col {
+  border-color: transparent;
+}
+
+html .shm-theme-modern .shm-run-check.is-warning {
+  background: color-mix(in srgb, var(--shm-warning) 10%, transparent);
+}
+
+html .shm-theme-modern .shm-run-check.is-unknown {
+  background: var(--shm-fill);
+}
+
+html .shm-theme-modern .shm-run-paints,
+html .shm-theme-modern .shm-completed-col {
+  background: color-mix(in srgb, var(--shm-background) 55%, transparent);
+}
+
+html .shm-theme-modern .shm-run .shm-run-filler {
+  color: var(--shm-tag-text);
+  background: var(--shm-fill-strong);
+  box-shadow: none;
+  border-radius: var(--shm-radius-small);
+}
+
+html .shm-theme-modern .shm-run-actions > .shm-button {
+  font-weight: 600;
+}
+
+html .shm-theme-modern .shm-run-actions > .shm-run-ghost {
+  flex: none;
+  color: var(--shm-text);
+  background: var(--shm-fill);
+}
+
+html .shm-theme-modern .shm-run-actions > .shm-run-ghost:not(:disabled):hover,
+html .shm-theme-modern .shm-run-actions > .shm-run-ghost:not(:disabled):focus-visible {
+  color: var(--shm-text);
+  background: var(--shm-fill-strong);
+}
+
+html .shm-theme-modern .shm-completed .shm-completed-title,
+html .shm-theme-modern .shm-consultant .shm-consultant-section-title {
+  color: var(--shm-text-secondary);
+  font-size: calc(13px * var(--shm-font-scale));
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+html .shm-theme-modern .shm-completed .shm-completed-plan {
+  background: var(--shm-surface-elevated);
+  border-color: transparent;
+  box-shadow: inset 0 0 0 1px var(--shm-fill);
+}
+
+html .shm-theme-modern .shm-completed-result {
+  font-weight: 700;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html .shm-theme-modern .shm-completed .shm-completed-toggle:hover {
+    background: var(--shm-hover);
+  }
+}
+
+/* Column titles in sentence case, like the other subheadings of this theme. */
+html .shm-theme-modern .shm-completed .shm-completed-col-title {
+  color: var(--shm-text-secondary);
+  font-size: calc(12px * var(--shm-font-scale));
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+html .shm-theme-modern .shm-completed-item-name {
+  color: var(--shm-tag-text);
+}
+
 /* ---- Settings: a list of categories, grouped rows like the system settings ---- */
 
 html .shm-theme-modern .shm-settings {
@@ -809,7 +953,7 @@ html .shm-theme-modern .shm-setting-link-icon {
 }
 
 /* The switch like the system's: a capsule that turns the accent color when on. */
-html .shm-theme-modern .shm-settings .shm-switch {
+html .shm-theme-modern .shm-switch {
   width: 40px;
   height: 24px;
   background: var(--shm-fill-strong);
@@ -817,7 +961,7 @@ html .shm-theme-modern .shm-settings .shm-switch {
   border-radius: var(--shm-radius-pill);
 }
 
-html .shm-theme-modern .shm-settings .shm-switch::before {
+html .shm-theme-modern .shm-switch::before {
   top: 2px;
   left: 2px;
   width: 20px;
@@ -827,12 +971,27 @@ html .shm-theme-modern .shm-settings .shm-switch::before {
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
 }
 
-html .shm-theme-modern .shm-settings .shm-switch:checked {
+html .shm-theme-modern .shm-switch:checked {
   background: var(--shm-accent);
 }
 
-html .shm-theme-modern .shm-settings .shm-switch:checked::before {
+html .shm-theme-modern .shm-switch:checked::before {
   background: #fff;
+}
+
+/* The small switch, e.g. next to the Paint Discount Consultant's title (#245). */
+html .shm-theme-modern .shm-switch.is-small {
+  width: 32px;
+  height: 20px;
+}
+
+html .shm-theme-modern .shm-switch.is-small::before {
+  width: 16px;
+  height: 16px;
+}
+
+html .shm-theme-modern .shm-switch.is-small:checked::before {
+  transform: translateX(12px);
 }
 
 html .shm-theme-modern .shm-segmented {

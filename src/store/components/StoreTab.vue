@@ -217,7 +217,7 @@ const displayClasses = computed(() => ({
       </div>
     </section>
 
-    <PaintConsultant :settings="settings" />
+    <PaintConsultant :settings="settings" :active="active" />
   </section>
 </template>
 
