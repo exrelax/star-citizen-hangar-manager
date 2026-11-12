@@ -117,6 +117,8 @@ export function demoRunningPlan(
     now: number;
     /** The demo's marked pledges: preferred as fillers, so the sidebar shows the same. */
     marked?: readonly number[];
+    /** Pledges that are no fillers, e.g. a marked paint ready to melt while the fillers wait. */
+    avoid?: readonly number[];
   },
 ): DemoRunningPlan | undefined {
   if (stage === 'none') return { plan: null, inputs: { cart: null } };
@@ -125,7 +127,10 @@ export function demoRunningPlan(
   const pair = findRebought(ownPaintsOf(pledges, storePaints)).sort(
     (a, b) => b.copy.discount - a.copy.discount,
   )[0];
-  const skip = new Set(pair ? [pair.old.pledgeId, pair.copy.pledgeId] : []);
+  const skip = new Set([
+    ...(pair ? [pair.old.pledgeId, pair.copy.pledgeId] : []),
+    ...(input.avoid ?? []),
+  ]);
   const fillerPaints = hangarFillers(pledges, storePaints, input.marked ?? [], skip);
   if (!fillerPaints.length) return undefined;
   const fillers = fillersOf(fillerPaints);

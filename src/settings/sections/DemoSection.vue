@@ -15,6 +15,7 @@ import {
   type DemoSource,
   type DemoStates,
 } from '@/demo/demo-settings';
+import { RUNNING_PLAN_STAGES, type RunningPlanStage } from '@/demo/demo-running-plan';
 import type { DemoComposition } from '@/demo/generate-hangar';
 import { newDemoHangar, resetDemoData } from '@/demo/use-demo';
 import { CREDIT_CASES, creditForCases, type CreditCase } from '@/demo/demo-store-credit';
@@ -241,6 +242,21 @@ async function reset() {
   </SettingsGroup>
 
   <SettingsGroup :disabled="off">
+    <SettingRow :label="i18n.t('settings.demo.runningPlanStage')" for="shm-demo-plan-stage">
+      <select
+        id="shm-demo-plan-stage"
+        class="shm-select"
+        :value="settings.demo.runningPlanStage"
+        :disabled="off"
+        @change="
+          set({ runningPlanStage: ($event.target as HTMLSelectElement).value as RunningPlanStage })
+        "
+      >
+        <option v-for="stage in RUNNING_PLAN_STAGES" :key="stage" :value="stage">
+          {{ i18n.t(`settings.demo.runningPlanStages.${stage}`) }}
+        </option>
+      </select>
+    </SettingRow>
     <SettingRow
       :label="i18n.t('settings.demo.storeCredit')"
       :hint="i18n.t('settings.demo.storeCreditHint')"

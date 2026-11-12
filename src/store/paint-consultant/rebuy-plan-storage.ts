@@ -117,7 +117,7 @@ export const rebuyPlanItem = storage.defineItem<AnyStoredRebuyPlan | null>(
 
 /**
  * The kept plan of the demo mode (#131), apart from the real one: the demo never reads or writes
- * the account's plan. Set for each demo hangar (`demo/demo-consultant.ts`).
+ * the account's plan. Set for the stage chosen in the demo settings (`demo/demo-running-plan.ts`).
  */
 export const demoRebuyPlanItem = storage.defineItem<AnyStoredRebuyPlan | null>(
   'local:demo.consultantPlan',

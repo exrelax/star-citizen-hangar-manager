@@ -344,6 +344,16 @@
         "impossible": "Pas possible",
         "none": "Aucun crédit"
       },
+      "runningPlanStage": "Étape du plan en cours",
+      "runningPlanStages": {
+        "cart": "Fondre d'abord : peintures manquantes dans le panier",
+        "credit": "Fondre d'abord : crédit boutique insuffisant",
+        "pay": "Fondre d'abord : prêt à payer",
+        "meltOld": "Acheter d'abord : anciennes peintures à fondre",
+        "wait": "Peintures d'appoint en attente des 24 heures",
+        "fillers": "Peintures d'appoint prêtes à fondre",
+        "none": "Aucun plan en cours"
+      },
       "protectedAccessOptions": {
         "separate": "Un pledge par jeu : SC et SQ42",
         "together": "Un pledge pour les deux jeux : SC · SQ42",

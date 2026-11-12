@@ -14,6 +14,7 @@ import {
   type HistoryPeriod,
 } from '@/store/warbond-history-view';
 import { creditForCases } from './demo-store-credit';
+import { demoCompletedPlans, demoRunningPlan, RUNNING_PLAN_STAGES } from './demo-running-plan';
 
 /*
  * Every case the demo always shows (#130), with the default demo settings on an account without
@@ -127,5 +128,16 @@ describe('the default demo on an empty account (#130)', () => {
     });
     expect(cases.same).toBeDefined();
     expect(cases.impossible).toBeDefined();
+  });
+
+  it("shows every stage of the consultant's running plan and its completed plans (#303)", () => {
+    for (const stage of RUNNING_PLAN_STAGES) {
+      const built = demoRunningPlan(stage, { pledges, items: catalog.items, now: NOW });
+      expect(built, stage).toBeDefined();
+      expect(built!.plan === null, stage).toBe(stage === 'none');
+    }
+    expect(new Set(demoCompletedPlans(catalog.items, NOW).map((plan) => plan.way))).toEqual(
+      new Set(['melt', 'buy']),
+    );
   });
 });

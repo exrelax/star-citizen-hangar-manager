@@ -344,6 +344,16 @@
         "impossible": "No posible",
         "none": "Sin crédito"
       },
+      "runningPlanStage": "Fase del plan en curso",
+      "runningPlanStages": {
+        "cart": "Fundir primero: faltan pinturas en el carrito",
+        "credit": "Fundir primero: crédito de tienda insuficiente",
+        "pay": "Fundir primero: listo para pagar",
+        "meltOld": "Comprar primero: pinturas antiguas por fundir",
+        "wait": "Pinturas de relleno esperando las 24 horas",
+        "fillers": "Pinturas de relleno listas para fundir",
+        "none": "Ningún plan en curso"
+      },
       "protectedAccessOptions": {
         "separate": "Un pledge por juego: SC y SQ42",
         "together": "Un pledge para ambos juegos: SC · SQ42",

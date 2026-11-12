@@ -269,7 +269,7 @@ export function withStates(
   }
 
   // A paint bought again with more discount (#139, #131): an old copy at its full price, a newer
-  // one at the best tier; the demo's kept plan confirms it (`demo-consultant.ts`).
+  // one at the best tier; the demo's running plan at the stage "buy first" confirms it (`demo-running-plan.ts`).
   const paints = ofKind(generated, 'paints');
   const [copy, old] = [paints[1], paints.at(-1)];
   if (copy && old && copy !== old) {

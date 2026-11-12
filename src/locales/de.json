@@ -344,6 +344,16 @@
         "impossible": "Nicht möglich",
         "none": "Keine Store Credits"
       },
+      "runningPlanStage": "Stand des laufenden Plans",
+      "runningPlanStages": {
+        "cart": "Erst einschmelzen: Paints fehlen im Warenkorb",
+        "credit": "Erst einschmelzen: Store Credits reichen nicht",
+        "pay": "Erst einschmelzen: bereit zum Bezahlen",
+        "meltOld": "Erst kaufen: alte Paints noch einzuschmelzen",
+        "wait": "Füll-Paints warten auf die 24 Stunden",
+        "fillers": "Füll-Paints bereit zum Einschmelzen",
+        "none": "Kein laufender Plan"
+      },
       "protectedAccessOptions": {
         "separate": "Ein Pledge pro Spiel: SC und SQ42",
         "together": "Ein Pledge für beide Spiele: SC · SQ42",
