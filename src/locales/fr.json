@@ -21,7 +21,8 @@
     "syncProgress": "Lecture des pages RSI : $1 sur $2 ($3)",
     "syncProgressSection": "Lecture de $1 : page $2 sur $3 ($4 du total)",
     "demoBadge": "Démo",
-    "demoBadgeHint": "Mode démo : une sélection de tes pledges avec des ID inventés. Désactive-le dans les paramètres.",
+    "demoBadgeHint": "Mode démo : les listes affichent des ID de pledge et des données inventés. Clique pour ouvrir les paramètres de la démo, p. ex. pour l’ajuster ou la désactiver.",
+    "demoBadgeLabel": "Mode démo : ouvrir les paramètres de la démo",
     "storeCreditHint": "Le crédit boutique du compte, tel que RSI l’affiche lors de la dernière actualisation ou vérification. Masqué tant que « Masquer la valeur de fusion » est activé.",
     "clearSearch": "Effacer la recherche"
   },

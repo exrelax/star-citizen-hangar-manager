@@ -5,6 +5,7 @@ import { computed, type Component } from 'vue';
 import {
   CATEGORY_GROUPS,
   CATEGORY_INFO,
+  categoryElementId,
   currentCategory,
   REVEAL_EVENT,
   SETTINGS_CATEGORIES,
@@ -71,7 +72,7 @@ const groups = computed(() =>
           type="button"
           class="shm-settings-nav-item"
           :aria-current="category === currentCategory ? 'page' : undefined"
-          :aria-controls="`shm-settings-${category}`"
+          :aria-controls="categoryElementId(category)"
           @click="currentCategory = category"
         >
           <SvgIcon :name="CATEGORY_INFO[category].icon" />
@@ -87,7 +88,7 @@ const groups = computed(() =>
     <section
       v-for="category in categories"
       v-show="category === currentCategory"
-      :id="`shm-settings-${category}`"
+      :id="categoryElementId(category)"
       :key="category"
       class="shm-settings-category"
       data-shm-reveal

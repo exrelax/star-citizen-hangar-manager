@@ -59,6 +59,9 @@ export const CATEGORY_GROUPS: { title: MessageKey; categories: SettingsCategory[
   },
 ];
 
+/** The element id of a category's panel, e.g. for a link to it (`anchors.ts`). */
+export const categoryElementId = (category: SettingsCategory) => `shm-settings-${category}`;
+
 /** The category shown; it stays while the manager switches tabs. */
 export const currentCategory = ref<SettingsCategory>('appearance');
 

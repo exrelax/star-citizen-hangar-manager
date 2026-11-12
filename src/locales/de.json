@@ -21,7 +21,8 @@
     "syncProgress": "Lese RSI-Seiten: $1 von $2 ($3)",
     "syncProgressSection": "Lese $1: Seite $2 von $3 ($4 von allem)",
     "demoBadge": "Demo",
-    "demoBadgeHint": "Demo-Modus: eine Auswahl deiner Pledges mit erfundenen Pledge-IDs. Abschalten in den Einstellungen.",
+    "demoBadgeHint": "Demo-Modus: Die Listen zeigen erfundene Pledge-IDs und Daten. Klicken öffnet die Demo-Einstellungen, z. B. um die Demo anzupassen oder abzuschalten.",
+    "demoBadgeLabel": "Demo-Modus: Demo-Einstellungen öffnen",
     "storeCreditHint": "Die Store Credits des Accounts, wie RSI sie beim letzten Neueinlesen oder Check zeigt. Ausgeblendet, solange „Schmelzwert ausblenden“ an ist.",
     "clearSearch": "Suche leeren"
   },
