@@ -9,7 +9,7 @@ import {
   LIST_RENDER_STEP,
   SEARCH_URL_SYNC_DELAY_MS,
 } from '@/config';
-import { i18n } from '@/i18n';
+import { i18n, type MessageKey } from '@/i18n';
 import {
   computed,
   nextTick,
@@ -72,7 +72,12 @@ const props = defineProps<{
    * `highlights.ts`), from their states.
    */
   highlights?: (states: ReadonlyMap<F, FilterState>) => readonly string[];
+  /** Texts of a list of other entries than pledges (e.g. warbond offers); pledges' by default. */
+  texts?: Partial<Record<ListText, MessageKey>>;
 }>();
+
+type ListText = 'count' | 'countFiltered' | 'searchPlaceholder' | 'noResults';
+const textOf = (key: ListText): MessageKey => props.texts?.[key] ?? `manager.${key}`;
 
 const emit = defineEmits<{
   'update:sort': [sort: S];
@@ -86,6 +91,8 @@ const emit = defineEmits<{
 
 defineSlots<{
   row(props: { entry: T; autoExpand: boolean }): unknown;
+  /** More controls beside the sort, e.g. the period of the warbond history. */
+  side?(): unknown;
 }>();
 
 // Pre-filled from the page URL, e.g. `…/account/pledges?search=polaris#hangar-manager`, and kept
@@ -297,8 +304,8 @@ onUnmounted(() => {
 
 const countLabel = computed(() =>
   visibleIds.value
-    ? i18n.t('manager.countFiltered', [visibleIds.value.size, props.entries.length])
-    : i18n.t('manager.count', [props.entries.length]),
+    ? i18n.t(textOf('countFiltered'), [visibleIds.value.size, props.entries.length])
+    : i18n.t(textOf('count'), [props.entries.length]),
 );
 </script>
 
@@ -313,8 +320,8 @@ const countLabel = computed(() =>
           v-model="query"
           type="search"
           class="shm-search"
-          :placeholder="i18n.t('manager.searchPlaceholder')"
-          :aria-label="i18n.t('manager.searchPlaceholder')"
+          :placeholder="i18n.t(textOf('searchPlaceholder'))"
+          :aria-label="i18n.t(textOf('searchPlaceholder'))"
           autocomplete="off"
           spellcheck="false"
         />
@@ -392,6 +399,7 @@ const countLabel = computed(() =>
     <div class="shm-count">
       <span aria-live="polite">{{ countLabel }}</span>
       <span class="shm-count-side">
+        <slot name="side" />
         <SelectMenu
           v-if="sortOptions && sortOptions.length > 1 && sort"
           class="shm-sort"
@@ -413,7 +421,7 @@ const countLabel = computed(() =>
     <div ref="sentinel" class="shm-sentinel" aria-hidden="true"></div>
 
     <p v-if="visibleIds && visibleIds.size === 0" class="shm-no-results">
-      {{ i18n.t('manager.noResults') }}
+      {{ i18n.t(textOf('noResults')) }}
     </p>
   </div>
 </template>

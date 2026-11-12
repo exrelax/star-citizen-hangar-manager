@@ -324,7 +324,8 @@
         "protectedAccess": "Geschützter Spielzugang",
         "upgraded": "Geupgradete Schiffe",
         "justBought": "Ein vor wenigen Stunden gekauftes Pledge",
-        "meltMarks": "Markierungen zum Einschmelzen in einem neuen Demo-Hangar"
+        "meltMarks": "Markierungen zum Einschmelzen in einem neuen Demo-Hangar",
+        "runningEvent": "Ein laufendes Event im Tab Pledge Store"
       },
       "notGiftablePercent": "Nicht verschenkbar",
       "notMeltablePercent": "Nicht einschmelzbar",
@@ -496,7 +497,7 @@
     "cartNotFound": "Nicht mehr an der gespeicherten Stelle in RSIs Buy Back – bitte synchronisieren und erneut versuchen."
   },
   "store": {
-    "warbondTitle": "Aktuelle Warbond CCUs",
+    "warbondTitle": "Warbond CCUs",
     "warbondIntro": "Warbond-Upgrades, die RSIs Ship-Upgrade-Tool gerade anbietet: das Schiff unter seinem Standardpreis, bezahlt mit echtem Geld. Der Rabatt ist von jedem Ausgangsschiff gleich – das günstigste CCU startet beim teuersten Schiff unter dem Warbond-Preis.",
     "loading": "Aktuelle Angebote werden von RSI gelesen …",
     "failed": "Die Angebote konnten nicht von RSI gelesen werden: $1",
@@ -542,7 +543,28 @@
     "historyNone": "Noch kein früheres Angebot dieses Schiffs gesehen.",
     "colSeen": "Gesehen",
     "colPrice": "Preis",
-    "colEvent": "Event"
+    "colEvent": "Event",
+    "viewCurrent": "Aktuelle Warbond CCUs",
+    "viewHistory": "Warbond CCU Historie",
+    "historyIntro": "Warbond-Angebote, die RSI nicht mehr verkauft, so wie der Hangar Manager sie in diesem Browser gesehen hat. Eine öffentliche Liste früherer Angebote gibt es nicht, daher wächst die Liste mit der Zeit.",
+    "historyCount": "$1 abgelaufene Angebote",
+    "historyCountFiltered": "$1 von $2 abgelaufenen Angeboten",
+    "historySearch": "Schiffe und Hersteller suchen …",
+    "historyNoResults": "Kein abgelaufenes Angebot passt zu deiner Suche.",
+    "historyEmpty": "In diesem Zeitraum wurde kein abgelaufenes Warbond-Angebot gesehen.",
+    "historySeen": "Gesehen $1",
+    "historyPeriod": "Zeitraum",
+    "historyPeriods": {
+      "event": "Eventzeitraum",
+      "days30": "Letzte 30 Tage",
+      "days90": "Letzte 90 Tage",
+      "days180": "Letzte 180 Tage"
+    },
+    "historySorts": {
+      "date": "Neueste zuerst",
+      "standardPrice": "Standardpreis",
+      "discount": "Rabatt"
+    }
   },
   "events": {
     "title": "Events",

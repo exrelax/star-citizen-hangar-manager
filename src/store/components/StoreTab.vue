@@ -24,6 +24,9 @@ import EventList from '@/events/components/EventList.vue';
 import { EVENTS_VERSION, eventsItem } from '@/events/events-storage';
 import { useStored } from '@/storage/use-stored';
 import { useDemoContext } from '@/demo/use-demo';
+import TabBar from '@/shared/components/TabBar.vue';
+import { currentWarbondsRequest } from '../open-current-warbonds';
+import WarbondHistoryList from './WarbondHistoryList.vue';
 
 /*
  * The "Pledge Store" tab: the warbond CCUs RSI currently offers, each with the cheapest ships to
@@ -94,6 +97,23 @@ const updated = computed(
     i18n.t('store.fetchedAt', [formatRelativeTime(fetchedAt.value, now.value, locale.value)]),
 );
 
+/** The current warbond CCUs or the expired ones of the history (#297); the current at first. */
+type WarbondView = 'current' | 'history';
+const view = ref<WarbondView>('current');
+/** The history is built once it was shown, then kept (v-show), like the manager's tabs. */
+const historyOpened = ref(false);
+watch(view, (shown) => shown === 'history' && (historyOpened.value = true));
+// A notification about new warbond CCUs shows the current ones.
+watch(currentWarbondsRequest, () => (view.value = 'current'));
+const viewItems = computed(() => [
+  { id: 'current' as const, label: i18n.t('store.viewCurrent'), icon: 'shuttle-space' as const },
+  {
+    id: 'history' as const,
+    label: i18n.t('store.viewHistory'),
+    icon: 'clock-rotate-left' as const,
+  },
+]);
+
 const displayClasses = computed(() => ({
   'shm-hide-ids': props.settings.hidePledgeIds,
   'shm-hide-values': props.settings.hideMeltValue,
@@ -104,47 +124,83 @@ const displayClasses = computed(() => ({
   <section class="shm-store" :class="displayClasses" aria-labelledby="shm-store-title">
     <EventList :events="events" />
     <h3 id="shm-store-title" class="shm-store-title">{{ i18n.t('store.warbondTitle') }}</h3>
-    <p class="shm-store-intro">{{ i18n.t('store.warbondIntro') }}</p>
+    <TabBar
+      class="shm-store-views"
+      :items="viewItems"
+      :selected="view"
+      :label="i18n.t('store.warbondTitle')"
+      panels="shm-store"
+      @select="view = $event"
+    />
 
-    <p v-if="!data && (!loaded || upgradeToolState.loading)" class="shm-store-state" role="status">
-      {{ i18n.t('store.loading') }}
-    </p>
-    <div v-else-if="upgradeToolState.error" class="shm-store-state is-error" role="alert">
-      <p>{{ i18n.t('store.failed', [upgradeToolState.error]) }}</p>
-      <button
-        type="button"
-        class="shm-button"
-        :disabled="upgradeToolState.loading"
-        @click="refreshUpgradeTool()"
+    <div
+      v-show="view === 'current'"
+      id="shm-store-panel-current"
+      role="tabpanel"
+      aria-labelledby="shm-store-tab-current"
+    >
+      <p class="shm-store-intro">{{ i18n.t('store.warbondIntro') }}</p>
+
+      <p
+        v-if="!data && (!loaded || upgradeToolState.loading)"
+        class="shm-store-state"
+        role="status"
       >
-        {{ i18n.t('store.retry') }}
-      </button>
-    </div>
-    <template v-if="data">
-      <p class="shm-count">
-        <span>{{ i18n.t('store.count', [offers.length]) }}</span>
-        <span class="shm-store-updated">
-          <span v-if="upgradeToolState.loading">{{ i18n.t('store.updating') }}</span>
-          <span v-else-if="updated">{{ updated }}</span>
-          <!-- Reads only the Pledge Store again, not hangar and buy back. -->
-          <button
-            v-tooltip="i18n.t('store.refresh')"
-            type="button"
-            class="shm-store-refresh"
-            :disabled="upgradeToolState.loading"
-            :aria-label="i18n.t('store.refresh')"
-            @click="refreshUpgradeTool()"
-          >
-            <RefreshIcon :spinning="upgradeToolState.loading" />
-          </button>
-        </span>
+        {{ i18n.t('store.loading') }}
       </p>
-      <!-- The container of the manager's lists: their gaps and compact view (row.css, modern.css). -->
-      <div v-if="offers.length" class="shm-rows">
-        <WarbondRow v-for="offer in offers" :key="offer.target.skuId" :offer="offer" />
+      <div v-else-if="upgradeToolState.error" class="shm-store-state is-error" role="alert">
+        <p>{{ i18n.t('store.failed', [upgradeToolState.error]) }}</p>
+        <button
+          type="button"
+          class="shm-button"
+          :disabled="upgradeToolState.loading"
+          @click="refreshUpgradeTool()"
+        >
+          {{ i18n.t('store.retry') }}
+        </button>
       </div>
-      <p v-if="!offers.length" class="shm-store-state">{{ i18n.t('store.empty') }}</p>
-    </template>
+      <template v-if="data">
+        <p class="shm-count">
+          <span>{{ i18n.t('store.count', [offers.length]) }}</span>
+          <span class="shm-store-updated">
+            <span v-if="upgradeToolState.loading">{{ i18n.t('store.updating') }}</span>
+            <span v-else-if="updated">{{ updated }}</span>
+            <!-- Reads only the Pledge Store again, not hangar and buy back. -->
+            <button
+              v-tooltip="i18n.t('store.refresh')"
+              type="button"
+              class="shm-store-refresh"
+              :disabled="upgradeToolState.loading"
+              :aria-label="i18n.t('store.refresh')"
+              @click="refreshUpgradeTool()"
+            >
+              <RefreshIcon :spinning="upgradeToolState.loading" />
+            </button>
+          </span>
+        </p>
+        <!-- The container of the manager's lists: their gaps and compact view (row.css, modern.css). -->
+        <div v-if="offers.length" class="shm-rows">
+          <WarbondRow v-for="offer in offers" :key="offer.target.skuId" :offer="offer" />
+        </div>
+        <p v-if="!offers.length" class="shm-store-state">{{ i18n.t('store.empty') }}</p>
+      </template>
+    </div>
+
+    <div
+      v-if="historyOpened"
+      v-show="view === 'history'"
+      id="shm-store-panel-history"
+      role="tabpanel"
+      aria-labelledby="shm-store-tab-history"
+    >
+      <WarbondHistoryList
+        :history="storeData?.history"
+        :ships="storeData?.ships ?? []"
+        :events="events"
+        :now="now"
+        :active="active && view === 'history'"
+      />
+    </div>
 
     <!-- The CCUs to secure before a price increase (#253), set apart below the warbond CCUs. -->
     <section v-if="secure.length" class="shm-store-secure" aria-labelledby="shm-store-secure-title">
@@ -167,6 +223,11 @@ const displayClasses = computed(() => ({
 <style scoped>
 .shm-store {
   margin-top: 20px;
+}
+
+/* The choice between the current warbond CCUs and their history, below the title. */
+.shm-store-views {
+  margin: 8px 0 12px;
 }
 
 .shm-count {

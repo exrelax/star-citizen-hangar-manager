@@ -1,11 +1,11 @@
 import { watch } from 'vue';
 import { actionFromSearch, ACTION_PARAM, type ManagerAction } from './manager-action-message';
-import { openTabAt } from './open-tab-at';
 import { hashOfTab } from './route';
 import { selection } from './selection';
 import { meltReadyIds } from './use-melt-marks';
 import { showHangarFilter } from './view-filter';
 import { showBuybackFilter } from '@/buyback/buyback-filter-request';
+import { openCurrentWarbonds } from '@/store/open-current-warbonds';
 
 export {
   isManagerActionMessage,
@@ -54,7 +54,7 @@ function meltReadyWhenKnown(): Promise<ReadonlySet<number>> {
 export async function applyManagerAction(action: ManagerAction): Promise<void> {
   // New warbond CCUs (#164): the Pledge Store tab at its warbond CCUs.
   if (action === 'showWarbonds') {
-    openTabAt('store', 'shm-store-title', { highlight: true });
+    openCurrentWarbonds();
     return;
   }
   // Expected price increases (#193): the buy back with its filter "Price increase expected".

@@ -225,7 +225,14 @@ export function useDemo(
       demoKey && void seedDemoNotes(demoKey, demoSampleNotes(Date.now(), catalog.value)),
     { immediate: true },
   );
-  const events = computed(() => (active.value ? demoEvents(Date.now()) : []));
+  const events = computed(() => {
+    if (!active.value) return [];
+    const now = Date.now();
+    // Without a running event (demo settings, #297) only the upcoming one shows.
+    return demoEvents(now).filter(
+      (event) => settings().states.runningEvent || now < event.eventStart,
+    );
+  });
   const demoPledges = computed(() => {
     if (!active.value || !key.value) return [];
     return (
@@ -280,7 +287,7 @@ export function useDemo(
         },
         tokens: account.generatedBuyback.tokens,
         storeItems: catalog.value.items,
-        storeData: demoStoreData(catalog.value, account.account.pledges),
+        storeData: demoStoreData(catalog.value, account.account.pledges, Date.now(), events.value),
         priceIncreases: account.priceIncreases,
       }),
       events: events.value,

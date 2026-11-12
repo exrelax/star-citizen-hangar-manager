@@ -478,7 +478,7 @@ html .shm-theme-modern .shm-warbond-heading {
 }
 
 /* Below the title here: the tags of the warbond rows start on the left and use the full width. */
-html .shm-theme-modern .shm-warbond-badges {
+html .shm-theme-modern :is(.shm-warbond-badges, .shm-past-badges) {
   justify-content: flex-start;
 }
 

@@ -30,6 +30,11 @@ export interface DemoStates {
   justBought: boolean;
   /** A new demo hangar starts with two marks to melt, waiting and ready. */
   meltMarks: boolean;
+  /**
+   * The Pledge Store tab shows a running event (#210); off, only the upcoming one, so the warbond
+   * history offers no event period (#297).
+   */
+  runningEvent: boolean;
   /** Share of pledges that can't be gifted, in percent. */
   notGiftablePercent: number;
   /** Share of pledges that can't be melted, in percent. */
@@ -68,6 +73,7 @@ export const DEFAULT_DEMO_SETTINGS: DemoSettings = {
     upgraded: true,
     justBought: true,
     meltMarks: true,
+    runningEvent: true,
     notGiftablePercent: 30,
     notMeltablePercent: 8,
   },
@@ -118,6 +124,7 @@ export function demoSettingsOf(stored: Partial<DemoSettings> | null | undefined)
       upgraded: valid(states?.upgraded, isBoolean, defaults.states.upgraded),
       justBought: valid(states?.justBought, isBoolean, defaults.states.justBought),
       meltMarks: valid(states?.meltMarks, isBoolean, defaults.states.meltMarks),
+      runningEvent: valid(states?.runningEvent, isBoolean, defaults.states.runningEvent),
       notGiftablePercent: valid(
         states?.notGiftablePercent,
         isPercent,

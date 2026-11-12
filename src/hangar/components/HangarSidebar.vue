@@ -77,6 +77,7 @@ import {
   hangarFilterStates,
   includeHangarFilter,
 } from '../hangar-filter-request';
+import { openCurrentWarbonds } from '@/store/open-current-warbonds';
 
 /*
  * The sidebar below RSI's page navigation on the left on every tab (App.vue teleports it there),
@@ -176,7 +177,7 @@ function noteHref(note: AppNotification) {
 /** The Pledge Store tab, at the warbond CCUs (#164) or the events (#69) of the notification. */
 function openStoreAt(kind: NonNullable<AppNotification['kind']>) {
   if (kind === 'events') return openTabAt('store', 'shm-events-title', { highlight: true });
-  openTabAt('store', 'shm-store-title', { highlight: true });
+  openCurrentWarbonds();
 }
 
 /** Shows only the marked pledges that can be melted now in "My Hangar", and again all (#147). */
