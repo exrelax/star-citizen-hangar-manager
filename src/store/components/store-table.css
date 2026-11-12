@@ -61,3 +61,15 @@
 .shm-warbond-table .shm-always-available {
   color: var(--shm-success);
 }
+
+/* A base ship opening RSI's ship upgrade dialog (BaseShipsTable.vue). */
+.shm-warbond-table .shm-base-ship-link {
+  color: var(--shm-accent);
+  text-decoration: none;
+}
+
+.shm-warbond-table .shm-base-ship-link:hover,
+.shm-warbond-table .shm-base-ship-link:focus-visible {
+  text-decoration: underline;
+  outline: none;
+}

@@ -99,7 +99,11 @@ const when = computed(() => formatExpectedTime(props.offer.increase.priceIncreas
         <p v-if="!offer.bases.length" class="shm-hint">
           {{ i18n.t('ccusToSecure.noBases', [offer.ship.name]) }}
         </p>
-        <BaseShipsTable v-else :bases="offer.bases" />
+        <BaseShipsTable
+          v-else
+          :bases="offer.bases"
+          :target="{ shipId: offer.ship.id, skuId: offer.skuId, name: offer.ship.name }"
+        />
       </div>
     </div>
   </div>

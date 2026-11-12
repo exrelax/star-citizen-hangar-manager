@@ -494,6 +494,7 @@
     "msrpHint": "Prix standard du vaisseau",
     "openUpgrade": "Amélioration",
     "openUpgradeHint": "Ouvre la fenêtre d'amélioration de RSI avec le $1 (Warbond Edition) comme cible",
+    "openUpgradeFromHint": "Ouvre la fenêtre d’upgrade de vaisseau de RSI avec le $1 comme vaisseau de base et le $2 comme cible",
     "inHangar": "Au hangar :",
     "sameShipBadge": "$1 vers $2",
     "sameShipBadgeHint": "CCU de ton hangar directement vers $1",
