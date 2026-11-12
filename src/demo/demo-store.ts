@@ -37,10 +37,14 @@ export function demoStoreData(
   });
   const warbonds = targets.map(offerOf);
   // Other ships for the expired offers of the history (#297), in a fixed order.
-  const expired = catalog.ships
+  // Spread over the catalog, so they come from several manufacturers for the search.
+  const others = catalog.ships
     .filter((ship) => !targets.includes(ship) && ship.msrp >= 60 && ship.msrp <= CCU_TARGET_MAX)
-    .sort((a, b) => a.id - b.id)
-    .slice(0, 4)
+    .sort((a, b) => a.id - b.id);
+  const step = Math.max(1, Math.floor(others.length / EXPIRED_OFFERS));
+  const expired = others
+    .filter((_, index) => index % step === 0)
+    .slice(0, EXPIRED_OFFERS)
     .map(offerOf);
   return {
     ships: [...catalog.ships],
@@ -50,6 +54,9 @@ export function demoStoreData(
 }
 
 const DAY = 24 * 60 * 60 * 1000;
+
+/** Expired offers of other ships than the current ones in the demo's history (#297). */
+const EXPIRED_OFFERS = 8;
 
 const DEMO_EVENTS = {
   iae: { id: 'demo-iae', name: { en: 'Intergalactic Aerospace Expo' } },
@@ -62,9 +69,9 @@ const DEMO_EVENTS = {
  * for two days without an event, with one earlier offer at another price; the third seen for the
  * first time during the event, never before.
  *
- * Expired offers of other ships for the "Warbond CCU History" (#297), one in each period: during
- * the running event (or the day before, without one), about 20 days ago at an event, about 45 days
- * ago without one, and about 150 days ago at another event.
+ * Expired offers of other ships for the "Warbond CCU History" (#297): three during the running
+ * event (or the days before, without one), about 20 days ago at an event, about 45 and 100 days ago
+ * without one, about 150 days ago at another event and about 170 days ago without one.
  */
 export function demoWarbondHistory(
   warbonds: readonly WarbondTarget[],
@@ -113,17 +120,25 @@ export function demoWarbondHistory(
   }
   if (third) sightings.push(sighting(third, third.price, sinceExpo / 2, 0, running));
 
-  const [duringEvent, recent, older, oldest] = expired;
-  if (duringEvent) {
+  // With the earlier offers of the current ships above (64 and 120 days ago), the expired ones
+  // are 3 in the event's period, 6 within 90 days and 10 within 180 days.
+  const [during1, during2, during3, recent, older, mid1, mid2, oldest] = expired;
+  const duringEvent = (target: WarbondTarget | undefined, from: number, to: number) => {
+    if (!target) return;
     sightings.push(
       expo
-        ? sighting(duringEvent, duringEvent.price, sinceExpo, sinceExpo / 4, running)
-        : sighting(duringEvent, duringEvent.price, 1.5, 0.5),
+        ? sighting(target, target.price, sinceExpo * from, sinceExpo * to, running)
+        : sighting(target, target.price, 1 + from, 1 + to),
     );
-  }
+  };
+  duringEvent(during1, 1, 0.75);
+  duringEvent(during2, 0.8, 0.5);
+  duringEvent(during3, 0.6, 0.25);
   if (recent) sightings.push(sighting(recent, recent.price, 21, 17, [DEMO_EVENTS.iae]));
   if (older) sightings.push(sighting(older, higher(older, 5), 46, 44));
-  if (oldest) sightings.push(sighting(oldest, oldest.price, 152, 143, [DEMO_EVENTS.invictus]));
+  if (mid1) sightings.push(sighting(mid1, higher(mid1, 10), 104, 98));
+  if (mid2) sightings.push(sighting(mid2, mid2.price, 152, 143, [DEMO_EVENTS.invictus]));
+  if (oldest) sightings.push(sighting(oldest, oldest.price, 172, 166));
   sightings.sort((a, b) => a.firstSeen - b.firstSeen);
   return { version: WARBOND_HISTORY_VERSION, lastReadAt: now, sightings };
 }
