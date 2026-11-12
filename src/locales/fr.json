@@ -561,9 +561,12 @@
       "days180": "180 derniers jours"
     },
     "historySorts": {
-      "date": "Plus récentes d'abord",
-      "standardPrice": "Prix standard",
-      "discount": "Remise"
+      "newest": "Plus récentes d'abord",
+      "oldest": "Plus anciennes d'abord",
+      "priceDesc": "Prix standard le plus élevé d'abord",
+      "priceAsc": "Prix standard le plus bas d'abord",
+      "discountDesc": "Plus forte remise d'abord",
+      "discountAsc": "Plus faible remise d'abord"
     }
   },
   "events": {

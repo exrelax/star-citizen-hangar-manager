@@ -106,9 +106,9 @@ describe('periods', () => {
   });
 
   it('selects the period of a new event and goes back to 90 days once it is over', () => {
-    const stored = { sort: 'discount' as const, period: 'days30' as const };
+    const stored = { sort: 'discountDesc' as const, period: 'days30' as const };
     const during = currentHistoryChoice(stored, IAE);
-    expect(during).toEqual({ sort: 'discount', period: 'event', eventId: 'iae' });
+    expect(during).toEqual({ sort: 'discountDesc', period: 'event', eventId: 'iae' });
     // Unchanged while the event runs: the same object, nothing to store.
     expect(currentHistoryChoice(during, IAE)).toBe(during);
     // Another period chosen during the event is kept until it ends.
@@ -116,7 +116,10 @@ describe('periods', () => {
     expect(currentHistoryChoice(chosen, IAE)).toBe(chosen);
     expect(currentHistoryChoice(chosen, undefined)).toBe(chosen);
     // After the event, its period goes back to 90 days; other periods stay.
-    expect(currentHistoryChoice(during, undefined)).toEqual({ sort: 'discount', period: 'days90' });
+    expect(currentHistoryChoice(during, undefined)).toEqual({
+      sort: 'discountDesc',
+      period: 'days90',
+    });
     expect(currentHistoryChoice(stored, undefined)).toBe(stored);
     // The next event selects its period again.
     const next = { ...IAE, id: 'invictus' };
@@ -142,9 +145,12 @@ describe('sortHistory', () => {
   const names = (sort: Parameters<typeof sortHistory>[1]) =>
     sortHistory(entries(), sort).map((entry) => entry.sighting.shipName);
 
-  it('sorts by date, standard price or discount, the highest first', () => {
-    expect(names('date')).toEqual(['Hull C', 'Vulture', 'Mercury']);
-    expect(names('standardPrice')).toEqual(['Hull C', 'Mercury', 'Vulture']);
-    expect(names('discount')).toEqual(['Hull C', 'Vulture', 'Mercury']);
+  it('sorts by date, standard price or discount, in either direction', () => {
+    expect(names('newest')).toEqual(['Hull C', 'Vulture', 'Mercury']);
+    expect(names('oldest')).toEqual(['Mercury', 'Vulture', 'Hull C']);
+    expect(names('priceDesc')).toEqual(['Hull C', 'Mercury', 'Vulture']);
+    expect(names('priceAsc')).toEqual(['Vulture', 'Mercury', 'Hull C']);
+    expect(names('discountDesc')).toEqual(['Hull C', 'Vulture', 'Mercury']);
+    expect(names('discountAsc')).toEqual(['Mercury', 'Vulture', 'Hull C']);
   });
 });
