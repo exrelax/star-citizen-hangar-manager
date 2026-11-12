@@ -132,7 +132,9 @@ function paidValue(random: DemoRandom, label: string, price: number): number {
  * The ship of the Price Increase Advisor's chain (#255): in the hangar as a ship, as the target of
  * one CCU and the base of another, so a price increase of it shows each case. A ship CCUs go to
  * with cheaper and pricier ones around it – one RSI sells CCUs to (`buyable`, if known), so the
- * advice recommends CCUs to it –, else none.
+ * advice recommends CCUs to it. Among the ones whose gap to the next cheaper ship most exceeds the
+ * gap to the next pricier one: the CCU from it melts for less than a CCU to it costs, so the
+ * advice needs store credit and the demo's store credit (#179) decides whether it is enough.
  */
 export function demoPivotShip(
   random: DemoRandom,
@@ -140,11 +142,16 @@ export function demoPivotShip(
   buyable?: ReadonlySet<number>,
 ): Ship | undefined {
   const sorted = ccuTargetsOf(catalog.ships).sort((a, b) => a.msrp - b.msrp);
-  const inner = sorted.filter(
-    (ship) => ship.msrp > sorted[0]!.msrp && ship.msrp < sorted[sorted.length - 1]!.msrp,
-  );
-  const sold = buyable ? inner.filter((ship) => buyable.has(ship.id)) : [];
-  return random.pick('pivot', sold.length ? sold : inner);
+  const sold = (ship: Ship) => !buyable || buyable.has(ship.id);
+  const scored = sorted.flatMap((ship, index) => {
+    const below = sorted.slice(0, index).filter((other) => other.msrp < ship.msrp && sold(other));
+    const above = sorted.find((other) => other.msrp > ship.msrp);
+    if (!sold(ship) || !below.length || !above) return [];
+    const gapBelow = ship.msrp - below[below.length - 1]!.msrp;
+    return [{ ship, score: gapBelow - (above.msrp - ship.msrp) }];
+  });
+  const best = scored.sort((a, b) => b.score - a.score).slice(0, 3);
+  return random.pick('pivot', best)?.ship;
 }
 
 function standaloneShip(
@@ -195,8 +202,9 @@ function ccu(random: DemoRandom, catalog: DemoCatalog, index: number, pivot?: Sh
     // The first CCU goes to the pivot, the second from it (#255).
     const cheaper = sorted.filter((ship) => ship.msrp < pivot.msrp);
     const pricier = sorted.filter((ship) => ship.msrp > pivot.msrp);
+    // The CCU from it goes to the next pricier ship: it melts for little (see `demoPivotShip`).
     from = index === 0 ? random.pick(`ccu:${index}:from`, cheaper)! : pivot;
-    to = index === 0 ? pivot : random.pick(`ccu:${index}:to`, pricier)!;
+    to = index === 0 ? pivot : pricier[0]!;
   } else {
     const fromIndex = random.int(`ccu:${index}:from`, 0, sorted.length - 2);
     from = sorted[fromIndex]!;
