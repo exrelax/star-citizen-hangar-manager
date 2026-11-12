@@ -51,6 +51,8 @@
     "showInMyGear": "Show in My Gear (page $1)",
     "discountTitle": "Original price: $1. Pledge value: $2. Saved: $3 ($4).",
     "surchargeTitle": "Original price: $1. Pledge value: $2. That is $3 ($4) more than the original price.",
+    "futureDiscountTitle": "From $1, when the price of the $2 is expected to rise, the original price of this pledge is $3 (today $4): its discount then is $5.",
+    "futureSurchargeTitle": "From $1, when the price of the $2 is expected to rise, the original price of this pledge is $3 (today $4): it then costs $5 more than that.",
     "externalLinks": "External links:",
     "openOn": "Open $1 on $2 (new tab)",
     "kinds": {

@@ -18,6 +18,8 @@ import GiftOverlay from './GiftOverlay.vue';
 import ProtectedBadge from './ProtectedBadge.vue';
 import PriceIncreaseBadge from '@/price-increases/components/PriceIncreaseBadge.vue';
 import { openCcuAdvice } from '@/price-increases/ccu-advice-request';
+import { futureDiscount } from '@/price-increases/future-discount';
+import { formatExpectedTime } from '@/price-increases/price-increase-label';
 import UpgradeLog from './UpgradeLog.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { selection } from '../selection';
@@ -69,6 +71,30 @@ const rebuyText = computed(() => {
         label: i18n.t('consultant.mark', [from, to]),
         hint: i18n.t('consultant.markHint', [from, to, freed]),
       };
+});
+
+/**
+ * The discount after an expected price increase, where its change in USD is known (#274): next
+ * to today's, in the warning color, with when it changes in its tooltip.
+ */
+const future = computed(() => {
+  const value = futureDiscount(props.pledge);
+  if (!value) return undefined;
+  const money = (amount: number) => formatUsd(amount, locale.value);
+  const share =
+    value.percent === undefined ? '' : ` (${formatPercent(Math.abs(value.percent), locale.value)})`;
+  const sign = value.amount === 0 ? '' : value.amount < 0 ? '+' : '−';
+  const amount = `${money(Math.abs(value.amount))}${share}`;
+  return {
+    text: `→ ${sign}${amount}`,
+    title: i18n.t(value.amount < 0 ? 'pledge.futureSurchargeTitle' : 'pledge.futureDiscountTitle', [
+      formatExpectedTime(value.increase.priceIncreaseAt, locale.value),
+      value.increase.ship.name,
+      money(value.original),
+      money(props.pledge.discount?.original ?? value.original),
+      amount,
+    ]),
+  };
 });
 
 const discount = computed(() =>
@@ -184,6 +210,9 @@ const toggle = () => {
             :class="{ 'is-surcharge': discount.isSurcharge }"
           >
             {{ discount.text }}
+          </span>
+          <span v-if="future" v-tooltip="future.title" class="shm-discount is-future">
+            {{ future.text }}
           </span>
           <span v-if="pledge.createdAt">{{ pledge.createdAt }}</span>
         </span>
