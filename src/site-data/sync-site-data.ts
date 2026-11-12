@@ -11,8 +11,12 @@ import { lastSiteDataReadTime } from './site-data-schedule';
  * GitHub Pages serves the files to any origin, so no host permission is needed. The development
  * build reads the files of the working copy instead (each source's `fetch`), so new data can be
  * tried before it goes live – without a request to localhost, which Chrome would ask the user to
- * allow from RSI's page.
+ * allow from RSI's page. There every check reads them again (`READ_ALWAYS`), so a changed file of
+ * the working copy shows with the next build, not only at the next time of the schedule.
  */
+
+/** The development build reads the working copy's files on every check; not in the tests. */
+const READ_ALWAYS = import.meta.env.DEV && import.meta.env.MODE !== 'test';
 
 /** A data file of the website and where it is kept. */
 export interface SiteDataSource<D, S extends { version: number }> {
@@ -131,7 +135,12 @@ export function createSiteDataSync<D, S extends { version: number }>(
       // Without stored data too only when due: a missing file is tried again at the next time of
       // the schedule, not on every check. Deleting the data in the settings deletes its metadata, so it is read
       // again.
-      if (force || outdated || siteDataDue(meta, now(), SITE_DATA, source.maxAgeMs)) {
+      if (
+        force ||
+        outdated ||
+        READ_ALWAYS ||
+        siteDataDue(meta, now(), SITE_DATA, source.maxAgeMs)
+      ) {
         // Without anything current stored, the data is stored in any case.
         const data = await readFile(fetch, now, current ? meta : undefined);
         if (data !== undefined) result = { data, read: true };
