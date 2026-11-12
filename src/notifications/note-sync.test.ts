@@ -2,7 +2,19 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { checkOff, notificationsItem } from './notifications';
 import { browserNotificationsItem } from './browser-permission';
-import { browserIdOf, noteIdOf, showNewNotesInBrowser, watchNotesInStep } from './note-sync';
+import {
+  browserIdOf,
+  noteIdOf,
+  openForNote,
+  showNewNotesInBrowser,
+  watchNotesInStep,
+} from './note-sync';
+import { openHangarManager } from '@/background/dispatch';
+
+vi.mock('@/background/dispatch', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/background/dispatch')>()),
+  openHangarManager: vi.fn(async () => {}),
+}));
 
 const clear = vi.fn();
 let closed: ((id: string, byUser: boolean) => void) | undefined;
@@ -83,5 +95,41 @@ describe('showNewNotesInBrowser', () => {
     await browserNotificationsItem.setValue(false);
     await showNewNotesInBrowser([{ ...warbonds, id: 'warbonds:2' }], warbonds.at);
     expect(create).not.toHaveBeenCalled();
+  });
+});
+
+describe('the link to the Pledge Store (#276)', () => {
+  const warbonds = {
+    id: 'warbonds:1',
+    kind: 'warbonds' as const,
+    text: 'New warbond CCUs',
+    at: 1_000_000,
+    browser: { title: 'New warbond CCUs', text: 'Zeus MR ($170)' },
+  };
+  const items = { ...warbonds, id: 'storeItems:1', kind: 'storeItems' as const };
+  let create: ReturnType<typeof vi.fn>;
+  beforeEach(async () => {
+    create = vi.fn().mockResolvedValue('id');
+    (fakeBrowser as unknown as { notifications: { create: unknown } }).notifications.create =
+      create;
+    await browserNotificationsItem.setValue(true);
+    vi.mocked(openHangarManager).mockClear();
+  });
+
+  it('gives the browser notification its button only where the tab shows the change', async () => {
+    await showNewNotesInBrowser([warbonds, items], warbonds.at);
+    const options = (id: string) => create.mock.calls.find((call) => call[0] === id)?.[1];
+    // Firefox shows no buttons at all.
+    expect(options('note:warbonds:1')?.buttons).toEqual(
+      import.meta.env.FIREFOX ? undefined : [{ title: expect.any(String) }],
+    );
+    expect(options('note:storeItems:1')).not.toHaveProperty('buttons');
+  });
+
+  it('opens the warbond CCUs for theirs, else just the manager', async () => {
+    await notificationsItem.setValue([warbonds, items]);
+    await openForNote('note:warbonds:1');
+    await openForNote('note:storeItems:1');
+    expect(vi.mocked(openHangarManager).mock.calls).toEqual([['showWarbonds'], ['open']]);
   });
 });

@@ -67,6 +67,20 @@ export interface AppNotification {
   browser?: { title: string; text: string };
 }
 
+/**
+ * The kinds whose change the Hangar Manager's Pledge Store tab shows (#276): the warbond CCUs and
+ * the events. Only they link to it, in the sidebar and in the browser; changed store items such as
+ * bundles or gear aren't in the tab.
+ */
+export const STORE_LINK_KINDS: readonly NonNullable<AppNotification['kind']>[] = [
+  'warbonds',
+  'events',
+];
+
+/** Whether the notification links to the Pledge Store tab. */
+export const hasStoreLink = (note: Pick<AppNotification, 'kind'>): boolean =>
+  note.kind !== undefined && STORE_LINK_KINDS.includes(note.kind);
+
 export const notificationsItem = storage.defineItem<AppNotification[]>('local:notifications', {
   fallback: [],
 });

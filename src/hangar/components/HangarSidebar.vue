@@ -26,6 +26,7 @@ import {
 } from '@/store/paint-consultant/rebuy-plan-storage';
 import {
   checkOff as checkOffReal,
+  hasStoreLink,
   noteDetails,
   noteText,
   openNotifications,
@@ -175,8 +176,7 @@ function noteHref(note: AppNotification) {
 /** The Pledge Store tab, at the warbond CCUs (#164) or the events (#69) of the notification. */
 function openStoreAt(kind: NonNullable<AppNotification['kind']>) {
   if (kind === 'events') return openTabAt('store', 'shm-events-title', { highlight: true });
-  // The warbond CCUs follow the events; for changed items the tab is just opened.
-  openTabAt('store', 'shm-store-title', { highlight: kind === 'warbonds' });
+  openTabAt('store', 'shm-store-title', { highlight: true });
 }
 
 /** Shows only the marked pledges that can be melted now in "My Hangar", and again all (#147). */
@@ -816,8 +816,9 @@ async function move(box: Box, step: -1 | 1) {
                     </li>
                   </ul>
                 </details>
+                <!-- Only where the Pledge Store tab shows the change (#276). -->
                 <button
-                  v-if="note.kind"
+                  v-if="note.kind && hasStoreLink(note)"
                   type="button"
                   class="shm-sidebar-link shm-sidebar-note-link"
                   @click="openStoreAt(note.kind)"

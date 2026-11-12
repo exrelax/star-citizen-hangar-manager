@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  hasStoreLink,
   NOTIFICATIONS_KEEP_DONE_MS,
   openNotifications,
   withAdded,
@@ -45,5 +46,14 @@ describe('withoutOld', () => {
     const now = NOTIFICATIONS_KEEP_DONE_MS + 100;
     const list = [note(1, { doneAt: 50 }), note(2, { doneAt: 200 }), note(3)];
     expect(withoutOld(list, now)).toEqual([note(2, { doneAt: 200 }), note(3)]);
+  });
+});
+
+describe('hasStoreLink (#276)', () => {
+  it('links only what the Pledge Store tab shows: warbond CCUs and events', () => {
+    expect(hasStoreLink({ kind: 'warbonds' })).toBe(true);
+    expect(hasStoreLink({ kind: 'events' })).toBe(true);
+    expect(hasStoreLink({ kind: 'storeItems' })).toBe(false);
+    expect(hasStoreLink({})).toBe(false);
   });
 });
