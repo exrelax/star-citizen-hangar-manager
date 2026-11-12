@@ -105,6 +105,13 @@ describe('the default demo on an empty account (#130)', () => {
       ),
     ).toBe(false);
 
+    // The own pledges as source (#298): a hangar without CCUs still gets current offers and the
+    // same history.
+    const own = demoStoreData(catalog, [], NOW, demoEvents(NOW));
+    expect(own.warbonds).toHaveLength(3);
+    const ownExpired = historyEntries(own.history, own.ships);
+    expect(withinPeriod(ownExpired, periodStart('days180', NOW, event)).length).toBe(10);
+
     // Without a running event (demo settings) there is no event period.
     const upcoming = demoEvents(NOW).filter((candidate) => NOW < candidate.eventStart);
     const quiet = demoStoreData(catalog, account.pledges, NOW, upcoming);
