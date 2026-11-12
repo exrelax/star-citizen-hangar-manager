@@ -57,7 +57,7 @@ describe('withDefaults', () => {
         useFillers: true,
         skipGiftable: true,
         reboughtDetection: 'plan',
-        layout: 'ways',
+        layout: 'choose',
       },
       shipLinks: { erkul: false, fleetyards: true },
     });

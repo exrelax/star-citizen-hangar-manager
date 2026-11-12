@@ -241,14 +241,15 @@ describe('PaintConsultant', () => {
       'Put the 10 paints into the cart',
     );
   });
-  describe('both ways side by side (the default layout)', () => {
-    const cards = { paintConsultant: DEFAULT_SETTINGS.paintConsultant };
+  describe('both ways side by side', () => {
+    const cards = {
+      paintConsultant: { ...DEFAULT_SETTINGS.paintConsultant, layout: 'ways' as const },
+    };
     const way = (root: HTMLElement, kind: 'buy' | 'melt') =>
       root.querySelector<HTMLElement>(`.shm-way.is-${kind}`)!;
     const buttons = (root: HTMLElement) => [...root.querySelectorAll<HTMLButtonElement>('button')];
 
-    it('is the default and shows the same result for both ways', async () => {
-      expect(DEFAULT_SETTINGS.paintConsultant.layout).toBe('ways');
+    it('shows the same result for both ways', async () => {
       const root = await render(await storeExample(40), cards);
       expect(root.querySelector('.shm-consultant-table')).toBeNull();
       expect(text(root)).toContain('Same result on both ways');
@@ -300,6 +301,74 @@ describe('PaintConsultant', () => {
       expect(document.querySelector('.shm-action-dialog')?.textContent).toContain(
         'checked it there',
       );
+    });
+  });
+
+  describe('choosing a way (the default layout, #246)', () => {
+    const choose = { paintConsultant: DEFAULT_SETTINGS.paintConsultant };
+    const choice = (root: HTMLElement, kind: 'buy' | 'melt') =>
+      root.querySelector<HTMLButtonElement>(`.shm-choose-way.is-${kind}`)!;
+    const detail = (root: HTMLElement) => root.querySelector<HTMLElement>('.shm-choose-detail')!;
+    const cart = (root: HTMLElement) => text(root.querySelector('#shm-choose-cart-title')!);
+
+    it('is the default and chooses buying first where it works', async () => {
+      expect(DEFAULT_SETTINGS.paintConsultant.layout).toBe('choose');
+      const root = await render(await storeExample(40), choose);
+      expect(root.querySelector('.shm-consultant-table')).toBeNull();
+      expect(root.querySelector('.shm-way')).toBeNull();
+      expect(text(root.querySelector('.shm-consultant-credit')!)).toContain('$40');
+      expect(choice(root, 'buy').getAttribute('aria-pressed')).toBe('true');
+      expect(choice(root, 'melt').getAttribute('aria-pressed')).toBe('false');
+      expect(text(choice(root, 'buy'))).toContain('Recommended');
+      expect(text(choice(root, 'buy'))).toContain('+$8.75');
+      expect(text(choice(root, 'buy'))).toContain('35% · 10 paints · $26 upfront');
+      // Paid first: $40 − $26, then the melt value and the fillers: $48.75 in the end.
+      expect(text(detail(root))).toContain('Pay with store credit');
+      expect(text(detail(root))).toContain('$14');
+      expect(text(detail(root))).toContain('$48.75 · +$8.75');
+      expect(text(detail(root))).toContain('Put the 10 paints into the cart');
+      expect(cart(root)).toBe('Cart · 10 paints at 35%');
+      expect(root.querySelectorAll('.shm-ways-paint')).toHaveLength(10);
+    });
+
+    it('shows the steps, the cart and its paints of the way chosen', async () => {
+      // $20: the 35 % cart costs $26, the 25 % one ($25 × 0.75) $18.75.
+      const root = await render(await storeExample(20), choose);
+      expect(cart(root)).toBe('Cart · 5 paints at 25%');
+      expect(root.querySelectorAll('.shm-ways-paint.is-out')).toHaveLength(5);
+      expect(root.querySelector('.shm-choose-tier.is-other')?.textContent).toContain('35%');
+
+      choice(root, 'melt').click();
+      await nextTick();
+      expect(choice(root, 'melt').getAttribute('aria-pressed')).toBe('true');
+      expect(cart(root)).toBe('Cart · 10 paints at 35%');
+      expect(root.querySelectorAll('.shm-ways-paint.is-out')).toHaveLength(0);
+      expect(text(detail(root))).toContain('Fill the cart and save the plan');
+      expect(text(detail(root))).toContain('Your paints leave the hangar first');
+      expect(root.querySelector('.shm-choose-tier.is-other')?.textContent).toContain('25%');
+    });
+
+    it("can't choose buying first without enough store credit and says why", async () => {
+      const root = await render(await storeExample(1), choose);
+      expect(choice(root, 'buy').disabled).toBe(true);
+      expect(text(choice(root, 'buy'))).toContain('Not possible');
+      expect(text(choice(root, 'buy'))).toContain('Needs $25 more store credit');
+      expect(choice(root, 'melt').getAttribute('aria-pressed')).toBe('true');
+      expect(text(detail(root))).toContain('Fill the cart and save the plan');
+    });
+
+    it('offers melting first only after the cart was filled', async () => {
+      const pledges = await storeExample(1);
+      const settings = { ...choose, bulkMelting: true };
+      const has = (root: HTMLElement, label: string) =>
+        [...detail(root).querySelectorAll('button')].some((b) => b.textContent?.includes(label));
+      const before = await render(pledges, settings);
+      expect(has(before, 'Melt the')).toBe(false);
+      app?.unmount();
+
+      await storePlan(pledges.map((pledge) => pledge.id));
+      const after = await render(pledges, settings);
+      expect(has(after, 'Melt the 5')).toBe(true);
     });
   });
 });
