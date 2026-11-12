@@ -33,6 +33,7 @@ export function useCcusToSecure(
       buyable: current(storedBuyable.value ?? null)?.skus ?? [],
       warbonds: current(storedWarbonds.value ?? null)?.warbonds ?? [],
       holdings: holdingsByShip(createShipLookup(ships), pledges(), buyback()),
+      buyback: buyback(),
       now: now.value,
     });
   });

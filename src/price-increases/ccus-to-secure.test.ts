@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import type { BuybackView } from '@/buyback/buyback-view';
 import type { Ship, ShipSku } from '@/ships/ships';
 import { ccusToSecure, type SecureInput } from './ccus-to-secure';
 import type { ExpectedPriceIncrease } from './price-increases';
@@ -93,5 +94,62 @@ describe('ccusToSecure (#253)', () => {
 
   it('is gone once the price increase is past', () => {
     expect(secure({ now: Date.parse('2026-11-21T00:00:00Z') })).toEqual([]);
+  });
+});
+
+describe('ccusToSecure with the buy back (#311)', () => {
+  let nextId = 1;
+  /** A buy back CCU; with ids as RSI's buy back gives them, else only its title. */
+  const ccu = (
+    from: number | string,
+    to: number | string,
+    extra: Partial<BuybackView> = {},
+  ): BuybackView =>
+    ({
+      id: nextId++,
+      title: `Upgrade - ${typeof from === 'string' ? from : 'X'} to ${typeof to === 'string' ? to : 'Y'} Standard Edition`,
+      isCcu: true,
+      ...(typeof from === 'number' &&
+        typeof to === 'number' && { upgrade: { fromShipId: from, toShipId: to, toSkuId: to } }),
+      ...extra,
+    }) as BuybackView;
+
+  it("lists a ship not on sale with the buy back's CCUs to it, by base ship, cheapest first", () => {
+    const buyback = [
+      ccu(32, 244, { price: { amount: 240, source: 'rsi' } }),
+      ccu(32, 244, { price: { amount: 230, source: 'rsi' } }),
+      ccu(35, 244, { price: { amount: 310, source: 'ships' } }),
+      ccu('Clipper', 'Galaxy'),
+      ccu(32, 109),
+    ];
+    const galaxyOffer = secure({ buyback }).find((offer) => offer.ship.name === 'Galaxy');
+    expect(galaxyOffer).toMatchObject({ bases: [] });
+    expect(galaxyOffer?.skuId).toBeUndefined();
+    expect(
+      galaxyOffer?.buyback?.map((group) => [group.fromName, group.price?.amount, group.count]),
+    ).toEqual([
+      ['Freelancer MAX', 230, 2],
+      ['Arrow', 310, 1],
+      // Found by its title, without a known price: last.
+      ['Clipper', undefined, 1],
+    ]);
+    expect(galaxyOffer?.buyback?.[2]?.fromShip?.id).toBe(33);
+  });
+
+  it('leaves out a ship not on sale without CCUs to it, or only ones RSI can’t sell again', () => {
+    expect(secure({ buyback: [] }).map((offer) => offer.ship.name)).not.toContain('Galaxy');
+    const unavailable = ccu(32, 244, {
+      unavailable: { from: { name: 'A', msrp: 400 }, to: { name: 'Galaxy', msrp: 380 } },
+    });
+    expect(secure({ buyback: [unavailable] }).map((offer) => offer.ship.name)).not.toContain(
+      'Galaxy',
+    );
+  });
+
+  it("keeps a ship on sale with the upgrade tool's CCUs, also with buy back CCUs to it", () => {
+    const [first] = secure({ buyback: [ccu(32, 109)] });
+    expect(first).toMatchObject({ ship: { name: 'Prospector' }, skuId: 109 });
+    expect(first?.buyback).toBeUndefined();
+    expect(first?.bases.length).toBeGreaterThan(0);
   });
 });

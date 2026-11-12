@@ -22,7 +22,7 @@ import {
   type PriceIncreaseMatcher,
 } from '@/price-increases/price-increase-match';
 import type { ExpectedPriceIncrease } from '@/price-increases/price-increases';
-import { demoPriceIncreases } from './demo-price-increases';
+import { demoNotOnSaleShip, demoPriceIncreases } from './demo-price-increases';
 import { fraction, hash } from './random';
 import { DEFAULT_DEMO_SETTINGS, type DemoSettings, type DemoStates } from './demo-settings';
 import type { DemoBuybackComposition } from './generate-buyback';
@@ -135,11 +135,14 @@ export function generatedDemo(
   priceIncreases: ExpectedPriceIncrease[];
 } {
   const account = generateDemoAccount(catalog, key, settings, buyable);
+  // A ship RSI doesn't sell CCUs to, with CCUs to it in the buy back (#311).
+  const notOnSale = demoNotOnSaleShip(catalog, buyable);
   const generatedBuyback = generateBuyback(
     catalog,
     key,
     today,
     buybackComposition(settings.buybackPledges),
+    notOnSale,
   );
   // One order snapshot for both lists, like the order sync's.
   const orders: OrdersSnapshot = {
@@ -156,6 +159,7 @@ export function generatedDemo(
     generatedBuyback.pledges,
     now,
     buyable,
+    notOnSale,
   );
   const matcher = createPriceIncreaseMatcher(priceIncreases, now);
   const views = account.pledges.map((pledge, position) => {

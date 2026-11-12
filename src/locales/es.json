@@ -1258,6 +1258,12 @@
     "cheapestTitle": "CCU más baratos hacia la $1",
     "gainHint": "Cada CCU comprado antes del $2 gana $1 de descuento. Los números muestran cuántas veces ya tienes cada nave – como nave o como destino de un CCU – en tu hangar y el Buy Back.",
     "gainUnknownHint": "Cada CCU comprado antes del $1 gana tanto descuento como suba el precio; aún no se sabe cuánto. Los números muestran cuántas veces ya tienes cada nave – como nave o como destino de un CCU – en tu hangar y el Buy Back.",
-    "noBases": "Ninguna nave cuesta menos que la $1, así que no hay CCU hacia ella."
+    "noBases": "Ninguna nave cuesta menos que la $1, así que no hay CCU hacia ella.",
+    "notOnSale": "No hay CCU a la venta · $1 en tu buy back",
+    "buybackTitle": "Los CCU al $1 en tu buy back",
+    "buybackGainHint": "RSI no vende CCU al $1 ahora mismo, pero tu buy back tiene algunos. Cada uno recomprado antes de $3 gana $2 de descuento.",
+    "buybackGainUnknownHint": "RSI no vende CCU al $1 ahora mismo, pero tu buy back tiene algunos. Cada uno recomprado antes de $2 gana tanto descuento como suba el precio – aún no se sabe cuánto.",
+    "colBuybackPrice": "Buy back",
+    "noPriceHint": "El precio de recompra aún no se conoce."
   }
 }

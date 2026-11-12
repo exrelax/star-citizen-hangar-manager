@@ -89,12 +89,33 @@ export function ccuPledge(from: Ship, to: Ship, edition = 'Standard'): Omit<Buyb
   };
 }
 
+/**
+ * CCUs to a ship RSI doesn't sell CCUs to right now (#311), for the CCUs to secure before its
+ * price increase: two from one base ship, one from another, and one from a third without the ids
+ * of RSI's "Buy Back" button – found by its title, without a known price.
+ */
+function ccusToNotOnSale(sorted: readonly Ship[], target: Ship): Omit<BuybackPledge, 'id'>[] {
+  const cheaper = sorted.filter((ship) => ship.msrp < target.msrp && ship.id !== target.id);
+  const [first, second, third] = [cheaper.at(-1), cheaper.at(-3), cheaper.at(-5)];
+  if (!first || !second || !third) return [];
+  const { title, contained, isUpgrade } = ccuPledge(third, target);
+  const withoutIds = { title, contained, isUpgrade };
+  return [
+    ccuPledge(first, target),
+    ccuPledge(first, target),
+    ccuPledge(second, target),
+    withoutIds,
+  ];
+}
+
 /** The generated buy back of a key, newest melted first. */
 export function generateBuyback(
   catalog: DemoCatalog,
   key: string,
   today: string,
   composition: DemoBuybackComposition = DEMO.buybackComposition,
+  /** A ship RSI doesn't sell CCUs to right now, with CCUs to it to add (#311). */
+  notOnSale?: Ship,
 ): DemoBuyback {
   const random = createRandom(`${key}:buyback`);
   const sorted = ccuTargetsOf(catalog.ships).sort((a, b) => a.msrp - b.msrp);
@@ -138,6 +159,7 @@ export function generateBuyback(
     return ccuPledge(from, to, random.chance(`ccu:${index}:warbond`, 0.3) ? 'Warbond' : 'Standard');
   });
   made.push(...unavailableCcus(sorted));
+  if (notOnSale) made.push(...ccusToNotOnSale(sorted, notOnSale));
   times(composition.paints, (index) => {
     const entry = random.pick(`paint:${index}`, itemsOf('Paints'));
     return entry && storeItemPledge(entry);
