@@ -54,6 +54,9 @@ const total = computed(() => entries.value && totalDiscount(entries.value));
 const firstShips = computed(() => entries.value?.[0] && ccuShips(entries.value[0].name));
 
 const money = (value: number) => formatUsd(value, locale.value);
+/** Green for a discount, orange for a surcharge; $0 is neither, so it stays plain. */
+const discountClass = (value: number | undefined) =>
+  !value ? undefined : value < 0 ? 'is-surcharge' : 'is-discount';
 /** "+$5", "−$15": paid amounts are added, discounts taken off; nothing is just "$0". */
 const signed = (value: number) =>
   value === 0 ? money(0) : `${value < 0 ? '−' : '+'}${money(Math.abs(value))}`;
@@ -119,7 +122,7 @@ const shortName = (name: string) => name.replace(/^upgrade\s*-\s*/i, '');
             <td
               v-tooltip="entry.withBase && i18n.t('upgradeLog.withBaseHint')"
               class="is-amount shm-value"
-              :class="entry.discount! < 0 ? 'is-surcharge' : 'is-discount'"
+              :class="discountClass(entry.discount)"
             >
               <template v-if="entry.discount !== undefined"
                 >{{ signed(-entry.discount) }}<sup v-if="entry.withBase">*</sup></template
@@ -131,7 +134,7 @@ const shortName = (name: string) => name.replace(/^upgrade\s*-\s*/i, '');
         <tfoot v-if="total !== undefined" class="shm-value">
           <tr>
             <th colspan="5">{{ i18n.t('upgradeLog.total') }}</th>
-            <td class="is-amount" :class="total < 0 ? 'is-surcharge' : 'is-discount'">
+            <td class="is-amount" :class="discountClass(total)">
               {{ signed(-total) }}
             </td>
           </tr>
