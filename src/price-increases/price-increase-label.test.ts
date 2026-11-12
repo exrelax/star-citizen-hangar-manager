@@ -71,6 +71,15 @@ describe('priceIncreaseLabel', () => {
     expect(later).toContain('Wer das Item vorher schmilzt');
     expect(later).toContain('Für die IAE angekündigt.');
   });
+
+  it('tells a price increase confirmed by CIG as confirmed (#275)', () => {
+    const confirmed = match({ confirmed: true, price: { from: 400, to: 450 } });
+    const hint = priceIncreaseLabel(confirmed, 'buyback', AT - 3 * DAY, 'en')!.hint;
+    expect(hint).toContain('The price of Galaxy rises on');
+    expect(hint).toContain('The price of Galaxy goes from $400 to $450.');
+    expect(hint).toContain('This price increase is confirmed by CIG.');
+    expect(hint).not.toContain('expected');
+  });
 });
 
 describe('priceIncreaseLabel with the change (#251)', () => {

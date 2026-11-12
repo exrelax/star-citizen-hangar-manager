@@ -39,6 +39,18 @@ export function localizedText(value: unknown, max = MAX_TEXT): LocalizedText | u
 export const localized = (value: LocalizedText, locale: Locale): string =>
   value[locale] ?? value.en;
 
+/** A link of the file: an https URL of at most `MAX_TEXT` characters, else none. */
+export function httpsUrl(value: unknown): string | undefined {
+  const raw = text(value);
+  if (!raw) return undefined;
+  try {
+    const url = new URL(raw);
+    return url.protocol === 'https:' ? url.href : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 /** A point in time of the file (an ISO date), else none. */
 export const time = (value: unknown): number | undefined => {
   if (typeof value !== 'string') return undefined;

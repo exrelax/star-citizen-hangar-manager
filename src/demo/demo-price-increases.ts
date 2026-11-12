@@ -18,6 +18,7 @@ import { ccuTargetsOf, type DemoPledge } from './generate-hangar';
  *   value and one from it that loses value – the advice and the sidebar's notification;
  * - a ship RSI sells CCUs to without a CCU from it in My Hangar: the Pledge Store tab's CCUs to
  *   secure and the sidebar's hint.
+ * The first one is confirmed by CIG, with a source, the second only expected (#275).
  */
 
 const HOUR = 60 * 60 * 1000;
@@ -35,6 +36,9 @@ const day = (now: number, days: number): ExpectedTime => ({
 
 const shipNamed = (catalog: DemoCatalog, name: string | undefined): Ship | undefined =>
   catalog.ships.find((ship) => ship.name === name);
+
+/** The source of the demo's confirmed price increase (#275): RSI's Comm-Link, no real post. */
+const DEMO_SOURCE = 'https://robertsspaceindustries.com/comm-link';
 
 /** A new price about 10 % higher, in steps of $5. */
 const risenPrice = (ship: Ship) => ({
@@ -146,6 +150,9 @@ export function demoPriceIncreases(
             ship: { id: pivotShip.id, name: pivotShip.name },
             priceIncreaseAt: at(now, 4, 3),
             price: risenPrice(pivotShip),
+            // Confirmed by CIG, with its source (#275); the other one only expected.
+            confirmed: true as const,
+            source: DEMO_SOURCE,
           },
         ]
       : []),
