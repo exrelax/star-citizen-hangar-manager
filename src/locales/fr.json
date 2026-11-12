@@ -1016,6 +1016,7 @@
     "flightReady": "Devrait devenir flight ready le $1.",
     "expected": "Ces dates sont attendues, pas confirmées par RSI.",
     "confirmed": "Cette hausse de prix est confirmée par CIG.",
+    "partlyConfirmed": "Les prix et dates sont attendus, sauf s’ils sont confirmés par CIG.",
     "source": "Source"
   },
   "ccuAdvice": {
@@ -1041,7 +1042,7 @@
     "giftableOne": "1 de ces $2 CCU peut être offert maintenant ; les nouveaux, achetés en store credit, ne pourront pas l’être.",
     "giftableSingle": "Ce CCU peut être offert maintenant ; le nouveau, acheté en store credit, ne pourra pas l’être.",
     "giftableAll": "Les $1 CCU peuvent être offerts maintenant ; les nouveaux, achetés en store credit, ne pourront pas l’être.",
-    "footer": "Une simple suggestion : le Hangar Manager ne fond ni n’achète jamais rien de lui-même. Les prix et dates sont attendus, pas confirmés par RSI.",
+    "footer": "Une simple suggestion : le Hangar Manager ne fond ni n’achète jamais rien de lui-même.",
     "button": "Garder la remise",
     "buttonHint": "Ce CCU perd de la valeur d’upgrade avec une hausse de prix attendue : comment garder sa remise.",
     "eventPrice": "Le $1 passe de $2 à $3",
@@ -1093,7 +1094,7 @@
   },
   "ccusToSecure": {
     "title": "CCU à sécuriser avant une hausse de prix",
-    "intro": "Vaisseaux dont le prix devrait bientôt augmenter. Un CCU vers un tel vaisseau acheté maintenant garde son prix mais gagne de la valeur d’upgrade avec la hausse – c’est la remise. Les dates et prix sont attendus, pas confirmés par RSI.",
+    "intro": "Vaisseaux dont le prix augmente bientôt. Un CCU vers un tel vaisseau acheté maintenant garde son prix mais gagne de la valeur d’upgrade avec la hausse – c’est la remise.",
     "openUpgradeHint": "Ouvre la fenêtre d’upgrade de vaisseau de RSI avec le $1 comme cible",
     "cheapestTitle": "CCU les moins chers vers le $1",
     "gainHint": "Chaque CCU acheté avant le $2 gagne $1 de remise. Les nombres indiquent combien de fois tu as déjà chaque vaisseau – comme vaisseau ou comme cible d’un CCU – dans ton hangar et le Buy Back.",

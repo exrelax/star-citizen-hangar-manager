@@ -14,6 +14,7 @@ import {
 import { useStoreData } from '../use-store-data';
 import { buildWarbondOffers } from '../warbond';
 import { useCcusToSecure } from '@/price-increases/use-ccus-to-secure';
+import { confirmationNote } from '@/price-increases/price-increase-label';
 import SecureRow from '@/price-increases/components/SecureRow.vue';
 import RefreshIcon from '@/hangar/components/RefreshIcon.vue';
 import WarbondRow from './WarbondRow.vue';
@@ -84,6 +85,8 @@ const secure = useCcusToSecure(
   () => props.buyback,
   now,
 );
+/** Whether their price increases are expected or confirmed by CIG (#275). */
+const secureNote = computed(() => confirmationNote(secure.value.map((offer) => offer.increase)));
 
 const updated = computed(
   () =>
@@ -148,7 +151,10 @@ const displayClasses = computed(() => ({
       <h3 id="shm-store-secure-title" class="shm-store-title">
         {{ i18n.t('ccusToSecure.title') }}
       </h3>
-      <p class="shm-store-intro">{{ i18n.t('ccusToSecure.intro') }}</p>
+      <p class="shm-store-intro">
+        {{ i18n.t('ccusToSecure.intro') }}
+        <template v-if="secureNote">{{ i18n.t(secureNote) }}</template>
+      </p>
       <div class="shm-rows">
         <SecureRow v-for="offer in secure" :key="offer.ship.id" :offer="offer" />
       </div>

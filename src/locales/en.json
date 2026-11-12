@@ -1016,6 +1016,7 @@
     "flightReady": "Expected to become flight ready on $1.",
     "expected": "These dates are expected, not confirmed by RSI.",
     "confirmed": "This price increase is confirmed by CIG.",
+    "partlyConfirmed": "Prices and dates are expected, unless confirmed by CIG.",
     "source": "Source"
   },
   "ccuAdvice": {
@@ -1041,7 +1042,7 @@
     "giftableOne": "1 of these $2 CCUs can be gifted now; the new ones, bought with store credit, can’t be gifted.",
     "giftableSingle": "This CCU can be gifted now; the new one, bought with store credit, can’t be gifted.",
     "giftableAll": "All $1 CCUs can be gifted now; the new ones, bought with store credit, can’t be gifted.",
-    "footer": "A suggestion only: the Hangar Manager never melts or buys anything on its own. Prices and dates are expected, not confirmed by RSI.",
+    "footer": "A suggestion only: the Hangar Manager never melts or buys anything on its own.",
     "button": "Keep the discount",
     "buttonHint": "This CCU loses upgrade value with an expected price increase: how to keep its discount.",
     "eventPrice": "$1 rises from $2 to $3",
@@ -1093,7 +1094,7 @@
   },
   "ccusToSecure": {
     "title": "CCUs to secure before a price increase",
-    "intro": "Ships whose price is expected to rise soon. A CCU to such a ship bought now keeps its price but gains upgrade value with the increase – that is the discount. The dates and prices are expected, not confirmed by RSI.",
+    "intro": "Ships whose price is expected to rise soon. A CCU to such a ship bought now keeps its price but gains upgrade value with the increase – that is the discount.",
     "openUpgradeHint": "Opens RSI’s ship upgrade dialog with the $1 as target",
     "cheapestTitle": "Cheapest CCUs to the $1",
     "gainHint": "Each CCU bought before $2 gains $1 of discount. The counts show how often you already have each ship – as ship or as target of a CCU – in your hangar and buy back.",

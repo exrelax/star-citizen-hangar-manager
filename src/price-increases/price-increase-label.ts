@@ -45,6 +45,18 @@ export function formatExpectedTime(time: ExpectedTime, locale: Locale): string {
     : new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' }).format(time.at);
 }
 
+/**
+ * What a text about several price increases says about their confirmation (#275): nothing while
+ * all are confirmed by CIG, that they are expected while none is, else both.
+ */
+export function confirmationNote(
+  increases: readonly Pick<ExpectedPriceIncrease, 'confirmed'>[],
+): 'priceIncrease.expected' | 'priceIncrease.partlyConfirmed' | undefined {
+  const confirmed = increases.filter((increase) => increase.confirmed).length;
+  if (confirmed === increases.length) return undefined;
+  return confirmed ? 'priceIncrease.partlyConfirmed' : 'priceIncrease.expected';
+}
+
 /** The time left until `time`, as the label shows it. */
 function countdown(time: ExpectedTime, now: number, locale: Locale): string {
   if (time.dayOnly) {

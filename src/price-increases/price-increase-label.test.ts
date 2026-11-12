@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { priceIncreaseLabel } from './price-increase-label';
+import { confirmationNote, priceIncreaseLabel } from './price-increase-label';
 import type { CcuPriceChange } from './ccu-price-change';
 import type { PriceIncreaseMatch } from './price-increase-match';
 import type { ExpectedPriceIncrease } from './price-increases';
@@ -142,5 +142,13 @@ describe('priceIncreaseLabel with the change (#251)', () => {
     expect(label(undefined, 'hangar', { target: prospector, direction: 'gains' }).text).toBe(
       'Price increase: 9 days',
     );
+  });
+});
+
+describe('confirmationNote (#275)', () => {
+  it('says nothing while all are confirmed, else whether some or none are', () => {
+    expect(confirmationNote([{ confirmed: true }, { confirmed: true }])).toBeUndefined();
+    expect(confirmationNote([{ confirmed: true }, {}])).toBe('priceIncrease.partlyConfirmed');
+    expect(confirmationNote([{}, {}])).toBe('priceIncrease.expected');
   });
 });
