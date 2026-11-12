@@ -10,7 +10,7 @@ import { i18n, locale } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { useSettings } from '@/settings/use-settings';
 import { vTooltip } from '@/shared/tooltip/tooltip';
-import { currentShipStatus, shipStatusItem } from '@/ships/ship-status';
+import { createShipStatusLookup, shipStatusItem } from '@/ships/ship-status';
 import { buyableShipsItem, current, shipsItem, warbondsItem } from '@/ships/ships-storage';
 import { useStored } from '@/storage/use-stored';
 import { fontScaleStyle, themeClasses } from '@/themes/theme';
@@ -81,7 +81,8 @@ const groups = computed((): CcuAdviceGroup[] | undefined => {
     buyable: current(buyable.value ?? null)?.skus ?? [],
     warbonds: current(warbonds.value ?? null)?.warbonds ?? [],
     risingShipIds: risingShipIds.value,
-    inConceptShipIds: new Set(currentShipStatus(shipStatus.value)?.inConcept ?? []),
+    // The Ship Matrix first, the website's ship facts where it has no value (#265).
+    statusOf: createShipStatusLookup(shipStatus.value, (id) => facts?.status(id)),
     storeCredit: storeCredit.value,
     isAlwaysAvailable: (id) => facts?.isAlwaysAvailable(id),
     holdingsOf: (id) => {

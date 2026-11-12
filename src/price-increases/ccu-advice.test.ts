@@ -143,7 +143,7 @@ describe('ccuAdvice (#252)', () => {
 
   it('only informs and warns without the new price', () => {
     const [group] = advice([ccu('Liberator', 'Merchantman', 50)], {
-      inConceptShipIds: new Set([7, 8]),
+      statusOf: (id) => ([7, 8].includes(id) ? 'in-concept' : 'flight-ready'),
     });
     expect(group?.increase).toBe(liberator);
     expect(group?.keep).toBeUndefined();

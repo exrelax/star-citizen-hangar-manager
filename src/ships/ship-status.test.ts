@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import {
+  createShipStatusLookup,
   maybeRefreshShipStatus,
   parseShipMatrix,
   shipStatusItem,
@@ -9,7 +10,7 @@ import {
 } from './ship-status';
 
 const DAY = 24 * 60 * 60 * 1000;
-const status = { version: SHIP_STATUS_VERSION, inConcept: [36, 244], count: 3 };
+const status = { version: SHIP_STATUS_VERSION, inConcept: [36, 244], flightReady: [165], count: 3 };
 
 describe('parseShipMatrix (#252)', () => {
   it('keeps the ships in concept and the count', () => {
@@ -57,5 +58,27 @@ describe('maybeRefreshShipStatus', () => {
     warn.mockRestore();
     expect(await shipStatusItem.getValue()).toEqual(status);
     expect((await shipStatusMeta.getValue()).lastOutcome?.status).toBe('failed');
+  });
+});
+
+describe('createShipStatusLookup (#265)', () => {
+  const website = (id: number) =>
+    ({ 165: 'in-concept', 244: 'flight-ready', 300: 'in-concept' })[id];
+
+  it('takes the Ship Matrix first, the website where it has no value', () => {
+    const statusOf = createShipStatusLookup(status, website);
+    // The Ship Matrix wins, also against the website.
+    expect(statusOf(244)).toBe('in-concept');
+    expect(statusOf(165)).toBe('flight-ready');
+    // Not in the Ship Matrix: the website.
+    expect(statusOf(300)).toBe('in-concept');
+    expect(statusOf(999)).toBeUndefined();
+  });
+
+  it('takes the website while the Ship Matrix isn’t read yet or of an older format', () => {
+    expect(createShipStatusLookup(null, website)(244)).toBe('flight-ready');
+    const older = { ...status, version: SHIP_STATUS_VERSION - 1 };
+    expect(createShipStatusLookup(older, website)(244)).toBe('flight-ready');
+    expect(createShipStatusLookup(null)(244)).toBeUndefined();
   });
 });

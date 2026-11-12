@@ -13,14 +13,16 @@ export type ProductionStatus = 'flight-ready' | 'in-concept';
 
 export interface ShipStatusSnapshot {
   version: number;
-  /** The ships in concept, by id; every other ship of the Ship Matrix is flight ready. */
+  /** The ships in concept, by id. */
   inConcept: number[];
+  /** The ships flight ready, by id; a ship in neither list has no value in the Ship Matrix. */
+  flightReady: number[];
   /** How many ships the Ship Matrix listed. */
   count: number;
 }
 
 /** Format version of the stored status; others are ignored and read again. */
-export const SHIP_STATUS_VERSION = 1;
+export const SHIP_STATUS_VERSION = 2;
 
 export const shipStatusItem = storage.defineItem<ShipStatusSnapshot | null>('local:ships.status', {
   fallback: null,
@@ -35,12 +37,16 @@ export const currentShipStatus = (value: ShipStatusSnapshot | null | undefined) 
 export function parseShipMatrix(json: unknown): ShipStatusSnapshot {
   const data = (json as { data?: unknown } | null)?.data;
   if (!Array.isArray(data) || !data.length) throw new Error('The Ship Matrix listed no ships');
-  const inConcept = data.flatMap((ship: { id?: unknown; production_status?: unknown }) =>
-    typeof ship?.id === 'number' && ship.production_status === 'in-concept' ? [ship.id] : [],
-  );
+  const ids = (status: string) =>
+    data
+      .flatMap((ship: { id?: unknown; production_status?: unknown }) =>
+        typeof ship?.id === 'number' && ship.production_status === status ? [ship.id] : [],
+      )
+      .sort((a, b) => a - b);
   return {
     version: SHIP_STATUS_VERSION,
-    inConcept: inConcept.sort((a, b) => a - b),
+    inConcept: ids('in-concept'),
+    flightReady: ids('flight-ready'),
     count: data.length,
   };
 }
@@ -90,4 +96,21 @@ export function maybeRefreshShipStatus({
     }
   })().finally(() => (running = undefined));
   return running;
+}
+
+/**
+ * The production status of a ship (#265): from the Ship Matrix, which the extension reads itself –
+ * the most current, straight from CIG – and, where it gives none (a ship it doesn't list, or the
+ * Ship Matrix not read yet or failing), from the website's ship facts (#109). `undefined` if
+ * neither knows.
+ */
+export function createShipStatusLookup(
+  matrix: ShipStatusSnapshot | null | undefined,
+  websiteStatus?: (id: number) => string | undefined,
+): (id: number) => ProductionStatus | string | undefined {
+  const current = currentShipStatus(matrix);
+  const inConcept = new Set(current?.inConcept);
+  const flightReady = new Set(current?.flightReady);
+  return (id) =>
+    inConcept.has(id) ? 'in-concept' : flightReady.has(id) ? 'flight-ready' : websiteStatus?.(id);
 }

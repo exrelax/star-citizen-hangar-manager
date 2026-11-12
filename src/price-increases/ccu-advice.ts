@@ -115,8 +115,11 @@ export interface CcuAdviceInput {
   warbonds: readonly WarbondSku[];
   /** Ships (by id) whose price is about to rise: no base ship for new CCUs. */
   risingShipIds?: ReadonlySet<number>;
-  /** Ships (by id) still in concept, from the Ship Matrix. */
-  inConceptShipIds?: ReadonlySet<number>;
+  /**
+   * A ship's production status (by id), e.g. "in-concept": the Ship Matrix first, the website's
+   * ship facts where it has none (#265, `createShipStatusLookup`).
+   */
+  statusOf?: (id: number) => string | undefined;
   /** The account's store credit in USD, if known. */
   storeCredit?: number;
   /** Whether a ship (by id) is always available in the Pledge Store; `undefined`: unknown. */
@@ -154,7 +157,7 @@ export function ccuAdvice(input: CcuAdviceInput): CcuAdviceGroup[] {
   const holdingsOf = input.holdingsOf ?? (() => NO_HOLDINGS);
   const onSale = new Set(buyable.map((sku) => sku.shipId));
   const risingShipIds = input.risingShipIds ?? new Set<number>();
-  const inConcept = input.inConceptShipIds ?? new Set<number>();
+  const statusOf = input.statusOf ?? (() => undefined);
   const lookup = createShipLookup(ships);
   const byId = new Map(ships.map((ship) => [ship.id, ship]));
   const warbondSkus = new Set(warbonds.map((warbond) => warbond.skuId));
@@ -206,7 +209,7 @@ export function ccuAdvice(input: CcuAdviceInput): CcuAdviceGroup[] {
         giftable: ccus.filter((ccu) => ccu.isGiftable).length,
         ...(keep && { keep }),
         ...(discountNow !== undefined && { discountNow }),
-        targetInConcept: inConcept.has(target.id),
+        targetInConcept: statusOf(target.id) === 'in-concept',
       };
 
       const price = increase.price;
