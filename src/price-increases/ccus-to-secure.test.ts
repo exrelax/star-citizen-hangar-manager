@@ -85,6 +85,12 @@ describe('ccusToSecure (#253)', () => {
     });
   });
 
+  it('finds the ship by name where the upgrade tool has another id', () => {
+    const otherIds = ships.map((ship) => (ship.id === 109 ? { ...ship, id: 9109 } : ship));
+    const [first] = secure({ ships: otherIds, buyable: [sku(9109), sku(165)] });
+    expect(first).toMatchObject({ ship: { id: 9109, name: 'Prospector' }, skuId: 9109 });
+  });
+
   it('is gone once the price increase is past', () => {
     expect(secure({ now: Date.parse('2026-11-21T00:00:00Z') })).toEqual([]);
   });

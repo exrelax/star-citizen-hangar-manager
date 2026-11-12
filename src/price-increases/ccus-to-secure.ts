@@ -1,5 +1,5 @@
 import type { Ship, ShipSku, WarbondSku } from '@/ships/ships';
-import { cheapestBases, type BaseShip, type Holdings } from '@/store/warbond';
+import { cheapestBases, createShipLookup, type BaseShip, type Holdings } from '@/store/warbond';
 import { upcomingPriceIncreases, type ExpectedPriceIncrease } from './price-increases';
 
 /*
@@ -38,13 +38,17 @@ export interface SecureInput {
 /** The CCUs to secure, the next price increase first; one entry per ship (its next increase). */
 export function ccusToSecure(input: SecureInput): SecureOffer[] {
   const upcoming = upcomingPriceIncreases(input.increases, input.now);
-  const rising = new Set(upcoming.map((increase) => increase.ship.id));
-  const bases = input.ships.filter((ship) => !rising.has(ship.id));
   const byId = new Map(input.ships.map((ship) => [ship.id, ship]));
+  const lookup = createShipLookup(input.ships);
+  /** The upgrade tool's ship of an increase: by id, else by name (as the advice does). */
+  const shipOf = (increase: ExpectedPriceIncrease) =>
+    byId.get(increase.ship.id) ?? lookup.shipOf(increase.ship.name);
+  const rising = new Set(upcoming.flatMap((increase) => shipOf(increase)?.id ?? []));
+  const bases = input.ships.filter((ship) => !rising.has(ship.id));
   const warbondSkus = new Set(input.warbonds.map((warbond) => warbond.skuId));
   const seen = new Set<number>();
   return upcoming.flatMap((increase): SecureOffer[] => {
-    const ship = byId.get(increase.ship.id);
+    const ship = shipOf(increase);
     if (!ship || seen.has(ship.id)) return [];
     seen.add(ship.id);
     // RSI sells standard CCUs to it right now.
