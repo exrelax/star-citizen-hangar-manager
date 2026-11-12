@@ -345,7 +345,7 @@ on its own.
   how many of the old CCUs can be gifted – the new ones, bought with store credit, can't. It
   recommends nothing where keeping them leaves more discount, or while RSI sells no CCU to the
   rising ship. Without the new price it only warns that a discount may be lost, and tells when
-  the target ship isn't flight ready yet (from RSI's Ship Matrix), so its price will probably rise
+  the target ship isn't flight ready yet (from RSI's Ship Matrix, the most current source; for ships it has no value for, from the project website's ship facts, #265), so its price will probably rise
   too. A suggestion only: nothing is melted or bought from there.
 
 ---
