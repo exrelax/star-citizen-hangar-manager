@@ -21,6 +21,8 @@ describe('withDefaults', () => {
         sort: { hangar: 'valueDesc', buyback: 'valueDesc' as never },
         shipLinks: { erkul: false, fleetyards: true },
         paintConsultant: { useStoreCredit: false } as never,
+        // An unknown sort goes back to the default, the period and event are kept.
+        warbondHistory: { sort: 'name' as never, period: 'event', eventId: 'iae-2956' },
       }),
     ).toEqual({
       language: 'de',
@@ -52,6 +54,7 @@ describe('withDefaults', () => {
       filters: DEFAULT_SETTINGS.filters,
       // The buy back can't sort by value: back to the default.
       sort: { hangar: 'valueDesc', buyback: 'newest' },
+      warbondHistory: { sort: 'date', period: 'event', eventId: 'iae-2956' },
       paintConsultant: {
         useStoreCredit: false,
         useFillers: true,

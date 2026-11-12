@@ -86,9 +86,38 @@ export const runningEvent = (
 export const historyPeriods = (event: StarCitizenEvent | undefined): HistoryPeriod[] =>
   HISTORY_PERIODS.filter((period) => period !== 'event' || event);
 
-/** The period selected at first: the event period while an event runs, else 90 days. */
-export const defaultHistoryPeriod = (event: StarCitizenEvent | undefined): HistoryPeriod =>
-  event ? 'event' : DEFAULT_HISTORY_PERIOD;
+/** The order and period of the history, as stored in the settings. */
+export interface HistoryChoice {
+  sort: HistorySort;
+  period: HistoryPeriod;
+  /** The event running when the period was chosen: a new event selects its own period. */
+  eventId?: string;
+}
+
+/**
+ * The stored choice as it applies now: an event that began since the period was chosen selects
+ * the event period, and once the event is over that period goes back to 90 days. The same object
+ * if nothing changes, so it is written back only when needed.
+ */
+export function currentHistoryChoice(
+  choice: HistoryChoice,
+  event: StarCitizenEvent | undefined,
+): HistoryChoice {
+  if (event && choice.eventId !== event.id) {
+    return { ...choice, period: 'event', eventId: event.id };
+  }
+  if (!event && choice.period === 'event') {
+    return { sort: choice.sort, period: DEFAULT_HISTORY_PERIOD };
+  }
+  return choice;
+}
+
+/** A period chosen by hand, kept for the event running now (if any). */
+export const chosenPeriod = (
+  choice: HistoryChoice,
+  period: HistoryPeriod,
+  event: StarCitizenEvent | undefined,
+): HistoryChoice => ({ sort: choice.sort, period, ...(event && { eventId: event.id }) });
 
 /** Where a period begins (epoch milliseconds); the event period falls back to 90 days. */
 export function periodStart(

@@ -199,6 +199,7 @@ const displayClasses = computed(() => ({
         :events="events"
         :now="now"
         :active="active && view === 'history'"
+        :settings="settings"
       />
     </div>
 
