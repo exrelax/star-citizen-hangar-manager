@@ -175,8 +175,15 @@ export const generateDemoAccount = (
   catalog: DemoCatalog,
   key: string,
   settings: DemoSettings = DEFAULT_DEMO_SETTINGS,
+  /** The ships RSI sells CCUs to, if known: the Price Increase Advisor's ship is one (#255). */
+  buyable?: ReadonlySet<number>,
 ): DemoAccount =>
-  withStates(generateHangar(catalog, key, settings.composition), catalog, key, settings.states);
+  withStates(
+    generateHangar(catalog, key, settings.composition, buyable),
+    catalog,
+    key,
+    settings.states,
+  );
 
 /** Gives the generated pledges their states and orders (#176). */
 export function withStates(
