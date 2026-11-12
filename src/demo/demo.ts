@@ -125,6 +125,8 @@ export function generatedDemo(
   today = localToday(),
   now = Date.now(),
   settings: DemoSettings = DEFAULT_DEMO_SETTINGS,
+  /** The ships RSI sells CCUs to, if known (#255). */
+  buyable?: ReadonlySet<number>,
 ): {
   pledges: PledgeView[];
   buyback: BuybackView[];
@@ -153,6 +155,7 @@ export function generatedDemo(
     account.pledges,
     generatedBuyback.pledges,
     now,
+    buyable,
   );
   const matcher = createPriceIncreaseMatcher(priceIncreases, now);
   const views = account.pledges.map((pledge, position) => {

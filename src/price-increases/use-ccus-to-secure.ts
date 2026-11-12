@@ -1,4 +1,5 @@
 import type { BuybackView } from '@/buyback/buyback-view';
+import { useDemoContext } from '@/demo/use-demo';
 import type { PledgeView } from '@/hangar/pledge-view';
 import { buyableShipsItem, current, shipsItem, warbondsItem } from '@/ships/ships-storage';
 import { useStored } from '@/storage/use-stored';
@@ -10,7 +11,8 @@ import { priceIncreasesItem, storedPriceIncreases } from './price-increases-stor
 /**
  * The CCUs to secure before a price increase (#253), for the Pledge Store tab and the sidebar's
  * notification (#254): from the stored upgrade tool and the website's expected price increases –
- * public data, also in the demo mode –, with the counts of the shown hangar and buy back.
+ * public data –, with the counts of the shown hangar and buy back. The generated demo has price
+ * increases of its own (#255).
  */
 export function useCcusToSecure(
   pledges: () => readonly PledgeView[],
@@ -21,11 +23,12 @@ export function useCcusToSecure(
   const storedBuyable = useStored(buyableShipsItem);
   const storedWarbonds = useStored(warbondsItem);
   const storedIncreases = useStored(priceIncreasesItem);
+  const demo = useDemoContext();
   return computed(() => {
     const ships = current(storedShips.value ?? null)?.ships;
     if (!ships) return [];
     return ccusToSecure({
-      increases: storedPriceIncreases(storedIncreases.value ?? null),
+      increases: demo.value?.priceIncreases ?? storedPriceIncreases(storedIncreases.value ?? null),
       ships,
       buyable: current(storedBuyable.value ?? null)?.skus ?? [],
       warbonds: current(storedWarbonds.value ?? null)?.warbonds ?? [],
