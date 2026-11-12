@@ -718,6 +718,16 @@ html .shm-theme-modern .shm-ways .shm-way.is-impossible {
   border-color: var(--shm-separator);
 }
 
+/* Choosing a way (#246): grouped surfaces, the chosen way with a ring in its color. */
+html .shm-theme-modern .shm-ways .shm-choose-way {
+  background: var(--shm-surface-elevated);
+  box-shadow: none;
+}
+
+html .shm-theme-modern .shm-ways .shm-choose-way.is-on {
+  box-shadow: inset 0 0 0 2px var(--shm-way);
+}
+
 /* ---- Settings: a list of categories, grouped rows like the system settings ---- */
 
 html .shm-theme-modern .shm-settings {

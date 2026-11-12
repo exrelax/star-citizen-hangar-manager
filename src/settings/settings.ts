@@ -43,7 +43,7 @@ export type ReboughtDetection = (typeof REBOUGHT_DETECTIONS)[number];
  * side by side as cards, each with its own tier, steps and store credit (the default); `table` –
  * the plan and its paints in tables, as before.
  */
-export const CONSULTANT_LAYOUTS = ['ways', 'table'] as const;
+export const CONSULTANT_LAYOUTS = ['choose', 'ways', 'table'] as const;
 export type ConsultantLayout = (typeof CONSULTANT_LAYOUTS)[number];
 
 export const THEMES = ['modern', 'rsi'] as const;
@@ -190,7 +190,7 @@ export const DEFAULT_SETTINGS: Settings = {
     useFillers: true,
     skipGiftable: true,
     reboughtDetection: 'plan',
-    layout: 'ways',
+    layout: 'choose',
   },
   shipLinks: { erkul: true, fleetyards: true },
   demo: DEFAULT_DEMO_SETTINGS,

@@ -252,10 +252,11 @@
     "paintConsultant": "Paint-Rabatt-Berater",
     "consultantLayout": "Darstellung",
     "consultantLayoutOptions": {
+      "choose": "Einen Weg wählen (Karten)",
       "ways": "Beide Wege nebeneinander (Karten)",
       "table": "Tabellen"
     },
-    "consultantLayoutHint": "Wie der Berater seinen Plan zeigt: „Erst kaufen“ und „Erst einschmelzen“ als Karten nebeneinander – jeweils mit Rabatt, Schritten und Store Credits auf dem Weg – oder den Plan und seine Paints in Tabellen.",
+    "consultantLayoutHint": "Wie der Berater seinen Plan zeigt: „Erst kaufen“ oder „Erst einschmelzen“ wählen und die Schritte, Store Credits auf dem Weg und den Warenkorb des gewählten Wegs sehen; beide Wege als Karten nebeneinander; oder den Plan und seine Paints in Tabellen.",
     "paintConsultantStoreCredit": "Meine Store Credits einbeziehen",
     "paintConsultantStoreCreditHint": "Der Warenkorb darf auch mit deinen aktuellen Store Credits bezahlt werden. Aus: nur mit dem, was das Einschmelzen deiner eigenen Paints ergibt. Der Berater kauft immer mit Store Credits, nie mit neuem Geld.",
     "paintConsultantFillers": "Füll-Paints verwenden",
@@ -729,6 +730,15 @@
       "melt": "Die $1 Füll-Paints einschmelzen",
       "meltOne": "Das Füll-Paint einschmelzen",
       "meltHint": "Schmilzt die Füll-Paints ein, die die Order des Paint-Rabatt-Beraters gekauft hat – nach ihren Pledge-IDs, nie andere Exemplare desselben Paints. Öffnet zuerst einen Dialog."
+    },
+    "choose": {
+      "label": "Weg wählen",
+      "wayStat": "$1 · $2 Paints · $3 vorab",
+      "cartTitle": "Warenkorb · $1 Paints mit $2",
+      "notInCart": "nicht in diesem Warenkorb",
+      "tiersOne": "Dieser Weg erreicht $1.",
+      "tiersOther": "Dieser Weg erreicht $1, der andere $2.",
+      "credit": "Store Credits"
     }
   },
   "upgradeLog": {

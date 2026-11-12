@@ -252,10 +252,11 @@
     "paintConsultant": "Conseiller de remises sur les peintures",
     "consultantLayout": "Affichage",
     "consultantLayoutOptions": {
+      "choose": "Choisir une voie (cartes)",
       "ways": "Les deux voies côte à côte (cartes)",
       "table": "Tableaux"
     },
-    "consultantLayoutHint": "Comment le conseiller montre son plan : « Acheter d’abord » et « Fondre d’abord » en cartes côte à côte – chacune avec sa remise, ses étapes et le crédit boutique au fil des étapes – ou le plan et ses peintures en tableaux.",
+    "consultantLayoutHint": "Comment le conseiller montre son plan : choisir « Acheter d’abord » ou « Fondre d’abord » et voir les étapes, le crédit boutique au fil des étapes et le panier de la voie choisie ; les deux voies côte à côte en cartes ; ou le plan et ses peintures en tableaux.",
     "paintConsultantStoreCredit": "Inclure mon crédit boutique",
     "paintConsultantStoreCreditHint": "Le panier peut aussi être payé avec votre crédit boutique actuel. Désactivé : uniquement avec ce que rapporte la fonte de vos propres peintures. Le conseiller achète toujours avec du crédit boutique, jamais avec de l’argent neuf.",
     "paintConsultantFillers": "Utiliser des peintures de remplissage",
@@ -729,6 +730,15 @@
       "melt": "Fondre les $1 peintures de remplissage",
       "meltOne": "Fondre la peinture de remplissage",
       "meltHint": "Fond les peintures de remplissage achetées par la commande du conseiller de remises sur les peintures – d’après leurs ids de pledge, jamais d’autres copies de la même peinture. Ouvre d’abord une boîte de dialogue."
+    },
+    "choose": {
+      "label": "Choisir une voie",
+      "wayStat": "$1 · $2 peintures · $3 d’avance",
+      "cartTitle": "Panier · $1 peintures à $2",
+      "notInCart": "pas dans ce panier",
+      "tiersOne": "Cette voie atteint $1.",
+      "tiersOther": "Cette voie atteint $1, l’autre $2.",
+      "credit": "Crédit boutique"
     }
   },
   "upgradeLog": {

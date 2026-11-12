@@ -252,10 +252,11 @@
     "paintConsultant": "Paint Discount Consultant",
     "consultantLayout": "Layout",
     "consultantLayoutOptions": {
+      "choose": "Choose a way (cards)",
       "ways": "Both ways side by side (cards)",
       "table": "Tables"
     },
-    "consultantLayoutHint": "How the consultant shows its plan: “Buy first” and “Melt first” as cards side by side – each with its discount, steps and store credit along the way – or the plan and its paints in tables.",
+    "consultantLayoutHint": "How the consultant shows its plan: choose “Buy first” or “Melt first” and see the chosen way’s steps, store credit along the way and cart; both ways side by side as cards; or the plan and its paints in tables.",
     "paintConsultantStoreCredit": "Include my store credit",
     "paintConsultantStoreCreditHint": "The cart may also be paid with your current store credit. Off: only with what melting your own paints gives. The consultant always buys with store credit, never with new money.",
     "paintConsultantFillers": "Use filler paints",
@@ -729,6 +730,15 @@
       "melt": "Melt the $1 filler paints",
       "meltOne": "Melt the filler paint",
       "meltHint": "Melts the filler paints the Paint Discount Consultant's order bought – by their pledge ids, never other copies of the same paint. Opens a dialog first."
+    },
+    "choose": {
+      "label": "Choose a way",
+      "wayStat": "$1 · $2 paints · $3 upfront",
+      "cartTitle": "Cart · $1 paints at $2",
+      "notInCart": "not in this cart",
+      "tiersOne": "This way reaches $1.",
+      "tiersOther": "This way reaches $1, the other one $2.",
+      "credit": "Store credit"
     }
   },
   "upgradeLog": {

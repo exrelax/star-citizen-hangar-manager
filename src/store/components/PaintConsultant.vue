@@ -16,6 +16,7 @@ import { refreshStoreItems } from '../items/sync-store-items';
 import { usePaintConsultant } from '../paint-consultant/use-paint-consultant';
 import { cartLinesOf } from '../paint-consultant/cart';
 import PaintCartButton from './PaintCartButton.vue';
+import PaintConsultantChoose from './PaintConsultantChoose.vue';
 import PaintConsultantWays from './PaintConsultantWays.vue';
 import {
   REBUY_PLAN_VERSION,
@@ -42,8 +43,9 @@ const COOLDOWN_SOURCE =
 const { pledges, storeItems, creditUnknown, storeCredit, result, pending } = usePaintConsultant();
 
 const options = computed(() => props.settings.paintConsultant);
-/** Both ways side by side as cards (the default), or the plan in tables. */
-const ways = computed(() => options.value.layout === 'ways');
+/** The ways as cards – one to choose (the default, #246) or both side by side – or in tables. */
+const ways = computed(() => options.value.layout !== 'table');
+const choose = computed(() => options.value.layout === 'choose');
 const { update } = useSettings();
 /** The option is also in the settings (`PaintConsultantSection.vue`); both change the same value. */
 const setSkipGiftable = (skipGiftable: boolean) =>
@@ -215,18 +217,25 @@ const openBulkMeltingSetting = () =>
         <p v-else class="shm-consultant-intro">{{ i18n.t('consultant.intro') }}</p>
       </div>
       <!-- The cards: the option next to the title, its hint in a tooltip. -->
-      <label
-        v-if="ways && storeItems && !settings.hideMeltValue"
-        v-tooltip="i18n.t('consultant.skipGiftableHint')"
-        class="shm-consultant-option"
-      >
-        <input
-          type="checkbox"
-          :checked="options.skipGiftable"
-          @change="setSkipGiftable(($event.target as HTMLInputElement).checked)"
-        />
-        <span>{{ i18n.t('consultant.skipGiftable') }}</span>
-      </label>
+      <div v-if="ways && storeItems && !settings.hideMeltValue" class="shm-consultant-head-side">
+        <!-- Choosing a way (#246): the store credit the ways start from. -->
+        <span
+          v-if="choose && options.useStoreCredit && !creditUnknown"
+          class="shm-consultant-credit"
+        >
+          <SvgIcon name="money-check-dollar" />
+          {{ i18n.t('consultant.choose.credit') }}
+          <span class="shm-consultant-credit-value">{{ usd(storeCredit) }}</span>
+        </span>
+        <label v-tooltip="i18n.t('consultant.skipGiftableHint')" class="shm-consultant-option">
+          <input
+            type="checkbox"
+            :checked="options.skipGiftable"
+            @change="setSkipGiftable(($event.target as HTMLInputElement).checked)"
+          />
+          <span>{{ i18n.t('consultant.skipGiftable') }}</span>
+        </label>
+      </div>
     </div>
 
     <p v-if="settings.hideMeltValue" class="shm-consultant-state">
@@ -459,8 +468,16 @@ const openBulkMeltingSetting = () =>
         }}
       </p>
 
+      <PaintConsultantChoose
+        v-if="plan && choose"
+        :plan="plan"
+        :buy-first="result?.buyFirst"
+        :credit="storeCredit"
+        :next="result?.next"
+        :settings="settings"
+      />
       <PaintConsultantWays
-        v-if="plan && ways"
+        v-else-if="plan && ways"
         :plan="plan"
         :buy-first="result?.buyFirst"
         :credit="storeCredit"
@@ -708,6 +725,32 @@ const openBulkMeltingSetting = () =>
   align-items: flex-end;
   justify-content: space-between;
   gap: 8px 16px;
+}
+
+.shm-consultant-head-side {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+
+/* The store credit as a quiet chip next to the option. */
+.shm-consultant-credit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  padding: 0 10px;
+  color: var(--shm-text-secondary);
+  font-size: calc(12px * var(--shm-font-scale));
+  background: rgb(var(--shm-accent-rgb) / 0.12);
+  border-radius: var(--shm-radius-control);
+}
+
+.shm-consultant-credit-value {
+  color: var(--shm-text-strong);
+  font-family: var(--shm-font-mono, inherit);
+  font-variant-numeric: tabular-nums;
 }
 
 .shm-consultant.is-ways .shm-consultant-head .shm-consultant-option {
