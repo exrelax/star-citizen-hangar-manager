@@ -740,7 +740,11 @@
     "paid": "Pagado",
     "paidHint": "Lo que esta mejora sumó al valor del pledge, es decir, lo que costó realmente",
     "discount": "Descuento",
-    "discountHint": "Diferencia de precio entre las dos naves menos el coste de la mejora. Desconocido para la primera mejora: RSI no registra el valor anterior."
+    "discountHint": "Diferencia de precio entre las dos naves menos el coste de la mejora. Para la primera mejora junto con el pledge base: RSI no registra el valor anterior.",
+    "withBaseHint": "El pledge base y la primera mejora juntos",
+    "withBase": "La primera mejora junto con el pledge base ($2): el precio de la $1 menos el valor tras la primera mejora. RSI no registra el valor anterior, así que no se pueden separar.",
+    "withBaseUnknown": "No se conoce el descuento del pledge base y la primera mejora: falta el precio de la nave de destino.",
+    "total": "Total"
   },
   "insurance": {
     "year": "1 año",

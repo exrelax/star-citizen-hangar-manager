@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import { useDemoContext } from '@/demo/use-demo';
 import { i18n, locale } from '@/i18n';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { formatUsd } from '../discount-format';
 import { shipsItem } from '@/ships/ships-storage';
 import { createPriceLookup, shipPricesOf } from '../ship-prices';
-import { loadUpgradeLog, withPrices, type PricedUpgradeLogEntry } from '../upgrade-log';
+import {
+  ccuShips,
+  loadUpgradeLog,
+  totalDiscount,
+  withPrices,
+  type PricedUpgradeLogEntry,
+} from '../upgrade-log';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 
 const props = defineProps<{
@@ -41,6 +47,11 @@ async function toggle() {
     ]);
   }
 }
+
+/** The discounts together: the pledge's discount against its current ship's price (#241). */
+const total = computed(() => entries.value && totalDiscount(entries.value));
+/** The first CCU's ships, for the note that its discount includes the base pledge. */
+const firstShips = computed(() => entries.value?.[0] && ccuShips(entries.value[0].name));
 
 const money = (value: number) => formatUsd(value, locale.value);
 /** "+$5", "−$15": paid amounts are added, discounts taken off; nothing is just "$0". */
@@ -106,14 +117,36 @@ const shortName = (name: string) => name.replace(/^upgrade\s*-\s*/i, '');
               <template v-if="entry.added !== undefined">{{ signed(entry.added) }}</template>
             </td>
             <td
+              v-tooltip="entry.withBase && i18n.t('upgradeLog.withBaseHint')"
               class="is-amount shm-value"
               :class="entry.discount! < 0 ? 'is-surcharge' : 'is-discount'"
             >
-              <template v-if="entry.discount !== undefined">{{ signed(-entry.discount) }}</template>
+              <template v-if="entry.discount !== undefined"
+                >{{ signed(-entry.discount) }}<sup v-if="entry.withBase">*</sup></template
+              >
             </td>
           </tr>
         </tbody>
+        <!-- The discounts together: the row's discount (#241). -->
+        <tfoot v-if="total !== undefined" class="shm-value">
+          <tr>
+            <th colspan="5">{{ i18n.t('upgradeLog.total') }}</th>
+            <td class="is-amount" :class="total < 0 ? 'is-surcharge' : 'is-discount'">
+              {{ signed(-total) }}
+            </td>
+          </tr>
+        </tfoot>
       </table>
+      <p
+        v-if="entries?.length && entries[0]!.discount !== undefined"
+        class="shm-upgrade-log-note shm-value"
+      >
+        *
+        {{ i18n.t('upgradeLog.withBase', [firstShips?.to ?? '', firstShips?.from ?? '']) }}
+      </p>
+      <p v-else-if="entries?.length" class="shm-upgrade-log-note shm-value">
+        {{ i18n.t('upgradeLog.withBaseUnknown') }}
+      </p>
     </template>
   </section>
 </template>
@@ -186,6 +219,15 @@ const shortName = (name: string) => name.replace(/^upgrade\s*-\s*/i, '');
   color: var(--shm-text-muted);
   font-weight: normal;
   border-top: 0;
+}
+
+.shm-upgrade-log-entries tfoot th {
+  color: var(--shm-text);
+  text-align: right;
+}
+
+.shm-upgrade-log-entries tfoot :is(th, td) {
+  border-top-color: rgb(var(--shm-accent-rgb) / 0.2);
 }
 
 .shm-upgrade-log-entries .is-amount {

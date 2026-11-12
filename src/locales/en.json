@@ -740,7 +740,11 @@
     "paid": "Paid",
     "paidHint": "What this upgrade added to the pledge value, i.e. what it really cost",
     "discount": "Discount",
-    "discountHint": "Price difference of the two ships minus what the upgrade cost. Not known for the first upgrade: RSI doesn't log the value before it."
+    "discountHint": "Price difference of the two ships minus what the upgrade cost. For the first upgrade together with the base pledge: RSI doesn’t log the value before it.",
+    "withBaseHint": "The base pledge and the first upgrade together",
+    "withBase": "The first upgrade together with the base pledge ($2): the $1’s price minus the value after the first upgrade. RSI doesn’t log the value before it, so the two can’t be told apart.",
+    "withBaseUnknown": "The discount of the base pledge and the first upgrade isn’t known: the target ship’s price is missing.",
+    "total": "Total"
   },
   "insurance": {
     "year": "1 year",

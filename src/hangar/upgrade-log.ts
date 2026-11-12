@@ -25,8 +25,17 @@ export interface UpgradeLogEntry {
 export interface PricedUpgradeLogEntry extends UpgradeLogEntry {
   /** Original price of the target ship. */
   targetPrice?: number;
-  /** Original price difference of the two ships minus what the CCU added; negative if more. */
+  /**
+   * Original price difference of the two ships minus what the CCU added; negative if more. For the
+   * first CCU it includes the base pledge (`withBase`).
+   */
   discount?: number;
+  /**
+   * The first CCU: RSI doesn't log the pledge's value before it, so the base pledge and this CCU
+   * can't be told apart. Its discount is theirs together: the target ship's price minus the value
+   * after this CCU (#241).
+   */
+  withBase?: true;
 }
 
 /** Applied CCUs of a pledge, oldest first (RSI lists them newest first). */
@@ -94,23 +103,38 @@ export function ccuShips(name: string): { from: string; to: string } | undefined
 /**
  * Adds the original price of each CCU's target ship and the discount of the CCU: what the price
  * difference of its ships would cost, minus what it added to the pledge. The first CCU has no
- * known step (RSI doesn't log the value before it), so it gets no discount.
+ * known step (RSI doesn't log the value before it): its discount is that of the base pledge and
+ * the CCU together, the target ship's price minus the value after it (#241). So the discounts add
+ * up to the pledge's discount against its current ship's price.
  */
 export function withPrices(
   entries: readonly UpgradeLogEntry[],
   priceOf: PriceLookup,
 ): PricedUpgradeLogEntry[] {
-  return entries.map((entry) => {
+  return entries.map((entry, index) => {
     const ships = ccuShips(entry.name);
     const from = ships && priceOf(ships.from);
     const to = ships && priceOf(ships.to);
+    if (index === 0) {
+      const discount =
+        to && entry.valueAfter !== undefined ? cents(to.price - entry.valueAfter) : undefined;
+      return { ...entry, targetPrice: to?.price, discount, withBase: true };
+    }
     const discount =
       from && to && entry.added !== undefined
-        ? Math.round((to.price - from.price - entry.added) * 100) / 100
+        ? cents(to.price - from.price - entry.added)
         : undefined;
     return { ...entry, targetPrice: to?.price, discount };
   });
 }
+
+/** The sum of the discounts, if every one is known. */
+export function totalDiscount(entries: readonly PricedUpgradeLogEntry[]): number | undefined {
+  if (!entries.length || entries.some((entry) => entry.discount === undefined)) return undefined;
+  return cents(entries.reduce((sum, entry) => sum + entry.discount!, 0));
+}
+
+const cents = (value: number) => Math.round(value * 100) / 100;
 
 const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
 
