@@ -5,6 +5,7 @@ import { i18n, locale } from '@/i18n';
 import { computed, ref } from 'vue';
 import { ownedCounts, type WarbondOffer } from '../warbond';
 import { vTooltip } from '@/shared/tooltip/tooltip';
+import BaseShipsTable from './BaseShipsTable.vue';
 
 const props = defineProps<{ offer: WarbondOffer }>();
 
@@ -32,9 +33,6 @@ const owned = computed(() =>
 
 /** The hangar's CCUs to this very ship, and its other CCUs that can't be chained with it. */
 const counts = computed(() => ownedCounts(props.offer));
-
-/** A count of the tables; nothing for none, so the counts that matter stand out. */
-const count = (value: number) => (value ? String(value) : '–');
 </script>
 
 <template>
@@ -115,42 +113,7 @@ const count = (value: number) => (value ? String(value) : '–');
         <p v-if="!offer.bases.length" class="shm-hint">{{ i18n.t('store.noBases') }}</p>
         <template v-else>
           <p class="shm-hint">{{ i18n.t('store.cheapestHint') }}</p>
-          <table class="shm-warbond-table">
-            <thead>
-              <tr>
-                <th scope="col" class="is-number">{{ i18n.t('store.colCcu') }}</th>
-                <th scope="col">{{ i18n.t('store.colFrom') }}</th>
-                <th scope="col" class="is-number">{{ i18n.t('store.colShipPrice') }}</th>
-                <th scope="col" class="is-number is-group">
-                  {{ i18n.t('store.colHangarShips') }}
-                </th>
-                <th scope="col" class="is-number">{{ i18n.t('store.colHangarCcus') }}</th>
-                <th scope="col" class="is-number is-group">
-                  {{ i18n.t('store.colBuybackShips') }}
-                </th>
-                <th scope="col" class="is-number">{{ i18n.t('store.colBuybackCcus') }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="base in offer.bases" :key="base.ship.id">
-                <td class="is-number is-strong">{{ usd(base.ccuPrice) }}</td>
-                <td>{{ base.ship.name }}</td>
-                <td class="is-number">{{ usd(base.ship.msrp) }}</td>
-                <td class="is-number is-group" :class="{ 'is-none': !base.holdings.hangarShips }">
-                  {{ count(base.holdings.hangarShips) }}
-                </td>
-                <td class="is-number" :class="{ 'is-none': !base.holdings.hangarCcus }">
-                  {{ count(base.holdings.hangarCcus) }}
-                </td>
-                <td class="is-number is-group" :class="{ 'is-none': !base.holdings.buybackShips }">
-                  {{ count(base.holdings.buybackShips) }}
-                </td>
-                <td class="is-number" :class="{ 'is-none': !base.holdings.buybackCcus }">
-                  {{ count(base.holdings.buybackCcus) }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <BaseShipsTable :bases="offer.bases" />
         </template>
 
         <h4 class="shm-warbond-heading">
@@ -195,6 +158,7 @@ const count = (value: number) => (value ? String(value) : '–');
 </template>
 
 <style src="@/hangar/components/row.css"></style>
+<style src="./store-table.css"></style>
 
 <style scoped>
 .shm-warbond-price {
@@ -253,55 +217,5 @@ const count = (value: number) => (value ? String(value) : '–');
   font-size: calc(12px * var(--shm-font-scale));
   font-weight: normal;
   text-transform: uppercase;
-}
-
-/* Tables like the CCU history's (UpgradeLog.vue): numbers right-aligned, so they line up. */
-.shm-warbond-table {
-  width: 100%;
-  margin: 0 0 6px;
-  border-collapse: collapse;
-}
-
-.shm-warbond-table th,
-.shm-warbond-table td {
-  padding: 3px 0 3px 12px;
-  text-align: left;
-  vertical-align: top;
-  border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.08);
-}
-
-.shm-warbond-table :is(th, td):first-child {
-  padding-left: 0;
-}
-
-.shm-warbond-table th {
-  color: var(--shm-text-muted);
-  font-weight: normal;
-  border-top: 0;
-}
-
-.shm-warbond-table .is-number {
-  text-align: right;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Space before each pair of count columns (hangar, buy back). */
-.shm-warbond-table .is-group {
-  padding-left: 24px;
-}
-
-.shm-warbond-table .is-strong {
-  color: var(--shm-text-strong);
-}
-
-.shm-warbond-table .is-muted,
-.shm-warbond-table .is-none {
-  color: var(--shm-text-muted);
-}
-
-/* The hangar's CCUs: small, they are a reference. */
-.shm-warbond-table.is-small {
-  font-size: calc(11px * var(--shm-font-scale));
 }
 </style>

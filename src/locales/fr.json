@@ -1023,5 +1023,14 @@
     "footer": "Une simple suggestion : le Hangar Manager ne fond ni n’achète jamais rien de lui-même. Les prix et dates sont attendus, pas confirmés par RSI.",
     "button": "Garder la remise",
     "buttonHint": "Ce CCU perd de la valeur d’upgrade avec une hausse de prix attendue : comment garder sa remise."
+  },
+  "ccusToSecure": {
+    "title": "CCU à sécuriser avant une hausse de prix",
+    "intro": "Vaisseaux dont le prix devrait bientôt augmenter. Un CCU vers un tel vaisseau acheté maintenant garde son prix mais gagne de la valeur d’upgrade avec la hausse – c’est la remise. Les dates et prix sont attendus, pas confirmés par RSI.",
+    "openUpgradeHint": "Ouvre la fenêtre d’upgrade de vaisseau de RSI avec le $1 comme cible",
+    "cheapestTitle": "CCU les moins chers vers le $1",
+    "gainHint": "Chaque CCU acheté avant le $2 gagne $1 de remise. Les nombres indiquent combien de fois tu as déjà chaque vaisseau – comme vaisseau ou comme cible d’un CCU – dans ton hangar et le Buy Back.",
+    "gainUnknownHint": "Chaque CCU acheté avant le $1 gagne autant de remise que le prix augmente – on ne sait pas encore de combien. Les nombres indiquent combien de fois tu as déjà chaque vaisseau – comme vaisseau ou comme cible d’un CCU – dans ton hangar et le Buy Back.",
+    "noBases": "Aucun vaisseau ne coûte moins que le $1, il n’y a donc pas de CCU vers lui."
   }
 }

@@ -662,6 +662,16 @@ always read both; the count line says when the offers were updated. For each war
   price (e.g. to a ship listed above) are left out: they can be chained. The count is also a tag on
   the item.
 
+Below them, set apart, **CCUs to secure before a price increase** (#253): for every ship whose
+price is expected to rise (the project website's list, see [Buy back](#buy-back)) and to which RSI
+sells CCUs right now – for every user, whether or not the hangar has CCUs to it. A CCU bought now
+keeps its price, but its upgrade value grows with the ship's: that is the discount. Each ship shows
+its price now and after (if announced), the countdown to the increase with the gain ("Price +$20:
+7 days"), and **Ship upgrade** with the ship as target. Opened, it lists the 10 cheapest CCUs to it,
+like the warbond CCUs, with the gain per CCU and how often you already have each base ship in your
+hangar and buy back. Ships about to rise themselves aren't offered as base ships; a ship disappears
+once its price increase is past.
+
 ## Paint Discount Consultant
 
 RSI gives a volume discount on paints in the cart: 15 % from 2 paints, 20 % from 3, 25 % from 5,
