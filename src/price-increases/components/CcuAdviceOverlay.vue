@@ -19,7 +19,7 @@ import { fontScaleStyle, themeClasses } from '@/themes/theme';
 import { computed, onMounted, onUnmounted, reactive, useTemplateRef } from 'vue';
 import { adviceEvents, type AdviceEvent, type AdviceRow } from '../advice-events';
 import { ccuAdvice, type CcuAdviceGroup } from '../ccu-advice';
-import { formatExpectedTime } from '../price-increase-label';
+import { confirmationNote, formatExpectedTime } from '../price-increase-label';
 import CcuShips from './CcuShips.vue';
 import PriceIncreaseBadge from './PriceIncreaseBadge.vue';
 
@@ -107,6 +107,11 @@ const groups = computed((): CcuAdviceGroup[] | undefined => {
 /** Per rising ship, the one of the CCU it was opened from first. */
 const events = computed(() =>
   groups.value ? adviceEvents(groups.value, storeCredit.value, props.pledgeId) : undefined,
+);
+
+/** Whether the price increases shown are expected or confirmed by CIG (#275). */
+const footerNote = computed(() =>
+  confirmationNote((events.value ?? []).map((event) => event.increase)),
 );
 
 // "Hide sensitive information": the amounts are the account's, so none is shown.
@@ -637,6 +642,7 @@ function onKeydown(event: KeyboardEvent) {
           <span class="shm-kd-footer-note">
             <SvgIcon name="circle-info" />
             {{ i18n.t('ccuAdvice.footer') }}
+            <template v-if="footerNote">{{ i18n.t(footerNote) }}</template>
           </span>
           <button
             v-if="recommendedIds.length"

@@ -1016,6 +1016,7 @@
     "flightReady": "Voraussichtlich ab $1 flugbereit.",
     "expected": "Diese Termine sind erwartet, nicht von RSI bestätigt.",
     "confirmed": "Diese Preiserhöhung ist von CIG bestätigt.",
+    "partlyConfirmed": "Preise und Termine sind erwartet, sofern nicht von CIG bestätigt.",
     "source": "Quelle"
   },
   "ccuAdvice": {
@@ -1041,7 +1042,7 @@
     "giftableOne": "1 dieser $2 CCUs lässt sich jetzt verschenken; die neuen, mit Store Credits gekauft, lassen sich nicht verschenken.",
     "giftableSingle": "Dieses CCU lässt sich jetzt verschenken; das neue, mit Store Credits gekauft, lässt sich nicht verschenken.",
     "giftableAll": "Alle $1 CCUs lassen sich jetzt verschenken; die neuen, mit Store Credits gekauft, lassen sich nicht verschenken.",
-    "footer": "Nur ein Vorschlag: Der Hangar Manager schmilzt und kauft nie etwas von sich aus. Preise und Termine sind erwartet, nicht von RSI bestätigt.",
+    "footer": "Nur ein Vorschlag: Der Hangar Manager schmilzt und kauft nie etwas von sich aus.",
     "button": "Rabatt erhalten",
     "buttonHint": "Dieses CCU verliert durch eine erwartete Preiserhöhung an Upgrade-Wert: so erhältst du seinen Rabatt.",
     "eventPrice": "Die $1 steigt von $2 auf $3",
@@ -1093,7 +1094,7 @@
   },
   "ccusToSecure": {
     "title": "CCUs vor einer Preiserhöhung sichern",
-    "intro": "Schiffe, deren Preis voraussichtlich bald steigt. Ein jetzt gekauftes CCU auf so ein Schiff behält seinen Preis, gewinnt mit der Preiserhöhung aber an Upgrade-Wert – das ist der Rabatt. Termine und Preise sind erwartet, nicht von RSI bestätigt.",
+    "intro": "Schiffe, deren Preis bald steigt. Ein jetzt gekauftes CCU auf so ein Schiff behält seinen Preis, gewinnt mit der Preiserhöhung aber an Upgrade-Wert – das ist der Rabatt.",
     "openUpgradeHint": "Öffnet RSIs Dialog für Schiffs-Upgrades mit der $1 als Ziel",
     "cheapestTitle": "Günstigste CCUs zur $1",
     "gainHint": "Jedes vor dem $2 gekaufte CCU gewinnt $1 Rabatt. Die Zahlen zeigen, wie oft du jedes Schiff schon hast – als Schiff oder als Ziel eines CCUs – in Hangar und Buy Back.",

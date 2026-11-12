@@ -1016,6 +1016,7 @@
     "flightReady": "Se espera que sea flight ready el $1.",
     "expected": "Estas fechas son previstas, no confirmadas por RSI.",
     "confirmed": "Esta subida de precio está confirmada por CIG.",
+    "partlyConfirmed": "Los precios y las fechas son previstos, salvo que CIG los haya confirmado.",
     "source": "Fuente"
   },
   "ccuAdvice": {
@@ -1041,7 +1042,7 @@
     "giftableOne": "1 de estos $2 CCU se puede regalar ahora; los nuevos, comprados con store credit, no se podrán regalar.",
     "giftableSingle": "Este CCU se puede regalar ahora; el nuevo, comprado con store credit, no se podrá regalar.",
     "giftableAll": "Los $1 CCU se pueden regalar ahora; los nuevos, comprados con store credit, no se podrán regalar.",
-    "footer": "Solo una sugerencia: el Hangar Manager nunca funde ni compra nada por sí mismo. Los precios y las fechas son previstos, no confirmados por RSI.",
+    "footer": "Solo una sugerencia: el Hangar Manager nunca funde ni compra nada por sí mismo.",
     "button": "Conservar el descuento",
     "buttonHint": "Este CCU pierde valor de mejora con una subida de precio prevista: cómo conservar su descuento.",
     "eventPrice": "La $1 sube de $2 a $3",
@@ -1093,7 +1094,7 @@
   },
   "ccusToSecure": {
     "title": "CCU que conviene asegurar antes de una subida de precio",
-    "intro": "Naves cuyo precio se espera que suba pronto. Un CCU hacia una de ellas comprado ahora mantiene su precio pero gana valor de mejora con la subida: ese es el descuento. Las fechas y precios son previstos, no confirmados por RSI.",
+    "intro": "Naves cuyo precio sube pronto. Un CCU hacia una de ellas comprado ahora mantiene su precio pero gana valor de mejora con la subida: ese es el descuento.",
     "openUpgradeHint": "Abre el diálogo de mejoras de nave de RSI con la $1 como destino",
     "cheapestTitle": "CCU más baratos hacia la $1",
     "gainHint": "Cada CCU comprado antes del $2 gana $1 de descuento. Los números muestran cuántas veces ya tienes cada nave – como nave o como destino de un CCU – en tu hangar y el Buy Back.",
