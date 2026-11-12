@@ -21,8 +21,12 @@ import { demoStoreNotes } from './demo-store-notes';
 import { demoStoreData } from './demo-store';
 import type { StoreData } from '@/store/warbond';
 import type { StoreItem } from '@/store/items/store-items';
-import { demoKeptPlan, resetDemoPlan, seedDemoPlan } from './demo-consultant';
-import { resetDemoRunningPlan } from './demo-running-plan';
+import {
+  demoCompletedPlans,
+  demoRunningPlan,
+  resetDemoRunningPlan,
+  seedDemoRunningPlan,
+} from './demo-running-plan';
 import { localToday } from '@/orders/refund';
 import type { DemoSettings } from './demo-settings';
 import {
@@ -59,18 +63,17 @@ async function demoKey(): Promise<string> {
  */
 export const newDemoHangar = (): Promise<void> => demoKeyItem.setValue(randomKey());
 
-/** Counts the resets of the demo, so its marks and kept plan are set again at once. */
+/** Counts the resets of the demo, so its marks and running plan are set again at once. */
 const demoResets = shallowRef(0);
 
 /**
- * The demo back to its start (#178): its marks, its consultant's kept plan and its sample
+ * The demo back to its start (#178): its marks, its consultant's running plan and its sample
  * notifications as a new demo hangar has them, and the Price Increase Advisor's ones shown again.
  */
 export async function resetDemoData(): Promise<void> {
   await Promise.all([
     demoMeltMarksItem.removeValue(),
     marksSeededItem.removeValue(),
-    resetDemoPlan(),
     resetDemoRunningPlan(),
     resetDemoNotes(),
     // The Price Increase Advisor's notifications closed with × (#255).
@@ -216,9 +219,6 @@ export function useDemo(
     if (!account || !key.value) return;
     const marked = demoMarkIds(account.pledges, justBoughtOf(account.pledges));
     if (settings().states.meltMarks) void seedDemoMarks(key.value, marked);
-    // The consultant's kept plan (#131): its filler paints are the marked ones.
-    const plan = demoKeptPlan(account.pledges, catalog.value.items, marked, Date.now());
-    void seedDemoPlan(key.value, plan);
   });
   // The demo's own sidebar notifications (#210, #131), once per key.
   watch(
@@ -241,6 +241,38 @@ export function useDemo(
       generatedAccount.value?.pledges ??
       demoHangar(pledges.value, key.value, localToday(), Date.now(), settings().ownHangarPledges)
     );
+  });
+  /*
+   * The consultant's running plan at the stage chosen in the settings (#303), with its completed
+   * plans: made of the demo hangar and the catalog only. Its fillers are the marked paint ready to
+   * melt at the stage "fillers", otherwise any other paint, so the sidebar's marks agree.
+   */
+  const running = computed(() => {
+    if (!active.value || !key.value) return undefined;
+    const pledgeList = demoPledges.value;
+    const now = Date.now();
+    const stage = settings().runningPlanStage;
+    const older = demoMarkIds(pledgeList, justBoughtOf(pledgeList)).filter(
+      (id) => id !== justBoughtOf(pledgeList),
+    );
+    const items = catalog.value.items;
+    const plan = demoRunningPlan(stage, {
+      pledges: pledgeList,
+      items,
+      now,
+      ...(stage === 'fillers' ? { marked: older } : { avoid: older }),
+    });
+    const hangar = pledgeList.reduce((hash, { id }) => (hash * 31 + id) | 0, pledgeList.length);
+    return {
+      // The demo hangar and catalog it was made of, so changing them sets the plan again.
+      seed: `${key.value}:${hangar}:${items.length}`,
+      stage,
+      plan,
+      completed: demoCompletedPlans(items, now),
+    };
+  });
+  watch([running, demoResets], ([demo]) => {
+    if (demo) void seedDemoRunningPlan(demo.seed, demo.stage, demo.plan, demo.completed);
   });
   const context = computed<DemoContext | null>(() => {
     if (!active.value || !key.value) return null;
@@ -300,8 +332,8 @@ export function useDemo(
           buyback: demoBuybackPledges.value.length,
           orders: [...demoPledges.value, ...demoBuybackPledges.value].filter((p) => p.order).length,
           storeCredit: 1,
-          paintPlan: 1,
-          paintHistory: 2,
+          paintPlan: running.value?.plan?.plan ? 1 : 0,
+          paintHistory: running.value?.completed.length ?? 0,
           events: events.value.length,
           ...(account && { priceIncreases: account.priceIncreases.length }),
         },

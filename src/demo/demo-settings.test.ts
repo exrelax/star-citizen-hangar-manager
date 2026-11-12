@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { FALLBACK_CATALOG } from './catalog';
 import { buybackComposition, generatedDemo } from './demo';
+import { RUNNING_PLAN_STAGES } from './demo-running-plan';
 import { DEFAULT_DEMO_SETTINGS, demoSettingsOf } from './demo-settings';
 
 const TODAY = '2026-11-10';
@@ -21,6 +22,15 @@ describe('demoSettingsOf (#178)', () => {
     expect(settings.buybackPledges).toBe(DEFAULT_DEMO_SETTINGS.buybackPledges);
     expect(settings.states.refund).toBe(false);
     expect(settings.states.notGiftablePercent).toBe(50);
+  });
+
+  it('has a running plan stage (#303): a valid one is kept, any other falls back to the default', () => {
+    expect(DEFAULT_DEMO_SETTINGS.runningPlanStage).toBe('cart');
+    for (const stage of RUNNING_PLAN_STAGES) {
+      expect(demoSettingsOf({ runningPlanStage: stage }).runningPlanStage).toBe(stage);
+    }
+    expect(demoSettingsOf({ runningPlanStage: 'later' as never }).runningPlanStage).toBe('cart');
+    expect(demoSettingsOf({ runningPlanStage: 3 as never }).runningPlanStage).toBe('cart');
   });
 });
 

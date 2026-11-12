@@ -1,4 +1,5 @@
 import { DEMO } from '@/config';
+import { RUNNING_PLAN_STAGES, type RunningPlanStage } from './demo-running-plan';
 import type { DemoComposition } from './generate-hangar';
 
 /*
@@ -52,6 +53,8 @@ export interface DemoSettings {
   states: DemoStates;
   /** The store credit of the demo in USD (#179), instead of the account's. */
   storeCredit: number;
+  /** The stage of the Paint Discount Consultant's running plan the demo shows (#303). */
+  runningPlanStage: RunningPlanStage;
 }
 
 /** The range of each kind's number and of the list sizes. */
@@ -78,6 +81,7 @@ export const DEFAULT_DEMO_SETTINGS: DemoSettings = {
     notMeltablePercent: 8,
   },
   storeCredit: 50,
+  runningPlanStage: 'cart',
 };
 
 const wholeIn =
@@ -137,5 +141,8 @@ export function demoSettingsOf(stored: Partial<DemoSettings> | null | undefined)
       ),
     },
     storeCredit: valid(stored?.storeCredit, isDemoCredit, defaults.storeCredit),
+    runningPlanStage: RUNNING_PLAN_STAGES.includes(stored?.runningPlanStage as RunningPlanStage)
+      ? stored!.runningPlanStage!
+      : defaults.runningPlanStage,
   };
 }
