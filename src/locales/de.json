@@ -336,7 +336,7 @@
         "reset": "Die Demo-Einstellungen sind zurückgesetzt, die Markierungen der Demo gelöscht."
       },
       "storeCredit": "Store Credits des Demos",
-      "storeCreditHint": "Werden statt deiner eigenen in den Kontozahlen angezeigt und vom Paint-Rabatt-Berater genutzt. Die Schnellauswahl setzt sie für jeden Fall des Beraters auf diesem Demo-Hangar.",
+      "storeCreditHint": "Werden statt deiner eigenen in den Kontozahlen angezeigt und vom Paint-Rabatt-Berater genutzt. Die Schnellauswahl setzt sie für jeden Fall des Beraters auf diesem Demo-Hangar. Ein Stand des laufenden Plans, den diese Store Credits nicht zeigen können, setzt eigene.",
       "creditCases": "Store Credits für einen Fall des Beraters",
       "creditCase": {
         "same": "Gleiche Stufe",

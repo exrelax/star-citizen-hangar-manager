@@ -14,6 +14,7 @@ import {
   demoCompletedPlans,
   demoRunningPlan,
   seedDemoRunningPlan,
+  withCopyBoughtToday,
   type RunningPlanStage,
 } from './demo-running-plan';
 
@@ -53,6 +54,66 @@ describe.each(['key-a', 'key-b', 'key-c'])('the running plan of the demo %s (#24
       now: NOW,
     });
   };
+
+  it.each([50, 500])(
+    "uses the demo's store credit of $%d wherever the stage can show it",
+    (credit) => {
+      for (const stage of Object.keys(EXPECTED) as Exclude<RunningPlanStage, 'none'>[]) {
+        const built = demoRunningPlan(stage, { pledges, items, now: NOW, marked, credit })!;
+        const view = runningPlanSteps({
+          plan: built.plan!,
+          pledges,
+          storeItems: items,
+          credit: built.inputs.credit,
+          cart: built.inputs.cart
+            ? { status: 'read', lines: built.inputs.cart, at: 0 }
+            : { status: 'unread' },
+          bulkMelting: true,
+          useFillers: true,
+          demo: true,
+          now: NOW,
+        });
+        // The stage shows whatever the credit is …
+        expect(
+          view.steps.map((step) => `${step.kind}:${step.state}`),
+          stage,
+        ).toEqual(EXPECTED[stage]);
+        // … with the demo's credit, unless it can't: "not enough" with more than the cart costs,
+        // or a cart the credit doesn't pay.
+        const cost = built.plan!.cartCost;
+        const fits =
+          stage === 'credit'
+            ? credit < cost
+            : stage === 'cart' || stage === 'pay'
+              ? credit >= cost
+              : true;
+        if (fits) expect(built.inputs.credit, stage).toBe(credit);
+        else expect(built.inputs.credit, stage).not.toBe(credit);
+      }
+    },
+  );
+
+  it('dates the copy bought again today for the stage with old paints left to melt', () => {
+    const dated = withCopyBoughtToday(pledges, items, TODAY);
+    const changed = dated.filter((pledge, index) => pledge.createdAt !== pledges[index]!.createdAt);
+    expect(changed.length).toBeLessThanOrEqual(1);
+    const built = demoRunningPlan('meltOld', { pledges: dated, items, now: NOW, marked })!;
+    const view = runningPlanSteps({
+      plan: built.plan!,
+      pledges: dated,
+      storeItems: items,
+      credit: built.inputs.credit,
+      cart: { status: 'unread' },
+      bulkMelting: true,
+      useFillers: true,
+      demo: true,
+      now: NOW,
+    });
+    expect(view.steps[1]!.body?.note).toMatchObject({
+      kind: 'onlyOldCopies',
+      values: { day: TODAY },
+    });
+  });
 
   it.each(Object.entries(EXPECTED))('shows the stage %s', (stage, states) => {
     const view = stepsOf(stage as RunningPlanStage);

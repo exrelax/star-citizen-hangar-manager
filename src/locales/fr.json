@@ -336,7 +336,7 @@
         "reset": "Les paramètres de la démo sont réinitialisés, ses marques effacées."
       },
       "storeCredit": "Crédit boutique de la démo",
-      "storeCreditHint": "Affiché dans les chiffres du compte et utilisé par le conseiller de réduction des peintures au lieu du vôtre. Les choix rapides le règlent pour chaque cas du conseiller sur ce hangar de démo.",
+      "storeCreditHint": "Affiché dans les chiffres du compte et utilisé par le conseiller de réduction des peintures au lieu du vôtre. Les choix rapides le règlent pour chaque cas du conseiller sur ce hangar de démo. Une étape du plan en cours que ce crédit ne peut pas montrer fixe le sien.",
       "creditCases": "Crédit boutique pour un cas du conseiller",
       "creditCase": {
         "same": "Même palier",

@@ -336,7 +336,7 @@
         "reset": "The demo settings are back to their defaults, the demo’s marks are cleared."
       },
       "storeCredit": "Store credit of the demo",
-      "storeCreditHint": "Shown in the account figures and used by the Paint Discount Consultant instead of your own. The quick choices set it for each case of the consultant on this demo hangar.",
+      "storeCreditHint": "Shown in the account figures and used by the Paint Discount Consultant instead of your own. The quick choices set it for each case of the consultant on this demo hangar. A stage of the running plan that this credit can't show sets its own.",
       "creditCases": "Store credit for a case of the consultant",
       "creditCase": {
         "same": "Same tier",

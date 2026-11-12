@@ -26,6 +26,7 @@ import {
   demoRunningPlan,
   resetDemoRunningPlan,
   seedDemoRunningPlan,
+  withCopyBoughtToday,
 } from './demo-running-plan';
 import { localToday } from '@/orders/refund';
 import type { DemoSettings } from './demo-settings';
@@ -237,10 +238,13 @@ export function useDemo(
   });
   const demoPledges = computed(() => {
     if (!active.value || !key.value) return [];
-    return (
+    const list =
       generatedAccount.value?.pledges ??
-      demoHangar(pledges.value, key.value, localToday(), Date.now(), settings().ownHangarPledges)
-    );
+      demoHangar(pledges.value, key.value, localToday(), Date.now(), settings().ownHangarPledges);
+    // The running plan bought the copy a few hours ago at this stage (#303).
+    return settings().runningPlanStage === 'meltOld'
+      ? withCopyBoughtToday(list, catalog.value.items, localToday())
+      : list;
   });
   /*
    * The consultant's running plan at the stage chosen in the settings (#303), with its completed
@@ -261,11 +265,12 @@ export function useDemo(
       items,
       now,
       ...(stage === 'fillers' ? { marked: older } : { avoid: older }),
+      credit: settings().storeCredit,
     });
     const hangar = pledgeList.reduce((hash, { id }) => (hash * 31 + id) | 0, pledgeList.length);
     return {
-      // The demo hangar and catalog it was made of, so changing them sets the plan again.
-      seed: `${key.value}:${hangar}:${items.length}`,
+      // The demo hangar, catalog and store credit it was made of: changing them sets the plan again.
+      seed: `${key.value}:${hangar}:${items.length}:${settings().storeCredit}`,
       stage,
       plan,
       completed: demoCompletedPlans(items, now),
@@ -340,7 +345,11 @@ export function useDemo(
         hangarPages: Math.max(1, Math.ceil(demoPledges.value.length / HANGAR_PAGE_SIZE)),
       },
       // Set in the demo settings (#179).
-      storeCredit: { amount: settings().storeCredit, currency: 'USD' },
+      // A stage of the running plan the setting can't show has a credit of its own (#303).
+      storeCredit: {
+        amount: running.value?.plan?.inputs.credit ?? settings().storeCredit,
+        currency: 'USD',
+      },
       justBought,
     };
   });
