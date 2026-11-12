@@ -82,6 +82,7 @@ async function render(pledges: ReturnType<typeof paint>[], settings: Partial<Set
 const storePlan = (pledgeIds: number[], at = Date.now()) =>
   rebuyPlanItem.setValue({
     version: REBUY_PLAN_VERSION,
+    way: 'melt',
     at,
     tier: { paints: 10, percent: 35 },
     own: pledgeIds.map((pledgeId) => ({ pledgeId, title: '', skuId: 1, meltValue: 5 })),

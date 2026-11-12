@@ -20,8 +20,8 @@ import {
 } from '@/notifications/browser-permission';
 import BulkExchangeOverlay from './BulkExchangeOverlay.vue';
 import {
+  currentPlanOf,
   demoRebuyPlanItem,
-  REBUY_PLAN_VERSION,
   rebuyPlanItem,
 } from '@/store/paint-consultant/rebuy-plan-storage';
 import {
@@ -206,9 +206,11 @@ function selectReady() {
 const realKeptPlan = useStored(rebuyPlanItem);
 const demoKeptPlan = useStored(demoRebuyPlanItem);
 // The demo's own kept plan (#131), with its filler paints marked.
-const keptPlan = computed(() => (demo.value ? demoKeptPlan.value : realKeptPlan.value));
+const keptPlan = computed(() =>
+  currentPlanOf(demo.value ? demoKeptPlan.value : realKeptPlan.value),
+);
 const readyFillers = computed(() => {
-  const purchase = keptPlan.value?.version === REBUY_PLAN_VERSION && keptPlan.value.purchase;
+  const purchase = keptPlan.value?.purchase;
   if (!purchase) return [];
   const ids = new Set(purchase.pledgeIds);
   return props.pledges.filter(

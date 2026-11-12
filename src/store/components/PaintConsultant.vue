@@ -20,7 +20,7 @@ import PaintConsultantChoose from './PaintConsultantChoose.vue';
 import PaintConsultantWays from './PaintConsultantWays.vue';
 import PaintProbablyRebought from './PaintProbablyRebought.vue';
 import {
-  REBUY_PLAN_VERSION,
+  currentPlanOf,
   rebuyPlanItem,
   demoRebuyPlanItem,
   rebuyPlanItemOf,
@@ -41,7 +41,8 @@ const COOLDOWN_SOURCE =
   'https://support.robertsspaceindustries.com/hc/en-us/articles/115013193627-Reclaim-a-Pledge';
 
 // Worked out once for the manager (App.vue), also for the marks in My Hangar.
-const { pledges, storeItems, creditUnknown, storeCredit, result, pending } = usePaintConsultant();
+const { pledges, storeItems, creditUnknown, storeCredit, accountCredit, result, pending } =
+  usePaintConsultant();
 
 const options = computed(() => props.settings.paintConsultant);
 /** The ways as cards – one to choose (the default, #246) or both side by side – or in tables. */
@@ -102,7 +103,10 @@ const demo = useDemoContext();
 const planLines = computed(() => (plan.value ? cartLinesOf(plan.value) : []));
 /** Keeps the plan once its paints are in the cart, for later (#105, #139, #168). */
 async function keepPlan() {
-  if (plan.value) await planItem().setValue(storedPlanOf(plan.value, Date.now()));
+  // The table's cart is the one of melting first.
+  if (plan.value) {
+    await planItem().setValue(storedPlanOf(plan.value, Date.now(), 'melt', accountCredit.value));
+  }
 }
 
 // ---- Melt the own paints at once (#104, with bulk melting on) ----
@@ -110,12 +114,12 @@ async function keepPlan() {
 // The demo has a kept plan of its own (#131), never the account's.
 const realPlan = useStored(rebuyPlanItem);
 const demoPlan = useStored(demoRebuyPlanItem);
-const storedPlan = computed(() => (demo.value ? demoPlan.value : realPlan.value));
+const storedPlan = computed(() => currentPlanOf(demo.value ? demoPlan.value : realPlan.value));
 const planItem = () => rebuyPlanItemOf(!!demo.value);
 /** The own paints of the plan were put into the cart (#103): only then they may be melted. */
 const cartFilled = computed(() => {
   const stored = storedPlan.value;
-  if (!plan.value || stored?.version !== REBUY_PLAN_VERSION) return false;
+  if (!plan.value || !stored) return false;
   const inCart = new Set(stored.own.map((paint) => paint.pledgeId));
   return plan.value.own.every((paint) => inCart.has(paint.pledgeId));
 });

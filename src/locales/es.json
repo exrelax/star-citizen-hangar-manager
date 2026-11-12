@@ -443,6 +443,11 @@
       "content": "El plan del asesor de descuentos de pinturas cuyas pinturas se pusieron en el carrito: propias y de relleno",
       "missing": "Hasta entonces el asesor no sabe qué pinturas de relleno se compraron."
     },
+    "paintHistory": {
+      "name": "Planes de pinturas terminados",
+      "content": "Los planes terminados del asesor de descuentos de pinturas: pinturas fundidas y compradas, store credit antes y después",
+      "missing": "No se pueden volver a leer: el asesor no muestra planes terminados hasta que termine el siguiente."
+    },
     "settings": {
       "name": "Ajustes",
       "content": "Idioma, tema, opciones de visualización y privacidad, filtros, orden",

@@ -12,7 +12,7 @@ import { browserNotificationsItem } from '@/notifications/browser-permission';
 import { isKindOn } from '@/notifications/kinds';
 import { resolveLanguage } from '@/settings/language';
 import { settingsItem, withDefaults } from '@/settings/settings';
-import { REBUY_PLAN_VERSION, rebuyPlanItem, type FillerPurchase } from './rebuy-plan-storage';
+import { currentPlanOf, rebuyPlanItem, type FillerPurchase } from './rebuy-plan-storage';
 
 /*
  * The browser notification that the Paint Discount Consultant's filler paints can be melted
@@ -31,8 +31,8 @@ export const fillersMeltableAt = (purchase: FillerPurchase) =>
 
 /** The kept plan's purchase that wasn't told yet, if any. */
 async function untoldPurchase() {
-  const plan = await rebuyPlanItem.getValue();
-  if (plan?.version !== REBUY_PLAN_VERSION || !plan.purchase || plan.purchase.notifiedAt) {
+  const plan = currentPlanOf(await rebuyPlanItem.getValue());
+  if (!plan?.purchase || plan.purchase.notifiedAt) {
     return undefined;
   }
   return { plan, purchase: plan.purchase };
@@ -54,7 +54,7 @@ export async function scheduleFillerNotification(now = Date.now()): Promise<void
 export async function notifyFillers(): Promise<void> {
   const untold = await untoldPurchase();
   if (!untold) return;
-  const { plan, purchase } = untold;
+  const { purchase } = untold;
   const snapshot = await hangarSnapshot.getValue();
   const inHangar =
     snapshot?.version === HANGAR_SNAPSHOT_VERSION
@@ -78,7 +78,13 @@ export async function notifyFillers(): Promise<void> {
           : translate(locale, 'consultant.fillers.ready', [left]),
     });
   }
-  await rebuyPlanItem.setValue({ ...plan, purchase: { ...purchase, notifiedAt: Date.now() } });
+  // Read again: the plan may have changed (or ended) while the notification was shown.
+  const current = currentPlanOf(await rebuyPlanItem.getValue());
+  if (current?.purchase?.orderId !== purchase.orderId) return;
+  await rebuyPlanItem.setValue({
+    ...current,
+    purchase: { ...current.purchase, notifiedAt: Date.now() },
+  });
 }
 
 /**
@@ -88,7 +94,7 @@ export async function notifyFillers(): Promise<void> {
  */
 export async function clearMeltedFillers(): Promise<void> {
   const [plan, snapshot] = await Promise.all([rebuyPlanItem.getValue(), hangarSnapshot.getValue()]);
-  const purchase = plan?.version === REBUY_PLAN_VERSION ? plan.purchase : undefined;
+  const purchase = currentPlanOf(plan)?.purchase;
   if (!purchase?.notifiedAt || snapshot?.version !== HANGAR_SNAPSHOT_VERSION) return;
   const inHangar = new Set(snapshot.pledges.map((pledge) => pledge.id));
   if (!purchase.pledgeIds.some((id) => inHangar.has(id))) {
@@ -99,7 +105,11 @@ export async function clearMeltedFillers(): Promise<void> {
 /** Wires the alarm and the click on the notification (call it in the background script). */
 export function watchFillerNotification(): void {
   void scheduleFillerNotification();
-  rebuyPlanItem.watch(() => void scheduleFillerNotification());
+  rebuyPlanItem.watch((plan) => {
+    // A plan discarded or completed (#245): its notification goes with it.
+    if (!plan) void browser.notifications?.clear(NOTIFICATION_ID);
+    void scheduleFillerNotification();
+  });
   onAlarm(FILLER_ALARM, () => void notifyFillers());
   hangarSnapshot.watch(() => void clearMeltedFillers());
   // The kind turned off (#197): its notification goes.

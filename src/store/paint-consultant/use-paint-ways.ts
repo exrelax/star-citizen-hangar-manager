@@ -11,11 +11,12 @@ import { computed, ref } from 'vue';
 import type { MissingCredit, PaintRebuyPlan } from './calculation';
 import { cartLinesOf } from './cart';
 import {
-  REBUY_PLAN_VERSION,
+  currentPlanOf,
   rebuyPlanItem,
   demoRebuyPlanItem,
   rebuyPlanItemOf,
   storedPlanOf,
+  type PlanWay,
 } from './rebuy-plan-storage';
 import { usePaintConsultant } from './use-paint-consultant';
 import { cartCardsOf, waysOf, type PaintWay, type WayKind, type WayStep } from './ways';
@@ -46,7 +47,7 @@ export const COOLDOWN_SOURCE =
 export const CHART = { width: 720, height: 200, left: 80, right: 660, top: 28, bottom: 168 };
 
 export function usePaintWays(props: PaintWaysProps) {
-  const { pledges, storeItems } = usePaintConsultant();
+  const { pledges, storeItems, accountCredit } = usePaintConsultant();
   const demo = useDemoContext();
 
   const usd = (value: number) => formatUsd(value, locale.value);
@@ -390,20 +391,25 @@ export function usePaintWays(props: PaintWaysProps) {
 
   // ---- Into the cart, then melting (way 2) ----
 
-  /** Keeps the plan of the way whose paints were put into the cart (#103, #105, #139, #168). */
-  async function keepPlan(plan: PaintRebuyPlan | undefined) {
-    if (plan) await planItem().setValue(storedPlanOf(plan, Date.now()));
+  /**
+   * Keeps the plan of the way whose paints were put into the cart (#103, #105, #139, #168), with
+   * the way and the store credit it starts from (#245).
+   */
+  async function keepPlan(plan: PaintRebuyPlan | undefined, way: PlanWay) {
+    if (plan) {
+      await planItem().setValue(storedPlanOf(plan, Date.now(), way, accountCredit.value));
+    }
   }
 
   // The demo has a kept plan of its own (#131), never the account's.
   const realPlan = useStored(rebuyPlanItem);
   const demoPlan = useStored(demoRebuyPlanItem);
-  const storedPlan = computed(() => (demo.value ? demoPlan.value : realPlan.value));
+  const storedPlan = computed(() => currentPlanOf(demo.value ? demoPlan.value : realPlan.value));
   const planItem = () => rebuyPlanItemOf(!!demo.value);
   /** The cart of melting first was filled: only then its own paints may be melted. */
   const cartFilled = computed(() => {
     const stored = storedPlan.value;
-    if (stored?.version !== REBUY_PLAN_VERSION || stored.tier.percent !== props.plan.tier.percent) {
+    if (!stored || stored.tier.percent !== props.plan.tier.percent) {
       return false;
     }
     const inCart = new Set(stored.own.map((paint) => paint.pledgeId));

@@ -23,7 +23,14 @@ import {
   storeItemsMeta,
   type StoreItemsSnapshot,
 } from '@/store/items/store-items-storage';
-import { rebuyPlanItem, type StoredRebuyPlan } from '@/store/paint-consultant/rebuy-plan-storage';
+import {
+  rebuyPlanItem,
+  type AnyStoredRebuyPlan,
+} from '@/store/paint-consultant/rebuy-plan-storage';
+import {
+  completedPlansItem,
+  type CompletedPlansSnapshot,
+} from '@/store/paint-consultant/completed-plans';
 import { warbondHistoryItem } from '@/store/warbond-history-storage';
 import type { WarbondHistorySnapshot } from '@/store/warbond-history';
 import { eventsItem, eventsMeta, type EventsSnapshot } from '@/events/events-storage';
@@ -70,6 +77,7 @@ export type StorageId =
   | 'priceIncreases'
   | 'storeCredit'
   | 'paintPlan'
+  | 'paintHistory'
   | 'settings';
 
 export interface StorageDefinition {
@@ -260,8 +268,18 @@ export const STORAGES: readonly StorageDefinition[] = [
     source: 'The Paint Discount Consultant ("Put the paints into the cart")',
     usedBy: ['Paint Discount Consultant (filler paints to melt again)'],
     kind: 'data',
-    count: (value: StoredRebuyPlan | null) =>
+    count: (value: AnyStoredRebuyPlan | null) =>
       value ? value.own.length + value.fillers.reduce((sum, f) => sum + f.quantity, 0) : 0,
+    readAgain: 'never',
+  },
+  {
+    id: 'paintHistory',
+    item: completedPlansItem,
+    content: "The Paint Discount Consultant's completed plans",
+    source: 'The Paint Discount Consultant (a running plan that ended)',
+    usedBy: ['Paint Discount Consultant (completed plans)'],
+    kind: 'data',
+    count: (value: CompletedPlansSnapshot | null) => value?.plans.length ?? 0,
     readAgain: 'never',
   },
   {

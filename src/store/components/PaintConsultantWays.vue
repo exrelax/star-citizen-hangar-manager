@@ -326,7 +326,7 @@ const {
               <PaintCartButton
                 v-if="card.way.plan"
                 :lines="card.lines"
-                @filled="keepPlan(card.way.plan)"
+                @filled="keepPlan(card.way.plan, 'buy')"
               />
               <button v-else type="button" class="shm-button" disabled>
                 <SvgIcon name="basket-shopping" />
@@ -337,7 +337,7 @@ const {
               <PaintCartButton
                 :lines="card.lines"
                 :label="i18n.t('consultant.ways.fillCart')"
-                @filled="keepPlan(plan)"
+                @filled="keepPlan(plan, 'melt')"
               />
               <!-- Bulk melting (experimental): after the cart was filled, before paying. -->
               <template v-if="cartFilled && ownPledges.length">

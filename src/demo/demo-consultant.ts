@@ -51,6 +51,7 @@ export function demoKeptPlan(
     .slice(0, 2);
   return {
     version: REBUY_PLAN_VERSION,
+    way: 'buy',
     // Put into the cart on the day the copy was bought, so the plan confirms it.
     at: Date.parse(`${since}T00:00:00`),
     tier: { paints: 10, percent: 35 },

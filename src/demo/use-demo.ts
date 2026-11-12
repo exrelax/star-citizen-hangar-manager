@@ -299,6 +299,7 @@ export function useDemo(
           orders: [...demoPledges.value, ...demoBuybackPledges.value].filter((p) => p.order).length,
           storeCredit: 1,
           paintPlan: 1,
+          paintHistory: 2,
           events: events.value.length,
           ...(account && { priceIncreases: account.priceIncreases.length }),
         },

@@ -254,13 +254,13 @@ const paintCards = computed(() =>
           <PaintCartButton
             v-if="current.way.kind === 'buy'"
             :lines="current.lines"
-            @filled="keepPlan(current.way.plan)"
+            @filled="keepPlan(current.way.plan, 'buy')"
           />
           <template v-else>
             <PaintCartButton
               :lines="current.lines"
               :label="i18n.t('consultant.ways.fillCart')"
-              @filled="keepPlan(plan)"
+              @filled="keepPlan(plan, 'melt')"
             />
             <!-- Bulk melting (experimental): after the cart was filled, before paying. -->
             <template v-if="cartFilled && ownPledges.length">

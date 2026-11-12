@@ -22,7 +22,7 @@ import {
   type PaintConsultantResult,
   type PendingRebuy,
 } from './calculation';
-import { demoRebuyPlanItem, rebuyPlanItem, REBUY_PLAN_VERSION } from './rebuy-plan-storage';
+import { currentPlanOf, demoRebuyPlanItem, rebuyPlanItem } from './rebuy-plan-storage';
 
 /*
  * The Paint Discount Consultant's result for the whole manager, worked out once (in App.vue) from
@@ -40,6 +40,11 @@ export interface PaintConsultantState {
   creditUnknown: ComputedRef<boolean>;
   /** The store credit the plan may use, in USD (0 if the setting leaves it out). */
   storeCredit: ComputedRef<number>;
+  /**
+   * The account's store credit in USD (in the demo mode the made-up one), whatever the setting
+   * says: what a running plan has (#245); undefined while unknown.
+   */
+  accountCredit: ComputedRef<number | undefined>;
   result: ComputedRef<PaintConsultantResult | undefined>;
   /** Paints of the kept plan melted first and left to buy again (#168). */
   pending: ComputedRef<PendingRebuy | undefined>;
@@ -104,10 +109,12 @@ export function providePaintConsultant({
   // The plan kept when its paints were put into the cart: confirms paints bought again (#139).
   const realPlan = useStored(rebuyPlanItem);
   const demoPlan = useStored(demoRebuyPlanItem);
-  const storedPlan = computed(() => (demoStoreCredit() ? demoPlan.value : realPlan.value));
+  const storedPlan = computed(() =>
+    currentPlanOf(demoStoreCredit() ? demoPlan.value : realPlan.value),
+  );
   const keptPlan = computed<KeptPlan | undefined>(() => {
     const stored = storedPlan.value;
-    return stored?.version === REBUY_PLAN_VERSION
+    return stored
       ? { at: stored.at, ownPledgeIds: stored.own.map((paint) => paint.pledgeId) }
       : undefined;
   });
@@ -132,7 +139,7 @@ export function providePaintConsultant({
   // Melted first (#168): what of the kept plan is left to buy, with the store credit there is now.
   const pending = computed(() => {
     const stored = storedPlan.value;
-    if (!storeItems.value || stored?.version !== REBUY_PLAN_VERSION) return undefined;
+    if (!storeItems.value || !stored) return undefined;
     return planPendingRebuy({
       kept: stored,
       pledges: pledges(),
@@ -174,6 +181,7 @@ export function providePaintConsultant({
     storeItems,
     creditUnknown,
     storeCredit,
+    accountCredit: credit,
     result,
     pending,
   };

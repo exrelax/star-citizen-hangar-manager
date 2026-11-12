@@ -33,7 +33,7 @@ import SettingsPanel from '@/settings/SettingsPanel.vue';
 import StoreTab from '@/store/components/StoreTab.vue';
 import CcuAdviceOverlay from '@/price-increases/components/CcuAdviceOverlay.vue';
 import { ccuAdviceRequest, closeCcuAdvice } from '@/price-increases/ccu-advice-request';
-import { checkFillerPurchase } from '@/store/paint-consultant/filler-purchase';
+import { checkRunningPlan } from '@/store/paint-consultant/plan-check';
 import { providePaintConsultant } from '@/store/paint-consultant/use-paint-consultant';
 import { useSettings } from '@/settings/use-settings';
 import { MANAGER_CONTAINER, useThemeClass } from '@/themes/theme';
@@ -146,8 +146,8 @@ const consultant = providePaintConsultant({
   demoStoreCredit: () => demoView.context.value?.storeCredit,
   demoStoreItems: () => demoView.context.value?.storeItems,
 });
-// Its filler paints bought (#105): the kept plan is checked against the real hangar and orders,
-// the fillers are marked to melt. Never in the demo.
+// Its running plan (#105, #245): checked against the real hangar and orders – the purchase found,
+// the fillers marked to melt, melted paints noted, the plan completed. Never in the demo.
 watch(
   () =>
     syncedAt.value && !demo.value && consultant.storeItems.value
@@ -156,7 +156,7 @@ watch(
   (current) => {
     if (!current) return;
     const [hangarPledges, ordersValue, storeItems] = current;
-    void checkFillerPurchase({ pledges: hangarPledges, orders: ordersValue, storeItems });
+    void checkRunningPlan({ pledges: hangarPledges, orders: ordersValue, storeItems });
   },
   { immediate: true },
 );
