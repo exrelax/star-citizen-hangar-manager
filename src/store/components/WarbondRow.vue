@@ -116,7 +116,14 @@ const counts = computed(() => ownedCounts(props.offer));
         <p v-if="!offer.bases.length" class="shm-hint">{{ i18n.t('store.noBases') }}</p>
         <template v-else>
           <p class="shm-hint">{{ i18n.t('store.cheapestHint') }}</p>
-          <BaseShipsTable :bases="offer.bases" />
+          <BaseShipsTable
+            :bases="offer.bases"
+            :target="{
+              shipId: offer.target.ship.id,
+              skuId: offer.target.skuId,
+              name: `${offer.target.ship.name} (${i18n.t('store.warbondEdition')})`,
+            }"
+          />
         </template>
 
         <h4 class="shm-warbond-heading">

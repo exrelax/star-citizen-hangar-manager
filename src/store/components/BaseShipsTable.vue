@@ -14,9 +14,14 @@ import './store-table.css';
  * price, and how often the user already has the ship – as ship or as target of a CCU – in the
  * hangar and the buy back. For the warbond CCUs and the CCUs to secure before a price increase.
  * A check marks the ships that are always available in the Pledge Store (the website's ship facts,
- * #109), so the user can get onto them later to apply the CCU.
+ * #109), so the user can get onto them later to apply the CCU. Each ship opens RSI's ship upgrade
+ * dialog with it as base and `target` as target, both chosen.
  */
-defineProps<{ bases: readonly BaseShip[] }>();
+defineProps<{
+  bases: readonly BaseShip[];
+  /** The CCUs' target: the upgrade tool's ship and SKU (e.g. the warbond edition). */
+  target: { shipId: number; skuId: number; name: string };
+}>();
 
 const shipFacts = useShipFacts();
 const alwaysAvailable = (id: number) => shipFacts.value?.isAlwaysAvailable(id) === true;
@@ -45,7 +50,21 @@ const count = (value: number) => (value ? String(value) : '–');
     <tbody>
       <tr v-for="base in bases" :key="base.ship.id">
         <td class="is-number is-strong">{{ usd(base.ccuPrice) }}</td>
-        <td>{{ base.ship.name }}</td>
+        <td>
+          <!-- RSI's own opener (a click handler on the page): its overlay with both ships chosen. -->
+          <a
+            v-tooltip="i18n.t('store.openUpgradeFromHint', [base.ship.name, target.name])"
+            href="#"
+            class="shm-base-ship-link js-open-ship-upgrades"
+            data-apiurl="/pledge-store/api/upgrade/v2"
+            :data-fromshipid="base.ship.id"
+            :data-toshipid="target.shipId"
+            :data-toskuid="target.skuId"
+            @click.prevent
+          >
+            {{ base.ship.name }}
+          </a>
+        </td>
         <td class="is-number">{{ usd(base.ship.msrp) }}</td>
         <td class="is-center">
           <SvgIcon

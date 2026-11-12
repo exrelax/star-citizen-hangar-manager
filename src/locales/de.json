@@ -494,6 +494,7 @@
     "msrpHint": "Standardpreis des Schiffs",
     "openUpgrade": "Ship Upgrade",
     "openUpgradeHint": "Öffnet RSIs Ship-Upgrade-Dialog mit der $1 (Warbond Edition) als Ziel",
+    "openUpgradeFromHint": "Öffnet RSIs Dialog für Schiffs-Upgrades mit der $1 als Basisschiff und der $2 als Ziel",
     "inHangar": "Im Hangar:",
     "sameShipBadge": "$1 auf $2",
     "sameShipBadgeHint": "CCUs deines Hangars direkt auf $1",

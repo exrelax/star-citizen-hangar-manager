@@ -494,6 +494,7 @@
     "msrpHint": "Precio estándar de la nave",
     "openUpgrade": "Mejora de nave",
     "openUpgradeHint": "Abre el diálogo de mejoras de RSI con la $1 (Warbond Edition) como destino",
+    "openUpgradeFromHint": "Abre el diálogo de mejoras de nave de RSI con la $1 como nave base y la $2 como destino",
     "inHangar": "En el hangar:",
     "sameShipBadge": "$1 a $2",
     "sameShipBadgeHint": "CCU de tu hangar directamente a $1",

@@ -656,8 +656,9 @@ always read both; the count line says when the offers were updated. For each war
   listed with the CCU's price, a check for the ships always available in the Pledge Store (so you
   can get onto them later to apply the CCU; from the project website's ship facts) and how often
   you already have each ship in your hangar and buy back – as a ship and as the target of a CCU –,
-  to choose the ship to buy the CCU from. The CCUs to secure before a price increase (below) use
-  the same table.
+  to choose the ship to buy the CCU from. A click on a ship opens RSI's ship upgrade dialog with
+  that ship as base and the warbond edition as target, both already chosen. The CCUs to secure
+  before a price increase (below) use the same table.
 - **Your CCUs between the warbond price and the standard price**: every warbond CCU spans this
   range, whatever ship it starts from. The CCUs of your hangar that overlap it can't be chained
   with it, so you see at a glance how many discounted CCUs you already have there – in a small
