@@ -356,6 +356,8 @@
         "impossible": "Pas possible",
         "none": "Aucun crédit"
       },
+      "newPlan": "Un nouveau plan du conseiller de remises sur les peintures",
+      "completedPlans": "Plans terminés du conseiller de remises sur les peintures",
       "runningPlanStage": "Étape du plan en cours",
       "runningPlanStages": {
         "cart": "Fondre d'abord : peintures manquantes dans le panier",

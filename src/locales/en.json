@@ -356,6 +356,8 @@
         "impossible": "Not possible",
         "none": "No store credit"
       },
+      "newPlan": "A new plan of the Paint Discount Consultant",
+      "completedPlans": "Completed plans of the Paint Discount Consultant",
       "runningPlanStage": "Stage of the running plan",
       "runningPlanStages": {
         "cart": "Melt first: paints missing in the cart",

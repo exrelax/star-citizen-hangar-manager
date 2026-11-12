@@ -257,6 +257,16 @@ async function reset() {
         </option>
       </select>
     </SettingRow>
+    <!-- With the stage: each set of the consultant's tabs (#306). -->
+    <SettingCheck
+      v-for="key in ['newPlan', 'completedPlans'] as const"
+      :key="key"
+      :checked="settings.demo[key]"
+      :disabled="off"
+      @change="(on) => set({ [key]: on })"
+    >
+      {{ i18n.t(`settings.demo.${key}`) }}
+    </SettingCheck>
     <SettingRow
       :label="i18n.t('settings.demo.storeCredit')"
       :hint="i18n.t('settings.demo.storeCreditHint')"
