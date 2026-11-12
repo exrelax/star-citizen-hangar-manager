@@ -359,6 +359,7 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
   <CcuAdviceOverlay
     v-if="ccuAdviceRequest"
     :pledges="pledges"
+    :buyback="buybackPledges"
     :pledge-id="ccuAdviceRequest.pledgeId"
     @close="closeCcuAdvice"
   />

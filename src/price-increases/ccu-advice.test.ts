@@ -38,34 +38,37 @@ const matcher = createPriceIncreaseMatcher([prospector, liberator], NOW);
 
 let nextId = 1;
 const ccu = (from: string, to: string, valueUsd: number, isGiftable = false): PledgeView => {
-  const pledge: Pledge = {
-    id: nextId++,
-    name: `Upgrade - ${from} to ${to}`,
-    title: `Upgrade - ${from} to ${to}`,
-    value: `$${valueUsd}.00 USD`,
-    valueUsd,
-    configurationValue: '',
-    currency: 'Store Credit',
-    availability: 'Attributed',
-    contains: '',
-    isLastAlpha: false,
-    isBuybackable: true,
-    isGiftable,
-    isExchangeable: true,
-    isUpgradeable: false,
-    isUpgraded: false,
-    upgrade: {
-      matchItems: [{ id: 1, name: from }],
-      targetItems: [{ id: 2, name: to }],
-      type: 'R',
-    },
-    nameReservations: null,
-    nameableShips: null,
-    items: [{ title: `Upgrade - ${from} to ${to}` }],
-  };
+  const pledge: Pledge = { ...ccuPledge(nextId++, from, to, valueUsd), isGiftable };
   const change = matcher.hangarCcu(pledge, priceOf);
   return { ...toPledgeView(pledge), ...(change && { ccuPriceChange: change }) };
 };
+
+/** A CCU pledge of My Hangar from `from` to `to`, as the sync stores it. */
+const ccuPledge = (id: number, from: string, to: string, valueUsd: number): Pledge => ({
+  id,
+  name: `Upgrade - ${from} to ${to}`,
+  title: `Upgrade - ${from} to ${to}`,
+  value: `$${valueUsd}.00 USD`,
+  valueUsd,
+  configurationValue: '',
+  currency: 'Store Credit',
+  availability: 'Attributed',
+  contains: '',
+  isLastAlpha: false,
+  isBuybackable: true,
+  isGiftable: false,
+  isExchangeable: true,
+  isUpgradeable: false,
+  isUpgraded: false,
+  upgrade: {
+    matchItems: [{ id: 1, name: from }],
+    targetItems: [{ id: 2, name: to }],
+    type: 'R',
+  },
+  nameReservations: null,
+  nameableShips: null,
+  items: [{ title: `Upgrade - ${from} to ${to}` }],
+});
 
 const advice = (pledges: PledgeView[], extra: Partial<CcuAdviceInput> = {}) =>
   ccuAdvice({ pledges, ships, buyable, warbonds: [], storeCredit: 0, ...extra });
@@ -87,6 +90,10 @@ describe('ccuAdvice (#252)', () => {
     // 8 × Freelancer MAX → Prospector for $5: $25 upgrade value, $20 discount each after.
     expect(group?.switch).toEqual({
       from: ships[2],
+      // No data on what is always available or on sale: the most expensive ship below.
+      choice: 'any',
+      holdings: { hangarShips: 0, hangarCcus: 0, buybackCcus: 0 },
+      alternatives: [],
       to: ships[0],
       price: 5,
       total: 40,
@@ -158,5 +165,87 @@ describe('ccuAdvice (#252)', () => {
       ['Sabre', 1],
       ['Vulture', 8],
     ]);
+  });
+});
+
+describe('the base ship of the new CCUs (#263)', () => {
+  // The example of #263: the Freelancer MAX ($150) rises by $20.
+  const freelancer: ExpectedPriceIncrease = {
+    ship: { id: 32, name: 'Freelancer MAX' },
+    priceIncreaseAt: { at: Date.parse('2026-11-19T16:00:00Z') },
+    price: { from: 150, to: 170 },
+  };
+  const fleet: Ship[] = [
+    { id: 32, name: 'Freelancer MAX', msrp: 150 },
+    { id: 33, name: 'Razor', msrp: 145 },
+    { id: 34, name: 'Ballista', msrp: 140 },
+    { id: 35, name: 'Cutlass Black', msrp: 110 },
+    { id: 36, name: 'Constellation Taurus', msrp: 190 },
+  ];
+  const fleetMatcher = createPriceIncreaseMatcher([freelancer], NOW);
+  const fleetPrices = createPriceLookup(fleet.map(({ name, msrp }) => ({ name, price: msrp })));
+  const ccus = [1001, 1002, 1003, 1004].map((id): PledgeView => {
+    const pledge = ccuPledge(id, 'Freelancer MAX', 'Constellation Taurus', 5);
+    const change = fleetMatcher.hangarCcu(pledge, fleetPrices);
+    return { ...toPledgeView(pledge), ...(change && { ccuPriceChange: change }) };
+  });
+  const holdings = new Map([
+    [33, { hangarShips: 1, hangarCcus: 2, buybackCcus: 0 }],
+    [34, { hangarShips: 0, hangarCcus: 1, buybackCcus: 3 }],
+  ]);
+  const fleetAdvice = (alwaysAvailable: number[] | undefined, onSale: number[]) =>
+    ccuAdvice({
+      pledges: ccus,
+      ships: fleet,
+      buyable: [32, ...onSale].map((shipId) => ({
+        shipId,
+        skuId: shipId,
+        title: 'Standard Edition',
+        price: 1,
+      })),
+      warbonds: [],
+      isAlwaysAvailable: (id) => (alwaysAvailable ? alwaysAvailable.includes(id) : undefined),
+      holdingsOf: (id) => holdings.get(id) ?? { hangarShips: 0, hangarCcus: 0, buybackCcus: 0 },
+    })[0]?.switch;
+
+  it('recommends the next always available ship below, with the cheaper ones as alternatives', () => {
+    const recommended = fleetAdvice([34, 35], [33, 34, 35]);
+    expect(recommended).toMatchObject({
+      from: { name: 'Ballista' },
+      choice: 'alwaysAvailable',
+      price: 10,
+      holdings: { hangarShips: 0, hangarCcus: 1, buybackCcus: 3 },
+      alternatives: [
+        {
+          from: { name: 'Razor' },
+          price: 5,
+          holdings: { hangarShips: 1, hangarCcus: 2, buybackCcus: 0 },
+        },
+      ],
+    });
+    // Every new CCU gains what the Freelancer MAX rises by.
+    expect(recommended?.discountAfter).toBe(20);
+  });
+
+  it('without data on always available ships: the most expensive ship on sale now', () => {
+    expect(fleetAdvice(undefined, [34, 35])).toMatchObject({
+      from: { name: 'Ballista' },
+      choice: 'onSale',
+      alternatives: [{ from: { name: 'Razor' } }],
+    });
+    // None always available below: the same.
+    expect(fleetAdvice([36], [34])?.choice).toBe('onSale');
+  });
+
+  it('without any ship on sale: the most expensive ship below, without alternatives', () => {
+    expect(fleetAdvice(undefined, [])).toMatchObject({
+      from: { name: 'Razor' },
+      choice: 'any',
+      alternatives: [],
+    });
+  });
+
+  it('has no alternatives when the always available ship gives the cheapest CCU', () => {
+    expect(fleetAdvice([33], [33])).toMatchObject({ from: { name: 'Razor' }, alternatives: [] });
   });
 });
