@@ -709,7 +709,12 @@ it into store credit with the paints you already own:
   how many. Turned off (in the consultant or the settings), they are included and marked
   "Giftable".
 - **Order**: fill the cart and check it first, melt only after that.
-- **Into the cart**: one button puts all paints of the plan – the own paints and the fillers with
+- **Start plan** (#317): a new plan only shows what it would do; its button **Start plan** keeps
+  it with its way and the store credit it starts from, and shows it as the running plan, step by
+  step. Nothing goes into the cart and nothing is melted before; a plan runs only once it was
+  started, until it is completed or discarded. While another plan runs, it asks first, since the
+  new one replaces it. In the demo mode it starts the demo's own plan.
+- **Into the cart** (a step of the running plan): one button puts all paints of the plan – the own paints and the fillers with
   their counts – into RSI's cart, with the requests RSI's own paint pages send, and opens it.
   Nothing is bought: you check the final price and every paint there and pay with store credit.
   The cart is read first: if it already holds items, which would change the tier, it says so and
@@ -723,17 +728,18 @@ it into store credit with the paints you already own:
   - **Buy first** pays the whole cart from the store credit before any paint is melted, so it
     takes the best tier the store credit pays alone – the same as melting first, a lower one, or
     none ("Needs $… more store credit").
-  - **Melt first** fills the cart and keeps the plan, melts the own paints (with bulk melting on,
-    once its cart was filled) and pays with their melt value.
+  - **Melt first** fills the cart, melts the own paints (with bulk melting on) and pays with
+    their melt value.
   - On top, the store credit each way frees and the discount tiers they reach. Below that, the
     cart as cards: own paints ("Yours") and fillers, with the standard price and the price in the
     cart – for both carts when the tiers differ.
   - When the ways differ, "Why they differ" compares what each needs before melting with the store
     credit there is. Each way has its own card: discount, store credit freed, what it needs
-    upfront, its steps with the store credit after each one, a hint and its cart button.
+    upfront, its steps with the store credit after each one, a hint and "Start plan".
   - A chart shows the store credit along both ways, and short notes say what to know before you
     start.
-- **Melt the own paints at once** (with the experimental bulk melting on): a button opens the bulk
+- **Melt the own paints at once** (a step of the running plan, with the experimental bulk melting
+  on): a button opens the bulk
   melting dialog with exactly the own paints of the plan and the store credit they give. Once these
   paints were put into the cart, the dialog asks to confirm that the cart was checked. Before that
   the button melts them first (way 2), with its own acknowledgement: buy them again right away.

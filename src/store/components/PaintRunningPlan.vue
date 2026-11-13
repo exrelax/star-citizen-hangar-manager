@@ -3,7 +3,7 @@ import type { PledgeView } from '@/hangar/pledge-view';
 import { i18n, locale } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { useNow } from '@/shared/use-now';
-import { computed, provide, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { planLinesOf, type RunStep } from '../paint-consultant/running-plan';
 import {
   amountOf,
@@ -15,7 +15,7 @@ import {
   stepTitleOf,
   wayTitleOf,
 } from '../paint-consultant/running-plan-texts';
-import { REPLACES_RUNNING_PLAN, type RunningPlanState } from '../paint-consultant/use-running-plan';
+import type { RunningPlanState } from '../paint-consultant/use-running-plan';
 import PaintConfirm from './PaintConfirm.vue';
 import PaintRunStepBody from './PaintRunStepBody.vue';
 
@@ -30,9 +30,6 @@ const props = defineProps<{
   running: RunningPlanState;
   pledges: readonly PledgeView[];
 }>();
-
-// Its own cart button fills the running plan's cart: nothing to replace.
-provide(REPLACES_RUNNING_PLAN, () => false);
 
 const now = useNow();
 const view = computed(() => props.running.view.value!);

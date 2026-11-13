@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import { useDemoContext } from '@/demo/use-demo';
-import BulkExchangeOverlay from '@/hangar/components/BulkExchangeOverlay.vue';
 import { formatPercent, formatUsd } from '@/hangar/discount-format';
-import type { PledgeView } from '@/hangar/pledge-view';
-import { openTabAt } from '@/hangar/open-tab-at';
-import { BULK_MELTING_SETTING_ID } from '@/settings/anchors';
-import { useStored } from '@/storage/use-stored';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { i18n, locale } from '@/i18n';
 import type { Settings } from '@/settings/settings';
@@ -17,8 +12,7 @@ import { computed, provide, ref, watch } from 'vue';
 import '@/shared/styles/switch.css';
 import { refreshStoreItems } from '../items/sync-store-items';
 import { usePaintConsultant } from '../paint-consultant/use-paint-consultant';
-import { cartLinesOf } from '../paint-consultant/cart';
-import PaintCartButton from './PaintCartButton.vue';
+import PaintStartButton from './PaintStartButton.vue';
 import PaintConsultantChoose from './PaintConsultantChoose.vue';
 import PaintConsultantWays from './PaintConsultantWays.vue';
 import PaintProbablyRebought from './PaintProbablyRebought.vue';
@@ -28,16 +22,11 @@ import { REPLACES_RUNNING_PLAN, useRunningPlan } from '../paint-consultant/use-r
 import {
   consultantTabRequest,
   consultantTabsOf,
+  openPaintConsultant,
   shownTabOf,
   type ConsultantTab,
 } from '../paint-consultant/consultant-tabs';
-import {
-  currentPlanOf,
-  rebuyPlanItem,
-  demoRebuyPlanItem,
-  rebuyPlanItemOf,
-  storedPlanOf,
-} from '../paint-consultant/rebuy-plan-storage';
+import { rebuyPlanItemOf, storedPlanOf } from '../paint-consultant/rebuy-plan-storage';
 
 /*
  * The Paint Discount Consultant (#95) in the Pledge Store tab: which own paints to melt and buy
@@ -65,7 +54,7 @@ const { pledges, storeItems, creditUnknown, storeCredit, accountCredit, result }
 
 const running = useRunningPlan({ settings: () => props.settings, active: () => !!props.active });
 const runningView = computed(() => running.view.value);
-// A new plan's cart replaces the running plan: its cart buttons ask first.
+// A new plan replaces the running plan: "Start plan" asks first (#317).
 provide(REPLACES_RUNNING_PLAN, () => !!running.plan.value);
 
 // ---- The tabs (#244) ----
@@ -170,55 +159,24 @@ const fillerCount = computed(
   () => plan.value?.fillers.reduce((sum, f) => sum + f.quantity, 0) ?? 0,
 );
 
-// ---- Into the cart (#103) ----
-
-// The demo is for screenshots: nothing goes into the real cart, nothing is melted.
-const demo = useDemoContext();
-const planLines = computed(() => (plan.value ? cartLinesOf(plan.value) : []));
-/** Keeps the plan once its paints are in the cart, for later (#105, #139, #168). */
-async function keepPlan() {
-  // The table's cart is the one of melting first.
-  if (plan.value) {
-    await planItem().setValue(storedPlanOf(plan.value, Date.now(), 'melt', accountCredit.value));
-  }
-}
-
-// ---- Melt the own paints at once (#104, with bulk melting on) ----
+// ---- Starting the plan (#317) ----
 
 // The demo has a kept plan of its own (#131), never the account's.
-const realPlan = useStored(rebuyPlanItem);
-const demoPlan = useStored(demoRebuyPlanItem);
-const storedPlan = computed(() => currentPlanOf(demo.value ? demoPlan.value : realPlan.value));
-const planItem = () => rebuyPlanItemOf(!!demo.value);
-/** The own paints of the plan were put into the cart (#103): only then they may be melted. */
-const cartFilled = computed(() => {
-  const stored = storedPlan.value;
-  if (!plan.value || !stored) return false;
-  const inCart = new Set(stored.own.map((paint) => paint.pledgeId));
-  return plan.value.own.every((paint) => inCart.has(paint.pledgeId));
-});
-/** The hangar's pledges of the plan's own paints. */
-const ownPledges = computed(() => {
-  const byId = new Map(pledges.value.map((pledge) => [pledge.id, pledge]));
-  return (plan.value?.own ?? [])
-    .map((paint) => byId.get(paint.pledgeId))
-    .filter((pledge): pledge is PledgeView => !!pledge && pledge.isMeltable);
-});
-const melting = ref(false);
+const demo = useDemoContext();
 /**
- * Melted first (#168): the plan is kept, so the paints to buy again are known once they are gone
- * from the hangar. A plan kept with the cart (way 1) stays as it is.
+ * Starts the table's plan – the one of melting first – with the store credit it starts from
+ * (#245, #317); the running plan then offers its cart and melting step by step.
  */
-async function keepPlanMelted() {
-  if (!cartFilled.value) await keepPlan();
+async function startPlan() {
+  if (!plan.value) return;
+  await rebuyPlanItemOf(!!demo.value).setValue(
+    storedPlanOf(plan.value, Date.now(), 'melt', accountCredit.value),
+  );
+  openPaintConsultant('running');
 }
 
 /** Pairs that look bought again without a kept plan (`reboughtDetection: 'guess'`). */
 const probablyRebought = computed(() => result.value?.probablyRebought ?? []);
-
-/** Bulk melting is off: the settings tab, at its setting. */
-const openBulkMeltingSetting = () =>
-  openTabAt('settings', BULK_MELTING_SETTING_ID, { highlight: true });
 </script>
 
 <template>
@@ -528,56 +486,9 @@ const openBulkMeltingSetting = () =>
             <li>{{ i18n.t('consultant.stepPacks') }}</li>
           </ul>
 
-          <!-- Fills RSI's cart; the user checks it and pays there – nothing is checked out here. -->
+          <!-- A plan runs only once it was started (#317): its cart and melting are its steps. -->
           <div class="shm-consultant-cart">
-            <PaintCartButton :lines="planLines" @filled="keepPlan" />
-
-            <!-- Bulk melting (experimental): the own paints at once, after the cart was filled. -->
-            <template v-if="settings.bulkMelting && ownPledges.length">
-              <button
-                v-tooltip="
-                  cartFilled
-                    ? i18n.t('consultant.meltHintReady')
-                    : i18n.t('consultant.meltFirstHint')
-                "
-                type="button"
-                class="shm-button is-danger"
-                @click="melting = true"
-              >
-                <SvgIcon name="triangle-exclamation" />
-                {{
-                  i18n.n(
-                    cartFilled ? 'consultant.meltOwn' : 'consultant.meltFirst',
-                    ownPledges.length,
-                  )
-                }}
-              </button>
-              <!-- Way 2 (#168): melting before buying needs its own acknowledgement. -->
-              <BulkExchangeOverlay
-                v-if="melting"
-                :pledges="ownPledges"
-                :hangar="pledges"
-                :skipped="0"
-                :extra-consent="
-                  cartFilled
-                    ? i18n.t('consultant.meltConsent')
-                    : i18n.t('consultant.meltFirstConsent')
-                "
-                @exchanged="keepPlanMelted"
-                @close="melting = false"
-              />
-            </template>
-            <!-- Off: points to the experimental setting, as the sidebar's "Selected" box does. -->
-            <button
-              v-else-if="ownPledges.length"
-              v-tooltip="i18n.t('bulkExchange.disabledHint')"
-              type="button"
-              class="shm-button"
-              @click="openBulkMeltingSetting"
-            >
-              <SvgIcon name="gear" />
-              {{ i18n.t('bulkExchange.disabled') }}
-            </button>
+            <PaintStartButton @start="startPlan" />
           </div>
         </div>
         <!-- Choosing a way (#246): the guess at the end, below the plan. -->

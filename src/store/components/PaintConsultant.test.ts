@@ -1,7 +1,8 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
-import { createApp, h, nextTick, type App } from 'vue';
+import { createApp, h, nextTick, shallowRef, type App } from 'vue';
+import { DEMO_CONTEXT, type DemoContext } from '@/demo/use-demo';
 import { storeCreditItem, STORE_CREDIT_VERSION } from '@/account/store-credit-storage';
 import type { Pledge } from '@/hangar/pledge';
 import { toPledgeView } from '@/hangar/pledge-view';
@@ -9,7 +10,11 @@ import { DEFAULT_SETTINGS, settingsItem, type Settings } from '@/settings/settin
 import { storeItemsItem, STORE_ITEMS_VERSION } from '../items/store-items-storage';
 import type { StoreItem } from '../items/store-items';
 import { providePaintConsultant } from '../paint-consultant/use-paint-consultant';
-import { rebuyPlanItem, REBUY_PLAN_VERSION } from '../paint-consultant/rebuy-plan-storage';
+import {
+  demoRebuyPlanItem,
+  rebuyPlanItem,
+  REBUY_PLAN_VERSION,
+} from '../paint-consultant/rebuy-plan-storage';
 import PaintConsultant from './PaintConsultant.vue';
 
 let app: App | undefined;
@@ -54,6 +59,8 @@ async function render(
   pledges: ReturnType<typeof paint>[],
   settings: Partial<Settings> = {},
   withoutNewPlan = false,
+  /** In the demo mode: its context, with nothing but what the consultant needs. */
+  demo = false,
 ) {
   const root = document.createElement('div');
   // The tests below see the table layout unless they ask for the cards.
@@ -74,6 +81,7 @@ async function render(
       return () => h(PaintConsultant, { settings: all });
     },
   });
+  if (demo) app.provide(DEMO_CONTEXT, shallowRef({ events: [] } as unknown as DemoContext));
   app.mount(root);
   // The stored values are read asynchronously.
   for (let i = 0; i < 5; i++) {
@@ -154,49 +162,51 @@ describe('PaintConsultant', () => {
     expect(marked.querySelectorAll('.shm-consultant-tag')).toHaveLength(2);
   });
 
-  describe('melting the own paints (#104)', () => {
-    const meltButton = (root: HTMLElement) =>
+  describe('starting a plan (#317)', () => {
+    const buttonsOf = (root: HTMLElement) =>
+      [...root.querySelectorAll<HTMLButtonElement>('#shm-consultant-panel-new button')].map(
+        (button) => text(button).trim(),
+      );
+    const startButton = (root: HTMLElement) =>
       [...root.querySelectorAll<HTMLButtonElement>('.shm-consultant-cart button')].find((b) =>
-        b.textContent?.includes('Melt the'),
+        b.textContent?.includes('Start plan'),
       );
 
-    it('is only offered with bulk melting on, otherwise a button leads to the setting', async () => {
-      const root = await render(await storeExample());
-      expect(meltButton(root)).toBeUndefined();
-      const toSetting = [...root.querySelectorAll('.shm-consultant-cart button')].find((b) =>
-        b.textContent?.includes('Bulk melting disabled'),
-      );
-      expect(toSetting).toBeDefined();
+    it('offers only "Start plan", no cart or melt button, and no plan runs before', async () => {
+      const root = await render(await storeExample(), { bulkMelting: true });
+      expect(startButton(root)).toBeDefined();
+      expect(buttonsOf(root).some((label) => /cart|Melt the/i.test(label))).toBe(false);
+      expect(await rebuyPlanItem.getValue()).toBeNull();
+      expect(root.querySelector('.shm-run')).toBeNull();
     });
 
-    it('melts after the cart was filled, or first with its own acknowledgement (#168)', async () => {
-      const pledges = await storeExample();
-      const first = await render(pledges, { bulkMelting: true });
-      expect(meltButton(first)?.disabled).toBe(false);
-      expect(meltButton(first)?.textContent).toContain('Melt the 5 own paints first');
-      meltButton(first)!.click();
-      await nextTick();
-      expect(document.querySelector('.shm-action-dialog')?.textContent).toContain(
-        'I melt these paints before buying them again',
+    it('keeps the plan with its way and store credit, and runs it from its first step', async () => {
+      const pledges = await storeExample(40);
+      const root = await render(pledges);
+      startButton(root)!.click();
+      for (let i = 0; i < 5; i++) {
+        await new Promise((resolve) => setTimeout(resolve));
+        await nextTick();
+      }
+      const stored = await rebuyPlanItem.getValue();
+      expect(stored).toMatchObject({ way: 'melt', creditAtStart: 40 });
+      expect(stored?.own.map((paint) => paint.pledgeId).sort()).toEqual(
+        pledges.map((pledge) => pledge.id).sort(),
       );
-      app?.unmount();
-
-      await storePlan(pledges.map((pledge) => pledge.id));
-      const ready = await render(pledges, { bulkMelting: true });
-      expect(meltButton(ready)?.textContent?.trim()).toBe('Melt the 5 own paints');
+      // The running plan of melting first, at its first step with nothing done yet.
+      expect(text(root.querySelector('.shm-run-title')!)).toBe('Running plan · Melt first');
+      const steps = [...root.querySelectorAll('.shm-run-step')];
+      expect(steps[0]?.getAttribute('aria-current')).toBe('step');
+      expect(text(steps[0] as HTMLElement)).toContain('Melt your 5 paints');
     });
 
-    it('asks to confirm the checked cart in the dialog, besides the other acknowledgements', async () => {
-      const pledges = await storeExample();
-      await storePlan(pledges.map((pledge) => pledge.id));
-      const root = await render(pledges, { bulkMelting: true });
-      meltButton(root)!.click();
-      await nextTick();
-      const dialog = document.querySelector('.shm-action-dialog')!;
-      expect(dialog.textContent).toContain('checked it there');
-      const submit = dialog.querySelector<HTMLButtonElement>('.shm-action-submit')!;
-      // Without every acknowledgement and the password nothing can be sent.
-      expect(submit.disabled).toBe(true);
+    it('keeps only the demo’s own plan in the demo (#131)', async () => {
+      const pledges = await storeExample(40);
+      const root = await render(pledges, {}, false, true);
+      startButton(root)!.click();
+      await new Promise((resolve) => setTimeout(resolve));
+      expect(await rebuyPlanItem.getValue()).toBeNull();
+      expect((await demoRebuyPlanItem.getValue())?.own).toHaveLength(5);
     });
   });
 
@@ -294,32 +304,45 @@ describe('PaintConsultant', () => {
     expect(root.querySelector('.shm-run')).toBeNull();
   });
 
-  it('asks before a new plan’s cart replaces the running plan (#245)', async () => {
+  it('asks before a new plan replaces the running plan (#245, #317)', async () => {
     const pledges = await storeExample(40);
     const choose = { paintConsultant: DEFAULT_SETTINGS.paintConsultant };
-    const cartButton = (root: HTMLElement) =>
+    const startButton = (root: HTMLElement) =>
       [...root.querySelectorAll<HTMLButtonElement>('.shm-choose-detail button')].find((b) =>
-        b.textContent?.includes('into the cart'),
+        b.textContent?.includes('Start plan'),
       )!;
-    // Without a running plan the cart button doesn't ask.
+    // Without a running plan: a single tab, its heading instead of tabs (#244).
     const free = await render(pledges, choose);
     expect(free.querySelector('.shm-run')).toBeNull();
-    // A single tab: its heading instead of tabs (#244).
     expect(free.querySelector('.shm-consultant-tabs')).toBeNull();
     expect(text(free.querySelector('.shm-consultant-section-title')!)).toBe('New plan');
     app?.unmount();
 
     await storePlan([pledges[0]!.id], Date.now(), 'buy');
     const root = await render(pledges, choose);
-    cartButton(root).click();
+    const tabs = [...root.querySelectorAll<HTMLElement>('.shm-consultant-tabs .shm-tab')];
+    tabs.find((tab) => text(tab).includes('New plan'))!.click();
     await nextTick();
-    const confirm = root.querySelector('.shm-choose-detail .shm-consultant-confirm')!;
-    expect(text(confirm)).toContain('Filling the cart for this new plan discards it');
-    expect(cartButton(root).disabled).toBe(true);
-    [...confirm.querySelectorAll('button')].find((b) => b.textContent?.includes('Cancel'))!.click();
+    startButton(root).click();
     await nextTick();
-    expect(root.querySelector('.shm-consultant-confirm')).toBeNull();
-    expect(cartButton(root).disabled).toBe(false);
+    const confirm = () => root.querySelector('.shm-choose-detail .shm-consultant-confirm');
+    expect(text(confirm()!)).toContain('Starting this new plan discards it');
+    expect(startButton(root).disabled).toBe(true);
+    [...confirm()!.querySelectorAll('button')]
+      .find((b) => b.textContent?.includes('Cancel'))!
+      .click();
+    await nextTick();
+    expect(confirm()).toBeNull();
+    expect((await rebuyPlanItem.getValue())?.own).toHaveLength(1);
+
+    startButton(root).click();
+    await nextTick();
+    [...confirm()!.querySelectorAll('button')]
+      .find((b) => b.textContent?.includes('Discard it and start'))!
+      .click();
+    await new Promise((resolve) => setTimeout(resolve));
+    expect(await rebuyPlanItem.getValue()).toMatchObject({ way: 'buy' });
+    expect((await rebuyPlanItem.getValue())?.own).toHaveLength(5);
   });
 
   it('has the option to leave out giftable paints as a switch next to the title', async () => {
@@ -369,7 +392,7 @@ describe('PaintConsultant', () => {
       const root = await render(await storeExample(20), cards);
       expect(text(root)).toContain('Two ways – with $20 both work, at different discounts');
       expect(text(way(root, 'buy'))).toContain('25%');
-      expect(text(way(root, 'buy'))).toContain('Put the 5 paints into the cart');
+      expect(text(way(root, 'buy'))).toContain('Start plan');
       expect(text(way(root, 'melt'))).toContain('35%');
       expect(root.querySelectorAll('.shm-ways-formulas > span')).toHaveLength(2);
       expect(text(root.querySelector('.shm-ways-why')!)).toContain('35% would cost $26');
@@ -381,26 +404,17 @@ describe('PaintConsultant', () => {
       expect(text(way(root, 'buy'))).toContain('Not possible');
       const needs = buttons(way(root, 'buy')).find((b) => b.textContent?.includes('Needs $25'));
       expect(needs?.disabled).toBe(true);
-      expect(text(way(root, 'melt'))).toContain('Fill the cart and save the plan');
+      expect(text(way(root, 'melt'))).toContain('Fill the cart and check it');
     });
 
-    it('offers melting first only after the cart was filled', async () => {
+    it('offers "Start plan" on each way that works, no cart or melt button (#317)', async () => {
       const pledges = await storeExample(1);
-      const settings = { ...cards, bulkMelting: true };
-      const before = await render(pledges, settings);
-      expect(buttons(way(before, 'melt')).some((b) => b.textContent?.includes('Melt the'))).toBe(
-        false,
-      );
-      app?.unmount();
-
       await storePlan(pledges.map((pledge) => pledge.id));
-      const after = await render(pledges, settings);
-      const melt = buttons(way(after, 'melt')).find((b) => b.textContent?.includes('Melt the 5'));
-      melt!.click();
-      await nextTick();
-      expect(document.querySelector('.shm-action-dialog')?.textContent).toContain(
-        'checked it there',
-      );
+      const root = await render(pledges, { ...cards, bulkMelting: true });
+      const labels = (kind: 'buy' | 'melt') =>
+        buttons(way(root, kind)).map((button) => text(button).trim());
+      expect(labels('melt')).toEqual(['Start plan']);
+      expect(labels('buy')).toEqual(['Needs $25 more store credit']);
     });
   });
 
@@ -426,7 +440,8 @@ describe('PaintConsultant', () => {
       expect(text(detail(root))).toContain('Pay with store credit');
       expect(text(detail(root))).toContain('$14');
       expect(text(detail(root))).toContain('$48.75 · +$8.75');
-      expect(text(detail(root))).toContain('Put the 10 paints into the cart');
+      expect(text(detail(root))).toContain('Start plan');
+      expect(text(detail(root))).not.toContain('into the cart');
       expect(cart(root)).toBe('Cart · 10 paints at 35%');
       expect(root.querySelectorAll('.shm-ways-paint')).toHaveLength(10);
     });
@@ -443,7 +458,7 @@ describe('PaintConsultant', () => {
       expect(choice(root, 'melt').getAttribute('aria-pressed')).toBe('true');
       expect(cart(root)).toBe('Cart · 10 paints at 35%');
       expect(root.querySelectorAll('.shm-ways-paint.is-out')).toHaveLength(0);
-      expect(text(detail(root))).toContain('Fill the cart and save the plan');
+      expect(text(detail(root))).toContain('Fill the cart and check it');
       expect(text(detail(root))).toContain('Your paints leave the hangar first');
       expect(root.querySelector('.shm-choose-tier.is-other')?.textContent).toContain('25%');
     });
@@ -454,21 +469,17 @@ describe('PaintConsultant', () => {
       expect(text(choice(root, 'buy'))).toContain('Not possible');
       expect(text(choice(root, 'buy'))).toContain('Needs $25 more store credit');
       expect(choice(root, 'melt').getAttribute('aria-pressed')).toBe('true');
-      expect(text(detail(root))).toContain('Fill the cart and save the plan');
+      expect(text(detail(root))).toContain('Fill the cart and check it');
     });
 
-    it('offers melting first only after the cart was filled', async () => {
+    it('offers "Start plan" only, also with bulk melting on (#317)', async () => {
       const pledges = await storeExample(1);
-      const settings = { ...choose, bulkMelting: true };
-      const has = (root: HTMLElement, label: string) =>
-        [...detail(root).querySelectorAll('button')].some((b) => b.textContent?.includes(label));
-      const before = await render(pledges, settings);
-      expect(has(before, 'Melt the')).toBe(false);
-      app?.unmount();
-
       await storePlan(pledges.map((pledge) => pledge.id));
-      const after = await render(pledges, settings);
-      expect(has(after, 'Melt the 5')).toBe(true);
+      const root = await render(pledges, { ...choose, bulkMelting: true });
+      const labels = [...detail(root).querySelectorAll('.shm-way-actions button')].map((b) =>
+        text(b).trim(),
+      );
+      expect(labels).toEqual(['Start plan']);
     });
   });
 });

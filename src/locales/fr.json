@@ -674,6 +674,8 @@
     "stepPacks": "Les packs de peintures et les pledges contenant une peinture avec d’autres objets ne sont pas encore pris en compte.",
     "toCart": "Mettre les $1 peintures dans le panier",
     "toCartHint": "Met les peintures propres et les peintures de remplissage de ce plan dans ton panier RSI et l’ouvre. Rien n’est acheté : tu vérifies le panier et tu paies là-bas.",
+    "start": "Démarrer le plan",
+    "startHint": "Garde ce plan avec sa voie et ton crédit store actuel, et l’affiche sous « Plan en cours » étape par étape : le panier, le paiement et la fonte. Rien n’est encore mis dans le panier ni fondu.",
     "cartOccupied": {
       "one": "Ton panier RSI contient déjà $1 article. D’autres articles changent le palier de remise, le plan ne tiendrait donc plus – vide d’abord le panier ou ajoute les peintures quand même.",
       "other": "Ton panier RSI contient déjà $1 articles. D’autres articles changent le palier de remise, le plan ne tiendrait donc plus – vide d’abord le panier ou ajoute les peintures quand même."
@@ -688,14 +690,6 @@
       "one": "Fondre la peinture propre",
       "other": "Fondre les $1 peintures propres"
     },
-    "meltHintCart": "Mets d’abord les peintures dans le panier et vérifie-le là-bas : alors seulement les peintures propres peuvent être fondues ici.",
-    "meltHintReady": "Fond en une fois les peintures propres de ce plan (fusion multiple). Ouvre d’abord une boîte de dialogue ; vérifie le panier avant.",
-    "meltConsent": "J’ai mis les peintures de ce plan dans le panier et je l’ai vérifié là-bas : le prix final et que chaque peinture que je fonds maintenant s’y trouve.",
-    "meltFirst": {
-      "one": "Fondre d’abord la peinture propre",
-      "other": "Fondre d’abord les $1 peintures propres"
-    },
-    "meltFirstHint": "Fond les peintures propres avant de les racheter (voie 2) : leur crédit boutique est libre tout de suite, et le conseiller retient quelles peintures racheter. La voie recommandée est l’autre : mettre les peintures dans le panier et acheter d’abord.",
     "meltFirstConsent": "Je fonds ces peintures avant de les racheter : je les rachète tout de suite – d’ici là, rien ne garantit le prix ni qu’elles soient encore vendues.",
     "fillerTag": "Remplissage",
     "skipGiftable": "Ignorer les peintures offrables",
@@ -773,7 +767,7 @@
       "statUpfrontHint": "Crédit boutique nécessaire avant de fondre une peinture.",
       "stepCartCheck": "Remplir le panier et le vérifier",
       "stepCartSub": "$1 peintures à $2",
-      "stepCartPlan": "Remplir le panier et garder le plan",
+      "stepCartPlan": "Remplir le panier et le vérifier",
       "stepCartPlanSub": "Montre si chaque peinture peut être achetée",
       "stepPay": "Payer en crédit boutique",
       "stepPaySub": "Avant de fondre une peinture",
@@ -802,7 +796,6 @@
       "hintSame": "Même résultat, mais vos peintures quittent le hangar avant l’achat des nouvelles copies.",
       "hintMelt": "Vos peintures quittent d’abord le hangar. Le plan gardé retient lesquelles racheter.",
       "needsMore": "Il faut $1 de crédit boutique en plus",
-      "fillCart": "Remplir le panier et garder le plan",
       "chartTitle": "Votre crédit boutique au fil des étapes",
       "chartToday": "aujourd’hui",
       "chartAfter": "après 24 h",
@@ -934,8 +927,8 @@
       "footer": "Le conseiller vérifie votre hangar, votre panier et votre crédit boutique à chaque actualisation.",
       "discard": "Abandonner le plan",
       "discardConfirm": "Abandonner le plan en cours ? Rien ne change dans votre hangar ni votre panier, et les pledges marqués à fondre le restent. Les peintures fondues d’abord et pas encore rachetées ne sont plus suivies.",
-      "replaceConfirm": "Un plan est en cours. Remplir le panier pour ce nouveau plan l’abandonne – ses peintures fondues d’abord et pas encore rachetées ne sont plus suivies.",
-      "replace": "L’abandonner et remplir le panier"
+      "replaceConfirm": "Un plan est en cours. Démarrer ce nouveau plan l’abandonne – ses peintures fondues d’abord et pas encore rachetées ne sont plus suivies.",
+      "replace": "L’abandonner et démarrer"
     },
     "tabs": {
       "running": "Plan en cours",

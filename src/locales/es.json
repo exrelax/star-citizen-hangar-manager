@@ -674,6 +674,8 @@
     "stepPacks": "Los packs de pinturas y los pledges con una pintura junto a otros objetos aún no se incluyen.",
     "toCart": "Poner las $1 pinturas en el carrito",
     "toCartHint": "Pone las pinturas propias y las de relleno de este plan en tu carrito de RSI y lo abre. No se compra nada: revisas el carrito y pagas allí.",
+    "start": "Iniciar el plan",
+    "startHint": "Guarda este plan con su camino y tu crédito de tienda actual y lo muestra en «Plan en curso» paso a paso: el carrito, el pago y la fundición. Todavía no se pone nada en el carrito ni se funde nada.",
     "cartOccupied": {
       "one": "Tu carrito de RSI ya contiene $1 artículo. Otros artículos cambian el nivel de descuento por volumen y el plan no cuadraría: vacía primero el carrito o añade las pinturas de todos modos.",
       "other": "Tu carrito de RSI ya contiene $1 artículos. Otros artículos cambian el nivel de descuento por volumen y el plan no cuadraría: vacía primero el carrito o añade las pinturas de todos modos."
@@ -688,14 +690,6 @@
       "one": "Fundir la pintura propia",
       "other": "Fundir las $1 pinturas propias"
     },
-    "meltHintCart": "Pon primero las pinturas en el carrito y revísalo allí: solo entonces se pueden fundir aquí las pinturas propias.",
-    "meltHintReady": "Funde a la vez las pinturas propias de este plan (fusión múltiple). Abre antes un diálogo; revisa el carrito antes.",
-    "meltConsent": "He puesto las pinturas de este plan en el carrito y lo he revisado allí: el precio final y que cada pintura que fundo ahora está en él.",
-    "meltFirst": {
-      "one": "Fundir primero la pintura propia",
-      "other": "Fundir primero las $1 pinturas propias"
-    },
-    "meltFirstHint": "Funde las pinturas propias antes de recomprarlas (camino 2): su crédito de tienda queda libre al instante y el asesor recuerda qué pinturas hay que recomprar. Se recomienda el otro camino: poner las pinturas en el carrito y comprar primero.",
     "meltFirstConsent": "Fundo estas pinturas antes de recomprarlas: las recompro enseguida; hasta entonces nada garantiza el precio ni que se sigan vendiendo.",
     "fillerTag": "Relleno",
     "skipGiftable": "Omitir pinturas regalables",
@@ -773,7 +767,7 @@
       "statUpfrontHint": "Crédito de tienda necesario antes de fundir ninguna pintura.",
       "stepCartCheck": "Llena el carrito y revísalo",
       "stepCartSub": "$1 pinturas al $2",
-      "stepCartPlan": "Llena el carrito y guarda el plan",
+      "stepCartPlan": "Llena el carrito y revísalo",
       "stepCartPlanSub": "Muestra si se puede comprar cada pintura",
       "stepPay": "Paga con crédito de tienda",
       "stepPaySub": "Antes de fundir ninguna pintura",
@@ -802,7 +796,6 @@
       "hintSame": "El mismo resultado, pero tus pinturas salen del hangar antes de comprar las nuevas copias.",
       "hintMelt": "Tus pinturas salen primero del hangar. El plan guardado recuerda cuáles volver a comprar.",
       "needsMore": "Necesita $1 más de crédito de tienda",
-      "fillCart": "Llenar el carrito y guardar el plan",
       "chartTitle": "Tu crédito de tienda a lo largo del camino",
       "chartToday": "hoy",
       "chartAfter": "tras 24 h",
@@ -934,8 +927,8 @@
       "footer": "El asesor revisa tu hangar, tu carrito y tu crédito de tienda en cada actualización.",
       "discard": "Descartar el plan",
       "discardConfirm": "¿Descartar el plan en curso? No cambia nada en tu hangar ni en tu carrito, y los pledges marcados para fundir siguen marcados. Las pinturas que fundiste primero y aún no has recomprado dejan de seguirse.",
-      "replaceConfirm": "Hay un plan en curso. Llenar el carrito para este plan nuevo lo descarta: sus pinturas que fundiste primero y aún no has recomprado dejan de seguirse.",
-      "replace": "Descartarlo y llenar el carrito"
+      "replaceConfirm": "Hay un plan en curso. Iniciar este plan nuevo lo descarta: sus pinturas que fundiste primero y aún no has recomprado dejan de seguirse.",
+      "replace": "Descartarlo e iniciar"
     },
     "tabs": {
       "running": "Plan en curso",
