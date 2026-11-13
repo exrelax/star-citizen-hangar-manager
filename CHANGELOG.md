@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.1.0] – 2026-11-13
 
 Everything around the Pledge Store, in time for the Intergalactic Aerospace Expo: warbond CCUs,
 price increases and a consultant for paint discounts. All features in detail:
