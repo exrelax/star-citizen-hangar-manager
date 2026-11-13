@@ -31,9 +31,14 @@ announcements.
 - The full CCU history of upgraded ships, with the discount of every step
 - Orders of your purchases with invoices, refund countdown and a prefilled refund request
 - Buy back pledges straight into the RSI cart
-- A Paint Discount Consultant: more store credit from your paints with RSI's volume discount
+- A Paint Discount Consultant: more store credit from your paints with RSI's volume discount,
+  as a plan you start and follow step by step
 - The current warbond CCUs of the pledge store, with the cheapest ships to start from and your own
-  CCUs in the same price range
+  CCUs in the same price range, and a history of the warbond offers seen so far
+- Expected price increases: a reminder on buy back items that get more expensive, advice for CCUs
+  that lose or gain upgrade value, and the CCUs to secure before a ship's price rises
+- Event notices like the Intergalactic Aerospace Expo, with countdowns
+- Notifications in the sidebar and, if you turn them on, from the browser – each kind on its own
 - Links from CCU Game (ccugame.app) straight to the pledge in the Hangar Manager
 - An addition to RSI's website: "My Gear" and "Buy Back Pledges" stay untouched and usable
 - Transparent storage: the settings list everything that is stored, with size and the time of the
@@ -649,7 +654,12 @@ the full hour (local clock), while the manager is open in a visible tab:
 
 That is about 34 reads of the upgrade tool and 65 requests for the items per hour, instead of 12
 and 156 with the former 5-minute interval of the items. The refresh button and the initial load
-always read both; the count line says when the offers were updated. For each warbond ship:
+always read both; the count line says when the offers were updated.
+
+Below the events, the warbond CCUs have two views, chosen with tabs: **Current Discount CCUs** –
+the warbond CCUs RSI sells now and the CCUs to secure before a price increase – and the **Warbond
+CCU History** with the offers that are over (both below). A notification about new warbond CCUs
+opens the current ones. For each warbond ship:
 
 - **Prices**: the warbond price, the standard price (struck through) and the discount in dollars
   and percent, with the ship's image.
@@ -669,16 +679,38 @@ always read both; the count line says when the offers were updated. For each war
   table with their ship prices, count, value and discount. CCUs ending at or below the warbond
   price (e.g. to a ship listed above) are left out: they can be chained. The count is also a tag on
   the item.
+- **Earlier offers** (in the opened item): since when this offer was seen – with the event running
+  then, if any – and the earlier offers of the same ship, also at other prices, or "No earlier
+  offer of this ship seen yet".
 
-Below them, set apart, **CCUs to secure before a price increase** (#253): for every ship whose
-price is expected to rise (the project website's list, see [Buy back](#buy-back)) and to which RSI
-sells CCUs right now – for every user, whether or not the hangar has CCUs to it. A CCU bought now
+The **warbond history** behind it: the Hangar Manager remembers every warbond offer it sees, with
+price, standard price, first and last sighting and the events running meanwhile – in this browser
+only, as no public record of past offers exists, so the list grows over time. Earlier offers
+collected on the project website (`data/warbond-history.json`, read once a day) are added; an own
+sighting of the same offer at the same time counts instead of the website's.
+
+The view **Warbond CCU History** lists the offers RSI no longer sells, each with the ship, its
+manufacturer, the warbond and standard price, the discount, when it was seen and its events. A
+**period** narrows it – the running event's period (offered while an event runs), the last 30, 90
+or 180 days –, a search finds ships and manufacturers, and the list sorts by date, standard price
+or discount, each way round. The count line says how many offers show ("3 of 12 expired offers").
+
+Below the current warbond CCUs, set apart, **CCUs to secure before a price increase** (#253): for
+every ship whose price is expected to rise (the project website's list, see [Buy back](#buy-back))
+and to which RSI sells CCUs right now – for every user, whether or not the hangar has CCUs to it. A CCU bought now
 keeps its price, but its upgrade value grows with the ship's: that is the discount. Each ship shows
 its price now and after (if announced), the countdown to the increase with the gain ("Price +$20:
 7 days"), and **Ship upgrade** with the ship as target. Opened, it lists the 10 cheapest CCUs to it,
 like the warbond CCUs, with the gain per CCU and how often you already have each base ship in your
 hangar and buy back. Ships about to rise themselves aren't offered as base ships; a ship disappears
 once its price increase is past.
+
+A ship RSI sells **no CCUs to right now** (e.g. before it is flight ready) is listed as well when
+your buy back has CCUs to it (#311): "No CCUs on sale · 2 in your buy back", without the "Ship
+upgrade" button. Opened, it lists those buy back CCUs by base ship, the cheapest first, with their
+buy back price (its source in a tooltip; without a known price last), the base ship's price,
+whether it is always available and the count – CCUs RSI can't sell again are left out. Bought back
+before the increase, they keep their price and gain the upgrade value.
 
 ## Paint Discount Consultant
 
@@ -709,11 +741,33 @@ it into store credit with the paints you already own:
   how many. Turned off (in the consultant or the settings), they are included and marked
   "Giftable".
 - **Order**: fill the cart and check it first, melt only after that.
+- **Tabs** (#244): the consultant shows the **Running plan**, a **New plan** and the **Completed
+  plans** in tabs, each only while it has something to show. With a single one there are no tabs,
+  only its heading; without any, it says why no plan is possible. A plan that starts running is
+  shown first.
 - **Start plan** (#317): a new plan only shows what it would do; its button **Start plan** keeps
   it with its way and the store credit it starts from, and shows it as the running plan, step by
   step. Nothing goes into the cart and nothing is melted before; a plan runs only once it was
   started, until it is completed or discarded. While another plan runs, it asks first, since the
   new one replaces it. In the demo mode it starts the demo's own plan.
+- **Running plan** (#245): one card with the way ("Running plan · Buy first"), since when it
+  runs, the store credit when done and a bar of the steps done. Its steps follow the way – buying
+  first: fill the cart and check it, pay with store credit, melt the old paints, melt the fillers
+  after 24 hours; melting first: melt your paints, buy the paints, melt the fillers. The current
+  step is open and checks what it needs on every refresh: whether all paints are in RSI's cart
+  (read while the Pledge Store tab is open), whether other items in the cart change the tier,
+  whether the store credit is enough, whether prices changed or a paint is no longer sold on its
+  own – with the paints listed and what is wrong with each. It offers what helps: put the missing
+  paints into the cart, go to the cart and pay, melt (bulk melting), read the cart or the store
+  credit again, or **Recalculate** for today's prices and store credit, keeping the paints
+  already melted. The purchase is found in the hangar and orders on the next refresh; the filler
+  paints then count down RSI's 24 hours. **Discard plan** ends it after a question: nothing in the
+  hangar or cart changes, pledges marked to melt stay marked. Hidden while the melt value is
+  hidden.
+- **Completed plans**: every plan carried through, the newest first, with its way, date, the own
+  and filler paints, what was melted, bought, freed and paid and the discount reached; on top how
+  many plans there are and the store credit they freed in all. Each opens for its details; the
+  newest one starts open.
 - **Into the cart** (a step of the running plan): one button puts all paints of the plan – the own paints and the fillers with
   their counts – into RSI's cart, with the requests RSI's own paint pages send, and opens it.
   Nothing is bought: you check the final price and every paint there and pay with store credit.
@@ -724,7 +778,15 @@ it into store credit with the paints you already own:
   Disabled in the demo mode.
 - **Two ways**: buying first and melting after (recommended, safer, but the store credit of the
   own paints isn't free for the cart yet), or melting first and buying after.
-- **Both ways side by side** (the default layout; the setting "Layout" switches to the tables):
+- **Choose a way** (the default layout of a new plan; the setting "Layout" switches to the two
+  below): both ways as two choices with what each frees, its tier, paints and what it needs
+  upfront. The recommended one is chosen – buying first where the store credit pays it; a way
+  that doesn't work is disabled and says why ("Needs $… more store credit"). Below, only the
+  chosen way: its steps with the store credit after each one, a chart of the store credit along
+  the way, a hint, "Start plan", and its cart as cards with the tier it reaches (and the tier of
+  the other way, if different). The store credit the ways start from shows next to the title.
+- **Both ways side by side** (the layout "Both ways side by side"; a third one shows the plan and
+  its paints in tables):
   - **Buy first** pays the whole cart from the store credit before any paint is melted, so it
     takes the best tier the store credit pays alone – the same as melting first, a lower one, or
     none ("Needs $… more store credit").
@@ -743,8 +805,7 @@ it into store credit with the paints you already own:
   melting dialog with exactly the own paints of the plan and the store credit they give. Once these
   paints were put into the cart, the dialog asks to confirm that the cart was checked. Before that
   the button melts them first (way 2), with its own acknowledgement: buy them again right away.
-  The plan is kept then, so the paints to buy again are known although the hangar no longer shows
-  them.
+  The running plan knows the paints to buy again although the hangar no longer shows them.
 - **Filler paints bought**: the kept plan is checked against the orders and the hangar whenever
   they are read. An order made on the plan's day or later, paid with store credit, that created
   own paints and filler paints of the plan confirms the purchase. The filler paints it created are
@@ -755,7 +816,7 @@ it into store credit with the paints you already own:
   bulk melting dialog with exactly them. With browser notifications on, a notification tells it
   also while no RSI page is open; a click opens My Hangar. Without such an order within 7 days,
   the plan isn't checked any more (it is kept for the paints bought again and those left to buy).
-- **Left to buy**: own paints of a kept plan that are gone from the hangar – melted – and not
+- **Left to buy** (in the running plan of melting first): own paints of the plan that are gone from the hangar – melted – and not
   bought again since are listed with the tier the store credit pays now (fewer filler paints if it
   is short; it says what the planned tier misses) and their own "Put the paints into the cart"
   button, which keeps the tier and fillers really put into the cart. Afterwards the hangar is read again, as after every bulk melting. With bulk
@@ -763,7 +824,7 @@ it into store credit with the paints you already own:
 - **Bought again**: once the paints were bought, the hangar holds each own paint twice – the old
   pledge without the discount and the new copy with it. The consultant pairs each copy with one
   old pledge of the same paint (the oldest one with less discount; the copy is younger). By
-  default a pair counts only when the old pledge was in a plan whose paints were put into the cart
+  default a pair counts only when the old pledge was in a plan that was started
   and the copy was bought that day or later; the setting "Paints bought again" can also show other
   pairs as a guess to check, which change nothing. For a counted pair it shows
   "cart filled" and "bought" as done, with the date, and only "melt the old paints" as open, with
@@ -912,10 +973,10 @@ order of the list:
     are melted again after RSI's 24-hour cooldown; off, only the own paints count.
   - **Leave out giftable paints** (on by default): bought again with store credit, they would no
     longer be giftable. Also right in the consultant.
-  - **Paints bought again**: only those of a plan put into the cart (default, safe), or also guessed
+  - **Paints bought again**: only those of a started plan (default, safe), or also guessed
     from discount and age – shown as a guess to check, without acting on it.
-  - **Layout**: both ways ("Buy first", "Melt first") side by side as cards (default), or the plan
-    and its paints in tables.
+  - **Layout** of a new plan: choose a way and see only that one (default), both ways ("Buy
+    first", "Melt first") side by side as cards, or the plan and its paints in tables.
 - **Smart updates**:
   - **Check hangar, buy back and orders for changes** (on by default) – see
     [Built for speed](#built-for-speed). The three settings below it only count while it is on.
