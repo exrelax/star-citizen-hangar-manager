@@ -26,7 +26,7 @@ Planned:
 Until the Opera listing is live, you can install the extension in Opera (and Edge) from a file of
 the [latest release on GitHub](https://github.com/exrelax/star-citizen-hangar-manager/releases/latest).
 Installed this way, it doesn't update itself: download
-`star-citizen-hangar-manager-1.0.0-chrome.zip` and unzip it into a folder. Open
+`star-citizen-hangar-manager-1.1.0-chrome.zip` and unzip it into a folder. Open
 `opera://extensions` (or `edge://extensions`), switch on **Developer mode**, click **Load
 unpacked** and select the folder.
 

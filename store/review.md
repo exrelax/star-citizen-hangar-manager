@@ -121,10 +121,10 @@ Opera reviews only readable code, and the built extension is minified. The versi
 for the source code and how to build it:
 
 - **Extension source code URL (public)**: the tag of the uploaded version,
-  <https://github.com/exrelax/star-citizen-hangar-manager/tree/v1.0.0>
+  <https://github.com/exrelax/star-citizen-hangar-manager/tree/v1.1.0>
 - **Extension source code URL (required only for Opera moderators)**: meant for sources that
   aren't public. Ours are, so it gets the sources zip of the GitHub release, a direct download:
-  <https://github.com/exrelax/star-citizen-hangar-manager/releases/download/v1.0.0/star-citizen-hangar-manager-1.0.0-sources.zip>
+  <https://github.com/exrelax/star-citizen-hangar-manager/releases/download/v1.1.0/star-citizen-hangar-manager-1.1.0-sources.zip>
 - **Build instructions**:
 
 ```text
