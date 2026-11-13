@@ -43,9 +43,19 @@ DEIN GANZER HANGAR UND BUY BACK
 • Rabatte von Schiffen und CCUs gegenüber dem Originalpreis
 • Der komplette CCU-Verlauf aufgewerteter Schiffe, mit dem Rabatt jedes Schritts
 • Bestellungen mit Rechnungen, Countdown für die Rückerstattung und vorausgefülltem Rückerstattungsantrag
-• Buy-Back-Pledges direkt in den RSI-Warenkorb, und deine Buy-Back-Tokens auf einen Blick
+• Buy-Back-Pledges direkt in den RSI-Warenkorb, mit ihrem Buy-Back-Preis, und deine Buy-Back-Tokens auf einen Blick
+• Sortierung nach Datum, Wert oder Rabatt; Pledges auswählen und ihre Übersicht sehen
+• Pledges zum späteren Einschmelzen merken und erfahren, wann RSIs 24 Stunden vorbei sind
 • Dialoge zum Eintauschen (Melt) und Verschenken, die klar zeigen, was du aufgibst
 • Links zu erkul.games und FleetYards.net, und von CCU Game (ccugame.app) direkt zum Pledge
+
+DER PLEDGE STORE AUF EINEN BLICK
+• Die aktuellen Warbond CCUs mit Preis und Rabatt, den günstigsten Ausgangsschiffen und deinen eigenen CCUs in ihrem Preisbereich
+• Eine Historie der bisher gesehenen Warbond-Angebote, mit ihren Events
+• Event-Hinweise wie zur Intergalactic Aerospace Expo, mit Countdowns
+• Erwartete Preiserhöhungen: eine Erinnerung an Buy-Back-Artikel, die teurer werden, Rat zu CCUs, die Upgrade-Wert verlieren oder gewinnen, und die CCUs, die du dir vor der Preiserhöhung eines Schiffs sichern kannst
+• Paint-Rabatt-Berater: mehr Store Credits aus deinen Paints mit RSIs Mengenrabatt, als Plan, den du startest und Schritt für Schritt verfolgst
+• Benachrichtigungen in der Sidebar zu Änderungen im Pledge Store, Events, Preiserhöhungen und Pledges, die eingeschmolzen werden können
 
 EINE ERGÄNZUNG, KEIN ERSATZ
 RSIs eigene Seiten „My Gear“ und „Buy Back Pledges“ bleiben, wie sie sind. Der Manager fügt einen Eintrag in die Kontonavigation ein, und nichts wird ohne deinen Klick gekauft, eingetauscht oder verschenkt.

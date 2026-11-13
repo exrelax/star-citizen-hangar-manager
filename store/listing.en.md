@@ -43,9 +43,19 @@ YOUR WHOLE HANGAR AND BUY BACK
 • Discounts of ships and CCUs compared to their original price
 • The full CCU history of upgraded ships, with the discount of every step
 • Orders with invoices, a refund countdown and a prefilled refund request
-• Buy back pledges straight into the RSI cart, and your buy back tokens at a glance
+• Buy back pledges straight into the RSI cart, with their buy back price, and your buy back tokens at a glance
+• Sorting by date, value or discount; select pledges and see their summary
+• Mark pledges to melt later and get told when RSI's 24 hours are over
 • Exchange (melt) and gift dialogs that make clear what you are about to give up
 • Links to erkul.games and FleetYards.net, and from CCU Game (ccugame.app) straight to the pledge
+
+THE PLEDGE STORE AT A GLANCE
+• The current warbond CCUs with price and discount, the cheapest ships to start from and your own CCUs in their price range
+• A history of the warbond offers seen so far, with their events
+• Event notices like the Intergalactic Aerospace Expo, with countdowns
+• Expected price increases: a reminder on buy back items that get more expensive, advice for CCUs that lose or gain upgrade value, and the CCUs to secure before a ship's price rises
+• Paint Discount Consultant: more store credit from your paints with RSI's volume discount, as a plan you start and follow step by step
+• Notifications in the sidebar about Pledge Store changes, events, price increases and pledges ready to melt
 
 AN ADDITION, NOT A REPLACEMENT
 RSI's own "My Gear" and "Buy Back Pledges" pages stay as they are. The manager adds an entry to the account navigation, and nothing is bought, melted or gifted without your click.

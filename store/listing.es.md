@@ -43,9 +43,19 @@ TODO TU HANGAR Y LA RECOMPRA
 • Los descuentos de naves y CCU respecto al precio original
 • El historial completo de CCU de las naves mejoradas, con el descuento de cada paso
 • Los pedidos con facturas, cuenta atrás del reembolso y solicitud de reembolso ya rellenada
-• Los pledges de la recompra directamente al carrito de RSI, y tus tokens de recompra de un vistazo
+• Los pledges de la recompra directamente al carrito de RSI, con su precio de recompra, y tus tokens de recompra de un vistazo
+• Ordena por fecha, valor o descuento; selecciona pledges y mira su resumen
+• Marca pledges para fundirlos más tarde y entérate de cuándo han pasado las 24 horas de RSI
 • Diálogos de canje (melt) y regalo que muestran claramente a qué renuncias
 • Enlaces a erkul.games y FleetYards.net, y desde CCU Game (ccugame.app) directamente al pledge
+
+EL PLEDGE STORE DE UN VISTAZO
+• Los CCU warbond actuales con precio y descuento, las naves de partida más baratas y tus propios CCU en su rango de precios
+• Un historial de las ofertas warbond vistas hasta ahora, con sus eventos
+• Avisos de eventos como la Intergalactic Aerospace Expo, con cuentas atrás
+• Subidas de precio previstas: un recordatorio en los artículos de la recompra que se encarecen, consejos para los CCU que pierden o ganan valor, y los CCU que conviene asegurar antes de que suba el precio de una nave
+• Asesor de descuentos de pinturas: más crédito de tienda con tus pinturas gracias al descuento por volumen de RSI, como un plan que inicias y sigues paso a paso
+• Notificaciones en la barra lateral sobre cambios en el Pledge Store, eventos, subidas de precio y pledges listos para fundir
 
 UN AÑADIDO, NO UN SUSTITUTO
 Las páginas «My Gear» y «Buy Back Pledges» de RSI siguen como están. El gestor añade una entrada a la navegación de la cuenta, y nada se compra, se canjea ni se regala sin tu clic.

@@ -43,9 +43,19 @@ TOUT TON HANGAR ET TES RACHATS
 • Les remises des vaisseaux et des CCU par rapport au prix d’origine
 • L’historique complet des CCU des vaisseaux améliorés, avec la remise de chaque étape
 • Les commandes avec factures, compte à rebours de remboursement et demande de remboursement préremplie
-• Les pledges du rachat directement dans le panier RSI, et tes jetons de rachat en un coup d’œil
+• Les pledges du rachat directement dans le panier RSI, avec leur prix de rachat, et tes jetons de rachat en un coup d’œil
+• Tri par date, valeur ou remise ; sélectionne des pledges et vois leur résumé
+• Marque des pledges à fondre plus tard et sois prévenu quand les 24 heures de RSI sont passées
 • Des fenêtres d’échange (melt) et de cadeau qui montrent clairement ce que tu abandonnes
 • Des liens vers erkul.games et FleetYards.net, et depuis CCU Game (ccugame.app) directement vers le pledge
+
+LE PLEDGE STORE EN UN COUP D’ŒIL
+• Les CCU warbond actuels avec prix et remise, les vaisseaux de départ les moins chers et tes propres CCU dans leur fourchette de prix
+• Un historique des offres warbond vues jusqu’ici, avec leurs événements
+• Des annonces d’événements comme l’Intergalactic Aerospace Expo, avec comptes à rebours
+• Les hausses de prix attendues : un rappel sur les articles du rachat qui vont coûter plus cher, des conseils pour les CCU qui perdent ou gagnent de la valeur, et les CCU à sécuriser avant la hausse de prix d’un vaisseau
+• Conseiller de remises sur les peintures : plus de crédit boutique avec tes peintures grâce à la remise sur volume de RSI, sous forme d’un plan que tu démarres et suis étape par étape
+• Des notifications dans la barre latérale sur les changements du Pledge Store, les événements, les hausses de prix et les pledges prêts à être fondus
 
 UN AJOUT, PAS UN REMPLACEMENT
 Les pages « My Gear » et « Buy Back Pledges » de RSI restent telles quelles. Le gestionnaire ajoute une entrée à la navigation du compte, et rien n’est acheté, échangé ou offert sans ton clic.
