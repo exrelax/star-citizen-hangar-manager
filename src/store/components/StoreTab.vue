@@ -291,6 +291,11 @@ const displayClasses = computed(() => ({
   margin-top: 32px;
 }
 
+/* The space below its intro, as above the warbond CCUs' count (#319). */
+.shm-store-secure .shm-store-intro {
+  margin-bottom: 10px;
+}
+
 .shm-store-state {
   margin: 20px 0;
   color: var(--shm-text-muted);
