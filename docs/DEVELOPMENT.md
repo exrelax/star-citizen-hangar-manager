@@ -170,12 +170,19 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
 
 - **Images** are referenced with relative paths from where they already are – `store/`,
   `public/icon/`, `src/assets/logo/` – and copied into the build with hashed names. Don't copy
-  them into `site/`.
+  them into `site/`; only images of the website itself live in `site/images/` (the community
+  badge, the ship thumbnails of the drawn "Keep the discount" dialog).
+- **Icons**: Font Awesome Free, one SVG file each in `site/icons/` as downloaded (the same
+  version as the extension's). While building, [`site/icons.ts`](../site/icons.ts) makes them one
+  inline sprite at the `<!-- icons -->` placeholder of each page; a page uses one with
+  `<svg class="icon" aria-hidden="true"><use href="#icon-<name>"></use></svg>`. A test checks
+  that every icon a page uses is in the folder.
 - **Nothing from other servers**: no web fonts, scripts, analytics or embedded images from
   elsewhere, in line with [`PRIVACY.md`](../PRIVACY.md).
 - **Current version**: the latest GitHub release (`/releases/latest`), loaded with the roadmap and
-  shown in the hero and as the first, "released" step of the roadmap; without a release, the
-  `version` of `package.json`. Publishing a release rebuilds the site.
+  shown in the hero and as the first, "released" step of the roadmap, with the main issues of its
+  milestone (the closed milestone titled like the version; those with the most sub-issues first);
+  without a release, the `version` of `package.json`. Publishing a release rebuilds the site.
 - **Roadmap**: built from the repository's open milestones (with a due date) and issues while
   building, by [`site/roadmap/roadmap.ts`](../site/roadmap/roadmap.ts); open `enhancement` issues
   without a milestone are listed under "Later", issues labelled `website` or
@@ -183,7 +190,8 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   are left out where their parent issue is listed (same milestone or "Later"); the parent stands
   for them, also in the progress. A hidden parent (`website`, `internal`) hides its sub-issues too. With a `GITHUB_TOKEN` that can read the
   [project board](https://github.com/users/exrelax/projects/1), the issues are grouped by its
-  columns, otherwise into open and done. Locally it works without a
+  columns, otherwise into open and done. Each step is a card on one line: the released version,
+  the milestones by date (the first "Next") and "Later". Locally it works without a
   token (GitHub allows 60 requests an hour without one).
 - **Privacy page**: `site/privacy.html` shows [`PRIVACY.md`](../PRIVACY.md), rendered while
   building by [`site/privacy/privacy.ts`](../site/privacy/privacy.ts) – change the policy only
