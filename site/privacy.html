@@ -51,26 +51,30 @@
     />
   </head>
   <body>
+    <!-- The icons (Font Awesome Free, CC BY 4.0), made from site/icons while building. -->
+    <!-- icons -->
+
     <a class="skip-link" href="#main">Skip to content</a>
 
     <header class="site-header">
-      <div class="container site-header-inner">
+      <nav class="container site-header-inner" aria-label="Main">
         <a class="brand" href="./">
-          <img src="../src/assets/logo/logo-full.svg" alt="" width="48" height="48" />
-          <span class="brand-name">Star Citizen<br />Hangar Manager</span>
+          <img src="../src/assets/logo/logo-full.svg" alt="" width="32" height="32" />
+          <span class="brand-name"
+            >Star Citizen<br /><span class="muted">Hangar Manager</span></span
+          >
         </a>
-        <nav class="site-nav" aria-label="Sections">
+        <span class="site-nav">
           <a href="./">← Back to the start page</a>
-        </nav>
-        <!-- The official badge of CIG's fankit, scaled down (see index.html). -->
-        <img
-          class="community-badge"
-          src="./images/MadeByTheCommunity_Black-128.png"
-          alt="Made by the Community"
-          width="64"
-          height="64"
-        />
-      </div>
+        </span>
+        <a
+          class="icon-button"
+          href="https://github.com/exrelax/star-citizen-hangar-manager"
+          aria-label="GitHub repository"
+          ><svg class="icon" aria-hidden="true"><use href="#icon-github"></use></svg
+        ></a>
+        <a class="button is-primary is-small" href="./#install">Install free</a>
+      </nav>
     </header>
 
     <!-- Made from PRIVACY.md while building (site/privacy). -->
@@ -80,18 +84,28 @@
 
     <footer class="site-footer">
       <div class="container site-footer-inner">
-        <div class="site-footer-top">
+        <div class="footer-top">
           <span class="footer-brand">
-            <img src="../src/assets/logo/logo-full.svg" alt="" width="32" height="32" />
-            Star Citizen Hangar Manager
+            <img src="../src/assets/logo/logo-full.svg" alt="" width="28" height="28" />
+            Star Citizen Hangar Manager <span class="faint">MIT license</span>
           </span>
           <nav class="footer-nav" aria-label="Footer">
             <a href="https://github.com/exrelax">Made by exrelax</a>
-            <a href="https://github.com/exrelax/star-citizen-hangar-manager">GitHub repository</a>
-            <a href="./">Start page</a>
+            <a href="https://github.com/exrelax/star-citizen-hangar-manager">GitHub</a>
+            <a href="https://github.com/exrelax/star-citizen-hangar-manager/blob/main/CHANGELOG.md"
+              >Changelog</a
+            >
+            <a href="./privacy.html">Privacy policy</a>
+            <a
+              href="https://github.com/exrelax/star-citizen-hangar-manager/blob/main/docs/FEATURES.md"
+              >All features</a
+            >
           </nav>
         </div>
-        <!-- CIG's notices, as on the start page (see index.html). -->
+        <!--
+          CIG's notices. The Terms of Service (section XIII.D, as of October 30, 2026) ask fansites
+          to say clearly that they are unofficial and to show RSI's trademark notices.
+        -->
         <div class="footer-notices">
           <p>A community project. It is not endorsed by or affiliated with Cloud Imperium Games.</p>
           <p>
@@ -101,7 +115,15 @@
           </p>
           <p>
             Star Citizen®, Squadron 42®, Roberts Space Industries® and Cloud Imperium® are
-            registered trademarks of Cloud Imperium Rights LLC.
+            registered trademarks of Cloud Imperium Rights LLC. Icons: Font Awesome Free (CC BY
+            4.0).
+          </p>
+          <p>
+            The ships' data (<a href="./data/ships.json">data/ships.json</a>) is based on RSI's
+            <a href="https://robertsspaceindustries.com/ship-matrix">Ship Matrix</a> and the
+            <a href="https://starcitizen.tools/List_of_pledge_vehicles">Star Citizen Wiki</a>
+            (<a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>) and is
+            shared under the same license.
           </p>
         </div>
       </div>

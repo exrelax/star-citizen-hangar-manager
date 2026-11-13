@@ -51,434 +51,1157 @@
     />
   </head>
   <body>
-    <!-- Icons used more than once (Font Awesome Free, CC BY 4.0), referenced with <use>. -->
-    <svg class="icon-sprite" aria-hidden="true">
-      <symbol id="github-icon" viewBox="0 0 496 512">
-        <path
-          fill="currentColor"
-          d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8z"
-        />
-      </symbol>
-      <symbol id="arrow-icon" viewBox="0 0 24 24">
-        <path
-          d="M7 17 17 7M9 7h8v8"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.4"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-      </symbol>
-    </svg>
+    <!-- The icons (Font Awesome Free, CC BY 4.0), made from site/icons while building. -->
+    <!-- icons -->
 
     <a class="skip-link" href="#main">Skip to content</a>
 
     <header class="site-header">
-      <div class="container site-header-inner">
+      <nav class="container site-header-inner" aria-label="Main">
         <a class="brand" href="./">
-          <img src="../src/assets/logo/logo-full.svg" alt="" width="48" height="48" />
-          <span class="brand-name">Star Citizen<br />Hangar Manager</span>
+          <img src="../src/assets/logo/logo-full.svg" alt="" width="32" height="32" />
+          <span class="brand-name"
+            >Star Citizen<br /><span class="muted">Hangar Manager</span></span
+          >
         </a>
-        <nav class="site-nav" aria-label="Sections">
+        <span class="site-nav">
+          <a href="#speed">Speed &amp; privacy</a>
           <a href="#features">Features</a>
-          <a href="#feedback">Feedback</a>
           <a href="#roadmap">Roadmap</a>
-        </nav>
-        <!--
-          The official badge of CIG's fankit (MadeByTheCommunity_Black.png), scaled down from
-          1418 to 128 px for twice its size here; otherwise unchanged.
-        -->
-        <img
-          class="community-badge"
-          src="./images/MadeByTheCommunity_Black-128.png"
-          alt="Made by the Community"
-          width="64"
-          height="64"
-        />
-      </div>
+          <a href="#feedback">Feedback</a>
+        </span>
+        <a
+          class="icon-button"
+          href="https://github.com/exrelax/star-citizen-hangar-manager"
+          aria-label="GitHub repository"
+          ><svg class="icon" aria-hidden="true"><use href="#icon-github"></use></svg
+        ></a>
+        <a class="button is-primary is-small" href="#install">Install free</a>
+      </nav>
     </header>
 
     <main id="main">
-      <section class="hero container" aria-labelledby="hero-title">
-        <div class="hero-text">
-          <div class="hero-eyebrow">
-            <p class="eyebrow">Browser extension · free and open source</p>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="container hero-inner">
+          <div class="hero-text">
             <!-- The current version, from the latest GitHub release (site/roadmap). -->
-            <!-- version -->
+            <p class="hero-pill">
+              <span class="pill-new">New</span><!-- version --><span
+                >· Pledge Store, price increases, paint discounts</span
+              >
+            </p>
+            <h1 id="hero-title">
+              Your whole hangar.<br /><span class="accent">Instantly.</span>
+              <span class="green">Privately.</span>
+            </h1>
+            <p class="lead">
+              A free browser extension that turns your Star Citizen hangar and buy back into one
+              fast, searchable page – right on the RSI website. Nothing about your hangar leaves
+              your browser.
+            </p>
+            <div id="install" class="install">
+              <a
+                class="button is-primary"
+                href="https://chromewebstore.google.com/detail/star-citizen-hangar-manag/nofhjnkljndooegpllppamacogkikdjg"
+                ><svg class="icon" aria-hidden="true"><use href="#icon-chrome"></use></svg>Add to
+                Chrome</a
+              >
+              <a
+                class="button"
+                href="https://addons.mozilla.org/firefox/addon/star-citizen-hangar-manager/"
+                ><svg class="icon" aria-hidden="true"><use href="#icon-firefox-browser"></use></svg
+                >Add to Firefox</a
+              >
+            </div>
+            <ul class="install-notes">
+              <li>
+                <svg class="icon" aria-hidden="true"><use href="#icon-opera"></use></svg>Opera – in
+                review
+              </li>
+              <li>
+                <svg class="icon" aria-hidden="true"><use href="#icon-edge"></use></svg>Edge – via
+                the Chrome Web Store
+              </li>
+              <li>
+                <svg class="icon" aria-hidden="true"><use href="#icon-github"></use></svg>MIT · open
+                source
+              </li>
+            </ul>
           </div>
-          <h1 id="hero-title">Your whole hangar on one fast, searchable page.</h1>
-          <p class="lead">
-            Your Star Citizen hangar and buy back – right on the RSI website, in its look and feel.
-            Your data stays in your browser.
-          </p>
-          <div class="hero-actions">
-            <a class="button" href="https://github.com/exrelax/star-citizen-hangar-manager">
-              <svg aria-hidden="true"><use href="#github-icon" /></svg>
-              View on GitHub
-            </a>
-            <span class="muted">No account · No tracking</span>
+          <div class="hero-media">
+            <img
+              class="shot"
+              src="../store/screenshots/01-my-hangar.png"
+              alt="The Hangar Manager on the RSI website: search, type and feature filters, the sidebar and a list of pledges"
+              width="1280"
+              height="800"
+              fetchpriority="high"
+            />
+            <div class="float-card is-speed">
+              <span class="float-icon is-blue"
+                ><svg class="icon" aria-hidden="true"><use href="#icon-bolt"></use></svg></span
+              ><span
+                ><strong class="num">0.5 s</strong
+                ><span class="muted">to check 1,000 pledges for changes</span></span
+              >
+            </div>
+            <div class="float-card is-private">
+              <span class="float-icon is-green"
+                ><svg class="icon" aria-hidden="true">
+                  <use href="#icon-shield-halved"></use></svg></span
+              ><span
+                ><strong>0 servers</strong
+                ><span class="muted">your data stays in your browser</span></span
+              >
+            </div>
           </div>
-        </div>
-        <div class="hero-media">
-          <img
-            class="screenshot is-back"
-            src="../store/screenshots/02-buy-back.png"
-            alt="Buy back tab with filters and a buy back pledge marked as probably giftable"
-            width="1280"
-            height="800"
-            loading="lazy"
-          />
-          <img
-            class="screenshot is-front"
-            src="../store/screenshots/01-my-hangar.png"
-            alt="My Hangar tab with search, type and feature filters and a list of pledges with tags"
-            width="1280"
-            height="800"
-          />
         </div>
       </section>
 
-      <!--
-        Install links (the repository is linked from the hero). A store whose listing isn't live
-        yet shows its state instead of a link; once it is, turn its entry into a link like Chrome's.
-      -->
-      <section class="install container" aria-labelledby="install-title">
-        <h2 id="install-title" class="eyebrow is-muted">Get it for your browser</h2>
-        <ul class="install-list">
-          <li>
-            <a
-              class="install-item"
-              href="https://chromewebstore.google.com/detail/star-citizen-hangar-manag/nofhjnkljndooegpllppamacogkikdjg"
-            >
-              <svg viewBox="0 0 512 512" aria-hidden="true">
-                <path
-                  fill="currentColor"
-                  d="M0 256C0 209.4 12.47 165.6 34.27 127.1L144.1 318.3C166 357.5 207.9 384 256 384C270.3 384 283.1 381.7 296.8 377.4L220.5 509.6C95.9 492.3 0 385.3 0 256zM365.1 321.6C377.4 302.4 384 279.1 384 256C384 217.8 367.2 183.5 340.7 160H493.4C505.4 189.6 512 222.1 512 256C512 397.4 397.4 511.1 256 512L365.1 321.6zM477.8 128H256C193.1 128 142.3 172.1 130.5 230.7L54.19 98.47C101 38.53 174 0 256 0C350.8 0 433.5 51.48 477.8 128V128zM168 256C168 207.4 207.4 168 256 168C304.6 168 344 207.4 344 256C344 304.6 304.6 344 256 344C207.4 344 168 304.6 168 256z"
-                />
-              </svg>
-              <span class="install-text">
-                <span class="install-name">Chrome</span>
-                <span class="install-state is-live">Chrome Web Store</span>
-              </span>
-            </a>
-          </li>
-          <li>
-            <a
-              class="install-item"
-              href="https://addons.mozilla.org/firefox/addon/star-citizen-hangar-manager/"
-            >
-              <svg viewBox="0 0 512 512" aria-hidden="true">
-                <path
-                  fill="currentColor"
-                  d="M130.22 127.548C130.38 127.558 130.3 127.558 130.22 127.548V127.548ZM481.64 172.898C471.03 147.398 449.56 119.898 432.7 111.168C446.42 138.058 454.37 165.048 457.4 185.168C457.405 185.306 457.422 185.443 457.45 185.578C429.87 116.828 383.098 89.1089 344.9 28.7479C329.908 5.05792 333.976 3.51792 331.82 4.08792L331.7 4.15792C284.99 30.1109 256.365 82.5289 249.12 126.898C232.503 127.771 216.219 131.895 201.19 139.035C199.838 139.649 198.736 140.706 198.066 142.031C197.396 143.356 197.199 144.87 197.506 146.323C197.7 147.162 198.068 147.951 198.586 148.639C199.103 149.327 199.76 149.899 200.512 150.318C201.264 150.737 202.096 150.993 202.954 151.071C203.811 151.148 204.676 151.045 205.491 150.768L206.011 150.558C221.511 143.255 238.408 139.393 255.541 139.238C318.369 138.669 352.698 183.262 363.161 201.528C350.161 192.378 326.811 183.338 304.341 187.248C392.081 231.108 368.541 381.784 246.951 376.448C187.487 373.838 149.881 325.467 146.421 285.648C146.421 285.648 157.671 243.698 227.041 243.698C234.541 243.698 255.971 222.778 256.371 216.698C256.281 214.698 213.836 197.822 197.281 181.518C188.434 172.805 184.229 168.611 180.511 165.458C178.499 163.75 176.392 162.158 174.201 160.688C168.638 141.231 168.399 120.638 173.51 101.058C148.45 112.468 128.96 130.508 114.8 146.428H114.68C105.01 134.178 105.68 93.7779 106.25 85.3479C106.13 84.8179 99.022 89.0159 98.1 89.6579C89.5342 95.7103 81.5528 102.55 74.26 110.088C57.969 126.688 30.128 160.242 18.76 211.318C14.224 231.701 12 255.739 12 263.618C12 398.318 121.21 507.508 255.92 507.508C376.56 507.508 478.939 420.281 496.35 304.888C507.922 228.192 481.64 173.82 481.64 172.898Z"
-                />
-              </svg>
-              <span class="install-text">
-                <span class="install-name">Firefox</span>
-                <span class="install-state is-live">Firefox Add-ons</span>
-              </span>
-            </a>
-          </li>
-          <li>
-            <span class="install-item">
-              <svg viewBox="0 0 496 512" aria-hidden="true">
-                <path
-                  fill="currentColor"
-                  d="M313.9 32.7c-170.2 0-252.6 223.8-147.5 355.1 36.5 45.4 88.6 75.6 147.5 75.6 36.3 0 70.3-11.1 99.4-30.4-43.8 39.2-101.9 63-165.3 63-3.9 0-8 0-11.9-.3C104.6 489.6 0 381.1 0 248 0 111 111 0 248 0h.8c63.1.3 120.7 24.1 164.4 63.1-29-19.4-63.1-30.4-99.3-30.4zm101.8 397.7c-40.9 24.7-90.7 23.6-132-5.8 56.2-20.5 97.7-91.6 97.7-176.6 0-84.7-41.2-155.8-97.4-176.6 41.8-29.2 91.2-30.3 132.9-5 105.9 98.7 105.5 265.7-1.2 364z"
-                />
-              </svg>
-              <span class="install-text">
-                <span class="install-name">Opera</span>
-                <span class="install-state">In review</span>
-              </span>
-            </span>
-          </li>
-          <li>
-            <span class="install-item">
-              <svg viewBox="0 0 512 512" aria-hidden="true">
-                <path
-                  fill="currentColor"
-                  d="M120.1 37.44C161.1 12.23 207.7-.7753 255 .0016C423 .0016 512 123.8 512 219.5C511.9 252.2 499 283.4 476.1 306.7C453.2 329.9 422.1 343.2 389.4 343.7C314.2 343.7 297.9 320.6 297.9 311.7C297.9 307.9 299.1 305.5 302.7 302.3L303.7 301.1L304.1 299.5C314.6 288 320 273.3 320 257.9C320 179.2 237.8 115.2 136 115.2C98.46 114.9 61.46 124.1 28.48 142.1C55.48 84.58 111.2 44.5 119.8 38.28C120.6 37.73 120.1 37.44 120.1 37.44V37.44zM135.7 355.5C134.3 385.5 140.3 415.5 152.1 442.7C165.7 469.1 184.8 493.7 208.6 512C149.1 500.5 97.11 468.1 59.2 422.7C21.12 376.3 0 318.4 0 257.9C0 206.7 62.4 163.5 136 163.5C172.6 162.9 208.4 174.4 237.8 196.2L234.2 197.4C182.7 215 135.7 288.1 135.7 355.5V355.5zM469.8 400L469.1 400.1C457.3 418.9 443.2 435.2 426.9 449.6C396.1 477.6 358.8 495.1 318.1 499.5C299.5 499.8 281.3 496.3 264.3 488.1C238.7 477.8 217.2 458.1 202.7 435.1C188.3 411.2 181.6 383.4 183.7 355.5C183.1 335.4 189.1 315.2 198.7 297.3C212.6 330.4 236.2 358.6 266.3 378.1C296.4 397.6 331.8 407.6 367.7 406.7C398.7 407 429.8 400 457.9 386.2L459.8 385.3C463.7 383 467.5 381.4 471.4 385.3C475.9 390.2 473.2 394.5 470.2 399.3C470 399.5 469.9 399.8 469.8 400V400z"
-                />
-              </svg>
-              <span class="install-text">
-                <span class="install-name">Edge</span>
-                <span class="install-state">Coming soon</span>
-              </span>
-            </span>
-          </li>
-        </ul>
+      <section id="speed" class="section" aria-labelledby="speed-title">
+        <div class="container stack">
+          <div class="section-head">
+            <p class="eyebrow">Two promises</p>
+            <h2 id="speed-title">Fast enough to forget it’s there. Private enough to trust it.</h2>
+          </div>
+          <div class="promises">
+            <article class="promise card">
+              <div class="promise-head">
+                <span class="promise-icon is-blue"
+                  ><svg class="icon" aria-hidden="true"><use href="#icon-bolt"></use></svg
+                ></span>
+                <h3>Built for speed – and always current</h3>
+              </div>
+              <ul class="stats">
+                <li>
+                  <strong class="num">0.5 s</strong
+                  ><span class="muted">to check 1,000 pledges for changes</span>
+                </li>
+                <li>
+                  <strong class="num">Instant</strong
+                  ><span class="muted">start from local data – no waiting for RSI</span>
+                </li>
+                <li>
+                  <strong class="num">As you type</strong
+                  ><span class="muted">search and filters across thousands of pledges</span>
+                </li>
+              </ul>
+              <div
+                class="pages"
+                role="img"
+                aria-label="1,000 pledges: 100 pages on RSI, one page in the manager"
+              >
+                <span class="muted pages-label" aria-hidden="true">RSI’s My Gear</span>
+                <span class="pages-rsi" aria-hidden="true"
+                  ><span></span><span></span><span></span><span></span><span></span><span></span
+                  ><span></span><span></span><span></span><span></span><span></span><span></span
+                  ><span></span><span></span><span></span><span></span><span></span><span></span
+                  ><span></span><span></span><span></span><span></span><span></span><span></span
+                  ><span></span><span></span><span></span><span></span><span></span><span></span
+                  ><span></span><span></span><span></span><span></span><span></span><span></span
+                  ><span></span><span></span><span></span><span></span><span></span><span></span
+                  ><span></span><span></span><span></span><span></span><span></span><span></span
+                  ><span></span><span></span
+                ></span>
+                <span class="pages-label is-strong" aria-hidden="true">Hangar Manager</span>
+                <span class="pages-manager" aria-hidden="true">One page · all pledges</span>
+                <span class="faint pages-note" aria-hidden="true"
+                  >1,000 pledges: 100 pages on RSI, one page in the manager.</span
+                >
+              </div>
+              <ul class="checklist is-blue">
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span
+                    >Smart updates read RSI’s pledge log and a few pages instead of your whole
+                    hangar</span
+                  >
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span>The Pledge Store is read around the full hour, when RSI changes it</span>
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span>Runs in the background – you never wait for a refresh</span>
+                </li>
+              </ul>
+            </article>
+            <article id="privacy" class="promise card">
+              <div class="promise-head">
+                <span class="promise-icon is-green"
+                  ><svg class="icon" aria-hidden="true"><use href="#icon-shield-halved"></use></svg
+                ></span>
+                <h3>Private by design</h3>
+              </div>
+              <div
+                class="flow"
+                role="img"
+                aria-label="Your hangar data moves only between the RSI website and your browser. There is no server of the extension."
+              >
+                <div class="flow-rsi" aria-hidden="true">
+                  <strong>RSI website</strong><span class="faint">read with your own login</span>
+                </div>
+                <div class="flow-line" aria-hidden="true">
+                  <span></span><span class="green">your session</span>
+                </div>
+                <div class="flow-browser" aria-hidden="true">
+                  <strong
+                    ><svg class="icon" aria-hidden="true"><use href="#icon-lock"></use></svg>Your
+                    browser</strong
+                  ><span class="flow-chips"
+                    ><span>Hangar</span><span>Buy back</span><span>Orders</span
+                    ><span>Pledge IDs</span><span>Settings</span></span
+                  >
+                </div>
+              </div>
+              <ul class="nots">
+                <li>
+                  <span class="not-icon"
+                    ><svg class="icon" aria-hidden="true"><use href="#icon-xmark"></use></svg></span
+                  >No server
+                </li>
+                <li>
+                  <span class="not-icon"
+                    ><svg class="icon" aria-hidden="true"><use href="#icon-xmark"></use></svg></span
+                  >No account
+                </li>
+                <li>
+                  <span class="not-icon"
+                    ><svg class="icon" aria-hidden="true"><use href="#icon-xmark"></use></svg></span
+                  >No tracking
+                </li>
+              </ul>
+              <ul class="checklist is-green">
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span>The extension never sees your RSI password</span>
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span>Hide IDs, name, address and values for screenshots and streams</span>
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span>Every stored part listed in the settings – read again or delete it</span>
+                </li>
+              </ul>
+              <a class="text-link" href="./privacy.html"
+                >Read the privacy policy
+                <svg class="icon" aria-hidden="true"><use href="#icon-arrow-right"></use></svg
+              ></a>
+            </article>
+          </div>
+        </div>
       </section>
 
-      <!-- How to open the manager after installing: where visitors look right after the stores. -->
-      <section class="getting-started container" aria-labelledby="getting-started-title">
-        <h2 id="getting-started-title">Getting started</h2>
-        <div class="getting-started-body">
-          <ol class="steps">
-            <li class="step">
-              <span class="step-number" aria-hidden="true">1</span>
-              <h3>Install the extension</h3>
-              <p>From your browser's store above.</p>
-            </li>
-            <li class="step">
-              <span class="step-number" aria-hidden="true">2</span>
-              <h3>Log in on the RSI website</h3>
-              <p>
-                The Hangar Manager uses your RSI session, so you need to be logged in on
-                robertsspaceindustries.com to use it.
-              </p>
-            </li>
-            <li class="step">
-              <span class="step-number" aria-hidden="true">3</span>
-              <h3>Open the Hangar Manager</h3>
-              <p>
-                The new first entry “Hangar Manager” in your account navigation, above “My Gear”.
-              </p>
-            </li>
-          </ol>
-          <div class="getting-started-actions">
-            <a
-              class="button"
-              href="https://robertsspaceindustries.com/en/account/pledges#hangar-manager"
-            >
-              Open the Hangar Manager
-              <svg aria-hidden="true"><use href="#arrow-icon" /></svg>
-            </a>
+      <section id="features" class="section features" aria-labelledby="features-title">
+        <div class="container stack">
+          <div class="section-head is-split">
+            <div>
+              <p class="eyebrow">What it does</p>
+              <h2 id="features-title">Everything RSI’s pages show – and what they don’t.</h2>
+            </div>
             <p class="muted">
-              Also from the extension's icon in the browser toolbar (pin it from the extensions menu
-              first).
+              RSI’s own “My Gear” and “Buy Back Pledges” stay as they are. Nothing is bought, melted
+              or gifted without your click.
             </p>
           </div>
-        </div>
-      </section>
-
-      <section id="features" class="section is-alt" aria-labelledby="features-title">
-        <div class="container">
-          <div class="section-heading">
-            <p class="eyebrow">What it does</p>
-            <h2 id="features-title">Everything RSI's hangar pages show – and what they don't.</h2>
-          </div>
-
-          <div class="features">
-            <article class="feature">
-              <div class="feature-media">
-                <img
-                  class="screenshot"
-                  src="../store/screenshots/01-my-hangar.png"
-                  alt="My Hangar tab with filters and a list of pledges"
-                  width="1280"
-                  height="800"
-                  loading="lazy"
-                />
-              </div>
-              <div class="feature-text">
-                <span class="feature-number" aria-hidden="true">1</span>
-                <h3>Your whole hangar, instantly</h3>
-                <p class="feature-lead">No more paging through RSI's 10 pledges per page.</p>
-                <ul class="checklist">
-                  <li>Opens instantly from local data</li>
-                  <li>
-                    Searches thousands of pledges as you type: by title, ship, pledge ID or order ID
-                  </li>
-                  <li>
-                    Filters that include or exclude ships, CCUs, paints, LTI, warbond, giftable and
-                    more
-                  </li>
-                </ul>
-              </div>
-            </article>
-
-            <article class="feature is-reversed">
-              <div class="feature-media">
-                <img
-                  class="screenshot"
-                  src="../store/screenshots/02-buy-back.png"
-                  alt="Buy back tab with an expanded buy back pledge"
-                  width="1280"
-                  height="800"
-                  loading="lazy"
-                />
-              </div>
-              <div class="feature-text">
-                <span class="feature-number" aria-hidden="true">2</span>
-                <h3>Buy back with confidence</h3>
-                <p class="feature-lead">See what you get back before you spend a token.</p>
-                <ul class="checklist">
-                  <li>Buy back pledges straight into the RSI cart</li>
-                  <li>Your buy back tokens at a glance</li>
-                  <li>
-                    Hints which buy backs are probably giftable, plus links to erkul.games and
-                    FleetYards.net
-                  </li>
-                </ul>
-              </div>
-            </article>
-
-            <article class="feature">
-              <div class="feature-media">
-                <img
-                  class="screenshot"
-                  src="../store/screenshots/03-pledge-store-ccu.png"
-                  alt="Pledge Store tab with the current warbond CCUs and the CCUs to secure before a price increase"
-                  width="1280"
-                  height="800"
-                  loading="lazy"
-                />
-              </div>
-              <div class="feature-text">
-                <span class="feature-number" aria-hidden="true">3</span>
-                <h3>The Pledge Store at a glance</h3>
-                <p class="feature-lead">Warbond CCUs, events and price increases in one place.</p>
-                <ul class="checklist">
-                  <li>The current warbond CCUs with the cheapest ships to start from</li>
-                  <li>A history of the warbond offers seen so far, with their events</li>
-                  <li>Event notices like the Intergalactic Aerospace Expo, with countdowns</li>
-                </ul>
-              </div>
-            </article>
-
-            <article class="feature is-reversed">
-              <div class="feature-media">
-                <img
-                  class="screenshot"
-                  src="../store/screenshots/04-paint-discount-consultant.png"
-                  alt="Paint Discount Consultant with the two ways of a new plan and its steps"
-                  width="1280"
-                  height="800"
-                  loading="lazy"
-                />
-              </div>
-              <div class="feature-text">
-                <span class="feature-number" aria-hidden="true">4</span>
-                <h3>More store credit from your paints</h3>
-                <p class="feature-lead">
-                  The Paint Discount Consultant uses RSI's volume discount.
-                </p>
-                <ul class="checklist">
-                  <li>Shows which paints to melt and buy again, on two ways</li>
-                  <li>A plan you start and follow step by step: cart, paying, melting</li>
-                  <li>Paid with store credit only – never with new money</li>
-                </ul>
-              </div>
-            </article>
-
-            <article class="feature">
-              <div class="feature-media">
-                <img
-                  class="screenshot"
-                  src="../store/screenshots/05-ccu-base-ship-overview.png"
-                  alt="CCUs to secure before a price increase, with the cheapest CCUs to a ship"
-                  width="1280"
-                  height="800"
-                  loading="lazy"
-                />
-              </div>
-              <div class="feature-text">
-                <span class="feature-number" aria-hidden="true">5</span>
-                <h3>Ahead of every price increase</h3>
-                <p class="feature-lead">Know what gets more expensive before it does.</p>
-                <ul class="checklist">
-                  <li>The cheapest CCUs to secure before a ship's price rises</li>
-                  <li>A reminder on buy back items that get more expensive</li>
-                  <li>Advice for CCUs that lose or gain upgrade value</li>
-                </ul>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section id="feedback" class="section feedback container" aria-labelledby="feedback-title">
-        <div class="feedback-text">
-          <h2 id="feedback-title">How it works</h2>
-          <p>
-            The Hangar Manager reads your hangar, buy back and orders from the RSI website with the
-            session you're already logged in with. Everything is stored only in your browser: there
-            is no server of its own, no account and no tracking.
-          </p>
-          <p>
-            RSI's own “My Gear” and “Buy Back Pledges” pages stay as they are, and nothing is
-            bought, melted or gifted without your click.
-          </p>
-        </div>
-        <ul class="help-links">
-          <li>
-            <a
-              class="help-link"
-              href="https://github.com/exrelax/star-citizen-hangar-manager/issues/new/choose"
-            >
-              <svg class="help-icon" aria-hidden="true">
-                <use href="#github-icon" />
-              </svg>
-              <span class="help-text">
-                <span class="help-title">Report a bug</span>
-                <span class="help-hint">Use the issue forms on GitHub.</span>
-              </span>
-              <svg class="help-arrow" aria-hidden="true">
-                <use href="#arrow-icon" />
-              </svg>
-            </a>
-          </li>
-          <li>
-            <a
-              class="help-link"
-              href="https://github.com/exrelax/star-citizen-hangar-manager/discussions/categories/ideas"
-            >
-              <svg class="help-icon" aria-hidden="true">
-                <use href="#github-icon" />
-              </svg>
-              <span class="help-text">
-                <span class="help-title">Share an idea</span>
-                <span class="help-hint"
-                  >Start a thread in the Ideas category of the Discussions.</span
+          <nav aria-label="Features">
+            <ul class="feature-tabs">
+              <li>
+                <a class="feature-tab card is-blue" href="#hangar"
+                  ><span class="feature-tab-top"
+                    ><span class="feature-icon"
+                      ><svg class="icon" aria-hidden="true">
+                        <use href="#icon-magnifying-glass"></use></svg></span
+                    ><span class="num faint">01</span></span
+                  ><span class="feature-tab-name">Hangar &amp; Buy Back</span></a
                 >
-              </span>
-              <svg class="help-arrow" aria-hidden="true">
-                <use href="#arrow-icon" />
-              </svg>
-            </a>
-          </li>
-          <li>
-            <a
-              class="help-link"
-              href="https://github.com/exrelax/star-citizen-hangar-manager/blob/main/CONTRIBUTING.md"
-            >
-              <svg class="help-icon" aria-hidden="true">
-                <use href="#github-icon" />
-              </svg>
-              <span class="help-text">
-                <span class="help-title">Contribute</span>
-                <span class="help-hint">Read the contributing guidelines.</span>
-              </span>
-              <svg class="help-arrow" aria-hidden="true">
-                <use href="#arrow-icon" />
-              </svg>
-            </a>
-          </li>
-        </ul>
+              </li>
+              <li>
+                <a class="feature-tab card is-orange" href="#sidebar"
+                  ><span class="feature-tab-top"
+                    ><span class="feature-icon"
+                      ><svg class="icon" aria-hidden="true">
+                        <use href="#icon-bell"></use></svg></span
+                    ><span class="num faint">02</span></span
+                  ><span class="feature-tab-name">Sidebar &amp; notifications</span></a
+                >
+              </li>
+              <li>
+                <a class="feature-tab card is-teal" href="#store"
+                  ><span class="feature-tab-top"
+                    ><span class="feature-icon"
+                      ><svg class="icon" aria-hidden="true">
+                        <use href="#icon-store"></use></svg></span
+                    ><span class="num faint">03</span></span
+                  ><span class="feature-tab-name">Pledge Store overview</span></a
+                >
+              </li>
+              <li>
+                <a class="feature-tab card is-red" href="#swap"
+                  ><span class="feature-tab-top"
+                    ><span class="feature-icon"
+                      ><svg class="icon" aria-hidden="true">
+                        <use href="#icon-triangle-exclamation"></use></svg></span
+                    ><span class="num faint">04</span></span
+                  ><span class="feature-tab-name">Discount warnings</span></a
+                >
+              </li>
+              <li>
+                <a class="feature-tab card is-purple" href="#paint"
+                  ><span class="feature-tab-top"
+                    ><span class="feature-icon"
+                      ><svg class="icon" aria-hidden="true">
+                        <use href="#icon-fill-drip"></use></svg></span
+                    ><span class="num faint">05</span></span
+                  ><span class="feature-tab-name">Paint volume discount</span></a
+                >
+              </li>
+              <li>
+                <a class="feature-tab card is-green" href="#gift"
+                  ><span class="feature-tab-top"
+                    ><span class="feature-icon"
+                      ><svg class="icon" aria-hidden="true">
+                        <use href="#icon-gift"></use></svg></span
+                    ><span class="num faint">06</span></span
+                  ><span class="feature-tab-name">“Probably giftable”</span></a
+                >
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <div class="container feature-list">
+          <article id="hangar" class="feature is-blue" aria-labelledby="hangar-title">
+            <div class="feature-text">
+              <span class="feature-eyebrow"
+                ><span class="feature-icon"
+                  ><svg class="icon" aria-hidden="true">
+                    <use href="#icon-magnifying-glass"></use></svg></span
+                >Hangar &amp; Buy Back</span
+              >
+              <h3 id="hangar-title">Thousands of pledges. One clear list.</h3>
+              <p class="feature-lead">
+                Your whole hangar and buy back on one page instead of RSI’s 10 pledges per page –
+                found as you type.
+              </p>
+              <ul class="checklist is-blue">
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span>Search by title, ship, pledge or order ID</span>
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span
+                    >Filters that include or exclude: ships, CCUs, paints, LTI, warbond, giftable,
+                    meltable, discount …</span
+                  >
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span
+                    >Sort by date, value or discount – with melt values, discounts and the full CCU
+                    history</span
+                  >
+                </li>
+              </ul>
+            </div>
+            <div class="feature-media is-shot">
+              <img
+                class="shot"
+                src="../store/screenshots/01-my-hangar.png"
+                alt="My Hangar with search, type and feature filters and pledges with their tags"
+                width="1280"
+                height="800"
+                loading="lazy"
+              />
+              <div class="callouts">
+                <span class="callout"
+                  ><span class="dot is-blue"></span><strong class="num">8 of 100</strong
+                  ><span class="muted">pledges match “Price change ahead”</span></span
+                >
+              </div>
+            </div>
+          </article>
+          <article
+            id="sidebar"
+            class="feature is-orange is-reversed"
+            aria-labelledby="sidebar-title"
+          >
+            <div class="feature-text">
+              <span class="feature-eyebrow"
+                ><span class="feature-icon"
+                  ><svg class="icon" aria-hidden="true"><use href="#icon-bell"></use></svg></span
+                >Sidebar</span
+              >
+              <h3 id="sidebar-title">Know what changed – without looking.</h3>
+              <p class="feature-lead">
+                A sidebar next to every tab tells you what matters now: in the Pledge Store, in your
+                hangar and in your buy back.
+              </p>
+              <ul class="checklist is-orange">
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span>New and gone warbond CCUs, changed Pledge Store items and events</span>
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span
+                    >Pledges ready to melt, paints to buy again, buy backs about to cost more</span
+                  >
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span
+                    >Browser notifications only if you turn them on – each kind on its own</span
+                  >
+                </li>
+              </ul>
+            </div>
+            <div class="feature-media is-sidebar">
+              <div class="sidebar-demo">
+                <div
+                  class="notes-box card"
+                  role="img"
+                  aria-label="Example of the sidebar's notification box with four notifications"
+                >
+                  <span class="notes-title"
+                    ><svg class="icon" aria-hidden="true"><use href="#icon-bell"></use></svg>
+                    Notifications<span class="notes-count num">4</span></span
+                  >
+                  <ul class="notes" aria-hidden="true">
+                    <li class="note is-teal">
+                      <span class="note-kind"
+                        ><svg class="icon" aria-hidden="true"><use href="#icon-store"></use></svg
+                        >Pledge Store</span
+                      ><span class="note-text"
+                        >New warbond CCUs: Sabre Firebird ($157), Argo Mole Carbon Edition
+                        ($268)</span
+                      ><span class="note-actions"
+                        ><span class="note-button">Show in Pledge Store</span></span
+                      >
+                    </li>
+                    <li class="note is-orange">
+                      <span class="note-kind"
+                        ><svg class="icon" aria-hidden="true">
+                          <use href="#icon-clock-rotate-left"></use></svg
+                        >Event</span
+                      ><span class="note-text"
+                        >Intergalactic Aerospace Expo is running – a new manufacturer every
+                        day</span
+                      ><span class="note-actions"
+                        ><span class="note-button">Show in Pledge Store</span></span
+                      >
+                    </li>
+                    <li class="note is-green">
+                      <span class="note-kind"
+                        ><svg class="icon" aria-hidden="true"><use href="#icon-fire"></use></svg
+                        >Ready to melt</span
+                      ><span class="note-text">3 marked pledges can be melted now</span
+                      ><span class="note-actions"
+                        ><span class="note-button">Show</span
+                        ><span class="note-button">Select</span></span
+                      >
+                    </li>
+                    <li class="note is-red">
+                      <span class="note-kind"
+                        ><svg class="icon" aria-hidden="true">
+                          <use href="#icon-triangle-exclamation"></use></svg
+                        >Buy back</span
+                      ><span class="note-text"
+                        >7 buy back items will probably cost more within 14 days</span
+                      ><span class="note-actions"><span class="note-button">Show</span></span>
+                    </li>
+                  </ul>
+                </div>
+                <div class="facts">
+                  <div class="fact card">
+                    <strong>On every tab</strong
+                    ><span class="muted"
+                      >Notifications, a summary of your hangar, your selection and the paint
+                      discount – boxes you can reorder or switch off.</span
+                    >
+                  </div>
+                  <div class="fact card">
+                    <strong>Checked off is gone</strong
+                    ><span class="muted"
+                      >Dismiss a notification once; it comes back only when something new
+                      happens.</span
+                    >
+                  </div>
+                  <div class="fact card">
+                    <strong>Even with no RSI page open</strong
+                    ><span class="muted"
+                      >With browser notifications on, new warbond CCUs reach you while you are
+                      away.</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article id="store" class="feature is-teal" aria-labelledby="store-title">
+            <div class="feature-text">
+              <span class="feature-eyebrow"
+                ><span class="feature-icon"
+                  ><svg class="icon" aria-hidden="true"><use href="#icon-store"></use></svg></span
+                >Pledge Store</span
+              >
+              <h3 id="store-title">Every discount the Pledge Store hides.</h3>
+              <p class="feature-lead">
+                The current warbond CCUs and the CCUs that become a discount when a ship’s price
+                rises – like the MISC Prospector at IAE 2956.
+              </p>
+              <ul class="checklist is-teal">
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span
+                    >Warbond CCUs with the cheapest ships to start from and a history of past
+                    offers</span
+                  >
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span
+                    >CCUs to secure before a price increase – also from your buy back for new flight
+                    ready ships RSI sells no CCUs to</span
+                  >
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span
+                    >Event countdowns for the Intergalactic Aerospace Expo and its daily
+                    offers</span
+                  >
+                </li>
+              </ul>
+            </div>
+            <div class="feature-media is-shot">
+              <img
+                class="shot"
+                src="../store/screenshots/05-ccu-base-ship-overview.png"
+                alt="CCUs to secure before a price increase: Galaxy, Liberator and Prospector with the cheapest CCUs to the Prospector"
+                width="1280"
+                height="800"
+                loading="lazy"
+              />
+              <div class="callouts">
+                <span class="callout"
+                  ><span class="dot is-orange"></span
+                  ><strong class="num">Prospector $155 → $175</strong
+                  ><span class="muted">+$20 for every CCU to it</span></span
+                ><span class="callout"
+                  ><span class="dot is-teal"></span><strong class="num">Galaxy</strong
+                  ><span class="muted">No CCUs on sale · 4 in your buy back</span></span
+                >
+              </div>
+            </div>
+          </article>
+          <article id="swap" class="feature is-red is-reversed" aria-labelledby="swap-title">
+            <div class="feature-text">
+              <span class="feature-eyebrow"
+                ><span class="feature-icon"
+                  ><svg class="icon" aria-hidden="true">
+                    <use href="#icon-triangle-exclamation"></use></svg></span
+                >Price increases</span
+              >
+              <h3 id="swap-title">Don’t lose a discount you already paid for.</h3>
+              <p class="feature-lead">
+                When a ship gets more expensive, CCUs from it lose upgrade value. The manager warns
+                you in time – and shows how to keep the discount.
+              </p>
+              <ul class="checklist is-red">
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span>Warnings on CCUs that lose value, with a countdown to the increase</span>
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span
+                    >A swap recommendation: melt them and buy CCUs to the rising ship with the store
+                    credit they give back – e.g. Prospector → Vulture becomes Freelancer MAX →
+                    Prospector</span
+                  >
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span>Buy back reminders for items about to cost more</span>
+                </li>
+              </ul>
+            </div>
+            <div class="feature-media is-swap">
+              <div
+                class="swap card"
+                role="img"
+                aria-label="The Keep the discount dialog: 4 Prospector CCUs lose $20 of upgrade value each when the Prospector rises from $155 to $175. Swapped for Freelancer MAX to Prospector CCUs they keep $80 of discount instead of −$20."
+              >
+                <div aria-hidden="true" class="swap-inner">
+                  <div class="swap-head">
+                    <div>
+                      <strong class="swap-title">Keep the discount of your CCUs</strong
+                      ><span class="muted"
+                        >When a base ship gets more expensive, CCUs from it lose upgrade value. Swap
+                        them for CCUs to that ship before the price rises.</span
+                      >
+                    </div>
+                    <span class="swap-close"
+                      ><svg class="icon" aria-hidden="true"><use href="#icon-xmark"></use></svg
+                    ></span>
+                  </div>
+                  <div class="swap-rise">
+                    <span class="swap-rise-icon"
+                      ><svg class="icon" aria-hidden="true"><use href="#icon-arrow-up"></use></svg
+                    ></span>
+                    <img src="./images/ships/prospector.png" alt="" width="54" height="30" />
+                    <span class="swap-rise-text"
+                      ><strong>Prospector rises from $155 to $175</strong
+                      ><span class="muted"
+                        >Nov 19, 2026, 5:00 PM · confirmed by CIG ·
+                        <span class="accent">Source</span></span
+                      ></span
+                    >
+                    <span class="swap-chip num">Price +$20: 6 days</span>
+                  </div>
+                  <div class="swap-columns">
+                    <div class="swap-panel">
+                      <strong class="muted">Discount of your 4 CCUs</strong>
+                      <div class="swap-bars num">
+                        <span class="muted">Today</span
+                        ><span class="bar"
+                          ><span class="bar-zero"></span
+                          ><span
+                            class="bar-fill is-neutral"
+                            style="left: 20%; width: 60%"
+                          ></span></span
+                        ><span class="right">$60</span> <span class="muted">If you keep them</span
+                        ><span class="bar"
+                          ><span class="bar-zero"></span
+                          ><span class="bar-fill is-red" style="left: 0; width: 20%"></span></span
+                        ><span class="right red">−$20</span> <strong>If you swap them</strong
+                        ><span class="bar"
+                          ><span class="bar-zero"></span
+                          ><span
+                            class="bar-fill is-green"
+                            style="left: 20%; width: 80%"
+                          ></span></span
+                        ><strong class="right green">$80</strong>
+                      </div>
+                      <span class="swap-sum"
+                        ><span>Swapping: <strong class="green">$100</strong> more discount</span
+                        ><span class="num">Store credit <strong>±$0</strong></span></span
+                      >
+                    </div>
+                    <div class="swap-panel">
+                      <strong class="muted">How to keep it</strong>
+                      <span class="swap-step"
+                        ><span class="step-number">1</span
+                        ><span
+                          ><strong>Melt the CCUs before Nov 19, 2026</strong><br /><span
+                            class="muted"
+                            >Their store credit pays for the new ones.</span
+                          ></span
+                        ></span
+                      >
+                      <span class="swap-step"
+                        ><span class="step-number">2</span
+                        ><span
+                          ><strong>Buy Freelancer MAX → Prospector</strong><br /><span class="muted"
+                            >$5 each, $20 in total. Always available in the Pledge Store.</span
+                          ></span
+                        ></span
+                      >
+                      <span class="swap-step"
+                        ><span class="step-number is-green">3</span
+                        ><span
+                          ><strong>The new CCUs gain $20 each</strong><br /><span class="muted"
+                            >They gain what the old ones lose.</span
+                          ></span
+                        ></span
+                      >
+                      <span class="swap-hint is-blue"
+                        ><svg class="icon" aria-hidden="true">
+                          <use href="#icon-circle-info"></use></svg
+                        >Melting them covers the new CCUs.</span
+                      >
+                      <span class="swap-hint is-orange"
+                        ><svg class="icon" aria-hidden="true"><use href="#icon-gift"></use></svg>All
+                        4 CCUs can be gifted now; the new ones can’t.</span
+                      >
+                    </div>
+                  </div>
+                  <div class="swap-table num">
+                    <span class="swap-table-title"
+                      ><strong class="muted">Your Prospector CCUs</strong
+                      ><span class="faint">Sorted by discount at stake</span></span
+                    >
+                    <div class="swap-grid">
+                      <div class="swap-row is-head">
+                        <span>CCU</span><span>Today</span><span>If kept</span><span>If swapped</span
+                        ><span>Credit</span>
+                      </div>
+                      <div class="swap-row is-origin">
+                        <span class="swap-ccu"
+                          ><img
+                            src="./images/ships/prospector.png"
+                            alt=""
+                            width="34"
+                            height="22"
+                          /><svg class="icon is-tiny" aria-hidden="true">
+                            <use href="#icon-arrow-right"></use></svg
+                          ><img
+                            src="./images/ships/vulture.png"
+                            alt=""
+                            width="34"
+                            height="22"
+                          /><span
+                            ><span class="muted">2 ×</span> Vulture<span class="swap-origin"
+                              >Opened from this pledge</span
+                            ></span
+                          ></span
+                        ><span class="muted">$30</span><span class="red">−$10</span
+                        ><strong class="green">$40</strong><span class="muted">$0</span>
+                      </div>
+                      <div class="swap-row">
+                        <span class="swap-ccu"
+                          ><img
+                            src="./images/ships/prospector.png"
+                            alt=""
+                            width="34"
+                            height="22"
+                          /><svg class="icon is-tiny" aria-hidden="true">
+                            <use href="#icon-arrow-right"></use></svg
+                          ><img src="./images/ships/sabre.png" alt="" width="34" height="22" /><span
+                            ><span class="muted">2 ×</span> Sabre</span
+                          ></span
+                        ><span class="muted">$30</span><span class="red">−$10</span
+                        ><strong class="green">$40</strong><span class="muted">$0</span>
+                      </div>
+                      <div class="swap-row is-total">
+                        <span>4 CCUs</span><span>$60</span><span class="red">−$20</span
+                        ><span class="green">$80</span><span>$0</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="swap-rise is-soft">
+                    <span class="swap-rise-icon"
+                      ><svg class="icon" aria-hidden="true"><use href="#icon-arrow-up"></use></svg
+                    ></span>
+                    <img src="./images/ships/liberator.png" alt="" width="54" height="30" />
+                    <span class="swap-rise-text"
+                      ><strong>Liberator rises in price</strong
+                      ><span class="muted"
+                        >Nov 15, 2026, 5:00 PM · expected, not confirmed by RSI</span
+                      ></span
+                    >
+                    <span class="swap-chip num">Price increase: 2 days</span>
+                  </div>
+                  <div class="swap-unknown">
+                    <span class="swap-ccu"
+                      ><img src="./images/ships/liberator.png" alt="" width="34" height="22" /><svg
+                        class="icon is-tiny"
+                        aria-hidden="true"
+                      >
+                        <use href="#icon-arrow-right"></use></svg
+                      ><img src="./images/ships/merchantman.png" alt="" width="34" height="22"
+                    /></span>
+                    <span class="swap-unknown-text"
+                      ><span><span class="muted">1 ×</span> Liberator → Merchantman</span
+                      ><span class="muted"
+                        >By how much isn’t known yet. The Merchantman isn’t flight ready yet: its
+                        price will probably rise too.</span
+                      ></span
+                    >
+                    <span class="swap-unknown-value num"
+                      ><strong>$50</strong><span class="orange">may be lost</span></span
+                    >
+                  </div>
+                  <div class="swap-foot">
+                    <span class="faint"
+                      ><svg class="icon" aria-hidden="true">
+                        <use href="#icon-circle-info"></use></svg
+                      >A suggestion only: the Hangar Manager never melts or buys anything on its
+                      own.</span
+                    >
+                    <span class="swap-mark"
+                      ><svg class="icon" aria-hidden="true"><use href="#icon-fire"></use></svg>Mark
+                      4 CCUs to melt</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article id="paint" class="feature is-purple" aria-labelledby="paint-title">
+            <div class="feature-text">
+              <span class="feature-eyebrow"
+                ><span class="feature-icon"
+                  ><svg class="icon" aria-hidden="true">
+                    <use href="#icon-fill-drip"></use></svg></span
+                >Paint Discount Consultant</span
+              >
+              <h3 id="paint-title">Up to 35% on your paints – with store credit only.</h3>
+              <p class="feature-lead">
+                RSI gives up to 35% on 10 paints in one cart. The consultant melts your paints
+                together, buys them again with cheap filler paints, and melts the fillers after 24
+                hours.
+              </p>
+              <ul class="checklist is-purple">
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span
+                    >Two ways – buy first (safe) or melt first (more store credit) – compared side
+                    by side</span
+                  >
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span>A plan you start and follow step by step: cart, paying, melting</span>
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span
+                    >Checks your cart and store credit, and counts down RSI’s 24 hours for the
+                    fillers</span
+                  >
+                </li>
+              </ul>
+            </div>
+            <div class="feature-media is-paint">
+              <img
+                class="shot"
+                src="../store/screenshots/04-paint-discount-consultant.png"
+                alt="Paint Discount Consultant with the two ways, their steps and a chart of the store credit"
+                width="1280"
+                height="800"
+                loading="lazy"
+              />
+              <div
+                class="tiers-card"
+                role="img"
+                aria-label="RSI's volume discount for paints: 15% from 2, 20% from 3, 25% from 5, 30% from 7 and 35% from 10 paints"
+              >
+                <span class="tiers-title">RSI’s volume discount</span>
+                <div class="tiers" aria-hidden="true">
+                  <span class="tier"
+                    ><span class="num tier-percent">15%</span
+                    ><span class="tier-bar" style="height: 16px"></span
+                    ><span class="num tier-count">×2</span></span
+                  ><span class="tier"
+                    ><span class="num tier-percent">20%</span
+                    ><span class="tier-bar" style="height: 24px"></span
+                    ><span class="num tier-count">×3</span></span
+                  ><span class="tier"
+                    ><span class="num tier-percent">25%</span
+                    ><span class="tier-bar" style="height: 33px"></span
+                    ><span class="num tier-count">×5</span></span
+                  ><span class="tier"
+                    ><span class="num tier-percent">30%</span
+                    ><span class="tier-bar" style="height: 43px"></span
+                    ><span class="num tier-count">×7</span></span
+                  ><span class="tier is-best"
+                    ><span class="num tier-percent">35%</span
+                    ><span class="tier-bar" style="height: 54px"></span
+                    ><span class="num tier-count">×10</span></span
+                  >
+                </div>
+              </div>
+            </div>
+          </article>
+          <article id="gift" class="feature is-green is-reversed" aria-labelledby="gift-title">
+            <div class="feature-text">
+              <span class="feature-eyebrow"
+                ><span class="feature-icon"
+                  ><svg class="icon" aria-hidden="true"><use href="#icon-gift"></use></svg></span
+                >Buy Back</span
+              >
+              <h3 id="gift-title">See which buy backs you can still gift.</h3>
+              <p class="feature-lead">
+                RSI only lets you gift a buy back that was giftable when you melted it. The manager
+                works it out from your order history and RSI’s new gift rules.
+              </p>
+              <ul class="checklist is-green">
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span
+                    >Marked “Probably giftable” right in the buy back list and as a filter</span
+                  >
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span>For pledges melted from now on, RSI’s own gift flag is kept</span>
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                  ><span
+                    >Buy back pledges straight into the RSI cart – with their buy back price</span
+                  >
+                </li>
+              </ul>
+            </div>
+            <div class="feature-media is-gift">
+              <img
+                class="shot is-dimmed"
+                src="../store/screenshots/02-buy-back.png"
+                alt="Buy back tab with a paint marked as probably giftable and the explanation of its order"
+                width="1280"
+                height="800"
+                loading="lazy"
+              />
+              <div class="gift-card">
+                <span class="gift-badge">Probably giftable</span>
+                <ul class="gift-rules">
+                  <li>
+                    <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                    ><span
+                      ><strong>Bought before Oct 30, 2026</strong>
+                      <span class="muted">– RSI’s new gift rules start then</span></span
+                    >
+                  </li>
+                  <li>
+                    <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                    ><span
+                      ><strong>Paid with money only</strong>
+                      <span class="muted">– no store credit, from your order history</span></span
+                    >
+                  </li>
+                  <li>
+                    <svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg
+                    ><span
+                      ><strong>Giftable when melted</strong>
+                      <span class="muted">– RSI keeps that status for the buy back</span></span
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </article>
+        </div>
       </section>
 
-      <section id="roadmap" class="section roadmap container" aria-labelledby="roadmap-title">
-        <div class="roadmap-header">
-          <h2 id="roadmap-title">Roadmap</h2>
-          <span class="muted">Built from the GitHub issues · updated daily</span>
+      <section class="section" aria-labelledby="more-title">
+        <div class="container stack">
+          <h2 id="more-title" class="is-small">And all the small things</h2>
+          <ul class="more">
+            <li class="card">
+              <span class="more-icon"
+                ><svg class="icon" aria-hidden="true">
+                  <use href="#icon-clock-rotate-left"></use></svg></span
+              ><strong>CCU history</strong
+              ><span class="muted"
+                >Every applied upgrade of a ship, with the discount of each step.</span
+              >
+            </li>
+            <li class="card">
+              <span class="more-icon"
+                ><svg class="icon" aria-hidden="true"><use href="#icon-receipt"></use></svg></span
+              ><strong>Orders &amp; refunds</strong
+              ><span class="muted"
+                >Invoices, a refund countdown and a prefilled refund request.</span
+              >
+            </li>
+            <li class="card">
+              <span class="more-icon"
+                ><svg class="icon" aria-hidden="true"><use href="#icon-bookmark"></use></svg></span
+              ><strong>Mark to melt later</strong
+              ><span class="muted">Get told when RSI’s 24 hours are over.</span>
+            </li>
+            <li class="card">
+              <span class="more-icon"
+                ><svg class="icon" aria-hidden="true">
+                  <use href="#icon-layer-group"></use></svg></span
+              ><strong>Select &amp; bulk melt</strong
+              ><span class="muted"
+                >A summary of any selection – and melting it at once (experimental).</span
+              >
+            </li>
+            <li class="card">
+              <span class="more-icon"
+                ><svg class="icon" aria-hidden="true"><use href="#icon-eye-slash"></use></svg></span
+              ><strong>Streamer mode</strong
+              ><span class="muted"
+                >Hide IDs, name, address and values – or show a demo hangar.</span
+              >
+            </li>
+            <li class="card">
+              <span class="more-icon"
+                ><svg class="icon" aria-hidden="true"><use href="#icon-palette"></use></svg></span
+              ><strong>Two themes</strong
+              ><span class="muted">Modern Hangar or the look of RSI’s own pages.</span>
+            </li>
+            <li class="card">
+              <span class="more-icon"
+                ><svg class="icon" aria-hidden="true"><use href="#icon-language"></use></svg></span
+              ><strong>Four languages</strong
+              ><span class="muted">English, German, French and Spanish.</span>
+            </li>
+            <li class="card">
+              <span class="more-icon"
+                ><svg class="icon" aria-hidden="true"><use href="#icon-link"></use></svg></span
+              ><strong>Links that help</strong
+              ><span class="muted"
+                >erkul.games, FleetYards.net and “Open in Hangar Manager” from CCU Game.</span
+              >
+            </li>
+          </ul>
         </div>
-        <!-- Rendered from GitHub's issues and milestones while building (site/roadmap). -->
-        <!-- roadmap -->
+      </section>
+
+      <section class="section start" aria-labelledby="start-title">
+        <div class="container split">
+          <div class="split-text">
+            <h2 id="start-title">Ready in a minute.</h2>
+            <p class="muted">
+              The first load reads your hangar, buy back and orders once – about 20 seconds for
+              1,000 pledges. From then on it opens instantly.
+            </p>
+            <div class="install">
+              <a
+                class="button is-primary"
+                href="https://chromewebstore.google.com/detail/star-citizen-hangar-manag/nofhjnkljndooegpllppamacogkikdjg"
+                ><svg class="icon" aria-hidden="true"><use href="#icon-chrome"></use></svg>Chrome
+                Web Store</a
+              >
+              <a
+                class="button"
+                href="https://addons.mozilla.org/firefox/addon/star-citizen-hangar-manager/"
+                ><svg class="icon" aria-hidden="true"><use href="#icon-firefox-browser"></use></svg
+                >Firefox Add-ons</a
+              >
+            </div>
+          </div>
+          <ol class="steps">
+            <li class="card">
+              <span class="step-number num">1</span><strong>Install the extension</strong
+              ><span class="muted"
+                >From the Chrome Web Store or Firefox Add-ons. Opera and Edge install it from a
+                release file.</span
+              >
+            </li>
+            <li class="card">
+              <span class="step-number num">2</span><strong>Log in on the RSI website</strong
+              ><span class="muted"
+                >The manager reads your hangar with your own RSI session – it never sees your
+                password.</span
+              >
+            </li>
+            <li class="card">
+              <span class="step-number num">3</span><strong>Open “Hangar Manager”</strong
+              ><span class="muted"
+                >The new first entry in your account navigation, above “My Gear” – or from the
+                toolbar icon.
+                <a href="https://robertsspaceindustries.com/en/account/pledges#hangar-manager"
+                  >Open it on the RSI website</a
+                >.</span
+              >
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section id="roadmap" class="section" aria-labelledby="roadmap-title">
+        <div class="container stack">
+          <div class="section-head is-split">
+            <div>
+              <p class="eyebrow">Roadmap</p>
+              <h2 id="roadmap-title">Built in the open.</h2>
+            </div>
+            <p class="muted live">
+              <span class="pulse" aria-hidden="true"></span>Built from the GitHub issues · updated
+              daily
+            </p>
+          </div>
+          <!-- Rendered from GitHub's releases, issues and milestones while building (site/roadmap). -->
+          <!-- roadmap -->
+        </div>
+      </section>
+
+      <section id="feedback" class="section" aria-labelledby="feedback-title">
+        <div class="container split">
+          <div class="split-text">
+            <h2 id="feedback-title">Made by the community, for the community.</h2>
+            <!--
+              The official badge of CIG's fankit (MadeByTheCommunity_Black.png), scaled down from
+              1418 to 128 px; otherwise unchanged.
+            -->
+            <img
+              class="community-badge"
+              src="./images/MadeByTheCommunity_Black-128.png"
+              alt="Made by the Community"
+              width="96"
+              height="96"
+            />
+          </div>
+          <ul class="help">
+            <li>
+              <a
+                class="card help-link"
+                href="https://github.com/exrelax/star-citizen-hangar-manager/issues/new/choose"
+                ><span class="help-icon"
+                  ><svg class="icon" aria-hidden="true"><use href="#icon-bug"></use></svg></span
+                ><strong>Report a bug</strong
+                ><span class="muted"
+                  >Use the issue forms on GitHub. Leave out pledge and order IDs.</span
+                ><span class="help-cta"
+                  ><svg class="icon" aria-hidden="true"><use href="#icon-github"></use></svg>Open an
+                  issue</span
+                ></a
+              >
+            </li>
+            <li>
+              <a
+                class="card help-link"
+                href="https://github.com/exrelax/star-citizen-hangar-manager/discussions/categories/ideas"
+                ><span class="help-icon"
+                  ><svg class="icon" aria-hidden="true">
+                    <use href="#icon-lightbulb"></use></svg></span
+                ><strong>Share an idea</strong
+                ><span class="muted">Start a thread in the Ideas category of the Discussions.</span
+                ><span class="help-cta"
+                  ><svg class="icon" aria-hidden="true"><use href="#icon-github"></use></svg
+                  >Discussions</span
+                ></a
+              >
+            </li>
+            <li>
+              <a
+                class="card help-link"
+                href="https://github.com/exrelax/star-citizen-hangar-manager/blob/main/CONTRIBUTING.md"
+                ><span class="help-icon"
+                  ><svg class="icon" aria-hidden="true">
+                    <use href="#icon-code-branch"></use></svg></span
+                ><strong>Contribute</strong
+                ><span class="muted"
+                  >Vue 3, TypeScript and WXT. Read the contributing guidelines.</span
+                ><span class="help-cta"
+                  ><svg class="icon" aria-hidden="true"><use href="#icon-github"></use></svg
+                  >CONTRIBUTING.md</span
+                ></a
+              >
+            </li>
+          </ul>
+        </div>
       </section>
     </main>
 
     <footer class="site-footer">
       <div class="container site-footer-inner">
-        <div class="site-footer-top">
+        <div class="footer-top">
           <span class="footer-brand">
-            <img src="../src/assets/logo/logo-full.svg" alt="" width="32" height="32" />
-            Star Citizen Hangar Manager
+            <img src="../src/assets/logo/logo-full.svg" alt="" width="28" height="28" />
+            Star Citizen Hangar Manager <span class="faint">MIT license</span>
           </span>
           <nav class="footer-nav" aria-label="Footer">
             <a href="https://github.com/exrelax">Made by exrelax</a>
-            <a href="https://github.com/exrelax/star-citizen-hangar-manager">GitHub repository</a>
+            <a href="https://github.com/exrelax/star-citizen-hangar-manager">GitHub</a>
+            <a href="https://github.com/exrelax/star-citizen-hangar-manager/blob/main/CHANGELOG.md"
+              >Changelog</a
+            >
             <a href="./privacy.html">Privacy policy</a>
+            <a
+              href="https://github.com/exrelax/star-citizen-hangar-manager/blob/main/docs/FEATURES.md"
+              >All features</a
+            >
           </nav>
         </div>
         <!--
@@ -494,8 +1217,8 @@
           </p>
           <p>
             Star Citizen®, Squadron 42®, Roberts Space Industries® and Cloud Imperium® are
-            registered trademarks of Cloud Imperium Rights LLC. Browser and GitHub icons: Font
-            Awesome Free (CC BY 4.0).
+            registered trademarks of Cloud Imperium Rights LLC. Icons: Font Awesome Free (CC BY
+            4.0).
           </p>
           <p>
             The ships' data (<a href="./data/ships.json">data/ships.json</a>) is based on RSI's

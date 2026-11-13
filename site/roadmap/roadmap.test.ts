@@ -77,6 +77,30 @@ const LATER = [
   sub(24, 23, { labels: [{ name: 'enhancement' }] }),
 ];
 
+/** The milestone of the released version (closed), and the issues that went into it. */
+const CLOSED_MILESTONES = [
+  {
+    number: 9,
+    title: 'v1.0.0',
+    html_url: 'https://github.com/m/9',
+    description: null,
+    due_on: null,
+  },
+  { number: 8, title: 'v0.9.0', html_url: '', description: null, due_on: null },
+];
+const RELEASED: unknown[] = [
+  closed(50, '2026-11-01T10:00:00Z'),
+  { ...closed(51, '2026-11-01T10:00:00Z'), sub_issues_summary: { total: 7 } },
+  { ...closed(52, '2026-11-01T10:00:00Z'), sub_issues_summary: { total: 3 } },
+  sub(53, 51, { state: 'closed' }),
+  closed(54, '2026-11-01T10:00:00Z'),
+  closed(55, '2026-11-01T10:00:00Z'),
+  closed(56, '2026-11-01T10:00:00Z'),
+  closed(57, '2026-11-01T10:00:00Z'),
+  closed(58, '2026-11-01T10:00:00Z'),
+  { ...closed(59, '2026-11-01T10:00:00Z'), labels: [{ name: 'internal' }] },
+];
+
 const RELEASE = {
   tag_name: 'v1.0.0',
   html_url: 'https://github.com/exrelax/star-citizen-hangar-manager/releases/tag/v1.0.0',
@@ -125,6 +149,10 @@ function github(
       return json(release);
     }
     if (path === '/milestones?state=open&sort=due_on') return json(MILESTONES);
+    if (path === '/milestones?state=closed&sort=due_on&direction=desc') {
+      return json(CLOSED_MILESTONES);
+    }
+    if (path === '/issues?milestone=9&state=closed') return json(RELEASED);
     if (path === '/issues?state=open&milestone=none&labels=enhancement') return json(LATER);
     const milestone = /^\/issues\?milestone=(\d+)&state=all$/.exec(path)?.[1];
     if (milestone) return json(ISSUES[Number(milestone)] ?? []);
@@ -203,11 +231,21 @@ describe('fetchRoadmap', () => {
       fetch: github() as typeof fetch,
       fallbackVersion: '1.1.0',
     });
-    expect(roadmap.release).toEqual({
+    expect(roadmap.release).toMatchObject({
       version: '1.0.0',
       url: RELEASE.html_url,
       publishedOn: '2026-11-05',
     });
+  });
+
+  it('lists the main issues of the released version, those with the most sub-issues first', async () => {
+    const { release } = await fetchRoadmap({
+      fetch: github() as typeof fetch,
+      fallbackVersion: '1.1.0',
+    });
+    // Without its sub-issues and the hidden ones; five listed, the rest counted.
+    expect(release.highlights?.map((entry) => entry.number)).toEqual([51, 52, 50, 54, 55]);
+    expect(release.moreHighlights).toBe(3);
   });
 
   it("falls back to package.json's version without a release, or if it can't be read", async () => {
@@ -230,7 +268,13 @@ describe('fetchRoadmap', () => {
 
 describe('renderRoadmap', () => {
   const roadmap: Roadmap = {
-    release: { version: '1.0.0', url: 'https://github.com/r/1.0.0', publishedOn: '2026-11-05' },
+    release: {
+      version: '1.0.0',
+      url: 'https://github.com/r/1.0.0',
+      publishedOn: '2026-11-05',
+      highlights: [{ number: 3, title: 'Pledge Store tab', url: 'u3' }],
+      moreHighlights: 2,
+    },
     fromBoard: false,
     milestones: [
       {
@@ -245,38 +289,68 @@ describe('renderRoadmap', () => {
           { status: 'Done', issues: [{ number: 6, title: 'Locks', url: 'u6' }], more: 4 },
         ],
       },
+      {
+        title: 'v1.2.0',
+        url: 'https://github.com/m/2',
+        dueOn: '2027-01-15',
+        description: '',
+        open: 1,
+        done: 0,
+        groups: [{ status: 'Open', issues: [{ number: 7, title: 'Later', url: 'u7' }], more: 0 }],
+      },
     ],
     later: [{ number: 5, title: 'Statistics "tab"', url: 'u5' }],
   };
 
-  it('renders the milestones with progress, issues and the later ideas', () => {
+  it('renders the released version, the milestones with progress and the later ideas', () => {
     const html = renderRoadmap(roadmap);
     const page = new DOMParser().parseFromString(html, 'text/html');
+    const text = (element: Element | null | undefined) =>
+      element?.textContent?.replace(/\s+/g, ' ').trim();
 
-    // The released version first, then the milestones.
-    const [released, next] = page.querySelectorAll('.roadmap-step');
-    expect(released!.classList.contains('is-released')).toBe(true);
-    expect(released!.querySelector('h3')?.textContent).toBe('Version 1.0.0Released');
-    expect(released!.querySelector('.roadmap-meta')?.textContent).toBe(
-      'Released November 5, 2026 · Release notes',
-    );
-    expect(released!.querySelector('.roadmap-meta a')?.getAttribute('href')).toBe(
+    // One step per card, in order: released, next, planned, later.
+    const steps = [...page.querySelectorAll('.roadmap-step')];
+    expect(steps.map((step) => step.className)).toEqual([
+      'roadmap-step is-released',
+      'roadmap-step is-next',
+      'roadmap-step is-planned',
+      'roadmap-step is-later',
+    ]);
+    const [released, next, planned, later] = steps;
+    expect(text(released!.querySelector('h3'))).toBe('v1.0.0');
+    expect(text(released!.querySelector('.roadmap-badge'))).toBe('Released');
+    expect(text(released!.querySelector('.roadmap-meta'))).toBe('November 5, 2026');
+    expect(text(released!.querySelector('.roadmap-issue'))).toBe('Pledge Store tab #3');
+    expect(text(released!.querySelector('.roadmap-more'))).toBe('+ 2 more');
+    expect(released!.querySelector('.roadmap-link')?.getAttribute('href')).toBe(
       'https://github.com/r/1.0.0',
     );
-    expect(next!.querySelector('h3')?.textContent).toBe('Version 1.1.0');
-    expect(next!.querySelector('.roadmap-meta')?.textContent).toBe(
-      'Due November 12, 2026 · 1 of 4 done',
-    );
-    expect(page.querySelector('.roadmap-description p')?.textContent).toBe('For the IAE:');
+
+    expect(text(next!.querySelector('h3'))).toBe('v1.1.0');
+    expect(text(next!.querySelector('.roadmap-badge'))).toBe('Next');
+    expect(text(next!.querySelector('.roadmap-meta'))).toBe('Due November 12, 2026 · 1 of 4 done');
+    expect(text(next!.querySelector('.roadmap-description p'))).toBe('For the IAE:');
     expect(
-      [...page.querySelectorAll('.roadmap-description li')].map((li) => li.textContent),
+      [...next!.querySelectorAll('.roadmap-description li')].map((li) => li.textContent),
     ).toEqual(['Warbond CCUs', 'Discounts']);
-    expect(page.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe('25');
-    // Titles are escaped, not markup.
-    expect(page.querySelector('.roadmap-issue')?.textContent).toBe('Export <CSV> #1');
+    expect(next!.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe('25');
+    // Grouped by status; titles are escaped, not markup.
+    const groups = [...next!.querySelectorAll('.roadmap-group')];
+    expect(groups.map((group) => group.getAttribute('aria-label'))).toEqual(['Open', 'Done']);
+    expect(groups.map((group) => text(group.querySelector('.roadmap-count')))).toEqual(['1', '5']);
+    expect(text(next!.querySelector('.roadmap-issue'))).toBe('Export <CSV> #1');
     expect(html).not.toContain('<CSV>');
-    expect(page.querySelector('.roadmap-group .muted')?.textContent).toBe('+ 4 more done');
-    expect(page.querySelector('.roadmap-chip')?.textContent).toBe('Statistics "tab" #5');
+    expect(text(next!.querySelector('.roadmap-more'))).toBe('+ 4 more done');
+    expect(text(planned!.querySelector('.roadmap-badge'))).toBe('Planned');
+
+    expect(text(later!.querySelector('h3'))).toBe('Later');
+    expect(text(later!.querySelector('.roadmap-issue'))).toBe('Statistics "tab" #5');
+    expect(later!.querySelector('.roadmap-link')?.getAttribute('href')).toContain(
+      '/discussions/categories/ideas',
+    );
+    // Icons of the page's sprite, hidden from screen readers.
+    expect(page.querySelector('.roadmap-issue use')?.getAttribute('href')).toBe('#icon-check');
+    expect(page.querySelector('.roadmap-issue svg')?.getAttribute('aria-hidden')).toBe('true');
   });
 
   it('says so when nothing is planned', () => {
@@ -288,7 +362,7 @@ describe('renderRoadmap', () => {
     });
     expect(html).toContain('Nothing planned');
     // The fallback from package.json: no date, no link.
-    expect(html).toContain('Version 1.0.0');
+    expect(html).toContain('v1.0.0');
     expect(html).not.toContain('Release notes');
   });
 });

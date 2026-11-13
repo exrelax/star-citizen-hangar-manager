@@ -3,7 +3,8 @@
  * (see site/vite.config.ts). Visitors' browsers never contact GitHub: the roadmap is plain HTML.
  *
  * - Released: the current version, the latest GitHub release (or the version of package.json if
- *   there is none), above the timeline; the hero shows it, too.
+ *   there is none), as the first step; the hero shows it, too. With its milestone (titled like the
+ *   version), it lists the main issues that went into it, those with the most sub-issues first.
  * - Timeline: the open milestones with a due date and issues, by date, with their issues grouped
  *   by the column of the project board (or into "Open" and "Done" if the board can't be read).
  * - Later: open `enhancement` issues without a milestone, except the website's own
@@ -48,6 +49,10 @@ export interface RoadmapRelease {
   url?: string;
   /** ISO date (YYYY-MM-DD) of the release; missing for the fallback. */
   publishedOn?: string;
+  /** The main issues of its milestone, the biggest first; missing without a milestone. */
+  highlights?: RoadmapIssue[];
+  /** Main issues of its milestone that aren't listed. */
+  moreHighlights?: number;
 }
 
 export interface Roadmap {
@@ -76,6 +81,8 @@ export const ROADMAP_SOURCE = {
 const BOARD_COLUMNS = ['Backlog', 'Ready', 'In progress', 'In review', 'Done'];
 /** Done issues listed per milestone, the most recently closed first. */
 const DONE_LISTED = 20;
+/** Main issues listed for the released version. */
+const HIGHLIGHTS_LISTED = 5;
 
 interface GitHubIssue {
   number: number;
@@ -87,6 +94,8 @@ interface GitHubIssue {
   pull_request?: unknown;
   /** API URL of the parent issue, for a sub-issue. */
   parent_issue_url?: string | null;
+  /** How many sub-issues it has, for a parent. */
+  sub_issues_summary?: { total: number } | null;
 }
 
 interface GitHubMilestone {
@@ -188,6 +197,23 @@ export async function fetchRoadmap(options: FetchRoadmapOptions): Promise<Roadma
     `/issues?state=open&milestone=none&labels=${ROADMAP_SOURCE.laterLabel}`,
   );
 
+  // The released version, with the main issues of its milestone (closed by then).
+  const release = await getRelease();
+  const releasedMilestone = (
+    await getAll<GitHubMilestone>('/milestones?state=closed&sort=due_on&direction=desc')
+  ).find((milestone) => milestone.title.replace(/^v/, '') === release.version);
+  if (releasedMilestone) {
+    const released = shown(
+      await getAll<GitHubIssue>(`/issues?milestone=${releasedMilestone.number}&state=closed`),
+    ).sort(
+      (a, b) =>
+        (b.sub_issues_summary?.total ?? 0) - (a.sub_issues_summary?.total ?? 0) ||
+        a.number - b.number,
+    );
+    release.highlights = released.slice(0, HIGHLIGHTS_LISTED).map(toIssue);
+    release.moreHighlights = Math.max(0, released.length - HIGHLIGHTS_LISTED);
+  }
+
   let columns: Map<number, string> | undefined;
   try {
     columns = token ? await fetchBoardColumns(token, fetchImpl) : undefined;
@@ -197,7 +223,7 @@ export async function fetchRoadmap(options: FetchRoadmapOptions): Promise<Roadma
   }
 
   return {
-    release: await getRelease(),
+    release,
     fromBoard: columns !== undefined,
     milestones: milestones
       .map((milestone, index) => toMilestone(milestone, shown(issuesByMilestone[index]!), columns))
@@ -325,43 +351,66 @@ const STATUS_COLORS: Record<string, string> = {
   Done: 'var(--site-success)',
 };
 
-/** The roadmap as HTML, for the `<!-- roadmap -->` placeholder in index.html. */
+/** Where an idea for "Later" is shared. */
+const IDEAS_URL = `https://github.com/${ROADMAP_SOURCE.repository}/discussions/categories/ideas`;
+
+/** An icon of the page's sprite (see site/icons.ts). */
+const icon = (name: string) =>
+  `<svg class="icon" aria-hidden="true"><use href="#icon-${name}"></use></svg>`;
+
+/**
+ * The roadmap as HTML, for the `<!-- roadmap -->` placeholder in index.html: a step per card –
+ * the released version, the milestones by date and "Later" – on one line.
+ */
 export function renderRoadmap(roadmap: Roadmap): string {
-  const released = renderRelease(roadmap.release);
-  const milestones = roadmap.milestones.map(renderMilestone).join('');
-  const later = roadmap.later.length
-    ? `<div class="roadmap-step is-later">
-        <span class="roadmap-dot" aria-hidden="true"></span>
-        <div class="roadmap-body">
-          <h3>Later</h3>
-          <p class="muted">Ideas from the backlog, not planned for a version yet.</p>
-          <ul class="roadmap-chips">${roadmap.later
-            .map((issue) => `<li>${renderIssueLink(issue, 'roadmap-chip')}</li>`)
-            .join('')}</ul>
+  const steps = [
+    renderRelease(roadmap.release),
+    ...roadmap.milestones.map((milestone, index) => renderMilestone(milestone, index === 0)),
+  ];
+  if (roadmap.later.length) {
+    steps.push(
+      renderStep(
+        'is-later',
+        `<div class="roadmap-heading">
+          <h3>Later</h3><span class="roadmap-badge">Ideas</span>
         </div>
-      </div>`
-    : '';
+        <p class="roadmap-meta">From the backlog, not planned for a version yet</p>
+        <ul class="roadmap-list">${roadmap.later.map((issue) => renderIssue(issue, 'lightbulb')).join('')}</ul>
+        ${renderCardLink(IDEAS_URL, 'Share an idea')}`,
+      ),
+    );
+  }
   const nothingPlanned =
-    milestones || later ? '' : '<p class="muted">Nothing planned at the moment.</p>';
-  return `<div class="roadmap-timeline">${released}${milestones}${later}</div>${nothingPlanned}`;
+    steps.length > 1 ? '' : '<p class="muted roadmap-empty">Nothing planned at the moment.</p>';
+  return `<div class="roadmap-steps">${steps.join('')}</div>${nothingPlanned}`;
 }
 
-/** The current version as the first step of the timeline, marked as released. */
-function renderRelease(release: RoadmapRelease): string {
-  const title = `Version ${escape(release.version)}`;
-  const meta = [
-    release.publishedOn && `Released ${escape(formatDate(release.publishedOn))}`,
-    release.url && `<a href="${escape(release.url)}">Release notes</a>`,
-  ].filter(Boolean);
-  return `<div class="roadmap-step is-released">
+/** One step of the roadmap: its dot on the line and its card. */
+function renderStep(className: string, body: string): string {
+  return `<div class="roadmap-step ${className}">
     <span class="roadmap-dot" aria-hidden="true"></span>
-    <div class="roadmap-body">
-      <div class="roadmap-heading">
-        <h3>${release.url ? `<a href="${escape(release.url)}">${title}</a>` : title}<span class="roadmap-released">Released</span></h3>
-        ${meta.length ? `<span class="roadmap-meta">${meta.join(' · ')}</span>` : ''}
-      </div>
-    </div>
+    <article class="roadmap-card">${body}</article>
   </div>`;
+}
+
+function renderCardLink(url: string, text: string): string {
+  return `<a class="roadmap-link" href="${escape(url)}">${escape(text)} ${icon('arrow-right')}</a>`;
+}
+
+/** The current version as the first step, marked as released, with the issues that went into it. */
+function renderRelease(release: RoadmapRelease): string {
+  const title = `v${escape(release.version)}`;
+  const highlights = release.highlights ?? [];
+  return renderStep(
+    'is-released',
+    `<div class="roadmap-heading">
+      <h3>${release.url ? `<a href="${escape(release.url)}">${title}</a>` : title}</h3><span class="roadmap-badge">Released</span>
+    </div>
+    ${release.publishedOn ? `<p class="roadmap-meta">${escape(formatDate(release.publishedOn))}</p>` : ''}
+    ${highlights.length ? `<ul class="roadmap-list">${highlights.map((issue) => renderIssue(issue, 'check')).join('')}</ul>` : ''}
+    ${release.moreHighlights ? `<p class="muted roadmap-more">+ ${release.moreHighlights} more</p>` : ''}
+    ${release.url ? renderCardLink(release.url, 'Release notes') : ''}`,
+  );
 }
 
 /** The current version for the hero, e.g. "v1.0.0", linked to its release notes. */
@@ -383,27 +432,24 @@ function formatDate(isoDate: string): string {
   });
 }
 
-function renderMilestone(milestone: RoadmapMilestone): string {
+function renderMilestone(milestone: RoadmapMilestone, next: boolean): string {
   const total = milestone.open + milestone.done;
   const percent = total ? Math.round((milestone.done / total) * 100) : 0;
   const due = formatDate(milestone.dueOn);
-  // "v1.1.0" reads "Version 1.1.0"; other titles stay as they are.
-  const title = milestone.title.replace(/^v(?=\d)/, 'Version ');
-  return `<div class="roadmap-step">
-    <span class="roadmap-dot" aria-hidden="true"></span>
-    <div class="roadmap-body">
-      <div class="roadmap-heading">
-        <h3><a href="${escape(milestone.url)}">${escape(title)}</a></h3>
-        <span class="roadmap-meta">Due ${escape(due)} · ${milestone.done} of ${total} done</span>
-      </div>
-      ${renderDescription(milestone.description)}
-      <div class="roadmap-progress" role="progressbar" aria-label="${escape(title)} progress"
-        aria-valuemin="0" aria-valuemax="100" aria-valuenow="${percent}">
-        <span style="width: ${percent}%"></span>
-      </div>
-      <div class="roadmap-groups">${milestone.groups.map(renderGroup).join('')}</div>
+  return renderStep(
+    next ? 'is-next' : 'is-planned',
+    `<div class="roadmap-heading">
+      <h3><a href="${escape(milestone.url)}">${escape(milestone.title)}</a></h3><span class="roadmap-badge">${next ? 'Next' : 'Planned'}</span>
     </div>
-  </div>`;
+    <p class="roadmap-meta">Due ${escape(due)} · ${milestone.done} of ${total} done</p>
+    <div class="roadmap-progress" role="progressbar" aria-label="${escape(milestone.title)} progress"
+      aria-valuemin="0" aria-valuemax="100" aria-valuenow="${percent}">
+      <span style="width: ${percent}%"></span>
+    </div>
+    ${renderDescription(milestone.description)}
+    <div class="roadmap-groups">${milestone.groups.map(renderGroup).join('')}</div>
+    ${renderCardLink(milestone.url, 'Milestone on GitHub')}`,
+  );
 }
 
 /**
@@ -441,15 +487,17 @@ function renderDescription(description: string): string {
 function renderGroup(group: RoadmapGroup): string {
   const color = STATUS_COLORS[group.status] ?? STATUS_COLORS.Backlog;
   const count = group.issues.length + group.more;
-  return `<section class="roadmap-group card" aria-label="${escape(group.status)}">
+  const symbol = group.status === 'Done' ? 'check' : 'clock-rotate-left';
+  return `<section class="roadmap-group" aria-label="${escape(group.status)}">
     <h4><span class="roadmap-status" style="background: ${color}" aria-hidden="true"></span>${escape(group.status)}<span class="roadmap-count">${count}</span></h4>
-    <ul>${group.issues.map((issue) => `<li>${renderIssueLink(issue, 'roadmap-issue')}</li>`).join('')}</ul>
-    ${group.more ? `<p class="muted">+ ${group.more} more done</p>` : ''}
+    <ul class="roadmap-list is-${group.status === 'Done' ? 'done' : 'open'}">${group.issues.map((issue) => renderIssue(issue, symbol)).join('')}</ul>
+    ${group.more ? `<p class="muted roadmap-more">+ ${group.more} more done</p>` : ''}
   </section>`;
 }
 
-function renderIssueLink(issue: RoadmapIssue, className: string): string {
-  return `<a class="${className}" href="${escape(issue.url)}"><span>${escape(issue.title)}</span> <span class="roadmap-number">#${issue.number}</span></a>`;
+/** An issue of a list: its icon, its title linked to GitHub and its number. */
+function renderIssue(issue: RoadmapIssue, symbol: string): string {
+  return `<li><a class="roadmap-issue" href="${escape(issue.url)}">${icon(symbol)}<span class="roadmap-title">${escape(issue.title)}</span> <span class="roadmap-number">#${issue.number}</span></a></li>`;
 }
 
 function escape(text: string): string {

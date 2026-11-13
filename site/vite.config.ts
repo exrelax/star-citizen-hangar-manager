@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { defineConfig, type Plugin } from 'vite';
+import { ICONS_FOLDER, iconSprite } from './icons.ts';
 import { parsePrivacy, renderPrivacy } from './privacy/privacy.ts';
 import { fetchRoadmap, renderRoadmap, renderVersion } from './roadmap/roadmap.ts';
 
@@ -21,6 +22,8 @@ import { fetchRoadmap, renderRoadmap, renderVersion } from './roadmap/roadmap.ts
  *
  * The privacy page (`privacy.html`) is made from the repository's PRIVACY.md (see
  * `privacy/privacy.ts`), so the policy has a single source.
+ *
+ * The icons (Font Awesome Free, `icons/`) become one inline sprite per page (see `icons.ts`).
  *
  * `public/` is copied as is: the data the extension loads from the site (`data/events.json`, the
  * event notices of the Pledge Store, #69; `data/ships.json`, #107, written by `pnpm site:ships`
@@ -138,9 +141,24 @@ const privacyPage: Plugin = {
   },
 };
 
+/** The icons' sprite (site/icons.ts), at the `<!-- icons -->` placeholder of every page. */
+const ICONS_PLACEHOLDER = '<!-- icons -->';
+const icons: Plugin = {
+  name: 'icons',
+  configureServer(server) {
+    server.watcher.add(ICONS_FOLDER);
+    server.watcher.on('all', (_event, file) => {
+      if (file.startsWith(ICONS_FOLDER)) server.ws.send({ type: 'full-reload' });
+    });
+  },
+  transformIndexHtml(page) {
+    return page.includes(ICONS_PLACEHOLDER) ? page.replace(ICONS_PLACEHOLDER, iconSprite()) : page;
+  },
+};
+
 export default defineConfig({
   root,
-  plugins: [serveRepositoryImages, roadmap(), privacyPage, absolutePreviewImages],
+  plugins: [serveRepositoryImages, icons, roadmap(), privacyPage, absolutePreviewImages],
   // Relative URLs: the site works under any path, e.g. /star-citizen-hangar-manager/ on GitHub
   // Pages, or a custom domain later.
   base: './',
