@@ -17,20 +17,20 @@ description as plain text, so they use no Markdown.
 
 ## Images
 
-| File                                                         | Size     | Where                                       |
-| ------------------------------------------------------------ | -------- | ------------------------------------------- |
-| [01-my-hangar.png](screenshots/01-my-hangar.png)             | 1280×800 | Screenshots of Chrome, Firefox and Edge     |
-| [02-buy-back.png](screenshots/02-buy-back.png)               | 1280×800 | (in this order)                             |
-| [03-pledge-upgrades.png](screenshots/03-pledge-upgrades.png) | 1280×800 |                                             |
-| [04-theme-rsi.png](screenshots/04-theme-rsi.png)             | 1280×800 |                                             |
-| [05-settings.png](screenshots/05-settings.png)               | 1280×800 |                                             |
-| [small-tile-440x280.png](small-tile-440x280.png)             | 440×280  | Chrome, Edge: small promotional tile        |
-| [marquee-1400x560.png](marquee-1400x560.png)                 | 1400×560 | Chrome, Edge: marquee / large tile (opt.)   |
-| [screenshots-opera/](screenshots-opera)                      | 612×408  | Opera: the same screenshots, smaller        |
-| [promo-300x188.png](promo-300x188.png)                       | 300×188  | Opera: promotional image                    |
-| [icon-64x64.png](icon-64x64.png)                             | 64×64    | Opera: icon (made by `pnpm icons`)          |
-| [logo-300x300.png](logo-300x300.png)                         | 300×300  | Edge: store logo (made by `pnpm icons`)     |
-| [social-preview-1280x640.png](social-preview-1280x640.png)   | 1280×640 | GitHub: Settings → General → Social preview |
+| File                                                                             | Size     | Where                                       |
+| -------------------------------------------------------------------------------- | -------- | ------------------------------------------- |
+| [01-my-hangar.png](screenshots/01-my-hangar.png)                                 | 1280×800 | Screenshots of Chrome, Firefox and Edge     |
+| [02-buy-back.png](screenshots/02-buy-back.png)                                   | 1280×800 | (in this order)                             |
+| [03-pledge-store-ccu.png](screenshots/03-pledge-store-ccu.png)                   | 1280×800 |                                             |
+| [04-paint-discount-consultant.png](screenshots/04-paint-discount-consultant.png) | 1280×800 |                                             |
+| [05-ccu-base-ship-overview.png](screenshots/05-ccu-base-ship-overview.png)       | 1280×800 |                                             |
+| [small-tile-440x280.png](small-tile-440x280.png)                                 | 440×280  | Chrome, Edge: small promotional tile        |
+| [marquee-1400x560.png](marquee-1400x560.png)                                     | 1400×560 | Chrome, Edge: marquee / large tile (opt.)   |
+| [screenshots-opera/](screenshots-opera)                                          | 612×408  | Opera: the same screenshots, smaller        |
+| [promo-300x188.png](promo-300x188.png)                                           | 300×188  | Opera: promotional image                    |
+| [icon-64x64.png](icon-64x64.png)                                                 | 64×64    | Opera: icon (made by `pnpm icons`)          |
+| [logo-300x300.png](logo-300x300.png)                                             | 300×300  | Edge: store logo (made by `pnpm icons`)     |
+| [social-preview-1280x640.png](social-preview-1280x640.png)                       | 1280×640 | GitHub: Settings → General → Social preview |
 
 The store icon is the extension's own, [public/icon/128.png](../public/icon/128.png): the logo at
 96 px with 16 px of transparent padding, as the Chrome Web Store asks for.
@@ -47,6 +47,11 @@ Opera allows screenshots of at most 800×600 and prefers 612×408 (3:2). The Ope
 from the ones above: the screenshots cropped by 40 px on the left and right to 1200×800 and scaled
 down, the promotional image scaled down from the small tile (300×191, then 1 px cut off at the top
 and 2 px at the bottom).
+
+The marquee and the social preview show the first screenshot in front of another one, next to
+the name, the claim and four short points of the listing. They are composed as a web page and
+rendered at their exact size; after new screenshots or texts, render them again. The small tile
+and Opera's promotional image show only the name and need no update.
 
 ## Where each text goes
 
