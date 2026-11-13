@@ -33,16 +33,20 @@ on:
       - demilestoned
   milestone:
     types: [created, edited, opened, closed, deleted]
-  # A new version shows at once (hero and roadmap), not only with the next daily build.
+  # A new version shows at once (hero and roadmap), not only with the next daily build. A release
+  # runs on its tag, which the `github-pages` environment doesn't let deploy (only `main` may), so
+  # this run only starts another one on `main` (the job `on-release`).
   release:
     types: [published]
   schedule:
     - cron: '17 4 * * *'
   workflow_dispatch:
 
-# Reads the code and the issues (roadmap), commits the ships' history (data/ships.json, #107) and
-# deploys to Pages with an OIDC token; nothing else.
+# Reads the code and the issues (roadmap), commits the ships' history (data/ships.json, #107),
+# deploys to Pages with an OIDC token and, for a release, starts this workflow on main; nothing
+# else.
 permissions:
+  actions: write
   contents: write
   issues: read
   pages: write
@@ -54,7 +58,19 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # A published release: build and deploy from main instead of from the tag.
+  on-release:
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - run: gh workflow run site.yml --ref main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+
   build:
+    if: github.event_name != 'release'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
