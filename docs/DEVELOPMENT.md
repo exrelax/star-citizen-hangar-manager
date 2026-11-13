@@ -148,11 +148,19 @@ it from there (`src/shared/extension-version.ts`) for the settings ("About") and
 
 The [release workflow](../.github/workflows/release.yml) then checks that the tag matches
 `package.json` and that the changelog has the version's section, runs the type check, ESLint and
-the tests, builds the zips (`pnpm zip`) and creates a **draft** release on GitHub with them:
+the tests, builds the zips (`pnpm zip`), checks that the sources zip builds the same extension
+(`pnpm check:sources`) and creates a **draft** release on GitHub with them:
 the Chrome and Firefox packages and the sources for addons.mozilla.org. Check the draft and publish
 it on GitHub, then upload the zips to the stores (texts and images in [`store/`](../store/README.md)).
 
 `node scripts/release-notes.js 1.0.0` shows locally what the release notes will be.
+
+The sources zip holds what the build needs and nothing else: `zip.excludeSources` in
+[`wxt.config.ts`](../wxt.config.ts) leaves out the store texts, the website (but not
+`site/public/`, whose data files the extension imports) and local files (`*.local.*`).
+`pnpm zip:firefox && pnpm check:sources` unzips it into a temporary folder, builds the Firefox
+extension there as the review notes say and compares it with `.output/firefox-mv3`. A new file the
+build imports from outside `src/` must not be excluded.
 
 ## Website
 
