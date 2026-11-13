@@ -41,9 +41,17 @@ unpacked** and select the folder.
   giftable, meltable, valuable – and sorting by date, value or discount
 - Melt values, discounts compared to the original price and the full CCU history of upgraded ships
 - Orders with invoices, refund countdown and a prefilled refund request
-- Buy back pledges with "probably giftable" hints, straight into the RSI cart
+- Buy back pledges with their buy back price and "probably giftable" hints, straight into the RSI
+  cart
+- Select pledges and see their summary, and mark pledges to melt later
 - The current warbond CCUs of the Pledge Store, with the cheapest ships to start from and your own
-  CCUs in their price range
+  CCUs in their price range, and a history of the warbond offers seen so far
+- Expected price increases: a reminder on buy back items that get more expensive, advice for CCUs
+  that lose or gain upgrade value, and the CCUs to secure before a ship's price rises
+- A Paint Discount Consultant: more store credit from your paints with RSI's volume discount, as a
+  plan you start and follow step by step
+- Event notices like the Intergalactic Aerospace Expo, and notifications in the sidebar – from
+  the browser only if you turn them on
 - Hide IDs, name, address and values for screenshots and streams, or show an anonymized selection
   in the demo mode
 - Two themes ("Modern Hangar" and "Classic RSI") and four languages (English, German, French,
