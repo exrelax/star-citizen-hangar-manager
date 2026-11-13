@@ -39,3 +39,7 @@ jobs:
       - run: pnpm lint
       - run: pnpm test
       - run: pnpm build
+
+      # The sources zip for addons.mozilla.org has to build the same extension (#321).
+      - run: pnpm zip:firefox
+      - run: pnpm check:sources

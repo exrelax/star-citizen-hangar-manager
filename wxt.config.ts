@@ -18,8 +18,11 @@ export default defineConfig({
   },
   zip: {
     // The sources zip for addons.mozilla.org needs only what builds the extension: the store
-    // texts and images (several MB) and the project website stay out.
-    excludeSources: ['store/**', 'site/**'],
+    // texts and images (several MB) and the project website stay out – but not the website's
+    // data files and event images (`site/public/`), which the extension imports (#321). Local,
+    // uncommitted files (`*.local.*`, e.g. working notes) never belong into it.
+    // `scripts/check-sources-zip.js` checks that the zip builds.
+    excludeSources: ['store/**', 'site/!(public)', 'site/!(public)/**', '**/*.local.*'],
   },
   hooks: {
     // The styleguide (src/entrypoints/styleguide) is a page for development: `wxt build` skips it.

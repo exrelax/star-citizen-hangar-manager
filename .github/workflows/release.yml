@@ -48,6 +48,9 @@ jobs:
       # The Chrome and Firefox zips and the sources zip for addons.mozilla.org, in .output.
       - run: pnpm zip
 
+      # Mozilla's reviewers build the add-on from the sources zip: it has to build the same (#321).
+      - run: pnpm check:sources
+
       - name: Create the draft release
         env:
           GH_TOKEN: ${{ github.token }}
