@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import BulkExchangeOverlay from '@/hangar/components/BulkExchangeOverlay.vue';
 import { i18n } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import type { Settings } from '@/settings/settings';
@@ -7,7 +6,7 @@ import { vTooltip } from '@/shared/tooltip/tooltip';
 import type { MissingCredit, PaintRebuyPlan } from '../paint-consultant/calculation';
 import { CHART, COOLDOWN_SOURCE, usePaintWays } from '../paint-consultant/use-paint-ways';
 import type { WayKind } from '../paint-consultant/ways';
-import PaintCartButton from './PaintCartButton.vue';
+import PaintStartButton from './PaintStartButton.vue';
 
 /*
  * The plan of the Paint Discount Consultant as two ways side by side (setting "Layout": "ways"),
@@ -26,7 +25,6 @@ const props = defineProps<{
 }>();
 
 const {
-  pledges,
   usd,
   percent,
   comparison,
@@ -44,11 +42,7 @@ const {
   why,
   waysTitle,
   wayCards,
-  keepPlan,
-  cartFilled,
-  ownPledges,
-  melting,
-  openBulkMeltingSetting,
+  startPlan,
   chart,
 } = usePaintWays(props);
 </script>
@@ -321,57 +315,16 @@ const {
             <span>{{ card.hint }}</span>
           </p>
 
+          <!-- A plan runs only once it was started (#317): its cart and melting are its steps. -->
           <div class="shm-way-actions shm-consultant-cart">
-            <template v-if="card.way.kind === 'buy'">
-              <PaintCartButton
-                v-if="card.way.plan"
-                :lines="card.lines"
-                @filled="keepPlan(card.way.plan, 'buy')"
-              />
-              <button v-else type="button" class="shm-button" disabled>
-                <SvgIcon name="basket-shopping" />
-                {{ i18n.t('consultant.ways.needsMore', [usd(card.way.missing)]) }}
-              </button>
-            </template>
-            <template v-else>
-              <PaintCartButton
-                :lines="card.lines"
-                :label="i18n.t('consultant.ways.fillCart')"
-                @filled="keepPlan(plan, 'melt')"
-              />
-              <!-- Bulk melting (experimental): after the cart was filled, before paying. -->
-              <template v-if="cartFilled && ownPledges.length">
-                <template v-if="settings.bulkMelting">
-                  <button
-                    v-tooltip="i18n.t('consultant.meltHintReady')"
-                    type="button"
-                    class="shm-button is-danger"
-                    @click="melting = true"
-                  >
-                    <SvgIcon name="triangle-exclamation" />
-                    {{ i18n.n('consultant.meltOwn', ownPledges.length) }}
-                  </button>
-                  <BulkExchangeOverlay
-                    v-if="melting"
-                    :pledges="ownPledges"
-                    :hangar="pledges"
-                    :skipped="0"
-                    :extra-consent="i18n.t('consultant.meltConsent')"
-                    @close="melting = false"
-                  />
-                </template>
-                <button
-                  v-else
-                  v-tooltip="i18n.t('bulkExchange.disabledHint')"
-                  type="button"
-                  class="shm-button"
-                  @click="openBulkMeltingSetting"
-                >
-                  <SvgIcon name="gear" />
-                  {{ i18n.t('bulkExchange.disabled') }}
-                </button>
-              </template>
-            </template>
+            <PaintStartButton
+              v-if="!card.impossible"
+              @start="startPlan(card.way.kind === 'buy' ? card.way.plan : plan, card.way.kind)"
+            />
+            <button v-else type="button" class="shm-button" disabled>
+              <SvgIcon name="route" />
+              {{ i18n.t('consultant.ways.needsMore', [usd(card.way.missing)]) }}
+            </button>
           </div>
         </article>
       </div>

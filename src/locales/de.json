@@ -674,6 +674,8 @@
     "stepPacks": "Paint-Pakete und Pledges mit einem Paint neben anderen Items sind noch nicht enthalten.",
     "toCart": "Die $1 Paints in den Warenkorb legen",
     "toCartHint": "Legt die eigenen Paints und die Füll-Paints dieses Plans in deinen RSI-Warenkorb und öffnet ihn. Gekauft wird nichts: Du prüfst den Warenkorb und bezahlst dort.",
+    "start": "Plan starten",
+    "startHint": "Speichert diesen Plan mit seinem Weg und deinen jetzigen Store Credits und zeigt ihn unter „Laufender Plan“ Schritt für Schritt: Warenkorb, Bezahlen und Einschmelzen. Noch kommt nichts in den Warenkorb und nichts wird eingeschmolzen.",
     "cartOccupied": {
       "one": "Dein RSI-Warenkorb enthält schon $1 Artikel. Andere Artikel ändern die Rabattstufe, dann geht der Plan nicht auf – leere den Warenkorb zuerst oder lege die Paints trotzdem hinein.",
       "other": "Dein RSI-Warenkorb enthält schon $1 Artikel. Andere Artikel ändern die Rabattstufe, dann geht der Plan nicht auf – leere den Warenkorb zuerst oder lege die Paints trotzdem hinein."
@@ -688,14 +690,6 @@
       "one": "Das eigene Paint einschmelzen",
       "other": "Die $1 eigenen Paints einschmelzen"
     },
-    "meltHintCart": "Lege die Paints zuerst in den Warenkorb und prüfe ihn dort: Erst dann lassen sich die eigenen Paints hier einschmelzen.",
-    "meltHintReady": "Schmilzt die eigenen Paints dieses Plans auf einmal ein (Mehrfach-Einschmelzen). Öffnet zuerst einen Dialog; prüfe vorher den Warenkorb.",
-    "meltConsent": "Ich habe die Paints dieses Plans in den Warenkorb gelegt und ihn dort geprüft: den Endpreis und dass jedes Paint, das ich jetzt einschmelze, darin liegt.",
-    "meltFirst": {
-      "one": "Das eigene Paint zuerst einschmelzen",
-      "other": "Die $1 eigenen Paints zuerst einschmelzen"
-    },
-    "meltFirstHint": "Schmilzt die eigenen Paints ein, bevor du sie neu kaufst (Weg 2): Ihre Store Credits sind sofort frei, und der Berater merkt sich, welche Paints neu zu kaufen sind. Empfohlen ist der andere Weg: Paints in den Warenkorb legen und zuerst kaufen.",
     "meltFirstConsent": "Ich schmelze diese Paints ein, bevor ich sie neu kaufe: Ich kaufe sie gleich danach – bis dahin garantiert nichts den Preis oder dass sie noch verkauft werden.",
     "fillerTag": "Füll-Paint",
     "skipGiftable": "Verschenkbare Paints auslassen",
@@ -773,7 +767,7 @@
       "statUpfrontHint": "Store Credits, die gebraucht werden, bevor ein Paint eingeschmolzen ist.",
       "stepCartCheck": "Warenkorb füllen und prüfen",
       "stepCartSub": "$1 Paints zu $2",
-      "stepCartPlan": "Warenkorb füllen und Plan speichern",
+      "stepCartPlan": "Warenkorb füllen und prüfen",
       "stepCartPlanSub": "Zeigt, ob jedes Paint gekauft werden kann",
       "stepPay": "Mit Store Credits bezahlen",
       "stepPaySub": "Bevor ein Paint eingeschmolzen ist",
@@ -802,7 +796,6 @@
       "hintSame": "Gleiches Ergebnis, aber deine Paints verlassen den Hangar, bevor die neuen Exemplare gekauft sind.",
       "hintMelt": "Deine Paints verlassen zuerst den Hangar. Der gespeicherte Plan merkt sich, welche neu zu kaufen sind.",
       "needsMore": "Braucht $1 mehr Store Credits",
-      "fillCart": "Warenkorb füllen und Plan speichern",
       "chartTitle": "Deine Store Credits auf dem Weg",
       "chartToday": "heute",
       "chartAfter": "nach 24 h",
@@ -934,8 +927,8 @@
       "footer": "Der Berater prüft bei jedem Aktualisieren deinen Hangar, Warenkorb und deine Store Credits.",
       "discard": "Plan verwerfen",
       "discardConfirm": "Laufenden Plan verwerfen? An deinem Hangar und Warenkorb ändert sich nichts, und zum Einschmelzen markierte Pledges bleiben markiert. Paints, die du zuerst eingeschmolzen und noch nicht neu gekauft hast, verfolgt der Berater dann nicht mehr.",
-      "replaceConfirm": "Ein Plan läuft gerade. Den Warenkorb für diesen neuen Plan zu füllen verwirft ihn – Paints daraus, die du zuerst eingeschmolzen und noch nicht neu gekauft hast, verfolgt der Berater dann nicht mehr.",
-      "replace": "Verwerfen und Warenkorb füllen"
+      "replaceConfirm": "Ein Plan läuft gerade. Diesen neuen Plan zu starten verwirft ihn – Paints daraus, die du zuerst eingeschmolzen und noch nicht neu gekauft hast, verfolgt der Berater dann nicht mehr.",
+      "replace": "Verwerfen und starten"
     },
     "tabs": {
       "running": "Laufender Plan",

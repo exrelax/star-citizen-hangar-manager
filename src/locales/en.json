@@ -674,6 +674,8 @@
     "stepPacks": "Paint packs and pledges with a paint next to other items aren't included yet.",
     "toCart": "Put the $1 paints into the cart",
     "toCartHint": "Puts the own paints and the filler paints of this plan into your RSI cart and opens it. Nothing is bought: you check the cart and pay there.",
+    "start": "Start plan",
+    "startHint": "Saves this plan with its way and your store credit now and shows it under “Running plan”, step by step: the cart, paying and melting. Nothing goes into the cart and nothing is melted yet.",
     "cartOccupied": {
       "one": "Your RSI cart already holds $1 item. Other items change the volume discount tier, so the plan wouldn't add up – empty the cart first, or add the paints anyway.",
       "other": "Your RSI cart already holds $1 items. Other items change the volume discount tier, so the plan wouldn't add up – empty the cart first, or add the paints anyway."
@@ -688,14 +690,6 @@
       "one": "Melt the own paint",
       "other": "Melt the $1 own paints"
     },
-    "meltHintCart": "Put the paints into the cart first, and check it there: only then the own paints can be melted here.",
-    "meltHintReady": "Melts the own paints of this plan at once (bulk melting). Opens a dialog first; check the cart before.",
-    "meltConsent": "I put the paints of this plan into the cart and checked it there: the final price and that every paint I melt now is in it.",
-    "meltFirst": {
-      "one": "Melt the own paint first",
-      "other": "Melt the $1 own paints first"
-    },
-    "meltFirstHint": "Melts the own paints before you buy them again (way 2): their store credit is free right away, and the consultant remembers which paints to buy again. Recommended is the other way: put the paints into the cart and buy first.",
     "meltFirstConsent": "I melt these paints before buying them again: I buy them again right away – nothing guarantees the price or that they are still sold until then.",
     "fillerTag": "Filler",
     "skipGiftable": "Leave out giftable paints",
@@ -773,7 +767,7 @@
       "statUpfrontHint": "Store credit needed before any paint is melted.",
       "stepCartCheck": "Fill the cart and check it",
       "stepCartSub": "$1 paints at $2",
-      "stepCartPlan": "Fill the cart and save the plan",
+      "stepCartPlan": "Fill the cart and check it",
       "stepCartPlanSub": "Shows if every paint can be bought",
       "stepPay": "Pay with store credit",
       "stepPaySub": "Before any paint is melted",
@@ -802,7 +796,6 @@
       "hintSame": "Same result, but your paints leave the hangar before the new copies are bought.",
       "hintMelt": "Your paints leave the hangar first. The saved plan remembers which ones to buy again.",
       "needsMore": "Needs $1 more store credit",
-      "fillCart": "Fill the cart and save the plan",
       "chartTitle": "Your store credit along the way",
       "chartToday": "today",
       "chartAfter": "after 24 h",
@@ -934,8 +927,8 @@
       "footer": "The consultant checks your hangar, cart and store credit on every refresh.",
       "discard": "Discard plan",
       "discardConfirm": "Discard the running plan? Nothing in your hangar or cart changes, and pledges marked to melt stay marked. Paints you melted first and haven’t bought again are no longer tracked.",
-      "replaceConfirm": "A plan is running. Filling the cart for this new plan discards it – paints of it you melted first and haven’t bought again are no longer tracked.",
-      "replace": "Discard it and fill the cart"
+      "replaceConfirm": "A plan is running. Starting this new plan discards it – paints of it you melted first and haven’t bought again are no longer tracked.",
+      "replace": "Discard it and start"
     },
     "tabs": {
       "running": "Running plan",

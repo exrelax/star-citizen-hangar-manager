@@ -1,23 +1,13 @@
 import { PAINT_DISCOUNT_TIERS } from '@/config';
 import { useDemoContext } from '@/demo/use-demo';
 import { formatPercent, formatUsd } from '@/hangar/discount-format';
-import { openTabAt } from '@/hangar/open-tab-at';
-import type { PledgeView } from '@/hangar/pledge-view';
 import { i18n, locale } from '@/i18n';
 import type { IconName } from '@/icons/icon-names';
-import { BULK_MELTING_SETTING_ID } from '@/settings/anchors';
-import { useStored } from '@/storage/use-stored';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import type { MissingCredit, PaintRebuyPlan } from './calculation';
 import { cartLinesOf } from './cart';
-import {
-  currentPlanOf,
-  rebuyPlanItem,
-  demoRebuyPlanItem,
-  rebuyPlanItemOf,
-  storedPlanOf,
-  type PlanWay,
-} from './rebuy-plan-storage';
+import { rebuyPlanItemOf, storedPlanOf, type PlanWay } from './rebuy-plan-storage';
+import { openPaintConsultant } from './consultant-tabs';
 import { usePaintConsultant } from './use-paint-consultant';
 import { cartCardsOf, waysOf, type PaintWay, type WayKind, type WayStep } from './ways';
 
@@ -47,7 +37,7 @@ export const COOLDOWN_SOURCE =
 export const CHART = { width: 720, height: 200, left: 80, right: 660, top: 28, bottom: 168 };
 
 export function usePaintWays(props: PaintWaysProps) {
-  const { pledges, storeItems, accountCredit } = usePaintConsultant();
+  const { storeItems, accountCredit } = usePaintConsultant();
   const demo = useDemoContext();
 
   const usd = (value: number) => formatUsd(value, locale.value);
@@ -383,41 +373,20 @@ export function usePaintWays(props: PaintWaysProps) {
     });
   });
 
-  // ---- Into the cart, then melting (way 2) ----
+  // ---- Starting a plan (#317) ----
 
   /**
-   * Keeps the plan of the way whose paints were put into the cart (#103, #105, #139, #168), with
-   * the way and the store credit it starts from (#245).
+   * Starts the plan of a way (#317): keeps it with the way and the store credit it starts from
+   * (#245); the running plan then offers its cart and melting step by step. The demo keeps a plan
+   * of its own (#131), never the account's.
    */
-  async function keepPlan(plan: PaintRebuyPlan | undefined, way: PlanWay) {
-    if (plan) {
-      await planItem().setValue(storedPlanOf(plan, Date.now(), way, accountCredit.value));
-    }
+  async function startPlan(plan: PaintRebuyPlan | undefined, way: PlanWay) {
+    if (!plan) return;
+    await rebuyPlanItemOf(!!demo.value).setValue(
+      storedPlanOf(plan, Date.now(), way, accountCredit.value),
+    );
+    openPaintConsultant('running');
   }
-
-  // The demo has a kept plan of its own (#131), never the account's.
-  const realPlan = useStored(rebuyPlanItem);
-  const demoPlan = useStored(demoRebuyPlanItem);
-  const storedPlan = computed(() => currentPlanOf(demo.value ? demoPlan.value : realPlan.value));
-  const planItem = () => rebuyPlanItemOf(!!demo.value);
-  /** The cart of melting first was filled: only then its own paints may be melted. */
-  const cartFilled = computed(() => {
-    const stored = storedPlan.value;
-    if (!stored || stored.tier.percent !== props.plan.tier.percent) {
-      return false;
-    }
-    const inCart = new Set(stored.own.map((paint) => paint.pledgeId));
-    return props.plan.own.every((paint) => inCart.has(paint.pledgeId));
-  });
-  const ownPledges = computed(() => {
-    const byId = new Map(pledges.value.map((pledge) => [pledge.id, pledge]));
-    return props.plan.own
-      .map((paint) => byId.get(paint.pledgeId))
-      .filter((pledge): pledge is PledgeView => !!pledge && pledge.isMeltable);
-  });
-  const melting = ref(false);
-  const openBulkMeltingSetting = () =>
-    openTabAt('settings', BULK_MELTING_SETTING_ID, { highlight: true });
 
   // ---- The store credit along the way ----
 
@@ -490,7 +459,6 @@ export function usePaintWays(props: PaintWaysProps) {
     };
   });
   return {
-    pledges,
     usd,
     factor,
     percent,
@@ -511,11 +479,7 @@ export function usePaintWays(props: PaintWaysProps) {
     why,
     waysTitle,
     wayCards,
-    keepPlan,
-    cartFilled,
-    ownPledges,
-    melting,
-    openBulkMeltingSetting,
+    startPlan,
     chart,
   };
 }

@@ -53,9 +53,8 @@ import { usePaintConsultant } from './use-paint-consultant';
  */
 
 /**
- * Whether filling RSI's cart replaces a running plan (#245): provided by the consultant for the
- * cart buttons of a new plan, which ask first then (`PaintCartButton`); the running plan's own
- * buttons provide `() => false`.
+ * Whether starting a new plan replaces a running plan (#245, #317): provided by the consultant for
+ * the "Start plan" buttons of a new plan, which ask first then (`PaintStartButton`).
  */
 export const REPLACES_RUNNING_PLAN: InjectionKey<() => boolean> = Symbol('shm-replaces-plan');
 
