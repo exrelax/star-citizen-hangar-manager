@@ -98,6 +98,16 @@ Built with [WXT](https://wxt.dev), Vue 3 and TypeScript. Setup, commands, dev mo
 the project structure: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Want to help? See
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## How it's made
+
+I build the Hangar Manager with the help of AI: [Claude Code](https://claude.com/claude-code)
+with the models Claude Opus 5.5 and Fable 5.2. The AI writes code to my plans, and I decide what
+gets in. Every change is reviewed and tested against a real hangar before a release, and you can
+see it in the commits, which name Claude as co-author.
+
+The extension itself uses no AI: it sends nothing to an AI service and works only with your RSI
+session in your browser. All of its code is open, so you can check what it does.
+
 ## License
 
 [MIT](LICENSE) © exrelax. Provided "as is", without warranty: actions such as exchanging or
