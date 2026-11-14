@@ -13,6 +13,13 @@ data stays in your browser.
 - **Chrome:** [Star Citizen Hangar Manager in the Chrome Web Store](https://chromewebstore.google.com/detail/star-citizen-hangar-manag/nofhjnkljndooegpllppamacogkikdjg)
 - **Firefox:** [Star Citizen Hangar Manager on Firefox Add-ons](https://addons.mozilla.org/firefox/addon/star-citizen-hangar-manager/)
 
+With Enhanced Safe Browsing on, Chrome warns: "Proceed with caution – This extension is not
+trusted by Enhanced Safe Browsing." This is about the developer account, not the extension:
+Chrome trusts extensions only once their developer has kept to the store's policies for a few
+months, and this account is new (1.0.0 came out on 2026-11-05). Installing is safe: click
+**Continue to install**. The code of every version is open on GitHub, and the warning goes away on
+its own once the account is trusted.
+
 Submitted on 2026-11-05, currently in review:
 
 - **Opera:** "Star Citizen Hangar Manager" on Opera Add-ons, ID `pnlcicdocajlpfaehmgclaonkclfcikm`

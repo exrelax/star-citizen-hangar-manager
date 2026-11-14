@@ -429,6 +429,10 @@ h1 {
   gap: 10px;
 }
 
+.install-hint {
+  font-size: 13px;
+}
+
 .install-notes {
   display: flex;
   flex-wrap: wrap;
