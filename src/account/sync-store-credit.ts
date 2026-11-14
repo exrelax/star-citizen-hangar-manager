@@ -1,3 +1,4 @@
+import { logError, reasonOf } from '@/errors/error-log';
 import { hashOf, recordCheck, recordSync } from '@/storage/meta';
 import { fetchStoreCredit, type StoreCredit } from './store-credit';
 import { storeCreditItem, storeCreditMeta, STORE_CREDIT_VERSION } from './store-credit-storage';
@@ -33,6 +34,7 @@ export function refreshStoreCredit({
       });
     } catch (error) {
       console.warn('[star-citizen-hangar-manager] Store credit unavailable', error);
+      void logError('STORE-CREDIT-FAIL', `Store credit: ${reasonOf(error)}; kept the last read`);
       await recordCheck(storeCreditMeta, { status: 'failed' }, { at: now() });
     }
   })().finally(() => (running = undefined));

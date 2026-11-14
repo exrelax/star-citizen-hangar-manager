@@ -1,3 +1,4 @@
+import { logError } from '@/errors/error-log';
 import {
   GAMES,
   type Game,
@@ -38,7 +39,12 @@ export function parsePledgePage(doc: Document): PledgePage {
 
 function parsePledge(li: HTMLElement): Pledge | undefined {
   const id = Number(inputValue(li, 'js-pledge-id'));
-  if (!Number.isInteger(id) || id <= 0) return undefined;
+  if (!Number.isInteger(id) || id <= 0) {
+    const name = inputValue(li, 'js-pledge-name');
+    if (name)
+      void logError('PARSE-HANGAR-NO-ID', `"${name}" on a My Hangar page: no pledge id; left out`);
+    return undefined;
+  }
 
   const value = inputValue(li, 'js-pledge-value');
   const name = inputValue(li, 'js-pledge-name');

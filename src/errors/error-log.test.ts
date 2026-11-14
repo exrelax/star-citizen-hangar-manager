@@ -36,8 +36,14 @@ describe('withEntry', () => {
 
 describe('logError', () => {
   it('stores errors logged at the same time, and clears them', async () => {
-    await Promise.all([logError('A', 'first', 1), logError('B', 'second', 2)]);
-    expect((await errorLogItem.getValue())?.entries.map((e) => e.code)).toEqual(['A', 'B']);
+    await Promise.all([
+      logError('BB-PAGE-SKIP', 'first', 1),
+      logError('BB-DETAIL-SKIP', 'second', 2),
+    ]);
+    expect((await errorLogItem.getValue())?.entries.map((e) => e.code)).toEqual([
+      'BB-PAGE-SKIP',
+      'BB-DETAIL-SKIP',
+    ]);
     await clearErrorLog();
     expect(await errorLogItem.getValue()).toBeNull();
   });

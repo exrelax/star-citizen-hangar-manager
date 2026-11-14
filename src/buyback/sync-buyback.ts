@@ -196,6 +196,7 @@ export async function enrichBuyback(
       '[star-citizen-hangar-manager] Fleetyards unavailable, buy back ship links missing',
       error,
     );
+    void logError('BB-LINKS-FAIL', `FleetYards: ${reasonOf(error)}; kept the known ship links`);
     return previousLinks;
   });
 }

@@ -1,3 +1,4 @@
+import { logError, reasonOf } from '@/errors/error-log';
 import { SHIP_MATRIX } from '@/config';
 import { settingsItem, withDefaults } from '@/settings/settings';
 import { defineMeta, hashOf, recordCheck, recordSync } from '@/storage/meta';
@@ -107,6 +108,7 @@ export function maybeRefreshShipStatus({
       });
     } catch (cause) {
       console.warn('[star-citizen-hangar-manager] Ship Matrix unavailable', cause);
+      void logError('SHIP-MATRIX-FAIL', `Ship Matrix: ${reasonOf(cause)}; kept the last status`);
       await recordCheck(shipStatusMeta, { status: 'failed' }, { at: now() });
     }
   })().finally(() => (running = undefined));

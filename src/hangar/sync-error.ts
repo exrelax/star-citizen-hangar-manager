@@ -15,7 +15,7 @@ export function syncErrorReport(
   return [
     `Star Citizen Hangar Manager ${context.version}`,
     context.userAgent,
-    `Reading ${error.storage} failed at ${new Date(error.at).toISOString()}`,
+    `${error.code}: reading ${error.storage} failed at ${new Date(error.at).toISOString()}`,
     withoutIds(error.message),
   ].join('\n');
 }

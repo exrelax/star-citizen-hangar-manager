@@ -46,6 +46,8 @@ export const REPOSITORY_LINKS = {
   privacy: `${REPOSITORY_URL}/blob/main/PRIVACY.md`,
   changelog: `${REPOSITORY_URL}/blob/main/CHANGELOG.md`,
   license: `${REPOSITORY_URL}/blob/main/LICENSE`,
+  /** What the codes of the error log mean (#341). */
+  errorCodes: `${REPOSITORY_URL}/blob/main/docs/ERROR_CODES.md`,
 } as const;
 
 /** Pledges per page in the RSI hangar ("My Gear"). Fixed by RSI. */

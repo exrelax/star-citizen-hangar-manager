@@ -1,3 +1,4 @@
+import { logError, reasonOf } from '@/errors/error-log';
 import { PLEDGE_STORE, UPGRADE_TOOL } from '@/config';
 import { RsiSignedOutError } from '@/shared/rsi-api';
 import { withLease } from '@/storage/lease';
@@ -138,6 +139,10 @@ async function readUpgradeTool(
   } catch (cause) {
     if (cause instanceof RsiSignedOutError) return 'signedOut';
     console.warn('[star-citizen-hangar-manager] Ship upgrade tool unavailable', cause);
+    void logError(
+      'STORE-UPGRADES-FAIL',
+      `Ship upgrade tool: ${reasonOf(cause)}; kept the last read`,
+    );
     state.error = cause instanceof Error ? cause.message : String(cause);
     await Promise.all(
       PARTS.map(({ meta }) => recordCheck(meta, { status: 'failed' }, { at: now() })),

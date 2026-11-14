@@ -1,3 +1,5 @@
+import type { ErrorCode } from './codes';
+
 /*
  * The error log (#340): the errors the Hangar Manager handled – a page it couldn't read, an entry
  * it left out – kept in this browser only, for the settings' "Error log" and for bug reports. At
@@ -52,7 +54,7 @@ let writing: Promise<void> = Promise.resolve();
  * Logs a handled error. Never throws: a log that can't be written mustn't break what failed
  * already.
  */
-export function logError(code: string, message: string, at = Date.now()): Promise<void> {
+export function logError(code: ErrorCode, message: string, at = Date.now()): Promise<void> {
   writing = writing
     .then(async () =>
       errorLogItem.setValue(withEntry(await errorLogItem.getValue(), { at, code, message })),

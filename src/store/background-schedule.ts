@@ -1,3 +1,4 @@
+import { logError } from '@/errors/error-log';
 import { onAlarm } from '@/background/dispatch';
 import { PLEDGE_STORE } from '@/config';
 import { browserNotificationsItem } from '@/notifications/browser-permission';
@@ -84,6 +85,9 @@ export async function testReadPledgeStore(): Promise<BackgroundReadResult> {
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    return { status: error instanceof RsiSignedOutError ? 'signedOut' : 'failed', message };
+    const signedOut = error instanceof RsiSignedOutError;
+    if (!signedOut)
+      void logError('STORE-BACKGROUND-FAIL', `Pledge Store in the background: ${message}`);
+    return { status: signedOut ? 'signedOut' : 'failed', message };
   }
 }

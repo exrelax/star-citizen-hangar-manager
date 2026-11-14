@@ -518,6 +518,7 @@
   },
   "errorLog": {
     "intro": "Errors the Hangar Manager handled, newest first: a page it couldn't read, an entry it left out, and what it did instead. Kept in this browser only, the last $1. Copy it into a bug report – the copy holds no pledge or order IDs.",
+    "codesLink": "What the codes mean",
     "copy": "Copy log",
     "clear": "Clear log",
     "clearConfirm": "Clear the error log?",

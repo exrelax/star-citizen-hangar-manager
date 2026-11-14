@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { logError, reasonOf } from '@/errors/error-log';
 import ExternalLinks from '@/hangar/components/ExternalLinks.vue';
 import OrderInfo from '@/orders/OrderInfo.vue';
 import { insuranceLabel } from '@/hangar/insurance';
@@ -119,6 +120,10 @@ async function addToCart() {
     if (!window.open(RSI_CART_PATH, '_blank')) location.assign(RSI_CART_PATH);
   } catch (error) {
     console.error('[star-citizen-hangar-manager] Adding to cart failed', error);
+    void logError(
+      'BB-CART-FAIL',
+      `Buy back pledge #${props.pledge.id} into the cart: ${reasonOf(error)}`,
+    );
     cartError.value =
       error instanceof CartError && error.reason === 'notFound'
         ? i18n.t('buyback.cartNotFound')

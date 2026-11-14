@@ -1,3 +1,4 @@
+import { logError, reasonOf } from '@/errors/error-log';
 import { SITE_DATA } from '@/config';
 import { hashOf, recordCheck, recordSync, type MetaItem, type StorageMeta } from '@/storage/meta';
 import { lastSiteDataReadTime } from './site-data-schedule';
@@ -113,6 +114,7 @@ export function createSiteDataSync<D, S extends { version: number }>(
       return data;
     } catch (error) {
       console.warn(`[star-citizen-hangar-manager] ${source.name} unavailable`, error);
+      void logError('SITE-DATA-FAIL', `${source.name}: ${reasonOf(error)}; kept the last read`);
       await recordCheck(source.meta, { status: 'failed' }, { at: now() });
       return undefined;
     }

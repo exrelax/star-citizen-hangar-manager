@@ -1,4 +1,5 @@
 import { HANGAR_PAGE_SIZE, SYNC_WORK } from '@/config';
+import { logError, reasonOf } from '@/errors/error-log';
 import { hangarSnapshot } from './hangar-storage';
 import { prepareListPages } from './list-pages';
 import { parsePledgePage, type PledgePage } from './parse-pledges';
@@ -66,6 +67,7 @@ export async function prepareHangarSync(
         '[star-citizen-hangar-manager] Ship matrix unavailable, CCU images may be missing',
         error,
       );
+      void logError('HANGAR-IMAGES-FAIL', `Ship Matrix: ${reasonOf(error)}; CCUs without images`);
       return new Map() as ShipImages;
     });
     const pagesOf = await readPages();
@@ -107,6 +109,7 @@ async function storeSnapshot(
       '[star-citizen-hangar-manager] Fleetyards unavailable, ship links may be missing',
       error,
     );
+    void logError('HANGAR-LINKS-FAIL', `FleetYards: ${reasonOf(error)}; kept the known ship links`);
     return previousLinks ?? {};
   });
 

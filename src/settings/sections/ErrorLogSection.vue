@@ -6,6 +6,7 @@ import {
   ERROR_LOG_MAX,
   ERROR_LOG_VERSION,
 } from '@/errors/error-log';
+import { REPOSITORY_LINKS } from '@/config';
 import { i18n } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
@@ -50,7 +51,12 @@ function clear() {
 </script>
 
 <template>
-  <p class="shm-settings-intro">{{ i18n.t('errorLog.intro', [ERROR_LOG_MAX]) }}</p>
+  <p class="shm-settings-intro">
+    {{ i18n.t('errorLog.intro', [ERROR_LOG_MAX]) }}
+    <a :href="REPOSITORY_LINKS.errorCodes" target="_blank" rel="noopener noreferrer">{{
+      i18n.t('errorLog.codesLink')
+    }}</a>
+  </p>
   <SettingsGroup :footer="i18n.n('errorLog.count', count)">
     <template #action>
       <span class="shm-error-log-actions">

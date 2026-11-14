@@ -1,3 +1,4 @@
+import { logError, reasonOf as logReasonOf } from '@/errors/error-log';
 import { postRsiJson } from '@/shared/rsi-api';
 import type { FillerPaint, StorePaint } from './calculation';
 
@@ -166,6 +167,7 @@ export async function addLinesToCart(
       result.added.push(line);
     } catch (error) {
       result.failed.push({ line, reason: error instanceof Error ? error.message : String(error) });
+      void logError('PAINT-CART-FAIL', `Paint "${line.name}" into the cart: ${logReasonOf(error)}`);
     }
   }
   return result;

@@ -518,6 +518,7 @@
   },
   "errorLog": {
     "intro": "Errores que el Hangar Manager ha gestionado, los más recientes primero: una página que no pudo leer, una entrada que omitió y lo que hizo en su lugar. Se guarda solo en este navegador, los últimos $1. Cópialo en un informe de error: la copia no contiene IDs de pledges ni de pedidos.",
+    "codesLink": "Qué significan los códigos",
     "copy": "Copiar registro",
     "clear": "Vaciar registro",
     "clearConfirm": "¿Vaciar el registro de errores?",

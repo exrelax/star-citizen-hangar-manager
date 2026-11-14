@@ -44,7 +44,9 @@ const durationText = computed(() =>
       <p>
         {{ i18n.t('status.syncFailed', [i18n.t(`storage.${syncState.error.storage}.name`)]) }}
       </p>
-      <p class="shm-initial-load-error-message">{{ syncState.error.message }}</p>
+      <p class="shm-initial-load-error-message">
+        {{ syncState.error.code }}: {{ syncState.error.message }}
+      </p>
       <CopyErrorButton class="shm-button" :error="syncState.error" />
     </div>
   </section>

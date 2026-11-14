@@ -115,7 +115,10 @@ function stepResult(id: (typeof steps)[number]['id'], outcome: CheckOutcome) {
 
 const details = computed(() => {
   if (syncState.error && !syncState.running) {
-    return { title: i18n.t('status.syncFailedTitle'), text: syncState.error.message };
+    return {
+      title: i18n.t('status.syncFailedTitle'),
+      text: `${syncState.error.code}: ${syncState.error.message}`,
+    };
   }
   if (syncState.running || !props.smartUpdates) return undefined;
   const lines = steps.flatMap(({ id, meta }) => {
