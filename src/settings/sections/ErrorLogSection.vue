@@ -7,6 +7,7 @@ import {
   ERROR_LOG_VERSION,
 } from '@/errors/error-log';
 import { REPOSITORY_LINKS } from '@/config';
+import { demoErrorLog } from '@/demo/demo-error-log';
 import { i18n } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
@@ -17,17 +18,19 @@ import SettingsGroup from '../SettingsGroup.vue';
 
 /*
  * The error log (#340): the errors the Hangar Manager handled, newest first, read-only, to copy
- * into a bug report. The copy never holds pledge or order ids; the demo mode doesn't show them
- * either (#132).
+ * into a bug report. The copy never holds pledge or order ids. The demo mode shows a made-up log
+ * instead (#132): the real one holds pledge titles and order dates of the account.
  */
 
 const props = defineProps<{ settings: Settings }>();
 
-const log = useStored(errorLogItem);
+const realLog = useStored(errorLogItem);
+const demoLog = demoErrorLog();
+const log = computed(() => (props.settings.demoMode ? demoLog : (realLog.value ?? null)));
 const count = computed(() =>
   log.value?.version === ERROR_LOG_VERSION ? log.value.entries.length : 0,
 );
-const text = computed(() => formatErrorLog(log.value ?? null, props.settings.demoMode));
+const text = computed(() => formatErrorLog(log.value));
 
 const copied = ref(false);
 let timer: ReturnType<typeof setTimeout> | undefined;
@@ -35,7 +38,7 @@ onUnmounted(() => clearTimeout(timer));
 
 async function copy() {
   try {
-    await navigator.clipboard.writeText(formatErrorLog(log.value ?? null, true));
+    await navigator.clipboard.writeText(formatErrorLog(log.value, true));
   } catch (error) {
     console.warn('[star-citizen-hangar-manager] Copying the error log failed', error);
     return;
@@ -46,6 +49,7 @@ async function copy() {
 }
 
 function clear() {
+  if (props.settings.demoMode) return;
   if (confirm(i18n.t('errorLog.clearConfirm'))) void clearErrorLog();
 }
 </script>
@@ -68,10 +72,10 @@ function clear() {
           {{ copied ? i18n.t('status.copied') : i18n.t('errorLog.copy') }}
         </button>
         <button
-          v-tooltip="i18n.t('errorLog.clear')"
+          v-tooltip="settings.demoMode ? i18n.t('storage.demoDisabled') : i18n.t('errorLog.clear')"
           type="button"
           class="shm-button is-danger is-icon"
-          :disabled="!count"
+          :disabled="!count || settings.demoMode"
           :aria-label="i18n.t('errorLog.clear')"
           @click="clear"
         >
