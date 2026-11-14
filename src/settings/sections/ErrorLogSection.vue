@@ -53,9 +53,13 @@ function clear() {
 <template>
   <p class="shm-settings-intro">
     {{ i18n.t('errorLog.intro', [ERROR_LOG_MAX]) }}
-    <a :href="REPOSITORY_LINKS.errorCodes" target="_blank" rel="noopener noreferrer">{{
-      i18n.t('errorLog.codesLink')
-    }}</a>
+    <a
+      class="shm-error-log-codes"
+      :href="REPOSITORY_LINKS.errorCodes"
+      target="_blank"
+      rel="noopener noreferrer"
+      >{{ i18n.t('errorLog.codesLink') }}</a
+    >
   </p>
   <SettingsGroup :footer="i18n.n('errorLog.count', count)">
     <template #action>
@@ -88,6 +92,11 @@ function clear() {
 </template>
 
 <style scoped>
+.shm-error-log-codes {
+  color: var(--shm-accent);
+  white-space: nowrap;
+}
+
 .shm-error-log-actions {
   display: flex;
   gap: 8px;
