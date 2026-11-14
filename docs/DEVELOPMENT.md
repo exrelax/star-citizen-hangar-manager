@@ -239,9 +239,13 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   period on 2026-11-12. Prices that change within hours (warbond, sales) are left out: the
   extension reads them live from RSI's upgrade tool.
   [`site/ships/ships.ts`](../site/ships/ships.ts) writes it (`pnpm site:ships`), run by the website
-  workflow before every build, so at least daily. It continues the committed file, and the
-  workflow commits a changed file back to `main` (as `github-actions[bot]`), so the history lives
-  in the repository. The wiki is read from its structured data – the Bucket table `vehicle`
+  workflow before every build, so at least daily. The history lives on the branch `data/ships`
+  (its only file: `ships.json`): the workflow continues the file of that branch and commits a
+  changed file back to it (as `github-actions[bot]`). It can't commit to `main`, which takes
+  changes only through pull requests. The file on `main` is the snapshot the extension bundles as
+  its fallback and the development build reads; the first run without the branch started from it.
+  To update it, e.g. before a release:
+  `git fetch origin data/ships && git show FETCH_HEAD:ships.json > site/public/data/ships.json`. The wiki is read from its structured data – the Bucket table `vehicle`
   behind its [List of pledge vehicles](https://starcitizen.tools/List_of_pledge_vehicles), with
   `api.php?action=bucket` – and its vehicles are matched to the Ship Matrix ids by name; a ship
   keeps the wiki vehicle it was matched with (`wikiName`), so a dropped name never moves to a

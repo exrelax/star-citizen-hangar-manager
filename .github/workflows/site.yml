@@ -42,7 +42,7 @@ on:
     - cron: '17 4 * * *'
   workflow_dispatch:
 
-# Reads the code and the issues (roadmap), commits the ships' history (data/ships.json, #107),
+# Reads the code and the issues (roadmap), commits the ships' history (branch data/ships, #107),
 # deploys to Pages with an OIDC token and, for a release, starts this workflow on main; nothing
 # else.
 permissions:
@@ -85,24 +85,54 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
+
+      # The ships' history (#107) lives on the branch `data/ships` (its only file: ships.json), not
+      # on main: main is protected and takes changes only through pull requests, so a run can't
+      # commit there. Each run continues the history of that branch; without the branch (the first
+      # run), it continues the file of main, which the extension bundles as its fallback.
+      - name: Read the ships' history
+        id: history
+        # `ls-remote` exits with 2 only if the branch is missing; any other error fails the run, so
+        # a history that can't be read is never started anew from main.
+        run: |
+          found=0
+          git ls-remote --exit-code --heads origin data/ships > /dev/null || found=$?
+          if [ "$found" -eq 0 ]; then
+            git fetch --depth=1 origin refs/heads/data/ships
+            git show FETCH_HEAD:ships.json > site/public/data/ships.json
+            echo "parent=$(git rev-parse FETCH_HEAD)" >> "$GITHUB_OUTPUT"
+          elif [ "$found" -eq 2 ]; then
+            echo 'No branch data/ships yet: continuing the file of main.'
+          else
+            exit "$found"
+          fi
+
       # The ships with their status, "always available" and standard price, and their history
       # (#107): from RSI's Ship Matrix and the Star Citizen Wiki into site/public/data/ships.json,
-      # continuing the committed file. If a source fails or looks broken, this step fails, nothing
-      # is deployed and the last deployment stays.
+      # continuing the history read above. If a source fails or looks broken, this step fails,
+      # nothing is deployed and the last deployment stays.
       - id: ships
         run: pnpm site:ships
 
-      # A change (a new ship, a status, availability or price that changed) is committed to main,
-      # so the history lives in the repository. Pushes with this token start no new run.
+      # A change (a new ship, a status, availability or price that changed) is committed to the
+      # branch `data/ships`, on top of its last commit, without checking it out. Pushes with this
+      # token start no new run.
       - name: Commit the ships' history
         if: steps.ships.outputs.changed == 'true' && github.ref == 'refs/heads/main'
+        env:
+          PARENT: ${{ steps.history.outputs.parent }}
         run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add site/public/data/ships.json
-          git commit -m "chore(site): Update the ships (revision ${{ steps.ships.outputs.revision }})"
-          git pull --rebase origin main
-          git push origin HEAD:main
+          blob=$(git hash-object -w site/public/data/ships.json)
+          tree=$(printf '100644 blob %s\tships.json\n' "$blob" | git mktree)
+          commit=$(
+            GIT_AUTHOR_NAME='github-actions[bot]' \
+            GIT_AUTHOR_EMAIL='41898282+github-actions[bot]@users.noreply.github.com' \
+            GIT_COMMITTER_NAME='github-actions[bot]' \
+            GIT_COMMITTER_EMAIL='41898282+github-actions[bot]@users.noreply.github.com' \
+            git commit-tree "$tree" ${PARENT:+-p "$PARENT"} \
+              -m "chore(site): Update the ships (revision ${{ steps.ships.outputs.revision }})"
+          )
+          git push origin "$commit:refs/heads/data/ships"
 
       # The roadmap reads the issues with this token. The columns of the project board need a token
       # that can read the project: the optional secret ROADMAP_TOKEN (a fine-grained token with

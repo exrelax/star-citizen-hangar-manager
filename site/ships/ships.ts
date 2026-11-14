@@ -24,7 +24,8 @@
  * listed in the log.
  *
  * Run by the website workflow before the build (`pnpm site:ships`, Node runs this file as is). The
- * history continues from the committed file; the workflow commits it back when `revision` changed.
+ * workflow puts the file of the branch `data/ships` here first, so the history continues from it,
+ * and commits it back to that branch when `revision` changed.
  * If a source fails or looks broken (far fewer ships than before), the file is kept and the run
  * fails, so the last deployment stays. A fact a source doesn't give for a ship (e.g. a vehicle
  * the wiki doesn't list) keeps its current period instead of ending it.
