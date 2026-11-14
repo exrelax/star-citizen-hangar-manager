@@ -378,7 +378,8 @@
       "hangar": "Hangar",
       "resetHint": "Todos los ajustes de la demo vuelven a sus valores predeterminados y se borran las marcas de la demo."
     },
-    "on": "Activado"
+    "on": "Activado",
+    "errorLog": "Registro de errores"
   },
   "storage": {
     "title": "Datos guardados",
@@ -514,6 +515,17 @@
     "syncFailedTitle": "Error",
     "copyDetails": "Copiar detalles",
     "copied": "Copiado"
+  },
+  "errorLog": {
+    "intro": "Errores que el Hangar Manager ha gestionado, los más recientes primero: una página que no pudo leer, una entrada que omitió y lo que hizo en su lugar. Se guarda solo en este navegador, los últimos $1. Cópialo en un informe de error: la copia no contiene IDs de pledges ni de pedidos.",
+    "copy": "Copiar registro",
+    "clear": "Vaciar registro",
+    "clearConfirm": "¿Vaciar el registro de errores?",
+    "empty": "Ningún error por ahora.",
+    "count": {
+      "one": "$1 entrada",
+      "other": "$1 entradas"
+    }
   },
   "ccugame": {
     "openInManager": "Abrir en el Hangar Manager (#$1)",

@@ -1,3 +1,4 @@
+import { withoutIds } from '@/errors/error-log';
 import type { SyncError } from './sync-state';
 
 /*
@@ -7,9 +8,6 @@ import type { SyncError } from './sync-state';
  * data; page numbers and HTTP statuses stay.
  */
 
-/** Ids of pledges and orders in an error message, never page numbers or HTTP statuses. */
-const ACCOUNT_IDS = /\d{5,}/g;
-
 export function syncErrorReport(
   error: SyncError,
   context: { version: string; userAgent: string },
@@ -18,6 +16,6 @@ export function syncErrorReport(
     `Star Citizen Hangar Manager ${context.version}`,
     context.userAgent,
     `Reading ${error.storage} failed at ${new Date(error.at).toISOString()}`,
-    error.message.replace(ACCOUNT_IDS, '<id>'),
+    withoutIds(error.message),
   ].join('\n');
 }

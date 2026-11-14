@@ -23,6 +23,7 @@ import { currentIntervalMinutes, recordCheckResult } from './smart-update/backof
 import { isCheckDue, withSmartUpdateLock } from './smart-update/schedule';
 import { announceCheck } from './smart-update/broadcast';
 import { SMART_UPDATE } from '@/config';
+import { logError, reasonOf } from '@/errors/error-log';
 
 const state = reactive({
   /** A full sync is running (of everything, or of `storage`). */
@@ -49,6 +50,7 @@ export interface SyncError {
 /** Logs a failed part of a sync and returns what the status shows of it. */
 function syncErrorOf(storage: StorageId, error: unknown): SyncError {
   console.error(`[star-citizen-hangar-manager] Reading ${storage} failed`, error);
+  void logError('SYNC-FAIL', `Reading ${storage} stopped: ${reasonOf(error)}; kept the last state`);
   return {
     storage,
     message: error instanceof Error ? error.message : String(error),

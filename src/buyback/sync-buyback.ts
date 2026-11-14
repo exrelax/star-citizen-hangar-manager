@@ -1,6 +1,7 @@
 import { BUYBACK_PAGE_SIZE, BUYBACK_RETRY_DELAYS_MS, SYNC_CONCURRENCY, SYNC_WORK } from '@/config';
 import { httpError, isTransient, withRetry } from '@/shared/lib/retry';
 import { narrowingFetchPage, type SkippedPositions } from './narrow-pages';
+import { logError, reasonOf } from '@/errors/error-log';
 import { prepareListPages, type ListPagesOf } from '@/hangar/list-pages';
 import { PLEDGE_CATEGORIES, type Pledge, type PledgeCategory } from '@/hangar/pledge';
 import { resolveShipLinks, type ShipLinks } from '@/hangar/ship-links';
@@ -68,6 +69,11 @@ export async function prepareBuybackSync(
         position.error,
       );
       skipped.push(position);
+      void logError(
+        'BB-PAGE-SKIP',
+        `Buy back${position.category ? ` (${position.category})` : ''} position ` +
+          `${position.position + 1}: ${reasonOf(position.error)}; the pledge there was left out`,
+      );
     }),
     pageSize: BUYBACK_PAGE_SIZE,
     progress,
@@ -172,6 +178,10 @@ export async function enrichBuyback(
         error,
       );
       pledge.detailsFailed = true;
+      void logError(
+        'BB-DETAIL-SKIP',
+        `Buy back pledge #${pledge.id}: ${reasonOf(error)}; kept without its items and price`,
+      );
     }
     progress?.complete(1, SYNC_WORK.detailPage);
   });
@@ -248,12 +258,16 @@ export function loadBuybackDetails(
   if (!reading) {
     reading = fetchDetails(id)
       .then((details) => rememberBuybackDetails(id, details))
-      .catch((error: unknown) =>
+      .catch((error: unknown) => {
         console.warn(
           `[star-citizen-hangar-manager] Details of buy back pledge ${id} unavailable`,
           error,
-        ),
-      )
+        );
+        void logError(
+          'BB-DETAIL-OPEN',
+          `Buy back pledge #${id}: ${reasonOf(error)} when opened; read again next time`,
+        );
+      })
       .finally(() => loading.delete(id));
     loading.set(id, reading);
   }

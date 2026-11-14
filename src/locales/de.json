@@ -378,7 +378,8 @@
       "hangar": "Hangar",
       "resetHint": "Alle Einstellungen der Demo zurück auf ihre Standardwerte; die Markierungen der Demo werden gelöscht."
     },
-    "on": "An"
+    "on": "An",
+    "errorLog": "Fehlerprotokoll"
   },
   "storage": {
     "title": "Gespeicherte Daten",
@@ -514,6 +515,17 @@
     "syncFailedTitle": "Fehler",
     "copyDetails": "Details kopieren",
     "copied": "Kopiert"
+  },
+  "errorLog": {
+    "intro": "Fehler, die der Hangar Manager abgefangen hat, die neuesten zuerst: eine Seite, die er nicht lesen konnte, ein Eintrag, den er ausgelassen hat, und was er stattdessen getan hat. Nur in diesem Browser gespeichert, die letzten $1. Kopiere es in einen Fehlerbericht – die Kopie enthält keine Pledge- oder Order-IDs.",
+    "copy": "Protokoll kopieren",
+    "clear": "Protokoll leeren",
+    "clearConfirm": "Fehlerprotokoll leeren?",
+    "empty": "Bisher keine Fehler.",
+    "count": {
+      "one": "$1 Eintrag",
+      "other": "$1 Einträge"
+    }
   },
   "ccugame": {
     "openInManager": "Im Hangar Manager öffnen (#$1)",
