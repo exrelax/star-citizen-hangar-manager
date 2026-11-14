@@ -35,10 +35,12 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      # Node runs the TypeScript files as they are; nothing to install.
+      # Node runs the TypeScript files as they are; nothing to install. setup-node would cache
+      # pnpm's store on its own (`packageManager` in package.json), but pnpm isn't set up here.
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
+          package-manager-cache: false
 
       - name: Check the stores
         env:
