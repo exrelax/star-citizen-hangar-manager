@@ -155,6 +155,31 @@ it on GitHub, then upload the zips to the stores (texts and images in [`store/`]
 
 `node scripts/release-notes.js 1.0.0` shows locally what the release notes will be.
 
+### Store review
+
+Each release has a publish issue ("Publish 1.1.1") with one sub-issue per store. A store issue has
+the label `store-review` and names its store and version on lines of their own (`Id:` only where
+the store's id isn't the one in
+[`scripts/store-review/stores.ts`](../scripts/store-review/stores.ts), e.g. Edge's):
+
+```
+Store: chrome
+Version: 1.1.1
+```
+
+`chrome`, `firefox`, `opera` and `edge` are known; without `Version:` any listing counts (the first
+approval). Once its review is requested, set the issue to "In review" on the board. The
+[store review workflow](../.github/workflows/store-review.yml) checks the stores every hour: when
+the store lists that version or a newer one, it sets the issue to "Done", comments the version
+seen and closes it. A store that answers unexpectedly fails the run (GitHub sends an email) and
+moves nothing. It also comments on #333 once Chrome reports that Enhanced Safe Browsing trusts the
+extension.
+
+The board needs the secret `PROJECT_TOKEN` (a fine-grained token of the board's owner with read
+and write access to projects); without it the workflow only reports. Locally,
+`GITHUB_TOKEN=… PROJECT_TOKEN=… node scripts/store-review/store-review.ts --dry-run` shows what it
+would do.
+
 The sources zip holds what the build needs and nothing else: `zip.excludeSources` in
 [`wxt.config.ts`](../wxt.config.ts) leaves out the store texts, the website (but not
 `site/public/`, whose data files the extension imports) and local files (`*.local.*`).

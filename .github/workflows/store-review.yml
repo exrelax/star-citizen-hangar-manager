@@ -1,0 +1,48 @@
+# Moves the store issues (label `store-review`) on the project board from "In review" to "Done"
+# once their store has published the version, comments the version seen and closes them (#350).
+# See scripts/store-review/store-review.ts. Runs hourly and by hand ("Run workflow"; "dry run"
+# only reports).
+#
+# The board of a user can't be changed with the workflow's own token, so it needs the secret
+# PROJECT_TOKEN: a fine-grained token of the board's owner with read and write access to
+# projects. Without it the run only reports what it would do.
+name: Store review
+
+on:
+  schedule:
+    # A few minutes past the hour: the full hour is GitHub's busiest time for scheduled runs.
+    - cron: '17 * * * *'
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: Only report, change nothing
+        type: boolean
+        default: false
+
+# Comments on and closes the issues; the board is changed with PROJECT_TOKEN.
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: store-review
+  cancel-in-progress: false
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+
+      # Node runs the TypeScript files as they are; nothing to install.
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+
+      - name: Check the stores
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN }}
+          DRY_RUN: ${{ inputs.dry-run && '--dry-run' || '' }}
+        run: node scripts/store-review/store-review.ts $DRY_RUN
