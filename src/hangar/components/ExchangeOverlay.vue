@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { logError, reasonOf } from '@/errors/error-log';
+import { capitalized, logError, reasonOf } from '@/errors/error-log';
+import { describePledge } from '@/hangar/pledge-kind';
 import { useDemoContext } from '@/demo/use-demo';
 import { EXCHANGE_ATTENTION_DELAY_MS } from '@/config';
 import { i18n, locale } from '@/i18n';
@@ -110,7 +111,13 @@ async function submit() {
     await reclaimPledge(props.pledge.id, password.value);
     done.value = true;
   } catch (failure) {
-    void logError('HANGAR-EXCHANGE-FAIL', `Pledge #${props.pledge.id}: ${reasonOf(failure)}`);
+    void logError(
+      'HANGAR-EXCHANGE-FAIL',
+      `${capitalized(describePledge(props.pledge))}: ${reasonOf(failure)}`,
+      {
+        error: failure,
+      },
+    );
     error.value = i18n.t('exchange.failed', [
       failure instanceof Error ? failure.message : String(failure),
     ]);

@@ -80,7 +80,9 @@ onMounted(async () => {
     }
   } catch (failure) {
     console.error('[star-citizen-hangar-manager] Loading the order failed', failure);
-    void logError('ORDER-LOAD-FAIL', `Order ${props.order.id}: ${reasonOf(failure)}`);
+    void logError('ORDER-LOAD-FAIL', `Order ${props.order.id}: ${reasonOf(failure)}`, {
+      error: failure,
+    });
     error.value = i18n.t('order.failed', [
       failure instanceof Error ? failure.message : String(failure),
     ]);

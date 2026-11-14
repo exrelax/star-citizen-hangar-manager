@@ -15,11 +15,22 @@ import type { FetchBuybackPage } from './sync-buyback';
  * skipped position again.
  */
 
+/** A page that failed while narrowing down (#339): its number, its size and why. */
+export interface FailedAttempt {
+  page: number;
+  size: number;
+  error: unknown;
+  at: number;
+}
+
 /** Positions (0-based, in RSI's list) skipped while reading a list. */
 export interface SkippedPositions {
   category?: PledgeCategory;
   position: number;
+  /** Why the page of this one pledge failed. */
   error: unknown;
+  /** The larger pages that failed before, from the full one down (#342). */
+  attempts: FailedAttempt[];
 }
 
 /** Whether a failure is the page's own, not the session's or the connection's: a server error. */
@@ -48,6 +59,7 @@ export function narrowingFetchPage(
     level: number,
     category: PledgeCategory | undefined,
     original: unknown,
+    attempts: FailedAttempt[],
   ): Promise<{ page: BuybackListPage; ended: boolean }> {
     const size = sizes[level + 1]!;
     const parts = sizes[level]! / size;
@@ -69,7 +81,8 @@ export function narrowingFetchPage(
       } catch (error) {
         if (!isBrokenPage(error)) throw error;
         if (size > 1) {
-          const inner = await narrow(from, level + 1, category, error);
+          const failed = { page: from / size + 1, size, error, at: Date.now() };
+          const inner = await narrow(from, level + 1, category, error, [...attempts, failed]);
           pledges.push(...inner.page.pledges);
           tokens ??= inner.page.tokens;
           total = Math.max(total, inner.page.lastPage * size);
@@ -78,7 +91,7 @@ export function narrowingFetchPage(
           continue;
         }
         if (++skipped > maxSkipped) throw original;
-        onSkip({ category, position: from, error });
+        onSkip({ category, position: from, error, attempts });
         total = Math.max(total, from + 1);
       }
     }
@@ -96,7 +109,8 @@ export function narrowingFetchPage(
       return await fetchPage(page, category, pageSize);
     } catch (error) {
       if (!isBrokenPage(error) || pageSize !== full || sizes.length < 2) throw error;
-      const { page: narrowed } = await narrow((page - 1) * full, 0, category, error);
+      const first = { page, size: full, error, at: Date.now() };
+      const { page: narrowed } = await narrow((page - 1) * full, 0, category, error, [first]);
       return narrowed;
     }
   };

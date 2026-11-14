@@ -89,7 +89,7 @@ async function fill() {
 
 function report(failure: unknown) {
   console.error('[star-citizen-hangar-manager] Filling the cart failed', failure);
-  void logError('PAINT-CART-FAIL', `Filling the cart: ${reasonOf(failure)}`);
+  void logError('PAINT-CART-FAIL', `Filling the cart: ${reasonOf(failure)}`, { error: failure });
   error.value = failure instanceof Error ? failure.message : String(failure);
   state.value = 'idle';
 }

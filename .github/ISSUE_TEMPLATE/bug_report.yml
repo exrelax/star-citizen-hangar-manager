@@ -70,6 +70,12 @@ body:
         - Français
         - Español
   - type: textarea
+    id: error-log
+    attributes:
+      label: Error log
+      description: In the Hangar Manager's settings under "Error log", click "Copy log" and paste it here. It names the extension's version, the pledges and the pages the errors happened on, but holds no pledge or order IDs. What the codes mean is explained in [docs/ERROR_CODES.md](https://github.com/exrelax/star-citizen-hangar-manager/blob/main/docs/ERROR_CODES.md).
+      render: text
+  - type: textarea
     id: console
     attributes:
       label: Console messages
@@ -87,5 +93,5 @@ body:
       options:
         - label: I searched the existing issues and this bug isn't reported yet.
           required: true
-        - label: This report contains no personal data (pledge or order IDs, names, addresses, passwords).
+        - label: This report contains no personal data (pledge or order IDs, names, addresses, passwords). Pledge names in the error log are fine.
           required: true

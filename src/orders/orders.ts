@@ -1,4 +1,5 @@
 import { logError } from '@/errors/error-log';
+import { outlineOf } from '@/errors/outline';
 import { parseAmount, parseDate } from '@/hangar/parse-pledges';
 import { normalizeSearchText } from '@/hangar/search';
 
@@ -161,6 +162,7 @@ export function parseBillingPage(doc: Document): { orders: Order[]; lastPage: nu
           void logError(
             'PARSE-ORDER-NO-ID',
             `Order of ${placed} in the billing list: no order id; left out`,
+            { outline: outlineOf(li) },
           );
         return undefined;
       }

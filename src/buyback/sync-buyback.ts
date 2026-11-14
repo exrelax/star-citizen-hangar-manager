@@ -1,7 +1,7 @@
 import { BUYBACK_PAGE_SIZE, BUYBACK_RETRY_DELAYS_MS, SYNC_CONCURRENCY, SYNC_WORK } from '@/config';
-import { httpError, isTransient, withRetry } from '@/shared/lib/retry';
+import { httpError, isTransient, urlOf, withRetry, withUrl } from '@/shared/lib/retry';
 import { narrowingFetchPage, type SkippedPositions } from './narrow-pages';
-import { logError, reasonOf } from '@/errors/error-log';
+import { capitalized, logError, reasonOf } from '@/errors/error-log';
 import { prepareListPages, type ListPagesOf } from '@/hangar/list-pages';
 import { PLEDGE_CATEGORIES, type Pledge, type PledgeCategory } from '@/hangar/pledge';
 import { resolveShipLinks, type ShipLinks } from '@/hangar/ship-links';
@@ -10,6 +10,7 @@ import { mapWithConcurrency } from '@/shared/lib/pool';
 import {
   BUYBACK_SNAPSHOT_VERSION,
   buybackShipNames,
+  describeBuybackPledge,
   hasSeveralItems,
   type BuybackPledge,
   type BuybackSnapshot,
@@ -61,6 +62,8 @@ export async function prepareBuybackSync(
   const { fetchPage = fetchBuybackPage, progress, concurrency } = deps;
   // A page RSI can't render is narrowed down to the pledge that breaks it (#339).
   const skipped: SkippedPositions[] = [];
+  // The last read names the pledges around a skipped one (#342); read once, when needed.
+  let previous: Promise<BuybackSnapshot | null> | undefined;
   const readPages = await prepareListPages({
     fetchPage: narrowingFetchPage(fetchPage, (position) => {
       console.warn(
@@ -69,11 +72,8 @@ export async function prepareBuybackSync(
         position.error,
       );
       skipped.push(position);
-      void logError(
-        'BB-PAGE-SKIP',
-        `Buy back${position.category ? ` (${position.category})` : ''} position ` +
-          `${position.position + 1}: ${reasonOf(position.error)}; the pledge there was left out`,
-      );
+      previous ??= buybackSnapshot.getValue();
+      void logSkipped(position, previous);
     }),
     pageSize: BUYBACK_PAGE_SIZE,
     progress,
@@ -85,6 +85,50 @@ export async function prepareBuybackSync(
     progress?.complete(0, SYNC_WORK.finish);
     return snapshot;
   };
+}
+
+/**
+ * Logs a skipped pledge (#339) as the error closest to the cause, with the larger pages that
+ * failed before it as its sub-errors, and – for the full list – the pledges the last read had at
+ * and around its position (#342).
+ */
+async function logSkipped(
+  position: SkippedPositions,
+  previous: Promise<BuybackSnapshot | null>,
+): Promise<void> {
+  let near = '';
+  if (!position.category) {
+    const pledges = (await previous.catch(() => null))?.pledges ?? [];
+    const around = (offset: number) => pledges[position.position + offset];
+    const there = around(0);
+    if (there) {
+      const before = around(-1);
+      const after = around(1);
+      near =
+        `; the last read had ${describeBuybackPledge(there)} there` +
+        (before ? `, after "${before.title}"` : '') +
+        (after ? `, before "${after.title}"` : '');
+    }
+  }
+  const list = position.category ? ` (${position.category})` : '';
+  await logError(
+    'BB-PAGE-SKIP',
+    `Buy back${list} position ${position.position + 1}, page of 1 pledge: ` +
+      `${reasonOf(position.error)}; the pledge there was left out${near}`,
+    {
+      error: position.error,
+      subErrors: position.attempts.map((attempt) => {
+        const url = urlOf(attempt.error);
+        return {
+          at: attempt.at,
+          message:
+            `Buy back${list} page ${attempt.page} of ${attempt.size} pledges: ` +
+            reasonOf(attempt.error),
+          ...(url && { url }),
+        };
+      }),
+    },
+  );
 }
 
 /** Merges the pages read, adds the details and stores the result as the new snapshot. */
@@ -180,7 +224,9 @@ export async function enrichBuyback(
       pledge.detailsFailed = true;
       void logError(
         'BB-DETAIL-SKIP',
-        `Buy back pledge #${pledge.id}: ${reasonOf(error)}; kept without its items and price`,
+        `${capitalized(describeBuybackPledge(pledge))}: ${reasonOf(error)}; ` +
+          'kept without its items and price',
+        { error },
       );
     }
     progress?.complete(1, SYNC_WORK.detailPage);
@@ -196,7 +242,9 @@ export async function enrichBuyback(
       '[star-citizen-hangar-manager] Fleetyards unavailable, buy back ship links missing',
       error,
     );
-    void logError('BB-LINKS-FAIL', `FleetYards: ${reasonOf(error)}; kept the known ship links`);
+    void logError('BB-LINKS-FAIL', `FleetYards: ${reasonOf(error)}; kept the known ship links`, {
+      error,
+    });
     return previousLinks;
   });
 }
@@ -234,8 +282,10 @@ export async function fetchBuybackDetails(id: number): Promise<BuybackDetails> {
 export async function fetchHtml(url: string, what: string): Promise<string> {
   return withRetry(
     async () => {
-      const response = await fetch(url, { credentials: 'include' });
-      if (!response.ok) throw httpError(what, response);
+      const response = await fetch(url, { credentials: 'include' }).catch((error: unknown) => {
+        throw withUrl(error, url);
+      });
+      if (!response.ok) throw httpError(what, response, url);
       return response.text();
     },
     BUYBACK_RETRY_DELAYS_MS,
@@ -264,10 +314,15 @@ export function loadBuybackDetails(
           `[star-citizen-hangar-manager] Details of buy back pledge ${id} unavailable`,
           error,
         );
-        void logError(
-          'BB-DETAIL-OPEN',
-          `Buy back pledge #${id}: ${reasonOf(error)} when opened; read again next time`,
-        );
+        void buybackSnapshot.getValue().then((snapshot) => {
+          const pledge = snapshot?.pledges.find((candidate) => candidate.id === id);
+          const which = pledge ? describeBuybackPledge(pledge) : `buy back pledge #${id}`;
+          return logError(
+            'BB-DETAIL-OPEN',
+            `${capitalized(which)}: ${reasonOf(error)} when opened; read again next time`,
+            { error },
+          );
+        });
       })
       .finally(() => loading.delete(id));
     loading.set(id, reading);

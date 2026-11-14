@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import {
   clearErrorLog,
+  entryOf,
+  isUnexpected,
   errorLogItem,
   formatErrorLog,
   logError,
@@ -37,8 +39,8 @@ describe('withEntry', () => {
 describe('logError', () => {
   it('stores errors logged at the same time, and clears them', async () => {
     await Promise.all([
-      logError('BB-PAGE-SKIP', 'first', 1),
-      logError('BB-DETAIL-SKIP', 'second', 2),
+      logError('BB-PAGE-SKIP', 'first', { at: 1 }),
+      logError('BB-DETAIL-SKIP', 'second', { at: 2 }),
     ]);
     expect((await errorLogItem.getValue())?.entries.map((e) => e.code)).toEqual([
       'BB-PAGE-SKIP',
@@ -79,5 +81,61 @@ describe('reasonOf', () => {
     expect(reasonOf(new Error('Loading buy back pledge 1 failed: HTTP 404'))).toBe('HTTP 404');
     expect(reasonOf(new Error('are you still logged in?'))).toBe('are you still logged in?');
     expect(reasonOf('text')).toBe('text');
+  });
+});
+
+describe('entryOf and formatErrorLog (#342)', () => {
+  it('keeps the URL of a failed request, and the stack only of an unexpected error', () => {
+    const failed = Object.assign(new Error('Loading buy back page 6 failed: HTTP 500'), {
+      url: 'https://rsi.test/bb?page=6',
+    });
+    expect(entryOf('BB-PAGE-SKIP', 'm', { error: failed, at: 1 })).toEqual({
+      at: 1,
+      code: 'BB-PAGE-SKIP',
+      message: 'm',
+      url: 'https://rsi.test/bb?page=6',
+    });
+    const mistake = new TypeError("Cannot read properties of undefined (reading 'title')");
+    mistake.stack = [
+      'TypeError: Cannot read properties of undefined',
+      '    at mainItem (chrome-extension://abcdef/content-scripts/hangar.js:13:20418)',
+      '    at enrich (chrome-extension://abcdef/content-scripts/hangar.js:13:24102)',
+    ].join('\n');
+    expect(entryOf('SYNC-UNEXPECTED', 'm', { error: mistake, at: 1 }).stack).toEqual([
+      'at mainItem (content-scripts/hangar.js:13:20418)',
+      'at enrich (content-scripts/hangar.js:13:24102)',
+    ]);
+    expect(isUnexpected(new TypeError('Failed to fetch'))).toBe(false);
+  });
+
+  it('marks the entry closest to the cause and lists its sub-errors below it', () => {
+    const at = new Date(2026, 10, 14, 15, 0, 0).getTime();
+    const log = withEntry(null, {
+      at,
+      code: 'BB-PAGE-SKIP',
+      message: 'Buy back position 8, page of 1 pledge: HTTP 500',
+      url: 'https://rsi.test/bb?page=8&pagesize=1',
+      subErrors: [
+        { at, message: 'Buy back page 1 of 250 pledges: HTTP 500', url: 'https://rsi.test/a' },
+      ],
+    });
+    expect(formatErrorLog(log)).toBe(
+      [
+        '2026-11-14 15:00:00 ► BB-PAGE-SKIP Buy back position 8, page of 1 pledge: HTTP 500',
+        '    URL: https://rsi.test/bb?page=8&pagesize=1',
+        '  ↳ 2026-11-14 15:00:00 Buy back page 1 of 250 pledges: HTTP 500',
+        '      URL: https://rsi.test/a',
+      ].join('\n'),
+    );
+  });
+
+  it("doesn't count entries with sub-errors as repeats", () => {
+    const entry = {
+      at: 1,
+      code: 'BB-PAGE-SKIP',
+      message: 'm',
+      subErrors: [{ at: 1, message: 's' }],
+    };
+    expect(withEntry(withEntry(null, entry), entry).entries).toHaveLength(2);
   });
 });

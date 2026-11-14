@@ -72,6 +72,15 @@ describe('narrowingFetchPage (#339)', () => {
     ]);
   });
 
+  it('tells the larger pages that failed before the skipped pledge (#342)', async () => {
+    const { skipped } = await read(50, [7]);
+    expect(skipped[0]?.attempts.map(({ page, size }) => `${size}:${page}`)).toEqual([
+      '20:1',
+      '10:1',
+      '5:2',
+    ]);
+  });
+
   it('handles a broken pledge at the start and at the end of a page', async () => {
     expect((await read(50, [0])).skipped.map((s) => s.position)).toEqual([0]);
     const end = await read(50, [19]);

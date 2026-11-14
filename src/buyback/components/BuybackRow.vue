@@ -122,7 +122,9 @@ async function addToCart() {
     console.error('[star-citizen-hangar-manager] Adding to cart failed', error);
     void logError(
       'BB-CART-FAIL',
-      `Buy back pledge #${props.pledge.id} into the cart: ${reasonOf(error)}`,
+      `Buy back pledge #${props.pledge.id} "${props.pledge.title}" (contains ` +
+        `"${props.pledge.contained}") into the cart: ${reasonOf(error)}`,
+      { error },
     );
     cartError.value =
       error instanceof CartError && error.reason === 'notFound'

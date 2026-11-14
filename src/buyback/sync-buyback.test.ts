@@ -6,6 +6,7 @@ import { SyncProgressTracker } from '@/hangar/sync-progress';
 import { buybackSnapshot } from './buyback-storage';
 import { runBuybackSmartUpdate } from './run';
 import { buybackMeta } from './buyback-storage';
+import { errorLogItem } from '@/errors/error-log';
 import { loadBuybackDetails, syncBuyback, type FetchBuybackPage } from './sync-buyback';
 
 const pledge = (id: number, contained = `Item ${id}`): BuybackPledge => ({
@@ -188,5 +189,57 @@ describe('loadBuybackDetails', () => {
     });
     await loadBuybackDetails(30, async () => Promise.reject(new Error('HTTP 404')));
     expect((await buybackSnapshot.getValue())?.pledges[0]?.detailsFailed).toBe(true);
+  });
+});
+
+describe('a skipped pledge in the error log (#339, #342)', () => {
+  it('names the pages that failed before, their URLs and the pledges the last read had there', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const total = 300;
+    const titled = (id: number): BuybackPledge => ({ ...pledge(id), title: `Pledge ${id}` });
+    // The last read had every pledge; RSI now fails to show the one at position 7.
+    await buybackSnapshot.setValue({
+      version: BUYBACK_SNAPSHOT_VERSION,
+      syncedAt: '2026-10-01T00:00:00.000Z',
+      pledges: Array.from({ length: total }, (_, index) => titled(total - index)),
+    });
+    const fetchPage: FetchBuybackPage = async (page, category, size = 250) => {
+      if (category) return { pledges: [], lastPage: 1 };
+      const from = (page - 1) * size;
+      if (from <= 7 && 7 < from + size) {
+        const error = new Error(`Loading buy back page ${page} failed: HTTP 500`);
+        throw Object.assign(error, {
+          status: 500,
+          url: `https://rsi.test/bb?page=${page}&pagesize=${size}`,
+        });
+      }
+      const to = Math.min(from + size, total);
+      return {
+        pledges: Array.from({ length: Math.max(0, to - from) }, (_, index) =>
+          titled(total - from - index),
+        ),
+        lastPage: Math.ceil(total / size),
+      };
+    };
+    await syncBuyback({
+      fetchPage,
+      fetchDetails: async () => ({ items: [] }),
+      fetchShipLinks: async () => ({}),
+    });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    const stored = await buybackSnapshot.getValue();
+    expect(stored?.unread).toBe(1);
+    const [entry] = (await errorLogItem.getValue())?.entries ?? [];
+    expect(entry?.code).toBe('BB-PAGE-SKIP');
+    expect(entry?.message).toContain('position 8, page of 1 pledge: HTTP 500');
+    expect(entry?.message).toContain('"Pledge 293"');
+    expect(entry?.message).toContain('after "Pledge 294", before "Pledge 292"');
+    expect(entry?.url).toBe('https://rsi.test/bb?page=8&pagesize=1');
+    expect(entry?.subErrors?.map((sub) => sub.url)).toEqual([
+      'https://rsi.test/bb?page=1&pagesize=250',
+      'https://rsi.test/bb?page=1&pagesize=50',
+      'https://rsi.test/bb?page=1&pagesize=10',
+    ]);
   });
 });

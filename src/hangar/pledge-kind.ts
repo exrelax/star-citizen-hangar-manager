@@ -16,6 +16,10 @@ export function pledgeKind(pledge: PledgeView): PledgeKind {
   return pledge.reward ? 'reward' : 'other';
 }
 
+/** A pledge for the error log (#342): its id, title and kind, e.g. `pledge #123456 "…" (ccu)`. */
+export const describePledge = (pledge: PledgeView): string =>
+  `pledge #${pledge.id} "${pledge.title}" (${pledgeKind(pledge)})`;
+
 /**
  * The icon of a row's primary kind (see row.css), for hangar and buy back pledges: CCU, paint,
  * game package (RSI's category), ship (also upgraded ships and $0 ships), reward – and the game

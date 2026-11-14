@@ -87,7 +87,9 @@ export async function testReadPledgeStore(): Promise<BackgroundReadResult> {
     const message = error instanceof Error ? error.message : String(error);
     const signedOut = error instanceof RsiSignedOutError;
     if (!signedOut)
-      void logError('STORE-BACKGROUND-FAIL', `Pledge Store in the background: ${message}`);
+      void logError('STORE-BACKGROUND-FAIL', `Pledge Store in the background: ${message}`, {
+        error,
+      });
     return { status: signedOut ? 'signedOut' : 'failed', message };
   }
 }

@@ -14,10 +14,14 @@ describe('demoErrorLog', () => {
     expect(Math.max(...times)).toBeLessThan(now);
   });
 
-  it('shows a skipped pledge and a repeated error', () => {
+  it('shows a narrowed page with its sub-errors, a repeated error, URL, stack and outline', () => {
     const text = formatErrorLog(log);
-    expect(text).toContain('BB-PAGE-SKIP');
+    expect(text).toContain('► BB-PAGE-SKIP');
+    expect(text).toContain('↳');
     expect(text).toContain('(×3)');
+    expect(text).toContain('URL: https://');
+    expect(text).toContain('at mainItem');
+    expect(text).toContain('Outline:');
   });
 
   it('holds no real-looking pledge ids', () => {

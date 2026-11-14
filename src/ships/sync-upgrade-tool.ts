@@ -142,6 +142,7 @@ async function readUpgradeTool(
     void logError(
       'STORE-UPGRADES-FAIL',
       `Ship upgrade tool: ${reasonOf(cause)}; kept the last read`,
+      { error: cause },
     );
     state.error = cause instanceof Error ? cause.message : String(cause);
     await Promise.all(

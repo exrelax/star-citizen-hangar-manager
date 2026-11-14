@@ -25,18 +25,50 @@ export async function withRetry<T>(
 /** An error of a failed request whose message ends in "HTTP <status>", as the checks expect. */
 export interface HttpError extends Error {
   status: number;
+  /** The full URL that was requested (#342). */
+  url?: string;
   /** How long the server asked to wait (`Retry-After`), in ms. */
   retryAfterMs?: number;
 }
 
-/** The error of a response that isn't ok: "<what> failed: HTTP <status>", with its `Retry-After`. */
-export function httpError(what: string, response: Response): HttpError {
-  const error = new Error(`${what} failed: HTTP ${response.status}`) as HttpError;
+/** The full URL of a request, also of a path relative to the page. */
+export function absoluteUrl(url: string): string {
+  try {
+    return new URL(url, globalThis.location?.href).href;
+  } catch {
+    return url;
+  }
+}
+
+/** `error` with the URL of the request it failed on (#342), e.g. for "Failed to fetch". */
+export function withUrl<T>(error: T, url: string): T {
+  if (error instanceof Error && !(error as Partial<HttpError>).url) {
+    (error as Partial<HttpError>).url = absoluteUrl(url);
+  }
+  return error;
+}
+
+/** The URL of the request an error failed on, if known. */
+export const urlOf = (error: unknown): string | undefined =>
+  error instanceof Error ? (error as Partial<HttpError>).url : undefined;
+
+/**
+ * The error of a response that isn't ok, with `message` (ending in "HTTP <status>"), its status,
+ * the URL requested and its `Retry-After`.
+ */
+export function responseError(message: string, response: Response, url?: string): HttpError {
+  const error = new Error(message) as HttpError;
   error.status = response.status;
+  const requested = url ?? response.url;
+  if (requested) error.url = absoluteUrl(requested);
   const retryAfter = parseRetryAfter(response.headers.get('Retry-After'));
   if (retryAfter !== undefined) error.retryAfterMs = retryAfter;
   return error;
 }
+
+/** The error of a response that isn't ok: "<what> failed: HTTP <status>". */
+export const httpError = (what: string, response: Response, url?: string): HttpError =>
+  responseError(`${what} failed: HTTP ${response.status}`, response, url);
 
 /** `Retry-After` in ms: seconds or an HTTP date; undefined without a usable value. */
 export function parseRetryAfter(value: string | null, now = Date.now()): number | undefined {

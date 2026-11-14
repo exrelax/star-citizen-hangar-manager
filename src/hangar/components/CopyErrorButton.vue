@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { i18n } from '@/i18n';
-import { extensionVersion } from '@/shared/extension-version';
+import { currentReportContext } from '@/errors/report';
+import { useSettings } from '@/settings/use-settings';
 import { onUnmounted, ref } from 'vue';
 import { syncErrorReport } from '../sync-error';
 import type { SyncError } from '../sync-state';
@@ -12,15 +13,13 @@ import type { SyncError } from '../sync-state';
 
 const props = defineProps<{ error: SyncError }>();
 
+const { settings } = useSettings();
 const copied = ref(false);
 let timer: ReturnType<typeof setTimeout> | undefined;
 onUnmounted(() => clearTimeout(timer));
 
 async function copy() {
-  const report = syncErrorReport(props.error, {
-    version: extensionVersion(),
-    userAgent: navigator.userAgent,
-  });
+  const report = syncErrorReport(props.error, currentReportContext(settings.value));
   try {
     await navigator.clipboard.writeText(report);
   } catch (error) {

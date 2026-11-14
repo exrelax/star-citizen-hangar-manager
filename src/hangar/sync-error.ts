@@ -1,4 +1,5 @@
 import { withoutIds } from '@/errors/error-log';
+import { reportHeader, type ReportContext } from '@/errors/report';
 import type { SyncError } from './sync-state';
 
 /*
@@ -8,14 +9,11 @@ import type { SyncError } from './sync-state';
  * data; page numbers and HTTP statuses stay.
  */
 
-export function syncErrorReport(
-  error: SyncError,
-  context: { version: string; userAgent: string },
-): string {
+export function syncErrorReport(error: SyncError, context: ReportContext): string {
   return [
-    `Star Citizen Hangar Manager ${context.version}`,
-    context.userAgent,
+    reportHeader(context),
     `${error.code}: reading ${error.storage} failed at ${new Date(error.at).toISOString()}`,
     withoutIds(error.message),
+    ...(error.url ? [`URL: ${withoutIds(error.url)}`] : []),
   ].join('\n');
 }

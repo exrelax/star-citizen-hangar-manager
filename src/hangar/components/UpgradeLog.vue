@@ -43,7 +43,9 @@ async function toggle() {
     entries.value = withPrices(shown, createPriceLookup(shipPricesOf(ships)));
   } catch (failure) {
     console.error('[star-citizen-hangar-manager] Loading the upgrade log failed', failure);
-    void logError('HANGAR-UPGRADE-LOG-FAIL', `Pledge #${props.pledgeId}: ${reasonOf(failure)}`);
+    void logError('HANGAR-UPGRADE-LOG-FAIL', `Pledge #${props.pledgeId}: ${reasonOf(failure)}`, {
+      error: failure,
+    });
     error.value = i18n.t('upgradeLog.failed', [
       failure instanceof Error ? failure.message : String(failure),
     ]);

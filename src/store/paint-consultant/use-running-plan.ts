@@ -170,7 +170,7 @@ export function useRunningPlan({
       };
     } catch (failure) {
       // Signed out, or RSI's error: shown in the step, never treated as a complete cart.
-      void logError('PAINT-CART-READ-FAIL', `RSI's cart: ${reasonOf(failure)}`);
+      void logError('PAINT-CART-READ-FAIL', `RSI's cart: ${reasonOf(failure)}`, { error: failure });
       realCart.value = {
         status: 'failed',
         reason: failure instanceof Error ? failure.message : String(failure),

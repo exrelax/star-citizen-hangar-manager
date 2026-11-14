@@ -1,4 +1,5 @@
 import { logError } from '@/errors/error-log';
+import { outlineOf } from '@/errors/outline';
 import { parseDate } from '@/hangar/parse-pledges';
 import type { ListPage } from '@/hangar/smart-update/check';
 import type { BuybackPledge, BuybackUpgrade } from './buyback';
@@ -43,7 +44,11 @@ function parseEntry(li: HTMLElement): BuybackPledge | undefined {
   const title = text(li.querySelector('h1'));
   if (!Number.isInteger(id) || id <= 0) {
     if (title)
-      void logError('PARSE-BUYBACK-NO-ID', `"${title}" on a buy back page: no pledge id; left out`);
+      void logError(
+        'PARSE-BUYBACK-NO-ID',
+        `"${title}" on a buy back page: no pledge id; left out`,
+        { outline: outlineOf(li) },
+      );
     return undefined;
   }
 

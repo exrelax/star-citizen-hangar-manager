@@ -81,7 +81,11 @@ async function readStoreItems(
     return 'read';
   } catch (error) {
     console.warn('[star-citizen-hangar-manager] Pledge Store items unavailable', error);
-    void logError('STORE-ITEMS-FAIL', `Pledge Store items: ${reasonOf(error)}; kept the last read`);
+    void logError(
+      'STORE-ITEMS-FAIL',
+      `Pledge Store items: ${reasonOf(error)}; kept the last read`,
+      { error },
+    );
     await recordCheck(storeItemsMeta, { status: 'failed' }, { at: now() });
     return 'failed';
   }

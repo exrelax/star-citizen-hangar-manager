@@ -167,7 +167,11 @@ export async function addLinesToCart(
       result.added.push(line);
     } catch (error) {
       result.failed.push({ line, reason: error instanceof Error ? error.message : String(error) });
-      void logError('PAINT-CART-FAIL', `Paint "${line.name}" into the cart: ${logReasonOf(error)}`);
+      void logError(
+        'PAINT-CART-FAIL',
+        `Paint "${line.name}" into the cart: ${logReasonOf(error)}`,
+        { error },
+      );
     }
   }
   return result;

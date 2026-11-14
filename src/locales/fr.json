@@ -517,7 +517,7 @@
     "copied": "Copié"
   },
   "errorLog": {
-    "intro": "Les erreurs gérées par le Hangar Manager, les plus récentes d’abord : une page qu’il n’a pas pu lire, une entrée qu’il a omise, et ce qu’il a fait à la place. Conservé dans ce navigateur uniquement, les $1 dernières. Copie-le dans un rapport de bug – la copie ne contient aucun ID de pledge ou de commande.",
+    "intro": "Les erreurs gérées par le Hangar Manager, les plus récentes d’abord : une page qu’il n’a pas pu lire, une entrée qu’il a omise, et ce qu’il a fait à la place. Conservé dans ce navigateur uniquement, les $1 dernières. Copie-le dans un rapport de bug – la copie nomme les pledges et les pages demandées à RSI, mais ne contient aucun ID de pledge ou de commande.",
     "codesLink": "Ce que signifient les codes",
     "copy": "Copier le journal",
     "clear": "Vider le journal",

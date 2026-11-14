@@ -8,6 +8,7 @@ import {
 } from '@/errors/error-log';
 import { REPOSITORY_LINKS } from '@/config';
 import { demoErrorLog } from '@/demo/demo-error-log';
+import { currentReportContext, reportHeader } from '@/errors/report';
 import { i18n } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
@@ -38,7 +39,8 @@ onUnmounted(() => clearTimeout(timer));
 
 async function copy() {
   try {
-    await navigator.clipboard.writeText(formatErrorLog(log.value, true));
+    const header = reportHeader(currentReportContext(props.settings));
+    await navigator.clipboard.writeText(`${header}\n\n${formatErrorLog(log.value, true)}`);
   } catch (error) {
     console.warn('[star-citizen-hangar-manager] Copying the error log failed', error);
     return;
@@ -87,7 +89,7 @@ function clear() {
       class="shm-error-log"
       readonly
       rows="14"
-      wrap="off"
+      wrap="soft"
       spellcheck="false"
       :aria-label="i18n.t('settings.errorLog')"
       :value="text || i18n.t('errorLog.empty')"

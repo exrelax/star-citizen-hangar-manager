@@ -517,7 +517,7 @@
     "copied": "Kopiert"
   },
   "errorLog": {
-    "intro": "Fehler, die der Hangar Manager abgefangen hat, die neuesten zuerst: eine Seite, die er nicht lesen konnte, ein Eintrag, den er ausgelassen hat, und was er stattdessen getan hat. Nur in diesem Browser gespeichert, die letzten $1. Kopiere es in einen Fehlerbericht – die Kopie enthält keine Pledge- oder Order-IDs.",
+    "intro": "Fehler, die der Hangar Manager abgefangen hat, die neuesten zuerst: eine Seite, die er nicht lesen konnte, ein Eintrag, den er ausgelassen hat, und was er stattdessen getan hat. Nur in diesem Browser gespeichert, die letzten $1. Kopiere es in einen Fehlerbericht – die Kopie nennt die Pledges und die bei RSI angefragten Seiten, enthält aber keine Pledge- oder Order-IDs.",
     "codesLink": "Was die Codes bedeuten",
     "copy": "Protokoll kopieren",
     "clear": "Protokoll leeren",

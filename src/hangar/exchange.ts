@@ -122,7 +122,9 @@ export async function reclaimPledges(
       await reclaim(id, password);
     } catch (failure) {
       const message = failure instanceof Error ? failure.message : String(failure);
-      void logError('HANGAR-EXCHANGE-FAIL', `Pledge #${id} (bulk melting): ${reasonOf(failure)}`);
+      void logError('HANGAR-EXCHANGE-FAIL', `Pledge #${id} (bulk melting): ${reasonOf(failure)}`, {
+        error: failure,
+      });
       return { exchanged, failed: { id, message } };
     }
     exchanged.push(id);

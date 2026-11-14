@@ -1,3 +1,4 @@
+import { httpError, withUrl } from '@/shared/lib/retry';
 import { settingsItem, withDefaults } from '@/settings/settings';
 import { FLEETYARDS_DETAILS_BATCH_SIZE } from '@/config';
 import type { Pledge } from './pledge';
@@ -115,8 +116,11 @@ export async function resolveShipLinks(
 /** Fleetyards allows requests from robertsspaceindustries.com (CORS), so the content script can call it. */
 const fleetyardsSource: ShipLinkSource = {
   async fetchSlugs() {
-    const response = await fetch(`${FLEETYARDS_API}/models/slugs`);
-    if (!response.ok) throw new Error(`Loading Fleetyards slugs failed: HTTP ${response.status}`);
+    const url = `${FLEETYARDS_API}/models/slugs`;
+    const response = await fetch(url).catch((error: unknown) => {
+      throw withUrl(error, url);
+    });
+    if (!response.ok) throw httpError('Loading Fleetyards slugs', response, url);
     return (await response.json()) as string[];
   },
 
@@ -127,9 +131,11 @@ const fleetyardsSource: ShipLinkSource = {
         .slice(start, start + FLEETYARDS_DETAILS_BATCH_SIZE)
         .map((slug) => `models[]=${encodeURIComponent(slug)}`)
         .join('&');
-      const response = await fetch(`${FLEETYARDS_API}/models/embed?${query}`);
-      if (!response.ok)
-        throw new Error(`Loading Fleetyards models failed: HTTP ${response.status}`);
+      const url = `${FLEETYARDS_API}/models/embed?${query}`;
+      const response = await fetch(url).catch((error: unknown) => {
+        throw withUrl(error, url);
+      });
+      if (!response.ok) throw httpError('Loading Fleetyards models', response, url);
       for (const model of (await response.json()) as { slug: string; erkulIdentifier?: string }[]) {
         if (model.erkulIdentifier) ids[model.slug] = model.erkulIdentifier;
       }

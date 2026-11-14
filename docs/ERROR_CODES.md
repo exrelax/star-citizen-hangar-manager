@@ -2,11 +2,29 @@
 
 The error log in the settings ("Error log") lists the errors the Hangar Manager handled, each
 with a code. The code says what didn't work and what the Hangar Manager did instead. Copy the
-log into a [bug report](https://github.com/exrelax/star-citizen-hangar-manager/issues) when an
-error keeps coming back: the copy holds no pledge or order IDs.
+log into a bug report when an error keeps coming back (see below).
 
 Each line of the log reads `<time> <code> <message>`, with `(×N)` when the same error happened
-N times in a row. The codes are defined in `src/errors/codes.ts`.
+N times in a row. Below an entry, indented, it can show:
+
+- `URL:` the full address the failed request asked for,
+- the place in the code of an unexpected error (the first lines of its stack trace),
+- `Outline:` how an entry of RSI's page was built that couldn't be read – tags, classes and
+  attribute names, never texts or values,
+- `↳` sub-errors: the errors that led to the entry, e.g. the larger pages that failed before a
+  single pledge was found to break a buy back page. Their entry is marked with `►`: it is the one
+  closest to the cause.
+
+The codes are defined in `src/errors/codes.ts`.
+
+## Reporting an error
+
+In the settings under "Error log", click "Copy log" and paste it into a
+[bug report](https://github.com/exrelax/star-citizen-hangar-manager/issues/new/choose). The copy
+starts with the extension's version, the browser, the language and theme of the extension, and
+whether the demo mode is on. It names the pledges an error is about – their title, kind and what
+RSI says they contain – so we can find out together what is special about them. It holds no pledge
+or order IDs (they read `<id>`), no name and no address.
 
 ## Refreshing
 

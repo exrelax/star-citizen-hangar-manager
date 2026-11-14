@@ -1,4 +1,5 @@
 import { logError } from '@/errors/error-log';
+import { outlineOf } from '@/errors/outline';
 import {
   GAMES,
   type Game,
@@ -42,7 +43,9 @@ function parsePledge(li: HTMLElement): Pledge | undefined {
   if (!Number.isInteger(id) || id <= 0) {
     const name = inputValue(li, 'js-pledge-name');
     if (name)
-      void logError('PARSE-HANGAR-NO-ID', `"${name}" on a My Hangar page: no pledge id; left out`);
+      void logError('PARSE-HANGAR-NO-ID', `"${name}" on a My Hangar page: no pledge id; left out`, {
+        outline: outlineOf(li),
+      });
     return undefined;
   }
 

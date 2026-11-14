@@ -1,3 +1,4 @@
+import { httpError, withUrl } from '@/shared/lib/retry';
 import { logError, reasonOf } from '@/errors/error-log';
 import { SITE_DATA } from '@/config';
 import { hashOf, recordCheck, recordSync, type MetaItem, type StorageMeta } from '@/storage/meta';
@@ -71,8 +72,12 @@ export function siteDataDue(
 
 /** Loads a file of the website without cookies (it needs none, and it is another origin). */
 export async function fetchSiteFile(url: string): Promise<unknown> {
-  const response = await fetch(url, { credentials: 'omit', cache: 'no-cache' });
-  if (!response.ok) throw new Error(`Loading ${url} failed: HTTP ${response.status}`);
+  const response = await fetch(url, { credentials: 'omit', cache: 'no-cache' }).catch(
+    (error: unknown) => {
+      throw withUrl(error, url);
+    },
+  );
+  if (!response.ok) throw httpError(`Loading ${url}`, response, url);
   return response.json();
 }
 
@@ -114,7 +119,9 @@ export function createSiteDataSync<D, S extends { version: number }>(
       return data;
     } catch (error) {
       console.warn(`[star-citizen-hangar-manager] ${source.name} unavailable`, error);
-      void logError('SITE-DATA-FAIL', `${source.name}: ${reasonOf(error)}; kept the last read`);
+      void logError('SITE-DATA-FAIL', `${source.name}: ${reasonOf(error)}; kept the last read`, {
+        error,
+      });
       await recordCheck(source.meta, { status: 'failed' }, { at: now() });
       return undefined;
     }

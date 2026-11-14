@@ -1,7 +1,7 @@
 import { ORDERS } from '@/config';
 import { listPageWork, type ProgressSink } from '@/hangar/sync-progress';
 import { mapWithConcurrency } from '@/shared/lib/pool';
-import { isThrottled, withRetry } from '@/shared/lib/retry';
+import { httpError, isThrottled, withRetry, withUrl } from '@/shared/lib/retry';
 import { postRsiJson } from '@/shared/rsi-api';
 import {
   ORDERS_SNAPSHOT_VERSION,
@@ -253,8 +253,10 @@ async function fetchBillingDocument(page: number, pageSize: number): Promise<Doc
   const url = `/en/account/billing?storefront=&page=${page}&pagesize=${pageSize}`;
   const response = await withRetry(
     async () => {
-      const result = await fetch(url, { credentials: 'include' });
-      if (!result.ok) throw new Error(`Loading billing page ${page} failed: HTTP ${result.status}`);
+      const result = await fetch(url, { credentials: 'include' }).catch((error: unknown) => {
+        throw withUrl(error, url);
+      });
+      if (!result.ok) throw httpError(`Loading billing page ${page}`, result, url);
       return result;
     },
     ORDERS.retryDelaysMs,
