@@ -11,6 +11,7 @@ import { vTooltip } from '@/shared/tooltip/tooltip';
 import type { CheckOutcome } from '@/storage/meta';
 import { useStored } from '@/storage/use-stored';
 import { hangarMeta } from '../hangar-storage';
+import CopyErrorButton from './CopyErrorButton.vue';
 import RefreshIcon from './RefreshIcon.vue';
 
 const props = defineProps<{
@@ -52,6 +53,13 @@ const status = computed((): { text: string; warn?: boolean } | null => {
             section.total,
           ])
         : i18n.t('status.refreshing'),
+    };
+  }
+  // What the last refresh couldn't read (#334), until the next one starts.
+  if (syncState.error) {
+    return {
+      text: i18n.t('status.syncFailed', [i18n.t(`storage.${syncState.error.storage}.name`)]),
+      warn: true,
     };
   }
   // Also while another tab checks: its findings arrive here through the storage.
@@ -106,6 +114,9 @@ function stepResult(id: (typeof steps)[number]['id'], outcome: CheckOutcome) {
 }
 
 const details = computed(() => {
+  if (syncState.error && !syncState.running) {
+    return { title: i18n.t('status.syncFailedTitle'), text: syncState.error.message };
+  }
   if (syncState.running || !props.smartUpdates) return undefined;
   const lines = steps.flatMap(({ id, meta }) => {
     const outcome = meta.value?.lastOutcome;
@@ -132,6 +143,11 @@ const details = computed(() => {
     >
       <RefreshIcon /> {{ i18n.t('status.fullRefresh') }}
     </button>
+    <CopyErrorButton
+      v-if="syncState.error && !syncState.running"
+      class="shm-status-action"
+      :error="syncState.error"
+    />
   </p>
 </template>
 

@@ -335,7 +335,8 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
         :settings="settings"
         :active="activeTab === 'buyback'"
       />
-      <template v-else-if="neverLoaded">
+      <!-- Also when only the buy back couldn't be read yet (#334): never empty, but unread. -->
+      <template v-else-if="neverLoaded || !buyback.syncedAt.value">
         <InitialLoad v-if="!syncState.running" />
       </template>
       <p v-else-if="!syncState.running" class="shm-empty">{{ i18n.t('buyback.empty') }}</p>

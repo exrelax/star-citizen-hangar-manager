@@ -509,7 +509,11 @@
     "stepPages": {
       "one": "$1 página leída",
       "other": "$1 páginas leídas"
-    }
+    },
+    "syncFailed": "No se pudo leer $1.",
+    "syncFailedTitle": "Error",
+    "copyDetails": "Copiar detalles",
+    "copied": "Copiado"
   },
   "ccugame": {
     "openInManager": "Abrir en el Hangar Manager (#$1)",
@@ -524,6 +528,7 @@
     },
     "empty": "RSI no muestra ningún pledge de recompra para tu cuenta.",
     "contains": "Contiene: $1",
+    "detailsFailed": "No se pudo leer la página de RSI de este pledge, así que pueden faltar sus objetos y su precio. Se volverá a leer en la próxima actualización.",
     "reclaimed": "Fundido el $1",
     "showInBuyback": "Mostrar en Buy Back (página $1)",
     "probablyGiftableHint": "Si lo recompras con dinero real (warbond), este elemento probablemente es regalable: se compró antes del $1 solo con dinero, sin crédito de tienda, y mantiene ese estado.",

@@ -6,7 +6,7 @@ import { SyncProgressTracker } from '@/hangar/sync-progress';
 import { buybackSnapshot } from './buyback-storage';
 import { runBuybackSmartUpdate } from './run';
 import { buybackMeta } from './buyback-storage';
-import { loadBuybackPrice, syncBuyback, type FetchBuybackPage } from './sync-buyback';
+import { loadBuybackDetails, syncBuyback, type FetchBuybackPage } from './sync-buyback';
 
 const pledge = (id: number, contained = `Item ${id}`): BuybackPledge => ({
   id,
@@ -82,6 +82,34 @@ describe('syncBuyback', () => {
     await syncBuyback({ fetchPage, fetchDetails, fetchShipLinks: async () => ({}) });
     expect(fetchDetails).not.toHaveBeenCalled();
   });
+
+  it('keeps a pledge whose detail page fails as the list shows it, and reads it again (#334)', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const fetchDetails = vi.fn(async (id: number) => {
+      if (id === 30) throw new Error(`Loading buy back pledge ${id} failed: HTTP 404`);
+      return { items: [`Item ${id}`], price: 5 };
+    });
+    const progress = new SyncProgressTracker();
+    await syncBuyback({ fetchPage, fetchDetails, fetchShipLinks: async () => ({}), progress });
+
+    const stored = await buybackSnapshot.getValue();
+    expect(stored?.pledges.map((p) => [p.id, p.items, p.detailsFailed])).toEqual([
+      [30, undefined, true],
+      [20, undefined, undefined],
+      [10, ['Item 10'], undefined],
+    ]);
+    // The failed page still counts as done, so the progress ends.
+    expect(progress.progress?.fraction).toBe(1);
+
+    // The next sync reads it again; once it works, the flag goes.
+    fetchDetails.mockClear();
+    fetchDetails.mockImplementation(async (id: number) => ({ items: [`Item ${id}`], price: 5 }));
+    await syncBuyback({ fetchPage, fetchDetails, fetchShipLinks: async () => ({}) });
+    expect(fetchDetails.mock.calls.map(([id]) => id)).toEqual([30]);
+    const fury = (await buybackSnapshot.getValue())?.pledges.find((p) => p.id === 30);
+    expect(fury).toMatchObject({ items: ['Item 30'], price: 5 });
+    expect(fury?.detailsFailed).toBeUndefined();
+  });
 });
 
 describe('buy back tokens', () => {
@@ -115,7 +143,7 @@ describe('buy back tokens', () => {
   });
 });
 
-describe('loadBuybackPrice', () => {
+describe('loadBuybackDetails', () => {
   it('reads the price of one pledge once and keeps it', async () => {
     await buybackSnapshot.setValue({
       version: BUYBACK_SNAPSHOT_VERSION,
@@ -123,7 +151,7 @@ describe('loadBuybackPrice', () => {
       pledges: [pledge(30, 'Avenger - Skullcrusher Paint'), pledge(20)],
     });
     const fetchDetails = vi.fn(async () => ({ items: [], price: 10 }));
-    await Promise.all([loadBuybackPrice(30, fetchDetails), loadBuybackPrice(30, fetchDetails)]);
+    await Promise.all([loadBuybackDetails(30, fetchDetails), loadBuybackDetails(30, fetchDetails)]);
     expect(fetchDetails).toHaveBeenCalledOnce();
     const stored = await buybackSnapshot.getValue();
     expect(stored?.pledges.map((p) => p.price)).toEqual([10, undefined]);
@@ -135,7 +163,30 @@ describe('loadBuybackPrice', () => {
       syncedAt: '2026-10-01T00:00:00.000Z',
       pledges: [pledge(30)],
     });
-    await loadBuybackPrice(30, async () => ({ items: [] }));
+    await loadBuybackDetails(30, async () => ({ items: [] }));
     expect((await buybackSnapshot.getValue())?.pledges[0]?.price).toBeNull();
+  });
+
+  it('reads the items of a pledge whose page failed during the sync (#334)', async () => {
+    await buybackSnapshot.setValue({
+      version: BUYBACK_SNAPSHOT_VERSION,
+      syncedAt: '2026-10-01T00:00:00.000Z',
+      pledges: [{ ...pledge(30, 'Fury and 2 items'), detailsFailed: true }],
+    });
+    await loadBuybackDetails(30, async () => ({ items: ['Lifetime Insurance'], price: 70 }));
+    const [fury] = (await buybackSnapshot.getValue())?.pledges ?? [];
+    expect(fury).toMatchObject({ items: ['Lifetime Insurance'], price: 70 });
+    expect(fury?.detailsFailed).toBeUndefined();
+  });
+
+  it('keeps the flag when the page fails again', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    await buybackSnapshot.setValue({
+      version: BUYBACK_SNAPSHOT_VERSION,
+      syncedAt: '2026-10-01T00:00:00.000Z',
+      pledges: [{ ...pledge(30, 'Fury and 2 items'), detailsFailed: true }],
+    });
+    await loadBuybackDetails(30, async () => Promise.reject(new Error('HTTP 404')));
+    expect((await buybackSnapshot.getValue())?.pledges[0]?.detailsFailed).toBe(true);
   });
 });

@@ -509,7 +509,11 @@
     "stepPages": {
       "one": "$1 page read",
       "other": "$1 pages read"
-    }
+    },
+    "syncFailed": "Reading $1 failed.",
+    "syncFailedTitle": "Error",
+    "copyDetails": "Copy details",
+    "copied": "Copied"
   },
   "ccugame": {
     "openInManager": "Open in Hangar Manager (#$1)",
@@ -524,6 +528,7 @@
     },
     "empty": "RSI lists no buy back pledges for your account.",
     "contains": "Contains: $1",
+    "detailsFailed": "RSI's page of this pledge couldn't be read, so its items and price may be missing. It's read again on the next refresh.",
     "reclaimed": "Melted $1",
     "showInBuyback": "Show in Buy Back (page $1)",
     "probablyGiftableHint": "When bought back with real money (warbond), this item is probably giftable: it was bought before $1 with money only, without store credit, and keeps that status.",

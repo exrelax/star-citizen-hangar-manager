@@ -2,7 +2,8 @@
 import { INITIAL_LOAD_EXAMPLES } from '@/config';
 import { i18n, locale } from '@/i18n';
 import { computed } from 'vue';
-import { startSync } from '../sync-state';
+import { startSync, syncState } from '../sync-state';
+import CopyErrorButton from './CopyErrorButton.vue';
 
 /*
  * In place of the lists while nothing is stored yet: the extension doesn't read the hangar on its
@@ -38,6 +39,14 @@ const durationText = computed(() =>
       {{ i18n.t('manager.initialLoad') }}
     </button>
     <p class="shm-initial-load-duration">{{ durationText }}</p>
+    <!-- The last load stopped (#334): what failed, for a retry or a bug report. -->
+    <div v-if="syncState.error" class="shm-initial-load-error" role="alert">
+      <p>
+        {{ i18n.t('status.syncFailed', [i18n.t(`storage.${syncState.error.storage}.name`)]) }}
+      </p>
+      <p class="shm-initial-load-error-message">{{ syncState.error.message }}</p>
+      <CopyErrorButton class="shm-button" :error="syncState.error" />
+    </div>
   </section>
 </template>
 
@@ -68,6 +77,22 @@ const durationText = computed(() =>
 .shm-initial-load-duration {
   color: var(--shm-text-muted);
   font-size: calc(13px * var(--shm-font-scale));
+}
+
+.shm-initial-load-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  color: var(--shm-upgraded);
+  font-size: calc(13px * var(--shm-font-scale));
+}
+
+.shm-initial-load-error-message {
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+  overflow-wrap: anywhere;
 }
 
 .shm-initial-load-button {

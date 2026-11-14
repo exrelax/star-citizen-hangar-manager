@@ -34,6 +34,11 @@ export interface BuybackPledge {
    * `buyback-price.ts`).
    */
   price?: number | null;
+  /**
+   * Its detail page couldn't be read on the last try (#334): `items` and `price` are what was known
+   * before, if anything. Read again on the next sync, or when its row is opened.
+   */
+  detailsFailed?: boolean;
 }
 
 /** Locally stored result of the last buy back sync. */

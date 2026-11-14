@@ -13,7 +13,7 @@ import type { BuybackLinkMode } from '@/settings/settings';
 import { computed, ref, watch } from 'vue';
 import type { BuybackView } from '../buyback-view';
 import { addBuybackToCart, CartError, RSI_CART_PATH } from '../cart';
-import { loadBuybackPrice } from '../sync-buyback';
+import { loadBuybackDetails } from '../sync-buyback';
 import { giftableHint } from '../giftable-hint';
 import { GIFTING_FAQ_URL } from '@/config';
 import { vTooltip } from '@/shared/tooltip/tooltip';
@@ -74,15 +74,17 @@ const toggle = () => {
 };
 
 // No price from the catalog (an item the store doesn't sell any more): its buy back page has it,
-// read once when the row is opened (#185). Not for made-up demo pledges.
+// read once when the row is opened (#185). The same for a pledge whose page couldn't be read
+// during the sync (#334). Not for made-up demo pledges.
 const loadingPrice = ref(false);
 watch(
   expanded,
   async (open) => {
     const { pledge } = props;
-    if (!open || pledge.price || pledge.priceRead || pledge.isCcu || pledge.displayId) return;
+    const needsPrice = !pledge.price && !pledge.priceRead && !pledge.isCcu;
+    if (!open || pledge.displayId || !(needsPrice || pledge.detailsFailed)) return;
     loadingPrice.value = true;
-    await loadBuybackPrice(pledge.id);
+    await loadBuybackDetails(pledge.id);
     loadingPrice.value = false;
   },
   { immediate: true },
@@ -256,6 +258,7 @@ const kind = computed(() =>
             {{ i18n.t('gift.faqLink') }}
           </a>
         </p>
+        <p v-if="pledge.detailsFailed" class="shm-hint">{{ i18n.t('buyback.detailsFailed') }}</p>
         <ul v-if="pledge.items.length" class="shm-items">
           <li v-for="(item, index) in pledge.items" :key="index">
             <span class="shm-item-title">{{ item }}</span>

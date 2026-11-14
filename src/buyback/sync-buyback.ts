@@ -1,4 +1,5 @@
-import { BUYBACK_PAGE_SIZE, SYNC_CONCURRENCY, SYNC_WORK } from '@/config';
+import { BUYBACK_PAGE_SIZE, BUYBACK_RETRY_DELAYS_MS, SYNC_CONCURRENCY, SYNC_WORK } from '@/config';
+import { httpError, isTransient, withRetry } from '@/shared/lib/retry';
 import { prepareListPages, type ListPagesOf } from '@/hangar/list-pages';
 import { PLEDGE_CATEGORIES, type Pledge, type PledgeCategory } from '@/hangar/pledge';
 import { resolveShipLinks, type ShipLinks } from '@/hangar/ship-links';
@@ -11,7 +12,7 @@ import {
   type BuybackPledge,
   type BuybackSnapshot,
 } from './buyback';
-import { buybackSnapshot, rememberBuybackPrice } from './buyback-storage';
+import { buybackSnapshot, rememberBuybackDetails } from './buyback-storage';
 import {
   parseBuybackDetail,
   parseBuybackPage,
@@ -143,10 +144,21 @@ export async function enrichBuyback(
   }
   // Only known once the list pages are read, so they join the progress late.
   progress?.expect(missing.length, missing.length * SYNC_WORK.detailPage);
+  // A page that can't be read leaves its pledge as the list shows it, never the whole buy back
+  // unread (#334); it is read again next time, as its items are still missing.
   await mapWithConcurrency(missing, concurrency, async (pledge) => {
-    const details = await fetchDetails(pledge.id);
-    pledge.items = details.items;
-    pledge.price = details.price ?? null;
+    try {
+      const details = await fetchDetails(pledge.id);
+      pledge.items = details.items;
+      pledge.price = details.price ?? null;
+      delete pledge.detailsFailed;
+    } catch (error) {
+      console.warn(
+        `[star-citizen-hangar-manager] Details of buy back pledge ${pledge.id} unavailable`,
+        error,
+      );
+      pledge.detailsFailed = true;
+    }
     progress?.complete(1, SYNC_WORK.detailPage);
   });
 
@@ -171,13 +183,11 @@ export const fetchBuybackPage: FetchBuybackPage = async (
   pageSize = BUYBACK_PAGE_SIZE,
 ) => {
   const filter = category ? `&product-type=${category}` : '';
-  const response = await fetch(
+  const html = await fetchHtml(
     `/en/account/buy-back-pledges?page=${page}&pagesize=${pageSize}${filter}`,
-    { credentials: 'include' },
+    `Loading buy back page ${page}`,
   );
-  if (!response.ok)
-    throw new Error(`Loading buy back page ${page} failed: HTTP ${response.status}`);
-  const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
+  const doc = new DOMParser().parseFromString(html, 'text/html');
   if (!doc.querySelector('.sidenav a[href$="/account/pledges"]')) {
     throw new Error(`Buy back page ${page} is no account page – are you still logged in?`);
   }
@@ -186,35 +196,52 @@ export const fetchBuybackPage: FetchBuybackPage = async (
 
 /** Items and price of a buy back pledge, from its detail page. */
 export async function fetchBuybackDetails(id: number): Promise<BuybackDetails> {
-  const response = await fetch(`/pledge/buyback/${id}`, { credentials: 'include' });
-  if (!response.ok)
-    throw new Error(`Loading buy back pledge ${id} failed: HTTP ${response.status}`);
-  const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
+  const html = await fetchHtml(`/pledge/buyback/${id}`, `Loading buy back pledge ${id}`);
+  const doc = new DOMParser().parseFromString(html, 'text/html');
   const price = parseBuybackPrice(doc);
   return { items: parseBuybackDetail(doc), ...(price !== undefined && { price }) };
 }
 
-const loadingPrices = new Map<number, Promise<void>>();
+/**
+ * The HTML of a page of the user's account, read again while it fails for a reason that may pass
+ * (#334: HTTP 429, 5xx, no answer). Throws "<what> failed: HTTP <status>" otherwise.
+ */
+export async function fetchHtml(url: string, what: string): Promise<string> {
+  return withRetry(
+    async () => {
+      const response = await fetch(url, { credentials: 'include' });
+      if (!response.ok) throw httpError(what, response);
+      return response.text();
+    },
+    BUYBACK_RETRY_DELAYS_MS,
+    isTransient,
+  );
+}
+
+const loading = new Map<number, Promise<void>>();
 
 /**
- * Reads the buy back price of one pledge from its detail page and keeps it (#185): for single
- * items the Pledge Store doesn't sell any more, when their row is opened. Once per pledge, also
- * when its row is opened twice meanwhile; a failure leaves it unread, so the next opening tries
- * again.
+ * Reads the detail page of one pledge and keeps what it shows, when its row is opened: the buy back
+ * price of single items the Pledge Store doesn't sell any more (#185), and the items and price of a
+ * pledge whose page couldn't be read during the sync (#334). Once per pledge, also when its row is
+ * opened twice meanwhile; a failure leaves it unread, so the next opening tries again.
  */
-export function loadBuybackPrice(
+export function loadBuybackDetails(
   id: number,
   fetchDetails: (id: number) => Promise<BuybackDetails> = fetchBuybackDetails,
 ): Promise<void> {
-  let loading = loadingPrices.get(id);
-  if (!loading) {
-    loading = fetchDetails(id)
-      .then(({ price }) => rememberBuybackPrice(id, price ?? null))
+  let reading = loading.get(id);
+  if (!reading) {
+    reading = fetchDetails(id)
+      .then((details) => rememberBuybackDetails(id, details))
       .catch((error: unknown) =>
-        console.warn(`[star-citizen-hangar-manager] Buy back price of ${id} unavailable`, error),
+        console.warn(
+          `[star-citizen-hangar-manager] Details of buy back pledge ${id} unavailable`,
+          error,
+        ),
       )
-      .finally(() => loadingPrices.delete(id));
-    loadingPrices.set(id, loading);
+      .finally(() => loading.delete(id));
+    loading.set(id, reading);
   }
-  return loading;
+  return reading;
 }

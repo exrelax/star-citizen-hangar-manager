@@ -76,6 +76,12 @@ export const SEARCH_URL_SYNC_DELAY_MS = 300;
 export const BUYBACK_PAGE_SIZE = 250;
 
 /**
+ * Waits before reading a buy back page again that failed for a reason that may pass (#334: HTTP
+ * 429, 5xx, no answer); RSI's `Retry-After` makes them longer.
+ */
+export const BUYBACK_RETRY_DELAYS_MS = [2_000, 6_000] as const;
+
+/**
  * Buy back pledges bought before this date are "probably giftable" when bought back with real
  * money (warbond). Purchase dates aren't listed in the buy back, so they are derived from the
  * pledge id (ids grow over time) and the reclaim date (see buyback-view.ts).

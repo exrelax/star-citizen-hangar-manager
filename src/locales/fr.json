@@ -509,7 +509,11 @@
     "stepPages": {
       "one": "$1 page lue",
       "other": "$1 pages lues"
-    }
+    },
+    "syncFailed": "Impossible de lire $1.",
+    "syncFailedTitle": "Erreur",
+    "copyDetails": "Copier les détails",
+    "copied": "Copié"
   },
   "ccugame": {
     "openInManager": "Ouvrir dans le Hangar Manager (#$1)",
@@ -524,6 +528,7 @@
     },
     "empty": "RSI n’indique aucun pledge à racheter pour ton compte.",
     "contains": "Contient : $1",
+    "detailsFailed": "La page RSI de ce pledge n’a pas pu être lue : ses objets et son prix peuvent manquer. Elle sera relue à la prochaine actualisation.",
     "reclaimed": "Fusionné le $1",
     "showInBuyback": "Afficher dans Buy Back (page $1)",
     "probablyGiftableHint": "Racheté en argent réel (warbond), cet élément est probablement offrable : il a été acheté avant le $1 uniquement avec de l’argent, sans crédit boutique, et garde ce statut.",

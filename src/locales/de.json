@@ -509,7 +509,11 @@
     "stepPages": {
       "one": "$1 Seite gelesen",
       "other": "$1 Seiten gelesen"
-    }
+    },
+    "syncFailed": "$1 konnte nicht gelesen werden.",
+    "syncFailedTitle": "Fehler",
+    "copyDetails": "Details kopieren",
+    "copied": "Kopiert"
   },
   "ccugame": {
     "openInManager": "Im Hangar Manager öffnen (#$1)",
@@ -524,6 +528,7 @@
     },
     "empty": "RSI listet keine Buy-Back-Pledges für deinen Account.",
     "contains": "Enthält: $1",
+    "detailsFailed": "RSIs Seite zu diesem Pledge konnte nicht gelesen werden, daher fehlen vielleicht Items und Preis. Sie wird beim nächsten Aktualisieren erneut gelesen.",
     "reclaimed": "Eingeschmolzen $1",
     "showInBuyback": "Im Buy Back anzeigen (Seite $1)",
     "probablyGiftableHint": "Bei einem Rückkauf mit echtem Geld (Warbond) ist dieses Item vermutlich verschenkbar: Es wurde vor dem $1 nur mit Geld gekauft, ohne Store Credits, und behält diesen Status.",
