@@ -136,7 +136,7 @@ jobs:
 
       # The roadmap reads the issues with this token. The columns of the project board need a token
       # that can read the project: the optional secret ROADMAP_TOKEN (a fine-grained token with
-      # read access to projects). Without access, the roadmap groups into open and done and the
+      # read access to projects). Without access, the roadmap lists open issues by number and the
       # run shows a warning. If GitHub's API fails, the build fails and the last deployment stays.
       - run: pnpm site:build
         env:

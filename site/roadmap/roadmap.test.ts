@@ -1,6 +1,12 @@
 // @vitest-environment happy-dom
 import { describe, expect, it, vi } from 'vitest';
-import { fetchRoadmap, renderRoadmap, renderVersion, type Roadmap } from './roadmap.ts';
+import {
+  fetchRoadmap,
+  renderRoadmap,
+  renderVersion,
+  type RoadmapMilestone,
+  type RoadmapRelease,
+} from './roadmap.ts';
 
 const REPO = 'https://api.github.com/repos/exrelax/star-citizen-hangar-manager';
 
@@ -36,7 +42,7 @@ const MILESTONES = [
     description: 'For the IAE',
     due_on: '2026-11-12T08:00:00Z',
   },
-  // Without a due date, or without issues: not on the timeline.
+  // Without issues (shown ones): not on the timeline.
   { number: 3, title: 'Someday', html_url: '', description: null, due_on: null },
   {
     number: 4,
@@ -66,6 +72,7 @@ const ISSUES: Record<number, unknown[]> = {
   // A sub-issue whose parent is elsewhere (another milestone) shows on its own.
   2: [issue(20), sub(21, 1)],
   4: [issue(26, { labels: [{ name: 'website' }] })],
+  5: [issue(27)],
 };
 
 const LATER = [
@@ -87,7 +94,19 @@ const CLOSED_MILESTONES = [
     due_on: null,
   },
   { number: 8, title: 'v0.9.0', html_url: '', description: null, due_on: null },
+  // A minor version with its patches, and a patch of another minor version.
+  { number: 10, title: 'v1.1.0', html_url: '', description: null, due_on: null },
+  {
+    number: 11,
+    title: 'v1.1.1',
+    html_url: '',
+    description: 'Error logs:\n- For connection errors to RSI',
+    due_on: null,
+  },
+  { number: 12, title: 'v1.1.2', html_url: '', description: 'Fixes', due_on: null },
+  { number: 13, title: 'v1.0.1', html_url: '', description: 'Old fixes', due_on: null },
 ];
+const RELEASED_MINOR: unknown[] = [closed(60, '2026-11-13T10:00:00Z')];
 const RELEASED: unknown[] = [
   closed(50, '2026-11-01T10:00:00Z'),
   { ...closed(51, '2026-11-01T10:00:00Z'), sub_issues_summary: { total: 7 } },
@@ -107,6 +126,27 @@ const RELEASE = {
   published_at: '2026-11-05T00:28:43Z',
 };
 
+/** A patch release: v1.1.1 of v1.1.0. */
+const PATCH_RELEASE = {
+  tag_name: 'v1.1.1',
+  html_url: 'https://github.com/exrelax/star-citizen-hangar-manager/releases/tag/v1.1.1',
+  published_at: '2026-11-15T09:00:00Z',
+};
+const MINOR_RELEASE = {
+  ...PATCH_RELEASE,
+  tag_name: 'v1.1.0',
+  published_at: '2026-11-13T09:00:00Z',
+};
+
+/** A third open milestone, without a due date: after the dated ones, beyond the two shown. */
+const UNDATED = {
+  number: 5,
+  title: 'v1.3.0',
+  html_url: 'https://github.com/m/5',
+  description: null,
+  due_on: null,
+};
+
 /**
  * Fake GitHub: REST answers by URL, the GraphQL board by `board`, the latest release by `release`
  * ('none': there is no release yet, 'error': the request fails).
@@ -114,6 +154,7 @@ const RELEASE = {
 function github(
   board?: { status: Record<number, string> } | 'denied',
   release: typeof RELEASE | 'none' | 'error' = RELEASE,
+  open: unknown[] = [...MILESTONES, UNDATED],
 ) {
   return vi.fn(async (url: string, init?: RequestInit) => {
     const json = (body: unknown, status = 200) =>
@@ -148,11 +189,13 @@ function github(
       if (release === 'error') return json({ message: 'Server Error' }, 500);
       return json(release);
     }
-    if (path === '/milestones?state=open&sort=due_on') return json(MILESTONES);
+    if (path === '/releases/tags/v1.1.0') return json(MINOR_RELEASE);
+    if (path === '/milestones?state=open&sort=due_on') return json(open);
     if (path === '/milestones?state=closed&sort=due_on&direction=desc') {
       return json(CLOSED_MILESTONES);
     }
     if (path === '/issues?milestone=9&state=closed') return json(RELEASED);
+    if (path === '/issues?milestone=10&state=closed') return json(RELEASED_MINOR);
     if (path === '/issues?state=open&milestone=none&labels=enhancement') return json(LATER);
     const milestone = /^\/issues\?milestone=(\d+)&state=all$/.exec(path)?.[1];
     if (milestone) return json(ISSUES[Number(milestone)] ?? []);
@@ -161,7 +204,10 @@ function github(
 }
 
 describe('fetchRoadmap', () => {
-  it('groups into open and done without a token, and leaves out what is not planned', async () => {
+  const numbers = (issues: { number: number; done?: boolean }[]) =>
+    issues.map((entry) => (entry.done ? `${entry.number} done` : String(entry.number)));
+
+  it('lists the next two planned versions, open issues first, and leaves out what is not planned', async () => {
     const warn = vi.fn();
     const roadmap = await fetchRoadmap({
       fetch: github() as typeof fetch,
@@ -171,41 +217,45 @@ describe('fetchRoadmap', () => {
 
     expect(roadmap.fromBoard).toBe(false);
     expect(warn).toHaveBeenCalledOnce();
-    // By due date; without a due date or without (visible) issues, a milestone isn't shown.
+    // By due date, at most two; without (shown) issues a milestone isn't planned.
     expect(roadmap.milestones.map((milestone) => milestone.title)).toEqual(['v1.1.0', 'v1.2.0']);
     const [next] = roadmap.milestones;
-    expect(next).toMatchObject({ dueOn: '2026-11-12', description: 'For the IAE', open: 2 });
-    expect(next!.groups.map((group) => [group.status, group.issues.map((i) => i.number)])).toEqual([
-      ['Open', [1, 3]],
-      // The most recently closed first.
-      ['Done', [13, 6]],
-    ]);
+    expect(next).toMatchObject({
+      dueOn: '2026-11-12',
+      description: 'For the IAE',
+      open: 2,
+      done: 2,
+    });
+    // Open by number, then done, the most recently closed first.
+    expect(numbers(next!.issues)).toEqual(['1', '3', '13 done', '6 done']);
     expect(roadmap.later.map((entry) => entry.number)).toEqual([5, 11]);
-    expect(roadmap.milestones[1]!.groups[0]!.issues.map((i) => i.number)).toEqual([20, 21]);
+    expect(numbers(roadmap.milestones[1]!.issues)).toEqual(['20', '21']);
   });
 
-  it('groups by the columns of the project board when the token can read it', async () => {
+  it('plans a milestone without a due date after the dated ones', async () => {
+    const roadmap = await fetchRoadmap({
+      fetch: github(undefined, RELEASE, [UNDATED, MILESTONES[0]]) as typeof fetch,
+      fallbackVersion: '1.1.0',
+    });
+    expect(roadmap.milestones.map((milestone) => [milestone.title, milestone.dueOn])).toEqual([
+      ['v1.2.0', '2027-01-15'],
+      ['v1.3.0', undefined],
+    ]);
+  });
+
+  it('lists the open issues the furthest on the project board first, if the token can read it', async () => {
     const roadmap = await fetchRoadmap({
       token: 'token',
-      // Closed is done whatever the column says; unknown columns (e.g. Inbox) count as backlog.
-      fetch: github({ status: { 1: 'In progress', 3: 'Inbox', 6: 'In review' } }) as typeof fetch,
+      // Unknown columns (e.g. Inbox) count as backlog.
+      fetch: github({ status: { 1: 'Ready', 3: 'In review', 6: 'In progress' } }) as typeof fetch,
       fallbackVersion: '1.1.0',
     });
 
     expect(roadmap.fromBoard).toBe(true);
-    expect(
-      roadmap.milestones[0]!.groups.map((group) => [
-        group.status,
-        group.issues.map((i) => i.number),
-      ]),
-    ).toEqual([
-      ['Backlog', [3]],
-      ['In progress', [1]],
-      ['Done', [13, 6]],
-    ]);
+    expect(numbers(roadmap.milestones[0]!.issues)).toEqual(['3', '1', '13 done', '6 done']);
   });
 
-  it('falls back to open and done if the board can not be read', async () => {
+  it('lists the open issues by number if the board can not be read', async () => {
     const warn = vi.fn();
     const roadmap = await fetchRoadmap({
       token: 'token',
@@ -216,7 +266,7 @@ describe('fetchRoadmap', () => {
 
     expect(roadmap.fromBoard).toBe(false);
     expect(warn.mock.calls[0]![0]).toContain('Resource not accessible');
-    expect(roadmap.milestones[0]!.groups.map((group) => group.status)).toEqual(['Open', 'Done']);
+    expect(numbers(roadmap.milestones[0]!.issues)).toEqual(['1', '3', '13 done', '6 done']);
   });
 
   it('fails if GitHub answers with an error, instead of returning an empty roadmap', async () => {
@@ -245,112 +295,183 @@ describe('fetchRoadmap', () => {
     });
     // Without its sub-issues and the hidden ones; five listed, the rest counted.
     expect(release.highlights?.map((entry) => entry.number)).toEqual([51, 52, 50, 54, 55]);
+    expect(release.highlights?.every((entry) => entry.done)).toBe(true);
     expect(release.moreHighlights).toBe(3);
+    expect(release.patches).toBeUndefined();
+  });
+
+  it('shows a patch version with its finished patches and the highlights of its minor version', async () => {
+    const { release } = await fetchRoadmap({
+      fetch: github(undefined, PATCH_RELEASE) as typeof fetch,
+      fallbackVersion: '1.1.0',
+    });
+    expect(release).toMatchObject({
+      version: '1.1.1',
+      publishedOn: '2026-11-15',
+      baseVersion: '1.1.0',
+      basePublishedOn: '2026-11-13',
+      // Up to the live version, of its minor version only.
+      patches: [{ version: '1.1.1', description: 'Error logs:\n- For connection errors to RSI' }],
+    });
+    expect(release.highlights?.map((entry) => entry.number)).toEqual([60]);
   });
 
   it("falls back to package.json's version without a release, or if it can't be read", async () => {
     const none = await fetchRoadmap({
       fetch: github(undefined, 'none') as typeof fetch,
-      fallbackVersion: '1.1.0',
+      fallbackVersion: '0.5.0',
     });
-    expect(none.release).toEqual({ version: '1.1.0' });
+    expect(none.release).toEqual({ version: '0.5.0' });
 
     const warn = vi.fn();
     const failed = await fetchRoadmap({
       fetch: github(undefined, 'error') as typeof fetch,
       warn,
-      fallbackVersion: '1.1.0',
+      fallbackVersion: '0.5.0',
     });
-    expect(failed.release).toEqual({ version: '1.1.0' });
+    expect(failed.release).toEqual({ version: '0.5.0' });
     expect(warn.mock.calls.some(([message]) => String(message).includes('release'))).toBe(true);
   });
 });
 
 describe('renderRoadmap', () => {
-  const roadmap: Roadmap = {
-    release: {
-      version: '1.0.0',
-      url: 'https://github.com/r/1.0.0',
-      publishedOn: '2026-11-05',
-      highlights: [{ number: 3, title: 'Pledge Store tab', url: 'u3' }],
-      moreHighlights: 2,
-    },
-    fromBoard: false,
-    milestones: [
-      {
-        title: 'v1.1.0',
-        url: 'https://github.com/m/1',
-        dueOn: '2026-11-12',
-        description: 'For the IAE:\n- Warbond CCUs\n- Discounts',
-        open: 3,
-        done: 1,
-        groups: [
-          { status: 'Open', issues: [{ number: 1, title: 'Export <CSV>', url: 'u1' }], more: 0 },
-          { status: 'Done', issues: [{ number: 6, title: 'Locks', url: 'u6' }], more: 4 },
-        ],
-      },
-      {
-        title: 'v1.2.0',
-        url: 'https://github.com/m/2',
-        dueOn: '2027-01-15',
-        description: '',
-        open: 1,
-        done: 0,
-        groups: [{ status: 'Open', issues: [{ number: 7, title: 'Later', url: 'u7' }], more: 0 }],
-      },
-    ],
-    later: [{ number: 5, title: 'Statistics "tab"', url: 'u5' }],
+  const live: RoadmapRelease = {
+    version: '1.1.1',
+    url: 'https://github.com/r/1.1.1',
+    publishedOn: '2026-11-15',
+    baseVersion: '1.1.0',
+    basePublishedOn: '2026-11-13',
+    patches: [{ version: '1.1.1', description: 'Error logs:\n- For RSI' }],
+    highlights: [{ number: 3, title: 'Pledge Store tab', url: 'u3', done: true }],
+    moreHighlights: 2,
   };
+  const next: RoadmapMilestone = {
+    title: 'v1.2.0',
+    url: 'https://github.com/m/2',
+    dueOn: '2026-11-20',
+    description: 'Not shown',
+    open: 3,
+    done: 1,
+    issues: [
+      { number: 1, title: 'Export <CSV>', url: 'u1' },
+      { number: 6, title: 'Locks', url: 'u6', done: true },
+    ],
+    moreDone: 0,
+  };
+  const planned: RoadmapMilestone = {
+    title: 'v1.3.0',
+    url: 'https://github.com/m/3',
+    description: '',
+    open: 1,
+    done: 0,
+    issues: [{ number: 7, title: 'Statistics', url: 'u7' }],
+    moreDone: 0,
+  };
+  const later = [{ number: 5, title: 'Paint packs "soon"', url: 'u5' }];
 
-  it('renders the released version, the milestones with progress and the later ideas', () => {
-    const html = renderRoadmap(roadmap);
-    const page = new DOMParser().parseFromString(html, 'text/html');
-    const text = (element: Element | null | undefined) =>
-      element?.textContent?.replace(/\s+/g, ' ').trim();
+  const parse = (html: string) => new DOMParser().parseFromString(html, 'text/html');
+  const text = (element: Element | null | undefined) =>
+    element?.textContent?.replace(/\s+/g, ' ').trim();
+  const steps = (page: Document) =>
+    [...page.querySelectorAll('.roadmap-steps > .roadmap-step')].map((step) => step.className);
 
-    // One step per card, in order: released, next, planned, later.
-    const steps = [...page.querySelectorAll('.roadmap-step')];
-    expect(steps.map((step) => step.className)).toEqual([
-      'roadmap-step is-released',
+  it('shows a patch version inside the live card, with the highlights of its minor version', () => {
+    const page = parse(renderRoadmap({ release: live, fromBoard: false, milestones: [], later }));
+    const card = page.querySelector('.is-live')!;
+    expect(text(card.querySelector('h3'))).toBe('v1.1.1');
+    expect(text(card.querySelector('.roadmap-badge'))).toBe('Live');
+    expect(text(card.querySelector('.roadmap-meta'))).toBe('v1.1.0 released November 13, 2026');
+    // The patch: only its version and its milestone's description.
+    expect(text(card.querySelector('.roadmap-patches li'))).toBe('v1.1.1Error logs: For RSI');
+    expect([...card.querySelectorAll('.roadmap-label')].map((label) => label.textContent)).toEqual([
+      'Patches',
+      'Highlights of v1.1.0',
+    ]);
+    expect(text(card.querySelector('.roadmap-issue'))).toBe('Pledge Store tab#3');
+    expect(card.querySelector('.roadmap-issue use')?.getAttribute('href')).toBe(
+      '#icon-circle-check',
+    );
+    expect(text(card.querySelector('.roadmap-more'))).toBe('and more in the release notes');
+    expect(card.querySelector('.roadmap-link')?.getAttribute('href')).toBe(
+      'https://github.com/r/1.1.1',
+    );
+  });
+
+  it('shows a minor version without patches', () => {
+    const page = parse(
+      renderRoadmap({
+        release: { version: '1.1.0', url: 'r', publishedOn: '2026-11-13' },
+        fromBoard: false,
+        milestones: [],
+        later,
+      }),
+    );
+    const card = page.querySelector('.is-live')!;
+    expect(text(card.querySelector('.roadmap-meta'))).toBe('Released November 13, 2026');
+    expect(card.querySelector('.roadmap-patches, .roadmap-label')).toBeNull();
+  });
+
+  it('shows the planned versions with their progress and issues', () => {
+    const html = renderRoadmap({
+      release: live,
+      fromBoard: false,
+      milestones: [next, planned],
+      later,
+    });
+    const page = parse(html);
+    const [, first, second] = [...page.querySelectorAll('.roadmap-step')];
+    expect(text(first!.querySelector('.roadmap-badge'))).toBe('Next');
+    expect(text(first!.querySelector('.roadmap-meta'))).toBe('Due November 20, 2026');
+    const progress = first!.querySelector('[role="progressbar"]');
+    expect(progress?.getAttribute('aria-valuenow')).toBe('1');
+    expect(progress?.getAttribute('aria-valuemax')).toBe('4');
+    expect(text(first!.querySelector('.roadmap-progress-text'))).toBe('1 of 4 done');
+    // Open as a circle, done checked; titles are escaped, not markup.
+    expect(
+      [...first!.querySelectorAll('.roadmap-issue use')].map((use) => use.getAttribute('href')),
+    ).toEqual(['#icon-circle', '#icon-circle-check']);
+    expect(text(first!.querySelector('.roadmap-issue'))).toBe('Export <CSV>#1');
+    expect(html).not.toContain('<CSV>');
+    expect(html).not.toContain('Not shown');
+    expect(text(second!.querySelector('.roadmap-badge'))).toBe('Planned');
+    expect(text(second!.querySelector('.roadmap-meta'))).toBe('No date yet');
+  });
+
+  it('puts "Later" apart from a full timeline of two planned versions', () => {
+    const page = parse(
+      renderRoadmap({ release: live, fromBoard: false, milestones: [next, planned], later }),
+    );
+    expect(steps(page)).toEqual([
+      'roadmap-step is-live',
       'roadmap-step is-next',
       'roadmap-step is-planned',
-      'roadmap-step is-later',
     ]);
-    const [released, next, planned, later] = steps;
-    expect(text(released!.querySelector('h3'))).toBe('v1.0.0');
-    expect(text(released!.querySelector('.roadmap-badge'))).toBe('Released');
-    expect(text(released!.querySelector('.roadmap-meta'))).toBe('November 5, 2026');
-    expect(text(released!.querySelector('.roadmap-issue'))).toBe('Pledge Store tab #3');
-    expect(text(released!.querySelector('.roadmap-more'))).toBe('+ 2 more');
-    expect(released!.querySelector('.roadmap-link')?.getAttribute('href')).toBe(
-      'https://github.com/r/1.0.0',
+    expect(page.querySelector('.roadmap-steps')?.getAttribute('style')).toContain(
+      '--roadmap-columns: 3',
     );
-
-    expect(text(next!.querySelector('h3'))).toBe('v1.1.0');
-    expect(text(next!.querySelector('.roadmap-badge'))).toBe('Next');
-    expect(text(next!.querySelector('.roadmap-meta'))).toBe('Due November 12, 2026 · 1 of 4 done');
-    expect(text(next!.querySelector('.roadmap-description p'))).toBe('For the IAE:');
-    expect(
-      [...next!.querySelectorAll('.roadmap-description li')].map((li) => li.textContent),
-    ).toEqual(['Warbond CCUs', 'Discounts']);
-    expect(next!.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe('25');
-    // Grouped by status; titles are escaped, not markup.
-    const groups = [...next!.querySelectorAll('.roadmap-group')];
-    expect(groups.map((group) => group.getAttribute('aria-label'))).toEqual(['Open', 'Done']);
-    expect(groups.map((group) => text(group.querySelector('.roadmap-count')))).toEqual(['1', '5']);
-    expect(text(next!.querySelector('.roadmap-issue'))).toBe('Export <CSV> #1');
-    expect(html).not.toContain('<CSV>');
-    expect(text(next!.querySelector('.roadmap-more'))).toBe('+ 4 more done');
-    expect(text(planned!.querySelector('.roadmap-badge'))).toBe('Planned');
-
-    expect(text(later!.querySelector('h3'))).toBe('Later');
-    expect(text(later!.querySelector('.roadmap-issue'))).toBe('Statistics "tab" #5');
-    expect(later!.querySelector('.roadmap-link')?.getAttribute('href')).toContain(
+    const section = page.querySelector('section.roadmap-later')!;
+    expect(text(section.querySelector('h3'))).toBe('Later');
+    expect(text(section.querySelector('.roadmap-chip'))).toBe('Paint packs "soon"#5');
+    expect(section.querySelector('.roadmap-link')?.getAttribute('href')).toContain(
       '/discussions/categories/ideas',
     );
+  });
+
+  it('keeps "Later" on the timeline next to one planned version', () => {
+    const page = parse(
+      renderRoadmap({ release: live, fromBoard: false, milestones: [next], later }),
+    );
+    expect(steps(page)).toEqual([
+      'roadmap-step is-live',
+      'roadmap-step is-next',
+      'roadmap-step is-later',
+    ]);
+    expect(page.querySelector('section.roadmap-later')).toBeNull();
+    const card = page.querySelector('.is-later')!;
+    expect(text(card.querySelector('.roadmap-badge'))).toBe('Ideas');
+    expect(card.querySelector('.roadmap-issue use')?.getAttribute('href')).toBe('#icon-lightbulb');
     // Icons of the page's sprite, hidden from screen readers.
-    expect(page.querySelector('.roadmap-issue use')?.getAttribute('href')).toBe('#icon-check');
-    expect(page.querySelector('.roadmap-issue svg')?.getAttribute('aria-hidden')).toBe('true');
+    expect(card.querySelector('.roadmap-issue svg')?.getAttribute('aria-hidden')).toBe('true');
   });
 
   it('says so when nothing is planned', () => {
