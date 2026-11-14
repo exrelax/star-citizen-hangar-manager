@@ -175,6 +175,11 @@ seen and closes it. A store that answers unexpectedly fails the run (GitHub send
 moves nothing. It also comments on #333 once Chrome reports that Enhanced Safe Browsing trusts the
 extension.
 
+While the publish issue itself is "In review", the website's roadmap shows its version as "In
+review" instead of "Next" (#354). A change on the board starts no workflow, so the store review
+compares the deployed roadmap with the board every hour and starts a website build when they
+differ.
+
 The board needs the secret `PROJECT_TOKEN` (a fine-grained token of the board's owner with read
 and write access to projects); without it the workflow only reports. Locally,
 `GITHUB_TOKEN=… PROJECT_TOKEN=… node scripts/store-review/store-review.ts --dry-run` shows what it

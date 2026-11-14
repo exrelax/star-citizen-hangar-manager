@@ -2096,6 +2096,13 @@ h2.is-small {
   --step-dot: 4px;
 }
 
+.roadmap-step.is-review {
+  --step: var(--site-teal);
+  --step-tint: rgb(100 210 255 / 0.16);
+  --step-ring: rgb(100 210 255 / 0.4);
+  --step-dot: 4px;
+}
+
 .roadmap-step.is-later {
   --step: var(--site-text-faint);
   --step-ring: var(--site-border);
@@ -2103,6 +2110,10 @@ h2.is-small {
 
 .roadmap-step:has(+ .is-next) {
   --rail-end: var(--site-accent);
+}
+
+.roadmap-step:has(+ .is-review) {
+  --rail-end: var(--site-teal);
 }
 
 .roadmap-step:has(+ .is-planned) {

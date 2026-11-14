@@ -1,5 +1,7 @@
 # Moves the store issues (label `store-review`) on the project board from "In review" to "Done"
 # once their store has published the version, comments the version seen and closes them (#350).
+# Starts a website build when the roadmap shows a version's review state wrongly: a change on the
+# board starts no workflow (#354).
 # See scripts/store-review/store-review.ts. Runs hourly and by hand ("Run workflow"; "dry run"
 # only reports).
 #
@@ -19,8 +21,10 @@ on:
         type: boolean
         default: false
 
-# Comments on and closes the issues; the board is changed with PROJECT_TOKEN.
+# Comments on and closes the issues and starts a website build when the roadmap is outdated
+# (#354); the board is changed with PROJECT_TOKEN.
 permissions:
+  actions: write
   contents: read
   issues: write
 
