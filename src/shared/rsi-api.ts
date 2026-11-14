@@ -1,3 +1,5 @@
+import { responseError, withUrl } from '@/shared/lib/retry';
+
 /*
  * Requests to RSI's JSON APIs, from an RSI page (content script) or from the background script
  * (#163). Both send RSI's cookies: the page as the site itself, the background through the host
@@ -42,7 +44,8 @@ export async function postRsiJson<T>(
   headers: Record<string, string> = {},
 ): Promise<T> {
   const token = sessionToken();
-  const response = await fetch(rsiUrl(path), {
+  const url = rsiUrl(path);
+  const response = await fetch(url, {
     method: 'POST',
     credentials: 'include',
     headers: {
@@ -53,7 +56,9 @@ export async function postRsiJson<T>(
       ...headers,
     },
     body: body === undefined ? undefined : JSON.stringify(body),
+  }).catch((error: unknown) => {
+    throw withUrl(error, url);
   });
-  if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
+  if (!response.ok) throw responseError(`${path}: HTTP ${response.status}`, response, url);
   return (await response.json()) as T;
 }

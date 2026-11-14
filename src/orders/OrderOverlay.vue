@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { logError, reasonOf } from '@/errors/error-log';
 import { useDemoContext } from '@/demo/use-demo';
 import { i18n } from '@/i18n';
 import { useSettings } from '@/settings/use-settings';
@@ -79,6 +80,9 @@ onMounted(async () => {
     }
   } catch (failure) {
     console.error('[star-citizen-hangar-manager] Loading the order failed', failure);
+    void logError('ORDER-LOAD-FAIL', `Order ${props.order.id}: ${reasonOf(failure)}`, {
+      error: failure,
+    });
     error.value = i18n.t('order.failed', [
       failure instanceof Error ? failure.message : String(failure),
     ]);

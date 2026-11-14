@@ -424,6 +424,16 @@ rotating spot checks, and the pages of the pledges the log names and of those ju
 ([`src/hangar/smart-update/check.ts`](../src/hangar/smart-update/check.ts)). How reliable that is
 for which change: [FEATURES.md](FEATURES.md#smart-updates-a-few-pages-instead-of-all).
 
+## Errors
+
+An error the Hangar Manager handles – a page it couldn't read, an entry it left out – goes into
+the error log with a code: `logError(code, message)` (`src/errors/error-log.ts`). The codes are
+defined in `src/errors/codes.ts` (what failed, what was done instead) and documented for users in
+[ERROR_CODES.md](ERROR_CODES.md); a test checks that both list the same codes. A new handled error
+gets a code of its own, or one whose meaning fits exactly. The message is short and telling: what,
+why (e.g. `HTTP 404`) and what was done instead. The log keeps the last 500 entries in this
+browser; the settings show it ("Error log") and copy it without pledge and order ids.
+
 ## Project structure
 
 ```

@@ -16,6 +16,7 @@ import AboutSection from './sections/AboutSection.vue';
 import AppearanceSection from './sections/AppearanceSection.vue';
 import DemoSection from './sections/DemoSection.vue';
 import DevelopmentSection from './sections/DevelopmentSection.vue';
+import ErrorLogSection from './sections/ErrorLogSection.vue';
 import ExperimentalSection from './sections/ExperimentalSection.vue';
 import FilterSection from './sections/FilterSection.vue';
 import ListsSection from './sections/ListsSection.vue';
@@ -50,6 +51,7 @@ const SECTIONS: Record<SettingsCategory, Component> = {
   smartUpdates: SmartUpdateSection,
   experimental: ExperimentalSection,
   storage: StorageSection,
+  errorLog: ErrorLogSection,
   about: AboutSection,
   development: DevelopmentSection,
 };

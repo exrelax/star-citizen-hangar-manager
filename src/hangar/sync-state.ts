@@ -23,6 +23,9 @@ import { currentIntervalMinutes, recordCheckResult } from './smart-update/backof
 import { isCheckDue, withSmartUpdateLock } from './smart-update/schedule';
 import { announceCheck } from './smart-update/broadcast';
 import { SMART_UPDATE } from '@/config';
+import { logError, reasonOf } from '@/errors/error-log';
+import { urlOf } from '@/shared/lib/retry';
+import { syncFailCode, type ErrorCode } from '@/errors/codes';
 
 const state = reactive({
   /** A full sync is running (of everything, or of `storage`). */
@@ -34,7 +37,42 @@ const state = reactive({
   checking: false,
   /** A smart update check is running in another tab (see `smart-update/broadcast.ts`). */
   checkingElsewhere: false,
+  /** What the last full sync couldn't read (#334), shown until the next one starts. */
+  error: null as SyncError | null,
 });
+
+/** A part of a full sync that failed: which storage, why, and when. */
+export interface SyncError {
+  storage: StorageId;
+  /** Its code in the error log (#341). */
+  code: ErrorCode;
+  /** The error's message, e.g. "Loading buy back page 3 failed: HTTP 500". */
+  message: string;
+  /** The URL of the request it failed on, if any (#342). */
+  url?: string;
+  at: number;
+}
+
+/** Logs a failed part of a sync and returns what the status shows of it. */
+function syncErrorOf(
+  storage: StorageId,
+  error: unknown,
+  code: ErrorCode = syncFailCode(storage),
+): SyncError {
+  console.error(`[star-citizen-hangar-manager] Reading ${storage} failed`, error);
+  void logError(code, `Reading ${storage} stopped: ${reasonOf(error)}; kept the last state`, {
+    error,
+    withStack: code === 'SYNC-UNEXPECTED',
+  });
+  const url = urlOf(error);
+  return {
+    storage,
+    code,
+    message: error instanceof Error ? error.message : String(error),
+    ...(url && { url }),
+    at: Date.now(),
+  };
+}
 
 /**
  * Taken by `maybeRunSmartUpdate` from the first trigger on, also while it only looks whether a
@@ -51,13 +89,20 @@ export const syncState = readonly(state);
 /**
  * Starts a full sync of the hangar, the buy back and then the orders, unless one is already
  * running. The first pages of all are read up front, so the progress counts all their pages from
- * the start.
+ * the start. Each part is stored on its own (#334): a buy back that can't be read keeps its last
+ * state, while the hangar and the orders are still read; the status then says what failed.
  */
 export async function startSync(): Promise<void> {
   if (state.running) return;
   state.running = true;
   state.progress = null;
+  state.error = null;
   const startedAt = performance.now();
+  const failed: SyncError[] = [];
+  const failure = (storage: StorageId) => (error: unknown) => {
+    failed.push(syncErrorOf(storage, error));
+    return null;
+  };
   try {
     // Small and optional: load alongside, a failure keeps the stored ships, offers and items.
     const upgradeTool = refreshUpgradeTool();
@@ -66,11 +111,14 @@ export async function startSync(): Promise<void> {
     // Reported only once both totals are known; the detail pages of the buy back join later.
     const progress = new SyncProgressTracker();
     const [runHangar, runBuyback, runOrders] = await Promise.all([
-      prepareHangarSync({ progress: progress.section('hangar') }),
-      prepareBuybackSync({ progress: progress.section('buyback') }),
-      // An extra as well: without the orders, hangar and buy back are still stored.
+      prepareHangarSync({ progress: progress.section('hangar') }).catch(failure('hangar')),
+      prepareBuybackSync({ progress: progress.section('buyback') }).catch(failure('buyback')),
+      // An extra: without the orders, hangar and buy back are still stored.
       prepareOrderSync({ progress: progress.section('orders') }).catch((error: unknown) => {
         console.warn('[star-citizen-hangar-manager] Orders unavailable', error);
+        void logError('SYNC-ORDERS-FAIL', `Order history unavailable: ${reasonOf(error)}`, {
+          error,
+        });
         return null;
       }),
     ]);
@@ -78,12 +126,23 @@ export async function startSync(): Promise<void> {
     progress.onChange = (value) => (state.progress = value);
     state.progress = progress.progress;
 
-    const hangar = await runHangar();
-    await recordSync(hangarMeta);
-    const buyback = await runBuyback();
-    await recordSync(buybackMeta);
+    const hangar = await runHangar?.()
+      .then(async (snapshot) => {
+        await recordSync(hangarMeta);
+        return snapshot;
+      })
+      .catch(failure('hangar'));
+    const buyback = await runBuyback?.()
+      .then(async (snapshot) => {
+        await recordSync(buybackMeta);
+        return snapshot;
+      })
+      .catch(failure('buyback'));
     const orders = await runOrders?.().catch((error: unknown) => {
       console.warn('[star-citizen-hangar-manager] Order sync failed', error);
+      void logError('SYNC-ORDERS-FAIL', `Reading the order history stopped: ${reasonOf(error)}`, {
+        error,
+      });
       return null;
     });
     await upgradeTool;
@@ -92,14 +151,15 @@ export async function startSync(): Promise<void> {
 
     const seconds = ((performance.now() - startedAt) / 1000).toFixed(1);
     console.info(
-      `[star-citizen-hangar-manager] Synced ${hangar.pledges.length} hangar and ` +
-        `${buyback.pledges.length} buy back pledges` +
+      `[star-citizen-hangar-manager] Synced ${hangar ? hangar.pledges.length : 'no'} hangar and ` +
+        `${buyback ? buyback.pledges.length : 'no'} buy back pledges` +
         (orders ? ` and ${Object.keys(orders.snapshot.orders).length} orders` : '') +
         ` in ${seconds} s`,
     );
   } catch (error) {
-    console.error('[star-citizen-hangar-manager] Sync failed', error);
+    failed.push(syncErrorOf('hangar', error, 'SYNC-UNEXPECTED'));
   } finally {
+    state.error = failed[0] ?? null;
     state.running = false;
     state.progress = null;
   }
@@ -122,6 +182,7 @@ export async function startStorageSync(id: StorageId): Promise<void> {
   state.running = true;
   state.storage = id;
   state.progress = null;
+  state.error = null;
   try {
     const progress = new SyncProgressTracker((value) => (state.progress = value));
     const section = progress.section(id);
@@ -157,7 +218,7 @@ export async function startStorageSync(id: StorageId): Promise<void> {
       section.complete(1, 1);
     }
   } catch (error) {
-    console.error(`[star-citizen-hangar-manager] Reading ${id} failed`, error);
+    state.error = syncErrorOf(id, error);
   } finally {
     state.running = false;
     state.storage = undefined;
@@ -250,6 +311,7 @@ async function runChecks(spotCheckPages: number): Promise<boolean> {
   //    Usually one page of the log and of the billing list.
   const orders = await updateOrders().catch((error: unknown) => {
     console.warn('[star-citizen-hangar-manager] Order update failed', error);
+    void logError('SMART-ORDERS-FAIL', `Order history update: ${reasonOf(error)}`, { error });
     return null;
   });
   const logIds = pledgeIdsOfLogEntries(orders?.newLogEntries ?? []);
@@ -291,6 +353,7 @@ async function runLogged(
     return outcome;
   } catch (error) {
     console.error(`[star-citizen-hangar-manager] ${label} failed`, error);
+    void logError('SMART-CHECK-FAIL', `${label}: ${reasonOf(error)}`, { error });
     // Counts as a check, so a broken connection isn't retried on every trigger.
     await recordCheck(meta, { status: 'failed' });
     return null;

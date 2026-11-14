@@ -378,7 +378,8 @@
       "hangar": "Hangar",
       "resetHint": "All demo settings back to their defaults; the demo’s marks are cleared."
     },
-    "on": "On"
+    "on": "On",
+    "errorLog": "Error log"
   },
   "storage": {
     "title": "Stored data",
@@ -509,6 +510,22 @@
     "stepPages": {
       "one": "$1 page read",
       "other": "$1 pages read"
+    },
+    "syncFailed": "Reading $1 failed.",
+    "syncFailedTitle": "Error",
+    "copyDetails": "Copy details",
+    "copied": "Copied"
+  },
+  "errorLog": {
+    "intro": "Errors the Hangar Manager handled, newest first: a page it couldn't read, an entry it left out, and what it did instead. Kept in this browser only, the last $1. Copy it into a bug report – the copy names the pledges and the pages it asked RSI for, but holds no pledge or order IDs.",
+    "codesLink": "What the codes mean",
+    "copy": "Copy log",
+    "clear": "Clear log",
+    "clearConfirm": "Clear the error log?",
+    "empty": "No errors so far.",
+    "count": {
+      "one": "$1 entry",
+      "other": "$1 entries"
     }
   },
   "ccugame": {
@@ -524,6 +541,11 @@
     },
     "empty": "RSI lists no buy back pledges for your account.",
     "contains": "Contains: $1",
+    "detailsFailed": "RSI's page of this pledge couldn't be read, so its items and price may be missing. It's read again on the next refresh.",
+    "unread": {
+      "one": "$1 pledge of RSI's buy back couldn't be read: RSI fails to show it, so it was left out. The next refresh tries again.",
+      "other": "$1 pledges of RSI's buy back couldn't be read: RSI fails to show them, so they were left out. The next refresh tries again."
+    },
     "reclaimed": "Melted $1",
     "showInBuyback": "Show in Buy Back (page $1)",
     "probablyGiftableHint": "When bought back with real money (warbond), this item is probably giftable: it was bought before $1 with money only, without store credit, and keeps that status.",

@@ -46,6 +46,8 @@ export const REPOSITORY_LINKS = {
   privacy: `${REPOSITORY_URL}/blob/main/PRIVACY.md`,
   changelog: `${REPOSITORY_URL}/blob/main/CHANGELOG.md`,
   license: `${REPOSITORY_URL}/blob/main/LICENSE`,
+  /** What the codes of the error log mean (#341). */
+  errorCodes: `${REPOSITORY_URL}/blob/main/docs/ERROR_CODES.md`,
 } as const;
 
 /** Pledges per page in the RSI hangar ("My Gear"). Fixed by RSI. */
@@ -74,6 +76,23 @@ export const SEARCH_URL_SYNC_DELAY_MS = 300;
 
 /** Buy back pledges per page; the largest page size RSI accepts for the buy back list. */
 export const BUYBACK_PAGE_SIZE = 250;
+
+/**
+ * Waits before reading a buy back page again that failed for a reason that may pass (#334: HTTP
+ * 429, 5xx, no answer); RSI's `Retry-After` makes them longer.
+ */
+export const BUYBACK_RETRY_DELAYS_MS = [2_000, 6_000] as const;
+
+/**
+ * A buy back page RSI keeps failing with a server error is read again in smaller pages over the
+ * same range, down to single pledges, to skip only the one that breaks it (#339). Each size divides
+ * the one before, so the smaller pages line up with the larger ones. More skipped pledges than
+ * `maxSkipped` in one read mean RSI itself is broken: the read stops.
+ */
+export const BUYBACK_NARROWING = {
+  sizes: [BUYBACK_PAGE_SIZE, 50, 10, 1],
+  maxSkipped: 10,
+} as const;
 
 /**
  * Buy back pledges bought before this date are "probably giftable" when bought back with real

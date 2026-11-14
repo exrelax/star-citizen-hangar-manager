@@ -34,6 +34,11 @@ export interface BuybackPledge {
    * `buyback-price.ts`).
    */
   price?: number | null;
+  /**
+   * Its detail page couldn't be read on the last try (#334): `items` and `price` are what was known
+   * before, if anything. Read again on the next sync, or when its row is opened.
+   */
+  detailsFailed?: boolean;
 }
 
 /** Locally stored result of the last buy back sync. */
@@ -52,6 +57,11 @@ export interface BuybackSnapshot {
    * back with store credit. Unset if RSI showed none.
    */
   tokens?: number;
+  /**
+   * Pledges of RSI's list the last full sync couldn't read (#339): a page broke on them and they
+   * were skipped. Unset when all were read.
+   */
+  unread?: number;
 }
 
 export const BUYBACK_SNAPSHOT_VERSION = 1;
@@ -86,6 +96,19 @@ export function buybackShipNames(pledge: BuybackPledge): string[] {
     /^(standalone ships?|package)\b/i.test(pledge.title);
   const main = mainItem(pledge);
   return isShipPledge && main ? [main] : [];
+}
+
+/**
+ * A buy back pledge for the error log (#342): its id, title, kind and what RSI says it contains,
+ * e.g. `buy back pledge #123456 "Package - Fury Starter" (game package, contains "Fury and 4
+ * items")` – enough to find out with its owner what is special about it.
+ */
+export function describeBuybackPledge(
+  pledge: Pick<BuybackPledge, 'id' | 'title' | 'contained' | 'isUpgrade' | 'category'>,
+): string {
+  const kind = pledge.isUpgrade ? 'CCU' : (pledge.category?.replace(/_/g, ' ') ?? 'other');
+  const contained = pledge.contained ? `, contains "${pledge.contained}"` : '';
+  return `buy back pledge #${pledge.id} "${pledge.title}" (${kind}${contained})`;
 }
 
 /** Content as RSI shows it, to notice changes in smart updates. */

@@ -1,3 +1,5 @@
+import { httpError, withUrl } from '@/shared/lib/retry';
+import { logError, reasonOf } from '@/errors/error-log';
 import { SHIP_MATRIX } from '@/config';
 import { settingsItem, withDefaults } from '@/settings/settings';
 import { defineMeta, hashOf, recordCheck, recordSync } from '@/storage/meta';
@@ -55,8 +57,10 @@ export function parseShipMatrix(json: unknown): ShipStatusSnapshot {
 }
 
 async function fetchShipStatus(): Promise<ShipStatusSnapshot> {
-  const response = await fetch(SHIP_MATRIX.url, { credentials: 'omit' });
-  if (!response.ok) throw new Error(`Loading the Ship Matrix failed: HTTP ${response.status}`);
+  const response = await fetch(SHIP_MATRIX.url, { credentials: 'omit' }).catch((error: unknown) => {
+    throw withUrl(error, SHIP_MATRIX.url);
+  });
+  if (!response.ok) throw httpError('Loading the Ship Matrix', response, SHIP_MATRIX.url);
   return parseShipMatrix(await response.json());
 }
 
@@ -107,6 +111,9 @@ export function maybeRefreshShipStatus({
       });
     } catch (cause) {
       console.warn('[star-citizen-hangar-manager] Ship Matrix unavailable', cause);
+      void logError('SHIP-MATRIX-FAIL', `Ship Matrix: ${reasonOf(cause)}; kept the last status`, {
+        error: cause,
+      });
       await recordCheck(shipStatusMeta, { status: 'failed' }, { at: now() });
     }
   })().finally(() => (running = undefined));

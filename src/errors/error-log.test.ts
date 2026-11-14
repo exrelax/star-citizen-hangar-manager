@@ -1,0 +1,141 @@
+import { beforeEach, describe, expect, it } from 'vitest';
+import { fakeBrowser } from 'wxt/testing/fake-browser';
+import {
+  clearErrorLog,
+  entryOf,
+  isUnexpected,
+  errorLogItem,
+  formatErrorLog,
+  logError,
+  reasonOf,
+  withEntry,
+  withoutIds,
+  ERROR_LOG_VERSION,
+} from './error-log';
+
+beforeEach(() => fakeBrowser.reset());
+
+const entry = (at: number, message = `Error ${at}`) => ({ at, code: 'TEST', message });
+
+describe('withEntry', () => {
+  it('keeps the newest entries only', () => {
+    let log = null;
+    for (let at = 1; at <= 7; at++) log = withEntry(log, entry(at), 5);
+    expect(log?.entries.map((e) => e.at)).toEqual([3, 4, 5, 6, 7]);
+  });
+
+  it('counts the same error right after itself', () => {
+    let log = withEntry(null, entry(1, 'Same'));
+    log = withEntry(log, entry(2, 'Same'));
+    log = withEntry(log, entry(3, 'Same'));
+    log = withEntry(log, entry(4, 'Other'));
+    expect(log.entries).toEqual([
+      { at: 3, code: 'TEST', message: 'Same', count: 3 },
+      { at: 4, code: 'TEST', message: 'Other' },
+    ]);
+  });
+});
+
+describe('logError', () => {
+  it('stores errors logged at the same time, and clears them', async () => {
+    await Promise.all([
+      logError('BB-PAGE-SKIP', 'first', { at: 1 }),
+      logError('BB-DETAIL-SKIP', 'second', { at: 2 }),
+    ]);
+    expect((await errorLogItem.getValue())?.entries.map((e) => e.code)).toEqual([
+      'BB-PAGE-SKIP',
+      'BB-DETAIL-SKIP',
+    ]);
+    await clearErrorLog();
+    expect(await errorLogItem.getValue()).toBeNull();
+  });
+});
+
+describe('formatErrorLog', () => {
+  it('lists the newest first, with code and count, without ids on demand', () => {
+    const log = {
+      version: ERROR_LOG_VERSION,
+      entries: [
+        { at: new Date(2026, 10, 14, 14, 56, 29).getTime(), code: 'A', message: 'Pledge #123456' },
+        { at: new Date(2026, 10, 14, 15, 0, 0).getTime(), code: 'B', message: 'Page 3', count: 2 },
+      ],
+    };
+    expect(formatErrorLog(log)).toBe(
+      '2026-11-14 15:00:00 B Page 3 (×2)\n2026-11-14 14:56:29 A Pledge #123456',
+    );
+    expect(formatErrorLog(log, true)).toContain('A Pledge #<id>');
+    expect(formatErrorLog(null)).toBe('');
+  });
+});
+
+describe('withoutIds', () => {
+  it('keeps page numbers and HTTP statuses', () => {
+    expect(withoutIds('Buy back page 3, pledge 115089796: HTTP 404')).toBe(
+      'Buy back page 3, pledge <id>: HTTP 404',
+    );
+  });
+});
+
+describe('reasonOf', () => {
+  it('keeps the reason of a failed request, else the message', () => {
+    expect(reasonOf(new Error('Loading buy back pledge 1 failed: HTTP 404'))).toBe('HTTP 404');
+    expect(reasonOf(new Error('are you still logged in?'))).toBe('are you still logged in?');
+    expect(reasonOf('text')).toBe('text');
+  });
+});
+
+describe('entryOf and formatErrorLog (#342)', () => {
+  it('keeps the URL of a failed request, and the stack only of an unexpected error', () => {
+    const failed = Object.assign(new Error('Loading buy back page 6 failed: HTTP 500'), {
+      url: 'https://rsi.test/bb?page=6',
+    });
+    expect(entryOf('BB-PAGE-SKIP', 'm', { error: failed, at: 1 })).toEqual({
+      at: 1,
+      code: 'BB-PAGE-SKIP',
+      message: 'm',
+      url: 'https://rsi.test/bb?page=6',
+    });
+    const mistake = new TypeError("Cannot read properties of undefined (reading 'title')");
+    mistake.stack = [
+      'TypeError: Cannot read properties of undefined',
+      '    at mainItem (chrome-extension://abcdef/content-scripts/hangar.js:13:20418)',
+      '    at enrich (chrome-extension://abcdef/content-scripts/hangar.js:13:24102)',
+    ].join('\n');
+    expect(entryOf('SYNC-UNEXPECTED', 'm', { error: mistake, at: 1 }).stack).toEqual([
+      'at mainItem (content-scripts/hangar.js:13:20418)',
+      'at enrich (content-scripts/hangar.js:13:24102)',
+    ]);
+    expect(isUnexpected(new TypeError('Failed to fetch'))).toBe(false);
+  });
+
+  it('marks the entry closest to the cause and lists its sub-errors below it', () => {
+    const at = new Date(2026, 10, 14, 15, 0, 0).getTime();
+    const log = withEntry(null, {
+      at,
+      code: 'BB-PAGE-SKIP',
+      message: 'Buy back position 8, page of 1 pledge: HTTP 500',
+      url: 'https://rsi.test/bb?page=8&pagesize=1',
+      subErrors: [
+        { at, message: 'Buy back page 1 of 250 pledges: HTTP 500', url: 'https://rsi.test/a' },
+      ],
+    });
+    expect(formatErrorLog(log)).toBe(
+      [
+        '2026-11-14 15:00:00 ► BB-PAGE-SKIP Buy back position 8, page of 1 pledge: HTTP 500',
+        '    URL: https://rsi.test/bb?page=8&pagesize=1',
+        '  ↳ 2026-11-14 15:00:00 Buy back page 1 of 250 pledges: HTTP 500',
+        '      URL: https://rsi.test/a',
+      ].join('\n'),
+    );
+  });
+
+  it("doesn't count entries with sub-errors as repeats", () => {
+    const entry = {
+      at: 1,
+      code: 'BB-PAGE-SKIP',
+      message: 'm',
+      subErrors: [{ at: 1, message: 's' }],
+    };
+    expect(withEntry(withEntry(null, entry), entry).entries).toHaveLength(2);
+  });
+});

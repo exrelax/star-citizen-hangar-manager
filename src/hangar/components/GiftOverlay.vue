@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { capitalized, logError, reasonOf } from '@/errors/error-log';
+import { describePledge } from '@/hangar/pledge-kind';
 import { useDemoContext } from '@/demo/use-demo';
 import { giftingRulesDate } from '@/buyback/giftable-hint';
 import { GIFTING_FAQ_URL } from '@/config';
@@ -66,6 +68,13 @@ async function submit() {
     await giftPledge(props.pledge.id, { name: name.value, email: email.value }, password.value);
     sentTo.value = email.value.trim();
   } catch (failure) {
+    void logError(
+      'HANGAR-GIFT-FAIL',
+      `${capitalized(describePledge(props.pledge))}: ${reasonOf(failure)}`,
+      {
+        error: failure,
+      },
+    );
     error.value = i18n.t('gift.failed', [
       failure instanceof Error ? failure.message : String(failure),
     ]);

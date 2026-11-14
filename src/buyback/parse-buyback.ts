@@ -1,3 +1,5 @@
+import { logError } from '@/errors/error-log';
+import { outlineOf } from '@/errors/outline';
 import { parseDate } from '@/hangar/parse-pledges';
 import type { ListPage } from '@/hangar/smart-update/check';
 import type { BuybackPledge, BuybackUpgrade } from './buyback';
@@ -39,9 +41,17 @@ function parseEntry(li: HTMLElement): BuybackPledge | undefined {
     /\/pledge\/buyback\/(\d+)/.exec(href)?.[1] ??
       li.querySelector('[data-pledgeid]')?.getAttribute('data-pledgeid'),
   );
-  if (!Number.isInteger(id) || id <= 0) return undefined;
-
   const title = text(li.querySelector('h1'));
+  if (!Number.isInteger(id) || id <= 0) {
+    if (title)
+      void logError(
+        'PARSE-BUYBACK-NO-ID',
+        `"${title}" on a buy back page: no pledge id; left out`,
+        { outline: outlineOf(li) },
+      );
+    return undefined;
+  }
+
   const image = li.querySelector('figure img')?.getAttribute('src');
   const ccuButton = li.querySelector('.js-open-ship-upgrades');
   const upgrade = ccuButton ? parseUpgrade(ccuButton) : undefined;

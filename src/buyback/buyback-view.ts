@@ -58,6 +58,8 @@ export interface BuybackView {
   unavailable?: BuybackUnavailable;
   /** Its detail page was read for the price (a price or none), so it needn't be read again. */
   priceRead: boolean;
+  /** Its detail page couldn't be read during the last sync (#334): items and price may be missing. */
+  detailsFailed: boolean;
   /** Its expected price increase, if any (#190, see `price-increase-match.ts`). */
   priceIncrease?: PriceIncreaseMatch;
   /** A CCU whose base or target ship is expected to rise (#250, see `ccu-price-change.ts`). */
@@ -135,6 +137,7 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
     ...(priceIncrease && { priceIncrease }),
     ...(ccuPriceChange && { ccuPriceChange }),
     priceRead: pledge.price !== undefined,
+    detailsFailed: pledge.detailsFailed === true,
     searchText: normalizeSearchText([pledge.title, ...shipNames, pledge.id].join(' ')),
   };
 }

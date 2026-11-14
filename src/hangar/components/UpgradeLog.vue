@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { logError, reasonOf } from '@/errors/error-log';
 import { useDemoContext } from '@/demo/use-demo';
 import { i18n, locale } from '@/i18n';
 import { computed, ref } from 'vue';
@@ -42,6 +43,9 @@ async function toggle() {
     entries.value = withPrices(shown, createPriceLookup(shipPricesOf(ships)));
   } catch (failure) {
     console.error('[star-citizen-hangar-manager] Loading the upgrade log failed', failure);
+    void logError('HANGAR-UPGRADE-LOG-FAIL', `Pledge #${props.pledgeId}: ${reasonOf(failure)}`, {
+      error: failure,
+    });
     error.value = i18n.t('upgradeLog.failed', [
       failure instanceof Error ? failure.message : String(failure),
     ]);

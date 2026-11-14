@@ -1,3 +1,4 @@
+import { httpError, withUrl } from '@/shared/lib/retry';
 import type { Pledge } from './pledge';
 
 /** Ship images by `shipKey(name)`. */
@@ -36,8 +37,11 @@ export function parseShipMatrix(json: unknown): ShipImages {
 }
 
 export async function fetchShipMatrixImages(): Promise<ShipImages> {
-  const response = await fetch('/ship-matrix/index', { credentials: 'include' });
-  if (!response.ok) throw new Error(`Loading the ship matrix failed: HTTP ${response.status}`);
+  const url = '/ship-matrix/index';
+  const response = await fetch(url, { credentials: 'include' }).catch((error: unknown) => {
+    throw withUrl(error, url);
+  });
+  if (!response.ok) throw httpError('Loading the ship matrix', response, url);
   return parseShipMatrix(await response.json());
 }
 

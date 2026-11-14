@@ -378,7 +378,8 @@
       "hangar": "Hangar",
       "resetHint": "Tous les réglages de la démo reviennent à leurs valeurs par défaut ; les marques de la démo sont effacées."
     },
-    "on": "Activé"
+    "on": "Activé",
+    "errorLog": "Journal des erreurs"
   },
   "storage": {
     "title": "Données enregistrées",
@@ -509,6 +510,22 @@
     "stepPages": {
       "one": "$1 page lue",
       "other": "$1 pages lues"
+    },
+    "syncFailed": "Impossible de lire $1.",
+    "syncFailedTitle": "Erreur",
+    "copyDetails": "Copier les détails",
+    "copied": "Copié"
+  },
+  "errorLog": {
+    "intro": "Les erreurs gérées par le Hangar Manager, les plus récentes d’abord : une page qu’il n’a pas pu lire, une entrée qu’il a omise, et ce qu’il a fait à la place. Conservé dans ce navigateur uniquement, les $1 dernières. Copie-le dans un rapport de bug – la copie nomme les pledges et les pages demandées à RSI, mais ne contient aucun ID de pledge ou de commande.",
+    "codesLink": "Ce que signifient les codes",
+    "copy": "Copier le journal",
+    "clear": "Vider le journal",
+    "clearConfirm": "Vider le journal des erreurs ?",
+    "empty": "Aucune erreur pour l’instant.",
+    "count": {
+      "one": "$1 entrée",
+      "other": "$1 entrées"
     }
   },
   "ccugame": {
@@ -524,6 +541,11 @@
     },
     "empty": "RSI n’indique aucun pledge à racheter pour ton compte.",
     "contains": "Contient : $1",
+    "detailsFailed": "La page RSI de ce pledge n’a pas pu être lue : ses objets et son prix peuvent manquer. Elle sera relue à la prochaine actualisation.",
+    "unread": {
+      "one": "$1 pledge du buy back de RSI n’a pas pu être lu : RSI ne parvient pas à l’afficher, il a donc été omis. La prochaine actualisation réessaiera.",
+      "other": "$1 pledges du buy back de RSI n’ont pas pu être lus : RSI ne parvient pas à les afficher, ils ont donc été omis. La prochaine actualisation réessaiera."
+    },
     "reclaimed": "Fusionné le $1",
     "showInBuyback": "Afficher dans Buy Back (page $1)",
     "probablyGiftableHint": "Racheté en argent réel (warbond), cet élément est probablement offrable : il a été acheté avant le $1 uniquement avec de l’argent, sans crédit boutique, et garde ce statut.",

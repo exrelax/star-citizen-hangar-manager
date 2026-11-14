@@ -378,7 +378,8 @@
       "hangar": "Hangar",
       "resetHint": "Todos los ajustes de la demo vuelven a sus valores predeterminados y se borran las marcas de la demo."
     },
-    "on": "Activado"
+    "on": "Activado",
+    "errorLog": "Registro de errores"
   },
   "storage": {
     "title": "Datos guardados",
@@ -509,6 +510,22 @@
     "stepPages": {
       "one": "$1 página leída",
       "other": "$1 páginas leídas"
+    },
+    "syncFailed": "No se pudo leer $1.",
+    "syncFailedTitle": "Error",
+    "copyDetails": "Copiar detalles",
+    "copied": "Copiado"
+  },
+  "errorLog": {
+    "intro": "Errores que el Hangar Manager ha gestionado, los más recientes primero: una página que no pudo leer, una entrada que omitió y lo que hizo en su lugar. Se guarda solo en este navegador, los últimos $1. Cópialo en un informe de error: la copia nombra los pledges y las páginas pedidas a RSI, pero no contiene IDs de pledges ni de pedidos.",
+    "codesLink": "Qué significan los códigos",
+    "copy": "Copiar registro",
+    "clear": "Vaciar registro",
+    "clearConfirm": "¿Vaciar el registro de errores?",
+    "empty": "Ningún error por ahora.",
+    "count": {
+      "one": "$1 entrada",
+      "other": "$1 entradas"
     }
   },
   "ccugame": {
@@ -524,6 +541,11 @@
     },
     "empty": "RSI no muestra ningún pledge de recompra para tu cuenta.",
     "contains": "Contiene: $1",
+    "detailsFailed": "No se pudo leer la página de RSI de este pledge, así que pueden faltar sus objetos y su precio. Se volverá a leer en la próxima actualización.",
+    "unread": {
+      "one": "No se pudo leer $1 pledge del buy back de RSI: RSI no logra mostrarlo, así que se omitió. La próxima actualización lo volverá a intentar.",
+      "other": "No se pudieron leer $1 pledges del buy back de RSI: RSI no logra mostrarlos, así que se omitieron. La próxima actualización lo volverá a intentar."
+    },
     "reclaimed": "Fundido el $1",
     "showInBuyback": "Mostrar en Buy Back (página $1)",
     "probablyGiftableHint": "Si lo recompras con dinero real (warbond), este elemento probablemente es regalable: se compró antes del $1 solo con dinero, sin crédito de tienda, y mantiene ese estado.",

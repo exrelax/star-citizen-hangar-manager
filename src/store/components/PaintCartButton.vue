@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { logError, reasonOf } from '@/errors/error-log';
 import { RSI_CART_PATH } from '@/buyback/cart';
 import { useDemoContext } from '@/demo/use-demo';
 import { i18n } from '@/i18n';
@@ -88,6 +89,7 @@ async function fill() {
 
 function report(failure: unknown) {
   console.error('[star-citizen-hangar-manager] Filling the cart failed', failure);
+  void logError('PAINT-CART-FAIL', `Filling the cart: ${reasonOf(failure)}`, { error: failure });
   error.value = failure instanceof Error ? failure.message : String(failure);
   state.value = 'idle';
 }

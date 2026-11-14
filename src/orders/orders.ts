@@ -1,3 +1,5 @@
+import { logError } from '@/errors/error-log';
+import { outlineOf } from '@/errors/outline';
 import { parseAmount, parseDate } from '@/hangar/parse-pledges';
 import { normalizeSearchText } from '@/hangar/search';
 
@@ -154,7 +156,16 @@ export function parseBillingPage(doc: Document): { orders: Order[]; lastPage: nu
     .map((li): Order | undefined => {
       const column = (label: string) => headerValue(li, label);
       const id = column('Order Id:').toUpperCase();
-      if (!/^[A-Z0-9]+$/.test(id)) return undefined;
+      if (!/^[A-Z0-9]+$/.test(id)) {
+        const placed = column('Order Placed:');
+        if (placed)
+          void logError(
+            'PARSE-ORDER-NO-ID',
+            `Order of ${placed} in the billing list: no order id; left out`,
+            { outline: outlineOf(li) },
+          );
+        return undefined;
+      }
       // "October 30, 2026 19:55" – the date is enough.
       const placed = column('Order Placed:').replace(/\s+\d{1,2}:\d{2}$/, '');
       const credits = totalsOf(li.querySelector('.payment-wrapper .right-section')).find((total) =>

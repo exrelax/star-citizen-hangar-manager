@@ -1,4 +1,7 @@
-import { BUYBACK_PAGE_SIZE, SYNC_CONCURRENCY, SYNC_WORK } from '@/config';
+import { BUYBACK_PAGE_SIZE, BUYBACK_RETRY_DELAYS_MS, SYNC_CONCURRENCY, SYNC_WORK } from '@/config';
+import { httpError, isTransient, urlOf, withRetry, withUrl } from '@/shared/lib/retry';
+import { narrowingFetchPage, type SkippedPositions } from './narrow-pages';
+import { capitalized, logError, reasonOf } from '@/errors/error-log';
 import { prepareListPages, type ListPagesOf } from '@/hangar/list-pages';
 import { PLEDGE_CATEGORIES, type Pledge, type PledgeCategory } from '@/hangar/pledge';
 import { resolveShipLinks, type ShipLinks } from '@/hangar/ship-links';
@@ -7,11 +10,12 @@ import { mapWithConcurrency } from '@/shared/lib/pool';
 import {
   BUYBACK_SNAPSHOT_VERSION,
   buybackShipNames,
+  describeBuybackPledge,
   hasSeveralItems,
   type BuybackPledge,
   type BuybackSnapshot,
 } from './buyback';
-import { buybackSnapshot, rememberBuybackPrice } from './buyback-storage';
+import { buybackSnapshot, rememberBuybackDetails } from './buyback-storage';
 import {
   parseBuybackDetail,
   parseBuybackPage,
@@ -56,24 +60,82 @@ export async function prepareBuybackSync(
   deps: BuybackSyncDeps = {},
 ): Promise<() => Promise<BuybackSnapshot>> {
   const { fetchPage = fetchBuybackPage, progress, concurrency } = deps;
+  // A page RSI can't render is narrowed down to the pledge that breaks it (#339).
+  const skipped: SkippedPositions[] = [];
+  // The last read names the pledges around a skipped one (#342); read once, when needed.
+  let previous: Promise<BuybackSnapshot | null> | undefined;
   const readPages = await prepareListPages({
-    fetchPage,
+    fetchPage: narrowingFetchPage(fetchPage, (position) => {
+      console.warn(
+        `[star-citizen-hangar-manager] Buy back position ${position.position + 1}` +
+          `${position.category ? ` of ${position.category}` : ''} skipped`,
+        position.error,
+      );
+      skipped.push(position);
+      previous ??= buybackSnapshot.getValue();
+      void logSkipped(position, previous);
+    }),
     pageSize: BUYBACK_PAGE_SIZE,
     progress,
     concurrency,
   });
   progress?.expect(0, SYNC_WORK.finish);
   return async () => {
-    const snapshot = await storeBuyback(await readPages(), deps);
+    const snapshot = await storeBuyback(await readPages(), deps, skipped);
     progress?.complete(0, SYNC_WORK.finish);
     return snapshot;
   };
+}
+
+/**
+ * Logs a skipped pledge (#339) as the error closest to the cause, with the larger pages that
+ * failed before it as its sub-errors, and – for the full list – the pledges the last read had at
+ * and around its position (#342).
+ */
+async function logSkipped(
+  position: SkippedPositions,
+  previous: Promise<BuybackSnapshot | null>,
+): Promise<void> {
+  let near = '';
+  if (!position.category) {
+    const pledges = (await previous.catch(() => null))?.pledges ?? [];
+    const around = (offset: number) => pledges[position.position + offset];
+    const there = around(0);
+    if (there) {
+      const before = around(-1);
+      const after = around(1);
+      near =
+        `; the last read had ${describeBuybackPledge(there)} there` +
+        (before ? `, after "${before.title}"` : '') +
+        (after ? `, before "${after.title}"` : '');
+    }
+  }
+  const list = position.category ? ` (${position.category})` : '';
+  await logError(
+    'BB-PAGE-SKIP',
+    `Buy back${list} position ${position.position + 1}, page of 1 pledge: ` +
+      `${reasonOf(position.error)}; the pledge there was left out${near}`,
+    {
+      error: position.error,
+      subErrors: position.attempts.map((attempt) => {
+        const url = urlOf(attempt.error);
+        return {
+          at: attempt.at,
+          message:
+            `Buy back${list} page ${attempt.page} of ${attempt.size} pledges: ` +
+            reasonOf(attempt.error),
+          ...(url && { url }),
+        };
+      }),
+    },
+  );
 }
 
 /** Merges the pages read, adds the details and stores the result as the new snapshot. */
 async function storeBuyback(
   pagesOf: ListPagesOf<BuybackPledge>,
   deps: BuybackSyncDeps,
+  skipped: readonly SkippedPositions[] = [],
 ): Promise<BuybackSnapshot> {
   const pledges = new Map<number, BuybackPledge>();
   for (const page of pagesOf(undefined)) {
@@ -96,6 +158,8 @@ async function storeBuyback(
   // RSI shows the tokens above every page of the list; the first one is read anyway.
   const tokens = (pagesOf(undefined)[0] as BuybackListPage | undefined)?.tokens;
   const now = new Date().toISOString();
+  // Only the full list counts: a pledge skipped in a category list just misses its category.
+  const unread = skipped.filter((position) => !position.category).length;
   const snapshot: BuybackSnapshot = {
     version: BUYBACK_SNAPSHOT_VERSION,
     syncedAt: now,
@@ -103,6 +167,7 @@ async function storeBuyback(
     pledges: all,
     shipLinks,
     ...(tokens !== undefined && { tokens }),
+    ...(unread > 0 && { unread }),
   };
   await buybackSnapshot.setValue(snapshot);
   return snapshot;
@@ -143,10 +208,27 @@ export async function enrichBuyback(
   }
   // Only known once the list pages are read, so they join the progress late.
   progress?.expect(missing.length, missing.length * SYNC_WORK.detailPage);
+  // A page that can't be read leaves its pledge as the list shows it, never the whole buy back
+  // unread (#334); it is read again next time, as its items are still missing.
   await mapWithConcurrency(missing, concurrency, async (pledge) => {
-    const details = await fetchDetails(pledge.id);
-    pledge.items = details.items;
-    pledge.price = details.price ?? null;
+    try {
+      const details = await fetchDetails(pledge.id);
+      pledge.items = details.items;
+      pledge.price = details.price ?? null;
+      delete pledge.detailsFailed;
+    } catch (error) {
+      console.warn(
+        `[star-citizen-hangar-manager] Details of buy back pledge ${pledge.id} unavailable`,
+        error,
+      );
+      pledge.detailsFailed = true;
+      void logError(
+        'BB-DETAIL-SKIP',
+        `${capitalized(describeBuybackPledge(pledge))}: ${reasonOf(error)}; ` +
+          'kept without its items and price',
+        { error },
+      );
+    }
     progress?.complete(1, SYNC_WORK.detailPage);
   });
 
@@ -160,6 +242,9 @@ export async function enrichBuyback(
       '[star-citizen-hangar-manager] Fleetyards unavailable, buy back ship links missing',
       error,
     );
+    void logError('BB-LINKS-FAIL', `FleetYards: ${reasonOf(error)}; kept the known ship links`, {
+      error,
+    });
     return previousLinks;
   });
 }
@@ -171,13 +256,11 @@ export const fetchBuybackPage: FetchBuybackPage = async (
   pageSize = BUYBACK_PAGE_SIZE,
 ) => {
   const filter = category ? `&product-type=${category}` : '';
-  const response = await fetch(
+  const html = await fetchHtml(
     `/en/account/buy-back-pledges?page=${page}&pagesize=${pageSize}${filter}`,
-    { credentials: 'include' },
+    `Loading buy back page ${page}`,
   );
-  if (!response.ok)
-    throw new Error(`Loading buy back page ${page} failed: HTTP ${response.status}`);
-  const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
+  const doc = new DOMParser().parseFromString(html, 'text/html');
   if (!doc.querySelector('.sidenav a[href$="/account/pledges"]')) {
     throw new Error(`Buy back page ${page} is no account page – are you still logged in?`);
   }
@@ -186,35 +269,63 @@ export const fetchBuybackPage: FetchBuybackPage = async (
 
 /** Items and price of a buy back pledge, from its detail page. */
 export async function fetchBuybackDetails(id: number): Promise<BuybackDetails> {
-  const response = await fetch(`/pledge/buyback/${id}`, { credentials: 'include' });
-  if (!response.ok)
-    throw new Error(`Loading buy back pledge ${id} failed: HTTP ${response.status}`);
-  const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
+  const html = await fetchHtml(`/pledge/buyback/${id}`, `Loading buy back pledge ${id}`);
+  const doc = new DOMParser().parseFromString(html, 'text/html');
   const price = parseBuybackPrice(doc);
   return { items: parseBuybackDetail(doc), ...(price !== undefined && { price }) };
 }
 
-const loadingPrices = new Map<number, Promise<void>>();
+/**
+ * The HTML of a page of the user's account, read again while it fails for a reason that may pass
+ * (#334: HTTP 429, 5xx, no answer). Throws "<what> failed: HTTP <status>" otherwise.
+ */
+export async function fetchHtml(url: string, what: string): Promise<string> {
+  return withRetry(
+    async () => {
+      const response = await fetch(url, { credentials: 'include' }).catch((error: unknown) => {
+        throw withUrl(error, url);
+      });
+      if (!response.ok) throw httpError(what, response, url);
+      return response.text();
+    },
+    BUYBACK_RETRY_DELAYS_MS,
+    isTransient,
+  );
+}
+
+const loading = new Map<number, Promise<void>>();
 
 /**
- * Reads the buy back price of one pledge from its detail page and keeps it (#185): for single
- * items the Pledge Store doesn't sell any more, when their row is opened. Once per pledge, also
- * when its row is opened twice meanwhile; a failure leaves it unread, so the next opening tries
- * again.
+ * Reads the detail page of one pledge and keeps what it shows, when its row is opened: the buy back
+ * price of single items the Pledge Store doesn't sell any more (#185), and the items and price of a
+ * pledge whose page couldn't be read during the sync (#334). Once per pledge, also when its row is
+ * opened twice meanwhile; a failure leaves it unread, so the next opening tries again.
  */
-export function loadBuybackPrice(
+export function loadBuybackDetails(
   id: number,
   fetchDetails: (id: number) => Promise<BuybackDetails> = fetchBuybackDetails,
 ): Promise<void> {
-  let loading = loadingPrices.get(id);
-  if (!loading) {
-    loading = fetchDetails(id)
-      .then(({ price }) => rememberBuybackPrice(id, price ?? null))
-      .catch((error: unknown) =>
-        console.warn(`[star-citizen-hangar-manager] Buy back price of ${id} unavailable`, error),
-      )
-      .finally(() => loadingPrices.delete(id));
-    loadingPrices.set(id, loading);
+  let reading = loading.get(id);
+  if (!reading) {
+    reading = fetchDetails(id)
+      .then((details) => rememberBuybackDetails(id, details))
+      .catch((error: unknown) => {
+        console.warn(
+          `[star-citizen-hangar-manager] Details of buy back pledge ${id} unavailable`,
+          error,
+        );
+        void buybackSnapshot.getValue().then((snapshot) => {
+          const pledge = snapshot?.pledges.find((candidate) => candidate.id === id);
+          const which = pledge ? describeBuybackPledge(pledge) : `buy back pledge #${id}`;
+          return logError(
+            'BB-DETAIL-OPEN',
+            `${capitalized(which)}: ${reasonOf(error)} when opened; read again next time`,
+            { error },
+          );
+        });
+      })
+      .finally(() => loading.delete(id));
+    loading.set(id, reading);
   }
-  return loading;
+  return reading;
 }
