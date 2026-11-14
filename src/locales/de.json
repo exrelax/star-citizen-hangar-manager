@@ -529,6 +529,10 @@
     "empty": "RSI listet keine Buy-Back-Pledges für deinen Account.",
     "contains": "Enthält: $1",
     "detailsFailed": "RSIs Seite zu diesem Pledge konnte nicht gelesen werden, daher fehlen vielleicht Items und Preis. Sie wird beim nächsten Aktualisieren erneut gelesen.",
+    "unread": {
+      "one": "$1 Pledge aus RSIs Buy Back konnte nicht gelesen werden: RSI kann ihn nicht anzeigen, daher fehlt er hier. Das nächste Aktualisieren versucht es erneut.",
+      "other": "$1 Pledges aus RSIs Buy Back konnten nicht gelesen werden: RSI kann sie nicht anzeigen, daher fehlen sie hier. Das nächste Aktualisieren versucht es erneut."
+    },
     "reclaimed": "Eingeschmolzen $1",
     "showInBuyback": "Im Buy Back anzeigen (Seite $1)",
     "probablyGiftableHint": "Bei einem Rückkauf mit echtem Geld (Warbond) ist dieses Item vermutlich verschenkbar: Es wurde vor dem $1 nur mit Geld gekauft, ohne Store Credits, und behält diesen Status.",

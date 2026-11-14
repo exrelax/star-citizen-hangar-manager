@@ -38,6 +38,8 @@ export function useBuybackPledges() {
   const syncedAt = ref<string>();
   /** Buy back tokens left, as of the last sync or smart update; unset if unknown. */
   const tokens = ref<number>();
+  /** Pledges the last full sync had to skip (#339); 0 when all were read. */
+  const unread = ref(0);
 
   let buyback: BuybackSnapshot | null = null;
   let hangar: HangarSnapshot | null = null;
@@ -92,6 +94,7 @@ export function useBuybackPledges() {
       : [];
     syncedAt.value = current?.syncedAt;
     tokens.value = current?.tokens;
+    unread.value = current?.unread ?? 0;
   };
 
   const unwatchBuyback = buybackSnapshot.watch((value) => {
@@ -146,5 +149,5 @@ export function useBuybackPledges() {
     unwatchPriceIncreases();
   });
 
-  return { pledges, loaded, syncedAt, tokens };
+  return { pledges, loaded, syncedAt, tokens, unread };
 }

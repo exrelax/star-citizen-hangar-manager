@@ -1,5 +1,6 @@
 import { BUYBACK_PAGE_SIZE, BUYBACK_RETRY_DELAYS_MS, SYNC_CONCURRENCY, SYNC_WORK } from '@/config';
 import { httpError, isTransient, withRetry } from '@/shared/lib/retry';
+import { narrowingFetchPage, type SkippedPositions } from './narrow-pages';
 import { prepareListPages, type ListPagesOf } from '@/hangar/list-pages';
 import { PLEDGE_CATEGORIES, type Pledge, type PledgeCategory } from '@/hangar/pledge';
 import { resolveShipLinks, type ShipLinks } from '@/hangar/ship-links';
@@ -57,15 +58,24 @@ export async function prepareBuybackSync(
   deps: BuybackSyncDeps = {},
 ): Promise<() => Promise<BuybackSnapshot>> {
   const { fetchPage = fetchBuybackPage, progress, concurrency } = deps;
+  // A page RSI can't render is narrowed down to the pledge that breaks it (#339).
+  const skipped: SkippedPositions[] = [];
   const readPages = await prepareListPages({
-    fetchPage,
+    fetchPage: narrowingFetchPage(fetchPage, (position) => {
+      console.warn(
+        `[star-citizen-hangar-manager] Buy back position ${position.position + 1}` +
+          `${position.category ? ` of ${position.category}` : ''} skipped`,
+        position.error,
+      );
+      skipped.push(position);
+    }),
     pageSize: BUYBACK_PAGE_SIZE,
     progress,
     concurrency,
   });
   progress?.expect(0, SYNC_WORK.finish);
   return async () => {
-    const snapshot = await storeBuyback(await readPages(), deps);
+    const snapshot = await storeBuyback(await readPages(), deps, skipped);
     progress?.complete(0, SYNC_WORK.finish);
     return snapshot;
   };
@@ -75,6 +85,7 @@ export async function prepareBuybackSync(
 async function storeBuyback(
   pagesOf: ListPagesOf<BuybackPledge>,
   deps: BuybackSyncDeps,
+  skipped: readonly SkippedPositions[] = [],
 ): Promise<BuybackSnapshot> {
   const pledges = new Map<number, BuybackPledge>();
   for (const page of pagesOf(undefined)) {
@@ -97,6 +108,8 @@ async function storeBuyback(
   // RSI shows the tokens above every page of the list; the first one is read anyway.
   const tokens = (pagesOf(undefined)[0] as BuybackListPage | undefined)?.tokens;
   const now = new Date().toISOString();
+  // Only the full list counts: a pledge skipped in a category list just misses its category.
+  const unread = skipped.filter((position) => !position.category).length;
   const snapshot: BuybackSnapshot = {
     version: BUYBACK_SNAPSHOT_VERSION,
     syncedAt: now,
@@ -104,6 +117,7 @@ async function storeBuyback(
     pledges: all,
     shipLinks,
     ...(tokens !== undefined && { tokens }),
+    ...(unread > 0 && { unread }),
   };
   await buybackSnapshot.setValue(snapshot);
   return snapshot;

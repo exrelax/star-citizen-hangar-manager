@@ -529,6 +529,10 @@
     "empty": "RSI no muestra ningún pledge de recompra para tu cuenta.",
     "contains": "Contiene: $1",
     "detailsFailed": "No se pudo leer la página de RSI de este pledge, así que pueden faltar sus objetos y su precio. Se volverá a leer en la próxima actualización.",
+    "unread": {
+      "one": "No se pudo leer $1 pledge del buy back de RSI: RSI no logra mostrarlo, así que se omitió. La próxima actualización lo volverá a intentar.",
+      "other": "No se pudieron leer $1 pledges del buy back de RSI: RSI no logra mostrarlos, así que se omitieron. La próxima actualización lo volverá a intentar."
+    },
     "reclaimed": "Fundido el $1",
     "showInBuyback": "Mostrar en Buy Back (página $1)",
     "probablyGiftableHint": "Si lo recompras con dinero real (warbond), este elemento probablemente es regalable: se compró antes del $1 solo con dinero, sin crédito de tienda, y mantiene ese estado.",

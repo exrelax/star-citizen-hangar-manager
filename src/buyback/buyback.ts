@@ -57,6 +57,11 @@ export interface BuybackSnapshot {
    * back with store credit. Unset if RSI showed none.
    */
   tokens?: number;
+  /**
+   * Pledges of RSI's list the last full sync couldn't read (#339): a page broke on them and they
+   * were skipped. Unset when all were read.
+   */
+  unread?: number;
 }
 
 export const BUYBACK_SNAPSHOT_VERSION = 1;

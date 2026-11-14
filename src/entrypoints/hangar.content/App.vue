@@ -329,6 +329,10 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
     aria-labelledby="shm-tab-buyback"
   >
     <template v-if="buyback.loaded.value && listsReady">
+      <!-- Pledges a page broke on were skipped by the last refresh (#339). -->
+      <p v-if="!demo && buyback.unread.value" class="shm-hint shm-unread-hint" role="status">
+        {{ i18n.n('buyback.unread', buyback.unread.value) }}
+      </p>
       <BuybackList
         v-if="buybackPledges.length"
         :pledges="buybackPledges"
@@ -448,5 +452,11 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
 .shm-empty {
   margin-top: 20px;
   color: var(--shm-text-muted);
+}
+
+.shm-unread-hint {
+  margin: 14px 0 0;
+  color: var(--shm-upgraded);
+  font-size: calc(12px * var(--shm-font-scale));
 }
 </style>

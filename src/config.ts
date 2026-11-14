@@ -82,6 +82,17 @@ export const BUYBACK_PAGE_SIZE = 250;
 export const BUYBACK_RETRY_DELAYS_MS = [2_000, 6_000] as const;
 
 /**
+ * A buy back page RSI keeps failing with a server error is read again in smaller pages over the
+ * same range, down to single pledges, to skip only the one that breaks it (#339). Each size divides
+ * the one before, so the smaller pages line up with the larger ones. More skipped pledges than
+ * `maxSkipped` in one read mean RSI itself is broken: the read stops.
+ */
+export const BUYBACK_NARROWING = {
+  sizes: [BUYBACK_PAGE_SIZE, 50, 10, 1],
+  maxSkipped: 10,
+} as const;
+
+/**
  * Buy back pledges bought before this date are "probably giftable" when bought back with real
  * money (warbond). Purchase dates aren't listed in the buy back, so they are derived from the
  * pledge id (ids grow over time) and the reclaim date (see buyback-view.ts).

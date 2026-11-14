@@ -529,6 +529,10 @@
     "empty": "RSI n’indique aucun pledge à racheter pour ton compte.",
     "contains": "Contient : $1",
     "detailsFailed": "La page RSI de ce pledge n’a pas pu être lue : ses objets et son prix peuvent manquer. Elle sera relue à la prochaine actualisation.",
+    "unread": {
+      "one": "$1 pledge du buy back de RSI n’a pas pu être lu : RSI ne parvient pas à l’afficher, il a donc été omis. La prochaine actualisation réessaiera.",
+      "other": "$1 pledges du buy back de RSI n’ont pas pu être lus : RSI ne parvient pas à les afficher, ils ont donc été omis. La prochaine actualisation réessaiera."
+    },
     "reclaimed": "Fusionné le $1",
     "showInBuyback": "Afficher dans Buy Back (page $1)",
     "probablyGiftableHint": "Racheté en argent réel (warbond), cet élément est probablement offrable : il a été acheté avant le $1 uniquement avec de l’argent, sans crédit boutique, et garde ce statut.",
