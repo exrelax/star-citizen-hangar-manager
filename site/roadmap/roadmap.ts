@@ -1,14 +1,23 @@
 /*
  * The roadmap of the website, built from the repository's GitHub issues when the site is built
  * (see site/vite.config.ts). Visitors' browsers never contact GitHub: the roadmap is plain HTML.
+ * Its layout is the design "Roadmap – Komponente" of the design file "Hangar Manager – Website"
+ * (#347): the live version and up to two planned versions on one timeline, then "Later".
  *
- * - Released: the current version, the latest GitHub release (or the version of package.json if
- *   there is none), as the first step; the hero shows it, too. With its milestone (titled like the
- *   version), it lists the main issues that went into it, those with the most sub-issues first.
- * - Timeline: the open milestones with a due date and issues, by date, with their issues grouped
- *   by the column of the project board (or into "Open" and "Done" if the board can't be read).
- * - Later: open `enhancement` issues without a milestone, except the website's own
- *   (`website`) and internal ones (`internal`).
+ * - Live: the current version, the latest GitHub release (or the version of package.json if there
+ *   is none); the hero shows it, too. With its milestone (titled like the version), it lists the
+ *   main issues that went into it, those with the most sub-issues first. A patch version (e.g.
+ *   1.1.1) is part of the card of its minor or major version: the card lists the finished patches
+ *   (closed milestones up to the live version) with the description of their milestone, and the
+ *   highlights stay those of the minor or major version.
+ * - Planned: the next open milestones with issues – by due date, those without one after them –
+ *   at most `PLANNED_SHOWN`. A patch version in development or planned is one of them, like any
+ *   other version. Their issues are listed open first (the furthest on the project board first),
+ *   then done.
+ * - Later: open `enhancement` issues without a milestone, except the website's own (`website`)
+ *   and internal ones (`internal`). With `PLANNED_SHOWN` planned versions the timeline is full and
+ *   "Later" would wrap to a line of its own, so it is a section below the timeline instead of a
+ *   step of it.
  *
  * Only the main features show: a sub-issue is left out when its parent issue is listed in the same
  * place (the same milestone, or "Later"), and doesn't count for the milestone's progress either.
@@ -20,25 +29,30 @@ export interface RoadmapIssue {
   number: number;
   title: string;
   url: string;
-}
-
-export interface RoadmapGroup {
-  /** The board column ("Backlog", "In progress", …), or "Open" / "Done" without the board. */
-  status: string;
-  issues: RoadmapIssue[];
-  /** Issues of the group that aren't listed (only "Done" is shortened). */
-  more: number;
+  /** Closed: shown as done. */
+  done?: boolean;
 }
 
 export interface RoadmapMilestone {
   title: string;
   url: string;
-  /** ISO date (YYYY-MM-DD). */
-  dueOn: string;
+  /** ISO date (YYYY-MM-DD); missing for a milestone without a due date. */
+  dueOn?: string;
   description: string;
   open: number;
   done: number;
-  groups: RoadmapGroup[];
+  /** Open issues first, the furthest on the board first, then the most recently done. */
+  issues: RoadmapIssue[];
+  /** Done issues that aren't listed. */
+  moreDone: number;
+}
+
+/** A finished patch version of the live version, e.g. 1.1.1 of 1.1.0. */
+export interface RoadmapPatch {
+  /** e.g. "1.1.1", without the "v". */
+  version: string;
+  /** The description of its milestone. */
+  description: string;
 }
 
 /** The current, released version of the extension. */
@@ -49,17 +63,24 @@ export interface RoadmapRelease {
   url?: string;
   /** ISO date (YYYY-MM-DD) of the release; missing for the fallback. */
   publishedOn?: string;
-  /** The main issues of its milestone, the biggest first; missing without a milestone. */
+  /** For a patch version: its minor or major version, e.g. "1.1.0" of "1.1.1". */
+  baseVersion?: string;
+  /** For a patch version: when its minor or major version was released. */
+  basePublishedOn?: string;
+  /** For a patch version: the finished patches, the newest first. */
+  patches?: RoadmapPatch[];
+  /** The main issues of its (minor or major version's) milestone, the biggest first. */
   highlights?: RoadmapIssue[];
-  /** Main issues of its milestone that aren't listed. */
+  /** Main issues of that milestone that aren't listed. */
   moreHighlights?: number;
 }
 
 export interface Roadmap {
   release: RoadmapRelease;
+  /** The planned versions, at most `PLANNED_SHOWN`, the next first. */
   milestones: RoadmapMilestone[];
   later: RoadmapIssue[];
-  /** Whether the groups come from the project board. */
+  /** Whether the open issues are ordered by the project board. */
   fromBoard: boolean;
 }
 
@@ -77,8 +98,10 @@ export const ROADMAP_SOURCE = {
   excludedLabels: ['website', 'internal'],
 };
 
-/** The board's columns in their order; issues in other columns count as "Backlog". */
-const BOARD_COLUMNS = ['Backlog', 'Ready', 'In progress', 'In review', 'Done'];
+/** The board's columns, the furthest last; issues in other columns count as "Backlog". */
+const BOARD_COLUMNS = ['Backlog', 'Ready', 'In progress', 'In review'];
+/** Planned versions shown on the timeline. */
+export const PLANNED_SHOWN = 2;
 /** Done issues listed per milestone, the most recently closed first. */
 const DONE_LISTED = 20;
 /** Main issues listed for the released version. */
@@ -118,10 +141,23 @@ export interface FetchRoadmapOptions {
   /** `GITHUB_TOKEN` of the workflow; without it, only public data and no board columns. */
   token?: string;
   fetch?: Fetch;
-  /** Called when the board can't be read and the issues are grouped into open and done. */
+  /** Called when something optional can't be read: the board, a release. */
   warn?: (message: string) => void;
   /** The version of package.json, shown if there is no GitHub release (or it can't be read). */
   fallbackVersion: string;
+}
+
+/** "v1.1.1" or "1.1.1" → [1, 1, 1]; undefined for a title that isn't a version. */
+export function parseVersion(title: string): [number, number, number] | undefined {
+  const match = /^v?(\d+)\.(\d+)\.(\d+)$/.exec(title.trim());
+  return match ? [Number(match[1]), Number(match[2]), Number(match[3])] : undefined;
+}
+
+/** Orders versions, a title that isn't one after them. */
+function compareVersions(a: string, b: string): number {
+  const [x, y] = [parseVersion(a), parseVersion(b)];
+  if (!x || !y) return (x ? -1 : y ? 1 : 0) || a.localeCompare(b);
+  return x[0] - y[0] || x[1] - y[1] || x[2] - y[2];
 }
 
 /** Loads milestones, issues and board columns from GitHub. Throws if GitHub can't be reached. */
@@ -168,6 +204,18 @@ export async function fetchRoadmap(options: FetchRoadmapOptions): Promise<Roadma
     }
   }
 
+  // The day a version was released, for the minor or major version of a patch.
+  async function getReleaseDate(version: string): Promise<string | undefined> {
+    try {
+      const response = await fetchImpl(`${api}/releases/tags/v${version}`, { headers });
+      if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+      return ((await response.json()) as GitHubRelease).published_at?.slice(0, 10);
+    } catch (error) {
+      warn(`The release of ${version} can't be read (${String(error)}): shown without its date.`);
+      return undefined;
+    }
+  }
+
   const visible = (issue: GitHubIssue) =>
     !issue.pull_request &&
     !issue.labels.some((label) => ROADMAP_SOURCE.excludedLabels.includes(label.name ?? ''));
@@ -185,23 +233,61 @@ export async function fetchRoadmap(options: FetchRoadmapOptions): Promise<Roadma
   const shown = (issues: GitHubIssue[]) =>
     mainIssues(issues.filter((issue) => !issue.pull_request)).filter(visible);
 
-  const milestones = (await getAll<GitHubMilestone>('/milestones?state=open&sort=due_on'))
-    .filter((milestone) => milestone.due_on)
-    .sort((a, b) => a.due_on!.localeCompare(b.due_on!));
+  // The open milestones with issues: by due date, those without one by version after them.
+  const open = await getAll<GitHubMilestone>('/milestones?state=open&sort=due_on');
   const issuesByMilestone = await Promise.all(
-    milestones.map((milestone) =>
-      getAll<GitHubIssue>(`/issues?milestone=${milestone.number}&state=all`),
-    ),
+    open.map((milestone) => getAll<GitHubIssue>(`/issues?milestone=${milestone.number}&state=all`)),
   );
+  const planned = open
+    .map((milestone, index) => ({ milestone, issues: shown(issuesByMilestone[index]!) }))
+    .filter(({ issues }) => issues.length > 0)
+    .sort(
+      ({ milestone: a }, { milestone: b }) =>
+        (a.due_on && b.due_on ? a.due_on.localeCompare(b.due_on) : 0) ||
+        (a.due_on ? -1 : b.due_on ? 1 : 0) ||
+        compareVersions(a.title, b.title),
+    )
+    .slice(0, PLANNED_SHOWN);
   const later = await getAll<GitHubIssue>(
     `/issues?state=open&milestone=none&labels=${ROADMAP_SOURCE.laterLabel}`,
   );
 
-  // The released version, with the main issues of its milestone (closed by then).
+  // The released version: for a patch, with its minor or major version and the finished patches.
   const release = await getRelease();
-  const releasedMilestone = (
-    await getAll<GitHubMilestone>('/milestones?state=closed&sort=due_on&direction=desc')
-  ).find((milestone) => milestone.title.replace(/^v/, '') === release.version);
+  const closed = await getAll<GitHubMilestone>(
+    '/milestones?state=closed&sort=due_on&direction=desc',
+  );
+  const current = parseVersion(release.version);
+  let highlightsOf = release.version;
+  if (current && current[2] > 0) {
+    const base = `${current[0]}.${current[1]}.0`;
+    highlightsOf = base;
+    release.baseVersion = base;
+    release.basePublishedOn = await getReleaseDate(base);
+    const patches = closed
+      .map((milestone) => ({ milestone, version: parseVersion(milestone.title) }))
+      .filter(
+        ({ version }) =>
+          version &&
+          version[0] === current[0] &&
+          version[1] === current[1] &&
+          version[2] > 0 &&
+          version[2] <= current[2],
+      )
+      .sort((a, b) => b.version![2] - a.version![2])
+      .map(({ milestone }) => ({
+        version: milestone.title.replace(/^v/, ''),
+        description: milestone.description?.trim() ?? '',
+      }));
+    // The live patch is listed even if its milestone is missing.
+    if (!patches.some((patch) => patch.version === release.version)) {
+      patches.unshift({ version: release.version, description: '' });
+    }
+    release.patches = patches;
+  }
+  const releasedMilestone = closed.find(
+    (milestone) => milestone.title.replace(/^v/, '') === highlightsOf,
+  );
   if (releasedMilestone) {
     const released = shown(
       await getAll<GitHubIssue>(`/issues?milestone=${releasedMilestone.number}&state=closed`),
@@ -210,24 +296,24 @@ export async function fetchRoadmap(options: FetchRoadmapOptions): Promise<Roadma
         (b.sub_issues_summary?.total ?? 0) - (a.sub_issues_summary?.total ?? 0) ||
         a.number - b.number,
     );
-    release.highlights = released.slice(0, HIGHLIGHTS_LISTED).map(toIssue);
+    release.highlights = released
+      .slice(0, HIGHLIGHTS_LISTED)
+      .map((issue) => ({ ...toIssue(issue), done: true }));
     release.moreHighlights = Math.max(0, released.length - HIGHLIGHTS_LISTED);
   }
 
   let columns: Map<number, string> | undefined;
   try {
     columns = token ? await fetchBoardColumns(token, fetchImpl) : undefined;
-    if (!columns) warn('No token: the roadmap groups the issues into open and done.');
+    if (!columns) warn('No token: the open issues are listed by number.');
   } catch (error) {
-    warn(`The project board can't be read (${String(error)}): grouped into open and done.`);
+    warn(`The project board can't be read (${String(error)}): open issues listed by number.`);
   }
 
   return {
     release,
     fromBoard: columns !== undefined,
-    milestones: milestones
-      .map((milestone, index) => toMilestone(milestone, shown(issuesByMilestone[index]!), columns))
-      .filter((milestone) => milestone.open + milestone.done > 0),
+    milestones: planned.map(({ milestone, issues }) => toMilestone(milestone, issues, columns)),
     later: shown(later)
       .sort((a, b) => a.number - b.number)
       .map(toIssue),
@@ -303,37 +389,27 @@ function toMilestone(
   issues: GitHubIssue[],
   columns: Map<number, string> | undefined,
 ): RoadmapMilestone {
-  // A closed issue is done, whatever its column says; an open one is never "Done".
-  const statusOf = (issue: GitHubIssue) => {
-    if (issue.state === 'closed') return 'Done';
-    if (!columns) return 'Open';
-    const column = columns.get(issue.number) ?? '';
-    return BOARD_COLUMNS.includes(column) && column !== 'Done' ? column : 'Backlog';
-  };
-  const order = columns ? BOARD_COLUMNS : ['Open', 'Done'];
-  const groups = order
-    .map((status): RoadmapGroup => {
-      const inGroup = issues.filter((issue) => statusOf(issue) === status);
-      if (status === 'Done') {
-        inGroup.sort((a, b) => (b.closed_at ?? '').localeCompare(a.closed_at ?? ''));
-        return {
-          status,
-          issues: inGroup.slice(0, DONE_LISTED).map(toIssue),
-          more: Math.max(0, inGroup.length - DONE_LISTED),
-        };
-      }
-      return { status, issues: inGroup.sort((a, b) => a.number - b.number).map(toIssue), more: 0 };
-    })
-    .filter((group) => group.issues.length > 0);
-  const done = issues.filter((issue) => issue.state === 'closed').length;
+  // The furthest column first; a column that isn't one of the board's counts as "Backlog".
+  const rank = (issue: GitHubIssue) =>
+    Math.max(0, BOARD_COLUMNS.indexOf(columns?.get(issue.number) ?? ''));
+  const open = issues
+    .filter((issue) => issue.state !== 'closed')
+    .sort((a, b) => rank(b) - rank(a) || a.number - b.number);
+  const done = issues
+    .filter((issue) => issue.state === 'closed')
+    .sort((a, b) => (b.closed_at ?? '').localeCompare(a.closed_at ?? ''));
   return {
     title: milestone.title,
     url: milestone.html_url,
-    dueOn: milestone.due_on!.slice(0, 10),
+    ...(milestone.due_on && { dueOn: milestone.due_on.slice(0, 10) }),
     description: milestone.description?.trim() ?? '',
-    open: issues.length - done,
-    done,
-    groups,
+    open: open.length,
+    done: done.length,
+    issues: [
+      ...open.map(toIssue),
+      ...done.slice(0, DONE_LISTED).map((issue) => ({ ...toIssue(issue), done: true })),
+    ],
+    moreDone: Math.max(0, done.length - DONE_LISTED),
   };
 }
 
@@ -341,55 +417,49 @@ function toIssue(issue: GitHubIssue): RoadmapIssue {
   return { number: issue.number, title: issue.title, url: issue.html_url };
 }
 
-/** Colors of the groups' dots, by status. */
-const STATUS_COLORS: Record<string, string> = {
-  Backlog: 'var(--site-text-faint)',
-  Open: 'var(--site-text-faint)',
-  Ready: 'var(--site-success)',
-  'In progress': 'var(--site-warning)',
-  'In review': 'var(--site-accent)',
-  Done: 'var(--site-success)',
-};
-
 /** Where an idea for "Later" is shared. */
 const IDEAS_URL = `https://github.com/${ROADMAP_SOURCE.repository}/discussions/categories/ideas`;
+/** What "Later" is. */
+const LATER_TEXT = 'Ideas from the backlog – not planned for a version yet.';
 
 /** An icon of the page's sprite (see site/icons.ts). */
 const icon = (name: string) =>
   `<svg class="icon" aria-hidden="true"><use href="#icon-${name}"></use></svg>`;
 
 /**
- * The roadmap as HTML, for the `<!-- roadmap -->` placeholder in index.html: a step per card –
- * the released version, the milestones by date and "Later" – on one line.
+ * The roadmap as HTML, for the `<!-- roadmap -->` placeholder in index.html: the live version and
+ * the planned ones as steps of one timeline, then "Later" – as a step too while the timeline has
+ * room for it, else as a section of its own below it.
  */
 export function renderRoadmap(roadmap: Roadmap): string {
+  const laterApart = roadmap.milestones.length >= PLANNED_SHOWN;
   const steps = [
-    renderRelease(roadmap.release),
+    renderLive(roadmap.release),
     ...roadmap.milestones.map((milestone, index) => renderMilestone(milestone, index === 0)),
+    ...(roadmap.later.length && !laterApart ? [renderLaterStep(roadmap.later)] : []),
   ];
-  if (roadmap.later.length) {
-    steps.push(
-      renderStep(
-        'is-later',
-        `<div class="roadmap-heading">
-          <h3>Later</h3><span class="roadmap-badge">Ideas</span>
-        </div>
-        <p class="roadmap-meta">From the backlog, not planned for a version yet</p>
-        <ul class="roadmap-list">${roadmap.later.map((issue) => renderIssue(issue, 'lightbulb')).join('')}</ul>
-        ${renderCardLink(IDEAS_URL, 'Share an idea')}`,
-      ),
-    );
-  }
+  const timeline = `<ol class="roadmap-steps" aria-label="Versions" style="--roadmap-columns: ${steps.length}">${steps.join('')}</ol>`;
+  const later = roadmap.later.length && laterApart ? renderLaterSection(roadmap.later) : '';
   const nothingPlanned =
-    steps.length > 1 ? '' : '<p class="muted roadmap-empty">Nothing planned at the moment.</p>';
-  return `<div class="roadmap-steps">${steps.join('')}</div>${nothingPlanned}`;
+    roadmap.milestones.length || roadmap.later.length
+      ? ''
+      : '<p class="muted roadmap-empty">Nothing planned at the moment.</p>';
+  return `${timeline}${later}${nothingPlanned}`;
 }
 
-/** One step of the roadmap: its dot on the line and its card. */
-function renderStep(className: string, body: string): string {
-  return `<div class="roadmap-step ${className}">
-    <span class="roadmap-dot" aria-hidden="true"></span>
-    <article class="roadmap-card">${body}</article>
+/** One step of the timeline: its dot and its line to the next one, and its card. */
+function renderStep(className: string, id: string, body: string): string {
+  return `<li class="roadmap-step ${className}">
+    <div class="roadmap-rail" aria-hidden="true"><span class="roadmap-line"></span><span class="roadmap-dot"></span></div>
+    <article class="roadmap-card" aria-labelledby="${id}">${body}</article>
+  </li>`;
+}
+
+/** A card's title with its badge, and the line below it. */
+function renderHead(id: string, title: string, badge: string, meta?: string): string {
+  return `<div class="roadmap-head">
+    <div class="roadmap-heading"><h3 id="${id}">${escape(title)}</h3><span class="roadmap-badge">${escape(badge)}</span></div>
+    ${meta ? `<p class="roadmap-meta">${escape(meta)}</p>` : ''}
   </div>`;
 }
 
@@ -397,20 +467,109 @@ function renderCardLink(url: string, text: string): string {
   return `<a class="roadmap-link" href="${escape(url)}">${escape(text)} ${icon('arrow-right')}</a>`;
 }
 
-/** The current version as the first step, marked as released, with the issues that went into it. */
-function renderRelease(release: RoadmapRelease): string {
-  const title = `v${escape(release.version)}`;
+/** The id of a card's title, e.g. "roadmap-v1-1-0". */
+const idOf = (name: string) => `roadmap-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+
+/**
+ * The live version as the first step, with the issues that went into it. A patch version shows
+ * its finished patches, and the highlights of its minor or major version.
+ */
+function renderLive(release: RoadmapRelease): string {
+  const title = `v${release.version}`;
+  const id = idOf(title);
+  const base = release.baseVersion;
+  const meta = base
+    ? `v${base} released${release.basePublishedOn ? ` ${formatDate(release.basePublishedOn)}` : ''}`
+    : release.publishedOn && `Released ${formatDate(release.publishedOn)}`;
+  const patches = release.patches ?? [];
   const highlights = release.highlights ?? [];
+  const more = release.moreHighlights
+    ? release.url
+      ? 'and more in the release notes'
+      : `+ ${release.moreHighlights} more`
+    : '';
   return renderStep(
-    'is-released',
-    `<div class="roadmap-heading">
-      <h3>${release.url ? `<a href="${escape(release.url)}">${title}</a>` : title}</h3><span class="roadmap-badge">Released</span>
-    </div>
-    ${release.publishedOn ? `<p class="roadmap-meta">${escape(formatDate(release.publishedOn))}</p>` : ''}
-    ${highlights.length ? `<ul class="roadmap-list">${highlights.map((issue) => renderIssue(issue, 'check')).join('')}</ul>` : ''}
-    ${release.moreHighlights ? `<p class="muted roadmap-more">+ ${release.moreHighlights} more</p>` : ''}
+    'is-live',
+    id,
+    `${renderHead(id, title, 'Live', meta || undefined)}
+    ${patches.length ? renderPatches(patches) : ''}
+    ${base && highlights.length ? `<p class="roadmap-label">Highlights of v${escape(base)}</p>` : ''}
+    ${highlights.length ? renderIssues(highlights) : ''}
+    ${more ? `<p class="roadmap-more">${escape(more)}</p>` : ''}
     ${release.url ? renderCardLink(release.url, 'Release notes') : ''}`,
   );
+}
+
+/** The finished patches of the live version: their version and their milestone's description. */
+function renderPatches(patches: RoadmapPatch[]): string {
+  const items = patches
+    .map(
+      (patch) =>
+        `<li><span class="roadmap-patch-version">v${escape(patch.version)}</span><span class="roadmap-patch-text">${escape(plainText(patch.description))}</span></li>`,
+    )
+    .join('');
+  return `<div class="roadmap-patches"><p class="roadmap-label">Patches</p><ol>${items}</ol></div>`;
+}
+
+function renderMilestone(milestone: RoadmapMilestone, next: boolean): string {
+  const id = idOf(milestone.title);
+  const total = milestone.open + milestone.done;
+  const percent = total ? Math.round((milestone.done / total) * 100) : 0;
+  const meta = milestone.dueOn ? `Due ${formatDate(milestone.dueOn)}` : 'No date yet';
+  return renderStep(
+    next ? 'is-next' : 'is-planned',
+    id,
+    `${renderHead(id, milestone.title, next ? 'Next' : 'Planned', meta)}
+    <div class="roadmap-progress-block">
+      <span class="roadmap-progress" role="progressbar" aria-label="${escape(milestone.title)}: ${milestone.done} of ${total} done"
+        aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${milestone.done}"><span style="width: ${percent}%"></span></span>
+      <span class="roadmap-progress-text">${milestone.done} of ${total} done</span>
+    </div>
+    ${renderIssues(milestone.issues)}
+    ${milestone.moreDone ? `<p class="roadmap-more">+ ${milestone.moreDone} more done</p>` : ''}
+    ${renderCardLink(milestone.url, 'Milestone on GitHub')}`,
+  );
+}
+
+/** "Later" as the last step of the timeline. */
+function renderLaterStep(later: RoadmapIssue[]): string {
+  const id = 'roadmap-later';
+  return renderStep(
+    'is-later',
+    id,
+    `${renderHead(id, 'Later', 'Ideas', LATER_TEXT)}
+    ${renderIssues(later, 'lightbulb')}
+    ${renderCardLink(IDEAS_URL, 'Share an idea')}`,
+  );
+}
+
+/** "Later" below a full timeline, apart from it: its ideas as chips. */
+function renderLaterSection(later: RoadmapIssue[]): string {
+  const chips = later
+    .map(
+      (issue) =>
+        `<li><a class="roadmap-chip" href="${escape(issue.url)}">${escape(issue.title)}<span class="roadmap-number">#${issue.number}</span></a></li>`,
+    )
+    .join('');
+  return `<section class="roadmap-later" aria-labelledby="roadmap-later">
+    <div class="roadmap-later-intro">
+      <h3 id="roadmap-later">${icon('lightbulb')}Later</h3>
+      <p>${escape(LATER_TEXT)}</p>
+      ${renderCardLink(IDEAS_URL, 'Share an idea')}
+    </div>
+    <ul class="roadmap-chips">${chips}</ul>
+  </section>`;
+}
+
+/** A list of issues: done ones checked, open ones as a circle, or all with `symbol`. */
+function renderIssues(issues: RoadmapIssue[], symbol?: string): string {
+  const items = issues
+    .map((issue) => {
+      const name = symbol ?? (issue.done ? 'circle-check' : 'circle');
+      return `<li><a class="roadmap-issue${issue.done ? ' is-done' : ''}" href="${escape(issue.url)}">${icon(name)}<span class="roadmap-title">${escape(issue.title)}</span><span class="roadmap-number">#${issue.number}</span></a></li>`;
+    })
+    .join('');
+  return `<ul class="roadmap-list">${items}</ul>`;
 }
 
 /** The current version for the hero, e.g. "v1.0.0", linked to its release notes. */
@@ -432,72 +591,13 @@ function formatDate(isoDate: string): string {
   });
 }
 
-function renderMilestone(milestone: RoadmapMilestone, next: boolean): string {
-  const total = milestone.open + milestone.done;
-  const percent = total ? Math.round((milestone.done / total) * 100) : 0;
-  const due = formatDate(milestone.dueOn);
-  return renderStep(
-    next ? 'is-next' : 'is-planned',
-    `<div class="roadmap-heading">
-      <h3><a href="${escape(milestone.url)}">${escape(milestone.title)}</a></h3><span class="roadmap-badge">${next ? 'Next' : 'Planned'}</span>
-    </div>
-    <p class="roadmap-meta">Due ${escape(due)} · ${milestone.done} of ${total} done</p>
-    <div class="roadmap-progress" role="progressbar" aria-label="${escape(milestone.title)} progress"
-      aria-valuemin="0" aria-valuemax="100" aria-valuenow="${percent}">
-      <span style="width: ${percent}%"></span>
-    </div>
-    ${renderDescription(milestone.description)}
-    <div class="roadmap-groups">${milestone.groups.map(renderGroup).join('')}</div>
-    ${renderCardLink(milestone.url, 'Milestone on GitHub')}`,
-  );
-}
-
-/**
- * A milestone's description, written in Markdown on GitHub: its paragraphs and its lists
- * (lines starting with "- " or "* "); any other Markdown stays plain text.
- */
-function renderDescription(description: string): string {
-  if (!description) return '';
-  const blocks: string[] = [];
-  let paragraph: string[] = [];
-  let list: string[] = [];
-  const flush = () => {
-    if (paragraph.length) blocks.push(`<p>${escape(paragraph.join(' '))}</p>`);
-    if (list.length)
-      blocks.push(`<ul>${list.map((item) => `<li>${escape(item)}</li>`).join('')}</ul>`);
-    paragraph = [];
-    list = [];
-  };
-  for (const line of description.split(/\r?\n/).map((text) => text.trim())) {
-    const item = /^[-*]\s+(.*)$/.exec(line);
-    if (item) {
-      if (paragraph.length) flush();
-      list.push(item[1]!);
-    } else if (line) {
-      if (list.length) flush();
-      paragraph.push(line);
-    } else {
-      flush();
-    }
-  }
-  flush();
-  return `<div class="roadmap-description">${blocks.join('')}</div>`;
-}
-
-function renderGroup(group: RoadmapGroup): string {
-  const color = STATUS_COLORS[group.status] ?? STATUS_COLORS.Backlog;
-  const count = group.issues.length + group.more;
-  const symbol = group.status === 'Done' ? 'check' : 'clock-rotate-left';
-  return `<section class="roadmap-group" aria-label="${escape(group.status)}">
-    <h4><span class="roadmap-status" style="background: ${color}" aria-hidden="true"></span>${escape(group.status)}<span class="roadmap-count">${count}</span></h4>
-    <ul class="roadmap-list is-${group.status === 'Done' ? 'done' : 'open'}">${group.issues.map((issue) => renderIssue(issue, symbol)).join('')}</ul>
-    ${group.more ? `<p class="muted roadmap-more">+ ${group.more} more done</p>` : ''}
-  </section>`;
-}
-
-/** An issue of a list: its icon, its title linked to GitHub and its number. */
-function renderIssue(issue: RoadmapIssue, symbol: string): string {
-  return `<li><a class="roadmap-issue" href="${escape(issue.url)}">${icon(symbol)}<span class="roadmap-title">${escape(issue.title)}</span> <span class="roadmap-number">#${issue.number}</span></a></li>`;
+/** A milestone's description, written in Markdown on GitHub, as one line of text. */
+function plainText(markdown: string): string {
+  return markdown
+    .split(/\r?\n/)
+    .map((line) => line.trim().replace(/^[-*]\s+/, ''))
+    .filter(Boolean)
+    .join(' ');
 }
 
 function escape(text: string): string {

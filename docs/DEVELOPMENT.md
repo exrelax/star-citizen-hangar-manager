@@ -183,16 +183,22 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   shown in the hero and as the first, "released" step of the roadmap, with the main issues of its
   milestone (the closed milestone titled like the version; those with the most sub-issues first);
   without a release, the `version` of `package.json`. Publishing a release rebuilds the site.
-- **Roadmap**: built from the repository's open milestones (with a due date) and issues while
-  building, by [`site/roadmap/roadmap.ts`](../site/roadmap/roadmap.ts); open `enhancement` issues
-  without a milestone are listed under "Later", issues labelled `website` or
-  `internal` (work for the project itself, e.g. the release or the demo mode) never show. Sub-issues
-  are left out where their parent issue is listed (same milestone or "Later"); the parent stands
-  for them, also in the progress. A hidden parent (`website`, `internal`) hides its sub-issues too. With a `GITHUB_TOKEN` that can read the
-  [project board](https://github.com/users/exrelax/projects/1), the issues are grouped by its
-  columns, otherwise into open and done. Each step is a card on one line: the released version,
-  the milestones by date (the first "Next") and "Later". Locally it works without a
-  token (GitHub allows 60 requests an hour without one).
+- **Roadmap**: built from the repository's milestones and issues while building, by
+  [`site/roadmap/roadmap.ts`](../site/roadmap/roadmap.ts), in the layout of the design "Roadmap –
+  Komponente" (#347). One timeline holds the live version and up to two planned versions (open
+  milestones with issues, by due date, those without one after them; the first "Next"). A finished
+  patch version (e.g. v1.1.1, a closed milestone up to the live version) is part of the live
+  version's card: the newest patch is its title, the patches show their milestone's description,
+  the highlights stay those of the minor or major version. A patch in development or planned is a
+  card of its own, like any version. Open `enhancement` issues without a milestone are listed
+  under "Later": a step of the timeline while it has room, a dashed section below it once two
+  versions are planned. Issues labelled `website` or `internal` (work for the project itself, e.g.
+  the release or the demo mode) never show. Sub-issues are left out where their parent issue is
+  listed (same milestone or "Later"); the parent stands for them, also in the progress. A hidden
+  parent (`website`, `internal`) hides its sub-issues too. With a `GITHUB_TOKEN` that can read the
+  [project board](https://github.com/users/exrelax/projects/1), a milestone's open issues are
+  listed the furthest on the board first, otherwise by number; done ones follow. Locally it works
+  without a token (GitHub allows 60 requests an hour without one).
 - **Privacy page**: `site/privacy.html` shows [`PRIVACY.md`](../PRIVACY.md), rendered while
   building by [`site/privacy/privacy.ts`](../site/privacy/privacy.ts) – change the policy only
   there. Its `#` heading is the title, the paragraphs before the first `##` section the line below
