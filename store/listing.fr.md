@@ -63,6 +63,7 @@ Les pages « My Gear » et « Buy Back Pledges » de RSI restent telles quelles.
 Deux thèmes (Modern Hangar et Classic RSI), trois tailles de police et une vue compacte. En français, anglais, allemand et espagnol.
 
 Open source : https://github.com/exrelax/star-citizen-hangar-manager
+Développé avec l’aide de l’IA (Claude Code), chaque modification relue et testée. L’extension elle-même n’utilise pas d’IA et n’envoie rien à un service d’IA.
 
 Ceci est un projet de fan non officiel, ni affilié à ni approuvé par Cloud Imperium Games ou Roberts Space Industries. Star Citizen® et Roberts Space Industries® sont des marques de Cloud Imperium Rights LLC.
 ```
