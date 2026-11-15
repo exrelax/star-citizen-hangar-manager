@@ -25,6 +25,7 @@
  */
 
 import { appendFile } from 'node:fs/promises';
+import { isPublishIssue } from '../../site/roadmap/roadmap.ts';
 import {
   deployedSteps,
   expectedInReview,
@@ -297,6 +298,39 @@ export class GitHub {
     }
   }
 
+  /** All pages of a list of the REST API. */
+  async restAll<T>(path: string): Promise<T[]> {
+    const all: T[] = [];
+    const separator = path.includes('?') ? '&' : '?';
+    for (let page = 1; ; page++) {
+      const items = await this.rest<T[]>(`${path}${separator}per_page=100&page=${page}`);
+      all.push(...items);
+      if (items.length < 100) return all;
+    }
+  }
+
+  async openMilestones(): Promise<Milestone[]> {
+    return this.restAll<Milestone>(`/repos/${REPOSITORY}/milestones?state=open`);
+  }
+
+  async milestoneIssues(milestone: number): Promise<ReleaseIssue[]> {
+    const issues = await this.restAll<ReleaseIssue>(
+      `/repos/${REPOSITORY}/issues?milestone=${milestone}&state=all`,
+    );
+    return issues.filter((issue) => !issue.pull_request);
+  }
+
+  async subIssues(issue: number): Promise<ReleaseIssue[]> {
+    return this.restAll<ReleaseIssue>(`/repos/${REPOSITORY}/issues/${issue}/sub_issues`);
+  }
+
+  async closeMilestone(milestone: number): Promise<void> {
+    await this.rest(`/repos/${REPOSITORY}/milestones/${milestone}`, {
+      method: 'PATCH',
+      body: { state: 'closed' },
+    });
+  }
+
   async issue(number: number): Promise<GitHubIssue> {
     return this.rest<GitHubIssue>(`/repos/${REPOSITORY}/issues/${number}`);
   }
@@ -320,9 +354,26 @@ export interface RunOptions {
   log?: (line: string) => void;
 }
 
+interface Milestone {
+  number: number;
+  title: string;
+}
+
+interface ReleaseIssue {
+  number: number;
+  title: string;
+  state: string;
+  html_url: string;
+  labels: { name?: string }[];
+  pull_request?: unknown;
+  sub_issues_summary?: { total: number; completed?: number } | null;
+}
+
 export interface RunResult {
-  /** The issues moved to "Done" (or that would be, in a dry run). */
+  /** The issues moved to "Done" (or that would be, in a dry run), publish issues too. */
   moved: number[];
+  /** The milestones closed (or that would be), by title (#365). */
+  closedMilestones: string[];
   /** What failed; the run fails when it isn't empty. */
   errors: string[];
 }
@@ -339,7 +390,7 @@ export async function run(options: RunOptions): Promise<RunResult> {
   if (!github.canReadBoard) log("No PROJECT_TOKEN: the board can't be read, only reporting.");
   else if (dryRun) log('Dry run: only reporting.');
 
-  const result: RunResult = { moved: [], errors: [] };
+  const result: RunResult = { moved: [], closedMilestones: [], errors: [] };
   const listings = new Map<string, Promise<Listing | undefined>>();
   const listing = (store: StoreId, id: string) => {
     const key = `${store}|${id}`;
@@ -397,8 +448,20 @@ export async function run(options: RunOptions): Promise<RunResult> {
   }
 
   if (board) {
+    let released = false;
     try {
-      await syncRoadmap(github, board, writes, fetchImpl, log);
+      released = await closeReleases(github, board, writes, result, log);
+    } catch (error) {
+      result.errors.push(`Releases: ${(error as Error).message}`);
+    }
+    try {
+      // The board read at the start is outdated now: the roadmap has to be built again anyway.
+      if (released) {
+        log('A publish issue or milestone was closed: starting a website build.');
+        if (writes) await github.buildSite();
+      } else {
+        await syncRoadmap(github, board, writes, fetchImpl, log);
+      }
     } catch (error) {
       result.errors.push(`Roadmap: ${(error as Error).message}`);
     }
@@ -411,6 +474,67 @@ export async function run(options: RunOptions): Promise<RunResult> {
   }
   return result;
 }
+
+const VERSION_TITLE = /^v?\d+\.\d+\.\d+$/;
+
+/**
+ * Closes the releases that are done (#365): a publish issue ("Publish v1.1.1") once all its
+ * sub-issues are closed – status "Done", a comment – and then its milestone once all of its issues
+ * are closed. A milestone without a publish issue stays open. Issues this run closed (or would, in a
+ * dry run) count as closed. Returns whether it closed anything.
+ */
+async function closeReleases(
+  github: GitHub,
+  board: Board,
+  writes: boolean,
+  result: RunResult,
+  log: (line: string) => void,
+): Promise<boolean> {
+  const closedNow = new Set(result.moved);
+  const isClosed = (issue: { number: number; state: string }) =>
+    issue.state === 'closed' || closedNow.has(issue.number);
+  let changed = false;
+  for (const milestone of await github.openMilestones()) {
+    if (!VERSION_TITLE.test(milestone.title.trim())) continue;
+    const issues = await github.milestoneIssues(milestone.number);
+    const publish = issues.find((issue) => isPublishIssue(issue, milestone.title));
+    if (!publish) continue;
+    const label = `#${publish.number} ${publish.title}`;
+
+    if (!isClosed(publish)) {
+      const subIssues = await github.subIssues(publish.number);
+      const open = subIssues.filter((issue) => !isClosed(issue));
+      if (open.length) {
+        log(`${label}: ${open.length} of ${subIssues.length} sub-issue(s) still open.`);
+        continue;
+      }
+      log(`${label}: all sub-issues are closed → ${DONE}.`);
+      result.moved.push(publish.number);
+      closedNow.add(publish.number);
+      changed = true;
+      if (writes) {
+        const item = board.items.get(publish.number);
+        if (item) await github.setDone(board, item);
+        await github.comment(publish.number, PUBLISH_DONE_COMMENT);
+        await github.close(publish.number);
+      }
+    }
+
+    const open = issues.filter((issue) => !isClosed(issue));
+    if (open.length) {
+      log(`Milestone ${milestone.title}: ${open.length} issue(s) still open.`);
+      continue;
+    }
+    log(`Milestone ${milestone.title}: all issues are closed → closed.`);
+    result.closedMilestones.push(milestone.title);
+    changed = true;
+    if (writes) await github.closeMilestone(milestone.number);
+  }
+  return changed;
+}
+
+export const PUBLISH_DONE_COMMENT =
+  'All store issues are done: every store has published the version. Moved to "Done" by the store review workflow (#365).';
 
 /** Starts a website build when the roadmap shows a version's review state wrongly (#354). */
 async function syncRoadmap(

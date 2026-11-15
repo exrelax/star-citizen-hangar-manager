@@ -43,6 +43,10 @@ function fakeWorld(options: {
   /** The deployed website, and the open issues with a milestone (#354). */
   site?: string;
   milestoneIssues?: unknown[];
+  /** The open milestones, their issues and the sub-issues of a publish issue (#365). */
+  milestones?: { number: number; title: string }[];
+  milestoneContent?: Record<number, unknown[]>;
+  subIssues?: Record<number, unknown[]>;
 }) {
   const calls: string[] = [];
   const chrome = `<gupdate><app appid="x" status="ok"><updatecheck _esbAllowlist="${options.esbTrusted ? 'true' : 'false'}" status="ok" version="${options.chromeVersion ?? '1.1.0'}"/></app></gupdate>`;
@@ -102,6 +106,20 @@ function fakeWorld(options: {
       '',
     );
     calls.push(`${method} ${path.replace(/\?.*/, '')}`);
+    if (path.startsWith('/milestones?state=open')) {
+      calls.pop();
+      return json(options.milestones ?? []);
+    }
+    const ofMilestone = /^\/issues\?milestone=(\d+)&state=all/.exec(path)?.[1];
+    if (ofMilestone) {
+      calls.pop();
+      return json(options.milestoneContent?.[Number(ofMilestone)] ?? []);
+    }
+    const subsOf = /^\/issues\/(\d+)\/sub_issues/.exec(path)?.[1];
+    if (subsOf) {
+      calls.pop();
+      return json(options.subIssues?.[Number(subsOf)] ?? []);
+    }
     if (path.startsWith('/issues?state=open&milestone=*')) {
       calls.pop();
       return json(options.milestoneIssues ?? []);
@@ -151,7 +169,7 @@ describe('the store review run (#350)', () => {
       fetch: world.fetchImpl,
       log: quiet,
     });
-    expect(result).toEqual({ moved: [353], errors: [] });
+    expect(result).toEqual({ moved: [353], closedMilestones: [], errors: [] });
     expect(world.calls).toEqual([
       'GET /issues',
       'setDone',
@@ -183,7 +201,7 @@ describe('the store review run (#350)', () => {
       fetch: world.fetchImpl,
       log: quiet,
     });
-    expect(result).toEqual({ moved: [], errors: [] });
+    expect(result).toEqual({ moved: [], closedMilestones: [], errors: [] });
   });
 
   it('only reports in a dry run and without the project token', async () => {
@@ -254,7 +272,7 @@ describe('the roadmap of the website (#354)', () => {
   ].join('');
   const PUBLISH = {
     number: 351,
-    title: 'Publish 1.1.1',
+    title: 'Publish v1.1.1',
     milestone: { title: 'v1.1.1' },
     sub_issues_summary: { total: 2 },
   };
@@ -312,17 +330,6 @@ describe('the roadmap of the website (#354)', () => {
     expect(dry.calls).not.toContain('POST /actions/workflows/site.yml/dispatches');
   });
 
-  it('starts one once every store issue is done, though the publish issue is still in review', async () => {
-    const world = fakeWorld({
-      issues: [],
-      statuses: { 351: 'In review' },
-      site: SITE.replace('is-next', 'is-review'),
-      milestoneIssues: [{ ...PUBLISH, sub_issues_summary: { total: 2, completed: 2 } }],
-    });
-    await run({ github: world.github, dryRun: false, fetch: world.fetchImpl, log: quiet });
-    expect(world.calls).toContain('POST /actions/workflows/site.yml/dispatches');
-  });
-
   it('starts one when a version in review shows as live (its release published first)', async () => {
     const world = fakeWorld({
       issues: [],
@@ -344,5 +351,100 @@ describe('the roadmap of the website (#354)', () => {
     });
     await run({ github: world.github, dryRun: false, fetch: world.fetchImpl, log: quiet });
     expect(world.calls).not.toContain('POST /actions/workflows/site.yml/dispatches');
+  });
+});
+
+describe('closing a release (#365)', () => {
+  const quiet = () => {};
+  const MILESTONE = { number: 3, title: 'v1.1.1' };
+  const publish = (state = 'open') => ({
+    number: 351,
+    title: 'Publish v1.1.1',
+    state,
+    html_url: '',
+    labels: [],
+    sub_issues_summary: { total: 2 },
+  });
+  const done = (number: number, state = 'closed') => ({
+    number,
+    title: `Issue ${number}`,
+    state,
+    html_url: '',
+    labels: [],
+  });
+  const world = (options: { chrome: string; publishState?: string; others?: unknown[] }) =>
+    fakeWorld({
+      issues: [CHROME_111],
+      statuses: { 352: 'In review', 351: 'In review' },
+      chromeVersion: options.chrome,
+      milestones: [MILESTONE, { number: 4, title: 'v1.2.0' }],
+      milestoneContent: {
+        3: [
+          publish(options.publishState),
+          done(352, 'open'),
+          done(353),
+          ...(options.others ?? [done(340)]),
+        ],
+        4: [done(400, 'open')],
+      },
+      subIssues: { 351: [done(352, 'open'), done(353)] },
+    });
+
+  it('closes the publish issue and the milestone once the last store published it', async () => {
+    const w = world({ chrome: '1.1.1' });
+    const result = await run({ github: w.github, dryRun: false, fetch: w.fetchImpl, log: quiet });
+    expect(result).toEqual({ moved: [352, 351], closedMilestones: ['v1.1.1'], errors: [] });
+    expect(w.calls).toEqual([
+      'GET /issues',
+      'setDone',
+      'POST /issues/352/comments',
+      'PATCH /issues/352',
+      'setDone',
+      'POST /issues/351/comments',
+      'PATCH /issues/351',
+      'PATCH /milestones/3',
+      'POST /actions/workflows/site.yml/dispatches',
+    ]);
+  });
+
+  it('leaves both open while a store issue is open', async () => {
+    const w = world({ chrome: '1.1.0' });
+    const result = await run({ github: w.github, dryRun: false, fetch: w.fetchImpl, log: quiet });
+    expect(result.closedMilestones).toEqual([]);
+    expect(w.calls).not.toContain('PATCH /issues/351');
+    expect(w.calls).not.toContain('PATCH /milestones/3');
+  });
+
+  it('leaves the milestone open while another of its issues is', async () => {
+    const w = world({ chrome: '1.1.1', others: [done(340, 'open')] });
+    const result = await run({ github: w.github, dryRun: false, fetch: w.fetchImpl, log: quiet });
+    expect(result.moved).toEqual([352, 351]);
+    expect(result.closedMilestones).toEqual([]);
+    expect(w.calls).not.toContain('PATCH /milestones/3');
+  });
+
+  it('closes the milestone of a publish issue closed by hand', async () => {
+    const content = { 3: [publish('closed'), done(352), done(353)] };
+    const closedByHand = fakeWorld({
+      issues: [],
+      statuses: {},
+      milestones: [MILESTONE],
+      milestoneContent: content,
+    });
+    const result = await run({
+      github: closedByHand.github,
+      dryRun: false,
+      fetch: closedByHand.fetchImpl,
+      log: quiet,
+    });
+    expect(result.closedMilestones).toEqual(['v1.1.1']);
+    expect(closedByHand.calls).toContain('PATCH /milestones/3');
+  });
+
+  it('only reports in a dry run', async () => {
+    const w = world({ chrome: '1.1.1' });
+    const result = await run({ github: w.github, dryRun: true, fetch: w.fetchImpl, log: quiet });
+    expect(result.closedMilestones).toEqual(['v1.1.1']);
+    expect(w.calls).toEqual(['GET /issues']);
   });
 });
