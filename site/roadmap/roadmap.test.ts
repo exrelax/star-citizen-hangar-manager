@@ -68,6 +68,19 @@ const ISSUES: Record<number, unknown[]> = {
     // Sub-issues of an issue of the same milestone: only their parent shows.
     sub(30, 3),
     sub(31, 6, { state: 'closed', closed_at: '2026-11-07T10:00:00Z' }),
+    // The publish issue (#354), internal: never listed, its board status counts.
+    issue(70, {
+      title: 'Publish 1.1.0',
+      labels: [{ name: 'internal' }],
+      sub_issues_summary: { total: 2 },
+    }),
+    // "Publish" in the title, but no parent; a parent without "Publish".
+    issue(71, { title: 'Publish the docs', labels: [{ name: 'internal' }] }),
+    issue(72, {
+      title: 'Release checks',
+      labels: [{ name: 'internal' }],
+      sub_issues_summary: { total: 3 },
+    }),
   ],
   // A sub-issue whose parent is elsewhere (another milestone) shows on its own.
   2: [issue(20), sub(21, 1)],
@@ -202,6 +215,31 @@ function github(
     return json({ message: 'Not Found' }, 404);
   });
 }
+
+describe('a version in review (#354)', () => {
+  const inReview = async (status: Record<number, string> | undefined) =>
+    (
+      await fetchRoadmap({
+        token: 'token',
+        fetch: github(status && { status }) as typeof fetch,
+        fallbackVersion: '1.1.0',
+      })
+    ).milestones.map((milestone) => milestone.inReview ?? false);
+
+  it('is in review while its publish issue is "In review" on the board', async () => {
+    expect(await inReview({ 70: 'In review' })).toEqual([true, false]);
+  });
+
+  it('is not before, nor for other parent issues or issues with "Publish" in the title', async () => {
+    expect(await inReview({ 70: 'In progress' })).toEqual([false, false]);
+    expect(await inReview({ 70: 'Done' })).toEqual([false, false]);
+    expect(await inReview({ 71: 'In review', 72: 'In review' })).toEqual([false, false]);
+  });
+
+  it('is not without the board', async () => {
+    expect(await inReview(undefined)).toEqual([false, false]);
+  });
+});
 
 describe('fetchRoadmap', () => {
   const numbers = (issues: { number: number; done?: boolean }[]) =>
@@ -455,6 +493,23 @@ describe('renderRoadmap', () => {
     expect(section.querySelector('.roadmap-link')?.getAttribute('href')).toContain(
       '/discussions/categories/ideas',
     );
+  });
+
+  it('shows a version in review instead of "Next" (#354)', () => {
+    const page = parse(
+      renderRoadmap({
+        release: live,
+        fromBoard: true,
+        milestones: [{ ...next, inReview: true }, planned],
+        later,
+      }),
+    );
+    expect(steps(page)).toEqual([
+      'roadmap-step is-live',
+      'roadmap-step is-review',
+      'roadmap-step is-planned',
+    ]);
+    expect(text(page.querySelector('.is-review .roadmap-badge'))).toBe('In review');
   });
 
   it('keeps "Later" on the timeline next to one planned version', () => {

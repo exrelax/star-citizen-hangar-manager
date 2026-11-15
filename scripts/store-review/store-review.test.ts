@@ -40,6 +40,9 @@ function fakeWorld(options: {
   esbTrusted?: boolean;
   esbComments?: string[];
   projectToken?: string;
+  /** The deployed website, and the open issues with a milestone (#354). */
+  site?: string;
+  milestoneIssues?: unknown[];
 }) {
   const calls: string[] = [];
   const chrome = `<gupdate><app appid="x" status="ok"><updatecheck _esbAllowlist="${options.esbTrusted ? 'true' : 'false'}" status="ok" version="${options.chromeVersion ?? '1.1.0'}"/></app></gupdate>`;
@@ -57,6 +60,9 @@ function fakeWorld(options: {
         : json({ status: 'public', current_version: { version: '1.1.1' } });
     }
     if (url.startsWith('https://addons.opera.com/')) return new Response('', { status: 404 });
+    if (url === 'https://exrelax.github.io/star-citizen-hangar-manager/') {
+      return new Response(options.site ?? '<html></html>');
+    }
     if (url.endsWith('/graphql')) {
       const body = JSON.parse(String(init?.body)) as { query: string };
       if (body.query.includes('mutation')) {
@@ -96,6 +102,12 @@ function fakeWorld(options: {
       '',
     );
     calls.push(`${method} ${path.replace(/\?.*/, '')}`);
+    if (path.startsWith('/issues?state=open&milestone=*')) {
+      calls.pop();
+      return json(options.milestoneIssues ?? []);
+    }
+    if (path.startsWith('/actions/workflows/site.yml/dispatches'))
+      return new Response(null, { status: 204 });
     if (path.startsWith('/issues?')) {
       return json(
         options.issues.map((issue) => ({
@@ -228,5 +240,87 @@ describe('the store review run (#350)', () => {
     const untrusted = fakeWorld({ issues: [], statuses: {} });
     await run({ github: untrusted.github, dryRun: false, fetch: untrusted.fetchImpl, log: quiet });
     expect(untrusted.calls).toEqual(['GET /issues']);
+  });
+});
+
+describe('the roadmap of the website (#354)', () => {
+  const quiet = () => {};
+  const step = (kind: string, title: string) =>
+    `<li class="roadmap-step ${kind}">\n<div class="roadmap-rail"></div>\n<article class="roadmap-card" aria-labelledby="roadmap-${title}">`;
+  const SITE = [
+    step('is-live', 'v1-1-0'),
+    step('is-next', 'v1-1-1'),
+    step('is-planned', 'v1-2-0'),
+  ].join('');
+  const PUBLISH = {
+    number: 351,
+    title: 'Publish 1.1.1',
+    milestone: { title: 'v1.1.1' },
+    sub_issues_summary: { total: 2 },
+  };
+
+  it('starts a website build once the publish issue is in review', async () => {
+    const world = fakeWorld({
+      issues: [],
+      statuses: { 351: 'In review' },
+      site: SITE,
+      milestoneIssues: [PUBLISH],
+    });
+    const result = await run({
+      github: world.github,
+      dryRun: false,
+      fetch: world.fetchImpl,
+      log: quiet,
+    });
+    expect(result.errors).toEqual([]);
+    expect(world.calls).toContain('POST /actions/workflows/site.yml/dispatches');
+  });
+
+  it('starts none while the roadmap shows it', async () => {
+    for (const [status, site] of [
+      ['In review', SITE.replace('is-next', 'is-review')],
+      ['In progress', SITE],
+    ] as const) {
+      const world = fakeWorld({
+        issues: [],
+        statuses: { 351: status },
+        site,
+        milestoneIssues: [PUBLISH],
+      });
+      await run({ github: world.github, dryRun: false, fetch: world.fetchImpl, log: quiet });
+      expect(world.calls).not.toContain('POST /actions/workflows/site.yml/dispatches');
+    }
+  });
+
+  it('starts one once the review is over, and none in a dry run', async () => {
+    const world = fakeWorld({
+      issues: [],
+      statuses: { 351: 'Done' },
+      site: SITE.replace('is-next', 'is-review'),
+      milestoneIssues: [PUBLISH],
+    });
+    await run({ github: world.github, dryRun: false, fetch: world.fetchImpl, log: quiet });
+    expect(world.calls).toContain('POST /actions/workflows/site.yml/dispatches');
+
+    const dry = fakeWorld({
+      issues: [],
+      statuses: { 351: 'In review' },
+      site: SITE,
+      milestoneIssues: [PUBLISH],
+    });
+    await run({ github: dry.github, dryRun: true, fetch: dry.fetchImpl, log: quiet });
+    expect(dry.calls).not.toContain('POST /actions/workflows/site.yml/dispatches');
+  });
+
+  it("ignores versions the roadmap doesn't show as planned", async () => {
+    const world = fakeWorld({
+      issues: [],
+      statuses: { 351: 'In review' },
+      // v1.1.1 is live already, or beyond the planned versions shown.
+      site: step('is-live', 'v1-1-1'),
+      milestoneIssues: [PUBLISH],
+    });
+    await run({ github: world.github, dryRun: false, fetch: world.fetchImpl, log: quiet });
+    expect(world.calls).not.toContain('POST /actions/workflows/site.yml/dispatches');
   });
 });

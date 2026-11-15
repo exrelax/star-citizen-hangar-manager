@@ -26,6 +26,13 @@
 
 import { appendFile } from 'node:fs/promises';
 import {
+  deployedSteps,
+  expectedInReview,
+  outdatedSteps,
+  SITE_URL,
+  type MilestoneIssue,
+} from './roadmap-sync.ts';
+import {
   compareVersions,
   isStoreId,
   readListing,
@@ -259,6 +266,37 @@ export class GitHub {
     });
   }
 
+  /** The open issues with a milestone, for the publish issues (#354). */
+  async openMilestoneIssues(): Promise<MilestoneIssue[]> {
+    const all: MilestoneIssue[] = [];
+    for (let page = 1; ; page++) {
+      const issues = await this.rest<MilestoneIssue[]>(
+        `/repos/${REPOSITORY}/issues?state=open&milestone=*&per_page=100&page=${page}`,
+      );
+      all.push(...issues.filter((issue) => !issue.pull_request));
+      if (issues.length < 100) return all;
+    }
+  }
+
+  /** Starts a build of the website on main. */
+  async buildSite(): Promise<void> {
+    const response = await this.fetchImpl(
+      `https://api.github.com/repos/${REPOSITORY}/actions/workflows/site.yml/dispatches`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/vnd.github+json',
+          ...(this.token && { Authorization: `Bearer ${this.token}` }),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ref: 'main' }),
+      },
+    );
+    if (!response.ok) {
+      throw new Error(`Starting the website build: ${response.status} ${await response.text()}`);
+    }
+  }
+
   async issue(number: number): Promise<GitHubIssue> {
     return this.rest<GitHubIssue>(`/repos/${REPOSITORY}/issues/${number}`);
   }
@@ -358,12 +396,42 @@ export async function run(options: RunOptions): Promise<RunResult> {
     }
   }
 
+  if (board) {
+    try {
+      await syncRoadmap(github, board, writes, fetchImpl, log);
+    } catch (error) {
+      result.errors.push(`Roadmap: ${(error as Error).message}`);
+    }
+  }
+
   try {
     await tellEsbTrusted(github, await listing('chrome', STORES.chrome.defaultId!), writes, log);
   } catch (error) {
     result.errors.push(`#${ESB_ISSUE}: ${(error as Error).message}`);
   }
   return result;
+}
+
+/** Starts a website build when the roadmap shows a version's review state wrongly (#354). */
+async function syncRoadmap(
+  github: GitHub,
+  board: Board,
+  writes: boolean,
+  fetchImpl: Fetch,
+  log: (line: string) => void,
+): Promise<void> {
+  const response = await fetchImpl(SITE_URL, { signal: AbortSignal.timeout(30_000) });
+  if (!response.ok) throw new Error(`${SITE_URL}: ${response.status}`);
+  const outdated = outdatedSteps(
+    deployedSteps(await response.text()),
+    expectedInReview(await github.openMilestoneIssues(), (issue) => board.items.get(issue)?.status),
+  );
+  if (!outdated.length) {
+    log('The roadmap shows the review state of each version.');
+    return;
+  }
+  log(`The roadmap is outdated (${outdated.join(', ')}): starting a website build.`);
+  if (writes) await github.buildSite();
 }
 
 /** Comments on #333 once Chrome trusts the extension, while the issue is open. */

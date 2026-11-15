@@ -14,6 +14,8 @@
  *   at most `PLANNED_SHOWN`. A patch version in development or planned is one of them, like any
  *   other version. Their issues are listed open first (the furthest on the project board first),
  *   then done.
+ *   A version whose publish issue ("Publish 1.1.1", a parent issue) is "In review" on the board
+ *   shows "In review" instead: it waits for the stores (#354).
  * - Later: open `enhancement` issues without a milestone, except the website's own (`website`)
  *   and internal ones (`internal`). With `PLANNED_SHOWN` planned versions the timeline is full and
  *   "Later" would wrap to a line of its own, so it is a section below the timeline instead of a
@@ -45,6 +47,11 @@ export interface RoadmapMilestone {
   issues: RoadmapIssue[];
   /** Done issues that aren't listed. */
   moreDone: number;
+  /**
+   * Waiting for the stores (#354): its publish issue – a parent issue with "Publish" in its title,
+   * e.g. "Publish 1.1.1" – is "In review" on the project board.
+   */
+  inReview?: boolean;
 }
 
 /** A finished patch version of the live version, e.g. 1.1.1 of 1.1.0. */
@@ -100,6 +107,7 @@ export const ROADMAP_SOURCE = {
 
 /** The board's columns, the furthest last; issues in other columns count as "Backlog". */
 const BOARD_COLUMNS = ['Backlog', 'Ready', 'In progress', 'In review'];
+const IN_REVIEW = 'In review';
 /** Planned versions shown on the timeline. */
 export const PLANNED_SHOWN = 2;
 /** Done issues listed per milestone, the most recently closed first. */
@@ -107,7 +115,7 @@ const DONE_LISTED = 20;
 /** Main issues listed for the released version. */
 const HIGHLIGHTS_LISTED = 5;
 
-interface GitHubIssue {
+export interface GitHubIssue {
   number: number;
   title: string;
   html_url: string;
@@ -239,7 +247,12 @@ export async function fetchRoadmap(options: FetchRoadmapOptions): Promise<Roadma
     open.map((milestone) => getAll<GitHubIssue>(`/issues?milestone=${milestone.number}&state=all`)),
   );
   const planned = open
-    .map((milestone, index) => ({ milestone, issues: shown(issuesByMilestone[index]!) }))
+    .map((milestone, index) => ({
+      milestone,
+      issues: shown(issuesByMilestone[index]!),
+      // All of them: the publish issue is internal and never listed.
+      all: issuesByMilestone[index]!,
+    }))
     .filter(({ issues }) => issues.length > 0)
     .sort(
       ({ milestone: a }, { milestone: b }) =>
@@ -313,11 +326,28 @@ export async function fetchRoadmap(options: FetchRoadmapOptions): Promise<Roadma
   return {
     release,
     fromBoard: columns !== undefined,
-    milestones: planned.map(({ milestone, issues }) => toMilestone(milestone, issues, columns)),
+    milestones: planned.map(({ milestone, issues, all }) => ({
+      ...toMilestone(milestone, issues, columns),
+      ...(isInReview(all, columns) && { inReview: true }),
+    })),
     later: shown(later)
       .sort((a, b) => a.number - b.number)
       .map(toIssue),
   };
+}
+
+/** A parent issue whose title says "Publish", e.g. "Publish 1.1.1" (#351). */
+export const isPublishIssue = (issue: GitHubIssue) =>
+  !issue.pull_request &&
+  /\bpublish\b/i.test(issue.title) &&
+  (issue.sub_issues_summary?.total ?? 0) > 0;
+
+/** Whether a milestone's publish issue is "In review" on the board; never without the board. */
+export function isInReview(
+  issues: GitHubIssue[],
+  columns: Map<number, string> | undefined,
+): boolean {
+  return issues.some((issue) => isPublishIssue(issue) && columns?.get(issue.number) === IN_REVIEW);
 }
 
 /** The board column of every issue of the repository on the project board, by issue number. */
@@ -468,7 +498,7 @@ function renderCardLink(url: string, text: string): string {
 }
 
 /** The id of a card's title, e.g. "roadmap-v1-1-0". */
-const idOf = (name: string) => `roadmap-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+export const idOf = (name: string) => `roadmap-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 
 /**
  * The live version as the first step, with the issues that went into it. A patch version shows
@@ -516,10 +546,15 @@ function renderMilestone(milestone: RoadmapMilestone, next: boolean): string {
   const total = milestone.open + milestone.done;
   const percent = total ? Math.round((milestone.done / total) * 100) : 0;
   const meta = milestone.dueOn ? `Due ${formatDate(milestone.dueOn)}` : 'No date yet';
+  const [step, badge] = milestone.inReview
+    ? ['is-review', 'In review']
+    : next
+      ? ['is-next', 'Next']
+      : ['is-planned', 'Planned'];
   return renderStep(
-    next ? 'is-next' : 'is-planned',
+    step,
     id,
-    `${renderHead(id, milestone.title, next ? 'Next' : 'Planned', meta)}
+    `${renderHead(id, milestone.title, badge, meta)}
     <div class="roadmap-progress-block">
       <span class="roadmap-progress" role="progressbar" aria-label="${escape(milestone.title)}: ${milestone.done} of ${total} done"
         aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${milestone.done}"><span style="width: ${percent}%"></span></span>
