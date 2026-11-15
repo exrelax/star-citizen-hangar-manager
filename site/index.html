@@ -10,6 +10,7 @@
     />
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#050c13" />
+    <!-- browser: sets data-browser on <html> for the store buttons (site/browser.ts) -->
     <link rel="icon" type="image/png" sizes="32x32" href="../public/icon/32.png" />
     <link rel="icon" type="image/png" sizes="96x96" href="../public/icon/96.png" />
     <link rel="stylesheet" href="./styles.css" />
@@ -102,7 +103,8 @@
             <div id="install" class="install">
               <div class="install-option">
                 <a
-                  class="button is-primary"
+                  class="button"
+                  data-store="chrome"
                   href="https://chromewebstore.google.com/detail/star-citizen-hangar-manag/nofhjnkljndooegpllppamacogkikdjg"
                   ><svg class="icon" aria-hidden="true"><use href="#icon-chrome"></use></svg>Add to
                   Chrome</a
@@ -112,6 +114,7 @@
               <div class="install-option">
                 <a
                   class="button"
+                  data-store="firefox"
                   href="https://addons.mozilla.org/firefox/addon/star-citizen-hangar-manager/"
                   ><svg class="icon" aria-hidden="true">
                     <use href="#icon-firefox-browser"></use></svg
@@ -1065,7 +1068,8 @@
             <div class="install">
               <div class="install-option">
                 <a
-                  class="button is-primary"
+                  class="button"
+                  data-store="chrome"
                   href="https://chromewebstore.google.com/detail/star-citizen-hangar-manag/nofhjnkljndooegpllppamacogkikdjg"
                   ><svg class="icon" aria-hidden="true"><use href="#icon-chrome"></use></svg>Chrome
                   Web Store</a
@@ -1075,6 +1079,7 @@
               <div class="install-option">
                 <a
                   class="button"
+                  data-store="firefox"
                   href="https://addons.mozilla.org/firefox/addon/star-citizen-hangar-manager/"
                   ><svg class="icon" aria-hidden="true">
                     <use href="#icon-firefox-browser"></use></svg

@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { defineConfig, type Plugin } from 'vite';
+import { browserScript } from './browser.ts';
 import { ICONS_FOLDER, iconSprite } from './icons.ts';
 import { parsePrivacy, renderPrivacy } from './privacy/privacy.ts';
 import { fetchRoadmap, renderRoadmap, renderVersion } from './roadmap/roadmap.ts';
@@ -127,6 +128,13 @@ function storeVersions(): Plugin {
   };
 }
 
+/** The inline script that tells the store buttons the visitor's browser (see `browser.ts`). */
+const BROWSER_PLACEHOLDER = /<!-- browser:[\s\S]*?-->/;
+const browser: Plugin = {
+  name: 'browser',
+  transformIndexHtml: (page) => page.replace(BROWSER_PLACEHOLDER, browserScript()),
+};
+
 /** Where the site is published (GitHub Pages); the canonical and preview URLs point here. */
 export const SITE_URL = 'https://exrelax.github.io/star-citizen-hangar-manager/';
 
@@ -189,6 +197,7 @@ export default defineConfig({
   root,
   plugins: [
     serveRepositoryImages,
+    browser,
     icons,
     roadmap(),
     storeVersions(),
