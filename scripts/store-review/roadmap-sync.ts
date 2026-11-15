@@ -6,10 +6,9 @@
  * website build when they differ.
  */
 
-import { idOf, isPublishIssue, type GitHubIssue } from '../../site/roadmap/roadmap.ts';
+import { idOf, isInReview, type GitHubIssue } from '../../site/roadmap/roadmap.ts';
 
 export const SITE_URL = 'https://exrelax.github.io/star-citizen-hangar-manager/';
-export const IN_REVIEW = 'In review';
 const PLANNED_STEPS = ['is-next', 'is-planned', 'is-review'];
 
 export interface MilestoneIssue extends GitHubIssue {
@@ -28,16 +27,25 @@ export function deployedSteps(html: string): Map<string, boolean> {
   return steps;
 }
 
-/** The ids of the roadmap cards that should be in review, by the board. */
+/** The ids of the roadmap cards that should be in review, by the board (as the roadmap decides). */
 export function expectedInReview(
   issues: readonly MilestoneIssue[],
   status: (issue: number) => string | undefined,
 ): Set<string> {
+  const byMilestone = Map.groupBy(
+    issues.filter((issue) => issue.milestone),
+    (issue) => issue.milestone!.title,
+  );
+  const columns = new Map(
+    issues.flatMap((issue) => {
+      const column = status(issue.number);
+      return column === undefined ? [] : [[issue.number, column] as const];
+    }),
+  );
   return new Set(
-    issues
-      .filter((issue) => issue.milestone && isPublishIssue(issue))
-      .filter((issue) => status(issue.number) === IN_REVIEW)
-      .map((issue) => idOf(issue.milestone!.title)),
+    [...byMilestone]
+      .filter(([, milestoneIssues]) => isInReview(milestoneIssues, columns))
+      .map(([title]) => idOf(title)),
   );
 }
 

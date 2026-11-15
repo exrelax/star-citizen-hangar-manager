@@ -176,8 +176,7 @@ seen and closes it. A store that answers unexpectedly fails the run (GitHub send
 moves nothing. It also comments on #333 once Chrome reports that Enhanced Safe Browsing trusts the
 extension.
 
-While the publish issue itself is "In review", the website's roadmap shows its version as "In
-review" instead of "Next" (#354). A change on the board starts no workflow, so the store review
+While the publish issue itself is "In review" and not all of its store issues are done, the website's roadmap shows its version as "In review" instead of "Next" (#354), and the version before it stays live, though the GitHub release is published. A change on the board starts no workflow, so the store review
 compares the deployed roadmap with the board every hour and starts a website build when they
 differ.
 

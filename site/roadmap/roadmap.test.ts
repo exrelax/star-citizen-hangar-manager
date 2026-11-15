@@ -86,6 +86,24 @@ const ISSUES: Record<number, unknown[]> = {
   2: [issue(20), sub(21, 1)],
   4: [issue(26, { labels: [{ name: 'website' }] })],
   5: [issue(27)],
+  // v1.1.1 (#354): released on GitHub, its publish issue with one of two store issues done.
+  20: [
+    issue(80),
+    issue(81, {
+      title: 'Publish 1.1.1',
+      labels: [{ name: 'internal' }],
+      sub_issues_summary: { total: 2, completed: 1 },
+    }),
+  ],
+};
+
+/** The open milestone of a released patch whose stores may still review it (#354). */
+const PATCH_MILESTONE = {
+  number: 20,
+  title: 'v1.1.1',
+  html_url: 'https://github.com/m/20',
+  description: null,
+  due_on: '2026-11-15T08:00:00Z',
 };
 
 const LATER = [
@@ -203,6 +221,13 @@ function github(
       return json(release);
     }
     if (path === '/releases/tags/v1.1.0') return json(MINOR_RELEASE);
+    if (path === '/releases') {
+      return json([
+        { ...PATCH_RELEASE, draft: false, prerelease: false },
+        { tag_name: 'v1.2.0-beta', html_url: '', published_at: null, draft: true },
+        { ...MINOR_RELEASE, draft: false, prerelease: false },
+      ]);
+    }
     if (path === '/milestones?state=open&sort=due_on') return json(open);
     if (path === '/milestones?state=closed&sort=due_on&direction=desc') {
       return json(CLOSED_MILESTONES);
@@ -238,6 +263,36 @@ describe('a version in review (#354)', () => {
 
   it('is not without the board', async () => {
     expect(await inReview(undefined)).toEqual([false, false]);
+  });
+});
+
+describe('a released version in review (#354)', () => {
+  const roadmapWith = (status: Record<number, string>, done = 1) => {
+    ISSUES[20]![1] = {
+      ...(ISSUES[20]![1] as object),
+      sub_issues_summary: { total: 2, completed: done },
+    };
+    return fetchRoadmap({
+      token: 'token',
+      fetch: github({ status }, PATCH_RELEASE, [PATCH_MILESTONE, ...MILESTONES]) as typeof fetch,
+      fallbackVersion: '1.1.1',
+    });
+  };
+
+  it('stays in review, and the release before it is live, until the stores published it', async () => {
+    const roadmap = await roadmapWith({ 81: 'In review' });
+    expect(roadmap.release.version).toBe('1.1.0');
+    expect(roadmap.milestones[0]).toMatchObject({ title: 'v1.1.1', inReview: true });
+  });
+
+  it('is live once every store issue is done, and its milestone no longer planned', async () => {
+    for (const roadmap of [
+      await roadmapWith({ 81: 'In review' }, 2),
+      await roadmapWith({ 81: 'Done' }),
+    ]) {
+      expect(roadmap.release.version).toBe('1.1.1');
+      expect(roadmap.milestones.map((milestone) => milestone.title)).not.toContain('v1.1.1');
+    }
   });
 });
 

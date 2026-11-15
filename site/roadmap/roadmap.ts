@@ -14,8 +14,10 @@
  *   at most `PLANNED_SHOWN`. A patch version in development or planned is one of them, like any
  *   other version. Their issues are listed open first (the furthest on the project board first),
  *   then done.
- *   A version whose publish issue ("Publish 1.1.1", a parent issue) is "In review" on the board
- *   shows "In review" instead: it waits for the stores (#354).
+ *   A version whose publish issue ("Publish 1.1.1", a parent issue) is "In review" on the board,
+ *   with store issues still open, shows "In review" instead: it waits for the stores (#354). Its
+ *   release, though published on GitHub, isn't live until then; the live version is the one
+ *   before it. A milestone of a version already live isn't planned.
  * - Later: open `enhancement` issues without a milestone, except the website's own (`website`)
  *   and internal ones (`internal`). With `PLANNED_SHOWN` planned versions the timeline is full and
  *   "Later" would wrap to a line of its own, so it is a section below the timeline instead of a
@@ -126,7 +128,7 @@ export interface GitHubIssue {
   /** API URL of the parent issue, for a sub-issue. */
   parent_issue_url?: string | null;
   /** How many sub-issues it has, for a parent. */
-  sub_issues_summary?: { total: number } | null;
+  sub_issues_summary?: { total: number; completed?: number } | null;
 }
 
 interface GitHubMilestone {
@@ -141,6 +143,8 @@ interface GitHubRelease {
   tag_name: string;
   html_url: string;
   published_at: string | null;
+  draft?: boolean;
+  prerelease?: boolean;
 }
 
 type Fetch = typeof fetch;
@@ -194,18 +198,31 @@ export async function fetchRoadmap(options: FetchRoadmapOptions): Promise<Roadma
     }
   }
 
-  // The latest release, i.e. the newest published one that is no draft and no pre-release.
-  async function getRelease(): Promise<RoadmapRelease> {
+  const toRelease = (release: GitHubRelease): RoadmapRelease => ({
+    version: release.tag_name.replace(/^v/, ''),
+    url: release.html_url,
+    publishedOn: release.published_at?.slice(0, 10),
+  });
+
+  /**
+   * The live version: the latest release, i.e. the newest published one that is no draft and no
+   * pre-release – unless the stores are still reviewing it (`inReview`, #354): then the newest
+   * release before it.
+   */
+  async function getRelease(inReview: Set<string>): Promise<RoadmapRelease> {
     try {
       const response = await fetchImpl(`${api}/releases/latest`, { headers });
       if (response.status === 404) return { version: fallbackVersion };
       if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
-      const release = (await response.json()) as GitHubRelease;
-      return {
-        version: release.tag_name.replace(/^v/, ''),
-        url: release.html_url,
-        publishedOn: release.published_at?.slice(0, 10),
-      };
+      const latest = toRelease((await response.json()) as GitHubRelease);
+      if (!inReview.has(latest.version)) return latest;
+      const earlier = (await getAll<GitHubRelease>('/releases'))
+        .filter((release) => !release.draft && !release.prerelease)
+        .map(toRelease)
+        .filter((release) => !inReview.has(release.version))
+        .sort((a, b) => compareVersions(b.version, a.version))[0];
+      if (!earlier) warn(`Only ${latest.version} is released, and it is in review: shown as live.`);
+      return earlier ?? latest;
     } catch (error) {
       warn(`The latest release can't be read (${String(error)}): showing ${fallbackVersion}.`);
       return { version: fallbackVersion };
@@ -241,19 +258,40 @@ export async function fetchRoadmap(options: FetchRoadmapOptions): Promise<Roadma
   const shown = (issues: GitHubIssue[]) =>
     mainIssues(issues.filter((issue) => !issue.pull_request)).filter(visible);
 
-  // The open milestones with issues: by due date, those without one by version after them.
+  let columns: Map<number, string> | undefined;
+  try {
+    columns = token ? await fetchBoardColumns(token, fetchImpl) : undefined;
+    if (!columns) warn('No token: the open issues are listed by number.');
+  } catch (error) {
+    warn(`The project board can't be read (${String(error)}): open issues listed by number.`);
+  }
+
   const open = await getAll<GitHubMilestone>('/milestones?state=open&sort=due_on');
   const issuesByMilestone = await Promise.all(
     open.map((milestone) => getAll<GitHubIssue>(`/issues?milestone=${milestone.number}&state=all`)),
   );
+  // The versions the stores are still reviewing (#354).
+  const inReview = new Set(
+    open
+      .filter((_, index) => isInReview(issuesByMilestone[index]!, columns))
+      .map((milestone) => milestone.title.replace(/^v/, '')),
+  );
+
+  // The released version: for a patch, with its minor or major version and the finished patches.
+  const release = await getRelease(inReview);
+
+  // The open milestones with issues: by due date, those without one by version after them. A
+  // milestone of a version already live (released, its milestone not closed yet) isn't planned.
   const planned = open
     .map((milestone, index) => ({
       milestone,
       issues: shown(issuesByMilestone[index]!),
-      // All of them: the publish issue is internal and never listed.
-      all: issuesByMilestone[index]!,
     }))
     .filter(({ issues }) => issues.length > 0)
+    .filter(
+      ({ milestone }) =>
+        !parseVersion(milestone.title) || compareVersions(milestone.title, release.version) > 0,
+    )
     .sort(
       ({ milestone: a }, { milestone: b }) =>
         (a.due_on && b.due_on ? a.due_on.localeCompare(b.due_on) : 0) ||
@@ -265,8 +303,6 @@ export async function fetchRoadmap(options: FetchRoadmapOptions): Promise<Roadma
     `/issues?state=open&milestone=none&labels=${ROADMAP_SOURCE.laterLabel}`,
   );
 
-  // The released version: for a patch, with its minor or major version and the finished patches.
-  const release = await getRelease();
   const closed = await getAll<GitHubMilestone>(
     '/milestones?state=closed&sort=due_on&direction=desc',
   );
@@ -315,20 +351,12 @@ export async function fetchRoadmap(options: FetchRoadmapOptions): Promise<Roadma
     release.moreHighlights = Math.max(0, released.length - HIGHLIGHTS_LISTED);
   }
 
-  let columns: Map<number, string> | undefined;
-  try {
-    columns = token ? await fetchBoardColumns(token, fetchImpl) : undefined;
-    if (!columns) warn('No token: the open issues are listed by number.');
-  } catch (error) {
-    warn(`The project board can't be read (${String(error)}): open issues listed by number.`);
-  }
-
   return {
     release,
     fromBoard: columns !== undefined,
-    milestones: planned.map(({ milestone, issues, all }) => ({
+    milestones: planned.map(({ milestone, issues }) => ({
       ...toMilestone(milestone, issues, columns),
-      ...(isInReview(all, columns) && { inReview: true }),
+      ...(inReview.has(milestone.title.replace(/^v/, '')) && { inReview: true }),
     })),
     later: shown(later)
       .sort((a, b) => a.number - b.number)
@@ -342,12 +370,21 @@ export const isPublishIssue = (issue: GitHubIssue) =>
   /\bpublish\b/i.test(issue.title) &&
   (issue.sub_issues_summary?.total ?? 0) > 0;
 
-/** Whether a milestone's publish issue is "In review" on the board; never without the board. */
+/**
+ * Whether the stores are reviewing a milestone's version: its publish issue is "In review" on the
+ * board and not all of its store issues are done yet (the store review closes them once their
+ * store has published the version, #350). Never without the board.
+ */
 export function isInReview(
   issues: GitHubIssue[],
   columns: Map<number, string> | undefined,
 ): boolean {
-  return issues.some((issue) => isPublishIssue(issue) && columns?.get(issue.number) === IN_REVIEW);
+  return issues.some(
+    (issue) =>
+      isPublishIssue(issue) &&
+      columns?.get(issue.number) === IN_REVIEW &&
+      (issue.sub_issues_summary?.completed ?? 0) < (issue.sub_issues_summary?.total ?? 0),
+  );
 }
 
 /** The board column of every issue of the repository on the project board, by issue number. */

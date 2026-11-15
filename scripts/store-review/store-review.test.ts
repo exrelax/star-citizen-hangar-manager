@@ -312,6 +312,17 @@ describe('the roadmap of the website (#354)', () => {
     expect(dry.calls).not.toContain('POST /actions/workflows/site.yml/dispatches');
   });
 
+  it('starts one once every store issue is done, though the publish issue is still in review', async () => {
+    const world = fakeWorld({
+      issues: [],
+      statuses: { 351: 'In review' },
+      site: SITE.replace('is-next', 'is-review'),
+      milestoneIssues: [{ ...PUBLISH, sub_issues_summary: { total: 2, completed: 2 } }],
+    });
+    await run({ github: world.github, dryRun: false, fetch: world.fetchImpl, log: quiet });
+    expect(world.calls).toContain('POST /actions/workflows/site.yml/dispatches');
+  });
+
   it("ignores versions the roadmap doesn't show as planned", async () => {
     const world = fakeWorld({
       issues: [],
