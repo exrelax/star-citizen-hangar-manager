@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.1.1] – 2026-11-15
+
+Reading the buy back no longer stops at a pledge RSI can't show, and a new error log tells what
+went wrong when something can't be read.
+
+### Fixed
+
+- **Buy back**: a pledge or page RSI fails to show no longer stops reading the buy back. Failed
+  requests are tried again, a page that keeps failing is read in smaller parts so only the pledge
+  that breaks it is left out, and the list says how many were left out. Hangar and orders are read
+  even if the buy back fails.
+
+### Added
+
+- An **error log** in the settings: the last 500 errors the Hangar Manager handled, newest first,
+  each with a code that says what didn't work and what it did instead (listed in
+  [docs/ERROR_CODES.md](https://github.com/exrelax/star-citizen-hangar-manager/blob/main/docs/ERROR_CODES.md))
+- **Copy the log** into a bug report: it names the pledges and pages an error is about, but holds
+  no pledge or order IDs, no name and no address; the bug report form asks for it
+- The status line says what failed during a refresh
+
+### Also
+
+- The README and the website explain Chrome's warning "not trusted by Enhanced Safe Browsing":
+  it is about the new developer account, not the extension, and installing is safe
+
 ## [1.1.0] – 2026-11-13
 
 Everything around the Pledge Store, in time for the Intergalactic Aerospace Expo: warbond CCUs,
