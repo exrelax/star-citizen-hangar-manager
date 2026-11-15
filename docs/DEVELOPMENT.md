@@ -176,12 +176,15 @@ seen and closes it. A store that answers unexpectedly fails the run (GitHub send
 moves nothing. It also comments on #333 once Chrome reports that Enhanced Safe Browsing trusts the
 extension.
 
-While the publish issue itself is "In review" and not all of its store issues are done, the website's roadmap shows its version as "In review" instead of "Next" (#354), and the version before it stays live, though the GitHub release is published. A change on the board starts no workflow, so the store review
-compares the deployed roadmap with the board every hour and starts a website build when they
-differ.
+While the publish issue itself is "In review" and not all of its store issues are done, the
+website's roadmap shows its version as "In review" instead of "Next" (#354), and the version
+before it stays live, though the GitHub release is published. A change on the board starts no
+workflow, so the store review compares the deployed roadmap with the board every hour and starts
+a website build when they differ.
 
-The board needs the secret `PROJECT_TOKEN` (a fine-grained token of the board's owner with read
-and write access to projects); without it the workflow only reports. Locally,
+The board needs the secret `PROJECT_TOKEN`: a classic token of the board's owner with the scope
+`project` (fine-grained tokens can't reach a user's project). Without it the store review only
+reports, and the website build lists open issues by number and shows no version in review. Locally,
 `GITHUB_TOKEN=… PROJECT_TOKEN=… node scripts/store-review/store-review.ts --dry-run` shows what it
 would do.
 
@@ -226,8 +229,10 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   the release or the demo mode) never show. Sub-issues are left out where their parent issue is
   listed (same milestone or "Later"); the parent stands for them, also in the progress. A hidden
   parent (`website`, `internal`) hides its sub-issues too. With a `GITHUB_TOKEN` that can read the
-  [project board](https://github.com/users/exrelax/projects/1), a milestone's open issues are
-  listed the furthest on the board first, otherwise by number; done ones follow. Locally it works
+  [project board](https://github.com/users/exrelax/projects/1) (the website workflow uses
+  `PROJECT_TOKEN`, see [Store review](#store-review)), a milestone's open issues are listed the
+  furthest on the board first, otherwise by number; done ones follow, and a version in review
+  shows as such. Locally it works
   without a token (GitHub allows 60 requests an hour without one).
 - **Privacy page**: `site/privacy.html` shows [`PRIVACY.md`](../PRIVACY.md), rendered while
   building by [`site/privacy/privacy.ts`](../site/privacy/privacy.ts) – change the policy only

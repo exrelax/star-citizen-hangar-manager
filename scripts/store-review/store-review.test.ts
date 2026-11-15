@@ -323,12 +323,23 @@ describe('the roadmap of the website (#354)', () => {
     expect(world.calls).toContain('POST /actions/workflows/site.yml/dispatches');
   });
 
-  it("ignores versions the roadmap doesn't show as planned", async () => {
+  it('starts one when a version in review shows as live (its release published first)', async () => {
     const world = fakeWorld({
       issues: [],
       statuses: { 351: 'In review' },
-      // v1.1.1 is live already, or beyond the planned versions shown.
-      site: step('is-live', 'v1-1-1'),
+      site: step('is-live', 'v1-1-1') + step('is-next', 'v1-2-0'),
+      milestoneIssues: [PUBLISH],
+    });
+    await run({ github: world.github, dryRun: false, fetch: world.fetchImpl, log: quiet });
+    expect(world.calls).toContain('POST /actions/workflows/site.yml/dispatches');
+  });
+
+  it("ignores versions the roadmap doesn't show", async () => {
+    const world = fakeWorld({
+      issues: [],
+      statuses: { 351: 'In review' },
+      // v1.1.1 beyond the planned versions shown.
+      site: step('is-live', 'v1-0-0') + step('is-next', 'v1-0-1'),
       milestoneIssues: [PUBLISH],
     });
     await run({ github: world.github, dryRun: false, fetch: world.fetchImpl, log: quiet });

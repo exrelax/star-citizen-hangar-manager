@@ -134,13 +134,15 @@ jobs:
           )
           git push origin "$commit:refs/heads/data/ships"
 
-      # The roadmap reads the issues with this token. The columns of the project board need a token
-      # that can read the project: the optional secret ROADMAP_TOKEN (a fine-grained token with
-      # read access to projects). Without access, the roadmap lists open issues by number and the
-      # run shows a warning. If GitHub's API fails, the build fails and the last deployment stays.
+      # The roadmap reads the issues with this token. The columns of the project board – and with
+      # them which version is in review (#354) – need a token that can read a user's project: a
+      # classic token with the scope `project`, the secret PROJECT_TOKEN of the store review
+      # (fine-grained tokens can't reach a user's project). Without access, the roadmap lists open
+      # issues by number, shows no version in review and the run shows a warning. If GitHub's API
+      # fails, the build fails and the last deployment stays.
       - run: pnpm site:build
         env:
-          GITHUB_TOKEN: ${{ secrets.ROADMAP_TOKEN || github.token }}
+          GITHUB_TOKEN: ${{ secrets.PROJECT_TOKEN || github.token }}
 
       - uses: actions/upload-pages-artifact@v5
         with:
