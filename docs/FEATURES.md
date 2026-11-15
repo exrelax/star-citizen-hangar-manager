@@ -866,6 +866,11 @@ it into store credit with the paints you already own:
   which part is being read ("Refreshing Buy Back: page 3 of 16 …").
 - **Smart updates** (on by default): check a few RSI pages for changes and update the list
   without a full refresh – see [Built for speed](#built-for-speed).
+- **When RSI fails**: a failed request is tried again. A buy back page that keeps failing is read
+  in smaller pages, down to single pledges, so only the pledge that breaks it is left out; the
+  list says how many were left out, and the next refresh tries again. A part that can't be read
+  (hangar, buy back or orders) keeps its last state while the others are read and stored. The
+  status line says what failed, and the [error log](#settings) keeps the details.
 - Requests are gentle on RSI's servers – see [Gentle on RSI](#gentle-on-rsi).
 
 ---
@@ -874,7 +879,7 @@ it into store credit with the paints you already own:
 
 The settings tab (#117) lists its categories on the left, in four groups – General (Appearance,
 Privacy, Demo mode), Lists (My Hangar and Buy Back, Filters, Sidebar), Automation (Notifications,
-Paint Discount Consultant, Smart updates) and More (Experimental, Stored data, About) – and shows
+Paint Discount Consultant, Smart updates) and More (Experimental, Stored data, Error log, About) – and shows
 one category at a time on the right, as grouped rows like the system settings: a switch for each
 on/off setting, a segmented control for the theme, selects and number fields for the rest. A
 narrow window shows the categories as a row above. Settings that depend on a switch sit below it
@@ -1016,6 +1021,14 @@ order of the list:
       RSI's website, and the lists offer the initial load again. Not possible during a refresh.
     - **Reset settings**: all settings back to their defaults (on all synced devices); the stored
       hangar stays.
+- **Error log**: the last 500 errors the Hangar Manager handled, newest first, in a read-only
+  field – a page it couldn't read, an entry it left out, and what it did instead. Each has a code
+  (listed in [ERROR_CODES.md](ERROR_CODES.md)); an error repeated in a row counts as one (`×3`),
+  and a buy back page read in smaller parts shows as one entry with its failed attempts below it.
+  **Copy log** puts it on the clipboard for a bug report, starting with the version, the browser,
+  the language and theme and whether the demo mode is on; it names the pledges and the pages asked
+  for, but holds no pledge or order IDs, no name and no address. **Clear log** empties it after a
+  confirmation. The log stays in this browser and is never sent anywhere.
 - **About**: the extension's version, and links to the source code, the issue forms (bug
   reports; ideas link to GitHub Discussions), the privacy policy, the changelog and the license. The popup of the
   toolbar icon shows the version, too.
