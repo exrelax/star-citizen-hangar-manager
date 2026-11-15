@@ -1296,7 +1296,10 @@
   "popup": {
     "manager": "Hangar Manager",
     "settings": "Ajustes",
-    "repository": "Repositorio de GitHub"
+    "repository": "Repositorio de GitHub",
+    "accessTitle": "Sin acceso a la web de RSI",
+    "accessText": "El navegador no deja que el Hangar Manager funcione en robertsspaceindustries.com, por eso no aparece allí.",
+    "accessAllow": "Permitir el acceso"
   },
   "priceIncrease": {
     "label": "Subida de precio: $1",

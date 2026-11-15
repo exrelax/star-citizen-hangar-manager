@@ -11,6 +11,9 @@ went wrong when something can't be read.
   requests are tried again, a page that keeps failing is read in smaller parts so only the pledge
   that breaks it is left out, and the list says how many were left out. Hangar and orders are read
   even if the buy back fails.
+- **Firefox**: when the browser doesn't let the extension run on RSI's website – the Hangar
+  Manager then doesn't show up at all –, the popup of the toolbar icon says so and allows it with
+  one click; open RSI tabs load again.
 
 ### Added
 
