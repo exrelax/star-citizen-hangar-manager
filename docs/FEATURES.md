@@ -1031,7 +1031,10 @@ order of the list:
   confirmation. The log stays in this browser and is never sent anywhere.
 - **About**: the extension's version, and links to the source code, the issue forms (bug
   reports; ideas link to GitHub Discussions), the privacy policy, the changelog and the license. The popup of the
-  toolbar icon shows the version, too.
+  toolbar icon shows the version, too. When the browser doesn't let the extension run on RSI's
+  website – Firefox may leave that access off, e.g. for a temporary add-on or after it was taken
+  back in `about:addons` –, the popup says so and asks for it with **Allow access**; once allowed,
+  open RSI tabs load again and show the Hangar Manager.
 
 Settings follow your browser profile to your other devices (see
 [Private by design](#private-by-design)).

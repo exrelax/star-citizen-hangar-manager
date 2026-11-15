@@ -131,8 +131,9 @@ Firefox removes temporary add-ons when it quits.
   background script show up there. Whether it can read RSI without a page: **Settings →
   Development → Read the Pledge Store in the background**.
 
-If the navigation entry does not appear in Firefox, check under `about:addons` → Star Citizen
-Hangar Manager → **Permissions** that access to `robertsspaceindustries.com` is allowed.
+If the navigation entry does not appear in Firefox, the access to `robertsspaceindustries.com` is
+probably off: the popup of the toolbar icon then says so and allows it with one click (or check
+`about:addons` → Star Citizen Hangar Manager → **Permissions**).
 
 ## Version
 

@@ -20,6 +20,7 @@ import {
 } from '@/store/background-schedule';
 import { watchFillerNotification } from '@/store/paint-consultant/filler-notification';
 import { migrateStorage } from '@/storage/migrate';
+import { grantsRsiAccess, reloadRsiTabs } from '@/shared/rsi-access';
 
 export default defineBackground(() => {
   // After an update: data of earlier versions moves to its current keys (see storage/migrate.ts).
@@ -33,9 +34,12 @@ export default defineBackground(() => {
   // Browser notifications (#152): the settings see whether this browser allows them – also when
   // the permission is taken back in the browser's own settings, or was while the extension slept.
   void mirrorNotificationPermission();
-  browser.permissions.onAdded.addListener(() => {
+  browser.permissions.onAdded.addListener((permissions) => {
     void mirrorNotificationPermission();
     listenToNotificationClicks();
+    // Access to RSI's website granted (the popup asks for it where it is missing): the open RSI
+    // tabs load again, so the Hangar Manager shows up in them.
+    if (grantsRsiAccess(permissions)) void reloadRsiTabs();
   });
   browser.permissions.onRemoved.addListener(() => void mirrorNotificationPermission());
   browser.runtime.onMessage.addListener((message) => {
