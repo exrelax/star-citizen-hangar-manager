@@ -1,14 +1,15 @@
 # Moves the store issues (label `store-review`) on the project board from "In review" to "Done"
 # once their store has published the version, comments the version seen and closes them (#350).
 # Then closes a publish issue ("Publish v1.1.1") once all its sub-issues are closed, and its
-# milestone once all of its issues are (#365). Starts a website build when it closed one, or when the
-# roadmap shows a version's review state wrongly: a change on the board starts no workflow (#354).
+# milestone once all of its issues are (#365). Starts a website build when it closed one, when the
+# roadmap shows a version's review state wrongly (a change on the board starts no workflow, #354),
+# or when a store lists another version than the website shows below its button (#368).
 # See scripts/store-review/store-review.ts. Runs hourly and by hand ("Run workflow"; "dry run"
 # only reports).
 #
 # The board of a user can't be changed with the workflow's own token, so it needs the secret
-# PROJECT_TOKEN: a fine-grained token of the board's owner with read and write access to
-# projects. Without it the run only reports what it would do.
+# PROJECT_TOKEN: a classic token of the board's owner with the scope `project` (fine-grained tokens
+# can't reach a user's board). Without it the run only reports what it would do.
 name: Store review
 
 on:
@@ -26,8 +27,8 @@ on:
         type: boolean
         default: false
 
-# Comments on and closes the issues and starts a website build when the roadmap is outdated
-# (#354); the board is changed with PROJECT_TOKEN.
+# Comments on and closes the issues and starts a website build when the website is outdated
+# (#354, #368); the board is changed with PROJECT_TOKEN.
 permissions:
   actions: write
   contents: read
