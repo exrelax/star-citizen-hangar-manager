@@ -158,7 +158,7 @@ it on GitHub, then upload the zips to the stores (texts and images in [`store/`]
 
 ### Store review
 
-Each release has a publish issue ("Publish 1.1.1") with one sub-issue per store. A store issue has
+Each release has a publish issue ("Publish v1.1.1") with one sub-issue per store. A store issue has
 the label `store-review` and names its store and version on lines of their own (`Id:` only where
 the store's id isn't the one in
 [`scripts/store-review/stores.ts`](../scripts/store-review/stores.ts), e.g. Edge's):
@@ -176,11 +176,20 @@ seen and closes it. A store that answers unexpectedly fails the run (GitHub send
 moves nothing. It also comments on #333 once Chrome reports that Enhanced Safe Browsing trusts the
 extension.
 
-While the publish issue itself is "In review" and not all of its store issues are done, the
-website's roadmap shows its version as "In review" instead of "Next" (#354), and the version
-before it stays live, though the GitHub release is published. A change on the board starts no
-workflow, so the store review compares the deployed roadmap with the board every hour and starts
-a website build when they differ.
+The publish issue is titled "Publish" and its milestone, e.g. "Publish v1.1.1" for the milestone
+v1.1.1. Only the stores worth waiting for get
+one: the version stays in review until the slowest of them has published it. The store review
+also runs when an issue is closed, and after the store issues (#365):
+
+- a publish issue whose sub-issues are all closed moves to "Done" and is closed,
+- a milestone whose issues are all closed, its publish issue among them, is closed (a milestone
+  without a publish issue stays open),
+- a website build starts when it closed one, or when the deployed roadmap differs from the board
+  (a change on the board starts no workflow).
+
+The website's roadmap shows a version as "In review" while its publish issue is "In review" on
+the board, and as "Live" once it has a GitHub release and its milestone is closed – a release
+published before the stores did isn't live yet (#354, #365).
 
 The board needs the secret `PROJECT_TOKEN`: a classic token of the board's owner with the scope
 `project` (fine-grained tokens can't reach a user's project). Without it the store review only

@@ -1,7 +1,8 @@
 # Moves the store issues (label `store-review`) on the project board from "In review" to "Done"
 # once their store has published the version, comments the version seen and closes them (#350).
-# Starts a website build when the roadmap shows a version's review state wrongly: a change on the
-# board starts no workflow (#354).
+# Then closes a publish issue ("Publish v1.1.1") once all its sub-issues are closed, and its
+# milestone once all of its issues are (#365). Starts a website build when it closed one, or when the
+# roadmap shows a version's review state wrongly: a change on the board starts no workflow (#354).
 # See scripts/store-review/store-review.ts. Runs hourly and by hand ("Run workflow"; "dry run"
 # only reports).
 #
@@ -11,6 +12,10 @@
 name: Store review
 
 on:
+  # An issue closed by hand (a store issue, a publish issue): its publish issue and milestone may
+  # close now (#365). What this workflow closes itself starts no workflow.
+  issues:
+    types: [closed]
   schedule:
     # A few minutes past the hour: the full hour is GitHub's busiest time for scheduled runs.
     - cron: '17 * * * *'

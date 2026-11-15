@@ -53,7 +53,7 @@ export function expectedInReview(
   );
   return new Set(
     [...byMilestone]
-      .filter(([, milestoneIssues]) => isInReview(milestoneIssues, columns))
+      .filter(([title, milestoneIssues]) => isInReview(milestoneIssues, title, columns))
       .map(([title]) => idOf(title)),
   );
 }

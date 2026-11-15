@@ -70,7 +70,7 @@ const ISSUES: Record<number, unknown[]> = {
     sub(31, 6, { state: 'closed', closed_at: '2026-11-07T10:00:00Z' }),
     // The publish issue (#354), internal: never listed, its board status counts.
     issue(70, {
-      title: 'Publish 1.1.0',
+      title: 'Publish v1.1.0',
       labels: [{ name: 'internal' }],
       sub_issues_summary: { total: 2 },
     }),
@@ -90,7 +90,7 @@ const ISSUES: Record<number, unknown[]> = {
   20: [
     issue(80),
     issue(81, {
-      title: 'Publish 1.1.1',
+      title: 'Publish v1.1.1',
       labels: [{ name: 'internal' }],
       sub_issues_summary: { total: 2, completed: 1 },
     }),
@@ -215,17 +215,15 @@ function github(
       });
     }
     const path = url.replace(REPO, '').replace(/[?&]per_page=100&page=\d+$/, '');
-    if (path === '/releases/latest') {
-      if (release === 'none') return json({ message: 'Not Found' }, 404);
-      if (release === 'error') return json({ message: 'Server Error' }, 500);
-      return json(release);
-    }
     if (path === '/releases/tags/v1.1.0') return json(MINOR_RELEASE);
+    // `release` is the newest; the older ones and a draft come with it.
     if (path === '/releases') {
+      if (release === 'none') return json([]);
+      if (release === 'error') return json({ message: 'Server Error' }, 500);
+      const releases = [PATCH_RELEASE, MINOR_RELEASE, RELEASE];
       return json([
-        { ...PATCH_RELEASE, draft: false, prerelease: false },
-        { tag_name: 'v1.2.0-beta', html_url: '', published_at: null, draft: true },
-        { ...MINOR_RELEASE, draft: false, prerelease: false },
+        { tag_name: 'v1.2.0', html_url: '', published_at: null, draft: true },
+        ...releases.slice(releases.indexOf(release)),
       ]);
     }
     if (path === '/milestones?state=open&sort=due_on') return json(open);
@@ -266,33 +264,32 @@ describe('a version in review (#354)', () => {
   });
 });
 
-describe('a released version in review (#354)', () => {
-  const roadmapWith = (status: Record<number, string>, done = 1) => {
-    ISSUES[20]![1] = {
-      ...(ISSUES[20]![1] as object),
-      sub_issues_summary: { total: 2, completed: done },
-    };
-    return fetchRoadmap({
+describe('a released version and its milestone (#365)', () => {
+  // v1.1.0's milestone closed: 1.1.0 is live.
+  const roadmapWith = (status: Record<number, string>, open = [PATCH_MILESTONE, MILESTONES[0]!]) =>
+    fetchRoadmap({
       token: 'token',
-      fetch: github({ status }, PATCH_RELEASE, [PATCH_MILESTONE, ...MILESTONES]) as typeof fetch,
+      fetch: github({ status }, PATCH_RELEASE, open) as typeof fetch,
       fallbackVersion: '1.1.1',
     });
-  };
 
-  it('stays in review, and the release before it is live, until the stores published it', async () => {
+  it('is in review while its publish issue is, and the version before it live', async () => {
     const roadmap = await roadmapWith({ 81: 'In review' });
     expect(roadmap.release.version).toBe('1.1.0');
     expect(roadmap.milestones[0]).toMatchObject({ title: 'v1.1.1', inReview: true });
   });
 
-  it('is live once every store issue is done, and its milestone no longer planned', async () => {
-    for (const roadmap of [
-      await roadmapWith({ 81: 'In review' }, 2),
-      await roadmapWith({ 81: 'Done' }),
-    ]) {
-      expect(roadmap.release.version).toBe('1.1.1');
-      expect(roadmap.milestones.map((milestone) => milestone.title)).not.toContain('v1.1.1');
-    }
+  it('is not live while its milestone is open, though released', async () => {
+    const roadmap = await roadmapWith({ 81: 'Done' });
+    expect(roadmap.release.version).toBe('1.1.0');
+    expect(roadmap.milestones[0]).toMatchObject({ title: 'v1.1.1' });
+    expect(roadmap.milestones[0]!.inReview).toBeUndefined();
+  });
+
+  it('is live once its milestone is closed', async () => {
+    const roadmap = await roadmapWith({}, [MILESTONES[0]!]);
+    expect(roadmap.release.version).toBe('1.1.1');
+    expect(roadmap.milestones.map((milestone) => milestone.title)).not.toContain('v1.1.1');
   });
 });
 
