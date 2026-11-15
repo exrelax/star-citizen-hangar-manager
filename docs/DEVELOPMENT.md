@@ -226,6 +226,10 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   shown in the hero and as the first, "released" step of the roadmap, with the main issues of its
   milestone (the closed milestone titled like the version; those with the most sub-issues first);
   without a release, the `version` of `package.json`. Publishing a release rebuilds the site.
+- **Call to action by browser**: the store button of the visitor's browser is highlighted, "Add
+  to Firefox" in Firefox and its forks, otherwise "Add to Chrome" (Chromium browsers install from
+  the Chrome Web Store). [`site/browser.ts`](../site/browser.ts) is the site's only script, inlined
+  into the page's head so the highlight is set before the page is drawn.
 - **Store versions**: below each store button, the version the Chrome Web Store and Firefox
   Add-ons have live, read while building by [`site/store-versions.ts`](../site/store-versions.ts)
   from the endpoints of the store review (#368). A store that can't be read leaves out its line;

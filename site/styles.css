@@ -230,7 +230,13 @@ button:focus-visible {
   height: 18px;
 }
 
-.button.is-primary {
+/*
+ * The store button of the visitor's browser is the call to action (site/browser.ts): "Add to
+ * Firefox" in Firefox and its forks, otherwise "Add to Chrome".
+ */
+.button.is-primary,
+:root:not([data-browser='firefox']) .button[data-store='chrome'],
+:root[data-browser='firefox'] .button[data-store='firefox'] {
   background: var(--site-accent);
 }
 
@@ -254,7 +260,9 @@ button:focus-visible {
     background: var(--site-fill-strong);
   }
 
-  .button.is-primary:hover {
+  .button.is-primary:hover,
+  :root:not([data-browser='firefox']) .button[data-store='chrome']:hover,
+  :root[data-browser='firefox'] .button[data-store='firefox']:hover {
     background: var(--site-accent-hover);
   }
 }
