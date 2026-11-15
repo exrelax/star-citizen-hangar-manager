@@ -448,3 +448,46 @@ describe('closing a release (#365)', () => {
     expect(w.calls).toEqual(['GET /issues']);
   });
 });
+
+describe('the store versions on the website (#368)', () => {
+  const quiet = () => {};
+  const line = (store: string, version: string) =>
+    `<span class="install-version" data-store-version="${store}">Version ${version}</span>`;
+  const BUILD = 'POST /actions/workflows/site.yml/dispatches';
+
+  it('starts a website build once a store lists another version', async () => {
+    const world = fakeWorld({
+      issues: [],
+      statuses: {},
+      chromeVersion: '1.1.1',
+      site: line('chrome', '1.1.0') + line('firefox', '1.1.1'),
+    });
+    const result = await run({
+      github: world.github,
+      dryRun: false,
+      fetch: world.fetchImpl,
+      log: quiet,
+    });
+    expect(result.errors).toEqual([]);
+    expect(world.calls).toContain(BUILD);
+  });
+
+  it('starts none while the website shows the versions, or a store fails', async () => {
+    for (const [site, firefox] of [
+      [line('chrome', '1.1.0') + line('firefox', '1.1.1'), 'listed'],
+      [line('chrome', '1.1.0') + line('firefox', '1.0.0'), 'broken'],
+      // A line the build left out waits for the next build.
+      [line('chrome', '1.1.0'), 'listed'],
+    ] as const) {
+      const world = fakeWorld({ issues: [], statuses: {}, site, firefox });
+      await run({ github: world.github, dryRun: false, fetch: world.fetchImpl, log: quiet });
+      expect(world.calls).not.toContain(BUILD);
+    }
+  });
+
+  it('only reports in a dry run', async () => {
+    const world = fakeWorld({ issues: [], statuses: {}, site: line('chrome', '1.0.0') });
+    await run({ github: world.github, dryRun: true, fetch: world.fetchImpl, log: quiet });
+    expect(world.calls).not.toContain(BUILD);
+  });
+});

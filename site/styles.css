@@ -429,6 +429,20 @@ h1 {
   gap: 10px;
 }
 
+.install-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+/* The version the store has live, below its button (#368). */
+.install-version {
+  color: var(--site-text-faint);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
 .install-hint {
   font-size: 13px;
 }

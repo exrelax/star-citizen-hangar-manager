@@ -17,6 +17,9 @@
  * reached with it, so `PROJECT_TOKEN` (a token with access to the project) reads and sets the
  * status. Without `PROJECT_TOKEN`, or with `--dry-run`, the run only reports what it would do.
  *
+ * Then it starts a website build when the deployed site is outdated: its roadmap (#354, #365), or
+ * the version it shows below a store's button (#368).
+ *
  * It also tells #333 once the Chrome Web Store reports that Enhanced Safe Browsing trusts the
  * extension, so the notes about the warning can be removed.
  *
@@ -26,6 +29,12 @@
 
 import { appendFile } from 'node:fs/promises';
 import { isPublishIssue } from '../../site/roadmap/roadmap.ts';
+import {
+  outdatedStoreVersions,
+  shownStoreVersions,
+  SITE_STORES,
+  type StoreVersions,
+} from '../../site/store-versions.ts';
 import {
   deployedSteps,
   expectedInReview,
@@ -447,24 +456,24 @@ export async function run(options: RunOptions): Promise<RunResult> {
     }
   }
 
+  let released = false;
   if (board) {
-    let released = false;
     try {
       released = await closeReleases(github, board, writes, result, log);
     } catch (error) {
       result.errors.push(`Releases: ${(error as Error).message}`);
     }
-    try {
-      // The board read at the start is outdated now: the roadmap has to be built again anyway.
-      if (released) {
-        log('A publish issue or milestone was closed: starting a website build.');
-        if (writes) await github.buildSite();
-      } else {
-        await syncRoadmap(github, board, writes, fetchImpl, log);
-      }
-    } catch (error) {
-      result.errors.push(`Roadmap: ${(error as Error).message}`);
+  }
+  try {
+    // The board read at the start is outdated now: the roadmap has to be built again anyway.
+    if (released) {
+      log('A publish issue or milestone was closed: starting a website build.');
+      if (writes) await github.buildSite();
+    } else {
+      await syncSite(github, board, listing, writes, fetchImpl, log);
     }
+  } catch (error) {
+    result.errors.push(`Website: ${(error as Error).message}`);
   }
 
   try {
@@ -536,25 +545,52 @@ async function closeReleases(
 export const PUBLISH_DONE_COMMENT =
   'All store issues are done: every store has published the version. Moved to "Done" by the store review workflow (#365).';
 
-/** Starts a website build when the roadmap shows a version's review state wrongly (#354). */
-async function syncRoadmap(
+/**
+ * Starts a website build when the deployed site is outdated: its roadmap shows a version's review
+ * state wrongly (#354, needs the board), or a store lists another version than the site shows
+ * below the store's button (#368).
+ */
+async function syncSite(
   github: GitHub,
-  board: Board,
+  board: Board | undefined,
+  listing: (store: StoreId, id: string) => Promise<Listing | undefined>,
   writes: boolean,
   fetchImpl: Fetch,
   log: (line: string) => void,
 ): Promise<void> {
   const response = await fetchImpl(SITE_URL, { signal: AbortSignal.timeout(30_000) });
   if (!response.ok) throw new Error(`${SITE_URL}: ${response.status}`);
-  const outdated = outdatedSteps(
-    deployedSteps(await response.text()),
-    expectedInReview(await github.openMilestoneIssues(), (issue) => board.items.get(issue)?.status),
-  );
-  if (!outdated.length) {
-    log('The roadmap shows the review state of each version.');
-    return;
+  const html = await response.text();
+  const outdated: string[] = [];
+
+  if (board) {
+    const roadmap = outdatedSteps(
+      deployedSteps(html),
+      expectedInReview(
+        await github.openMilestoneIssues(),
+        (issue) => board.items.get(issue)?.status,
+      ),
+    );
+    if (roadmap.length) outdated.push(...roadmap);
+    else log('The roadmap shows the review state of each version.');
   }
-  log(`The roadmap is outdated (${outdated.join(', ')}): starting a website build.`);
+
+  const live: StoreVersions = {};
+  for (const store of SITE_STORES) {
+    try {
+      const listed = await listing(store, STORES[store].defaultId!);
+      if (listed) live[store] = listed.version;
+    } catch (error) {
+      // A store issue reports it where it matters; the site keeps its line until the store answers.
+      log(`${(error as Error).message}: its version on the website not checked.`);
+    }
+  }
+  const versions = outdatedStoreVersions(shownStoreVersions(html), live);
+  if (versions.length) outdated.push(...versions);
+  else log('The website shows the version each store has live.');
+
+  if (!outdated.length) return;
+  log(`The website is outdated (${outdated.join(', ')}): starting a website build.`);
   if (writes) await github.buildSite();
 }
 

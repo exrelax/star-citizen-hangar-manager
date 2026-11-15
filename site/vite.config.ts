@@ -4,6 +4,13 @@ import { defineConfig, type Plugin } from 'vite';
 import { ICONS_FOLDER, iconSprite } from './icons.ts';
 import { parsePrivacy, renderPrivacy } from './privacy/privacy.ts';
 import { fetchRoadmap, renderRoadmap, renderVersion } from './roadmap/roadmap.ts';
+import {
+  fetchStoreVersions,
+  renderStoreVersions,
+  SITE_STORES,
+  storeVersionPlaceholder,
+  type StoreVersions,
+} from './store-versions.ts';
 
 /*
  * The project website (GitHub Pages): plain HTML and CSS in `site/`, built by Vite.
@@ -22,6 +29,8 @@ import { fetchRoadmap, renderRoadmap, renderVersion } from './roadmap/roadmap.ts
  *
  * The privacy page (`privacy.html`) is made from the repository's PRIVACY.md (see
  * `privacy/privacy.ts`), so the policy has a single source.
+ *
+ * Below each store button stands the version the store has live (see `store-versions.ts`, #368).
  *
  * The icons (Font Awesome Free, `icons/`) become one inline sprite per page (see `icons.ts`).
  *
@@ -98,6 +107,26 @@ function roadmap(): Plugin {
   };
 }
 
+/**
+ * Renders the version each store has live below its buttons. A store that can't be read leaves
+ * out its line, in the build too: the store review starts a build once it is wrong (#368).
+ */
+function storeVersions(): Plugin {
+  let versions: Promise<StoreVersions> | undefined;
+  const warn = (message: string) =>
+    console.warn(
+      process.env.GITHUB_ACTIONS ? `::warning::${message}` : `[store versions] ${message}`,
+    );
+  return {
+    name: 'store-versions',
+    transformIndexHtml(page) {
+      if (!SITE_STORES.some((store) => page.includes(storeVersionPlaceholder(store)))) return page;
+      versions ??= fetchStoreVersions(warn);
+      return versions.then((live) => renderStoreVersions(page, live));
+    },
+  };
+}
+
 /** Where the site is published (GitHub Pages); the canonical and preview URLs point here. */
 export const SITE_URL = 'https://exrelax.github.io/star-citizen-hangar-manager/';
 
@@ -158,7 +187,14 @@ const icons: Plugin = {
 
 export default defineConfig({
   root,
-  plugins: [serveRepositoryImages, icons, roadmap(), privacyPage, absolutePreviewImages],
+  plugins: [
+    serveRepositoryImages,
+    icons,
+    roadmap(),
+    storeVersions(),
+    privacyPage,
+    absolutePreviewImages,
+  ],
   // Relative URLs: the site works under any path, e.g. /star-citizen-hangar-manager/ on GitHub
   // Pages, or a custom domain later.
   base: './',

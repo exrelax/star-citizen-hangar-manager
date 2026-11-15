@@ -184,8 +184,9 @@ also runs when an issue is closed, and after the store issues (#365):
 - a publish issue whose sub-issues are all closed moves to "Done" and is closed,
 - a milestone whose issues are all closed, its publish issue among them, is closed (a milestone
   without a publish issue stays open),
-- a website build starts when it closed one, or when the deployed roadmap differs from the board
-  (a change on the board starts no workflow).
+- a website build starts when it closed one, when the deployed roadmap differs from the board
+  (a change on the board starts no workflow), or when a store lists another version than the
+  website shows below its button (#368).
 
 The website's roadmap shows a version as "In review" while its publish issue is "In review" on
 the board, and as "Live" once it has a GitHub release and its milestone is closed – a release
@@ -225,6 +226,10 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   shown in the hero and as the first, "released" step of the roadmap, with the main issues of its
   milestone (the closed milestone titled like the version; those with the most sub-issues first);
   without a release, the `version` of `package.json`. Publishing a release rebuilds the site.
+- **Store versions**: below each store button, the version the Chrome Web Store and Firefox
+  Add-ons have live, read while building by [`site/store-versions.ts`](../site/store-versions.ts)
+  from the endpoints of the store review (#368). A store that can't be read leaves out its line;
+  the build goes on.
 - **Roadmap**: built from the repository's milestones and issues while building, by
   [`site/roadmap/roadmap.ts`](../site/roadmap/roadmap.ts), in the layout of the design "Roadmap –
   Komponente" (#347). One timeline holds the live version and up to two planned versions (open
