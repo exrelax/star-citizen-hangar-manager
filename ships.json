@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "revision": 2,
-  "changedAt": "2026-11-14T20:16:57.182Z",
-  "generatedAt": "2026-11-14T20:16:57.182Z",
+  "revision": 3,
+  "changedAt": "2026-11-16T12:46:11.324Z",
+  "generatedAt": "2026-11-16T12:46:11.324Z",
   "sources": [
     {
       "id": "ship-matrix",
@@ -196,7 +196,7 @@
     {"id":221,"name":"Scorpius","manufacturer":"Roberts Space Industries","wikiName":"Scorpius","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[],"msrp":[{"value":240,"from":"2026-11-12"}]},
     {"id":222,"name":"Railen","manufacturer":"Gatac Manufacture","wikiName":"Railen","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[],"msrp":[{"value":400,"from":"2026-11-12"}]},
     {"id":223,"name":"400i","manufacturer":"Origin Jumpworks","wikiName":"400i","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[],"msrp":[{"value":250,"from":"2026-11-12"}]},
-    {"id":224,"name":"Liberator","manufacturer":"Anvil Aerospace","wikiName":"Liberator","status":[{"value":"in-concept","from":"2026-11-12"}],"alwaysAvailable":[],"msrp":[{"value":575,"from":"2026-11-12"}]},
+    {"id":224,"name":"Liberator","manufacturer":"Anvil Aerospace","wikiName":"Liberator","status":[{"value":"in-concept","from":"2026-11-12","to":"2026-11-16"},{"value":"flight-ready","from":"2026-11-16"}],"alwaysAvailable":[],"msrp":[{"value":575,"from":"2026-11-12","to":"2026-11-16"},{"value":600,"from":"2026-11-16"}]},
     {"id":225,"name":"Spartan","manufacturer":"Anvil Aerospace","wikiName":"Spartan","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[],"msrp":[{"value":80,"from":"2026-11-12"}]},
     {"id":226,"name":"RAFT","manufacturer":"Argo Astronautics","wikiName":"RAFT","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[],"msrp":[{"value":190,"from":"2026-11-12"}]},
     {"id":227,"name":"Odyssey","manufacturer":"MISC","wikiName":"Odyssey","status":[{"value":"in-concept","from":"2026-11-12"}],"alwaysAvailable":[],"msrp":[{"value":700,"from":"2026-11-12"}]},
