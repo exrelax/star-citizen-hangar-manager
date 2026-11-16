@@ -1096,6 +1096,17 @@ h2.is-small {
   min-width: 0;
 }
 
+/* A note below a feature's picture, e.g. when it shows a real example. */
+.feature-caption {
+  max-width: 560px;
+  margin: 16px auto 0;
+  color: var(--site-text-faint);
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+  text-wrap: pretty;
+}
+
 .callouts {
   position: absolute;
   bottom: -24px;
