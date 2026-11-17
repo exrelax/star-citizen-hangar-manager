@@ -465,6 +465,11 @@
       "content": "Las naves cuyo precio se espera que suba, desde el sitio web del proyecto, con sus fechas",
       "missing": "Aún no lo usa nada."
     },
+    "shipRemovals": {
+      "name": "Naves retiradas",
+      "content": "Las naves que se retiran definitivamente de la Pledge Store, desde el sitio web del proyecto, con sus fechas",
+      "missing": "Aún no lo usa nada."
+    },
     "storeCredit": {
       "name": "Crédito de tienda",
       "content": "El crédito de tienda de la cuenta, como lo muestra su menú de cuenta",

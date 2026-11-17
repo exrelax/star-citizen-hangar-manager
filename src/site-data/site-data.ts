@@ -70,3 +70,29 @@ export function fileList(json: unknown, schemaVersion: number, key: string): unk
   if (!file || file.schemaVersion !== schemaVersion || !Array.isArray(file[key])) return undefined;
   return file[key];
 }
+
+/** A point in time of a file given as a day, or as a time if it is known. */
+export interface DayOrTime {
+  /** Epoch milliseconds; for a day its start in UTC. */
+  at: number;
+  /** Only the day is known: shown without time, over when the day is (UTC). */
+  dayOnly?: true;
+}
+
+const DAY = /^\d{4}-\d{2}-\d{2}$/;
+/** A time with its zone: without one it would depend on the user's. */
+const DATE_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2})$/;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** A day (`2026-11-16`) or a time with its zone (`2026-11-16T16:00:00Z`), else none. */
+export function dayOrTime(value: unknown): DayOrTime | undefined {
+  if (typeof value !== 'string') return undefined;
+  const dayOnly = DAY.test(value);
+  if (!dayOnly && !DATE_TIME.test(value)) return undefined;
+  const at = Date.parse(dayOnly ? `${value}T00:00:00Z` : value);
+  if (!Number.isFinite(at)) return undefined;
+  return dayOnly ? { at, dayOnly } : { at };
+}
+
+/** When a point in time is over: a time at once, a day at its end (UTC). */
+export const endOf = (time: DayOrTime): number => (time.dayOnly ? time.at + DAY_MS : time.at);

@@ -465,6 +465,11 @@
       "content": "Schiffe, deren Preis voraussichtlich steigt, von der Projekt-Website, mit ihren Daten",
       "missing": "Wird noch nirgends genutzt."
     },
+    "shipRemovals": {
+      "name": "Entfernte Schiffe",
+      "content": "Schiffe, die dauerhaft aus dem Pledge Store genommen werden, von der Projekt-Website, mit ihren Daten",
+      "missing": "Wird noch nirgends genutzt."
+    },
     "storeCredit": {
       "name": "Store Credits",
       "content": "Die Store Credits des Accounts, wie sein Account-Menü sie zeigt",
