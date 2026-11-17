@@ -1,4 +1,25 @@
 {
   "schemaVersion": 1,
-  "shipRemovals": []
+  "shipRemovals": [
+    {
+      "ship": { "id": 45, "name": "Constellation Mk IV Andromeda" },
+      "removedAt": "2027-01-27",
+      "source": "https://robertsspaceindustries.com/en/comm-link/transmission/21350-FAQ-RSI-Discovery-Month"
+    },
+    {
+      "ship": { "id": 46, "name": "Constellation Mk IV Taurus" },
+      "removedAt": "2027-01-27",
+      "source": "https://robertsspaceindustries.com/en/comm-link/transmission/21350-FAQ-RSI-Discovery-Month"
+    },
+    {
+      "ship": { "id": 47, "name": "Constellation Mk IV Aquila" },
+      "removedAt": "2027-01-27",
+      "source": "https://robertsspaceindustries.com/en/comm-link/transmission/21350-FAQ-RSI-Discovery-Month"
+    },
+    {
+      "ship": { "id": 49, "name": "Constellation Mk IV Phoenix" },
+      "removedAt": "2027-01-27",
+      "source": "https://robertsspaceindustries.com/en/comm-link/transmission/21350-FAQ-RSI-Discovery-Month"
+    }
+  ]
 }
