@@ -249,7 +249,7 @@
     "notificationKindPriceAdvisor": "CCUs und Preiserhöhungen",
     "notificationKindPriceAdvisorHint": "CCUs deines Hangars, die durch eine innerhalb des unter „Allgemein“ eingestellten Zeitraums erwartete Preiserhöhung an Upgrade-Wert verlieren, eine Benachrichtigung je Preiserhöhung, nur in der Sidebar.",
     "notificationKindShipRemovals": "Schiffe, die den Pledge Store verlassen",
-    "notificationKindShipRemovalsHint": "Schiffe, die CIG dauerhaft aus dem Pledge Store nimmt, eine Benachrichtigung pro Datum, mit einer Warnung zu den CCUs davon in deinem Hangar und Buy Back, in der Sidebar.",
+    "notificationKindShipRemovalsHint": "Schiffe, die CIG dauerhaft aus dem Pledge Store nimmt, eine Benachrichtigung pro Datum, mit einer Warnung zu den CCUs davon in deinem Hangar und Buy Back, in der Sidebar und eine Woche vor dem Datum im Browser.",
     "priceAdvisorSecureHint": "Auch ohne betroffene CCUs",
     "priceAdvisorSecureHintHint": "Ein Hinweis, dass sich ein CCU zum steigenden Schiff noch zum alten Preis kaufen lässt, solange keines deiner CCUs dadurch an Wert verliert.",
     "sidebarNotifications": "Sidebar",
@@ -1271,6 +1271,11 @@
     },
     "showShipRemovalsHint": "Zeigt die Schiffe, die den Pledge Store verlassen, im Tab „Pledge Store“.",
     "dismissShipRemovalsHint": "Entfernt diese Benachrichtigung für diese Schiffe an diesem Datum. Ein neues Schiff oder Datum zeigt sie wieder.",
+    "browserShipRemovalsTitle": "Schiffe verlassen den Pledge Store",
+    "browserShipRemovals": {
+      "one": "$1 verlässt am $2 den Pledge Store.",
+      "other": "$1 verlassen am $2 den Pledge Store."
+    },
     "browserPriceIncreaseTitle": "Erwartete Preiserhöhung",
     "browserPriceIncreaseOne": "„$1“ wird voraussichtlich in weniger als 2 Tagen teurer ($2). Kauf es vorher zurück oder nutze es vorher als Rabatt-Token.",
     "browserPriceIncrease": "$1 Buy-Back-Items werden voraussichtlich in weniger als 2 Tagen teurer ($2). Kauf sie vorher zurück oder nutze sie vorher als Rabatt-Token."

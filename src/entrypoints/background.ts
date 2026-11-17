@@ -3,6 +3,7 @@ import { watchGiftFlags } from '@/buyback/gift-flags';
 import { isCheckingMessage, relayToOtherTabs } from '@/hangar/smart-update/broadcast';
 import { watchMeltReady } from '@/notifications/melt-ready-notification';
 import { watchPriceIncreases } from '@/price-increases/price-increase-browser-notification';
+import { watchShipRemovals } from '@/ship-removals/removal-browser-notification';
 import { watchNotesInStep } from '@/notifications/note-sync';
 import { watchStoreNoteKinds } from '@/store/store-change-notes';
 import {
@@ -69,6 +70,8 @@ export default defineBackground(() => {
   // Buy back pledges whose price is expected to rise in less than two days (#193): an alarm when
   // the next one crosses the limit, then one browser notification for all of them.
   watchPriceIncreases();
+  // Ships leaving the Pledge Store, a week before (#291).
+  watchShipRemovals();
 
   // The sidebar's notifications and their browser notifications in step (#155).
   watchNotesInStep();

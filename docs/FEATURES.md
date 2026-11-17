@@ -732,6 +732,11 @@ triangle yellow-orange or – with fewer CCUs to the ship – red; the notificat
 highest level; then the others by name. Its × closes it for these ships on this date: a new ship or another date brings it
 back. It can be turned off in the settings ("Ships leaving the Pledge Store").
 
+With browser notifications on, a **browser notification** tells each date a week before it (#291),
+also while no RSI page is open: "The Constellation Mk IV Andromeda, … leave the Pledge Store on Jan
+27, 2027." Each date is told once for its ships; a click opens the section of the Pledge Store tab.
+It goes away once the date has passed or the Hangar Manager is seen. Never in the demo mode.
+
 ## Paint Discount Consultant
 
 RSI gives a volume discount on paints in the cart: 15 % from 2 paints, 20 % from 3, 25 % from 5,
@@ -979,8 +984,8 @@ order of the list:
       browser notifications about marked pledges and the consultant's filler paints; the sidebar
       tells it anyway.
     - **Pledge Store**: **Warbond CCUs changed** (in the sidebar, new ones also in the browser),
-      **Pledge Store items changed**, **Events** and **Ships leaving the Pledge Store** (#290; all
-      three in the sidebar only).
+      **Pledge Store items changed** and **Events** (both in the sidebar only), **Ships leaving the
+      Pledge Store** (#290: in the sidebar, and a week before the date in the browser, #291).
     - **Buy Back**: **Expected price increases** (in the sidebar, and in the browser once less than
       2 days are left). Turned off, a kind adds no notification, and its open ones go – in the
       sidebar and in the browser.
