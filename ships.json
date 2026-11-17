@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "revision": 3,
-  "changedAt": "2026-11-16T12:46:11.324Z",
-  "generatedAt": "2026-11-16T12:46:11.324Z",
+  "revision": 4,
+  "changedAt": "2026-11-17T18:10:34.186Z",
+  "generatedAt": "2026-11-17T18:10:34.186Z",
   "sources": [
     {
       "id": "ship-matrix",
@@ -283,6 +283,7 @@
     {"id":325,"name":"Constellation Mk V Centaurus","manufacturer":"Roberts Space Industries","wikiName":"Constellation Mk V Centaurus","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[],"msrp":[{"value":300,"from":"2026-11-12"}]},
     {"id":326,"name":"Skylark","manufacturer":"Roberts Space Industries","wikiName":"Skylark","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[],"msrp":[{"value":45,"from":"2026-11-14"}]},
     {"id":327,"name":"ATLS IKTI Akuma","manufacturer":"Argo Astronautics","wikiName":"ATLS IKTI Akuma","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[],"msrp":[{"value":50,"from":"2026-11-12"}]},
-    {"id":328,"name":"Sabre Raven EX","manufacturer":"Aegis Dynamics","wikiName":"Sabre Raven EX","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[],"msrp":[{"value":185,"from":"2026-11-12"}]}
+    {"id":328,"name":"Sabre Raven EX","manufacturer":"Aegis Dynamics","wikiName":"Sabre Raven EX","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[],"msrp":[{"value":185,"from":"2026-11-12"}]},
+    {"id":329,"name":"Marauder","manufacturer":"Drake Interplanetary","wikiName":"Marauder","status":[{"value":"flight-ready","from":"2026-11-17"}],"alwaysAvailable":[],"msrp":[]}
   ]
 }
