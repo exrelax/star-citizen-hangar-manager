@@ -1449,6 +1449,7 @@
     "hint": "CIG nimmt $1 am $2 aus dem Pledge Store.",
     "announced": "Das Datum hat CIG angekündigt.",
     "ccuHint": "$1 verlässt am $2 den Pledge Store. Dieses CCU lässt sich danach nur noch auf ein Pledge mit diesem Schiff anwenden.",
-    "ccusTo": "CCUs zu $1: $2 in deinem Hangar, $3 in deinem Buy Back."
+    "ccusTo": "CCUs zu $1: $2 in deinem Hangar, $3 in deinem Buy Back.",
+    "ccuCritical": "Du hast weniger CCUs zu $1 als CCUs von diesem Schiff: Nicht jedes davon hat ein Schiff, auf das es sich anwenden lässt."
   }
 }

@@ -419,6 +419,16 @@
   color: var(--shm-warning);
 }
 
+/* Fewer CCUs to the ship than from it (#287): red in both places. */
+.shm-badge.shm-removal-badge.is-critical {
+  color: var(--shm-danger);
+  border-color: color-mix(in srgb, var(--shm-danger) 60%, transparent);
+}
+
+.shm-removal-hint.is-critical .shm-icon {
+  color: var(--shm-danger);
+}
+
 /* Marked to melt (#97): waiting for RSI's 24 hours, then ready to melt. */
 .shm-badge.is-melt-mark {
   display: inline-flex;

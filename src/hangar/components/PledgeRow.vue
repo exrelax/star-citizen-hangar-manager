@@ -105,7 +105,8 @@ const future = computed(() => {
 
 /**
  * A CCU whose base ship leaves the Pledge Store (#289): a warning triangle with the ship and the
- * date, and – expanded – how many CCUs to that ship the hangar and the buy back have.
+ * date, and – expanded – how many CCUs to that ship the hangar and the buy back have. Red with
+ * fewer CCUs to the ship than from it (#287): not every CCU from it has a ship to go on.
  */
 const removals = useProvidedRemovalCcus();
 const removal = computed(() => {
@@ -114,9 +115,19 @@ const removal = computed(() => {
   const { ship, removedAt } = entry.removal;
   const count = (source: 'hangar' | 'buyback') =>
     entry.to.filter((ccu) => ccu.source === source).length;
+  const critical = entry.level === 'critical';
+  const about = i18n.t('shipRemovals.ccuHint', [
+    ship.name,
+    formatExpectedTime(removedAt, locale.value),
+  ]);
+  const shortage = critical ? i18n.t('shipRemovals.ccuCritical', [ship.name]) : '';
+  const ccusTo = i18n.t('shipRemovals.ccusTo', [ship.name, count('hangar'), count('buyback')]);
   return {
-    hint: i18n.t('shipRemovals.ccuHint', [ship.name, formatExpectedTime(removedAt, locale.value)]),
-    ccusTo: i18n.t('shipRemovals.ccusTo', [ship.name, count('hangar'), count('buyback')]),
+    critical,
+    /** The tooltip: the ship, the date and, if so, that there are too few CCUs to it. */
+    hint: [about, shortage].filter(Boolean).join(' '),
+    /** Expanded: the counts before the shortage they show. */
+    details: [about, ccusTo, shortage].filter(Boolean).join(' '),
   };
 });
 
@@ -282,6 +293,7 @@ const toggle = () => {
           v-if="removal"
           v-tooltip="removal.hint"
           class="shm-badge is-price-increase is-warning shm-removal-badge"
+          :class="{ 'is-critical': removal.critical }"
           role="img"
           :aria-label="removal.hint"
           tabindex="0"
@@ -400,9 +412,13 @@ const toggle = () => {
           {{ pledge.upgrade.targetItems.map((item) => item.name).join(', ') }}
         </p>
         <!-- Its base ship leaves the Pledge Store (#289): what to apply it to afterwards. -->
-        <p v-if="removal" class="shm-hint shm-removal-hint">
+        <p
+          v-if="removal"
+          class="shm-hint shm-removal-hint"
+          :class="{ 'is-critical': removal.critical }"
+        >
           <SvgIcon name="triangle-exclamation" />
-          <span>{{ removal.hint }} {{ removal.ccusTo }}</span>
+          <span>{{ removal.details }}</span>
         </p>
         <ul v-if="pledge.items.length" class="shm-items">
           <li
