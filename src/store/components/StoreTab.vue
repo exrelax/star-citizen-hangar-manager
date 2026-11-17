@@ -27,6 +27,8 @@ import { useDemoContext } from '@/demo/use-demo';
 import TabBar from '@/shared/components/TabBar.vue';
 import { currentWarbondsRequest } from '../open-current-warbonds';
 import WarbondHistoryList from './WarbondHistoryList.vue';
+import ShipRemovalsSection from '@/ship-removals/components/ShipRemovalsSection.vue';
+import { shipRemovalsItem, storedShipRemovals } from '@/ship-removals/ship-removals-storage';
 
 /*
  * The "Pledge Store" tab: the warbond CCUs RSI currently offers, each with the cheapest ships to
@@ -87,6 +89,15 @@ const storeData = computed(() =>
 );
 const offers = computed(() =>
   storeData.value ? buildWarbondOffers(storeData.value, props.pledges, props.buyback) : [],
+);
+
+/**
+ * The ships CIG takes out of the Pledge Store (#288): public data, but the demo shows them only
+ * with the real Pledge Store data, like the events; its own come with #292.
+ */
+const storedRemovals = useStored(shipRemovalsItem);
+const removals = computed(() =>
+  demoContext.value && !realInDemo.value ? [] : storedShipRemovals(storedRemovals.value ?? null),
 );
 
 /** The CCUs to secure before a price increase (#253). */
@@ -231,6 +242,9 @@ const displayClasses = computed(() => ({
         :settings="settings"
       />
     </div>
+
+    <!-- Below the discount CCUs and their history, whichever is shown. -->
+    <ShipRemovalsSection :removals="removals" :ships="storeData?.ships ?? []" />
 
     <PaintConsultant :settings="settings" :active="active" />
   </section>

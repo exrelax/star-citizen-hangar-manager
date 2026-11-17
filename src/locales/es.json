@@ -1436,5 +1436,17 @@
     "buybackGainUnknownHint": "RSI no vende CCU al $1 ahora mismo, pero tu buy back tiene algunos. Cada uno recomprado antes de $2 gana tanto descuento como suba el precio – aún no se sabe cuánto.",
     "colBuybackPrice": "Buy back",
     "noPriceHint": "El precio de recompra aún no se conoce."
+  },
+  "shipRemovals": {
+    "title": "Naves que dejan la Pledge Store",
+    "intro": "CIG retira definitivamente estas naves de la Pledge Store. Un CCU desde una de ellas solo podrá aplicarse a un pledge con esa nave que ya tengas, o que obtengas con un CCU hacia ella.",
+    "date": {
+      "one": "$1 · $2 nave",
+      "other": "$1 · $2 naves"
+    },
+    "announcedBy": "Anunciado por CIG",
+    "label": "Retirada: $1",
+    "hint": "CIG retira la $1 de la Pledge Store el $2.",
+    "announced": "La fecha es la anunciada por CIG."
   }
 }

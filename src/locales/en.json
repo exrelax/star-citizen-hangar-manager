@@ -1436,5 +1436,17 @@
     "buybackGainUnknownHint": "RSI doesn’t sell CCUs to the $1 right now, but your buy back has some. Each one bought back before $2 gains as much discount as the price rises – how much isn’t known yet.",
     "colBuybackPrice": "Buy back",
     "noPriceHint": "The buy back price isn’t known yet."
+  },
+  "shipRemovals": {
+    "title": "Ships leaving the Pledge Store",
+    "intro": "CIG takes these ships out of the Pledge Store for good. A CCU from one of them can then only be applied to a pledge with the ship that you already have, or that a CCU to it gives you.",
+    "date": {
+      "one": "$1 · $2 ship",
+      "other": "$1 · $2 ships"
+    },
+    "announcedBy": "Announced by CIG",
+    "label": "Removal: $1",
+    "hint": "CIG takes the $1 out of the Pledge Store on $2.",
+    "announced": "The date is CIG’s announcement."
   }
 }

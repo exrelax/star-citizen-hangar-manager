@@ -57,8 +57,11 @@ export function confirmationNote(
   return confirmed ? 'priceIncrease.partlyConfirmed' : 'priceIncrease.expected';
 }
 
-/** The time left until `time`, as the label shows it. */
-function countdown(time: ExpectedTime, now: number, locale: Locale): string {
+/**
+ * The time left until `time`, as the label shows it; also the countdown of the ship removals
+ * (#288).
+ */
+export function countdown(time: ExpectedTime, now: number, locale: Locale): string {
   if (time.dayOnly) {
     return now >= time.at
       ? translate(locale, 'priceIncrease.today')
@@ -82,9 +85,6 @@ function countdown(time: ExpectedTime, now: number, locale: Locale): string {
   const seconds = Math.floor((left % MINUTE) / 1000);
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
-
-/** Less than this left: the countdown shows seconds, so it is updated every second. */
-export const SECONDS_COUNTDOWN_MS = HOUR;
 
 /** The increase a CCU's label counts down to: the one that decides the direction. */
 function ccuIncrease(ccu: CcuPriceChange): ExpectedPriceIncrease | undefined {

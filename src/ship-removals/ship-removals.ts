@@ -70,3 +70,26 @@ export const upcomingShipRemovals = (list: readonly ShipRemoval[], now: number):
   list
     .filter((removal) => endOf(removal.removedAt) > now)
     .sort((a, b) => a.removedAt.at - b.removedAt.at);
+
+/** The removals of one date: ships removed on the same date are told together (#285). */
+export interface RemovalDate {
+  removedAt: DayOrTime;
+  removals: ShipRemoval[];
+}
+
+/** The upcoming removals by date, the next to be over first; the ships of a date by name. */
+export function removalsByDate(list: readonly ShipRemoval[], now: number): RemovalDate[] {
+  const groups = new Map<string, RemovalDate>();
+  for (const removal of upcomingShipRemovals(list, now)) {
+    const { at, dayOnly } = removal.removedAt;
+    const key = `${at}${dayOnly ? 'd' : ''}`;
+    const group = groups.get(key) ?? { removedAt: removal.removedAt, removals: [] };
+    group.removals.push(removal);
+    groups.set(key, group);
+  }
+  for (const group of groups.values()) {
+    group.removals.sort((a, b) => a.ship.name.localeCompare(b.ship.name));
+  }
+  // A date with a time before the whole day it falls on: it is over first.
+  return [...groups.values()].sort((a, b) => endOf(a.removedAt) - endOf(b.removedAt));
+}

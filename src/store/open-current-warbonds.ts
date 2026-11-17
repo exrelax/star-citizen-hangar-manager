@@ -21,3 +21,8 @@ export function openCcusToSecure(): void {
   currentWarbondsRequest.value++;
   openTabAt('store', 'shm-store-secure-title', { highlight: true });
 }
+
+/** Opens the Pledge Store tab at the ships leaving the Pledge Store (#288), e.g. from a notification. */
+export function openShipRemovals(): void {
+  openTabAt('store', 'shm-store-removals-title', { highlight: true });
+}

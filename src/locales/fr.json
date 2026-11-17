@@ -1436,5 +1436,17 @@
     "buybackGainUnknownHint": "RSI ne vend pas de CCU vers le $1 en ce moment, mais ton buy back en a. Chacun racheté avant $2 gagne autant de réduction que la hausse du prix – son montant n’est pas encore connu.",
     "colBuybackPrice": "Buy back",
     "noPriceHint": "Le prix de rachat n’est pas encore connu."
+  },
+  "shipRemovals": {
+    "title": "Vaisseaux qui quittent le Pledge Store",
+    "intro": "CIG retire définitivement ces vaisseaux du Pledge Store. Un CCU depuis l’un d’eux ne pourra alors s’appliquer qu’à un pledge avec ce vaisseau que vous avez déjà, ou qu’un CCU vers lui vous donne.",
+    "date": {
+      "one": "$1 · $2 vaisseau",
+      "other": "$1 · $2 vaisseaux"
+    },
+    "announcedBy": "Annoncé par CIG",
+    "label": "Retrait : $1",
+    "hint": "CIG retire le $1 du Pledge Store le $2.",
+    "announced": "La date est celle annoncée par CIG."
   }
 }

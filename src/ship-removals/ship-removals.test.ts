@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import siteFile from '../../site/public/data/ship-removals.json';
-import { parseShipRemovals, upcomingShipRemovals } from './ship-removals';
+import { parseShipRemovals, removalsByDate, upcomingShipRemovals } from './ship-removals';
 
 const file = (shipRemovals: unknown[]) => ({ schemaVersion: 1, shipRemovals });
 const SOURCE = 'https://robertsspaceindustries.com/comm-link/transmission/12345';
@@ -99,5 +99,43 @@ describe('upcomingShipRemovals', () => {
     ]);
     expect(upcomingShipRemovals(list, Date.parse('2026-11-28T00:00:00Z'))).toHaveLength(1);
     expect(upcomingShipRemovals(list, Date.parse('2026-11-20T16:00:00Z'))).toHaveLength(2);
+  });
+});
+
+describe('removalsByDate', () => {
+  const list = parseShipRemovals(
+    file([
+      { ...hornet, ship: { id: 47, name: 'Constellation Mk IV Aquila' }, removedAt: '2027-01-27' },
+      {
+        ...hornet,
+        ship: { id: 45, name: 'Constellation Mk IV Andromeda' },
+        removedAt: '2027-01-27',
+      },
+      // The same day with a time is another date: told apart.
+      {
+        ...hornet,
+        ship: { id: 46, name: 'Constellation Mk IV Taurus' },
+        removedAt: '2027-01-27T00:00:00Z',
+      },
+      hornet,
+    ]),
+  )!;
+
+  it('groups the upcoming removals by date, the next first, the ships by name', () => {
+    const groups = removalsByDate(list, Date.parse('2026-11-20T00:00:00Z'));
+    expect(groups.map((group) => group.removals.map((removal) => removal.ship.id))).toEqual([
+      [15],
+      [46],
+      [45, 47],
+    ]);
+    expect(groups[2]!.removedAt).toEqual({ at: Date.parse('2027-01-27T00:00:00Z'), dayOnly: true });
+  });
+
+  it('leaves out the dates that are past', () => {
+    expect(
+      removalsByDate(list, Date.parse('2027-01-27T12:00:00Z')).map(
+        (group) => group.removals.length,
+      ),
+    ).toEqual([2]);
   });
 });
