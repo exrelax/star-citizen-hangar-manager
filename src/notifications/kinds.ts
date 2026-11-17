@@ -11,6 +11,8 @@
  *   settings (#193), in the sidebar, and in the browser once less than two days are left.
  * - `priceAdvisor`: the Price Increase Advisor's notifications (#254), CCUs of the hangar losing
  *   value by a price increase within that period, in the sidebar only.
+ * - `shipRemovals`: ships CIG takes out of the Pledge Store (#290), one per date with a warning for
+ *   CCUs from them, in the sidebar; a browser notification of the same kind follows with #291.
  * Only the kinds turned off are stored, so a kind added later starts on.
  */
 
@@ -21,6 +23,7 @@ export const NOTIFICATION_KINDS = [
   'events',
   'priceIncreases',
   'priceAdvisor',
+  'shipRemovals',
 ] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 
