@@ -591,6 +591,12 @@ html .shm-theme-modern .shm-badge.is-price-increase.is-warning {
   background: color-mix(in srgb, var(--shm-warning) 16%, transparent);
 }
 
+/* A CCU whose base ship leaves the store, with too few CCUs to it (#289): red, not yellow. */
+html .shm-theme-modern .shm-badge.shm-removal-badge.is-critical {
+  color: var(--shm-danger);
+  background: color-mix(in srgb, var(--shm-danger) 16%, transparent);
+}
+
 html .shm-theme-modern .shm-badge.is-price-increase.is-warning.is-soon {
   color: var(--shm-text-on-warning);
   background: var(--shm-warning);

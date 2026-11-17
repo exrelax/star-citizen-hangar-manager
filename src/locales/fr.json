@@ -1447,6 +1447,9 @@
     "announcedBy": "Annoncé par CIG",
     "label": "Retrait : $1",
     "hint": "CIG retire le $1 du Pledge Store le $2.",
-    "announced": "La date est celle annoncée par CIG."
+    "announced": "La date est celle annoncée par CIG.",
+    "ccuHint": "Le $1 quitte le Pledge Store le $2. Ce CCU ne pourra alors s’appliquer qu’à un pledge avec ce vaisseau.",
+    "ccusTo": "CCU vers le $1 : $2 dans votre hangar, $3 dans votre buy back.",
+    "ccuCritical": "Vous avez moins de CCU vers le $1 que depuis lui : tous les CCU depuis ce vaisseau n’auront pas de vaisseau auquel s’appliquer."
   }
 }

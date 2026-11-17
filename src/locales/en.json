@@ -1447,6 +1447,9 @@
     "announcedBy": "Announced by CIG",
     "label": "Removal: $1",
     "hint": "CIG takes the $1 out of the Pledge Store on $2.",
-    "announced": "The date is CIG’s announcement."
+    "announced": "The date is CIG’s announcement.",
+    "ccuHint": "The $1 leaves the Pledge Store on $2. This CCU can then only be applied to a pledge with that ship.",
+    "ccusTo": "CCUs to the $1: $2 in your hangar, $3 in your buy back.",
+    "ccuCritical": "You have fewer CCUs to the $1 than from it: not every CCU from it has a ship to be applied to."
   }
 }
