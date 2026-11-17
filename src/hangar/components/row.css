@@ -402,6 +402,23 @@
   border-color: color-mix(in srgb, var(--shm-warning) 60%, transparent);
 }
 
+/* A CCU whose base ship leaves the Pledge Store (#289): the warning triangle only. */
+.shm-badge.shm-removal-badge {
+  padding-inline: 5px;
+}
+
+/* Expanded: the same triangle before what it means for the CCU. */
+.shm-removal-hint {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.shm-removal-hint .shm-icon {
+  flex: none;
+  color: var(--shm-warning);
+}
+
 /* Marked to melt (#97): waiting for RSI's 24 hours, then ready to melt. */
 .shm-badge.is-melt-mark {
   display: inline-flex;

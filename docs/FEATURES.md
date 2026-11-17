@@ -720,6 +720,10 @@ hour "46:12") and a link to CIG's announcement. A CCU from such a ship can after
 applied to a pledge with the ship you already have, or get with a CCU to it. A ship disappears
 once its date is past. The demo mode shows them only with "Show real Pledge Store data".
 
+In **My Hangar**, a CCU whose base ship leaves the Pledge Store shows a yellow-orange warning
+triangle (#289); its tooltip names the ship and the date. Expanded, the CCU tells how many CCUs to
+that ship are in your hangar and your buy back – the ways to get a ship to apply it to later.
+
 ## Paint Discount Consultant
 
 RSI gives a volume discount on paints in the cart: 15 % from 2 paints, 20 % from 3, 25 % from 5,

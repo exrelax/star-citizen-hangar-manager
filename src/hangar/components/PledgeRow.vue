@@ -26,6 +26,7 @@ import { selection } from '../selection';
 import { formatTimeLeft, toggleMeltMark } from '../melt-marks';
 import { useMarkedPledges } from '../use-melt-marks';
 import { useNow } from '@/shared/use-now';
+import { useProvidedRemovalCcus } from '@/ship-removals/use-removal-ccus';
 
 const props = defineProps<{
   pledge: PledgeView;
@@ -99,6 +100,23 @@ const future = computed(() => {
         amount,
       ],
     ),
+  };
+});
+
+/**
+ * A CCU whose base ship leaves the Pledge Store (#289): a warning triangle with the ship and the
+ * date, and – expanded – how many CCUs to that ship the hangar and the buy back have.
+ */
+const removals = useProvidedRemovalCcus();
+const removal = computed(() => {
+  const entry = removals.value.byHangarCcu.get(props.pledge.id);
+  if (!entry) return undefined;
+  const { ship, removedAt } = entry.removal;
+  const count = (source: 'hangar' | 'buyback') =>
+    entry.to.filter((ccu) => ccu.source === source).length;
+  return {
+    hint: i18n.t('shipRemovals.ccuHint', [ship.name, formatExpectedTime(removedAt, locale.value)]),
+    ccusTo: i18n.t('shipRemovals.ccusTo', [ship.name, count('hangar'), count('buyback')]),
   };
 });
 
@@ -260,6 +278,16 @@ const toggle = () => {
               : i18n.n('refund.days', refund.daysLeft)
           }}
         </span>
+        <span
+          v-if="removal"
+          v-tooltip="removal.hint"
+          class="shm-badge is-price-increase is-warning shm-removal-badge"
+          role="img"
+          :aria-label="removal.hint"
+          tabindex="0"
+        >
+          <SvgIcon name="triangle-exclamation" />
+        </span>
         <PriceIncreaseBadge
           v-if="pledge.priceIncrease || pledge.ccuPriceChange"
           :match="pledge.priceIncrease"
@@ -370,6 +398,11 @@ const toggle = () => {
           {{ pledge.upgrade.matchItems.map((item) => item.name).join(', ') }}
           →
           {{ pledge.upgrade.targetItems.map((item) => item.name).join(', ') }}
+        </p>
+        <!-- Its base ship leaves the Pledge Store (#289): what to apply it to afterwards. -->
+        <p v-if="removal" class="shm-hint shm-removal-hint">
+          <SvgIcon name="triangle-exclamation" />
+          <span>{{ removal.hint }} {{ removal.ccusTo }}</span>
         </p>
         <ul v-if="pledge.items.length" class="shm-items">
           <li

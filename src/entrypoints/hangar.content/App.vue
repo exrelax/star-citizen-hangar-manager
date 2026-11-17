@@ -30,6 +30,7 @@ import type { IconName, IconSet } from '@/icons/icon-names';
 import TabBar from '@/shared/components/TabBar.vue';
 import { i18n } from '@/i18n';
 import SettingsPanel from '@/settings/SettingsPanel.vue';
+import { REMOVAL_CCUS, useRemovalCcus } from '@/ship-removals/use-removal-ccus';
 import StoreTab from '@/store/components/StoreTab.vue';
 import CcuAdviceOverlay from '@/price-increases/components/CcuAdviceOverlay.vue';
 import { ccuAdviceRequest, closeCcuAdvice } from '@/price-increases/ccu-advice-request';
@@ -123,6 +124,15 @@ const meltMarks = useMeltMarks(
   },
 );
 provide(MELT_MARKS, meltMarks);
+// The ships leaving the Pledge Store with the CCUs from and to them (#289), for the rows.
+provide(
+  REMOVAL_CCUS,
+  useRemovalCcus(
+    () => pledges.value,
+    () => buybackPledges.value,
+    () => !demo.value || settings.value.demo.realStoreData,
+  ),
+);
 // The ones that can be melted now, for the sidebar's notification and its "Show" and "Select".
 const now = useNow();
 watchEffect(() => {
