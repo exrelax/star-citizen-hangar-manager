@@ -248,6 +248,8 @@
     "hangarNotifications": "My Hangar",
     "notificationKindPriceAdvisor": "CCU et hausses de prix",
     "notificationKindPriceAdvisorHint": "Les CCU de ton hangar qui perdent de la valeur d’upgrade avec une hausse de prix attendue dans la période réglée sous « Général », une notification par hausse, dans la barre latérale uniquement.",
+    "notificationKindShipRemovals": "Vaisseaux qui quittent le Pledge Store",
+    "notificationKindShipRemovalsHint": "Les vaisseaux que CIG retire définitivement du Pledge Store, une notification par date, avec un avertissement pour les CCU depuis eux dans votre hangar et votre buy back, dans la barre latérale.",
     "priceAdvisorSecureHint": "Aussi sans CCU concernés",
     "priceAdvisorSecureHintHint": "Un rappel qu’un CCU vers le vaisseau qui augmente peut encore être acheté à l’ancien prix, tant qu’aucun de tes CCU n’en perd de la valeur.",
     "sidebarNotifications": "Barre latérale",
@@ -468,7 +470,7 @@
     "shipRemovals": {
       "name": "Vaisseaux retirés",
       "content": "Les vaisseaux retirés définitivement du Pledge Store, depuis le site du projet, avec leurs dates",
-      "missing": "Rien ne les utilise encore."
+      "missing": "D’ici là, ni l’onglet Pledge Store, ni My Hangar, ni la barre latérale ne montrent les vaisseaux qui quittent le Pledge Store."
     },
     "storeCredit": {
       "name": "Crédit boutique",
@@ -1259,6 +1261,16 @@
     "openAdvisorHint": "Comment garder la remise de ces CCU.",
     "showSecureHint": "Affiche les CCU les moins chers vers le vaisseau dans l’onglet Pledge Store.",
     "dismissAdvisorHint": "Retire cette notification pour cette hausse de prix. Une hausse nouvelle ou déplacée s’affiche à nouveau.",
+    "shipRemovals": {
+      "one": "Le $1 quitte le Pledge Store le $2.",
+      "other": "$3 vaisseaux quittent le Pledge Store le $2 :"
+    },
+    "shipRemovalCcus": {
+      "one": "$1 : $2 CCU depuis lui, $3 vers lui",
+      "other": "$1 : $2 CCU depuis lui, $3 vers lui"
+    },
+    "showShipRemovalsHint": "Affiche les vaisseaux qui quittent le Pledge Store dans l’onglet Pledge Store.",
+    "dismissShipRemovalsHint": "Retire cette notification pour ces vaisseaux à cette date. Un nouveau vaisseau ou une nouvelle date la fait revenir.",
     "browserPriceIncreaseTitle": "Hausse de prix attendue",
     "browserPriceIncreaseOne": "« $1 » coûtera probablement plus cher dans moins de 2 jours ($2). Rachetez-le ou utilisez-le comme jeton de réduction avant.",
     "browserPriceIncrease": "$1 éléments du Buy Back coûteront probablement plus cher dans moins de 2 jours ($2). Rachetez-les ou utilisez-les comme jetons de réduction avant."

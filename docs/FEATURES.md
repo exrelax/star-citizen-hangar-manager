@@ -725,6 +725,13 @@ triangle (#289), red when you have fewer CCUs to that ship than from it; its too
 ship and the date. Expanded, the CCU tells how many CCUs to
 that ship are in your hangar and your buy back – the ways to get a ship to apply it to later.
 
+The **sidebar** tells each date in one notification with all ships removed on it (#290), and
+**Show in Pledge Store** opens the section. Below the text all ships of the date are listed: first
+those with CCUs from them in your hangar or buy back, with their counts ("Constellation Mk IV Taurus: 3 CCUs from it, 1 to it"), each
+triangle yellow-orange or – with fewer CCUs to the ship – red; the notification's icon takes the
+highest level; then the others by name. Its × closes it for these ships on this date: a new ship or another date brings it
+back. It can be turned off in the settings ("Ships leaving the Pledge Store").
+
 ## Paint Discount Consultant
 
 RSI gives a volume discount on paints in the cart: 15 % from 2 paints, 20 % from 3, 25 % from 5,
@@ -972,7 +979,8 @@ order of the list:
       browser notifications about marked pledges and the consultant's filler paints; the sidebar
       tells it anyway.
     - **Pledge Store**: **Warbond CCUs changed** (in the sidebar, new ones also in the browser),
-      **Pledge Store items changed** and **Events** (both in the sidebar only).
+      **Pledge Store items changed**, **Events** and **Ships leaving the Pledge Store** (#290; all
+      three in the sidebar only).
     - **Buy Back**: **Expected price increases** (in the sidebar, and in the browser once less than
       2 days are left). Turned off, a kind adds no notification, and its open ones go – in the
       sidebar and in the browser.
@@ -981,7 +989,8 @@ order of the list:
     warbond CCUs while one is still offered, changed Pledge Store items while one of the new or
     repriced ones still has that price, the Paint Discount Consultant's while paints can still be
     bought again (on all browsers, as the dismissed paints are synced), the expected price
-    increases' while buy back pledges are in their period, and the hint on browser
+    increases' while buy back pledges are in their period, the ship removals' while their date is
+    ahead, and the hint on browser
     notifications while they are off. Kinds turned off stay hidden; notifications from before this
     version (without what they were about) don't come back. It says how many came back.
 - **Paint Discount Consultant** (it always buys with store credit, never with new money):

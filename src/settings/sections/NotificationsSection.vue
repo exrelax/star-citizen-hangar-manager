@@ -1,4 +1,11 @@
 <script setup lang="ts">
+import {
+  demoDismissedRemovalNotesItem,
+  dismissedRemovalNotesItem,
+  removalNoteKeys,
+  restoreRemovalNotes,
+} from '@/ship-removals/removal-notes';
+import { shipRemovalsItem, storedShipRemovals } from '@/ship-removals/ship-removals-storage';
 import { i18n } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import {
@@ -150,6 +157,18 @@ const advisorToRestore = computed(() => {
     ahead,
   );
 });
+/** The ship removals' notifications (#290), dismissed for a date still ahead. */
+const removalsStored = useStored(shipRemovalsItem);
+const realRemovalDismissed = useStored(dismissedRemovalNotesItem);
+const demoRemovalDismissed = useStored(demoDismissedRemovalNotesItem);
+const removalsToRestore = computed(() => {
+  if (!kindOn('shipRemovals')) return false;
+  const ahead = removalNoteKeys(storedShipRemovals(removalsStored.value ?? null), Date.now());
+  return hasDismissedAhead(
+    [...(realRemovalDismissed.value ?? []), ...(demoRemovalDismissed.value ?? [])],
+    ahead,
+  );
+});
 /** The hint on browser notifications, dismissed while they are off. */
 const hintToRestore = computed(() => allowed.value === false && hintDismissed.value === true);
 
@@ -162,6 +181,7 @@ const restoreCount = computed(() =>
       Number(paintToRestore.value) +
       Number(priceToRestore.value) +
       Number(advisorToRestore.value) +
+      Number(removalsToRestore.value) +
       Number(hintToRestore.value),
 );
 /** How many came back with the last click, shown below the button. */
@@ -175,6 +195,7 @@ async function restore() {
     paintToRestore.value ? restorePaintNotifications() : undefined,
     priceToRestore.value ? restorePriceIncreaseNotes() : undefined,
     advisorToRestore.value ? restoreAdvisorNotes() : undefined,
+    removalsToRestore.value ? restoreRemovalNotes() : undefined,
     hintToRestore.value ? browserNotificationsHintDismissedItem.setValue(false) : undefined,
   ]);
   restored.value = count;
@@ -235,6 +256,13 @@ async function restore() {
       @change="(on) => setKind('events', on)"
     >
       {{ i18n.t('settings.notificationKindEvents') }}
+    </SettingCheck>
+    <SettingCheck
+      :checked="kindOn('shipRemovals')"
+      :hint="i18n.t('settings.notificationKindShipRemovalsHint')"
+      @change="(on) => setKind('shipRemovals', on)"
+    >
+      {{ i18n.t('settings.notificationKindShipRemovals') }}
     </SettingCheck>
   </SettingsGroup>
 

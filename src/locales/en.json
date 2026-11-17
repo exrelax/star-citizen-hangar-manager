@@ -248,6 +248,8 @@
     "hangarNotifications": "My Hangar",
     "notificationKindPriceAdvisor": "CCUs and price increases",
     "notificationKindPriceAdvisorHint": "CCUs of your hangar that lose upgrade value with a price increase expected within the period set under “General”, one notification per price increase, in the sidebar only.",
+    "notificationKindShipRemovals": "Ships leaving the Pledge Store",
+    "notificationKindShipRemovalsHint": "Ships CIG takes out of the Pledge Store for good, one notification per date, with a warning for the CCUs of your hangar and buy back from them, in the sidebar.",
     "priceAdvisorSecureHint": "Also without affected CCUs",
     "priceAdvisorSecureHintHint": "A hint that a CCU to the rising ship can still be bought at the old price, while none of your CCUs loses value by it.",
     "sidebarNotifications": "Sidebar",
@@ -468,7 +470,7 @@
     "shipRemovals": {
       "name": "Ship removals",
       "content": "Ships taken out of the Pledge Store for good, from the project website, with their dates",
-      "missing": "Nothing uses them yet."
+      "missing": "Until then no ships leaving the Pledge Store show: not in the Pledge Store tab, in My Hangar or in the sidebar."
     },
     "storeCredit": {
       "name": "Store credit",
@@ -1259,6 +1261,16 @@
     "openAdvisorHint": "How to keep the discount of these CCUs.",
     "showSecureHint": "Shows the cheapest CCUs to the ship in the Pledge Store tab.",
     "dismissAdvisorHint": "Removes this notification for this price increase. A new or moved price increase shows again.",
+    "shipRemovals": {
+      "one": "The $1 leaves the Pledge Store on $2.",
+      "other": "$3 ships leave the Pledge Store on $2:"
+    },
+    "shipRemovalCcus": {
+      "one": "$1: $2 CCU from it, $3 to it",
+      "other": "$1: $2 CCUs from it, $3 to it"
+    },
+    "showShipRemovalsHint": "Shows the ships leaving the Pledge Store in the Pledge Store tab.",
+    "dismissShipRemovalsHint": "Removes this notification for these ships on this date. A new ship or date shows again.",
     "browserPriceIncreaseTitle": "Expected price increase",
     "browserPriceIncreaseOne": "“$1” will probably cost more in less than 2 days ($2). Buy it back or use it as a discount token before then.",
     "browserPriceIncrease": "$1 buy back items will probably cost more in less than 2 days ($2). Buy them back or use them as discount tokens before then."

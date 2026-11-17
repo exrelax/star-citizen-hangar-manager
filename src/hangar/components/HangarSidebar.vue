@@ -77,7 +77,20 @@ import {
   hangarFilterStates,
   includeHangarFilter,
 } from '../hangar-filter-request';
-import { openCcusToSecure, openCurrentWarbonds } from '@/store/open-current-warbonds';
+import {
+  openCcusToSecure,
+  openCurrentWarbonds,
+  openShipRemovals,
+} from '@/store/open-current-warbonds';
+import { useProvidedRemovalCcus } from '@/ship-removals/use-removal-ccus';
+import {
+  demoDismissedRemovalNotesItem,
+  dismissedRemovalNotesItem,
+  removalNoteKeys,
+  removalNotes,
+  type RemovalNote,
+  type RemovalWarning,
+} from '@/ship-removals/removal-notes';
 
 /*
  * The sidebar below RSI's page navigation on the left on every tab (App.vue teleports it there),
@@ -162,6 +175,7 @@ const noteCount = computed(
     (paintNoteCount.value ? 1 : 0) +
     (priceNoteCount.value ? 1 : 0) +
     advisorShown.value.length +
+    removalShown.value.length +
     (showBrowserHint.value ? 1 : 0),
 );
 const noteTime = computed(
@@ -358,6 +372,50 @@ function toggleAdvisorFilter() {
   else includeHangarFilter('priceChange');
 }
 const openSecureSection = openCcusToSecure;
+
+/*
+ * The ships leaving the Pledge Store (#290): one notification per date with all its ships, and a
+ * warning for those with CCUs from them – red with fewer CCUs to the ship than from it. Each is
+ * dismissed for its ships on its date (see `removal-notes.ts`).
+ */
+const removalCcus = useProvidedRemovalCcus();
+const realRemovalDismissed = useStored(dismissedRemovalNotesItem);
+const demoRemovalDismissed = useStored(demoDismissedRemovalNotesItem);
+const removalShown = computed((): RemovalNote[] => {
+  const dismissed = demo.value ? demoRemovalDismissed.value : realRemovalDismissed.value;
+  // Not before the dismissed ones are read: they would show for a moment.
+  if (!dismissed || !isKindOn(props.settings.notificationsOff, 'shipRemovals')) return [];
+  return removalNotes(removalCcus.value.list, now.value, dismissed);
+});
+function dismissRemovalNote(note: RemovalNote) {
+  const item = demo.value ? demoDismissedRemovalNotesItem : dismissedRemovalNotesItem;
+  const dismissed = (demo.value ? demoRemovalDismissed.value : realRemovalDismissed.value) ?? [];
+  const ahead = removalNoteKeys(
+    removalCcus.value.list.map((entry) => entry.removal),
+    now.value,
+  );
+  void item.setValue(withDismissed(dismissed, note.key, ahead));
+}
+/** One ship: its name; several: their count, each listed below. */
+function removalText(note: RemovalNote) {
+  const when = formatExpectedTime(note.removedAt, locale.value);
+  return i18n.n('notifications.shipRemovals', note.ships.length, [
+    note.ships[0]!.ship.name,
+    when,
+    number.value.format(note.ships.length),
+  ]);
+}
+/** The ships of the date without CCUs from them, by name. */
+const removalOthers = (note: RemovalNote) => {
+  const warned = new Set(note.warnings.map((warning) => warning.removal.ship.id));
+  return note.ships.filter((removal) => !warned.has(removal.ship.id));
+};
+const removalWarningText = (warning: RemovalWarning) =>
+  i18n.n('notifications.shipRemovalCcus', warning.from, [
+    warning.removal.ship.name,
+    number.value.format(warning.from),
+    number.value.format(warning.to),
+  ]);
 
 function dismissPaintNote() {
   void dismissedItem().setValue(dismissedOf(rebuyIds.value));
@@ -750,6 +808,54 @@ async function move(box: Box, step: -1 | 1) {
                 type="button"
                 class="shm-button shm-sidebar-button"
                 @click="openSecureSection"
+              >
+                <SvgIcon name="basket-shopping" />
+                {{ i18n.t('notifications.showInStore') }}
+              </button>
+            </div>
+          </div>
+          <div
+            v-for="note in removalShown"
+            :key="note.key"
+            class="shm-sidebar-melt-ready is-dismissable shm-sidebar-removal"
+            :class="note.level && `is-${note.level}`"
+            role="status"
+          >
+            <SvgIcon :name="note.level ? 'triangle-exclamation' : 'circle-info'" />
+            <p>{{ removalText(note) }}</p>
+            <button
+              v-tooltip="i18n.t('notifications.dismissShipRemovalsHint')"
+              type="button"
+              class="shm-sidebar-icon-button shm-sidebar-note-dismiss"
+              :aria-label="i18n.t('notifications.dismiss')"
+              @click="dismissRemovalNote(note)"
+            >
+              <SvgIcon name="xmark" />
+            </button>
+            <!-- Every ship of the date: those with CCUs from them first, each in the color of its
+                 level (#287), then the others by name. -->
+            <ul
+              v-if="note.ships.length > 1 || note.warnings.length"
+              class="shm-sidebar-removal-warnings"
+            >
+              <li
+                v-for="warning in note.warnings"
+                :key="warning.removal.ship.id"
+                :class="`is-${warning.level}`"
+              >
+                <SvgIcon name="triangle-exclamation" />
+                <span>{{ removalWarningText(warning) }}</span>
+              </li>
+              <li v-for="ship in removalOthers(note)" :key="ship.ship.id" class="is-plain">
+                <span>{{ ship.ship.name }}</span>
+              </li>
+            </ul>
+            <div v-mark-wrapped class="shm-sidebar-actions">
+              <button
+                v-tooltip="i18n.t('notifications.showShipRemovalsHint')"
+                type="button"
+                class="shm-button shm-sidebar-button"
+                @click="openShipRemovals"
               >
                 <SvgIcon name="basket-shopping" />
                 {{ i18n.t('notifications.showInStore') }}
@@ -1248,6 +1354,47 @@ async function move(box: Box, step: -1 | 1) {
 
 .shm-sidebar-melt-ready .shm-sidebar-actions.is-wrapped {
   grid-column: 2;
+}
+
+/* Ship removals (#290): the icon in the color of the highest level, each warning in its own. */
+.shm-sidebar-removal.is-warning > .shm-icon,
+.shm-sidebar-removal-warnings .is-warning .shm-icon {
+  color: var(--shm-warning);
+}
+
+.shm-sidebar-removal.is-critical > .shm-icon,
+.shm-sidebar-removal-warnings .is-critical .shm-icon {
+  color: var(--shm-danger);
+}
+
+/* Below the text, in its column; RSI's page resets every list (see the notes' list). */
+.shm-sidebar-removal-warnings:not(#shm-none) {
+  display: grid;
+  grid-column: 2;
+  gap: 4px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Its own line height and margins: RSI's page sets those of every list item. */
+.shm-sidebar-removal-warnings li {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  margin: 0;
+  color: var(--shm-text-secondary);
+  font-size: calc(11px * var(--shm-font-scale));
+  line-height: 1.35;
+}
+
+.shm-sidebar-removal-warnings .shm-icon {
+  flex: none;
+}
+
+/* A ship without CCUs from it: no icon, its name in line with the warned ships' names. */
+.shm-sidebar-removal-warnings li.is-plain {
+  padding-left: calc(1em + 6px);
 }
 
 /* Between the notifications as within their list (`gap`); for the list, see the title's space. */

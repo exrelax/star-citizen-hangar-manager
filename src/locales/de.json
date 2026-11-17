@@ -248,6 +248,8 @@
     "hangarNotifications": "My Hangar",
     "notificationKindPriceAdvisor": "CCUs und Preiserhöhungen",
     "notificationKindPriceAdvisorHint": "CCUs deines Hangars, die durch eine innerhalb des unter „Allgemein“ eingestellten Zeitraums erwartete Preiserhöhung an Upgrade-Wert verlieren, eine Benachrichtigung je Preiserhöhung, nur in der Sidebar.",
+    "notificationKindShipRemovals": "Schiffe, die den Pledge Store verlassen",
+    "notificationKindShipRemovalsHint": "Schiffe, die CIG dauerhaft aus dem Pledge Store nimmt, eine Benachrichtigung pro Datum, mit einer Warnung zu den CCUs davon in deinem Hangar und Buy Back, in der Sidebar.",
     "priceAdvisorSecureHint": "Auch ohne betroffene CCUs",
     "priceAdvisorSecureHintHint": "Ein Hinweis, dass sich ein CCU zum steigenden Schiff noch zum alten Preis kaufen lässt, solange keines deiner CCUs dadurch an Wert verliert.",
     "sidebarNotifications": "Sidebar",
@@ -468,7 +470,7 @@
     "shipRemovals": {
       "name": "Entfernte Schiffe",
       "content": "Schiffe, die dauerhaft aus dem Pledge Store genommen werden, von der Projekt-Website, mit ihren Daten",
-      "missing": "Wird noch nirgends genutzt."
+      "missing": "Bis dahin zeigen Pledge-Store-Tab, My Hangar und Sidebar keine Schiffe, die den Pledge Store verlassen."
     },
     "storeCredit": {
       "name": "Store Credits",
@@ -1259,6 +1261,16 @@
     "openAdvisorHint": "So erhältst du den Rabatt dieser CCUs.",
     "showSecureHint": "Zeigt die günstigsten CCUs zum Schiff im Tab Pledge Store.",
     "dismissAdvisorHint": "Entfernt diese Benachrichtigung für diese Preiserhöhung. Eine neue oder verschobene Preiserhöhung erscheint wieder.",
+    "shipRemovals": {
+      "one": "$1 verlässt am $2 den Pledge Store.",
+      "other": "$3 Schiffe verlassen am $2 den Pledge Store:"
+    },
+    "shipRemovalCcus": {
+      "one": "$1: $2 CCU vom Schiff, $3 zum Schiff",
+      "other": "$1: $2 CCUs vom Schiff, $3 zum Schiff"
+    },
+    "showShipRemovalsHint": "Zeigt die Schiffe, die den Pledge Store verlassen, im Tab „Pledge Store“.",
+    "dismissShipRemovalsHint": "Entfernt diese Benachrichtigung für diese Schiffe an diesem Datum. Ein neues Schiff oder Datum zeigt sie wieder.",
     "browserPriceIncreaseTitle": "Erwartete Preiserhöhung",
     "browserPriceIncreaseOne": "„$1“ wird voraussichtlich in weniger als 2 Tagen teurer ($2). Kauf es vorher zurück oder nutze es vorher als Rabatt-Token.",
     "browserPriceIncrease": "$1 Buy-Back-Items werden voraussichtlich in weniger als 2 Tagen teurer ($2). Kauf sie vorher zurück oder nutze sie vorher als Rabatt-Token."
