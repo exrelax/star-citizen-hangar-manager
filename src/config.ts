@@ -297,6 +297,16 @@ export const PRICE_INCREASES = {
 } as const;
 
 /**
+ * The ship removals (#285): ships CIG takes out of the Pledge Store for good, on the project
+ * website like the events, read the same way (`SITE_DATA`).
+ */
+export const SHIP_REMOVALS = {
+  url: 'https://exrelax.github.io/star-citizen-hangar-manager/data/ship-removals.json',
+  /** The format the extension reads; files of other versions are ignored. */
+  schemaVersion: 1,
+} as const;
+
+/**
  * The items of RSI's Pledge Store (see `src/store/items`), read with the store's own search: all
  * items of these products, 100 per request – 13 requests, ~2 s for ~680 items (November 2026).
  * Physical merchandise and CCUs (from the ship upgrade tool) are left out.

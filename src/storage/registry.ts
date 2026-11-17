@@ -44,6 +44,11 @@ import {
   priceIncreasesMeta,
   type PriceIncreasesSnapshot,
 } from '@/price-increases/price-increases-storage';
+import {
+  shipRemovalsItem,
+  shipRemovalsMeta,
+  type ShipRemovalsSnapshot,
+} from '@/ship-removals/ship-removals-storage';
 import type { BuybackSnapshot } from '@/buyback/buyback';
 import type { HangarSnapshot } from '@/hangar/pledge';
 import type { OrdersSnapshot } from '@/orders/orders';
@@ -81,6 +86,7 @@ export type StorageId =
   | 'storeItems'
   | 'events'
   | 'priceIncreases'
+  | 'shipRemovals'
   | 'storeCredit'
   | 'paintPlan'
   | 'paintHistory'
@@ -265,6 +271,17 @@ export const STORAGES: readonly StorageDefinition[] = [
     usedBy: [],
     kind: 'data',
     count: (value: PriceIncreasesSnapshot | null) => value?.priceIncreases.length ?? 0,
+    readAgain: 'auto',
+  },
+  {
+    id: 'shipRemovals',
+    meta: shipRemovalsMeta,
+    item: shipRemovalsItem,
+    content: 'Ship removals: ship id and name, date, source, event',
+    source: 'The project website (GitHub Pages, data/ship-removals.json)',
+    usedBy: [],
+    kind: 'data',
+    count: (value: ShipRemovalsSnapshot | null) => value?.shipRemovals.length ?? 0,
     readAgain: 'auto',
   },
   {

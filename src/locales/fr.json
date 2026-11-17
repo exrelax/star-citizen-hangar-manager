@@ -465,6 +465,11 @@
       "content": "Les vaisseaux dont le prix devrait augmenter, depuis le site du projet, avec leurs dates",
       "missing": "Rien ne les utilise encore."
     },
+    "shipRemovals": {
+      "name": "Vaisseaux retirés",
+      "content": "Les vaisseaux retirés définitivement du Pledge Store, depuis le site du projet, avec leurs dates",
+      "missing": "Rien ne les utilise encore."
+    },
     "storeCredit": {
       "name": "Crédit boutique",
       "content": "Le crédit boutique du compte, comme son menu de compte l’affiche",

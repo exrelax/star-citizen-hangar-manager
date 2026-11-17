@@ -102,8 +102,9 @@ sees or stores your RSI login.
 - **exrelax.github.io** (this project's website on GitHub Pages): every two hours, more often in the
   afternoon and evening (at most every 15 minutes), while an RSI page with the extension is open, the
   extension loads the list of Star Citizen events it shows in the Pledge Store tab
-  (`data/events.json`) and the list of ships whose price is expected to rise
-  (`data/price-increases.json`), once a day the ships' facts (`data/ships.json`: production
+  (`data/events.json`), the list of ships whose price is expected to rise
+  (`data/price-increases.json`) and the list of ships taken out of the Pledge Store
+  (`data/ship-removals.json`), once a day the ships' facts (`data/ships.json`: production
   status, always available, standard price) and earlier warbond offers
   (`data/warbond-history.json`), and while the tab shows an event, its image from the
   same website. All are public files, the same for everyone; the requests send no data, no cookies, nothing about

@@ -10,6 +10,7 @@ import { maybeRefreshStoreItems, refreshStoreItems } from '@/store/items/sync-st
 import { refreshStoreCredit } from '@/account/sync-store-credit';
 import { maybeRefreshEvents } from '@/events/sync-events';
 import { maybeRefreshPriceIncreases } from '@/price-increases/sync-price-increases';
+import { maybeRefreshShipRemovals } from '@/ship-removals/sync-ship-removals';
 import type { StorageId } from '@/storage/registry';
 import { reactive, readonly } from 'vue';
 import { recordCheck, recordSync, type CheckOutcome, type MetaItem } from '@/storage/meta';
@@ -208,13 +209,15 @@ export async function startStorageSync(id: StorageId): Promise<void> {
             ? maybeRefreshEvents({ force: true })
             : id === 'priceIncreases'
               ? maybeRefreshPriceIncreases({ force: true })
-              : id === 'shipStatus'
-                ? maybeRefreshShipStatus({ force: true })
-                : id === 'shipFacts'
-                  ? maybeRefreshShipFacts({ force: true })
-                  : id === 'warbondHistorySite'
-                    ? maybeRefreshSiteWarbondHistory({ force: true })
-                    : refreshUpgradeTool());
+              : id === 'shipRemovals'
+                ? maybeRefreshShipRemovals({ force: true })
+                : id === 'shipStatus'
+                  ? maybeRefreshShipStatus({ force: true })
+                  : id === 'shipFacts'
+                    ? maybeRefreshShipFacts({ force: true })
+                    : id === 'warbondHistorySite'
+                      ? maybeRefreshSiteWarbondHistory({ force: true })
+                      : refreshUpgradeTool());
       section.complete(1, 1);
     }
   } catch (error) {
@@ -276,6 +279,8 @@ async function runSmartUpdateIfDue(force: boolean): Promise<void> {
   await maybeRefreshEvents();
   // The expected price increases of the project website (#195): once a day.
   await maybeRefreshPriceIncreases();
+  // The ship removals of the project website (#285): at the times of `SITE_DATA.schedule`.
+  await maybeRefreshShipRemovals();
   // Which ships are flight ready, from the Ship Matrix (#252): at the minutes of the Pledge Store
   // items (`SHIP_MATRIX`), once a day without smart updates.
   await maybeRefreshShipStatus();

@@ -465,6 +465,11 @@
       "content": "Ships whose price is expected to rise, from the project website, with their dates",
       "missing": "Nothing uses them yet."
     },
+    "shipRemovals": {
+      "name": "Ship removals",
+      "content": "Ships taken out of the Pledge Store for good, from the project website, with their dates",
+      "missing": "Nothing uses them yet."
+    },
     "storeCredit": {
       "name": "Store credit",
       "content": "The account's store credit, as its account menu shows it",

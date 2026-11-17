@@ -130,7 +130,11 @@ const isReading = (id: StorageId) =>
 
 /** The events (#69), the expected price increases (#195), … come from the project website. */
 const fromWebsite = (id: StorageId) =>
-  id === 'events' || id === 'priceIncreases' || id === 'shipFacts' || id === 'warbondHistorySite';
+  id === 'events' ||
+  id === 'priceIncreases' ||
+  id === 'shipRemovals' ||
+  id === 'shipFacts' ||
+  id === 'warbondHistorySite';
 
 /** The storage reset last, shown below the table until the next reset. */
 const resetDone = ref<StorageId>();

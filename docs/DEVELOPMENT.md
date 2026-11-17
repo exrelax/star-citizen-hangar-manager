@@ -279,6 +279,11 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   the dev build from the working copy, checked by
   [`src/price-increases/price-increases.ts`](../src/price-increases/price-increases.ts). See
   [below](#editing-the-expected-price-increases) for how to edit it.
+- **Ship removals**: `data/ship-removals.json` lists the ships CIG takes out of the Pledge Store
+  for good, with the date and source of the announcement, for Ship Removals (#285). Read like the
+  price increases, by the same loader and on the same schedule, the dev build from the working
+  copy, checked by [`src/ship-removals/ship-removals.ts`](../src/ship-removals/ship-removals.ts).
+  See [below](#editing-the-ship-removals) for how to edit it.
 - **Warbond history**: `data/warbond-history.json` lists earlier warbond offers (`offers`: the
   ship's upgrade tool `id` and `name`, an optional `skuId`, `price`, `msrp`, `firstSeen`,
   `lastSeen` as ISO dates, optional `events` with `id` and `name`), offers seen before a browser
@@ -379,6 +384,34 @@ Each entry of `priceIncreases` is one ship (the values are an example):
   Anything else is left out.
 
 A ship can have several entries, e.g. one per step if its price rises twice.
+
+### Editing the ship removals
+
+Each entry of `shipRemovals` is one ship that CIG takes out of the Pledge Store for good (the
+values are an example):
+
+```json
+{
+  "ship": { "id": 15, "name": "F7C-M Super Hornet Mk I" },
+  "removedAt": "2026-11-27T16:00:00Z",
+  "source": "https://robertsspaceindustries.com/comm-link/transmission/…",
+  "event": "iae-2956"
+}
+```
+
+- **`ship.id`** and **`ship.name`** (required): the ship's id and name in RSI's Ship Matrix, looked
+  up like those of a [price increase](#editing-the-expected-price-increases).
+- **`removedAt`** (required): when the ship leaves the Pledge Store, as announced. A day
+  (`"2026-11-27"`) counts until that day is over (UTC); a time in UTC
+  (`"2026-11-27T16:00:00Z"`) until then. An entry whose date has passed is ignored, so old entries
+  can stay until the file is cleaned up.
+- **`source`** (required): where CIG announced it, as an `https` URL, e.g. a Comm-Link or a post
+  on Spectrum. The extension names it wherever it shows the removal: the date is an announcement.
+- **`event`** (optional): the `id` of the event in `events.json` the removal belongs to.
+
+An entry without a required field, or with one that doesn't fit, is left out. A ship has one
+entry: a second one for the same ship is ignored. Ships removed on the same date are told
+together.
 
 ## Configuration
 

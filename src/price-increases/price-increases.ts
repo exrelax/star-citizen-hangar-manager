@@ -1,10 +1,13 @@
 import { PRICE_INCREASES } from '@/config';
 import {
+  dayOrTime,
+  endOf,
   fileList,
   httpsUrl,
   localizedText,
   record,
   text,
+  type DayOrTime,
   type LocalizedText,
 } from '@/site-data/site-data';
 
@@ -17,12 +20,9 @@ import {
  */
 
 /** A point in time of the file: a day, or a time if the probable time is known. */
-export interface ExpectedTime {
-  /** Epoch milliseconds; for a day its start in UTC. */
-  at: number;
-  /** Only the day is known: shown without time, over when the day is (UTC). */
-  dayOnly?: true;
-}
+export type ExpectedTime = DayOrTime;
+
+export { endOf };
 
 export interface ExpectedPriceIncrease {
   ship: {
@@ -61,20 +61,6 @@ const MAX_NAME = 150;
 const MAX_ALIASES = 10;
 const MAX_RELATED = 50;
 
-const DAY = /^\d{4}-\d{2}-\d{2}$/;
-/** A time with its zone: without one it would depend on the user's. */
-const DATE_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2})$/;
-
-/** A day (`2026-11-16`) or a time with its zone (`2026-11-16T16:00:00Z`), else none. */
-function expectedTime(value: unknown): ExpectedTime | undefined {
-  if (typeof value !== 'string') return undefined;
-  const dayOnly = DAY.test(value);
-  if (!dayOnly && !DATE_TIME.test(value)) return undefined;
-  const at = Date.parse(dayOnly ? `${value}T00:00:00Z` : value);
-  if (!Number.isFinite(at)) return undefined;
-  return dayOnly ? { at, dayOnly } : { at };
-}
-
 const isPrice = (value: unknown): value is number =>
   typeof value === 'number' && Number.isFinite(value) && value > 0;
 
@@ -84,9 +70,6 @@ function expectedPrice(value: unknown): ExpectedPrice | undefined {
   if (!raw || !isPrice(raw.from) || !isPrice(raw.to) || raw.to <= raw.from) return undefined;
   return { from: raw.from, to: raw.to };
 }
-
-/** When a point in time is over: a time at once, a day at its end (UTC). */
-export const endOf = (time: ExpectedTime): number => (time.dayOnly ? time.at + DAY_MS : time.at);
 
 /** The valid names of a list, each once, at most `max`. */
 function names(value: unknown, max: number): string[] {
@@ -106,11 +89,11 @@ function parseEntry(entry: unknown): ExpectedPriceIncrease | undefined {
   if (!raw || !ship) return undefined;
   const id = ship.id;
   const name = text(ship.name, MAX_NAME);
-  const priceIncreaseAt = expectedTime(raw.priceIncreaseAt);
+  const priceIncreaseAt = dayOrTime(raw.priceIncreaseAt);
   if (typeof id !== 'number' || !Number.isSafeInteger(id) || id <= 0) return undefined;
   if (!name || !priceIncreaseAt) return undefined;
   const aliases = names(ship.aliases, MAX_ALIASES).filter((alias) => alias !== name);
-  const flightReadyAt = expectedTime(raw.flightReadyAt);
+  const flightReadyAt = dayOrTime(raw.flightReadyAt);
   const price = expectedPrice(raw.price);
   const relatedItems = names(
     Array.isArray(raw.relatedItems) ? raw.relatedItems.map((item) => record(item)?.name) : [],
