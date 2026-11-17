@@ -726,10 +726,10 @@ ship and the date. Expanded, the CCU tells how many CCUs to
 that ship are in your hangar and your buy back – the ways to get a ship to apply it to later.
 
 The **sidebar** tells each date in one notification with all ships removed on it (#290), and
-**Show in Pledge Store** opens the section. Ships with CCUs from them in your hangar or buy back are
-listed below it with their counts ("Constellation Mk IV Taurus: 3 CCUs from it, 1 to it"), each
+**Show in Pledge Store** opens the section. Below the text all ships of the date are listed: first
+those with CCUs from them in your hangar or buy back, with their counts ("Constellation Mk IV Taurus: 3 CCUs from it, 1 to it"), each
 triangle yellow-orange or – with fewer CCUs to the ship – red; the notification's icon takes the
-highest level. Its × closes it for these ships on this date: a new ship or another date brings it
+highest level; then the others by name. Its × closes it for these ships on this date: a new ship or another date brings it
 back. It can be turned off in the settings ("Ships leaving the Pledge Store").
 
 ## Paint Discount Consultant

@@ -30,7 +30,6 @@ import {
   noteDetails,
   noteText,
   openNotifications,
-  shortList,
   type AppNotification,
 } from '@/notifications/notifications';
 import { checkOffDemo, demoNotificationsItem } from '@/demo/demo-notes';
@@ -397,15 +396,20 @@ function dismissRemovalNote(note: RemovalNote) {
   );
   void item.setValue(withDismissed(dismissed, note.key, ahead));
 }
+/** One ship: its name; several: their count, each listed below. */
 function removalText(note: RemovalNote) {
   const when = formatExpectedTime(note.removedAt, locale.value);
-  const names = note.ships.map((removal) => removal.ship.name);
-  return i18n.n('notifications.shipRemovals', names.length, [
-    shortList(names, locale.value),
+  return i18n.n('notifications.shipRemovals', note.ships.length, [
+    note.ships[0]!.ship.name,
     when,
-    number.value.format(names.length),
+    number.value.format(note.ships.length),
   ]);
 }
+/** The ships of the date without CCUs from them, by name. */
+const removalOthers = (note: RemovalNote) => {
+  const warned = new Set(note.warnings.map((warning) => warning.removal.ship.id));
+  return note.ships.filter((removal) => !warned.has(removal.ship.id));
+};
 const removalWarningText = (warning: RemovalWarning) =>
   i18n.n('notifications.shipRemovalCcus', warning.from, [
     warning.removal.ship.name,
@@ -828,8 +832,12 @@ async function move(box: Box, step: -1 | 1) {
             >
               <SvgIcon name="xmark" />
             </button>
-            <!-- The ships with CCUs from them, each in the color of its level (#287). -->
-            <ul v-if="note.warnings.length" class="shm-sidebar-removal-warnings">
+            <!-- Every ship of the date: those with CCUs from them first, each in the color of its
+                 level (#287), then the others by name. -->
+            <ul
+              v-if="note.ships.length > 1 || note.warnings.length"
+              class="shm-sidebar-removal-warnings"
+            >
               <li
                 v-for="warning in note.warnings"
                 :key="warning.removal.ship.id"
@@ -837,6 +845,9 @@ async function move(box: Box, step: -1 | 1) {
               >
                 <SvgIcon name="triangle-exclamation" />
                 <span>{{ removalWarningText(warning) }}</span>
+              </li>
+              <li v-for="ship in removalOthers(note)" :key="ship.ship.id" class="is-plain">
+                <span>{{ ship.ship.name }}</span>
               </li>
             </ul>
             <div v-mark-wrapped class="shm-sidebar-actions">
@@ -1366,15 +1377,24 @@ async function move(box: Box, step: -1 | 1) {
   list-style: none;
 }
 
+/* Its own line height and margins: RSI's page sets those of every list item. */
 .shm-sidebar-removal-warnings li {
   display: flex;
   gap: 6px;
   align-items: baseline;
+  margin: 0;
   color: var(--shm-text-secondary);
+  font-size: calc(11px * var(--shm-font-scale));
+  line-height: 1.35;
 }
 
 .shm-sidebar-removal-warnings .shm-icon {
   flex: none;
+}
+
+/* A ship without CCUs from it: no icon, its name in line with the warned ships' names. */
+.shm-sidebar-removal-warnings li.is-plain {
+  padding-left: calc(1em + 6px);
 }
 
 /* Between the notifications as within their list (`gap`); for the list, see the title's space. */

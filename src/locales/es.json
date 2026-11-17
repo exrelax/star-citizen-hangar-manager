@@ -470,7 +470,7 @@
     "shipRemovals": {
       "name": "Naves retiradas",
       "content": "Las naves que se retiran definitivamente de la Pledge Store, desde el sitio web del proyecto, con sus fechas",
-      "missing": "Aún no lo usa nada."
+      "missing": "Hasta entonces, ni la pestaña Pledge Store, ni My Hangar, ni la barra lateral muestran las naves que dejan la Pledge Store."
     },
     "storeCredit": {
       "name": "Crédito de tienda",
@@ -1263,7 +1263,7 @@
     "dismissAdvisorHint": "Quita esta notificación para esta subida de precio. Una subida nueva o aplazada vuelve a mostrarse.",
     "shipRemovals": {
       "one": "La $1 deja la Pledge Store el $2.",
-      "other": "$3 naves dejan la Pledge Store el $2: $1."
+      "other": "$3 naves dejan la Pledge Store el $2:"
     },
     "shipRemovalCcus": {
       "one": "$1: $2 CCU desde ella, $3 hacia ella",

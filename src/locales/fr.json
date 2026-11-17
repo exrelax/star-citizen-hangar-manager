@@ -470,7 +470,7 @@
     "shipRemovals": {
       "name": "Vaisseaux retirés",
       "content": "Les vaisseaux retirés définitivement du Pledge Store, depuis le site du projet, avec leurs dates",
-      "missing": "Rien ne les utilise encore."
+      "missing": "D’ici là, ni l’onglet Pledge Store, ni My Hangar, ni la barre latérale ne montrent les vaisseaux qui quittent le Pledge Store."
     },
     "storeCredit": {
       "name": "Crédit boutique",
@@ -1263,7 +1263,7 @@
     "dismissAdvisorHint": "Retire cette notification pour cette hausse de prix. Une hausse nouvelle ou déplacée s’affiche à nouveau.",
     "shipRemovals": {
       "one": "Le $1 quitte le Pledge Store le $2.",
-      "other": "$3 vaisseaux quittent le Pledge Store le $2 : $1."
+      "other": "$3 vaisseaux quittent le Pledge Store le $2 :"
     },
     "shipRemovalCcus": {
       "one": "$1 : $2 CCU depuis lui, $3 vers lui",
