@@ -712,6 +712,14 @@ buy back price (its source in a tooltip; without a known price last), the base s
 whether it is always available and the count – CCUs RSI can't sell again are left out. Bought back
 before the increase, they keep their price and gain the upgrade value.
 
+Below them, whichever view is shown, the **ships leaving the Pledge Store** (#288, part of Ship
+Removals #285): ships CIG takes out of the store for good, e.g. the Constellation Mk IV when its
+retirement window ends. They come from the project website's list and are grouped by date ("Jan
+27, 2027 · 4 ships"); each ship shows the date, the countdown ("Removal: 71 days", in the last
+hour "46:12") and a link to CIG's announcement. A CCU from such a ship can afterwards only be
+applied to a pledge with the ship you already have, or get with a CCU to it. A ship disappears
+once its date is past. The demo mode shows them only with "Show real Pledge Store data".
+
 ## Paint Discount Consultant
 
 RSI gives a volume discount on paints in the cart: 15 % from 2 paints, 20 % from 3, 25 % from 5,
