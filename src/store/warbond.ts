@@ -3,6 +3,7 @@ import type { BuybackView } from '@/buyback/buyback-view';
 import type { PledgeView } from '@/hangar/pledge-view';
 import { createPriceLookup, type PledgeDiscount, type ShipPrice } from '@/hangar/ship-prices';
 import type { Ship } from '@/ships/ships';
+import { ccuShips } from '@/hangar/upgrade-log';
 import { offerHistory, type OfferHistory, type WarbondHistorySnapshot } from './warbond-history';
 
 /*
@@ -71,6 +72,8 @@ export interface WarbondOffer {
   bases: BaseShip[];
   /** CCUs of the hangar overlapping the span of every warbond CCU (warbond price to msrp). */
   owned: OwnedCcu[];
+  /** How many CCUs of the hangar start from the warbond's ship (#399); the buy back's don't count. */
+  fromShip: number;
   /** Since when it is offered, and the earlier offers of its ship (#4). */
   history: OfferHistory;
 }
@@ -204,6 +207,24 @@ export function ownedCounts(offer: Pick<WarbondOffer, 'target' | 'owned'>) {
   return { sameShip, others };
 }
 
+/**
+ * How many CCUs of the hangar have `ship` as base ship (#399), matched like the ship removals' CCUs
+ * (#287): by the base ship RSI names, else by the CCU's title, through the upgrade tool's names.
+ */
+export function hangarCcusFrom(
+  hangar: readonly Pick<PledgeView, 'isCcu' | 'title' | 'upgrade'>[],
+  lookup: ShipLookup,
+  ship: Pick<Ship, 'id' | 'name'>,
+): number {
+  return hangar.filter((pledge) => {
+    if (!pledge.isCcu) return false;
+    const from = pledge.upgrade?.matchItems[0]?.name ?? ccuShips(pledge.title)?.from;
+    if (!from) return false;
+    const found = lookup.shipOf(from);
+    return found ? found.id === ship.id : from === ship.name;
+  }).length;
+}
+
 /** The warbond offers with their cheapest CCUs and the hangar's CCUs that collide with them. */
 export function buildWarbondOffers(
   data: StoreData,
@@ -224,6 +245,7 @@ export function buildWarbondOffers(
           low: target.price,
           high: target.ship.msrp,
         }),
+        fromShip: hangarCcusFrom(hangar, lookup, target.ship),
         history: offerHistory(data.history, {
           shipId: target.ship.id,
           skuId: target.skuId,

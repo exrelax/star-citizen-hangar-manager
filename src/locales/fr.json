@@ -592,6 +592,8 @@
     "inHangar": "Au hangar :",
     "sameShipBadge": "$1 vers $2",
     "sameShipBadgeHint": "CCU de ton hangar directement vers $1",
+    "fromShipBadge": "$1 depuis $2",
+    "fromShipBadgeHint": "CCU de ton hangar depuis $1 vers un autre vaisseau",
     "collidingBadge": "$1 incompatibles",
     "collidingBadgeHint": "Autres CCU de ton hangar dans cette fourchette de prix : ils ne peuvent pas être enchaînés avec ce CCU warbond (détails en dépliant)",
     "cheapestTitle": "CCU warbond les moins chers",

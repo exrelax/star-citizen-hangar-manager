@@ -17,7 +17,8 @@ import { createRandom } from './random';
  * The warbond CCUs of the demo's Pledge Store tab (#130): offers of its own instead of the
  * Pledge Store's, so the tab shows them on any account and with either source of the demo hangar
  * (#298) – for ships the demo hangar has CCUs to, so own CCUs in the same price range show next to
- * them, else for the most expensive ships of the catalog in range.
+ * them, else for the most expensive ships of the catalog in range; and one for a ship its CCUs only
+ * start from (#399).
  */
 export function demoStoreData(
   catalog: DemoCatalog,
@@ -43,11 +44,14 @@ export function demoStoreData(
     skuId: ship.id,
     price: ship.msrp - warbondDiscount(random, `warbond:${ship.id}`, ship.msrp),
   });
-  const warbonds = targets.map(offerOf);
+  // One more for a ship the hangar's CCUs start from but none go to (#399): its "x from" badge
+  // alone, with as few other CCUs in its price range as possible.
+  const fromShip = fromOnlyShip(catalog, hangar, targets, (ship) => offerOf(ship).price);
+  const warbonds = [...targets, ...(fromShip ? [fromShip] : [])].map(offerOf);
   // Other ships for the expired offers of the history (#297), in a fixed order.
   // Spread over the catalog, so they come from several manufacturers for the search.
   const others = catalog.ships
-    .filter((ship) => !targets.includes(ship) && inRange(ship))
+    .filter((ship) => !targets.includes(ship) && ship !== fromShip && inRange(ship))
     .sort((a, b) => a.id - b.id);
   const step = Math.max(1, Math.floor(others.length / EXPIRED_OFFERS));
   const expired = others
@@ -59,6 +63,40 @@ export function demoStoreData(
     warbonds,
     history: demoWarbondHistory(warbonds, expired, now, events),
   };
+}
+
+/**
+ * A ship in the warbond range the hangar's CCUs start from, but none go to, and not one of
+ * `taken`: the one with the fewest other CCUs of the hangar across its warbond price range.
+ */
+function fromOnlyShip(
+  catalog: DemoCatalog,
+  hangar: readonly Pick<Pledge, 'upgrade'>[],
+  taken: readonly Ship[],
+  warbondPrice: (ship: Ship) => number,
+): Ship | undefined {
+  const priceOf = (name: string | undefined) =>
+    catalog.ships.find((ship) => ship.name === name)?.msrp;
+  const spans = hangar.flatMap((pledge) => {
+    const from = pledge.upgrade?.matchItems[0]?.name;
+    const to = pledge.upgrade?.targetItems[0]?.name;
+    const low = priceOf(from);
+    const high = priceOf(to);
+    return low === undefined || high === undefined ? [] : [{ from, to, low, high }];
+  });
+  const targets = new Set(spans.map((span) => span.to));
+  const candidates = [...new Set(spans.map((span) => span.from))]
+    .map((name) => catalog.ships.find((ship) => ship.name === name))
+    .filter(
+      (ship): ship is Ship =>
+        !!ship &&
+        isWarbondTargetPrice(ship.msrp) &&
+        !targets.has(ship.name) &&
+        !taken.includes(ship),
+    );
+  const crossing = (ship: Ship) =>
+    spans.filter((span) => span.low < ship.msrp && span.high > warbondPrice(ship)).length;
+  return candidates.sort((a, b) => crossing(a) - crossing(b) || a.id - b.id)[0];
 }
 
 const DAY = 24 * 60 * 60 * 1000;
@@ -113,7 +151,7 @@ export function demoWarbondHistory(
   const expo = events.find((event) => event.eventStart <= now && now < event.eventEnd);
   const running = expo && [{ id: expo.id, name: expo.name }];
   const sinceExpo = expo ? (now - expo.eventStart) / DAY : 0.04;
-  const [first, second, third] = warbonds;
+  const [first, second, third, fourth] = warbonds;
   const sightings: WarbondSighting[] = [];
   if (first) {
     sightings.push(
@@ -130,6 +168,8 @@ export function demoWarbondHistory(
     );
   }
   if (third) sightings.push(sighting(third, third.price, sinceExpo / 2, 0, running));
+  // The ship the hangar's CCUs start from (#399): seen for a day, without an event.
+  if (fourth) sightings.push(sighting(fourth, fourth.price, 1, 0));
 
   // With the earlier offers of the current ships above (64 and 120 days ago), the expired ones
   // are 3 in the event's period, 6 within 90 days and 10 within 180 days.
