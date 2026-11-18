@@ -385,7 +385,7 @@
     "rsiPages": "Site de RSI",
     "rsiPagesIntro": "Ajouts aux pages de RSI.",
     "upgradeDialogAlwaysAvailable": "Afficher les vaisseaux toujours disponibles dans la fenêtre d’upgrade de RSI",
-    "upgradeDialogAlwaysAvailableHint": "Marque les vaisseaux cibles toujours disponibles dans le Pledge Store, pour que tu puisses y accéder plus tard et appliquer un CCU. D’après les données du site du projet (Star Citizen Wiki)."
+    "upgradeDialogAlwaysAvailableHint": "Marque les vaisseaux de base et cibles toujours disponibles dans le Pledge Store, pour que tu puisses y accéder plus tard et appliquer un CCU. D’après les données du site du projet (Star Citizen Wiki)."
   },
   "storage": {
     "title": "Données enregistrées",

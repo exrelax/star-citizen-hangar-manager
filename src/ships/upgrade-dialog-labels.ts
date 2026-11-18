@@ -1,14 +1,16 @@
 import type { ShipFactsLookup } from './ship-facts';
 
 /*
- * The label "Always available" in RSI's own ship upgrade dialog (#401): on each target ship the
- * ship facts of the website (#109) list as always available in the Pledge Store now. The dialog is
+ * The label "Always available" in RSI's own ship upgrade dialog (#401): on each ship, base ship
+ * ("From") and target ship ("To"), the ship facts of the website (#109) list as always available
+ * in the Pledge Store now. The dialog is
  * RSI's (a React overlay, November 2026), opened on "My Gear", in the Pledge Store and from the
  * Hangar Manager. The label is added from outside, watching the dialog, and never changes it
  * otherwise:
  *
- *   .ShipUpgradeModal .ShipSelector.to       the list of target ships (virtualized: items are
- *     .ShipItem[data-store-action-label]     reused for other ships while scrolling)
+ *   .ShipUpgradeModal .ShipSelector.from     the lists of base and target ships, or the ship
+ *   .ShipUpgradeModal .ShipSelector.to       chosen (virtualized: items are reused for other
+ *     .ShipItem[data-store-action-label]     ships while scrolling)
  *       "Select Mustang Alpha (id: 65) as to ship"
  *       .ShipItem-general-information-name   "Mustang Alpha"
  *       .ShipItem-general-information-status-and-stock   "in stock", where the label goes
@@ -17,22 +19,23 @@ import type { ShipFactsLookup } from './ship-facts';
  */
 
 const MODAL = '.ShipUpgradeModal';
-const TARGETS = '.ShipSelector.to';
+/** Both sides of the dialog, base ships ("From") and target ships ("To"). */
+const SELECTORS = '.ShipSelector.from, .ShipSelector.to';
 const ITEM = '.ShipItem';
 const NAME = '.ShipItem-general-information-name';
 const SPOT = '.ShipItem-general-information-status-and-stock';
 const LABEL_CLASS = 'shm-always-available-label';
 
-/** How long an opened dialog may lack its target list before it counts as changed markup. */
+/** How long an opened dialog may lack its ship lists before it counts as changed markup. */
 const MISMATCH_AFTER_MS = 5000;
 
-/** A target ship of the dialog: RSI's id where the item names it, its name. */
+/** A ship of the dialog: RSI's id where the item names it, its name. */
 export interface UpgradeTarget {
   id?: number;
   name?: string;
 }
 
-/** The target ship of an item of the dialog's target list. */
+/** The ship of an item of the dialog's lists. */
 export function targetOf(item: Element): UpgradeTarget {
   const label = item.getAttribute('data-store-action-label') ?? '';
   const id = /\(id:\s*(\d+)\)/.exec(label)?.[1];
@@ -43,7 +46,7 @@ export function targetOf(item: Element): UpgradeTarget {
 const normalized = (name: string) => name.toLowerCase().replace(/\s+/g, ' ').trim();
 
 /**
- * Whether a target ship is always available now: by RSI's id, which is the ship facts' id, else by
+ * Whether a ship of the dialog is always available now: by RSI's id, which is the ship facts' id, else by
  * its name (the facts' name or its wiki name). Unknown ships and no facts: not.
  */
 export function createAlwaysAvailableCheck(
@@ -72,11 +75,14 @@ export interface UpgradeDialogOptions {
   onMismatch: (reason: string) => void;
 }
 
-/** Adds, updates or removes the labels of every target ship shown now. */
+/** Adds, updates or removes the labels of every ship shown now, on both sides. */
 export function applyLabels(root: ParentNode, options: UpgradeDialogOptions): void {
   const enabled = options.enabled();
   const texts = enabled ? options.texts() : undefined;
-  for (const item of root.querySelectorAll(`${MODAL} ${TARGETS} ${ITEM}`)) {
+  const items = [...root.querySelectorAll(MODAL)].flatMap((modal) =>
+    [...modal.querySelectorAll(SELECTORS)].flatMap((side) => [...side.querySelectorAll(ITEM)]),
+  );
+  for (const item of items) {
     const existing = item.querySelector<HTMLElement>(`.${LABEL_CLASS}`);
     const target = targetOf(item);
     const show = !!texts && options.isAlwaysAvailable(target);
@@ -96,7 +102,7 @@ export function applyLabels(root: ParentNode, options: UpgradeDialogOptions): vo
 }
 
 /**
- * Watches the page for RSI's ship upgrade dialog and keeps the labels of its target ships; `update`
+ * Watches the page for RSI's ship upgrade dialog and keeps the labels of its ships; `update`
  * applies a changed setting or ship facts at once. Returns the stop function.
  */
 export function watchUpgradeDialog(
@@ -119,14 +125,14 @@ export function watchUpgradeDialog(
       return;
     }
     openedAt ??= Date.now();
-    const targets = modal.querySelector(TARGETS);
-    if (!targets) {
-      if (Date.now() - openedAt > MISMATCH_AFTER_MS) mismatch('no list of target ships');
+    const sides = [...modal.querySelectorAll(SELECTORS)];
+    if (!sides.length) {
+      if (Date.now() - openedAt > MISMATCH_AFTER_MS) mismatch('no lists of ships');
       return;
     }
-    const items = [...targets.querySelectorAll(ITEM)];
+    const items = sides.flatMap((side) => [...side.querySelectorAll(ITEM)]);
     if (items.length && items.every((item) => !targetOf(item).id && !targetOf(item).name)) {
-      mismatch('no target ship id or name');
+      mismatch('no ship id or name');
     } else if (items.length && !items.some((item) => item.querySelector(SPOT))) {
       mismatch('no place for the label');
     }

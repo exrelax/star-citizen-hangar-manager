@@ -97,7 +97,7 @@ describe('targetOf and the check', () => {
 });
 
 describe('applyLabels', () => {
-  it('labels the always available target ships only, not the base ships', () => {
+  it('labels the always available ships on both sides, base and target ships', () => {
     dialog(
       item('Mustang Alpha', 65) + item('Cutlass Steel', 228) + item('MOLE'),
       item('Mustang Alpha', 65),
@@ -107,7 +107,9 @@ describe('applyLabels', () => {
     const label = document.querySelector('.ShipSelector.to .shm-always-available-label')!;
     expect(label.textContent).toBe('Always available');
     expect(label.getAttribute('title')).toBe('From the ship facts');
-    expect(document.querySelector('.ShipSelector.from .shm-always-available-label')).toBeNull();
+    expect(
+      document.querySelector('.ShipSelector.from .shm-always-available-label')?.textContent,
+    ).toBe('Always available');
   });
 
   it('follows an item reused for another ship, and removes the labels when turned off', () => {

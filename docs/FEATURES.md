@@ -967,8 +967,8 @@ order of the list:
   show is disabled). **New demo hangar** makes another random one; **Reset demo** puts
   these settings back and clears the demo's marks. Changes apply at once.
 - **RSI website** (additions to RSI's own pages): **Show always available ships in RSI's ship
-  upgrade dialog** (#401, on by default) labels each target ship of RSI's ship upgrade dialog
-  that the ship facts list as always available in the Pledge Store ("Always available", with its
+  upgrade dialog** (#401, on by default) labels each ship of RSI's ship upgrade dialog – on the
+  left ("From") and on the right ("To") – that the ship facts list as always available in the Pledge Store ("Always available", with its
   source as tooltip) – on "My Gear", in the Pledge Store and from the Hangar Manager. Ships are
   matched by RSI's ship id, else by name; without the ship facts, or when RSI changed the dialog,
   no label shows (and the error log notes `PARSE-UPGRADE-DIALOG`).

@@ -385,7 +385,7 @@
     "rsiPages": "Web de RSI",
     "rsiPagesIntro": "Añadidos a las páginas de RSI.",
     "upgradeDialogAlwaysAvailable": "Mostrar las naves siempre disponibles en el diálogo de mejoras de RSI",
-    "upgradeDialogAlwaysAvailableHint": "Marca las naves de destino siempre disponibles en la Pledge Store, para que puedas conseguirlas más tarde y aplicar un CCU. Según los datos de naves de la web del proyecto (Star Citizen Wiki)."
+    "upgradeDialogAlwaysAvailableHint": "Marca las naves base y de destino siempre disponibles en la Pledge Store, para que puedas conseguirlas más tarde y aplicar un CCU. Según los datos de naves de la web del proyecto (Star Citizen Wiki)."
   },
   "storage": {
     "title": "Datos guardados",
