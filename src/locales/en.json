@@ -587,6 +587,7 @@
     "openWarbondUpgrade": "Warbond upgrade",
     "upgradeDemo": "Not available in demo mode: RSI’s dialog shows your real ships and CCUs.",
     "openUpgradeHint": "Opens RSI's ship upgrade dialog with the $1 (Warbond Edition) as target",
+    "openUpgradeAnyHint": "Opens RSI’s ship upgrade dialog, as in “My Gear”",
     "openUpgradeFromHint": "Opens RSI’s ship upgrade dialog with the $1 as base ship and the $2 as target",
     "inHangar": "In hangar:",
     "sameShipBadge": "$1 to $2",

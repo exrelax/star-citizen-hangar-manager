@@ -13,12 +13,16 @@ import { computed } from 'vue';
  * RSI's own opener, a click handler on the page for `js-open-ship-upgrades`. In the demo they are
  * disabled: RSI's dialog shows the real account's ships and CCUs.
  *
+ * Without a ship (My Hangar, #374) a single "Ship upgrade" opens the dialog without a preset base
+ * or target ship, as the button of RSI's "My Gear" does.
+ *
  * Rows ignore clicks inside `.shm-upgrade-buttons` for their toggle.
  */
 
 const props = defineProps<{
-  shipId: number;
-  shipName: string;
+  /** The target ship; without one the dialog opens without a preset. */
+  shipId?: number;
+  shipName?: string;
   /** The standard SKU ("Ship upgrade"). */
   skuId?: number;
   /** The warbond SKU ("Warbond upgrade"). */
@@ -29,13 +33,23 @@ const demo = useDemoContext();
 
 interface UpgradeButton {
   key: string;
-  skuId: number;
+  skuId?: number;
   icon: IconName;
   label: string;
   hint: string;
 }
 
 const buttons = computed(() => {
+  if (props.shipId === undefined) {
+    return [
+      {
+        key: 'any',
+        icon: 'basket-shopping',
+        label: i18n.t('store.openUpgrade'),
+        hint: i18n.t('store.openUpgradeAnyHint'),
+      } satisfies UpgradeButton,
+    ];
+  }
   const list: UpgradeButton[] = [];
   if (props.warbondSkuId !== undefined) {
     list.push({
@@ -43,7 +57,7 @@ const buttons = computed(() => {
       skuId: props.warbondSkuId,
       icon: 'tag',
       label: i18n.t('store.openWarbondUpgrade'),
-      hint: i18n.t('store.openUpgradeHint', [props.shipName]),
+      hint: i18n.t('store.openUpgradeHint', [props.shipName ?? '']),
     });
   }
   if (props.skuId !== undefined) {
@@ -52,7 +66,7 @@ const buttons = computed(() => {
       skuId: props.skuId,
       icon: 'basket-shopping',
       label: i18n.t('store.openUpgrade'),
-      hint: i18n.t('ccusToSecure.openUpgradeHint', [props.shipName]),
+      hint: i18n.t('ccusToSecure.openUpgradeHint', [props.shipName ?? '']),
     });
   }
   return list;

@@ -32,6 +32,7 @@ import { i18n } from '@/i18n';
 import SettingsPanel from '@/settings/SettingsPanel.vue';
 import { REMOVAL_CCUS, useRemovalCcus } from '@/ship-removals/use-removal-ccus';
 import StoreTab from '@/store/components/StoreTab.vue';
+import ShipUpgradeButtons from '@/store/components/ShipUpgradeButtons.vue';
 import CcuAdviceOverlay from '@/price-increases/components/CcuAdviceOverlay.vue';
 import { ccuAdviceRequest, closeCcuAdvice } from '@/price-increases/ccu-advice-request';
 import { checkRunningPlan } from '@/store/paint-consultant/plan-check';
@@ -253,6 +254,11 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
 
 <!-- Reuses the markup classes of the original hangar page so the view inherits the site's look. -->
 <template>
+  <!--
+    RSI's ship upgrade dialog without a preset (#374), as the button of "My Gear": above the manager on
+    the right, outside the tabs, so every tab has it.
+  -->
+  <ShipUpgradeButtons class="shm-page-actions" />
   <div class="top">
     <!--
       The refresh button with the state of the list (the hangar's in the settings). Before the title, so
