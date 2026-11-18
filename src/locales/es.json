@@ -1475,6 +1475,19 @@
     "limitedSaleEvent": {
       "one": "Puede que ya no esté a la venta cuando termine $1, el $2.",
       "other": "Puede que ya no estén a la venta cuando termine $1, el $2."
+    },
+    "tableTitle": "Tus CCU desde y hacia la $1",
+    "colHangar": "Hangar",
+    "colBuyback": "Buy back",
+    "colTogether": "Total",
+    "rowFrom": "CCU desde ella",
+    "rowTo": "CCU hacia ella",
+    "summaryNone": "No tienes CCU desde o hacia la $1.",
+    "summaryNoneFrom": "No tienes CCU desde la $1: nada que asegurar.",
+    "summaryEnough": "Suficiente: por cada CCU desde la $1 hay un CCU hacia ella.",
+    "summaryMissing": {
+      "one": "Falta $1 CCU hacia la $2 para los CCU desde ella. Asegúralo antes del $3.",
+      "other": "Faltan $1 CCU hacia la $2 para los CCU desde ella. Asegúralos antes del $3."
     }
   }
 }

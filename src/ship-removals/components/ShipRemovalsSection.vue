@@ -5,7 +5,9 @@ import { countdown, formatExpectedTime } from '@/price-increases/price-increase-
 import type { Ship } from '@/ships/ships';
 import { useCountdownNow } from '@/shared/use-countdown-now';
 import { vTooltip } from '@/shared/tooltip/tooltip';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import type { RemovalCcus } from '../removal-ccus';
+import RemovalCcuTable from './RemovalCcuTable.vue';
 import { limitedSaleNote } from '../removal-availability';
 import { removalsByDate, type ShipRemoval } from '../ship-removals';
 import { useProvidedRemovalCcus } from '../use-removal-ccus';
@@ -14,7 +16,7 @@ import { useProvidedRemovalCcus } from '../use-removal-ccus';
  * The ships CIG takes out of the Pledge Store for good (#288, part of Ship Removals #285), in the
  * Pledge Store tab: grouped by date, each ship with the date, a countdown (as the price increases'
  * badges, #195) and the source of the announcement. Built from the rows of the manager's lists, so
- * it fits every theme; nothing to expand. Notifications open the tab at its title
+ * it fits every theme. Opened, a ship shows the CCUs from and to it (#380). Notifications open the tab at its title
  * (`shm-store-removals-title`).
  */
 
@@ -32,6 +34,26 @@ const imageOf = computed(() => new Map(props.ships.map((ship) => [ship.id, ship.
 const removalState = useProvidedRemovalCcus();
 const limited = (removal: ShipRemoval) =>
   limitedSaleNote([removal], removalState.value.limited, locale.value);
+
+/** The ships opened (#380): each shows its CCUs from and to it. */
+const expanded = ref(new Set<number>());
+function toggle(id: number) {
+  const next = new Set(expanded.value);
+  if (!next.delete(id)) next.add(id);
+  expanded.value = next;
+}
+/** Clicks on the row toggle it, except on its links (the source). */
+function toggleFrom(event: MouseEvent, id: number) {
+  if ((event.target as Element).closest('a')) return;
+  toggle(id);
+}
+/** The CCUs from and to a ship, as #287 counts them; none outside the manager view. */
+const entryOf = (removal: ShipRemoval): RemovalCcus =>
+  removalState.value.list.find((entry) => entry.removal.ship.id === removal.ship.id) ?? {
+    removal,
+    from: [],
+    to: [],
+  };
 
 const when = (removal: ShipRemoval) => formatExpectedTime(removal.removedAt, locale.value);
 const label = (removal: ShipRemoval) =>
@@ -74,8 +96,9 @@ const hint = (removal: ShipRemoval) =>
           v-for="removal in group.removals"
           :key="removal.ship.id"
           class="shm-row shm-removal"
+          :class="{ 'is-expanded': expanded.has(removal.ship.id) }"
         >
-          <div class="shm-row-summary">
+          <div class="shm-row-summary" @click="toggleFrom($event, removal.ship.id)">
             <span class="shm-thumb">
               <img
                 v-if="imageOf.get(removal.ship.id)"
@@ -113,6 +136,25 @@ const hint = (removal: ShipRemoval) =>
                 {{ label(removal) }}
               </span>
             </span>
+            <button
+              v-tooltip="i18n.t('pledge.toggleDetails')"
+              type="button"
+              class="shm-chevron"
+              :aria-expanded="expanded.has(removal.ship.id)"
+              :aria-label="i18n.t('pledge.toggleDetails')"
+              @click.stop="toggle(removal.ship.id)"
+            >
+              <SvgIcon name="chevron-right" />
+            </button>
+          </div>
+          <!-- The CCUs from and to the ship (#380): whether to secure CCUs to it before. -->
+          <div v-if="expanded.has(removal.ship.id)" class="shm-details shm-removal-details">
+            <div class="shm-details-main">
+              <h4 class="shm-warbond-heading">
+                {{ i18n.t('shipRemovals.tableTitle', [removal.ship.name]) }}
+              </h4>
+              <RemovalCcuTable :entry="entryOf(removal)" />
+            </div>
           </div>
         </article>
       </div>
@@ -130,15 +172,6 @@ const hint = (removal: ShipRemoval) =>
 
 .shm-store-removals .shm-store-intro {
   margin-bottom: 4px;
-}
-
-/* Nothing to open: no pointer, no hover. */
-.shm-removal .shm-row-summary {
-  cursor: default;
-}
-
-.shm-removal .shm-row-summary:hover {
-  background: none;
 }
 
 /* Plain text, not the monospace of the meta lines (IDs, prices, dates). */
@@ -168,6 +201,11 @@ const hint = (removal: ShipRemoval) =>
 .shm-removal-source:hover,
 .shm-removal-source:focus-visible {
   text-decoration: underline;
+}
+
+/* No buttons under the image here: the content spans both columns, as in SecureRow.vue. */
+.shm-removal-details .shm-details-main {
+  grid-column: 1 / -1;
 }
 
 /* As the warbond CCUs' heading (WarbondRow.vue); Modern Hangar adjusts it in modern.css. */

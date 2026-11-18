@@ -717,7 +717,9 @@ Removals #285): ships CIG takes out of the store for good, e.g. the Constellatio
 retirement window ends. They come from the project website's list and are grouped by date ("Jan
 27, 2027 · 4 ships"); each ship shows the date, the countdown ("Removal: 71 days", in the last
 hour "46:12") and a link to CIG's announcement. A CCU from such a ship can afterwards only be
-applied to a pledge with the ship you already have, or get with a CCU to it. A ship disappears
+applied to a pledge with the ship you already have, or get with a CCU to it. Opened, a ship shows
+your CCUs from and to it (#380) in a table – in the hangar, in the buy back and together – and
+whether that is enough, or how many CCUs to it are missing and until when to secure them. A ship disappears
 once its date is past. The demo mode shows them only with "Show real Pledge Store data".
 
 In **My Hangar**, a CCU whose base ship leaves the Pledge Store shows a yellow-orange warning
