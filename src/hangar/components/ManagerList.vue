@@ -439,42 +439,6 @@ const countLabel = computed(() =>
   margin-top: 20px;
 }
 
-.shm-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/*
- * One category per line: its label, then its buttons. The labels share one column as wide as the
- * longest (e.g. "Propriétés"), so the buttons of all groups start at the same point.
- */
-.shm-filters {
-  display: grid;
-  grid-template-columns: max-content minmax(0, 1fr);
-  gap: 8px 10px;
-}
-
-.shm-filter-group {
-  display: grid;
-  grid-column: 1 / -1;
-  grid-template-columns: subgrid;
-  align-items: center;
-}
-
-.shm-filter-group-label {
-  color: var(--shm-text-muted);
-  font-size: calc(11px * var(--shm-font-scale));
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.shm-filter-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
 .shm-count {
   display: flex;
   flex-wrap: wrap;

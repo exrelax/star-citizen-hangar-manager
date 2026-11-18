@@ -668,8 +668,8 @@ dialog. Counts of 0 show as "–", lists not read yet say so. A click on a colum
 a second click reverses the order (by default by value, lowest first, #406); a search finds ships
 by name and manufacturer, a price range (slider and number fields) and the filters "Always
 available", "On sale" and "Warbond" narrow the table, and the count says how many of all ships
-show. The columns of the hangar are tinted a little darker, those of the buy back a little
-lighter. The head and the ship's name stay in
+show. The columns of the hangar are tinted a little lighter, those of the buy back a little
+darker, with a faint line between the columns of each. The head and the ship's name stay in
 view while the table scrolls, also sideways on narrow windows; dollar amounts follow the setting
 that hides them. In the demo mode the counts are the demo's and the upgrade buttons are disabled.
 

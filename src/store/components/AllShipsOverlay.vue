@@ -97,6 +97,16 @@ const FILTER_LABELS: Record<AllShipsFilter, MessageKey> = {
   onSale: 'allShips.filterOnSale',
   warbond: 'allShips.filterWarbond',
 };
+/** How many ships each filter would keep, as the chips of My Hangar show it. */
+const filterCounts = computed(
+  () =>
+    Object.fromEntries(
+      ALL_SHIPS_FILTERS.map((filter) => [
+        filter,
+        allShipsView(rows.value, { ...queryAll.value, filters: new Set([filter]) }).length,
+      ]),
+    ) as Record<AllShipsFilter, number>,
+);
 function toggleFilter(filter: AllShipsFilter) {
   const next = new Set(filters.value);
   if (!next.delete(filter)) next.add(filter);
@@ -109,6 +119,14 @@ const clamp = (value: number, low: number, high: number) =>
 const setMin = (value: number) => (min.value = clamp(value, bounds.value.min, max.value));
 const setMax = (value: number) => (max.value = clamp(value, min.value, bounds.value.max));
 const numberOf = (event: Event) => (event.target as HTMLInputElement).valueAsNumber;
+
+/** The whole range without filters, for the chips' counts. */
+const queryAll = computed(() => ({
+  search: '',
+  min: bounds.value.min,
+  max: bounds.value.max,
+  filters: new Set<AllShipsFilter>(),
+}));
 
 const narrowed = computed(
   () =>
@@ -205,8 +223,8 @@ const GROUP_HEADS: Record<string, { label: MessageKey; hint: MessageKey }> = {
 
         <p v-if="!rows.length" class="shm-overlay-note">{{ i18n.t('allShips.noShips') }}</p>
         <template v-else>
-          <!-- Search, price range and filters (#406). -->
-          <div class="shm-all-ships-controls">
+          <!-- Search, price range and filters (#406), laid out like My Hangar's (ManagerList.vue). -->
+          <div class="shm-controls shm-all-ships-controls">
             <span class="shm-search-field">
               <SvgIcon class="shm-search-icon" name="magnifying-glass" />
               <input
@@ -229,76 +247,89 @@ const GROUP_HEADS: Record<string, { label: MessageKey; hint: MessageKey }> = {
                 <SvgIcon name="circle-xmark" />
               </button>
             </span>
-            <div class="shm-all-ships-filters">
+            <div class="shm-filters">
               <div
-                class="shm-all-ships-range"
+                class="shm-filter-group"
                 role="group"
                 :aria-label="i18n.t('allShips.priceRange')"
               >
-                <span class="shm-all-ships-label">{{ i18n.t('allShips.priceRange') }}</span>
-                <input
-                  type="number"
-                  class="shm-all-ships-number shm-value"
-                  :min="bounds.min"
-                  :max="max"
-                  :value="min"
-                  :aria-label="i18n.t('allShips.priceFrom')"
-                  @change="setMin(numberOf($event))"
-                />
-                <span class="shm-all-ships-slider" :style="rangeStyle">
-                  <input
-                    type="range"
-                    :min="bounds.min"
-                    :max="bounds.max"
-                    step="5"
-                    :value="min"
-                    :aria-label="i18n.t('allShips.priceFrom')"
-                    @input="setMin(numberOf($event))"
-                  />
-                  <input
-                    type="range"
-                    :min="bounds.min"
-                    :max="bounds.max"
-                    step="5"
-                    :value="max"
-                    :aria-label="i18n.t('allShips.priceTo')"
-                    @input="setMax(numberOf($event))"
-                  />
+                <span class="shm-filter-group-label" aria-hidden="true">
+                  {{ i18n.t('allShips.priceRange') }}
                 </span>
-                <input
-                  type="number"
-                  class="shm-all-ships-number shm-value"
-                  :min="min"
-                  :max="bounds.max"
-                  :value="max"
-                  :aria-label="i18n.t('allShips.priceTo')"
-                  @change="setMax(numberOf($event))"
-                />
+                <!-- The slider, and below it the number of each end. -->
+                <div class="shm-all-ships-range">
+                  <span class="shm-all-ships-slider" :style="rangeStyle">
+                    <input
+                      type="range"
+                      :min="bounds.min"
+                      :max="bounds.max"
+                      step="5"
+                      :value="min"
+                      :aria-label="i18n.t('allShips.priceFrom')"
+                      @input="setMin(numberOf($event))"
+                    />
+                    <input
+                      type="range"
+                      :min="bounds.min"
+                      :max="bounds.max"
+                      step="5"
+                      :value="max"
+                      :aria-label="i18n.t('allShips.priceTo')"
+                      @input="setMax(numberOf($event))"
+                    />
+                  </span>
+                  <span class="shm-all-ships-ends">
+                    <input
+                      type="number"
+                      class="shm-all-ships-number shm-value"
+                      :min="bounds.min"
+                      :max="max"
+                      :value="min"
+                      :aria-label="i18n.t('allShips.priceFrom')"
+                      @change="setMin(numberOf($event))"
+                    />
+                    <span class="shm-all-ships-dash" aria-hidden="true">–</span>
+                    <input
+                      type="number"
+                      class="shm-all-ships-number shm-value"
+                      :min="min"
+                      :max="bounds.max"
+                      :value="max"
+                      :aria-label="i18n.t('allShips.priceTo')"
+                      @change="setMax(numberOf($event))"
+                    />
+                  </span>
+                </div>
               </div>
               <div
-                class="shm-filter-buttons"
+                class="shm-filter-group"
                 role="group"
                 :aria-label="i18n.t('allShips.filtersLabel')"
               >
-                <span class="shm-all-ships-label">{{ i18n.t('allShips.filtersLabel') }}</span>
-                <button
-                  v-for="filter in ALL_SHIPS_FILTERS"
-                  :key="filter"
-                  type="button"
-                  class="shm-filter"
-                  :class="{ 'is-active': filters.has(filter) }"
-                  :aria-pressed="filters.has(filter)"
-                  @click="toggleFilter(filter)"
-                >
-                  <span class="shm-filter-label">{{ i18n.t(FILTER_LABELS[filter]) }}</span>
-                </button>
-                <button v-if="narrowed" type="button" class="shm-filter-reset" @click="reset">
-                  {{ i18n.t('allShips.reset') }}
-                </button>
+                <span class="shm-filter-group-label" aria-hidden="true">
+                  {{ i18n.t('allShips.filtersLabel') }}
+                </span>
+                <div class="shm-filter-buttons">
+                  <button
+                    v-for="filter in ALL_SHIPS_FILTERS"
+                    :key="filter"
+                    type="button"
+                    class="shm-filter"
+                    :class="{ 'is-active': filters.has(filter) }"
+                    :aria-pressed="filters.has(filter)"
+                    @click="toggleFilter(filter)"
+                  >
+                    <span class="shm-filter-label">{{ i18n.t(FILTER_LABELS[filter]) }}</span>
+                    <span class="shm-filter-count">{{ filterCounts[filter] }}</span>
+                  </button>
+                  <button v-if="narrowed" type="button" class="shm-filter-reset" @click="reset">
+                    {{ i18n.t('allShips.reset') }}
+                  </button>
+                </div>
               </div>
             </div>
-            <p class="shm-all-ships-count" aria-live="polite">{{ countText }}</p>
           </div>
+          <p class="shm-all-ships-count" aria-live="polite">{{ countText }}</p>
 
           <p v-if="!shown.length" class="shm-overlay-note">{{ i18n.t('allShips.noResults') }}</p>
           <div v-else class="shm-all-ships-scroll" tabindex="0">
@@ -470,47 +501,39 @@ const GROUP_HEADS: Record<string, { label: MessageKey; hint: MessageKey }> = {
   margin: 4px 0 0;
 }
 
-/* Search, then price range and filters on one line where it fits, then the count. */
+/* As My Hangar's search and filters (list-controls.css); the search only as wide as it needs. */
 .shm-all-ships-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .shm-all-ships-controls .shm-search-field {
   flex: none;
+  max-width: 360px;
 }
 
-.shm-all-ships-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 24px;
-  align-items: center;
-}
-
-.shm-all-ships-filters .shm-filter-buttons {
-  align-items: center;
-}
-
-.shm-all-ships-label {
-  margin-right: 4px;
-  color: var(--shm-text-muted);
-  font-size: calc(11px * var(--shm-font-scale));
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
+/* The slider, and below it the number of each end at its sides. */
 .shm-all-ships-range {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 260px;
+}
+
+.shm-all-ships-ends {
   display: flex;
   gap: 8px;
   align-items: center;
+  justify-content: space-between;
+}
+
+.shm-all-ships-dash {
+  color: var(--shm-text-muted);
 }
 
 .shm-all-ships-number {
-  width: 7ch;
+  width: 9ch;
   height: 28px;
-  padding: 0 6px;
+  padding: 0 8px;
   color: var(--shm-text);
   font: inherit;
   font-size: calc(12px * var(--shm-font-scale));
@@ -532,8 +555,8 @@ const GROUP_HEADS: Record<string, { label: MessageKey; hint: MessageKey }> = {
  */
 .shm-all-ships-slider {
   position: relative;
-  width: 160px;
-  height: 28px;
+  height: 22px;
+  margin: 0 9px;
 }
 
 .shm-all-ships-slider::before {
@@ -553,10 +576,11 @@ const GROUP_HEADS: Record<string, { label: MessageKey; hint: MessageKey }> = {
   content: '';
 }
 
+/* The inputs reach under the handles' half at both ends, so the track lines up with them. */
 .shm-all-ships-slider input {
   position: absolute;
-  inset: 0;
-  width: 100%;
+  inset: 0 -9px;
+  width: calc(100% + 18px);
   margin: 0;
   background: none;
   accent-color: var(--shm-accent);
@@ -565,23 +589,23 @@ const GROUP_HEADS: Record<string, { label: MessageKey; hint: MessageKey }> = {
 }
 
 .shm-all-ships-slider input::-webkit-slider-thumb {
+  width: 18px;
+  height: 18px;
+  background: var(--shm-accent);
+  border: 2px solid var(--shm-surface-elevated);
+  border-radius: 50%;
+  appearance: none;
+  cursor: grab;
+  pointer-events: auto;
+}
+
+.shm-all-ships-slider input::-moz-range-thumb {
   width: 14px;
   height: 14px;
   background: var(--shm-accent);
   border: 2px solid var(--shm-surface-elevated);
   border-radius: 50%;
-  appearance: none;
-  cursor: pointer;
-  pointer-events: auto;
-}
-
-.shm-all-ships-slider input::-moz-range-thumb {
-  width: 12px;
-  height: 12px;
-  background: var(--shm-accent);
-  border: 2px solid var(--shm-surface-elevated);
-  border-radius: 50%;
-  cursor: pointer;
+  cursor: grab;
   pointer-events: auto;
 }
 
@@ -594,7 +618,7 @@ const GROUP_HEADS: Record<string, { label: MessageKey; hint: MessageKey }> = {
 }
 
 .shm-all-ships-count {
-  margin: 0;
+  margin: 0 0 8px;
   color: var(--shm-text-muted);
   font-size: calc(12px * var(--shm-font-scale));
   font-variant-numeric: tabular-nums;
@@ -634,36 +658,40 @@ const GROUP_HEADS: Record<string, { label: MessageKey; hint: MessageKey }> = {
 }
 
 /*
- * The groups of columns told apart (#406): the hangar's a little darker, the buy back's a little
- * lighter. The head keeps its opaque ground, so the rows don't show through while scrolling.
+ * The groups of columns told apart (#406): the hangar's a little lighter, the buy back's a little
+ * darker, with a faint line between their columns. The head keeps its opaque ground, so the rows
+ * don't show through while scrolling.
  */
 .shm-all-ships-table td.is-hangar {
-  background: rgb(0 0 0 / 0.1);
+  background: rgb(255 255 255 / 0.05);
 }
 
 .shm-all-ships-table td.is-buyback {
-  background: rgb(255 255 255 / 0.1);
+  background: rgb(0 0 0 / 0.1);
 }
 
 .shm-all-ships-table thead th.is-hangar {
-  background: linear-gradient(rgb(0 0 0 / 0.1), rgb(0 0 0 / 0.1)), var(--shm-surface-elevated);
+  background:
+    linear-gradient(rgb(255 255 255 / 0.05), rgb(255 255 255 / 0.05)), var(--shm-surface-elevated);
 }
 
 .shm-all-ships-table thead th.is-buyback {
-  background:
-    linear-gradient(rgb(255 255 255 / 0.1), rgb(255 255 255 / 0.1)), var(--shm-surface-elevated);
+  background: linear-gradient(rgb(0 0 0 / 0.1), rgb(0 0 0 / 0.1)), var(--shm-surface-elevated);
 }
 
-/* The last column of a group with room on its right, before the next group. */
 .shm-all-ships-table :is(td, th):is(.is-hangar, .is-buyback) {
   padding-right: 8px;
+  border-left: 1px solid rgb(255 255 255 / 0.06);
 }
 
 .shm-all-ships-table .shm-all-ships-name {
   position: sticky;
   left: 0;
   z-index: 1;
-  min-width: 160px;
+  /* One width, whatever ships are shown: the table doesn't jump sideways while filtering. */
+  width: 200px;
+  min-width: 200px;
+  max-width: 200px;
   padding-right: 12px;
   font-weight: normal;
   text-align: left;
