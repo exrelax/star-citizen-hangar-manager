@@ -381,7 +381,11 @@
       "resetHint": "All demo settings back to their defaults; the demo’s marks are cleared."
     },
     "on": "On",
-    "errorLog": "Error log"
+    "errorLog": "Error log",
+    "rsiPages": "RSI website",
+    "rsiPagesIntro": "Additions to RSI's own pages.",
+    "upgradeDialogAlwaysAvailable": "Show always available ships in RSI's ship upgrade dialog",
+    "upgradeDialogAlwaysAvailableHint": "Labels the ships, base and target ships, that are always available in the Pledge Store, so you can get onto them later to apply a CCU. From the ship facts of the project website (Star Citizen Wiki)."
   },
   "storage": {
     "title": "Stored data",
@@ -1497,5 +1501,9 @@
       "one": "$1 CCU to the $2 is missing for the CCUs from it in your hangar. Secure it before $3.",
       "other": "$1 CCUs to the $2 are missing for the CCUs from it in your hangar. Secure them before $3."
     }
+  },
+  "upgradeDialog": {
+    "alwaysAvailable": "Always available",
+    "alwaysAvailableHint": "Always available in the Pledge Store, so you can get onto the ship later to apply a CCU. Source: Star Citizen Wiki, via the Hangar Manager's project website."
   }
 }

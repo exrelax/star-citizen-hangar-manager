@@ -381,7 +381,11 @@
       "resetHint": "Todos los ajustes de la demo vuelven a sus valores predeterminados y se borran las marcas de la demo."
     },
     "on": "Activado",
-    "errorLog": "Registro de errores"
+    "errorLog": "Registro de errores",
+    "rsiPages": "Web de RSI",
+    "rsiPagesIntro": "Añadidos a las páginas de RSI.",
+    "upgradeDialogAlwaysAvailable": "Mostrar las naves siempre disponibles en el diálogo de mejoras de RSI",
+    "upgradeDialogAlwaysAvailableHint": "Marca las naves base y de destino siempre disponibles en la Pledge Store, para que puedas conseguirlas más tarde y aplicar un CCU. Según los datos de naves de la web del proyecto (Star Citizen Wiki)."
   },
   "storage": {
     "title": "Datos guardados",
@@ -1497,5 +1501,9 @@
       "one": "Falta $1 CCU hacia la $2 para los CCU desde ella en tu hangar. Asegúralo antes del $3.",
       "other": "Faltan $1 CCU hacia la $2 para los CCU desde ella en tu hangar. Asegúralos antes del $3."
     }
+  },
+  "upgradeDialog": {
+    "alwaysAvailable": "Siempre disponible",
+    "alwaysAvailableHint": "Siempre disponible en la Pledge Store: puedes conseguir la nave más tarde para aplicar un CCU. Fuente: Star Citizen Wiki, a través de la web del proyecto del Hangar Manager."
   }
 }

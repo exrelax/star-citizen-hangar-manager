@@ -933,7 +933,7 @@ it into store credit with the paints you already own:
 ## Settings
 
 The settings tab (#117) lists its categories on the left, in four groups – General (Appearance,
-Privacy, Demo mode), Lists (My Hangar and Buy Back, Filters, Sidebar), Automation (Notifications,
+Privacy, Demo mode, RSI website), Lists (My Hangar and Buy Back, Filters, Sidebar), Automation (Notifications,
 Paint Discount Consultant, Smart updates) and More (Experimental, Stored data, Error log, About) – and shows
 one category at a time on the right, as grouped rows like the system settings: a switch for each
 on/off setting, a segmented control for the theme, selects and number fields for the rest. A
@@ -966,6 +966,12 @@ order of the list:
   this demo hangar – same tier, lower tier, not possible, no store credit (a case the hangar can't
   show is disabled). **New demo hangar** makes another random one; **Reset demo** puts
   these settings back and clears the demo's marks. Changes apply at once.
+- **RSI website** (additions to RSI's own pages): **Show always available ships in RSI's ship
+  upgrade dialog** (#401, on by default) labels each ship of RSI's ship upgrade dialog – on the
+  left ("From") and on the right ("To") – that the ship facts list as always available in the Pledge Store ("Always available", with its
+  source as tooltip) – on "My Gear", in the Pledge Store and from the Hangar Manager. Ships are
+  matched by RSI's ship id, else by name; without the ship facts, or when RSI changed the dialog,
+  no label shows (and the error log notes `PARSE-UPGRADE-DIALOG`).
 - **My Hangar and Buy Back** (formerly "General" and "Show links for ships"):
   - **Show only the best insurance of upgraded ships** (on by default): after upgrades a pledge
     lists the insurance of every step; only the one that counts (LTI, otherwise the most months)

@@ -65,11 +65,12 @@ or order IDs (they read `<id>`), no name and no address.
 
 ## Reading RSI's pages
 
-| Code                  | What didn't work                              | What the Hangar Manager did                           | What you can do                           |
-| --------------------- | --------------------------------------------- | ----------------------------------------------------- | ----------------------------------------- |
-| `PARSE-HANGAR-NO-ID`  | An entry of a My Hangar page had no pledge id | Left the entry out                                    | Report it: RSI may have changed its page. |
-| `PARSE-BUYBACK-NO-ID` | An entry of a buy back page had no pledge id  | Left the entry out                                    | Report it: RSI may have changed its page. |
-| `PARSE-ORDER-NO-ID`   | An entry of the billing list had no order id  | Left the order out; its pledges show no order details | Report it: RSI may have changed its page. |
+| Code                   | What didn't work                                                                    | What the Hangar Manager did                           | What you can do                             |
+| ---------------------- | ----------------------------------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------- |
+| `PARSE-HANGAR-NO-ID`   | An entry of a My Hangar page had no pledge id                                       | Left the entry out                                    | Report it: RSI may have changed its page.   |
+| `PARSE-BUYBACK-NO-ID`  | An entry of a buy back page had no pledge id                                        | Left the entry out                                    | Report it: RSI may have changed its page.   |
+| `PARSE-ORDER-NO-ID`    | An entry of the billing list had no order id                                        | Left the order out; its pledges show no order details | Report it: RSI may have changed its page.   |
+| `PARSE-UPGRADE-DIALOG` | RSI's ship upgrade dialog didn't have the target ship list the Hangar Manager knows | Showed no "Always available" labels in it             | Report it: RSI may have changed its dialog. |
 
 ## Orders
 

@@ -381,7 +381,11 @@
       "resetHint": "Alle Einstellungen der Demo zurück auf ihre Standardwerte; die Markierungen der Demo werden gelöscht."
     },
     "on": "An",
-    "errorLog": "Fehlerprotokoll"
+    "errorLog": "Fehlerprotokoll",
+    "rsiPages": "RSI Website",
+    "rsiPagesIntro": "Ergänzungen auf RSIs eigenen Seiten.",
+    "upgradeDialogAlwaysAvailable": "Immer kaufbare Schiffe in RSIs Ship-Upgrade-Dialog zeigen",
+    "upgradeDialogAlwaysAvailableHint": "Kennzeichnet die Basis- und Zielschiffe, die im Pledge Store immer kaufbar sind, sodass du später jederzeit auf sie kommst, um ein CCU anzuwenden. Aus den Schiffsdaten der Projekt-Website (Star Citizen Wiki)."
   },
   "storage": {
     "title": "Gespeicherte Daten",
@@ -1497,5 +1501,9 @@
       "one": "Für die CCUs von $2 in deinem Hangar fehlt $1 CCU zum Schiff. Sichere es dir vor dem $3.",
       "other": "Für die CCUs von $2 in deinem Hangar fehlen $1 CCUs zum Schiff. Sichere sie dir vor dem $3."
     }
+  },
+  "upgradeDialog": {
+    "alwaysAvailable": "Immer kaufbar",
+    "alwaysAvailableHint": "Im Pledge Store immer kaufbar: Du kommst später jederzeit auf das Schiff, um ein CCU anzuwenden. Quelle: Star Citizen Wiki, über die Projekt-Website des Hangar Managers."
   }
 }

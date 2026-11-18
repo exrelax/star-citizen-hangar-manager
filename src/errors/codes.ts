@@ -93,6 +93,10 @@ export const ERROR_CODES = {
     failed: 'An entry of a buy back page had no pledge id',
     instead: 'Left the entry out',
   },
+  'PARSE-UPGRADE-DIALOG': {
+    failed: "RSI's ship upgrade dialog didn't have the target ship list the Hangar Manager knows",
+    instead: 'Showed no "Always available" labels in it',
+  },
   'PARSE-ORDER-NO-ID': {
     failed: 'An entry of the billing list had no order id',
     instead: 'Left the order out; its pledges show no order details',
