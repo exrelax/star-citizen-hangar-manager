@@ -680,9 +680,12 @@ opens the current ones. For each warbond ship:
 - **Your CCUs between the warbond price and the standard price**: every warbond CCU spans this
   range, whatever ship it starts from. The CCUs of your hangar that overlap it can't be chained
   with it, so you see at a glance how many discounted CCUs you already have there – in a small
-  table with their ship prices, count, value and discount. CCUs ending at or below the warbond
-  price (e.g. to a ship listed above) are left out: they can be chained. The count is also a tag on
-  the item.
+  table with their ship prices, count, value and discount in dollars and in percent. A click on a
+  column head sorts the table by it, a second click reverses the order (#395): numbers start with
+  the highest, names with A; a surcharge counts as a negative discount, CCUs without a known
+  discount come last. The order applies to the tables of all warbond CCUs and is kept. CCUs ending
+  at or below the warbond price (e.g. to a ship listed above) are left out: they can be chained.
+  The count is also a tag on the item.
 - **Earlier offers** (in the opened item): since when this offer was seen – with the event running
   then, if any – and the earlier offers of the same ship, also at other prices, or "No earlier
   offer of this ship seen yet".

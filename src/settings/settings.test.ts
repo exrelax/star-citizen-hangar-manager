@@ -23,6 +23,7 @@ describe('withDefaults', () => {
         paintConsultant: { useStoreCredit: false } as never,
         // An unknown sort goes back to the default, the period and event are kept.
         warbondHistory: { sort: 'name' as never, period: 'event', eventId: 'iae-2956' },
+        ownedCcuSort: { column: 'percent', direction: 'asc' },
       }),
     ).toEqual({
       language: 'de',
@@ -55,6 +56,7 @@ describe('withDefaults', () => {
       // The buy back can't sort by value: back to the default.
       sort: { hangar: 'valueDesc', buyback: 'newest' },
       warbondHistory: { sort: 'newest', period: 'event', eventId: 'iae-2956' },
+      ownedCcuSort: { column: 'percent', direction: 'asc' },
       paintConsultant: {
         useStoreCredit: false,
         useFillers: true,
@@ -112,5 +114,17 @@ describe('withDefaults', () => {
     for (const storeRefreshMinutes of [0, -5, 1441, 2.5, '10']) {
       expect(withDefaults({ storeRefreshMinutes } as never).storeRefreshMinutes).toBe(5);
     }
+  });
+});
+
+describe("the order of the warbond CCUs' own CCUs (#395)", () => {
+  it('falls back to the default order for an unknown column or direction', () => {
+    expect(
+      withDefaults({ ownedCcuSort: { column: 'nope', direction: 'asc' } as never }).ownedCcuSort,
+    ).toBeNull();
+    expect(
+      withDefaults({ ownedCcuSort: { column: 'value', direction: 'up' } as never }).ownedCcuSort,
+    ).toBeNull();
+    expect(withDefaults({}).ownedCcuSort).toBeNull();
   });
 });

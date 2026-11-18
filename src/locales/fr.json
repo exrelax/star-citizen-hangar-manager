@@ -613,6 +613,8 @@
     "colCount": "Nombre",
     "colValue": "Valeur",
     "colDiscount": "Remise",
+    "colDiscountPercent": "%",
+    "colDiscountPercentHint": "Remise en pourcentage",
     "historyTitle": "Offres précédentes",
     "historySince": "Vue depuis le $1.",
     "historySinceEvent": "Vue depuis le $1, pendant $2.",

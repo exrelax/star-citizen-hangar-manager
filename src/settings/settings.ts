@@ -1,3 +1,5 @@
+import { isTableSort } from '@/shared/table-sort';
+import { OWNED_CCU_COLUMNS, type OwnedCcuSort } from '@/store/owned-ccu-sort';
 import { DEFAULT_DEMO_SETTINGS, demoSettingsOf, type DemoSettings } from '@/demo/demo-settings';
 import { notificationKindsOf, type NotificationKind } from '@/notifications/kinds';
 import { BUYBACK_FILTER_CATEGORIES, type BuybackFilter } from '@/buyback/buyback-view';
@@ -140,6 +142,8 @@ export interface Settings {
   };
   /** Order and period of the Pledge Store tab's Warbond CCU History (#297). */
   warbondHistory: HistoryChoice;
+  /** Order of the warbond CCUs' tables "Your CCUs between" (#395); `null` for the default one. */
+  ownedCcuSort: OwnedCcuSort | null;
   /** The Paint Discount Consultant (see `store/paint-consultant`); it only uses store credit. */
   paintConsultant: {
     /** The cart may also be paid with the current store credit, not only with the melt values. */
@@ -194,6 +198,7 @@ export const DEFAULT_SETTINGS: Settings = {
   },
   sort: { hangar: 'newest', buyback: 'newest' },
   warbondHistory: { sort: 'newest', period: DEFAULT_HISTORY_PERIOD },
+  ownedCcuSort: null,
   paintConsultant: {
     useStoreCredit: true,
     useFillers: true,
@@ -294,6 +299,9 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
       buyback: valid(stored?.sort?.buyback, oneOf(BUYBACK_SORTS), DEFAULT_SETTINGS.sort.buyback),
     },
     warbondHistory: warbondHistoryOf(stored?.warbondHistory),
+    ownedCcuSort: isTableSort(stored?.ownedCcuSort, OWNED_CCU_COLUMNS)
+      ? { column: stored.ownedCcuSort.column, direction: stored.ownedCcuSort.direction }
+      : null,
     paintConsultant: {
       useStoreCredit: valid(
         stored?.paintConsultant?.useStoreCredit,
