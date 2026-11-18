@@ -547,6 +547,7 @@ src/
     background.ts        Background (service worker in Chrome, background script in Firefox)
     hangar.content/      Content script: nav entry and manager view on the RSI hangar page
     ccugame.content/     Content script: links to the manager on ccugame.app
+    upgrade-dialog.content/  Content script: labels in RSI's ship upgrade dialog (all RSI pages)
     popup/               Popup of the toolbar icon: links to the manager, settings, repository
     styleguide/          Styleguide page with all building blocks (dev builds only)
   hangar/                Hangar data and view: sync, smart updates, list, filters, search

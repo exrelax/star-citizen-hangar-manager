@@ -381,7 +381,11 @@
       "resetHint": "Tous les réglages de la démo reviennent à leurs valeurs par défaut ; les marques de la démo sont effacées."
     },
     "on": "Activé",
-    "errorLog": "Journal des erreurs"
+    "errorLog": "Journal des erreurs",
+    "rsiPages": "Site de RSI",
+    "rsiPagesIntro": "Ajouts aux pages de RSI.",
+    "upgradeDialogAlwaysAvailable": "Afficher les vaisseaux toujours disponibles dans la fenêtre d’upgrade de RSI",
+    "upgradeDialogAlwaysAvailableHint": "Marque les vaisseaux cibles toujours disponibles dans le Pledge Store, pour que tu puisses y accéder plus tard et appliquer un CCU. D’après les données du site du projet (Star Citizen Wiki)."
   },
   "storage": {
     "title": "Données enregistrées",
@@ -1497,5 +1501,9 @@
       "one": "Il manque $1 CCU vers le $2 pour les CCU depuis lui dans votre hangar. Sécurisez-le avant le $3.",
       "other": "Il manque $1 CCU vers le $2 pour les CCU depuis lui dans votre hangar. Sécurisez-les avant le $3."
     }
+  },
+  "upgradeDialog": {
+    "alwaysAvailable": "Toujours disponible",
+    "alwaysAvailableHint": "Toujours disponible dans le Pledge Store : tu peux accéder au vaisseau plus tard pour appliquer un CCU. Source : Star Citizen Wiki, via le site du projet du Hangar Manager."
   }
 }

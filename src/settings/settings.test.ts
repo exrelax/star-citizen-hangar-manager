@@ -30,6 +30,7 @@ describe('withDefaults', () => {
       hideMeltValue: true,
       themedActionDialogs: false,
       translateRsiTexts: false,
+      upgradeDialogAlwaysAvailable: true,
       bulkMelting: true,
       hideSupersededInsurances: true,
       summaryTypes: false,
@@ -126,5 +127,17 @@ describe("the order of the warbond CCUs' own CCUs (#395)", () => {
       withDefaults({ ownedCcuSort: { column: 'value', direction: 'up' } as never }).ownedCcuSort,
     ).toBeNull();
     expect(withDefaults({}).ownedCcuSort).toBeNull();
+  });
+});
+
+describe('the "Always available" labels in RSI’s ship upgrade dialog (#401)', () => {
+  it('are on by default and can be turned off', () => {
+    expect(withDefaults({}).upgradeDialogAlwaysAvailable).toBe(true);
+    expect(withDefaults({ upgradeDialogAlwaysAvailable: false }).upgradeDialogAlwaysAvailable).toBe(
+      false,
+    );
+    expect(
+      withDefaults({ upgradeDialogAlwaysAvailable: 'no' as never }).upgradeDialogAlwaysAvailable,
+    ).toBe(true);
   });
 });

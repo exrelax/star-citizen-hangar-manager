@@ -11,6 +11,7 @@ export const SETTINGS_CATEGORIES = [
   'appearance',
   'privacy',
   'demo',
+  'rsiPages',
   'lists',
   'filters',
   'sidebar',
@@ -34,6 +35,7 @@ export const CATEGORY_INFO: Record<SettingsCategory, CategoryInfo> = {
   appearance: { title: 'settings.appearance', icon: 'palette' },
   privacy: { title: 'settings.privacyTitle', icon: 'eye-slash' },
   demo: { title: 'settings.demo.title', icon: 'wand-magic-sparkles' },
+  rsiPages: { title: 'settings.rsiPages', icon: 'globe-pointer' },
   lists: { title: 'settings.lists', icon: 'list' },
   filters: { title: 'settings.filters', icon: 'filter' },
   sidebar: { title: 'settings.sidebar', icon: 'table-columns' },
@@ -49,7 +51,10 @@ export const CATEGORY_INFO: Record<SettingsCategory, CategoryInfo> = {
 
 /** The groups of the list, each with a title above its categories. */
 export const CATEGORY_GROUPS: { title: MessageKey; categories: SettingsCategory[] }[] = [
-  { title: 'settings.categoryGroups.general', categories: ['appearance', 'privacy', 'demo'] },
+  {
+    title: 'settings.categoryGroups.general',
+    categories: ['appearance', 'privacy', 'demo', 'rsiPages'],
+  },
   { title: 'settings.categoryGroups.lists', categories: ['lists', 'filters', 'sidebar'] },
   {
     title: 'settings.categoryGroups.automation',

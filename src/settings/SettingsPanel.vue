@@ -23,6 +23,7 @@ import ListsSection from './sections/ListsSection.vue';
 import NotificationsSection from './sections/NotificationsSection.vue';
 import PaintConsultantSection from './sections/PaintConsultantSection.vue';
 import PrivacySection from './sections/PrivacySection.vue';
+import RsiPagesSection from './sections/RsiPagesSection.vue';
 import SidebarSection from './sections/SidebarSection.vue';
 import SmartUpdateSection from './sections/SmartUpdateSection.vue';
 import StorageSection from './sections/StorageSection.vue';
@@ -43,6 +44,7 @@ const SECTIONS: Record<SettingsCategory, Component> = {
   appearance: AppearanceSection,
   privacy: PrivacySection,
   demo: DemoSection,
+  rsiPages: RsiPagesSection,
   lists: ListsSection,
   filters: FilterSection,
   sidebar: SidebarSection,

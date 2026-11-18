@@ -1,0 +1,15 @@
+/*
+ * The label "Always available" in RSI's ship upgrade dialog (#401): below RSI's "in stock", in the
+ * dialog's own font and size, so it fits next to RSI's texts.
+ */
+.ShipUpgradeModal .shm-always-available-label {
+  margin: 0 7px 7px;
+  color: #39ced8;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 12px;
+  text-align: right;
+  white-space: nowrap;
+  cursor: help;
+}
