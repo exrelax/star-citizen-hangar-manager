@@ -512,7 +512,8 @@ an account without stored data):
   not always available, with the demo's event or without one (the demo setting "A running event
   in the Pledge Store tab").
   With the upgrade tool's ships on sale also a leaving ship with "Ship upgrade" only, with "Warbond
-  upgrade" next to it and without either (#391, #392); the upgrade buttons are disabled in the demo.
+  upgrade" next to it and without either (#391, #392), and ships to secure with and without
+  "Warbond upgrade"; the upgrade buttons are disabled in the demo.
 - Sample notifications: events, new and gone warbond CCUs, changed store items – never a browser
   notification.
 - The settings without real account data (#132).

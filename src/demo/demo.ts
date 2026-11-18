@@ -24,6 +24,7 @@ import {
 import type { ExpectedPriceIncrease } from '@/price-increases/price-increases';
 import { demoNotOnSaleShip, demoPriceIncreases, realNotOnSaleShips } from './demo-price-increases';
 import { fraction, hash } from './random';
+import { demoStoreData } from './demo-store';
 import { DEFAULT_DEMO_SETTINGS, type DemoSettings, type DemoStates } from './demo-settings';
 import type { DemoBuybackComposition } from './generate-buyback';
 
@@ -166,6 +167,8 @@ export function generatedDemo(
     now,
     buyable,
     notOnSale,
+    // The ships of the demo's warbond offers, as its Pledge Store tab shows them (#392).
+    new Set(demoStoreData(catalog, account.pledges, now).warbonds.map((offer) => offer.ship.id)),
   );
   const matcher = createPriceIncreaseMatcher(priceIncreases, now);
   const views = account.pledges.map((pledge, position) => {
