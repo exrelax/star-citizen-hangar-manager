@@ -116,6 +116,27 @@ describe('removalCcus', () => {
     ]);
   });
 
+  it('counts the CCUs from the ship in the hangar only for the level', () => {
+    const result = removalCcus(
+      input({
+        hangar: [hangarCcu(1, 'Constellation Andromeda', 'Constellation Mk V Centaurus')],
+        buyback: [
+          buybackCcu(10, 45, 325, 'Upgrade - Constellation Andromeda to Centaurus'),
+          buybackCcu(11, 45, 325, 'Upgrade - Constellation Andromeda to Centaurus'),
+          buybackCcu(12, 4, 45, 'Upgrade - Cutlass Black to Constellation Andromeda'),
+        ],
+      }),
+    );
+    // 3 from it (1 owned), 1 to it: enough for the one in the hangar.
+    expect(counts(result)).toEqual([{ ship: 45, from: 3, to: 1, level: 'warning' }]);
+    const buybackOnly = removalCcus(
+      input({
+        buyback: [buybackCcu(10, 45, 325, 'Upgrade - Constellation Andromeda to Centaurus')],
+      }),
+    );
+    expect(counts(buybackOnly)).toEqual([{ ship: 45, from: 1, to: 0, level: undefined }]);
+  });
+
   it('counts only CCUs, not pledges with the ship itself', () => {
     const result = removalCcus(
       input({

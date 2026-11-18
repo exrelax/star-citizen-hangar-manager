@@ -1,11 +1,11 @@
 import type { DayOrTime } from '@/site-data/site-data';
-import type { RemovalCcus, RemovalLevel } from './removal-ccus';
+import { hangarCcus, type RemovalCcus, type RemovalLevel } from './removal-ccus';
 import { removalsByDate, type ShipRemoval } from './ship-removals';
 
 /*
  * The sidebar's notifications about ship removals (#290, part of Ship Removals #285): one per date,
  * listing all ships removed on it, with the section of the Pledge Store tab (#288). Ships with CCUs
- * from them in the hangar or the buy back are warned about, each by the level of #287: yellow-orange
+ * from them in the hangar are warned about, each by the level of #287: yellow-orange
  * while there are as many CCUs to the ship, red with fewer. Its × dismisses it for these ships on
  * this date, kept in the sync storage like the Price Increase Advisor's; a new ship or a new date
  * shows it again. Past dates don't show.
@@ -30,7 +30,7 @@ export const demoDismissedRemovalNotesItem = storage.defineItem<string[]>(
   { fallback: [] },
 );
 
-/** A ship of the notification with CCUs from it: how many from and to it, and the level. */
+/** A ship of the notification with CCUs from it in the hangar: how many, how many to it, the level. */
 export interface RemovalWarning {
   removal: ShipRemoval;
   from: number;
@@ -67,7 +67,7 @@ export function removalNotes(
       .flatMap((removal): RemovalWarning[] => {
         const entry = byShip.get(removal.ship.id);
         return entry?.level
-          ? [{ removal, from: entry.from.length, to: entry.to.length, level: entry.level }]
+          ? [{ removal, from: hangarCcus(entry.from), to: entry.to.length, level: entry.level }]
           : [];
       })
       .sort((a, b) => Number(b.level === 'critical') - Number(a.level === 'critical'));

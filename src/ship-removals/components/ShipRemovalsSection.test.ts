@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createApp, h, type App } from 'vue';
+import { createApp, h, nextTick, type App } from 'vue';
 import type { ShipRemoval } from '../ship-removals';
 import ShipRemovalsSection from './ShipRemovalsSection.vue';
 
@@ -52,6 +52,20 @@ describe('ShipRemovalsSection', () => {
     expect(rows[0]!.querySelector('.shm-badge')?.textContent?.trim()).toBe('Removal: 40:00');
     expect(rows[1]!.querySelector('.shm-badge')?.textContent?.trim()).toBe('Removal: today');
     expect(rows[1]!.querySelector('a')?.getAttribute('href')).toBe(SOURCE);
+  });
+
+  it('opens a ship with a click on its row, and closes it again', async () => {
+    const root = mount([
+      removal(45, 'Constellation Mk IV Andromeda', '2027-01-27T00:00:00Z', true),
+    ]);
+    const row = root.querySelector('.shm-removal')!;
+    (row.querySelector('.shm-row-summary') as HTMLElement).click();
+    await nextTick();
+    expect(row.querySelector('.shm-removal-details')).not.toBeNull();
+    expect(row.querySelector('.shm-chevron')?.getAttribute('aria-expanded')).toBe('true');
+    (row.querySelector('.shm-chevron') as HTMLElement).click();
+    await nextTick();
+    expect(row.querySelector('.shm-removal-details')).toBeNull();
   });
 
   it('shows nothing without upcoming removals', () => {

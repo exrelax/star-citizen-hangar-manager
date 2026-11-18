@@ -1475,6 +1475,19 @@
     "limitedSaleEvent": {
       "one": "Il pourrait ne plus être en vente après la fin de $1, le $2.",
       "other": "Ils pourraient ne plus être en vente après la fin de $1, le $2."
+    },
+    "tableTitle": "Vos CCU depuis et vers le $1",
+    "colHangar": "Hangar",
+    "colBuyback": "Buy back",
+    "colTogether": "Ensemble",
+    "rowFrom": "CCU depuis lui",
+    "rowTo": "CCU vers lui",
+    "summaryNone": "Vous n’avez aucun CCU depuis ou vers le $1.",
+    "summaryNoneFrom": "Vous n’avez aucun CCU depuis le $1 dans votre hangar : rien à sécuriser.",
+    "summaryEnough": "Suffisant : pour chaque CCU depuis le $1 dans votre hangar, il y a un CCU vers lui.",
+    "summaryMissing": {
+      "one": "Il manque $1 CCU vers le $2 pour les CCU depuis lui dans votre hangar. Sécurisez-le avant le $3.",
+      "other": "Il manque $1 CCU vers le $2 pour les CCU depuis lui dans votre hangar. Sécurisez-les avant le $3."
     }
   }
 }

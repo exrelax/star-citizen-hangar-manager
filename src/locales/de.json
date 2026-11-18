@@ -1475,6 +1475,19 @@
     "limitedSaleEvent": {
       "one": "Nach dem Ende von $1 am $2 ist das Schiff womöglich nicht mehr erhältlich.",
       "other": "Nach dem Ende von $1 am $2 sind die Schiffe womöglich nicht mehr erhältlich."
+    },
+    "tableTitle": "Deine CCUs von und zu $1",
+    "colHangar": "Hangar",
+    "colBuyback": "Buy Back",
+    "colTogether": "Zusammen",
+    "rowFrom": "CCUs vom Schiff",
+    "rowTo": "CCUs zum Schiff",
+    "summaryNone": "Du hast keine CCUs von oder zu $1.",
+    "summaryNoneFrom": "Du hast keine CCUs von $1 im Hangar: Es gibt nichts abzusichern.",
+    "summaryEnough": "Genug: Zu jedem CCU von $1 in deinem Hangar gibt es ein CCU zum Schiff.",
+    "summaryMissing": {
+      "one": "Für die CCUs von $2 in deinem Hangar fehlt $1 CCU zum Schiff. Sichere es dir vor dem $3.",
+      "other": "Für die CCUs von $2 in deinem Hangar fehlen $1 CCUs zum Schiff. Sichere sie dir vor dem $3."
     }
   }
 }
