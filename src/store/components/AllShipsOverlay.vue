@@ -894,15 +894,40 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
 
 /*
  * The counts: tinted while the group has any – a band across its three cells, inset from the
- * row's lines –, empty ones as a faint dot.
+ * row's lines, with round ends (on a layer of its own, so the lines stay straight) –, empty ones
+ * as a faint dot.
  */
 .shm-all-ships-table td.is-count {
+  position: relative;
   color: var(--shm-text-strong);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 100% calc(100% - 4px);
+}
+
+.shm-all-ships-table td.is-tinted::before {
+  position: absolute;
+  inset: 2px 0;
+  background: var(--shm-all-ships-tint);
+  content: '';
+  pointer-events: none;
+}
+
+.shm-all-ships-table td.is-tinted.is-first::before {
+  left: 2px;
+  border-radius: 8px 0 0 8px;
+}
+
+.shm-all-ships-table td.is-tinted.is-last::before {
+  right: 2px;
+  border-radius: 0 8px 8px 0;
+}
+
+.shm-all-ships-table td.is-hangar {
+  --shm-all-ships-tint: rgb(var(--shm-success-rgb) / 0.08);
+}
+
+.shm-all-ships-table td.is-buyback {
+  --shm-all-ships-tint: color-mix(in srgb, var(--shm-warning) 8%, transparent);
 }
 
 .shm-all-ships-table td.is-count.is-from {
@@ -912,34 +937,6 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
 .shm-all-ships-table td.is-count.is-none {
   color: var(--shm-text-faint);
   font-weight: 400;
-  opacity: 0.6;
-}
-
-.shm-all-ships-table td.is-hangar.is-tinted {
-  background-image: linear-gradient(
-    rgb(var(--shm-success-rgb) / 0.08),
-    rgb(var(--shm-success-rgb) / 0.08)
-  );
-}
-
-.shm-all-ships-table td.is-buyback.is-tinted {
-  background-image: linear-gradient(
-    color-mix(in srgb, var(--shm-warning) 8%, transparent),
-    color-mix(in srgb, var(--shm-warning) 8%, transparent)
-  );
-}
-
-/* The band's ends rounded: inset from the cell's edges, so only the band is clipped. */
-.shm-all-ships-table td.is-tinted.is-first {
-  background-position: right center;
-  background-size: calc(100% - 4px) calc(100% - 4px);
-  border-radius: 8px 0 0 8px;
-}
-
-.shm-all-ships-table td.is-tinted.is-last {
-  background-position: left center;
-  background-size: calc(100% - 4px) calc(100% - 4px);
-  border-radius: 0 8px 8px 0;
 }
 
 /* The Pledge Store: "Warbond" in the warbond's yellow, "Standard" or "Ship upgrade". */
