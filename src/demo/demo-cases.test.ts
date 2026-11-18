@@ -141,3 +141,14 @@ describe('the default demo on an empty account (#130)', () => {
     );
   });
 });
+
+describe('the own CCUs of a warbond offer in the default demo (#395)', () => {
+  it('has one offer with at least three, of different discounts, one a surcharge', () => {
+    const offers = buildWarbondOffers(demoStoreData(catalog, pledges, NOW), pledges, buyback);
+    const sortable = offers.find((offer) => {
+      const amounts = offer.owned.flatMap((ccu) => ccu.discount?.amount ?? []);
+      return new Set(amounts).size >= 3 && amounts.some((amount) => amount < 0);
+    });
+    expect(sortable).toBeDefined();
+  });
+});

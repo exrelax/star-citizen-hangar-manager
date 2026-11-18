@@ -10,7 +10,7 @@ import {
 import type { DemoCatalog } from './catalog';
 import { demoEvents } from './demo-events';
 import type { Pledge } from '@/hangar/pledge';
-import { CCU_TARGET_MAX, warbondDiscount } from './generate-hangar';
+import { isWarbondTargetPrice, warbondDiscount } from './generate-hangar';
 import { createRandom } from './random';
 
 /*
@@ -29,10 +29,10 @@ export function demoStoreData(
     ...new Set(hangar.flatMap((pledge) => pledge.upgrade?.targetItems[0]?.name ?? [])),
   ]
     .map((name) => catalog.ships.find((ship) => ship.name === name))
-    .filter((ship) => ship !== undefined && ship.msrp >= 60 && ship.msrp <= CCU_TARGET_MAX)
+    .filter((ship) => ship !== undefined && isWarbondTargetPrice(ship.msrp))
     .slice(0, CURRENT_OFFERS) as Ship[];
   // A hangar with fewer CCUs in range (e.g. the own pledges as source, #298): other ships fill up.
-  const inRange = (ship: Ship) => ship.msrp >= 60 && ship.msrp <= CCU_TARGET_MAX;
+  const inRange = (ship: Ship) => isWarbondTargetPrice(ship.msrp);
   for (const ship of [...catalog.ships].sort((a, b) => b.msrp - a.msrp || a.id - b.id)) {
     if (targets.length >= CURRENT_OFFERS) break;
     if (inRange(ship) && !targets.includes(ship)) targets.push(ship);

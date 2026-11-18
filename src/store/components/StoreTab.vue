@@ -4,6 +4,7 @@ import { PLEDGE_STORE } from '@/config';
 import type { PledgeView } from '@/hangar/pledge-view';
 import { i18n, locale } from '@/i18n';
 import type { Settings } from '@/settings/settings';
+import { useSettings } from '@/settings/use-settings';
 import { formatRelativeTime } from '@/shared/lib/relative-time';
 import { computed, onUnmounted, ref, watch } from 'vue';
 import {
@@ -51,6 +52,8 @@ const { data, fetchedAt, loaded } = useStoreData();
 const storedEvents = useStored(eventsItem);
 // The demo shows events of its own (#210) – the website's only with the real Pledge Store data.
 const demoContext = useDemoContext();
+// Stores the view choices of the tab, e.g. the order of the warbond CCUs' tables (#395).
+const { update } = useSettings();
 /**
  * The demo with the real Pledge Store data (#310): the real offers, history, events and price
  * increases – public data –, counted against the demo hangar and buy back.
@@ -204,7 +207,13 @@ const displayClasses = computed(() => ({
         </p>
         <!-- The container of the manager's lists: their gaps and compact view (row.css, modern.css). -->
         <div v-if="offers.length" class="shm-rows">
-          <WarbondRow v-for="offer in offers" :key="offer.target.skuId" :offer="offer" />
+          <WarbondRow
+            v-for="offer in offers"
+            :key="offer.target.skuId"
+            :offer="offer"
+            :owned-sort="settings.ownedCcuSort"
+            @update:owned-sort="(ownedCcuSort) => update({ ownedCcuSort })"
+          />
         </div>
         <p v-if="!offers.length" class="shm-store-state">{{ i18n.t('store.empty') }}</p>
       </template>

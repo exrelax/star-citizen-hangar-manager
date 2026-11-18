@@ -9,11 +9,29 @@ import type { SightingEvent } from '../warbond-history';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import BaseShipsTable from './BaseShipsTable.vue';
 import ShipUpgradeButtons from './ShipUpgradeButtons.vue';
+import SortableTh from '@/shared/components/SortableTh.vue';
+import { nextSort } from '@/shared/table-sort';
+import {
+  OWNED_CCU_SORT_COLUMNS,
+  sortOwnedCcus,
+  type OwnedCcuColumn,
+  type OwnedCcuSort,
+} from '../owned-ccu-sort';
 // Shared, unscoped styles of the store's tables; a plain import, as `<style src>` of the same file
 // in several components breaks the build.
 import './store-table.css';
 
-const props = defineProps<{ offer: WarbondOffer }>();
+const props = defineProps<{
+  offer: WarbondOffer;
+  /** The order of "Your CCUs between" (#395), the same for every warbond CCU. */
+  ownedSort?: OwnedCcuSort | null;
+}>();
+
+const emit = defineEmits<{ 'update:ownedSort': [sort: OwnedCcuSort] }>();
+
+/** A click on a column head: sorts by it, a second click reverses the order. */
+const sortBy = (column: OwnedCcuColumn) =>
+  emit('update:ownedSort', nextSort(props.ownedSort, column, OWNED_CCU_SORT_COLUMNS[column].first));
 
 const expanded = ref(false);
 
@@ -29,12 +47,23 @@ const discountText = computed(
   () => `−${usd(props.offer.discount)} (${formatPercent(props.offer.percent, locale.value)})`,
 );
 
-/** The hangar's colliding CCUs with their discount formatted once. */
+/**
+ * The hangar's colliding CCUs in the chosen order, with their discount formatted once: the amount
+ * and the percentage in columns of their own (#395).
+ */
 const owned = computed(() =>
-  props.offer.owned.map((ccu) => ({
-    ...ccu,
-    shown: ccu.discount && formatDiscount(ccu.discount, locale.value),
-  })),
+  sortOwnedCcus(props.offer.owned, props.ownedSort).map((ccu) => {
+    const shown = ccu.discount && formatDiscount(ccu.discount, locale.value);
+    const sign = !ccu.discount?.amount ? '' : shown?.isSurcharge ? '+' : '−';
+    return {
+      ...ccu,
+      shown: shown && {
+        ...shown,
+        amount: `${sign}${usd(Math.abs(ccu.discount!.amount))}`,
+        percent: `${sign}${formatPercent(Math.abs(ccu.discount!.percent), locale.value)}`,
+      },
+    };
+  }),
 );
 
 /** The hangar's CCUs to this very ship, and its other CCUs that can't be chained with it. */
@@ -167,11 +196,34 @@ const earlier = computed(() =>
         <table v-else class="shm-warbond-table is-small">
           <thead>
             <tr>
-              <th scope="col">{{ i18n.t('store.colCcu') }}</th>
-              <th scope="col" class="is-number">{{ i18n.t('store.colShipPrices') }}</th>
-              <th scope="col" class="is-number">{{ i18n.t('store.colCount') }}</th>
-              <th scope="col" class="is-number shm-value">{{ i18n.t('store.colValue') }}</th>
-              <th scope="col" class="is-number shm-value">{{ i18n.t('store.colDiscount') }}</th>
+              <SortableTh column="ccu" :sort="ownedSort" @sort="sortBy">
+                {{ i18n.t('store.colCcu') }}
+              </SortableTh>
+              <SortableTh column="shipPrices" :sort="ownedSort" numeric @sort="sortBy">
+                {{ i18n.t('store.colShipPrices') }}
+              </SortableTh>
+              <SortableTh column="count" :sort="ownedSort" numeric @sort="sortBy">
+                {{ i18n.t('store.colCount') }}
+              </SortableTh>
+              <SortableTh column="value" :sort="ownedSort" numeric class="shm-value" @sort="sortBy">
+                {{ i18n.t('store.colValue') }}
+              </SortableTh>
+              <SortableTh
+                column="discount"
+                :sort="ownedSort"
+                numeric
+                class="shm-value"
+                @sort="sortBy"
+              >
+                {{ i18n.t('store.colDiscount') }}
+              </SortableTh>
+              <SortableTh column="percent" :sort="ownedSort" numeric @sort="sortBy">
+                <span
+                  v-tooltip="i18n.t('store.colDiscountPercentHint')"
+                  :aria-label="i18n.t('store.colDiscountPercentHint')"
+                  >{{ i18n.t('store.colDiscountPercent') }}</span
+                >
+              </SortableTh>
             </tr>
           </thead>
           <tbody>
@@ -189,7 +241,17 @@ const earlier = computed(() =>
                   class="shm-discount"
                   :class="{ 'is-surcharge': ccu.shown.isSurcharge }"
                 >
-                  {{ ccu.shown.text }}
+                  {{ ccu.shown.amount }}
+                </span>
+              </td>
+              <td class="is-number">
+                <span
+                  v-if="ccu.shown"
+                  v-tooltip="ccu.shown.title"
+                  class="shm-discount"
+                  :class="{ 'is-surcharge': ccu.shown.isSurcharge }"
+                >
+                  {{ ccu.shown.percent }}
                 </span>
               </td>
             </tr>

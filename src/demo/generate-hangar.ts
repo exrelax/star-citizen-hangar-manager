@@ -98,6 +98,9 @@ const GAME_ITEMS: PledgeItem[] = [
 /** CIG sells CCUs only to ships up to this standard price, in USD. */
 export const CCU_TARGET_MAX = 1000;
 
+/** The standard prices of the demo's warbond offers (`demo-store.ts`): from $60 to the maximum. */
+export const isWarbondTargetPrice = (msrp: number) => msrp >= 60 && msrp <= CCU_TARGET_MAX;
+
 /** The ships a CCU can go to: up to `CCU_TARGET_MAX`. */
 export const ccuTargetsOf = (ships: readonly Ship[]) =>
   ships.filter((ship) => ship.msrp > 0 && ship.msrp <= CCU_TARGET_MAX);
@@ -333,5 +336,39 @@ export function generateHangar(
   // A paint comes first: the newest pledge, bought a few hours ago with store credit (#176).
   const paint = shuffled.find((pledge) => pledge.demoKind === 'paints');
   const ordered = paint ? [paint, ...shuffled.filter((pledge) => pledge !== paint)] : shuffled;
-  return ordered.map((pledge, position) => ({ ...pledge, id: DEMO.idBase - position }));
+  return withSurcharge(ordered, catalog).map((pledge, position) => ({
+    ...pledge,
+    id: DEMO.idBase - position,
+  }));
+}
+
+/** How much more than the price difference the CCU with a surcharge cost. */
+const SURCHARGE = 10;
+
+/**
+ * One CCU paid more than the price difference of its ships today, e.g. bought before the base ship
+ * became cheaper: a surcharge among the own CCUs of a warbond offer (#395). The demo's warbond
+ * offers are for the first ships the hangar's CCUs go to (`demoStoreData`), so it is a standard CCU
+ * to one of them, not one of the Price Increase Advisor's.
+ */
+function withSurcharge(pledges: DemoPledge[], catalog: DemoCatalog): DemoPledge[] {
+  const priceOf = (name: string | undefined) =>
+    catalog.ships.find((ship) => ship.name === name)?.msrp;
+  const targets = [
+    ...new Set(pledges.flatMap((pledge) => pledge.upgrade?.targetItems[0]?.name ?? [])),
+  ]
+    .filter((name) => isWarbondTargetPrice(priceOf(name) ?? 0))
+    .slice(0, 3);
+  const ccu = pledges.find(
+    (pledge) =>
+      pledge.upgrade &&
+      !pledge.demoPivot &&
+      /standard edition$/i.test(pledge.title) &&
+      targets.includes(pledge.upgrade.targetItems[0]!.name),
+  );
+  if (!ccu) return pledges;
+  const value = ccu.standardPrice + SURCHARGE;
+  return pledges.map((pledge) =>
+    pledge === ccu ? { ...pledge, value: usdText(value), valueUsd: value } : pledge,
+  );
 }
