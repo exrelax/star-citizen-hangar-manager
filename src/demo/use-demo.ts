@@ -23,6 +23,8 @@ import type { StorageId } from '@/storage/registry';
 import { HANGAR_PAGE_SIZE } from '@/config';
 import { demoStoreNotes } from './demo-store-notes';
 import { demoStoreData } from './demo-store';
+import { demoShipRemovals, type DemoShipRemovals } from './demo-ship-removals';
+import { demoDismissedRemovalNotesItem } from '@/ship-removals/removal-notes';
 import type { StoreData } from '@/store/warbond';
 import type { StoreItem } from '@/store/items/store-items';
 import {
@@ -83,6 +85,8 @@ export async function resetDemoData(): Promise<void> {
     resetDemoNotes(),
     // The Price Increase Advisor's notifications closed with × (#255).
     demoDismissedAdvisorNotesItem.removeValue(),
+    // The ship removals' notifications closed with × (#292).
+    demoDismissedRemovalNotesItem.removeValue(),
   ]);
   demoResets.value++;
 }
@@ -155,6 +159,11 @@ export interface DemoContext {
   storage: { counts: Partial<Record<StorageId, number>>; hangarPages: number };
   /** The warbond CCUs and their history in the Pledge Store tab (#130, #297), with either source. */
   storeData: StoreData;
+  /**
+   * The ships leaving the Pledge Store (#292) instead of the website's, made for the demo hangar and
+   * buy back, with the ones on sale now but not always available (#293).
+   */
+  shipRemovals: DemoShipRemovals;
   /** The catalog's items, for the Paint Discount Consultant of the generated demo (#131). */
   storeItems?: readonly StoreItem[];
   /** Buy back tokens shown instead of the account's, with the generated buy back (#177). */
@@ -333,6 +342,17 @@ export function useDemo(
         })),
       ].flatMap((entry) => (entry.order ? [[entry.order.id, entry] as const] : [])),
     );
+    const now = Date.now();
+    const storeData = demoStoreData(catalog.value, demoPledges.value, now, events.value);
+    const shipRemovals = demoShipRemovals({
+      ships: catalog.value.ships,
+      hangar: demoPledges.value,
+      buyback: demoBuybackPledges.value,
+      buyable: buyable.value,
+      warbondShips: new Set(storeData.warbonds.map((warbond) => warbond.ship.id)),
+      avoid: new Set((account?.priceIncreases ?? []).map((increase) => increase.ship.id)),
+      now,
+    });
     return {
       fakeId,
       realOrder,
@@ -348,7 +368,8 @@ export function useDemo(
         priceIncreases: account.priceIncreases,
       }),
       // With either source (#298): never the Pledge Store's real offers or this browser's history.
-      storeData: demoStoreData(catalog.value, demoPledges.value, Date.now(), events.value),
+      storeData,
+      shipRemovals,
       events: events.value,
       storage: {
         counts: {
@@ -359,6 +380,7 @@ export function useDemo(
           paintPlan: running.value?.plan?.plan ? 1 : 0,
           paintHistory: running.value?.completed.length ?? 0,
           events: events.value.length,
+          shipRemovals: shipRemovals.removals.length,
           ...(account && { priceIncreases: account.priceIncreases.length }),
         },
         hangarPages: Math.max(1, Math.ceil(demoPledges.value.length / HANGAR_PAGE_SIZE)),

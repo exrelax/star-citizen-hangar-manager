@@ -34,7 +34,15 @@ export function useCcusToSecure(
         storedPriceIncreases(storedIncreases.value ?? null),
       ships,
       buyable: current(storedBuyable.value ?? null)?.skus ?? [],
-      warbonds: current(storedWarbonds.value ?? null)?.warbonds ?? [],
+      // The demo's warbond offers for "Warbond upgrade" (#392), as its Pledge Store tab shows them.
+      warbonds:
+        (realIncreases() ? undefined : demo.value?.storeData.warbonds)?.map((offer) => ({
+          shipId: offer.ship.id,
+          skuId: offer.skuId,
+          price: offer.price,
+        })) ??
+        current(storedWarbonds.value ?? null)?.warbonds ??
+        [],
       holdings: holdingsByShip(createShipLookup(ships), pledges(), buyback()),
       buyback: buyback(),
       now: now.value,

@@ -4,7 +4,8 @@ import SvgIcon from '@/icons/SvgIcon.vue';
 import { countdown, formatExpectedTime } from '@/price-increases/price-increase-label';
 import { standardSku, warbondSku, type Ship } from '@/ships/ships';
 import ShipUpgradeButtons from '@/store/components/ShipUpgradeButtons.vue';
-import { buyableShipsItem, current, warbondsItem } from '@/ships/ships-storage';
+import { buyableShipsItem, current } from '@/ships/ships-storage';
+import type { WarbondTarget } from '@/store/warbond';
 import { useStored } from '@/storage/use-stored';
 import { useCountdownNow } from '@/shared/use-countdown-now';
 import { vTooltip } from '@/shared/tooltip/tooltip';
@@ -30,17 +31,23 @@ const props = defineProps<{
   removals: readonly ShipRemoval[];
   /** The upgrade tool's ships, for their images. */
   ships: readonly Ship[];
+  /** The tab's current warbond offers, for "Warbond upgrade" (#392): the demo's in the demo. */
+  warbonds?: readonly WarbondTarget[];
 }>();
 
 /**
  * The standard SKU of a ship RSI sells CCUs to, the upgrade dialog's target (#391): from the stored
- * upgrade tool, public data, as the CCUs to secure (`use-ccus-to-secure.ts`).
+ * upgrade tool, public data, as the CCUs to secure (`use-ccus-to-secure.ts`); the warbond SKUs of
+ * the tab's offers (#392).
  */
 const storedBuyable = useStored(buyableShipsItem);
-const storedWarbonds = useStored(warbondsItem);
 const skus = computed(() => ({
   buyable: current(storedBuyable.value ?? null)?.skus ?? [],
-  warbonds: current(storedWarbonds.value ?? null)?.warbonds ?? [],
+  warbonds: (props.warbonds ?? []).map((offer) => ({
+    shipId: offer.ship.id,
+    skuId: offer.skuId,
+    price: offer.price,
+  })),
 }));
 const skuOf = (removal: ShipRemoval) => standardSku(skus.value, removal.ship.id)?.skuId;
 /** Its cheapest warbond SKU, for "Warbond upgrade" (#392). */

@@ -130,7 +130,13 @@ provide(
   useRemovalCcus(
     () => pledges.value,
     () => buybackPledges.value,
-    () => !demo.value || settings.value.demo.realStoreData,
+    // The demo's own (#292), unless it shows the real Pledge Store data (#310).
+    () => {
+      const context = demoView.context.value;
+      return context && !settings.value.demo.realStoreData
+        ? { ...context.shipRemovals, events: context.events }
+        : undefined;
+    },
   ),
 );
 // The ones that can be melted now, for the sidebar's notification and its "Show" and "Select".
