@@ -1505,5 +1505,32 @@
   "upgradeDialog": {
     "alwaysAvailable": "Immer kaufbar",
     "alwaysAvailableHint": "Im Pledge Store immer kaufbar: Du kommst später jederzeit auf das Schiff, um ein CCU anzuwenden. Quelle: Star Citizen Wiki, über die Projekt-Website des Hangar Managers."
+  },
+  "allShips": {
+    "button": "Alle Schiffe",
+    "buttonHint": "Alle Schiffe des Pledge Store nach Wert, mit dem, was dein Hangar und dein Buy Back davon haben",
+    "title": "Alle Schiffe nach Wert",
+    "intro": "Jedes Schiff aus RSIs Ship-Upgrade-Tool, das wertvollste zuerst, mit dem, was dein Hangar und dein Buy Back davon haben.",
+    "count": {
+      "one": "$1 Schiff",
+      "other": "$1 Schiffe"
+    },
+    "colShip": "Schiff",
+    "colValue": "Wert",
+    "colWarbond": "Warbond",
+    "colWarbondHint": "Der aktuelle Warbond-Preis, solange es einen Warbond-Rabatt gibt",
+    "colPurchasable": "Erhältlich",
+    "colPurchasableHint": "RSI verkauft das Schiff noch, auf welchem Weg auch immer. Quelle: Star Citizen Wiki, über die Projekt-Website.",
+    "groupHangar": "Hangar",
+    "groupBuyback": "Buy Back",
+    "colCcusFrom": "CCUs von",
+    "colCcusFromHint": "CCUs mit dem Schiff als Basisschiff",
+    "colCcusTo": "CCUs auf",
+    "colCcusToHint": "CCUs mit dem Schiff als Zielschiff",
+    "colShips": "Schiffe",
+    "colShipsHint": "Einzelne Schiffs-Pledges (Standalone Ships) des Schiffs",
+    "colOnSale": "Im Verkauf",
+    "notRead": "Noch nicht gelesen",
+    "noShips": "Die Schiffe des Pledge Store sind noch nicht gelesen."
   }
 }

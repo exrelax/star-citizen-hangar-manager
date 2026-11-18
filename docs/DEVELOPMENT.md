@@ -295,9 +295,12 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   [`src/store/site-warbond-history.ts`](../src/store/site-warbond-history.ts).
 - **Ships** (#107): `data/ships.json` lists every ship of RSI's Ship Matrix with its slowly
   changing facts and their history: the production status (Ship Matrix), whether it is always
-  available in the Pledge Store and its standard price (Star Citizen Wiki), for the CCU Consultant
-  (#106), the Price Increase Advisor (#263) and the extension's ship status (#109). Each fact is a
-  list of periods (`{ value, from, to }`; `alwaysAvailable` only the periods in which it was), the
+  available in the Pledge Store, whether RSI still sells it at all (`retired`, #385: "Retired",
+  "Out of production", "… (No longer available)") and its standard price (Star Citizen Wiki), for
+  the CCU Consultant (#106), the Price Increase Advisor (#263), the table of all ships (#385) and
+  the extension's ship status (#109). Each fact is a
+  list of periods (`{ value, from, to }`; `alwaysAvailable` and `retired` only the periods in which
+  they were), the
   open one is the current value; `revision` counts the runs that changed anything. The dates are
   the days a run first saw a value, not the days RSI changed it; the first run started every
   period on 2026-11-12. Prices that change within hours (warbond, sales) are left out: the
@@ -505,6 +508,9 @@ an account without stored data):
   to buy, filler paints waiting and ready. With the demo setting "Show real Pledge Store data"
   (#310), the real warbond CCUs, history, events and price increases instead, with the counts of
   the demo hangar and buy back, which then also has CCUs to the real ships not on sale.
+- The table of all ships (#385, #390): counts of the demo hangar and buy back, warbond prices of
+  the demo's offers, always available and not sold any more from the ship facts, "Ship upgrade"
+  disabled.
 - Ship Removals (#292, `demo-ship-removals.ts`, checked in `demo-ship-removals.test.ts`): one ship
   alone on a date with a time and two days with two ships each; ships with enough CCUs to them,
   with too few and without CCUs; the yellow-orange and red triangle in My Hangar with its button to
