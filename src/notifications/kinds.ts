@@ -12,7 +12,7 @@
  * - `priceAdvisor`: the Price Increase Advisor's notifications (#254), CCUs of the hangar losing
  *   value by a price increase within that period, in the sidebar only.
  * - `shipRemovals`: ships CIG takes out of the Pledge Store (#290), one per date with a warning for
- *   CCUs from them, in the sidebar; a browser notification of the same kind follows with #291.
+ *   CCUs from them, in the sidebar, and in the browser a week before the date (#291).
  * Only the kinds turned off are stored, so a kind added later starts on.
  */
 

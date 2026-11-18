@@ -304,6 +304,8 @@ export const SHIP_REMOVALS = {
   url: 'https://exrelax.github.io/star-citizen-hangar-manager/data/ship-removals.json',
   /** The format the extension reads; files of other versions are ignored. */
   schemaVersion: 1,
+  /** The browser notification comes this long before the date (#291). */
+  browserNoticeMs: 7 * 24 * 60 * 60 * 1000,
 } as const;
 
 /**

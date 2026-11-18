@@ -5,7 +5,7 @@ import { selection } from './selection';
 import { meltReadyIds } from './use-melt-marks';
 import { showHangarFilter } from './view-filter';
 import { showBuybackFilter } from '@/buyback/buyback-filter-request';
-import { openCurrentWarbonds } from '@/store/open-current-warbonds';
+import { openCurrentWarbonds, openShipRemovals } from '@/store/open-current-warbonds';
 
 export {
   isManagerActionMessage,
@@ -60,6 +60,11 @@ export async function applyManagerAction(action: ManagerAction): Promise<void> {
   // Expected price increases (#193): the buy back with its filter "Price increase expected".
   if (action === 'showPriceIncreases') {
     showBuybackFilter('priceIncrease');
+    return;
+  }
+  // Ships leaving the Pledge Store (#291): the section of the Pledge Store tab.
+  if (action === 'showShipRemovals') {
+    openShipRemovals();
     return;
   }
   location.hash = hashOfTab('hangar');

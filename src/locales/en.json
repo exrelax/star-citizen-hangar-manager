@@ -249,7 +249,7 @@
     "notificationKindPriceAdvisor": "CCUs and price increases",
     "notificationKindPriceAdvisorHint": "CCUs of your hangar that lose upgrade value with a price increase expected within the period set under “General”, one notification per price increase, in the sidebar only.",
     "notificationKindShipRemovals": "Ships leaving the Pledge Store",
-    "notificationKindShipRemovalsHint": "Ships CIG takes out of the Pledge Store for good, one notification per date, with a warning for the CCUs of your hangar and buy back from them, in the sidebar.",
+    "notificationKindShipRemovalsHint": "Ships CIG takes out of the Pledge Store for good, one notification per date, with a warning for the CCUs of your hangar and buy back from them, in the sidebar, and a week before the date in the browser.",
     "priceAdvisorSecureHint": "Also without affected CCUs",
     "priceAdvisorSecureHintHint": "A hint that a CCU to the rising ship can still be bought at the old price, while none of your CCUs loses value by it.",
     "sidebarNotifications": "Sidebar",
@@ -1271,6 +1271,11 @@
     },
     "showShipRemovalsHint": "Shows the ships leaving the Pledge Store in the Pledge Store tab.",
     "dismissShipRemovalsHint": "Removes this notification for these ships on this date. A new ship or date shows again.",
+    "browserShipRemovalsTitle": "Ships leaving the Pledge Store",
+    "browserShipRemovals": {
+      "one": "The $1 leaves the Pledge Store on $2.",
+      "other": "The $1 leave the Pledge Store on $2."
+    },
     "browserPriceIncreaseTitle": "Expected price increase",
     "browserPriceIncreaseOne": "“$1” will probably cost more in less than 2 days ($2). Buy it back or use it as a discount token before then.",
     "browserPriceIncrease": "$1 buy back items will probably cost more in less than 2 days ($2). Buy them back or use them as discount tokens before then."

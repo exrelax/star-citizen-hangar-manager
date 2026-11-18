@@ -249,7 +249,7 @@
     "notificationKindPriceAdvisor": "CCU y subidas de precio",
     "notificationKindPriceAdvisorHint": "CCU de tu hangar que pierden valor de mejora con una subida de precio prevista dentro del periodo ajustado en «General», una notificación por subida, solo en la barra lateral.",
     "notificationKindShipRemovals": "Naves que dejan la Pledge Store",
-    "notificationKindShipRemovalsHint": "Las naves que CIG retira definitivamente de la Pledge Store, una notificación por fecha, con un aviso para los CCU desde ellas en tu hangar y tu buy back, en la barra lateral.",
+    "notificationKindShipRemovalsHint": "Las naves que CIG retira definitivamente de la Pledge Store, una notificación por fecha, con un aviso para los CCU desde ellas en tu hangar y tu buy back, en la barra lateral, y una semana antes de la fecha en el navegador.",
     "priceAdvisorSecureHint": "También sin CCU afectados",
     "priceAdvisorSecureHintHint": "Un aviso de que aún se puede comprar un CCU a la nave que sube al precio anterior, mientras ninguno de tus CCU pierda valor por ello.",
     "sidebarNotifications": "Barra lateral",
@@ -1271,6 +1271,11 @@
     },
     "showShipRemovalsHint": "Muestra las naves que dejan la Pledge Store en la pestaña Pledge Store.",
     "dismissShipRemovalsHint": "Quita esta notificación para estas naves en esta fecha. Una nave o fecha nueva la vuelve a mostrar.",
+    "browserShipRemovalsTitle": "Naves que dejan la Pledge Store",
+    "browserShipRemovals": {
+      "one": "La $1 deja la Pledge Store el $2.",
+      "other": "Las $1 dejan la Pledge Store el $2."
+    },
     "browserPriceIncreaseTitle": "Subida de precio prevista",
     "browserPriceIncreaseOne": "«$1» probablemente costará más en menos de 2 días ($2). Recómpralo o úsalo como token de descuento antes.",
     "browserPriceIncrease": "$1 artículos del Buy Back probablemente costarán más en menos de 2 días ($2). Recómpralos o úsalos como tokens de descuento antes."
