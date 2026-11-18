@@ -26,8 +26,19 @@ ul.pledges > li.shm-highlight {
  * the content and the layout would shift when switching tabs or changing filters.
  */
 .inner-content.shm-manager {
+  position: relative;
   width: 100%;
   min-width: 0;
+}
+
+/*
+ * Above the manager on the right, outside its tabs (#374): in the space between RSI's line at the
+ * top of the page and the manager.
+ */
+.shm-manager .shm-page-actions {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
 }
 
 /*

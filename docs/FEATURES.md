@@ -889,8 +889,8 @@ it into store credit with the paints you already own:
 
 - **Show in My Gear / Show in Buy Back**: opens the pledge on RSI's original page, scrolled to it
   and highlighted – also when it moved to another page in the meantime.
-- **Ship upgrade** (#374): in the head of My Hangar, next to the sorting, opens RSI's ship upgrade
-  dialog without a preset ship, as the button of RSI's "My Gear" does. A CCU bought there shows
+- **Ship upgrade** (#374): above the Hangar Manager on the right, outside its tabs so every tab has
+  it, opens RSI's ship upgrade dialog without a preset ship, as the button of RSI's "My Gear" does. A CCU bought there shows
   in My Hangar with the next smart update. Disabled in the demo mode: RSI's dialog shows your real
   ships and CCUs.
 - **External links**: ships link to their pages on **erkul.games** and **FleetYards.net** (can be
