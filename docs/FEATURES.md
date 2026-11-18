@@ -725,9 +725,9 @@ once its date is past. The demo mode shows them only with "Show real Pledge Stor
 
 In **My Hangar**, a CCU whose base ship leaves the Pledge Store shows a yellow-orange warning
 triangle (#289), red when you have fewer CCUs to that ship than from it in your hangar; its
-tooltip names the
-ship and the date. Expanded, the CCU tells how many CCUs to
-that ship are in your hangar and your buy back – the ways to get a ship to apply it to later.
+tooltip names the ship and the date. Expanded, the CCU tells how many CCUs to that ship are in your
+hangar and your buy back – the ways to get a ship to apply it to later. Its button "Show in Pledge
+Store" (#381) opens the ship under "Ships leaving the Pledge Store", expanded with its table.
 
 The **sidebar** tells each date in one notification with all ships removed on it (#290), and
 **Show in Pledge Store** opens the section. Below the text all ships of the date are listed: first

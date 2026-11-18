@@ -1468,6 +1468,7 @@
     "ccuHint": "La $1 deja la Pledge Store el $2. Este CCU solo podrá aplicarse entonces a un pledge con esa nave.",
     "ccusTo": "CCU hacia la $1: $2 en tu hangar, $3 en tu buy back.",
     "ccuCritical": "Tienes menos CCU hacia la $1 que desde ella: no todos los CCU desde esa nave tendrán una nave a la que aplicarse.",
+    "showShipHint": "Abre «Naves que dejan la Pledge Store» con tus CCU desde y hacia la $1.",
     "limitedSale": {
       "one": "La $1 está a la venta ahora, pero no es una de las naves siempre disponibles.",
       "other": "Las $1 están a la venta ahora, pero no son de las naves siempre disponibles."

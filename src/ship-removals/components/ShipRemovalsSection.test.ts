@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp, h, nextTick, type App } from 'vue';
 import type { ShipRemoval } from '../ship-removals';
+import { openShipRemoval, shipRemovalRequest } from '@/store/open-current-warbonds';
 import ShipRemovalsSection from './ShipRemovalsSection.vue';
 
 /* The section of the Pledge Store tab with the ships leaving it (#288). */
@@ -66,6 +67,31 @@ describe('ShipRemovalsSection', () => {
     (row.querySelector('.shm-chevron') as HTMLElement).click();
     await nextTick();
     expect(row.querySelector('.shm-removal-details')).toBeNull();
+  });
+
+  it('expands a ship opened from My Hangar (#381), also with another one open', async () => {
+    const root = mount([
+      removal(45, 'Constellation Mk IV Andromeda', '2027-01-27T00:00:00Z', true),
+      removal(47, 'Constellation Mk IV Aquila', '2027-01-27T00:00:00Z', true),
+    ]);
+    const [andromeda, aquila] = [...root.querySelectorAll('.shm-removal')];
+    (andromeda!.querySelector('.shm-row-summary') as HTMLElement).click();
+    openShipRemoval(47);
+    await nextTick();
+    expect(location.hash).toBe('#hangar-manager-store');
+    expect(aquila!.id).toBe('shm-store-removal-47');
+    expect(aquila!.querySelector('.shm-removal-details')).not.toBeNull();
+    expect(andromeda!.querySelector('.shm-removal-details')).not.toBeNull();
+    expect(shipRemovalRequest.value).toBeUndefined();
+  });
+
+  it('expands a ship requested before the section was built (#381)', async () => {
+    shipRemovalRequest.value = { shipId: 45 };
+    const root = mount([
+      removal(45, 'Constellation Mk IV Andromeda', '2027-01-27T00:00:00Z', true),
+    ]);
+    await nextTick();
+    expect(root.querySelector('#shm-store-removal-45 .shm-removal-details')).not.toBeNull();
   });
 
   it('shows nothing without upcoming removals', () => {
