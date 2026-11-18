@@ -61,7 +61,11 @@ async function securedShips(inDemo: boolean, realInDemo = false): Promise<string
   });
   app.provide(
     DEMO_CONTEXT,
-    shallowRef(inDemo ? ({ priceIncreases: [demo] } as unknown as DemoContext) : null),
+    shallowRef(
+      inDemo
+        ? ({ priceIncreases: [demo], storeData: { warbonds: [] } } as unknown as DemoContext)
+        : null,
+    ),
   );
   app.mount(document.createElement('div'));
   // The stored values are read asynchronously.

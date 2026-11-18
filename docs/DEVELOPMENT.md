@@ -505,6 +505,15 @@ an account without stored data):
   to buy, filler paints waiting and ready. With the demo setting "Show real Pledge Store data"
   (#310), the real warbond CCUs, history, events and price increases instead, with the counts of
   the demo hangar and buy back, which then also has CCUs to the real ships not on sale.
+- Ship Removals (#292, `demo-ship-removals.ts`, checked in `demo-ship-removals.test.ts`): one ship
+  alone on a date with a time and two days with two ships each; ships with enough CCUs to them,
+  with too few and without CCUs; the yellow-orange and red triangle in My Hangar with its button to
+  the ship; the sidebar notifications without a warning, yellow-orange and red; a ship on sale but
+  not always available, with the demo's event or without one (the demo setting "A running event
+  in the Pledge Store tab").
+  With the upgrade tool's ships on sale also a leaving ship with "Ship upgrade" only, with "Warbond
+  upgrade" next to it and without either (#391, #392), and ships to secure with and without
+  "Warbond upgrade"; the upgrade buttons are disabled in the demo.
 - Sample notifications: events, new and gone warbond CCUs, changed store items – never a browser
   notification.
 - The settings without real account data (#132).

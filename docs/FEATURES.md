@@ -234,7 +234,10 @@ Sharing your hangar in a screenshot, a stream or a video? The settings categorie
   the demo setting **Show real Pledge Store data** (#310) it shows the real warbond CCUs, their
   history, the events and the CCUs to secure before a price increase instead – public data –,
   still counted against the demo hangar and buy back, whose CCUs then also lead to the real ships
-  RSI sells no CCUs to before their price increase. The hangar's pledges have every
+  RSI sells no CCUs to before their price increase. The ships leaving the Pledge Store are the
+  demo's own too (#292), picked for the demo hangar and buy back. The upgrade buttons of the tab
+  are disabled in the demo, since RSI's dialog shows your real ships and CCUs. The hangar's pledges
+  have every
   state (#176): meltable or not, giftable or not, LTI and insurances in years and months (also
   several at once), upgraded ships with made-up "Applied upgrades", protected game access – one
   pledge per game like RSI's, by the demo settings `SC` on a reward without a ship and `SQ42` on a
@@ -725,7 +728,8 @@ applied to a pledge with the ship you already have, or get with a CCU to it. Ope
 your CCUs from and to it (#380) in a table – in the hangar, in the buy back and together – and
 whether that is enough for the CCUs from it in your hangar – those in the buy back aren't yours
 and don't count –, or how many CCUs to it are missing and until when to secure them. A ship disappears
-once its date is past. The demo mode shows them only with "Show real Pledge Store data".
+once its date is past. The demo mode has removals of its own (#292), made for the demo hangar and
+buy back, with dates ahead of today; with "Show real Pledge Store data" it shows the website's.
 
 In **My Hangar**, a CCU whose base ship leaves the Pledge Store shows a yellow-orange warning
 triangle (#289), red when you have fewer CCUs to that ship than from it in your hangar; its

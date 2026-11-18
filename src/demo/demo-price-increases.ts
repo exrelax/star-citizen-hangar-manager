@@ -18,6 +18,8 @@ import { ccuTargetsOf, type DemoPledge } from './generate-hangar';
  *   value and one from it that loses value – the advice and the sidebar's notification;
  * - a ship RSI sells CCUs to without a CCU from it in My Hangar: the Pledge Store tab's CCUs to
  *   secure and the sidebar's hint.
+ * - one of the demo's warbond offers RSI sells CCUs to: a ship to secure with "Warbond upgrade"
+ *   (#392).
  * The first one is confirmed by CIG, with a source, the second only expected (#275).
  * And a ship RSI doesn't sell CCUs to right now, with CCUs to it in the buy back (#311).
  */
@@ -61,6 +63,8 @@ export function demoPriceIncreases(
   buyable?: ReadonlySet<number>,
   /** A ship not on sale with CCUs to it in the buy back (`demoNotOnSaleShip`, #311). */
   notOnSale?: Ship,
+  /** The ships of the demo's warbond offers: one to secure gets "Warbond upgrade" (#392). */
+  warbondShips: ReadonlySet<number> = new Set(),
 ): ExpectedPriceIncrease[] {
   const used = new Set<string>(notOnSale ? [notOnSale.name] : []);
   /** The first of the candidates not used yet, else any ship of the catalog not used yet. */
@@ -128,6 +132,15 @@ export function demoPriceIncreases(
   // A ship in the middle: there are cheaper ones to start the CCUs from.
   const secureShip = secureCandidates[Math.floor(secureCandidates.length / 2)];
   if (secureShip) used.add(secureShip.name);
+  // One of the demo's warbond offers, so a ship to secure shows "Warbond upgrade" too (#392).
+  const warbondShip = ccuTargetsOf(catalog.ships).find(
+    (ship) =>
+      warbondShips.has(ship.id) &&
+      !used.has(ship.name) &&
+      ship.name !== moduleShip?.name &&
+      (!buyable || buyable.has(ship.id)),
+  );
+  if (warbondShip) used.add(warbondShip.name);
 
   return [
     // Flight ready ahead, with a probable time, with its module.
@@ -174,6 +187,15 @@ export function demoPriceIncreases(
             ship: { id: secureShip.id, name: secureShip.name },
             priceIncreaseAt: at(now, 8, 1),
             price: risenPrice(secureShip),
+          },
+        ]
+      : []),
+    ...(warbondShip
+      ? [
+          {
+            // Without a known new price: the Price Increase Advisor's cases stay as they are.
+            ship: { id: warbondShip.id, name: warbondShip.name },
+            priceIncreaseAt: at(now, 10, 3),
           },
         ]
       : []),

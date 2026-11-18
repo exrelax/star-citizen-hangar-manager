@@ -92,12 +92,14 @@ const offers = computed(() =>
 );
 
 /**
- * The ships CIG takes out of the Pledge Store (#288): public data, but the demo shows them only
- * with the real Pledge Store data, like the events; its own come with #292.
+ * The ships CIG takes out of the Pledge Store (#288): public data; the demo has its own (#292),
+ * unless it shows the real Pledge Store data, like the events.
  */
 const storedRemovals = useStored(shipRemovalsItem);
 const removals = computed(() =>
-  demoContext.value && !realInDemo.value ? [] : storedShipRemovals(storedRemovals.value ?? null),
+  demoContext.value && !realInDemo.value
+    ? demoContext.value.shipRemovals.removals
+    : storedShipRemovals(storedRemovals.value ?? null),
 );
 
 /** The CCUs to secure before a price increase (#253). */
@@ -244,7 +246,11 @@ const displayClasses = computed(() => ({
     </div>
 
     <!-- Below the discount CCUs and their history, whichever is shown. -->
-    <ShipRemovalsSection :removals="removals" :ships="storeData?.ships ?? []" />
+    <ShipRemovalsSection
+      :removals="removals"
+      :ships="storeData?.ships ?? []"
+      :warbonds="storeData?.warbonds ?? []"
+    />
 
     <PaintConsultant :settings="settings" :active="active" />
   </section>

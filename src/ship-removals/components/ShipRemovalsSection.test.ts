@@ -3,7 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { createApp, h, nextTick, shallowRef, type App } from 'vue';
 import { DEMO_CONTEXT, type DemoContext } from '@/demo/use-demo';
-import { buyableShipsItem, SHIPS_VERSION, warbondsItem } from '@/ships/ships-storage';
+import { buyableShipsItem, SHIPS_VERSION } from '@/ships/ships-storage';
+import type { WarbondTarget } from '@/store/warbond';
 import type { ShipRemoval } from '../ship-removals';
 import { openShipRemoval, shipRemovalRequest } from '@/store/open-current-warbonds';
 import ShipRemovalsSection from './ShipRemovalsSection.vue';
@@ -27,10 +28,10 @@ afterEach(() => {
   document.body.innerHTML = '';
 });
 
-function mount(removals: ShipRemoval[], demo = false) {
+function mount(removals: ShipRemoval[], demo = false, warbonds: WarbondTarget[] = []) {
   const root = document.createElement('div');
   document.body.append(root);
-  app = createApp({ render: () => h(ShipRemovalsSection, { removals, ships: [] }) });
+  app = createApp({ render: () => h(ShipRemovalsSection, { removals, ships: [], warbonds }) });
   app.provide(DEMO_CONTEXT, shallowRef(demo ? ({} as DemoContext) : null));
   app.mount(root);
   return root;
@@ -98,7 +99,7 @@ describe('ShipRemovalsSection', () => {
     expect(root.querySelector('#shm-store-removal-45 .shm-removal-details')).not.toBeNull();
   });
 
-  it("opens RSI's ship upgrade dialog for a ship on sale, with its standard SKU (#391)", async () => {
+  it("opens RSI's ship upgrade dialog for a ship on sale, with its SKUs (#391, #392)", async () => {
     fakeBrowser.reset();
     await buyableShipsItem.setValue({
       version: SHIPS_VERSION,
@@ -107,15 +108,19 @@ describe('ShipRemovalsSection', () => {
         { shipId: 45, skuId: 901, title: 'Standard Edition', price: 350 },
       ],
     });
-    await warbondsItem.setValue({
-      version: SHIPS_VERSION,
-      warbonds: [{ shipId: 45, skuId: 900, price: 300 }],
-    });
+    // The tab's current warbond offers.
+    const warbonds = [
+      {
+        ship: { id: 45, name: 'Constellation Mk IV Andromeda', msrp: 350 },
+        skuId: 900,
+        price: 300,
+      },
+    ];
     const removals = [
       removal(45, 'Constellation Mk IV Andromeda', '2027-01-27T00:00:00Z', true),
       removal(47, 'Constellation Mk IV Aquila', '2027-01-27T00:00:00Z', true),
     ];
-    const root = mount(removals);
+    const root = mount(removals, false, warbonds);
     await new Promise((resolve) => setTimeout(resolve));
     await nextTick();
     const [andromeda, aquila] = [...root.querySelectorAll('.shm-removal')];
@@ -139,7 +144,7 @@ describe('ShipRemovalsSection', () => {
 
     // In the demo they are disabled: RSI's dialog would show the real account.
     app!.unmount();
-    const demo = mount(removals, true);
+    const demo = mount(removals, true, warbonds);
     await new Promise((resolve) => setTimeout(resolve));
     await nextTick();
     const disabled = [...demo.querySelectorAll<HTMLButtonElement>('.shm-upgrade-buttons button')];
