@@ -23,6 +23,7 @@ import { useNow } from '@/shared/use-now';
 import { FILTER_HIGHLIGHTS } from '@/config';
 import { highlightClasses } from '../highlights';
 import ManagerList from './ManagerList.vue';
+import ShipUpgradeButtons from '@/store/components/ShipUpgradeButtons.vue';
 import PledgeRow from './PledgeRow.vue';
 
 const props = defineProps<{ pledges: PledgeView[]; settings: Settings; active: boolean }>();
@@ -131,6 +132,10 @@ const filterHint = (filter: PledgeFilter) => {
     @visible="showVisible"
     @filter-states="showFilterStates"
   >
+    <!-- RSI's ship upgrade dialog without a preset (#374), as on "My Gear". -->
+    <template #side>
+      <ShipUpgradeButtons class="shm-hangar-upgrade" />
+    </template>
     <template #row="{ entry, autoExpand }">
       <PledgeRow :pledge="entry" :auto-expand="autoExpand" />
     </template>

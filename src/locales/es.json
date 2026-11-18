@@ -587,6 +587,7 @@
     "openWarbondUpgrade": "Mejora Warbond",
     "upgradeDemo": "No disponible en el modo demo: el diálogo de RSI muestra tus naves y CCU reales.",
     "openUpgradeHint": "Abre el diálogo de mejoras de RSI con la $1 (Warbond Edition) como destino",
+    "openUpgradeAnyHint": "Abre el diálogo de mejoras de nave de RSI, como en «My Gear»",
     "openUpgradeFromHint": "Abre el diálogo de mejoras de nave de RSI con la $1 como nave base y la $2 como destino",
     "inHangar": "En el hangar:",
     "sameShipBadge": "$1 a $2",
