@@ -1,6 +1,6 @@
 import type { BuybackView } from '@/buyback/buyback-view';
 import type { BuybackPrice } from '@/buyback/buyback-price';
-import type { Ship, ShipSku, WarbondSku } from '@/ships/ships';
+import { standardSku, type Ship, type ShipSku, type WarbondSku } from '@/ships/ships';
 import { cheapestBases, createShipLookup, type BaseShip, type Holdings } from '@/store/warbond';
 import { upcomingPriceIncreases, type ExpectedPriceIncrease } from './price-increases';
 
@@ -74,7 +74,6 @@ export function ccusToSecure(input: SecureInput): SecureOffer[] {
     byId.get(increase.ship.id) ?? lookup.shipOf(increase.ship.name);
   const rising = new Set(upcoming.flatMap((increase) => shipOf(increase)?.id ?? []));
   const bases = input.ships.filter((ship) => !rising.has(ship.id));
-  const warbondSkus = new Set(input.warbonds.map((warbond) => warbond.skuId));
   const seen = new Set<number>();
 
   /** The buy back's CCUs to `ship` that RSI can sell again, grouped by base ship. */
@@ -108,9 +107,7 @@ export function ccusToSecure(input: SecureInput): SecureOffer[] {
     if (!ship || seen.has(ship.id)) return [];
     seen.add(ship.id);
     // RSI sells standard CCUs to it right now, else the buy back may have some (#311).
-    const sku = input.buyable.find(
-      (entry) => entry.shipId === ship.id && !warbondSkus.has(entry.skuId),
-    );
+    const sku = standardSku(input, ship.id);
     const price = ship.msrp;
     const gain =
       increase.price && Math.round((increase.price.to - increase.price.from) * 100) / 100;
