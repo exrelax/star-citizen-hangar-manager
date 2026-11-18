@@ -1467,6 +1467,14 @@
     "announced": "La fecha es la anunciada por CIG.",
     "ccuHint": "La $1 deja la Pledge Store el $2. Este CCU solo podrá aplicarse entonces a un pledge con esa nave.",
     "ccusTo": "CCU hacia la $1: $2 en tu hangar, $3 en tu buy back.",
-    "ccuCritical": "Tienes menos CCU hacia la $1 que desde ella: no todos los CCU desde esa nave tendrán una nave a la que aplicarse."
+    "ccuCritical": "Tienes menos CCU hacia la $1 que desde ella: no todos los CCU desde esa nave tendrán una nave a la que aplicarse.",
+    "limitedSale": {
+      "one": "La $1 está a la venta ahora, pero no es una de las naves siempre disponibles.",
+      "other": "Las $1 están a la venta ahora, pero no son de las naves siempre disponibles."
+    },
+    "limitedSaleEvent": {
+      "one": "Puede que ya no esté a la venta cuando termine $1, el $2.",
+      "other": "Puede que ya no estén a la venta cuando termine $1, el $2."
+    }
   }
 }

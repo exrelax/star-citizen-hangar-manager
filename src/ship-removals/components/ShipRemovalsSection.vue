@@ -6,7 +6,9 @@ import type { Ship } from '@/ships/ships';
 import { useCountdownNow } from '@/shared/use-countdown-now';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { computed } from 'vue';
+import { limitedSaleNote } from '../removal-availability';
 import { removalsByDate, type ShipRemoval } from '../ship-removals';
+import { useProvidedRemovalCcus } from '../use-removal-ccus';
 
 /*
  * The ships CIG takes out of the Pledge Store for good (#288, part of Ship Removals #285), in the
@@ -25,6 +27,11 @@ const props = defineProps<{
 const now = useCountdownNow(() => props.removals.map((removal) => removal.removedAt));
 const groups = computed(() => removalsByDate(props.removals, now.value));
 const imageOf = computed(() => new Map(props.ships.map((ship) => [ship.id, ship.image])));
+
+/** On sale now, but not always available (#293): it may be gone before the date. */
+const removalState = useProvidedRemovalCcus();
+const limited = (removal: ShipRemoval) =>
+  limitedSaleNote([removal], removalState.value.limited, locale.value);
 
 const when = (removal: ShipRemoval) => formatExpectedTime(removal.removedAt, locale.value);
 const label = (removal: ShipRemoval) =>
@@ -92,6 +99,10 @@ const hint = (removal: ShipRemoval) =>
                   >{{ i18n.t('priceIncrease.source') }} <SvgIcon name="square-up-right"
                 /></a>
               </span>
+              <span v-if="limited(removal)" class="shm-removal-note shm-removal-limited">
+                <SvgIcon name="circle-info" />
+                {{ limited(removal) }}
+              </span>
             </span>
             <span class="shm-badges">
               <span
@@ -134,6 +145,19 @@ const hint = (removal: ShipRemoval) =>
 .shm-removal-note {
   color: var(--shm-text-secondary);
   font-size: calc(12px * var(--shm-font-scale));
+}
+
+/* On sale now, but not always available (#293): it wraps, unlike the other lines of a row. */
+.shm-removal-limited {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  white-space: normal;
+}
+
+.shm-removal-limited .shm-icon {
+  flex: none;
+  color: var(--shm-accent);
 }
 
 .shm-removal-source {

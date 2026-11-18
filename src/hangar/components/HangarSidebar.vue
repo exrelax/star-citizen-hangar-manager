@@ -83,6 +83,7 @@ import {
   openShipRemovals,
 } from '@/store/open-current-warbonds';
 import { useProvidedRemovalCcus } from '@/ship-removals/use-removal-ccus';
+import { limitedSaleNote } from '@/ship-removals/removal-availability';
 import {
   demoDismissedRemovalNotesItem,
   dismissedRemovalNotesItem,
@@ -405,6 +406,9 @@ function removalText(note: RemovalNote) {
     number.value.format(note.ships.length),
   ]);
 }
+/** The ships of the date on sale now but not always available (#293), as one note. */
+const removalLimited = (note: RemovalNote) =>
+  limitedSaleNote(note.ships, removalCcus.value.limited, locale.value);
 /** The ships of the date without CCUs from them, by name. */
 const removalOthers = (note: RemovalNote) => {
   const warned = new Set(note.warnings.map((warning) => warning.removal.ship.id));
@@ -850,6 +854,9 @@ async function move(box: Box, step: -1 | 1) {
                 <span>{{ ship.ship.name }}</span>
               </li>
             </ul>
+            <p v-if="removalLimited(note)" class="shm-sidebar-note shm-sidebar-removal-limited">
+              {{ removalLimited(note) }}
+            </p>
             <div v-mark-wrapped class="shm-sidebar-actions">
               <button
                 v-tooltip="i18n.t('notifications.showShipRemovalsHint')"
@@ -1390,6 +1397,12 @@ async function move(box: Box, step: -1 | 1) {
 
 .shm-sidebar-removal-warnings .shm-icon {
   flex: none;
+}
+
+/* On sale now, but not always available (#293): below the ships, in the text's column. */
+.shm-sidebar-melt-ready > .shm-sidebar-removal-limited {
+  margin: 6px 0 0;
+  color: var(--shm-text-secondary);
 }
 
 /* A ship without CCUs from it: no icon, its name in line with the warned ships' names. */

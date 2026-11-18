@@ -27,6 +27,7 @@ import { formatTimeLeft, toggleMeltMark } from '../melt-marks';
 import { useMarkedPledges } from '../use-melt-marks';
 import { useNow } from '@/shared/use-now';
 import { useProvidedRemovalCcus } from '@/ship-removals/use-removal-ccus';
+import { limitedSaleNote } from '@/ship-removals/removal-availability';
 
 const props = defineProps<{
   pledge: PledgeView;
@@ -122,12 +123,14 @@ const removal = computed(() => {
   ]);
   const shortage = critical ? i18n.t('shipRemovals.ccuCritical', [ship.name]) : '';
   const ccusTo = i18n.t('shipRemovals.ccusTo', [ship.name, count('hangar'), count('buyback')]);
+  // On sale now, but not always available (#293): it may be gone before the date.
+  const limited = limitedSaleNote([entry.removal], removals.value.limited, locale.value) ?? '';
   return {
     critical,
     /** The tooltip: the ship, the date and, if so, that there are too few CCUs to it. */
-    hint: [about, shortage].filter(Boolean).join(' '),
+    hint: [about, shortage, limited].filter(Boolean).join(' '),
     /** Expanded: the counts before the shortage they show. */
-    details: [about, ccusTo, shortage].filter(Boolean).join(' '),
+    details: [about, ccusTo, shortage, limited].filter(Boolean).join(' '),
   };
 });
 

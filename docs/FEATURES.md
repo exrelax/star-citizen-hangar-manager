@@ -737,6 +737,14 @@ also while no RSI page is open: "The Constellation Mk IV Andromeda, … leave th
 27, 2027." Each date is told once for its ships; a click opens the section of the Pledge Store tab.
 It goes away once the date has passed or the Hangar Manager is seen. Never in the demo mode.
 
+A ship leaving the store that is **on sale right now but not always available** (#293) may be
+gone before its date, e.g. when the event it is sold in ends. The section, the CCUs in My Hangar
+and the sidebar notification say so ("The Constellation Mk IV Andromeda is on sale right now, but
+isn't one of the always available ships."), during an event also when it ends ("It may not be on
+sale any more once Intergalactic Aerospace Expo 2956 ends on November 27, 2026."). The ships on
+sale come from RSI's upgrade tool, which ships are always available from the ship facts of the
+project website; without them there is no note.
+
 ## Paint Discount Consultant
 
 RSI gives a volume discount on paints in the cart: 15 % from 2 paints, 20 % from 3, 25 % from 5,
