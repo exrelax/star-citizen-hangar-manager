@@ -658,7 +658,9 @@
       "priceAsc": "Menor precio estándar primero",
       "discountDesc": "Mayor descuento primero",
       "discountAsc": "Menor descuento primero"
-    }
+    },
+    "openWarbondShort": "Warbond",
+    "openStandardShort": "Estándar"
   },
   "events": {
     "title": "Eventos",
@@ -1510,7 +1512,7 @@
     "button": "Todas las naves",
     "buttonHint": "Todas las naves de la Pledge Store por valor, con lo que tienen de ellas tu hangar y tu buy back",
     "title": "Todas las naves por valor",
-    "intro": "Cada nave de la herramienta de mejoras de RSI, la más valiosa primero, con lo que tienen de ella tu hangar y tu buy back.",
+    "intro": "Cada nave de la herramienta de mejoras de RSI, la más barata primero – con lo que tienen de ella tu hangar y tu buy back, y cómo conseguirla.",
     "count": {
       "one": "$1 nave",
       "other": "$1 naves"
@@ -1531,6 +1533,34 @@
     "colShipsHint": "Pledges de la nave sola (Standalone Ships)",
     "colOnSale": "En venta ahora",
     "notRead": "Aún no leído",
-    "noShips": "Las naves de la Pledge Store aún no se han leído."
+    "noShips": "Las naves de la Pledge Store aún no se han leído.",
+    "search": "Buscar naves y fabricantes …",
+    "priceRange": "Valor",
+    "priceFrom": "Valor desde",
+    "priceTo": "Valor hasta",
+    "filtersLabel": "Mostrar solo",
+    "filterAlwaysAvailable": "Siempre disponible",
+    "filterOnSale": "En venta",
+    "filterWarbond": "Warbond",
+    "countFiltered": {
+      "one": "$1 de $2 nave",
+      "other": "$1 de $2 naves"
+    },
+    "noResults": "Ninguna nave coincide con la búsqueda y los filtros.",
+    "reset": "Restablecer",
+    "histogram": "Naves por cada 50 dólares de valor",
+    "filterOwned": "En mi hangar o buy back",
+    "countOwned": {
+      "one": "$1 en tu hangar o buy back",
+      "other": "$1 en tu hangar o buy back"
+    },
+    "filteredBy": "filtradas por $1",
+    "bandNote": "una línea cada 100 dólares",
+    "colPledgeStore": "Pledge Store",
+    "notSold": "No a la venta",
+    "notOnSale": "No está a la venta ahora",
+    "warbondPrice": "warbond $1",
+    "saves": "ahorra $1",
+    "source": "Valores de la herramienta de mejoras de RSI. «Siempre disponible» y «No a la venta» del Star Citizen Wiki (CC BY-SA 4.0), a través de la web del proyecto."
   }
 }

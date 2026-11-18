@@ -27,6 +27,8 @@ const props = defineProps<{
   skuId?: number;
   /** The warbond SKU ("Warbond upgrade"). */
   warbondSkuId?: number;
+  /** Short labels for a table (#385): "Warbond" and, next to it, "Standard". */
+  short?: boolean;
 }>();
 
 const demo = useDemoContext();
@@ -56,7 +58,7 @@ const buttons = computed(() => {
       key: 'warbond',
       skuId: props.warbondSkuId,
       icon: 'tag',
-      label: i18n.t('store.openWarbondUpgrade'),
+      label: i18n.t(props.short ? 'store.openWarbondShort' : 'store.openWarbondUpgrade'),
       hint: i18n.t('store.openUpgradeHint', [props.shipName ?? '']),
     });
   }
@@ -65,7 +67,11 @@ const buttons = computed(() => {
       key: 'standard',
       skuId: props.skuId,
       icon: 'basket-shopping',
-      label: i18n.t('store.openUpgrade'),
+      label: i18n.t(
+        props.short && props.warbondSkuId !== undefined
+          ? 'store.openStandardShort'
+          : 'store.openUpgrade',
+      ),
       hint: i18n.t('ccusToSecure.openUpgradeHint', [props.shipName ?? '']),
     });
   }

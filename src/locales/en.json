@@ -658,7 +658,9 @@
       "priceAsc": "Lowest standard price first",
       "discountDesc": "Highest discount first",
       "discountAsc": "Lowest discount first"
-    }
+    },
+    "openWarbondShort": "Warbond",
+    "openStandardShort": "Standard"
   },
   "events": {
     "title": "Events",
@@ -1510,7 +1512,7 @@
     "button": "All ships",
     "buttonHint": "All ships of the Pledge Store by value, with what your hangar and buy back have of them",
     "title": "All ships by value",
-    "intro": "Every ship of RSI's ship upgrade tool, the most valuable first, with what your hangar and your buy back have of it.",
+    "intro": "Every ship of RSI’s upgrade tool, cheapest first – with what your hangar and buy back have of it, and how to get it.",
     "count": {
       "one": "$1 ship",
       "other": "$1 ships"
@@ -1531,6 +1533,34 @@
     "colShipsHint": "Standalone ship pledges of the ship",
     "colOnSale": "On sale",
     "notRead": "Not read yet",
-    "noShips": "The Pledge Store's ships aren't read yet."
+    "noShips": "The Pledge Store's ships aren't read yet.",
+    "search": "Search ships and manufacturers …",
+    "priceRange": "Value",
+    "priceFrom": "Value from",
+    "priceTo": "Value up to",
+    "filtersLabel": "Show only",
+    "filterAlwaysAvailable": "Always available",
+    "filterOnSale": "On sale",
+    "filterWarbond": "Warbond",
+    "countFiltered": {
+      "one": "$1 of $2 ship",
+      "other": "$1 of $2 ships"
+    },
+    "noResults": "No ship matches the search and the filters.",
+    "reset": "Reset",
+    "histogram": "Ships per 50 dollars of value",
+    "filterOwned": "In my hangar or buy back",
+    "countOwned": {
+      "one": "$1 of them in your hangar or buy back",
+      "other": "$1 of them in your hangar or buy back"
+    },
+    "filteredBy": "filtered by $1",
+    "bandNote": "a line marks every 100 dollars",
+    "colPledgeStore": "Pledge Store",
+    "notSold": "Not sold",
+    "notOnSale": "Not on sale now",
+    "warbondPrice": "warbond $1",
+    "saves": "saves $1",
+    "source": "Values from RSI’s ship upgrade tool. “Always available” and “Not sold” from the Star Citizen Wiki (CC BY-SA 4.0), via the project website."
   }
 }
