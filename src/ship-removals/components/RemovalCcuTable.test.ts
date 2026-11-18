@@ -47,7 +47,7 @@ describe('RemovalCcuTable', () => {
       ['CCUs to it', '1', '2', '3'],
     ]);
     expect(summary).toBe(
-      'Enough: for every CCU from the Constellation Mk IV Andromeda there is a CCU to it.',
+      'Enough: for every CCU from the Constellation Mk IV Andromeda in your hangar there is a CCU to it.',
     );
   });
 
@@ -59,7 +59,7 @@ describe('RemovalCcuTable', () => {
       level: 'critical',
     });
     expect(summary).toBe(
-      '3 CCUs to the Constellation Mk IV Andromeda are missing for the CCUs from it. Secure them before Jan 27, 2027.',
+      '2 CCUs to the Constellation Mk IV Andromeda are missing for the CCUs from it in your hangar. Secure them before Jan 27, 2027.',
     );
     expect(root.querySelector('.shm-removal-summary')?.classList).toContain('is-critical');
   });
@@ -69,9 +69,9 @@ describe('RemovalCcuTable', () => {
     expect(none.root.querySelector('table')).toBeNull();
     expect(none.summary).toBe('You have no CCUs from or to the Constellation Mk IV Andromeda.');
     app?.unmount();
-    const toOnly = mount({ removal, from: [], to: ccus(1, 0) });
+    const toOnly = mount({ removal, from: ccus(0, 2), to: ccus(1, 0) });
     expect(toOnly.summary).toBe(
-      'You have no CCUs from the Constellation Mk IV Andromeda: nothing to secure.',
+      'You have no CCUs from the Constellation Mk IV Andromeda in your hangar: nothing to secure.',
     );
   });
 });

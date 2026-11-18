@@ -2,7 +2,7 @@
 import { i18n, locale } from '@/i18n';
 import { formatExpectedTime } from '@/price-increases/price-increase-label';
 import { computed } from 'vue';
-import type { RemovalCcus } from '../removal-ccus';
+import { hangarCcus, type RemovalCcus } from '../removal-ccus';
 // The shared, unscoped styles of the Pledge Store tab's tables.
 import '@/store/components/store-table.css';
 
@@ -10,7 +10,8 @@ import '@/store/components/store-table.css';
  * The CCUs from and to a ship leaving the Pledge Store (#380), in the hangar and the buy back, as
  * #287 counts them: a CCU from the ship needs a ship to be applied to once the ship can't be bought
  * any more – one already owned, or one that a CCU to it gives. Below the table, whether there are
- * enough CCUs to the ship, or how many are missing and until when to secure them.
+ * enough CCUs to the ship for those from it in the hangar (the buy back's aren't owned; they are
+ * listed, but don't count), or how many are missing and until when to secure them.
  */
 const props = defineProps<{ entry: RemovalCcus }>();
 
@@ -24,11 +25,13 @@ const rows = computed(() => [
 const shown = (value: number) => (value ? String(value) : '–');
 
 const ship = computed(() => props.entry.removal.ship.name);
+/** The level counts the CCUs from the ship in the hangar only (#287): the buy back's aren't owned. */
 const summary = computed(() => {
   const { from, to, level, removal } = props.entry;
-  if (!from.length) return i18n.t('shipRemovals.summaryNoneFrom', [ship.value]);
+  const owned = hangarCcus(from);
+  if (!owned) return i18n.t('shipRemovals.summaryNoneFrom', [ship.value]);
   if (level === 'warning') return i18n.t('shipRemovals.summaryEnough', [ship.value]);
-  const missing = from.length - to.length;
+  const missing = owned - to.length;
   return i18n.n('shipRemovals.summaryMissing', missing, [
     String(missing),
     ship.value,
@@ -54,19 +57,19 @@ const summary = computed(() => {
       <tbody>
         <tr v-for="row in rows" :key="row.key">
           <th scope="row">{{ row.label }}</th>
-          <td class="is-number" :class="{ 'is-none': !count(row.list, 'hangar') }">
+          <td
+            class="is-number"
+            :class="[
+              { 'is-none': !count(row.list, 'hangar') },
+              row.key === 'from' && entry.level ? `is-${entry.level}` : undefined,
+            ]"
+          >
             {{ shown(count(row.list, 'hangar')) }}
           </td>
           <td class="is-number" :class="{ 'is-none': !count(row.list, 'buyback') }">
             {{ shown(count(row.list, 'buyback')) }}
           </td>
-          <td
-            class="is-number is-group is-strong"
-            :class="[
-              { 'is-none': !count(row.list) },
-              row.key === 'from' && entry.level ? `is-${entry.level}` : undefined,
-            ]"
-          >
+          <td class="is-number is-group is-strong" :class="{ 'is-none': !count(row.list) }">
             {{ shown(count(row.list)) }}
           </td>
         </tr>

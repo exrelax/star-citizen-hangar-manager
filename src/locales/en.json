@@ -1483,11 +1483,11 @@
     "rowFrom": "CCUs from it",
     "rowTo": "CCUs to it",
     "summaryNone": "You have no CCUs from or to the $1.",
-    "summaryNoneFrom": "You have no CCUs from the $1: nothing to secure.",
-    "summaryEnough": "Enough: for every CCU from the $1 there is a CCU to it.",
+    "summaryNoneFrom": "You have no CCUs from the $1 in your hangar: nothing to secure.",
+    "summaryEnough": "Enough: for every CCU from the $1 in your hangar there is a CCU to it.",
     "summaryMissing": {
-      "one": "$1 CCU to the $2 is missing for the CCUs from it. Secure it before $3.",
-      "other": "$1 CCUs to the $2 are missing for the CCUs from it. Secure them before $3."
+      "one": "$1 CCU to the $2 is missing for the CCUs from it in your hangar. Secure it before $3.",
+      "other": "$1 CCUs to the $2 are missing for the CCUs from it in your hangar. Secure them before $3."
     }
   }
 }

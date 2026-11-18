@@ -14,8 +14,10 @@ import { upcomingShipRemovals, type ShipRemoval } from './ship-removals';
  * - the CCUs **from** it (base ship), and
  * - the CCUs **to** it (target ship), which give a ship to apply a CCU from it to. Pledges with
  *   the ship itself don't count here.
- * The level: **warning** while there are at least as many CCUs to the ship as from it, else
- * **critical**; none without CCUs from it.
+ * The level counts the CCUs from the ship in the hangar only: those of the buy back aren't owned
+ * and become a problem only when bought back (they are listed, though). **Warning** while there are
+ * at least as many CCUs to the ship – hangar and buy back together – as from it in the hangar,
+ * else **critical**; none without CCUs from it in the hangar.
  *
  * Ships are matched by the upgrade tool's id: a buy back CCU names it on its "Buy Back" button
  * (`fromShipId`, `toShipId`); otherwise, and in My Hangar, the name is looked up in the upgrade
@@ -54,7 +56,11 @@ export interface RemovalCcusInput {
   now: number;
 }
 
-/** The level of a removed ship by its CCUs from and to it. */
+/** How many CCUs of a list are in the hangar. */
+export const hangarCcus = (list: readonly RemovalCcu[]): number =>
+  list.filter((ccu) => ccu.source === 'hangar').length;
+
+/** The level of a removed ship by its CCUs from it in the hangar and to it. */
 export const removalLevel = (from: number, to: number): RemovalLevel | undefined =>
   from === 0 ? undefined : to >= from ? 'warning' : 'critical';
 
@@ -111,7 +117,7 @@ export function removalCcus(input: RemovalCcusInput): RemovalCcus[] {
   }
 
   return [...result.values()].map((entry) => {
-    const level = removalLevel(entry.from.length, entry.to.length);
+    const level = removalLevel(hangarCcus(entry.from), entry.to.length);
     return level ? { ...entry, level } : entry;
   });
 }

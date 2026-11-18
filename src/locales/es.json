@@ -1483,11 +1483,11 @@
     "rowFrom": "CCU desde ella",
     "rowTo": "CCU hacia ella",
     "summaryNone": "No tienes CCU desde o hacia la $1.",
-    "summaryNoneFrom": "No tienes CCU desde la $1: nada que asegurar.",
-    "summaryEnough": "Suficiente: por cada CCU desde la $1 hay un CCU hacia ella.",
+    "summaryNoneFrom": "No tienes CCU desde la $1 en tu hangar: nada que asegurar.",
+    "summaryEnough": "Suficiente: por cada CCU desde la $1 en tu hangar hay un CCU hacia ella.",
     "summaryMissing": {
-      "one": "Falta $1 CCU hacia la $2 para los CCU desde ella. Asegúralo antes del $3.",
-      "other": "Faltan $1 CCU hacia la $2 para los CCU desde ella. Asegúralos antes del $3."
+      "one": "Falta $1 CCU hacia la $2 para los CCU desde ella en tu hangar. Asegúralo antes del $3.",
+      "other": "Faltan $1 CCU hacia la $2 para los CCU desde ella en tu hangar. Asegúralos antes del $3."
     }
   }
 }

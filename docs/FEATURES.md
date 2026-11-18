@@ -719,17 +719,19 @@ retirement window ends. They come from the project website's list and are groupe
 hour "46:12") and a link to CIG's announcement. A CCU from such a ship can afterwards only be
 applied to a pledge with the ship you already have, or get with a CCU to it. Opened, a ship shows
 your CCUs from and to it (#380) in a table – in the hangar, in the buy back and together – and
-whether that is enough, or how many CCUs to it are missing and until when to secure them. A ship disappears
+whether that is enough for the CCUs from it in your hangar – those in the buy back aren't yours
+and don't count –, or how many CCUs to it are missing and until when to secure them. A ship disappears
 once its date is past. The demo mode shows them only with "Show real Pledge Store data".
 
 In **My Hangar**, a CCU whose base ship leaves the Pledge Store shows a yellow-orange warning
-triangle (#289), red when you have fewer CCUs to that ship than from it; its tooltip names the
+triangle (#289), red when you have fewer CCUs to that ship than from it in your hangar; its
+tooltip names the
 ship and the date. Expanded, the CCU tells how many CCUs to
 that ship are in your hangar and your buy back – the ways to get a ship to apply it to later.
 
 The **sidebar** tells each date in one notification with all ships removed on it (#290), and
 **Show in Pledge Store** opens the section. Below the text all ships of the date are listed: first
-those with CCUs from them in your hangar or buy back, with their counts ("Constellation Mk IV Taurus: 3 CCUs from it, 1 to it"), each
+those with CCUs from them in your hangar, with their counts ("Constellation Mk IV Taurus: 3 CCUs from it, 1 to it"), each
 triangle yellow-orange or – with fewer CCUs to the ship – red; the notification's icon takes the
 highest level; then the others by name. Its × closes it for these ships on this date: a new ship or another date brings it
 back. It can be turned off in the settings ("Ships leaving the Pledge Store").
