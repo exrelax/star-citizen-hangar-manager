@@ -511,6 +511,24 @@ const GROUP_HEADS: Record<string, { label: MessageKey; hint: MessageKey }> = {
   max-width: 360px;
 }
 
+/* On a desktop window side by side: the search on the left, the filters on the right. */
+@media (min-width: 960px) {
+  .shm-overlay .shm-all-ships-controls.shm-controls {
+    flex-direction: row;
+    gap: 24px;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .shm-all-ships-controls .shm-search-field {
+    flex: 0 1 360px;
+  }
+
+  .shm-all-ships-controls .shm-filters {
+    flex: 0 1 auto;
+  }
+}
+
 /* The slider, and below it the number of each end at its sides. */
 .shm-all-ships-range {
   display: flex;
