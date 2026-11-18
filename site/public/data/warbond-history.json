@@ -60,14 +60,27 @@
     },
     {
       "ship": { "id": 228, "name": "Drake Cutlass Steel" },
-      "price": 235,
-      "msrp": 210,
+      "price": 210,
+      "msrp": 235,
       "firstSeen": "2026-11-17T16:00:00Z",
       "lastSeen": "2026-11-18T16:00:00Z",
       "events": [
         {
           "id": "drake-cutlass-steel-iae-2956-day-5",
           "name": "Drake Cutlass Steel - IAE 2956 Day 5"
+        }
+      ]
+    },
+    {
+      "ship": { "id": 201, "name": "Argo Mole" },
+      "price": 295,
+      "msrp": 315,
+      "firstSeen": "2026-11-18T16:00:00Z",
+      "lastSeen": "2026-11-19T16:00:00Z",
+      "events": [
+        {
+          "id": "argo-mole-iae-2956-day-6",
+          "name": "Argo Mole - IAE 2956 Day 6"
         }
       ]
     }
