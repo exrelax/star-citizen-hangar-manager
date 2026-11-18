@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { BUYBACK_FILTER_PREDICATES } from '@/buyback/buyback-view';
 import { PLEDGE_FILTER_PREDICATES } from '@/hangar/filters';
-import { buildWarbondOffers } from '@/store/warbond';
+import { buildWarbondOffers, ownedCounts } from '@/store/warbond';
 import { demoCatalog } from './catalog';
 import { generatedDemo, justBoughtOf } from './demo';
 import { demoEvents } from './demo-events';
@@ -150,5 +150,16 @@ describe('the own CCUs of a warbond offer in the default demo (#395)', () => {
       return new Set(amounts).size >= 3 && amounts.some((amount) => amount < 0);
     });
     expect(sortable).toBeDefined();
+  });
+});
+
+describe('the "x from" badge of the default demo (#399)', () => {
+  it('shows first on one warbond offer and next to the other two badges on another', () => {
+    const offers = buildWarbondOffers(demoStoreData(catalog, pledges, NOW), pledges, buyback);
+    const counts = offers.map((offer) => ({ ...ownedCounts(offer), from: offer.fromShip }));
+    expect(counts.some((count) => count.from > 0 && count.sameShip === 0)).toBe(true);
+    expect(counts.some((count) => count.from > 0 && count.sameShip > 0 && count.others > 0)).toBe(
+      true,
+    );
   });
 });

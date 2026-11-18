@@ -666,6 +666,9 @@ opens the current ones. For each warbond ship:
 
 - **Prices**: the warbond price, the standard price (struck through) and the discount in dollars
   and percent, with the ship's image.
+- **In hangar**: tags with your hangar's CCUs straight to the ship ("2 to Liberator"), from the ship
+  to another one ("2 from Liberator", #399; the buy back's don't count) and the other CCUs in its
+  price range that can't be chained with it ("13 incompatible"); each only when there is one.
 - **Warbond upgrade** (#392): opens RSI's own ship upgrade dialog with the warbond edition of the
   ship already chosen as target – only the ship to start from is left to pick. In the demo mode the
   upgrade buttons are disabled, since RSI's dialog shows your real ships and CCUs.

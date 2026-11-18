@@ -135,7 +135,10 @@ const earlier = computed(() =>
       </span>
 
       <!-- Only with at least one tag: "In hangar:", then the tags. -->
-      <span v-if="counts.sameShip || counts.others" class="shm-badges shm-warbond-badges">
+      <span
+        v-if="counts.sameShip || offer.fromShip || counts.others"
+        class="shm-badges shm-warbond-badges"
+      >
         <span class="shm-warbond-badges-label">{{ i18n.t('store.inHangar') }}</span>
         <span
           v-if="counts.sameShip"
@@ -143,6 +146,14 @@ const earlier = computed(() =>
           class="shm-badge shm-warbond-owned"
         >
           {{ i18n.t('store.sameShipBadge', [counts.sameShip, offer.target.ship.name]) }}
+        </span>
+        <!-- The hangar's CCUs from this ship (#399). -->
+        <span
+          v-if="offer.fromShip"
+          v-tooltip="i18n.t('store.fromShipBadgeHint', [offer.target.ship.name])"
+          class="shm-badge shm-warbond-owned shm-warbond-from"
+        >
+          {{ i18n.t('store.fromShipBadge', [offer.fromShip, offer.target.ship.name]) }}
         </span>
         <span
           v-if="counts.others"

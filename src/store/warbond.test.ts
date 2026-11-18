@@ -6,6 +6,7 @@ import {
   buildWarbondOffers,
   cheapestBases,
   createShipLookup,
+  hangarCcusFrom,
   holdingsByShip,
   ownedCcusInRange,
   ownedCounts,
@@ -218,5 +219,44 @@ describe('ownedCounts', () => {
       ccu(34, 'Vulture', 'Mercury Star Runner', 5),
     ]);
     expect(ownedCounts(offer!)).toEqual({ sameShip: 3, others: 1 });
+  });
+});
+
+describe('hangarCcusFrom (#399)', () => {
+  const lookup = createShipLookup(SHIPS);
+  const vultureShip = SHIPS[5]!;
+
+  it('counts none without a CCU from the ship', () => {
+    expect(hangarCcusFrom([ccu(30, 'Freelancer', 'Vulture', 65)], lookup, vultureShip)).toBe(0);
+    expect(hangarCcusFrom([shipPledge(31, 'Vulture')], lookup, vultureShip)).toBe(0);
+  });
+
+  it('counts one and several CCUs of the hangar from the ship', () => {
+    expect(hangarCcusFrom([ccu(32, 'Vulture', 'Eclipse', 125)], lookup, vultureShip)).toBe(1);
+    expect(
+      hangarCcusFrom(
+        [
+          ccu(33, 'Vulture', 'Eclipse', 125),
+          ccu(34, 'Vulture', 'Redeemer', 155),
+          ccu(35, 'Prospector', 'Vulture', 20),
+        ],
+        lookup,
+        vultureShip,
+      ),
+    ).toBe(2);
+  });
+
+  it("matches by the title without RSI's base ship", () => {
+    const fromTitle = { ...ccu(36, 'Vulture', 'Eclipse', 125), upgrade: undefined };
+    expect(hangarCcusFrom([fromTitle], lookup, vultureShip)).toBe(1);
+  });
+
+  it("is part of each offer, without the buy back's CCUs", () => {
+    const [offer] = buildWarbondOffers(
+      { ships: SHIPS, warbonds: [vulture] },
+      [ccu(37, 'Vulture', 'Eclipse', 125)],
+      [buybackPledge({ id: 38, title: 'Upgrade - Vulture to Redeemer', isCcu: true })],
+    );
+    expect(offer!.fromShip).toBe(1);
   });
 });
