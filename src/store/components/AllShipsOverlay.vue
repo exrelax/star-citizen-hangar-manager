@@ -515,7 +515,8 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
   flex-direction: column;
   gap: 14px;
   width: min(1040px, 100%);
-  max-height: calc(100vh - 120px);
+  /* One height, whatever the filters show: the dialog doesn't jump. */
+  height: min(1000px, calc(100vh - 120px));
   padding-bottom: 0;
 }
 
@@ -721,7 +722,7 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
 }
 
 .shm-all-ships-col-store {
-  width: 186px;
+  width: 214px;
 }
 
 .shm-all-ships-table th,
@@ -891,12 +892,17 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
   font-size: calc(10px * var(--shm-font-scale));
 }
 
-/* The counts: tinted while the group has any, empty ones as a faint dot. */
+/*
+ * The counts: tinted while the group has any – a band across its three cells, inset from the
+ * row's lines –, empty ones as a faint dot.
+ */
 .shm-all-ships-table td.is-count {
   color: var(--shm-text-strong);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  background-clip: padding-box;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% calc(100% - 4px);
 }
 
 .shm-all-ships-table td.is-count.is-from {
@@ -910,19 +916,30 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
 }
 
 .shm-all-ships-table td.is-hangar.is-tinted {
-  background-color: rgb(var(--shm-success-rgb) / 0.07);
+  background-image: linear-gradient(
+    rgb(var(--shm-success-rgb) / 0.08),
+    rgb(var(--shm-success-rgb) / 0.08)
+  );
 }
 
 .shm-all-ships-table td.is-buyback.is-tinted {
-  background-color: color-mix(in srgb, var(--shm-warning) 7%, transparent);
+  background-image: linear-gradient(
+    color-mix(in srgb, var(--shm-warning) 8%, transparent),
+    color-mix(in srgb, var(--shm-warning) 8%, transparent)
+  );
 }
 
+/* The band's ends rounded: inset from the cell's edges, so only the band is clipped. */
 .shm-all-ships-table td.is-tinted.is-first {
-  border-radius: 6px 0 0 6px;
+  background-position: right center;
+  background-size: calc(100% - 4px) calc(100% - 4px);
+  border-radius: 8px 0 0 8px;
 }
 
 .shm-all-ships-table td.is-tinted.is-last {
-  border-radius: 0 6px 6px 0;
+  background-position: left center;
+  background-size: calc(100% - 4px) calc(100% - 4px);
+  border-radius: 0 8px 8px 0;
 }
 
 /* The Pledge Store: "Warbond" in the warbond's yellow, "Standard" or "Ship upgrade". */
@@ -936,7 +953,8 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
   padding: 0 8px;
 }
 
-.shm-all-ships-store .shm-upgrade-warbond {
+/* Above the themes' own button colors. */
+.shm-overlay .shm-all-ships-store .shm-button.shm-upgrade-warbond {
   color: var(--shm-upgraded);
   background: rgb(var(--shm-upgraded-rgb) / 0.15);
   border-color: transparent;
