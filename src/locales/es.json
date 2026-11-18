@@ -1505,5 +1505,32 @@
   "upgradeDialog": {
     "alwaysAvailable": "Siempre disponible",
     "alwaysAvailableHint": "Siempre disponible en la Pledge Store: puedes conseguir la nave más tarde para aplicar un CCU. Fuente: Star Citizen Wiki, a través de la web del proyecto del Hangar Manager."
+  },
+  "allShips": {
+    "button": "Todas las naves",
+    "buttonHint": "Todas las naves de la Pledge Store por valor, con lo que tienen de ellas tu hangar y tu buy back",
+    "title": "Todas las naves por valor",
+    "intro": "Cada nave de la herramienta de mejoras de RSI, la más valiosa primero, con lo que tienen de ella tu hangar y tu buy back.",
+    "count": {
+      "one": "$1 nave",
+      "other": "$1 naves"
+    },
+    "colShip": "Nave",
+    "colValue": "Valor",
+    "colWarbond": "Warbond",
+    "colWarbondHint": "El precio warbond actual, mientras haya un descuento warbond",
+    "colPurchasable": "A la venta",
+    "colPurchasableHint": "RSI aún vende la nave, de alguna manera. Fuente: Star Citizen Wiki, a través de la web del proyecto.",
+    "groupHangar": "Hangar",
+    "groupBuyback": "Buy Back",
+    "colCcusFrom": "CCU desde",
+    "colCcusFromHint": "CCU con la nave como nave base",
+    "colCcusTo": "CCU a",
+    "colCcusToHint": "CCU con la nave como nave de destino",
+    "colShips": "Naves",
+    "colShipsHint": "Pledges de la nave sola (Standalone Ships)",
+    "colOnSale": "En venta ahora",
+    "notRead": "Aún no leído",
+    "noShips": "Las naves de la Pledge Store aún no se han leído."
   }
 }

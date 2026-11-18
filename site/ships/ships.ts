@@ -6,11 +6,13 @@
  * - `alwaysAvailable`: whether the ship is always available in the Pledge Store, from the Star
  *   Citizen Wiki's "Pledge availability" (only the exact value "Always available" counts).
  * - `msrp`: the standard price in USD, from the wiki's "Pledge price".
+ * - `retired`: RSI doesn't sell the ship any more in any way (#385), from the wiki's "Pledge
+ *   availability" ("Retired", "Out of production", "… (No longer available)"; not "Retiring").
  * Prices that change within hours (warbond, sales) and what is on sale right now are left out:
  * a daily read can't follow them, and the extension reads them live from RSI's upgrade tool.
  *
- * Each fact is a list of periods, `{ value, from, to }` (`alwaysAvailable` without `value`: the
- * periods in which it was). The last period without `to` is the current value. Dates are the days
+ * Each fact is a list of periods, `{ value, from, to }` (`alwaysAvailable` and `retired` without
+ * `value`: the periods in which it was). The last period without `to` is the current value. Dates are the days
  * (UTC) a run first saw a value – not the day RSI changed it, and the wiki may lag behind; the
  * first run starts every period on its own day. `revision` counts the runs that changed anything,
  * `changedAt` is the last one.
@@ -65,7 +67,7 @@ export const SOURCES = [
     url: 'https://starcitizen.tools/List_of_pledge_vehicles',
     license: 'CC BY-SA 4.0',
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
-    facts: ['alwaysAvailable', 'msrp'],
+    facts: ['alwaysAvailable', 'msrp', 'retired'],
   },
 ];
 
@@ -92,6 +94,8 @@ export interface ShipEntry {
   status: Period<string>[];
   alwaysAvailable: Period[];
   msrp: Period<number>[];
+  /** The periods in which RSI didn't sell the ship any more; missing in files before #385. */
+  retired?: Period[];
 }
 
 export interface ShipsFile {
@@ -116,6 +120,7 @@ export interface MatrixShip {
 export interface WikiVehicle {
   name: string;
   alwaysAvailable: boolean;
+  retired: boolean;
   msrp?: number;
 }
 
@@ -127,8 +132,18 @@ export interface Observation {
   wikiName?: string;
   status?: string;
   alwaysAvailable?: boolean;
+  retired?: boolean;
   msrp?: number;
 }
+
+/**
+ * The wiki's pledge availability of a ship RSI doesn't sell any more in any way: "Retired",
+ * "Out of production" (also with "*"), "Limited edition (No longer available)". "Retiring" (a
+ * removal announced, #285) still sells.
+ */
+export const isRetired = (availability: unknown): boolean =>
+  typeof availability === 'string' &&
+  /^(?:retired|out of production\*?)$|\(no longer available\)/i.test(availability.trim());
 
 /** The Bucket query for every vehicle with its pledge availability and price. */
 export const WIKI_QUERY =
@@ -149,6 +164,7 @@ export function parseWiki(json: unknown): WikiVehicle[] {
     byName.set(row.page_name.trim(), {
       name: row.page_name.trim(),
       alwaysAvailable: row.pledge_availability === 'Always available',
+      retired: isRetired(row.pledge_availability),
       ...(typeof price === 'number' && price > 0 && { msrp: price }),
     });
   }
@@ -255,7 +271,11 @@ export function observe(
       name: ship.name,
       ...(ship.manufacturer && { manufacturer: ship.manufacturer }),
       ...(ship.status && { status: ship.status }),
-      ...(vehicle && { wikiName: vehicle.name, alwaysAvailable: vehicle.alwaysAvailable }),
+      ...(vehicle && {
+        wikiName: vehicle.name,
+        alwaysAvailable: vehicle.alwaysAvailable,
+        retired: vehicle.retired,
+      }),
       ...(vehicle?.msrp !== undefined && { msrp: vehicle.msrp }),
     };
   });
@@ -311,7 +331,14 @@ export function continueFile(
   for (const seen of observations) {
     let ship = ships.get(seen.id);
     if (!ship) {
-      ship = { id: seen.id, name: seen.name, status: [], alwaysAvailable: [], msrp: [] };
+      ship = {
+        id: seen.id,
+        name: seen.name,
+        status: [],
+        alwaysAvailable: [],
+        msrp: [],
+        retired: [],
+      };
       if (seen.manufacturer) ship.manufacturer = seen.manufacturer;
       ships.set(seen.id, ship);
       changed = true;
@@ -331,6 +358,9 @@ export function continueFile(
     changed = continueValue(ship.status, seen.status, day) || changed;
     changed = continueFlag(ship.alwaysAvailable, seen.alwaysAvailable, day) || changed;
     changed = continueValue(ship.msrp, seen.msrp, day) || changed;
+    // Files before #385 have no `retired` yet.
+    ship.retired ??= [];
+    changed = continueFlag(ship.retired, seen.retired, day) || changed;
   }
   const revision = (previous?.revision ?? 0) + (changed ? 1 : 0);
   return {
@@ -380,8 +410,8 @@ export function serialize(file: ShipsFile): string {
   const headLines = JSON.stringify(head, null, 2).slice(0, -2);
   // Always in the same order of fields, whatever order they were added in.
   const shipLines = ships
-    .map(({ id, name, manufacturer, wikiName, status, alwaysAvailable, msrp }) =>
-      JSON.stringify({ id, name, manufacturer, wikiName, status, alwaysAvailable, msrp }),
+    .map(({ id, name, manufacturer, wikiName, status, alwaysAvailable, msrp, retired }) =>
+      JSON.stringify({ id, name, manufacturer, wikiName, status, alwaysAvailable, msrp, retired }),
     )
     .map((line) => `    ${line}`)
     .join(',\n');

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   brokenReason,
   continueFile,
+  isRetired,
   matchVehicles,
   observe,
   parseShipMatrix,
@@ -21,12 +22,12 @@ const MATRIX: MatrixShip[] = [
   { id: 224, name: 'Liberator', manufacturer: 'Anvil Aerospace', status: 'in-concept' },
 ];
 const WIKI: WikiVehicle[] = [
-  { name: 'C8R Pisces Rescue', alwaysAvailable: true, msrp: 65 },
-  { name: 'Dragonfly', alwaysAvailable: true, msrp: 40 },
-  { name: 'Ballista', alwaysAvailable: true, msrp: 140 },
-  { name: 'Ballista Snowblind', alwaysAvailable: false, msrp: 150 },
-  { name: 'Freelancer Max', alwaysAvailable: true, msrp: 150 },
-  { name: 'Liberator', alwaysAvailable: false, msrp: 575 },
+  { name: 'C8R Pisces Rescue', alwaysAvailable: true, retired: false, msrp: 65 },
+  { name: 'Dragonfly', alwaysAvailable: true, retired: false, msrp: 40 },
+  { name: 'Ballista', alwaysAvailable: true, retired: false, msrp: 140 },
+  { name: 'Ballista Snowblind', alwaysAvailable: false, retired: false, msrp: 150 },
+  { name: 'Freelancer Max', alwaysAvailable: true, retired: false, msrp: 150 },
+  { name: 'Liberator', alwaysAvailable: false, retired: false, msrp: 575 },
 ];
 
 const DAY1 = '2026-11-12T04:17:00.000Z';
@@ -48,9 +49,30 @@ describe('parsing (#107)', () => {
         ],
       }),
     ).toEqual([
-      { name: 'Ballista', alwaysAvailable: true, msrp: 140 },
-      { name: 'Polaris', alwaysAvailable: false },
+      { name: 'Ballista', alwaysAvailable: true, retired: false, msrp: 140 },
+      { name: 'Polaris', alwaysAvailable: false, retired: false },
     ]);
+  });
+
+  it("reads the ships RSI doesn't sell any more in any way (#385)", () => {
+    for (const value of [
+      'Retired',
+      'Out of production',
+      'Out of production*',
+      'Limited edition (No longer available)',
+      '(No longer available)',
+    ]) {
+      expect(isRetired(value), value).toBe(true);
+    }
+    for (const value of [
+      'Always available',
+      'Time-limited sales',
+      'Not available for sale',
+      '[https://robertsspaceindustries.com/en/comm-link/transmission/21336 Retiring]',
+      undefined,
+    ]) {
+      expect(isRetired(value), String(value)).toBe(false);
+    }
   });
 
   it('reads the Ship Matrix’s ids, names, manufacturers and status', () => {
@@ -99,6 +121,7 @@ describe('continueFile', () => {
       status: [{ value: 'flight-ready', from: '2026-11-12' }],
       alwaysAvailable: [{ from: '2026-11-12' }],
       msrp: [{ value: 140, from: '2026-11-12' }],
+      retired: [],
     });
     expect(file.ships.find((ship) => ship.id === 224)?.alwaysAvailable).toEqual([]);
   });
@@ -167,11 +190,37 @@ describe('continueFile', () => {
   });
 });
 
+describe('retired ships (#385)', () => {
+  it('opens a period when the wiki retires a ship, and continues a file without the fact', () => {
+    const first = run(undefined, WIKI, DAY1).file;
+    // A file of before #385: no `retired` yet.
+    const old = {
+      ...first,
+      ships: first.ships.map((ship) => {
+        const copy = { ...ship };
+        delete copy.retired;
+        return copy;
+      }),
+    } as ShipsFile;
+    const wiki = WIKI.map((vehicle) =>
+      vehicle.name === 'Ballista' ? { ...vehicle, retired: true } : vehicle,
+    );
+    const { file, changed } = run(old, wiki, DAY2);
+    expect(changed).toBe(true);
+    expect(file.ships.find((ship) => ship.id === 157)?.retired).toEqual([{ from: '2026-11-13' }]);
+    expect(file.ships.find((ship) => ship.id === 224)?.retired).toEqual([]);
+  });
+});
+
 describe('brokenReason', () => {
   const many = <T>(count: number, make: (index: number) => T) =>
     Array.from({ length: count }, (_, index) => make(index));
   const matrix = many(200, (id) => ({ id, name: `Ship ${id}` }));
-  const wiki = many(200, (index) => ({ name: `Ship ${index}`, alwaysAvailable: index < 40 }));
+  const wiki = many(200, (index) => ({
+    name: `Ship ${index}`,
+    alwaysAvailable: index < 40,
+    retired: false,
+  }));
 
   it('accepts complete sources', () => {
     expect(brokenReason(matrix, wiki, undefined)).toBeUndefined();
@@ -192,7 +241,7 @@ describe('serialize', () => {
     const { file } = run(undefined, WIKI, DAY1);
     const text = serialize(file);
     expect(text).toContain(
-      '    {"id":157,"name":"Ballista","manufacturer":"Anvil Aerospace","wikiName":"Ballista","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[{"from":"2026-11-12"}],"msrp":[{"value":140,"from":"2026-11-12"}]}',
+      '    {"id":157,"name":"Ballista","manufacturer":"Anvil Aerospace","wikiName":"Ballista","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[{"from":"2026-11-12"}],"msrp":[{"value":140,"from":"2026-11-12"}],"retired":[]}',
     );
     expect(JSON.parse(text)).toEqual(file);
   });

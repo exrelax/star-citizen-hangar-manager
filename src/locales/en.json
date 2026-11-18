@@ -1505,5 +1505,32 @@
   "upgradeDialog": {
     "alwaysAvailable": "Always available",
     "alwaysAvailableHint": "Always available in the Pledge Store, so you can get onto the ship later to apply a CCU. Source: Star Citizen Wiki, via the Hangar Manager's project website."
+  },
+  "allShips": {
+    "button": "All ships",
+    "buttonHint": "All ships of the Pledge Store by value, with what your hangar and buy back have of them",
+    "title": "All ships by value",
+    "intro": "Every ship of RSI's ship upgrade tool, the most valuable first, with what your hangar and your buy back have of it.",
+    "count": {
+      "one": "$1 ship",
+      "other": "$1 ships"
+    },
+    "colShip": "Ship",
+    "colValue": "Value",
+    "colWarbond": "Warbond",
+    "colWarbondHint": "The current warbond price, while there is a warbond discount",
+    "colPurchasable": "Sold",
+    "colPurchasableHint": "RSI still sells the ship, in any way. Source: Star Citizen Wiki, via the project website.",
+    "groupHangar": "Hangar",
+    "groupBuyback": "Buy Back",
+    "colCcusFrom": "CCUs from",
+    "colCcusFromHint": "CCUs with the ship as base ship",
+    "colCcusTo": "CCUs to",
+    "colCcusToHint": "CCUs with the ship as target ship",
+    "colShips": "Ships",
+    "colShipsHint": "Standalone ship pledges of the ship",
+    "colOnSale": "On sale",
+    "notRead": "Not read yet",
+    "noShips": "The Pledge Store's ships aren't read yet."
   }
 }

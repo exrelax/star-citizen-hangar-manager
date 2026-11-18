@@ -659,6 +659,15 @@ That is about 34 reads of the upgrade tool and 65 requests for the items per hou
 and 156 with the former 5-minute interval of the items. The refresh button and the initial load
 always read both; the count line says when the offers were updated.
 
+**All ships** (#385), a button at the top of the Pledge Store tab, opens a table of every ship of
+RSI's upgrade tool, the most valuable first: its value and current warbond price, whether it is
+always available and whether RSI sells it at all (both from the project website's ship facts, the
+Star Citizen Wiki), how many CCUs from and to it and standalone ships of it your hangar and your
+buy back have, and – while it is on sale – "Ship upgrade" (and "Warbond upgrade") for RSI's
+dialog. Counts of 0 show as "–", lists not read yet say so. The head and the ship's name stay in
+view while the table scrolls, also sideways on narrow windows; dollar amounts follow the setting
+that hides them. In the demo mode the counts are the demo's and the upgrade buttons are disabled.
+
 Below the events, the warbond CCUs have two views, chosen with tabs: **Current Discount CCUs** –
 the warbond CCUs RSI sells now and the CCUs to secure before a price increase – and the **Warbond
 CCU History** with the offers that are over (both below). A notification about new warbond CCUs

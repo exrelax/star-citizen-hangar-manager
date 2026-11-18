@@ -41,6 +41,7 @@ const ballista = {
     { value: 135, from: '2026-11-12', to: '2026-11-13' },
     { value: 140, from: '2026-11-13' },
   ],
+  retired: [],
 };
 const clipper = {
   id: 230,
@@ -49,6 +50,7 @@ const clipper = {
   status: [{ value: 'flight-ready', from: '2026-11-12' }],
   alwaysAvailable: [{ from: '2026-11-12', to: '2026-11-13' }],
   msrp: [{ value: 150, from: '2026-11-12' }],
+  retired: [],
 };
 /** The wiki doesn't list it: whether it is always available is unknown. */
 const merchantman = {
@@ -57,6 +59,7 @@ const merchantman = {
   status: [{ value: 'in-concept', from: '2026-11-12' }],
   alwaysAvailable: [],
   msrp: [],
+  retired: [],
 };
 
 describe('parseShipFacts (#109)', () => {
@@ -154,5 +157,26 @@ describe('reading the ships’ facts', () => {
     });
     warn.mockRestore();
     expect(storedShipFacts(await shipFactsItem.getValue())).toEqual(facts);
+  });
+});
+
+describe('isPurchasable (#385)', () => {
+  const sources = [{ ...SOURCES[1]!, facts: ['alwaysAvailable', 'msrp', 'retired'] }];
+  const retired = { ...clipper, id: 1, name: 'Aurora Mk I ES', retired: [{ from: '2026-11-18' }] };
+
+  it("tells the ships RSI still sells from those it doesn't, by the wiki", () => {
+    const facts = createShipFactsLookup(
+      parseShipFacts(file([ballista, retired, merchantman], { sources }))!,
+    );
+    expect(facts.isPurchasable(183)).toBe(true);
+    expect(facts.isPurchasable(1)).toBe(false);
+    // Not in the wiki, and an unknown ship: not known.
+    expect(facts.isPurchasable(36)).toBeUndefined();
+    expect(facts.isPurchasable(999)).toBeUndefined();
+  });
+
+  it('knows nothing with a file of before the fact', () => {
+    const facts = createShipFactsLookup(parseShipFacts(file([ballista]))!);
+    expect(facts.isPurchasable(183)).toBeUndefined();
   });
 });

@@ -14,6 +14,7 @@ import {
   type HistoryPeriod,
 } from '@/store/warbond-history-view';
 import { creditForCases } from './demo-store-credit';
+import { allShips } from '@/store/all-ships';
 import { demoCompletedPlans, demoRunningPlan, RUNNING_PLAN_STAGES } from './demo-running-plan';
 
 /*
@@ -161,5 +162,37 @@ describe('the "x from" badge of the default demo (#399)', () => {
     expect(counts.some((count) => count.from > 0 && count.sameShip > 0 && count.others > 0)).toBe(
       true,
     );
+  });
+});
+
+describe('the table of all ships in the default demo (#385, #390)', () => {
+  it('counts CCUs from and to ships and standalone ships, in the hangar and the buy back', () => {
+    const store = demoStoreData(catalog, pledges, NOW);
+    const rows = allShips({
+      ships: store.ships,
+      buyable: [],
+      warbonds: store.warbonds.map((offer) => ({
+        shipId: offer.ship.id,
+        skuId: offer.skuId,
+        price: offer.price,
+      })),
+      hangar: pledges,
+      buyback,
+    });
+    for (const key of [
+      'hangarFrom',
+      'hangarTo',
+      'buybackFrom',
+      'buybackTo',
+      'hangarShips',
+      'buybackShips',
+    ] as const) {
+      expect(
+        rows.some((row) => row[key] > 0),
+        key,
+      ).toBe(true);
+    }
+    expect(rows.some((row) => row.warbondPrice !== undefined)).toBe(true);
+    expect(rows.some((row) => row.warbondPrice === undefined)).toBe(true);
   });
 });

@@ -26,6 +26,8 @@ export interface ShipFact {
   status: FactPeriod<string>[];
   alwaysAvailable: FactPeriod[];
   msrp: FactPeriod<number>[];
+  /** The periods in which RSI didn't sell the ship any more (#385); empty in files without it. */
+  retired: FactPeriod[];
 }
 
 export interface FactSource {
@@ -96,6 +98,7 @@ export function parseShipFacts(json: unknown): ShipFacts | undefined {
         status: periods(ship?.status, isText),
         alwaysAvailable: periods(ship?.alwaysAvailable),
         msrp: periods(ship?.msrp, isPrice),
+        retired: periods(ship?.retired),
       },
     ];
   });
@@ -157,6 +160,16 @@ export function createShipFactsLookup(facts: ShipFacts) {
       if (!ship || !gives('alwaysAvailable', sourceId)) return undefined;
       if (!ship.wikiName && !ship.alwaysAvailable.length) return undefined;
       return current(ship.alwaysAvailable) !== undefined;
+    },
+
+    /**
+     * Whether RSI sells the ship at all now, in any way (#385); `undefined` if that isn't known –
+     * an unknown ship, no source giving the fact (files before it), or a ship the wiki doesn't list.
+     */
+    isPurchasable(id: number): boolean | undefined {
+      const ship = byId.get(id);
+      if (!ship || !gives('retired') || !ship.wikiName) return undefined;
+      return current(ship.retired) === undefined;
     },
 
     /** Since when a ship is always available (`YYYY-MM-DD`), if it is. */

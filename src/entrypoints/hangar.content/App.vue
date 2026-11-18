@@ -381,6 +381,8 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
       :buyback="buybackPledges"
       :settings="settings"
       :active="activeTab === 'store'"
+      :hangar-read="demo || !!syncedAt"
+      :buyback-read="demo || !!buyback.syncedAt.value"
     />
   </div>
   <div
