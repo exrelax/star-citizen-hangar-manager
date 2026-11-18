@@ -660,18 +660,18 @@ and 156 with the former 5-minute interval of the items. The refresh button and t
 always read both; the count line says when the offers were updated.
 
 **All ships** (#385), a button at the top of the Pledge Store tab, opens a table of every ship of
-RSI's upgrade tool, the most valuable first: its value and current warbond price, whether it is
-always available and whether RSI sells it at all (both from the project website's ship facts, the
-Star Citizen Wiki), how many CCUs from and to it and standalone ships of it your hangar and your
-buy back have, and – while it is on sale – "Ship upgrade" (and "Warbond upgrade") for RSI's
-dialog. Counts of 0 show as "–", lists not read yet say so. A click on a column head sorts by it,
-a second click reverses the order (by default by value, lowest first, #406); a search finds ships
-by name and manufacturer, a price range (slider and number fields) and the filters "Always
-available", "On sale" and "Warbond" narrow the table, and the count says how many of all ships
-show. The columns of the hangar are tinted a little lighter, those of the buy back a little
-darker, with a faint line between the columns of each. The head and the ship's name stay in
-view while the table scrolls, also sideways on narrow windows; dollar amounts follow the setting
-that hides them. In the demo mode the counts are the demo's and the upgrade buttons are disabled.
+RSI's upgrade tool, the cheapest first, with a line at every $100. Each ship shows its value and
+current warbond price (with what it saves), whether it is always available or not sold any more
+(both from the project website's ship facts, the Star Citizen Wiki; ships no longer sold are
+faded), how many standalone ships of it and CCUs to and from it your hangar and your buy back
+have (tinted green and orange while they have any), and in the Pledge Store "Warbond" and
+"Standard" or "Ship upgrade" for RSI's dialog, else "Not on sale now". Above it, a search finds
+ships by name and manufacturer, the filters "Always available", "On sale", "Warbond" and "In my
+hangar or buy back" narrow it, and the value range is chosen on a slider below a histogram of
+the ships per $50. A click on a column head sorts by it, a second click reverses the order (#406).
+Counts of 0 show as a faint dot, lists not read yet say so. The head stays in view while the table
+scrolls, also sideways on narrow windows; dollar amounts follow the setting that hides them. In
+the demo mode the counts are the demo's and the upgrade buttons are disabled.
 
 Below the events, the warbond CCUs have two views, chosen with tabs: **Current Discount CCUs** –
 the warbond CCUs RSI sells now and the CCUs to secure before a price increase – and the **Warbond

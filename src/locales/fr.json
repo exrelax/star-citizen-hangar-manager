@@ -658,7 +658,9 @@
       "priceAsc": "Prix standard le plus bas d'abord",
       "discountDesc": "Plus forte remise d'abord",
       "discountAsc": "Plus faible remise d'abord"
-    }
+    },
+    "openWarbondShort": "Warbond",
+    "openStandardShort": "Standard"
   },
   "events": {
     "title": "Événements",
@@ -1510,7 +1512,7 @@
     "button": "Tous les vaisseaux",
     "buttonHint": "Tous les vaisseaux du Pledge Store par valeur, avec ce que ton hangar et ton buy back en ont",
     "title": "Tous les vaisseaux par valeur",
-    "intro": "Chaque vaisseau de l’outil d’upgrade de RSI avec sa valeur, ce que ton hangar et ton buy back en ont, et comment l’obtenir.",
+    "intro": "Chaque vaisseau de l’outil d’upgrade de RSI, le moins cher d’abord – avec ce que ton hangar et ton buy back en ont, et comment l’obtenir.",
     "count": {
       "one": "$1 vaisseau",
       "other": "$1 vaisseaux"
@@ -1533,7 +1535,7 @@
     "notRead": "Pas encore lu",
     "noShips": "Les vaisseaux du Pledge Store ne sont pas encore lus.",
     "search": "Chercher des vaisseaux et des constructeurs …",
-    "priceRange": "Valeur en $",
+    "priceRange": "Valeur",
     "priceFrom": "Valeur à partir de",
     "priceTo": "Valeur jusqu’à",
     "filtersLabel": "Afficher seulement",
@@ -1545,6 +1547,20 @@
       "other": "$1 sur $2 vaisseaux"
     },
     "noResults": "Aucun vaisseau ne correspond à la recherche et aux filtres.",
-    "reset": "Réinitialiser"
+    "reset": "Réinitialiser",
+    "histogram": "Vaisseaux par tranche de 50 dollars",
+    "filterOwned": "Dans mon hangar ou buy back",
+    "countOwned": {
+      "one": "$1 dans ton hangar ou buy back",
+      "other": "$1 dans ton hangar ou buy back"
+    },
+    "filteredBy": "filtrés par $1",
+    "bandNote": "une ligne tous les 100 dollars",
+    "colPledgeStore": "Pledge Store",
+    "notSold": "Plus vendu",
+    "notOnSale": "Pas en vente en ce moment",
+    "warbondPrice": "warbond $1",
+    "saves": "économise $1",
+    "source": "Valeurs de l’outil d’upgrade de RSI. « Toujours disponible » et « Plus vendu » d’après le Star Citizen Wiki (CC BY-SA 4.0), via le site du projet."
   }
 }

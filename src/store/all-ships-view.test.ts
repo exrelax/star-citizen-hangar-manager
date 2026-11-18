@@ -4,6 +4,8 @@ import {
   ALL_SHIPS_COLUMNS,
   allShipsView,
   priceBounds,
+  valueBand,
+  valueHistogram,
   type AllShipsColumn,
   type AllShipsFilter,
   type AllShipsQuery,
@@ -124,9 +126,30 @@ describe('allShipsView: search, price range and filters', () => {
     expect(only('warbond')).toEqual(['Liberator']);
     expect(only('onSale', 'warbond')).toEqual(['Liberator']);
     expect(only('alwaysAvailable', 'warbond')).toEqual([]);
+    // Something of it in the hangar or the buy back.
+    expect(only('owned')).toEqual(['Aurora Mk I ES', 'Prospector', 'Liberator', 'Polaris']);
+    expect(
+      allShipsView([...ROWS, row(5, 'Idris-P', 1900)], { ...all, filters: new Set(['owned']) }),
+    ).toHaveLength(4);
   });
 
   it('combines search, range and filters', () => {
     expect(names({ search: 'p', min: 100, filters: new Set(['onSale']) })).toEqual(['Prospector']);
+  });
+});
+
+describe('the value scale (#385 layout)', () => {
+  it('counts the ships per $50, all of $1,000 and more in the last bar', () => {
+    const bars = valueHistogram([...ROWS, row(5, 'Idris-P', 1900), row(6, 'Pioneer', 1000)]);
+    expect(bars).toHaveLength(21);
+    expect(bars[0]).toBe(1); // $20
+    expect(bars[3]).toBe(1); // $155
+    expect(bars[12]).toBe(1); // $600
+    expect(bars[19]).toBe(1); // $975
+    expect(bars[20]).toBe(2); // $1,000 and $1,900
+  });
+
+  it('puts the lines between the $100 bands', () => {
+    expect([20, 99, 100, 155, 999, 1000, 1900].map(valueBand)).toEqual([0, 0, 1, 1, 9, 10, 10]);
   });
 });

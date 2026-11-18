@@ -13,14 +13,19 @@ import { buyableShipsItem, current } from '@/ships/ships-storage';
 import { useShipFacts } from '@/ships/use-ship-facts';
 import { useStored } from '@/storage/use-stored';
 import { fontScaleStyle, themeClasses } from '@/themes/theme';
-import { computed, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
-import { allShips } from '../all-ships';
+import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
+import { allShips, type AllShipsRow } from '../all-ships';
 import {
   ALL_SHIPS_FILTERS,
   ALL_SHIPS_SORT_COLUMNS,
   allShipsView,
   DEFAULT_ALL_SHIPS_SORT,
+  isOnSale,
+  ownsAny,
   priceBounds,
+  VALUE_SCALE,
+  valueBand,
+  valueHistogram,
   type AllShipsColumn,
   type AllShipsFilter,
   type AllShipsSort,
@@ -31,12 +36,15 @@ import ShipUpgradeButtons from './ShipUpgradeButtons.vue';
 import '@/hangar/components/list-controls.css';
 
 /*
- * The table of all ships by value (#385), opened from the Pledge Store tab: what each ship is
- * worth, whether and how it can be bought, and what the hangar and the buy back have of it
- * (`all-ships.ts`). Sorted by any column, searched and filtered (#406, `all-ships-view.ts`); the
- * columns of the hangar and the buy back are tinted apart. The head and the ship's name stay in
- * view while the table scrolls; it scrolls on its own, also sideways on narrow windows.
- * Teleported out of the manager like its other dialogs, so it carries the theme itself.
+ * The table of all ships by value (#385), opened from the Pledge Store tab, laid out as the design
+ * "Pledge Store – All ships by value": a toolbar with the search, the filters (as My Hangar's) and
+ * the value range – a histogram of the ships per $50 over a slider –, then the table, cheapest
+ * first, with a line at every $100 while sorted by value. Each ship shows its value and warbond
+ * price, whether it is always available or not sold any more, what the hangar and the buy back
+ * have of it (tinted while they have any) and how to get it in the Pledge Store. Sorted by any
+ * column, searched and filtered (#406, `all-ships-view.ts`). The head stays in view while the
+ * table scrolls in the dialog. Teleported out of the manager like its other dialogs, so it
+ * carries the theme itself.
  */
 
 const props = defineProps<{
@@ -77,92 +85,145 @@ const sort = ref<AllShipsSort>(DEFAULT_ALL_SHIPS_SORT);
 const sortBy = (column: AllShipsColumn) =>
   (sort.value = nextSort(sort.value, column, ALL_SHIPS_SORT_COLUMNS[column].first));
 
-/** The search, the price range and the filters (#406). */
+/** The search, the value range on the slider's scale ($0 to "$1,000 and more") and the filters. */
 const search = ref('');
-const bounds = computed(() => priceBounds(rows.value));
-const min = ref(0);
-const max = ref(0);
-// The range starts at the lowest and the highest value, also when the ships come later.
-watch(
-  bounds,
-  (next) => {
-    min.value = next.min;
-    max.value = next.max;
-  },
-  { immediate: true },
-);
+const low = ref(0);
+const high = ref<number>(VALUE_SCALE.end);
+const setLow = (event: Event) =>
+  (low.value = Math.min(Number((event.target as HTMLInputElement).value), high.value));
+const setHigh = (event: Event) =>
+  (high.value = Math.max(Number((event.target as HTMLInputElement).value), low.value));
+/** The upper end of the scale: no upper end. */
+const upper = computed(() => (high.value >= VALUE_SCALE.end ? Infinity : high.value));
+
 const filters = ref(new Set<AllShipsFilter>());
 const FILTER_LABELS: Record<AllShipsFilter, MessageKey> = {
   alwaysAvailable: 'allShips.filterAlwaysAvailable',
   onSale: 'allShips.filterOnSale',
   warbond: 'allShips.filterWarbond',
+  owned: 'allShips.filterOwned',
 };
-/** How many ships each filter would keep, as the chips of My Hangar show it. */
-const filterCounts = computed(
-  () =>
-    Object.fromEntries(
-      ALL_SHIPS_FILTERS.map((filter) => [
-        filter,
-        allShipsView(rows.value, { ...queryAll.value, filters: new Set([filter]) }).length,
-      ]),
-    ) as Record<AllShipsFilter, number>,
-);
 function toggleFilter(filter: AllShipsFilter) {
   const next = new Set(filters.value);
   if (!next.delete(filter)) next.add(filter);
   filters.value = next;
 }
-
-/** A number field's value within the bounds and the other end; the slider's likewise. */
-const clamp = (value: number, low: number, high: number) =>
-  Math.min(high, Math.max(low, Number.isFinite(value) ? Math.round(value) : low));
-const setMin = (value: number) => (min.value = clamp(value, bounds.value.min, max.value));
-const setMax = (value: number) => (max.value = clamp(value, min.value, bounds.value.max));
-const numberOf = (event: Event) => (event.target as HTMLInputElement).valueAsNumber;
-
-/** The whole range without filters, for the chips' counts. */
-const queryAll = computed(() => ({
-  search: '',
-  min: bounds.value.min,
-  max: bounds.value.max,
-  filters: new Set<AllShipsFilter>(),
-}));
+/** How many ships each filter keeps, as the chips of My Hangar show it. */
+const filterCounts = computed(
+  () =>
+    Object.fromEntries(
+      ALL_SHIPS_FILTERS.map((filter) => [
+        filter,
+        allShipsView(rows.value, {
+          search: '',
+          min: 0,
+          max: Infinity,
+          filters: new Set([filter]),
+        }).length,
+      ]),
+    ) as Record<AllShipsFilter, number>,
+);
 
 const narrowed = computed(
-  () =>
-    !!search.value.trim() ||
-    !!filters.value.size ||
-    min.value > bounds.value.min ||
-    max.value < bounds.value.max,
+  () => !!search.value.trim() || !!filters.value.size || low.value > 0 || upper.value < Infinity,
 );
 function reset() {
   search.value = '';
   filters.value = new Set();
-  min.value = bounds.value.min;
-  max.value = bounds.value.max;
+  low.value = 0;
+  high.value = VALUE_SCALE.end;
 }
 
 const shown = computed(() =>
   allShipsView(
     rows.value,
-    { search: search.value, min: min.value, max: max.value, filters: filters.value },
+    { search: search.value, min: low.value, max: upper.value, filters: filters.value },
     sort.value,
   ),
 );
-const countText = computed(() =>
-  narrowed.value
-    ? i18n.n('allShips.countFiltered', rows.value.length, [shown.value.length, rows.value.length])
-    : i18n.n('allShips.count', rows.value.length),
-);
 
-/** Where the slider's range lies, for its track between the handles. */
-const rangeStyle = computed(() => {
-  const { min: low, max: high } = bounds.value;
-  const share = (value: number) => (high > low ? ((value - low) / (high - low)) * 100 : 0);
-  return { '--shm-range-from': `${share(min.value)}%`, '--shm-range-to': `${share(max.value)}%` };
+/** The lines between the $100 bands, while sorted by value. */
+const bandStarts = computed(() => {
+  const starts = new Set<number>();
+  if (sort.value.column !== 'value') return starts;
+  let previous: number | undefined;
+  for (const row of shown.value) {
+    const band = valueBand(row.ship.msrp);
+    if (previous !== undefined && band !== previous) starts.add(row.ship.id);
+    previous = band;
+  }
+  return starts;
 });
 
+/** "244 ships · 207 of them in your hangar or buy back · a line marks every $100". */
+const count = computed(() => {
+  const total = rows.value.length;
+  const active = ALL_SHIPS_FILTERS.filter((filter) => filters.value.has(filter));
+  const main = narrowed.value
+    ? i18n.n('allShips.countFiltered', total, [shown.value.length, total])
+    : i18n.n('allShips.count', total);
+  const owned = rows.value.filter(ownsAny).length;
+  const sub = active.length
+    ? i18n.t('allShips.filteredBy', [
+        new Intl.ListFormat(locale.value, { type: 'conjunction' }).format(
+          active.map((filter) => i18n.t(FILTER_LABELS[filter])),
+        ),
+      ])
+    : i18n.n('allShips.countOwned', owned);
+  const parts = [sub, ...(sort.value.column === 'value' ? [i18n.t('allShips.bandNote')] : [])];
+  return { main, sub: parts.join(' · ') };
+});
+
+/** The value range as text, with the ships' own lowest and highest value at the scale's ends. */
+const bounds = computed(() => priceBounds(rows.value));
+const rangeText = computed(() => {
+  const from = low.value > 0 ? low.value : bounds.value.min;
+  const to = upper.value < Infinity ? upper.value : bounds.value.max;
+  return `${usd(from)} – ${usd(to)}`;
+});
+
+/** The histogram's bars: their height, and whether they are in the range chosen. */
+const histogram = computed(() => {
+  const bars = valueHistogram(rows.value);
+  const most = Math.max(1, ...bars);
+  return bars.map((ships, index) => {
+    const start = index * VALUE_SCALE.step;
+    return {
+      key: start,
+      height: `${Math.round((ships / most) * 30)}px`,
+      inRange: start + VALUE_SCALE.step > low.value && start <= high.value,
+    };
+  });
+});
+const TICKS = [0, 250, 500, 750, 1000];
+const tickText = (value: number) => `${usd(value)}${value === VALUE_SCALE.end ? '+' : ''}`;
+/** Where the slider's range lies, for its track between the handles. */
+const rangeStyle = computed(() => ({
+  '--shm-range-from': `${(low.value / VALUE_SCALE.end) * 100}%`,
+  '--shm-range-to': `${(high.value / VALUE_SCALE.end) * 100}%`,
+}));
+
 const usd = (value: number) => formatUsd(value, locale.value);
+
+/** The counts of a group: ships, CCUs to it, CCUs from it, as the design orders them. */
+const GROUPS = {
+  hangar: ['hangarShips', 'hangarTo', 'hangarFrom'],
+  buyback: ['buybackShips', 'buybackTo', 'buybackFrom'],
+} as const satisfies Record<string, readonly AllShipsColumn[]>;
+const COLUMN_HEADS: Record<string, { label: MessageKey; hint: MessageKey }> = {
+  hangarShips: { label: 'allShips.colShips', hint: 'allShips.colShipsHint' },
+  hangarTo: { label: 'allShips.colCcusTo', hint: 'allShips.colCcusToHint' },
+  hangarFrom: { label: 'allShips.colCcusFrom', hint: 'allShips.colCcusFromHint' },
+  buybackShips: { label: 'allShips.colShips', hint: 'allShips.colShipsHint' },
+  buybackTo: { label: 'allShips.colCcusTo', hint: 'allShips.colCcusToHint' },
+  buybackFrom: { label: 'allShips.colCcusFrom', hint: 'allShips.colCcusFromHint' },
+};
+type CountColumn = (typeof GROUPS)[keyof typeof GROUPS][number];
+const countOf = (row: AllShipsRow, column: CountColumn) => row[column];
+const hasAny = (row: AllShipsRow, group: keyof typeof GROUPS) =>
+  GROUPS[group].some((column) => row[column] > 0);
+const read = (group: keyof typeof GROUPS) =>
+  group === 'hangar' ? props.hangarRead : props.buybackRead;
 
 const dialog = useTemplateRef<HTMLElement>('dialog');
 function onKeydown(event: KeyboardEvent) {
@@ -173,20 +234,6 @@ onMounted(() => {
   dialog.value?.focus();
 });
 onUnmounted(() => removeEventListener('keydown', onKeydown));
-
-/** The columns of a group: hangar or buy back, tinted apart. */
-const GROUP_COLUMNS = {
-  hangar: ['hangarFrom', 'hangarTo', 'hangarShips'],
-  buyback: ['buybackFrom', 'buybackTo', 'buybackShips'],
-} as const satisfies Record<string, readonly AllShipsColumn[]>;
-const GROUP_HEADS: Record<string, { label: MessageKey; hint: MessageKey }> = {
-  hangarFrom: { label: 'allShips.colCcusFrom', hint: 'allShips.colCcusFromHint' },
-  hangarTo: { label: 'allShips.colCcusTo', hint: 'allShips.colCcusToHint' },
-  hangarShips: { label: 'allShips.colShips', hint: 'allShips.colShipsHint' },
-  buybackFrom: { label: 'allShips.colCcusFrom', hint: 'allShips.colCcusFromHint' },
-  buybackTo: { label: 'allShips.colCcusTo', hint: 'allShips.colCcusToHint' },
-  buybackShips: { label: 'allShips.colShips', hint: 'allShips.colShipsHint' },
-};
 </script>
 
 <template>
@@ -223,265 +270,235 @@ const GROUP_HEADS: Record<string, { label: MessageKey; hint: MessageKey }> = {
 
         <p v-if="!rows.length" class="shm-overlay-note">{{ i18n.t('allShips.noShips') }}</p>
         <template v-else>
-          <!-- Search, price range and filters (#406), laid out like My Hangar's (ManagerList.vue). -->
-          <div class="shm-controls shm-all-ships-controls">
-            <span class="shm-search-field">
-              <SvgIcon class="shm-search-icon" name="magnifying-glass" />
-              <input
-                v-model="search"
-                type="search"
-                class="shm-search"
-                :placeholder="i18n.t('allShips.search')"
-                :aria-label="i18n.t('allShips.search')"
-                autocomplete="off"
-                spellcheck="false"
-              />
-              <button
-                v-if="search"
-                v-tooltip="i18n.t('manager.clearSearch')"
-                type="button"
-                class="shm-search-clear"
-                :aria-label="i18n.t('manager.clearSearch')"
-                @click="search = ''"
-              >
-                <SvgIcon name="circle-xmark" />
-              </button>
-            </span>
-            <div class="shm-filters">
+          <!-- The toolbar: search and filters on the left, the value range on the right. -->
+          <div class="shm-all-ships-toolbar">
+            <div class="shm-all-ships-find">
+              <span class="shm-search-field">
+                <SvgIcon class="shm-search-icon" name="magnifying-glass" />
+                <input
+                  v-model="search"
+                  type="search"
+                  class="shm-search"
+                  :placeholder="i18n.t('allShips.search')"
+                  :aria-label="i18n.t('allShips.search')"
+                  autocomplete="off"
+                  spellcheck="false"
+                />
+                <button
+                  v-if="search"
+                  v-tooltip="i18n.t('manager.clearSearch')"
+                  type="button"
+                  class="shm-search-clear"
+                  :aria-label="i18n.t('manager.clearSearch')"
+                  @click="search = ''"
+                >
+                  <SvgIcon name="circle-xmark" />
+                </button>
+              </span>
               <div
-                class="shm-filter-group"
-                role="group"
-                :aria-label="i18n.t('allShips.priceRange')"
-              >
-                <span class="shm-filter-group-label" aria-hidden="true">
-                  {{ i18n.t('allShips.priceRange') }}
-                </span>
-                <!-- The slider, and below it the number of each end. -->
-                <div class="shm-all-ships-range">
-                  <span class="shm-all-ships-slider" :style="rangeStyle">
-                    <input
-                      type="range"
-                      :min="bounds.min"
-                      :max="bounds.max"
-                      step="5"
-                      :value="min"
-                      :aria-label="i18n.t('allShips.priceFrom')"
-                      @input="setMin(numberOf($event))"
-                    />
-                    <input
-                      type="range"
-                      :min="bounds.min"
-                      :max="bounds.max"
-                      step="5"
-                      :value="max"
-                      :aria-label="i18n.t('allShips.priceTo')"
-                      @input="setMax(numberOf($event))"
-                    />
-                  </span>
-                  <span class="shm-all-ships-ends">
-                    <input
-                      type="number"
-                      class="shm-all-ships-number shm-value"
-                      :min="bounds.min"
-                      :max="max"
-                      :value="min"
-                      :aria-label="i18n.t('allShips.priceFrom')"
-                      @change="setMin(numberOf($event))"
-                    />
-                    <span class="shm-all-ships-dash" aria-hidden="true">–</span>
-                    <input
-                      type="number"
-                      class="shm-all-ships-number shm-value"
-                      :min="min"
-                      :max="bounds.max"
-                      :value="max"
-                      :aria-label="i18n.t('allShips.priceTo')"
-                      @change="setMax(numberOf($event))"
-                    />
-                  </span>
-                </div>
-              </div>
-              <div
-                class="shm-filter-group"
+                class="shm-filter-buttons"
                 role="group"
                 :aria-label="i18n.t('allShips.filtersLabel')"
               >
-                <span class="shm-filter-group-label" aria-hidden="true">
-                  {{ i18n.t('allShips.filtersLabel') }}
-                </span>
-                <div class="shm-filter-buttons">
-                  <button
-                    v-for="filter in ALL_SHIPS_FILTERS"
-                    :key="filter"
-                    type="button"
-                    class="shm-filter"
-                    :class="{ 'is-active': filters.has(filter) }"
-                    :aria-pressed="filters.has(filter)"
-                    @click="toggleFilter(filter)"
-                  >
-                    <span class="shm-filter-label">{{ i18n.t(FILTER_LABELS[filter]) }}</span>
-                    <span class="shm-filter-count">{{ filterCounts[filter] }}</span>
-                  </button>
-                  <button v-if="narrowed" type="button" class="shm-filter-reset" @click="reset">
-                    {{ i18n.t('allShips.reset') }}
-                  </button>
-                </div>
+                <span class="shm-filter-group-label">{{ i18n.t('allShips.filtersLabel') }}</span>
+                <button
+                  v-for="filter in ALL_SHIPS_FILTERS"
+                  :key="filter"
+                  type="button"
+                  class="shm-filter"
+                  :class="{ 'is-active': filters.has(filter) }"
+                  :aria-pressed="filters.has(filter)"
+                  @click="toggleFilter(filter)"
+                >
+                  <span class="shm-filter-label">{{ i18n.t(FILTER_LABELS[filter]) }}</span>
+                  <span class="shm-filter-count">{{ filterCounts[filter] }}</span>
+                </button>
+                <button v-if="narrowed" type="button" class="shm-filter-reset" @click="reset">
+                  {{ i18n.t('allShips.reset') }}
+                </button>
               </div>
             </div>
+
+            <div
+              class="shm-all-ships-range"
+              role="group"
+              :aria-label="i18n.t('allShips.priceRange')"
+            >
+              <span class="shm-all-ships-range-head">
+                <span>{{ i18n.t('allShips.priceRange') }}</span>
+                <span class="shm-all-ships-range-text shm-value">{{ rangeText }}</span>
+              </span>
+              <span
+                class="shm-all-ships-histogram"
+                role="img"
+                :aria-label="i18n.t('allShips.histogram')"
+              >
+                <span
+                  v-for="bar in histogram"
+                  :key="bar.key"
+                  class="shm-all-ships-bar"
+                  :class="{ 'is-out': !bar.inRange }"
+                  :style="{ height: bar.height }"
+                ></span>
+              </span>
+              <span class="shm-all-ships-slider" :style="rangeStyle">
+                <input
+                  type="range"
+                  min="0"
+                  :max="VALUE_SCALE.end"
+                  :step="VALUE_SCALE.step"
+                  :value="low"
+                  :aria-label="i18n.t('allShips.priceFrom')"
+                  :aria-valuetext="usd(low)"
+                  @input="setLow"
+                />
+                <input
+                  type="range"
+                  min="0"
+                  :max="VALUE_SCALE.end"
+                  :step="VALUE_SCALE.step"
+                  :value="high"
+                  :aria-label="i18n.t('allShips.priceTo')"
+                  :aria-valuetext="tickText(high)"
+                  @input="setHigh"
+                />
+              </span>
+              <span class="shm-all-ships-ticks" aria-hidden="true">
+                <span v-for="tick in TICKS" :key="tick">{{ tickText(tick) }}</span>
+              </span>
+            </div>
           </div>
-          <p class="shm-all-ships-count" aria-live="polite">{{ countText }}</p>
+
+          <p class="shm-all-ships-count" aria-live="polite">
+            <strong>{{ count.main }}</strong> · {{ count.sub }}
+          </p>
 
           <p v-if="!shown.length" class="shm-overlay-note">{{ i18n.t('allShips.noResults') }}</p>
           <div v-else class="shm-all-ships-scroll" tabindex="0">
-            <table class="shm-warbond-table shm-all-ships-table">
+            <table class="shm-all-ships-table">
+              <colgroup>
+                <col />
+                <col class="shm-all-ships-col-value" />
+                <col v-for="index in 6" :key="index" class="shm-all-ships-col-count" />
+                <col class="shm-all-ships-col-store" />
+              </colgroup>
               <thead>
-                <tr>
-                  <SortableTh
-                    column="name"
-                    :sort="sort"
-                    rowspan="2"
-                    class="shm-all-ships-name"
-                    @sort="sortBy"
-                  >
-                    {{ i18n.t('allShips.colShip') }}
-                  </SortableTh>
-                  <SortableTh
-                    column="value"
-                    :sort="sort"
-                    numeric
-                    rowspan="2"
-                    class="shm-value"
-                    @sort="sortBy"
-                  >
-                    {{ i18n.t('allShips.colValue') }}
-                  </SortableTh>
-                  <SortableTh
-                    v-tooltip="i18n.t('allShips.colWarbondHint')"
-                    column="warbond"
-                    :sort="sort"
-                    numeric
-                    rowspan="2"
-                    class="shm-value"
-                    @sort="sortBy"
-                  >
-                    {{ i18n.t('allShips.colWarbond') }}
-                  </SortableTh>
-                  <SortableTh
-                    v-tooltip="i18n.t('store.colAlwaysAvailableHint')"
-                    column="alwaysAvailable"
-                    :sort="sort"
-                    rowspan="2"
-                    class="is-center"
-                    @sort="sortBy"
-                  >
-                    {{ i18n.t('store.colAlwaysAvailable') }}
-                  </SortableTh>
-                  <SortableTh
-                    v-tooltip="i18n.t('allShips.colPurchasableHint')"
-                    column="purchasable"
-                    :sort="sort"
-                    rowspan="2"
-                    class="is-center"
-                    @sort="sortBy"
-                  >
-                    {{ i18n.t('allShips.colPurchasable') }}
-                  </SortableTh>
-                  <th scope="colgroup" colspan="3" class="is-group is-center is-hangar">
-                    {{ i18n.t('allShips.groupHangar') }}
+                <tr class="shm-all-ships-groups">
+                  <th colspan="2" aria-hidden="true"></th>
+                  <th scope="colgroup" colspan="3" class="is-hangar">
+                    <span>{{ i18n.t('allShips.groupHangar') }}</span>
                   </th>
-                  <th scope="colgroup" colspan="3" class="is-group is-center is-buyback">
-                    {{ i18n.t('allShips.groupBuyback') }}
+                  <th scope="colgroup" colspan="3" class="is-buyback">
+                    <span>{{ i18n.t('allShips.groupBuyback') }}</span>
                   </th>
-                  <SortableTh column="onSale" :sort="sort" rowspan="2" @sort="sortBy">
-                    {{ i18n.t('allShips.colOnSale') }}
-                  </SortableTh>
+                  <th aria-hidden="true"></th>
                 </tr>
                 <tr>
-                  <template v-for="(columns, group) in GROUP_COLUMNS" :key="group">
+                  <SortableTh column="name" :sort="sort" class="shm-all-ships-name" @sort="sortBy">
+                    {{ i18n.t('allShips.colShip') }}
+                  </SortableTh>
+                  <SortableTh column="value" :sort="sort" numeric @sort="sortBy">
+                    {{ i18n.t('allShips.colValue') }}
+                  </SortableTh>
+                  <template v-for="(columns, group) in GROUPS" :key="group">
                     <SortableTh
-                      v-for="(column, index) in columns"
+                      v-for="column in columns"
                       :key="column"
-                      v-tooltip="i18n.t(GROUP_HEADS[column]!.hint)"
+                      v-tooltip="i18n.t(COLUMN_HEADS[column]!.hint)"
                       :column="column"
                       :sort="sort"
-                      numeric
-                      :class="[`is-${group}`, { 'is-group': index === 0 }]"
+                      class="is-count"
                       @sort="sortBy"
                     >
-                      {{ i18n.t(GROUP_HEADS[column]!.label) }}
+                      {{ i18n.t(COLUMN_HEADS[column]!.label) }}
                     </SortableTh>
                   </template>
+                  <SortableTh column="onSale" :sort="sort" numeric @sort="sortBy">
+                    {{ i18n.t('allShips.colPledgeStore') }}
+                  </SortableTh>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="row in shown" :key="row.ship.id">
+                <tr
+                  v-for="row in shown"
+                  :key="row.ship.id"
+                  :class="{
+                    'is-band-start': bandStarts.has(row.ship.id),
+                    'is-not-sold': row.purchasable === false,
+                  }"
+                >
                   <th scope="row" class="shm-all-ships-name">
-                    <span class="is-strong">{{ row.ship.name }}</span>
-                    <span v-if="row.manufacturer" class="shm-all-ships-maker">
-                      {{ row.manufacturer }}
+                    <span class="shm-all-ships-ship">
+                      <span class="shm-all-ships-ship-name">{{ row.ship.name }}</span>
+                      <span v-if="row.manufacturer" class="shm-all-ships-maker">{{
+                        row.manufacturer
+                      }}</span>
+                      <span
+                        v-if="row.alwaysAvailable"
+                        v-tooltip="i18n.t('store.colAlwaysAvailableHint')"
+                        class="shm-all-ships-tag is-available"
+                        >{{ i18n.t('store.colAlwaysAvailable') }}</span
+                      >
+                      <span
+                        v-if="row.purchasable === false"
+                        v-tooltip="i18n.t('allShips.colPurchasableHint')"
+                        class="shm-all-ships-tag"
+                        >{{ i18n.t('allShips.notSold') }}</span
+                      >
                     </span>
                   </th>
-                  <td class="is-number shm-value">{{ usd(row.ship.msrp) }}</td>
-                  <td class="is-number shm-value">
-                    <template v-if="row.warbondPrice !== undefined">{{
-                      usd(row.warbondPrice)
-                    }}</template>
+                  <td class="shm-all-ships-value">
+                    <span class="shm-value">{{ usd(row.ship.msrp) }}</span>
+                    <template v-if="row.warbondPrice !== undefined">
+                      <span class="shm-all-ships-warbond shm-value">{{
+                        i18n.t('allShips.warbondPrice', [usd(row.warbondPrice)])
+                      }}</span>
+                      <span class="shm-all-ships-saves shm-value">{{
+                        i18n.t('allShips.saves', [usd(row.ship.msrp - row.warbondPrice)])
+                      }}</span>
+                    </template>
                   </td>
-                  <td class="is-center">
-                    <SvgIcon
-                      v-if="row.alwaysAvailable"
-                      class="shm-always-available"
-                      name="check"
-                      :label="i18n.t('store.colAlwaysAvailable')"
-                    />
-                  </td>
-                  <td class="is-center">
-                    <SvgIcon
-                      v-if="row.purchasable"
-                      class="shm-always-available"
-                      name="check"
-                      :label="i18n.t('allShips.colPurchasable')"
-                    />
-                    <span v-else-if="row.purchasable === false" class="is-none">–</span>
-                  </td>
-                  <template v-if="hangarRead">
-                    <td
-                      v-for="(count, index) in [row.hangarFrom, row.hangarTo, row.hangarShips]"
-                      :key="`h${index}`"
-                      class="is-number is-hangar"
-                      :class="{ 'is-group': index === 0, 'is-none': !count }"
-                    >
-                      {{ count || '–' }}
+                  <template v-for="(columns, group) in GROUPS" :key="group">
+                    <template v-if="read(group)">
+                      <td
+                        v-for="(column, index) in columns"
+                        :key="column"
+                        class="is-count"
+                        :class="[
+                          `is-${group}`,
+                          {
+                            'is-tinted': hasAny(row, group),
+                            'is-first': index === 0,
+                            'is-last': index === columns.length - 1,
+                            'is-from': column.endsWith('From'),
+                            'is-none': !countOf(row, column),
+                          },
+                        ]"
+                      >
+                        {{ countOf(row, column) || '·' }}
+                      </td>
+                    </template>
+                    <td v-else colspan="3" class="is-count is-none">
+                      {{ i18n.t('allShips.notRead') }}
                     </td>
                   </template>
-                  <td v-else colspan="3" class="is-group is-none is-center is-hangar">
-                    {{ i18n.t('allShips.notRead') }}
-                  </td>
-                  <template v-if="buybackRead">
-                    <td
-                      v-for="(count, index) in [row.buybackFrom, row.buybackTo, row.buybackShips]"
-                      :key="`b${index}`"
-                      class="is-number is-buyback"
-                      :class="{ 'is-group': index === 0, 'is-none': !count }"
-                    >
-                      {{ count || '–' }}
-                    </td>
-                  </template>
-                  <td v-else colspan="3" class="is-group is-none is-center is-buyback">
-                    {{ i18n.t('allShips.notRead') }}
-                  </td>
-                  <td>
+                  <td class="shm-all-ships-store">
                     <ShipUpgradeButtons
-                      v-if="row.skuId !== undefined || row.warbondSkuId !== undefined"
+                      v-if="isOnSale(row)"
+                      short
                       :ship-id="row.ship.id"
                       :ship-name="row.ship.name"
                       :sku-id="row.skuId"
                       :warbond-sku-id="row.warbondSkuId"
                     />
+                    <span v-else-if="row.purchasable !== false" class="shm-all-ships-note">{{
+                      i18n.t('allShips.notOnSale')
+                    }}</span>
                   </td>
                 </tr>
               </tbody>
             </table>
+            <p class="shm-all-ships-source">{{ i18n.t('allShips.source') }}</p>
           </div>
         </template>
       </section>
@@ -492,79 +509,98 @@ const GROUP_HEADS: Record<string, { label: MessageKey; hint: MessageKey }> = {
 <style src="@/shared/overlay.css"></style>
 
 <style>
-/* As wide as the window allows: twelve columns. */
+/* As wide as the design: the table of nine columns and its toolbar. */
 .shm-all-ships.shm-overlay-dialog {
-  width: min(1240px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: min(1040px, 100%);
+  max-height: calc(100vh - 120px);
+  padding-bottom: 0;
+}
+
+.shm-all-ships .shm-overlay-header {
+  margin-bottom: 0;
 }
 
 .shm-all-ships-intro {
-  margin: 4px 0 0;
-}
-
-/* As My Hangar's search and filters (list-controls.css); the search only as wide as it needs. */
-.shm-all-ships-controls {
-  margin-bottom: 10px;
-}
-
-.shm-all-ships-controls .shm-search-field {
-  flex: none;
-  max-width: 360px;
-}
-
-/* On a desktop window side by side: the search on the left, the filters on the right. */
-@media (min-width: 960px) {
-  .shm-overlay .shm-all-ships-controls.shm-controls {
-    flex-direction: row;
-    gap: 24px;
-    align-items: flex-start;
-    justify-content: space-between;
-  }
-
-  .shm-all-ships-controls .shm-search-field {
-    flex: 0 1 360px;
-  }
-
-  .shm-all-ships-controls .shm-filters {
-    flex: 0 1 auto;
-  }
-}
-
-/* The slider, and below it the number of each end at its sides. */
-.shm-all-ships-range {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 260px;
-}
-
-.shm-all-ships-ends {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.shm-all-ships-dash {
+  margin: 2px 0 0;
   color: var(--shm-text-muted);
 }
 
-.shm-all-ships-number {
-  width: 9ch;
-  height: 28px;
-  padding: 0 8px;
-  color: var(--shm-text);
-  font: inherit;
-  font-size: calc(12px * var(--shm-font-scale));
-  font-variant-numeric: tabular-nums;
-  text-align: right;
-  background: rgb(var(--shm-surface-rgb) / 0.8);
-  border: 1px solid rgb(var(--shm-accent-rgb) / 0.35);
-  border-radius: var(--shm-radius-control);
+/* Search and filters on the left, the value range on the right; stacked on narrow windows. */
+.shm-all-ships-toolbar {
+  display: grid;
+  flex: none;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 24px;
+  align-items: end;
+  padding: 12px 14px;
+  background: rgb(0 0 0 / 0.22);
+  border-radius: var(--shm-radius-cell);
 }
 
-.shm-all-ships-number:focus {
-  border-color: var(--shm-accent);
-  outline: none;
+@media (max-width: 760px) {
+  .shm-all-ships-toolbar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.shm-all-ships-find {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.shm-all-ships-find .shm-search-field {
+  flex: none;
+}
+
+.shm-all-ships-find .shm-filter-buttons {
+  align-items: center;
+}
+
+.shm-all-ships-find .shm-filter-group-label {
+  margin-right: 2px;
+}
+
+.shm-all-ships-range {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.shm-all-ships-range-head {
+  display: flex;
+  justify-content: space-between;
+  color: var(--shm-text-faint);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+.shm-all-ships-range-text {
+  color: var(--shm-text-strong);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* How many ships each $50 has: the bars in the range chosen stand out. */
+.shm-all-ships-histogram {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  height: 30px;
+}
+
+.shm-all-ships-bar {
+  flex: 1;
+  min-height: 2px;
+  background: rgb(var(--shm-accent-rgb) / 0.55);
+  border-radius: 2px 2px 0 0;
+}
+
+.shm-all-ships-bar.is-out {
+  background: rgb(var(--shm-accent-rgb) / 0.18);
 }
 
 /*
@@ -573,56 +609,55 @@ const GROUP_HEADS: Record<string, { label: MessageKey; hint: MessageKey }> = {
  */
 .shm-all-ships-slider {
   position: relative;
-  height: 22px;
-  margin: 0 9px;
+  height: 16px;
 }
 
 .shm-all-ships-slider::before {
   position: absolute;
-  top: 50%;
+  top: 7px;
   right: 0;
   left: 0;
-  height: 4px;
+  height: 2px;
   background: linear-gradient(
     to right,
-    rgb(var(--shm-accent-rgb) / 0.2) var(--shm-range-from),
+    rgb(var(--shm-accent-rgb) / 0.25) var(--shm-range-from),
     var(--shm-accent) var(--shm-range-from) var(--shm-range-to),
-    rgb(var(--shm-accent-rgb) / 0.2) var(--shm-range-to)
+    rgb(var(--shm-accent-rgb) / 0.25) var(--shm-range-to)
   );
-  border-radius: 2px;
-  transform: translateY(-50%);
+  border-radius: 1px;
   content: '';
 }
 
-/* The inputs reach under the handles' half at both ends, so the track lines up with them. */
 .shm-all-ships-slider input {
   position: absolute;
-  inset: 0 -9px;
-  width: calc(100% + 18px);
+  inset: 0 -8px;
+  width: calc(100% + 16px);
+  height: 16px;
   margin: 0;
   background: none;
-  accent-color: var(--shm-accent);
   appearance: none;
   pointer-events: none;
 }
 
 .shm-all-ships-slider input::-webkit-slider-thumb {
-  width: 18px;
-  height: 18px;
-  background: var(--shm-accent);
-  border: 2px solid var(--shm-surface-elevated);
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border: 0;
   border-radius: 50%;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.4);
   appearance: none;
   cursor: grab;
   pointer-events: auto;
 }
 
 .shm-all-ships-slider input::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  background: var(--shm-accent);
-  border: 2px solid var(--shm-surface-elevated);
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border: 0;
   border-radius: 50%;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.4);
   cursor: grab;
   pointer-events: auto;
 }
@@ -632,117 +667,299 @@ const GROUP_HEADS: Record<string, { label: MessageKey; hint: MessageKey }> = {
 }
 
 .shm-all-ships-slider input:focus-visible::-webkit-slider-thumb {
-  box-shadow: 0 0 0 3px rgb(var(--shm-accent-rgb) / 0.4);
+  box-shadow: 0 0 0 3px rgb(var(--shm-accent-rgb) / 0.5);
+}
+
+.shm-all-ships-ticks {
+  display: flex;
+  justify-content: space-between;
+  color: var(--shm-text-faint);
+  font-size: calc(10px * var(--shm-font-scale));
+  font-variant-numeric: tabular-nums;
 }
 
 .shm-all-ships-count {
-  margin: 0 0 8px;
+  flex: none;
+  margin: 0;
+  padding: 0 2px;
   color: var(--shm-text-muted);
   font-size: calc(12px * var(--shm-font-scale));
   font-variant-numeric: tabular-nums;
 }
 
-/*
- * The table scrolls on its own, in both directions, so its head (top) and the ship's name (left)
- * stay in view.
- */
+.shm-all-ships-count strong {
+  color: var(--shm-text-strong);
+}
+
+/* The table scrolls inside the dialog, its head stays; sideways on narrow windows. */
 .shm-all-ships-scroll {
-  max-height: calc(100vh - 320px);
+  flex: 1;
+  min-height: 0;
+  margin: 0 -24px;
   overflow: auto;
+  overscroll-behavior: contain;
+  border-top: 1px solid var(--shm-separator, rgb(var(--shm-accent-rgb) / 0.14));
   outline: none;
+}
+
+/* Fixed columns: the table doesn't jump sideways while filtering. */
+.shm-all-ships-table {
+  width: 100%;
+  min-width: 900px;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: calc(13px * var(--shm-font-scale));
+}
+
+.shm-all-ships-col-value {
+  width: 98px;
+}
+
+.shm-all-ships-col-count {
+  width: 64px;
+}
+
+.shm-all-ships-col-store {
+  width: 186px;
+}
+
+.shm-all-ships-table th,
+.shm-all-ships-table td {
+  padding: 2px 7px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.shm-all-ships-table :is(th, td):first-child {
+  padding-left: 24px;
+  text-align: left;
+}
+
+.shm-all-ships-table :is(th, td):last-child {
+  padding-right: 24px;
+  text-align: right;
 }
 
 .shm-all-ships-table thead th {
   position: sticky;
-  z-index: 2;
+  z-index: 1;
+  color: var(--shm-text-faint);
+  font-size: calc(11px * var(--shm-font-scale));
+  font-weight: 600;
   line-height: calc(16px * var(--shm-font-scale));
   background: var(--shm-surface-elevated);
   white-space: nowrap;
-  vertical-align: bottom;
 }
 
 .shm-all-ships-table thead tr:first-child th {
   top: 0;
+  padding-top: 8px;
 }
 
-/* The second row of the head right below the first: its line and padding (store-table.css). */
 .shm-all-ships-table thead tr:nth-child(2) th {
-  top: calc(16px * var(--shm-font-scale) + 6px);
+  top: calc(16px * var(--shm-font-scale) + 13px);
+  padding-top: 5px;
+  padding-bottom: 7px;
+  box-shadow: 0 1px 0 var(--shm-separator, rgb(var(--shm-accent-rgb) / 0.14));
 }
 
-/* The first column of the second row is no first column of the table: it keeps its gap. */
-.shm-all-ships-table thead tr:nth-child(2) th.is-group {
-  padding-left: 24px;
+.shm-all-ships-table thead .shm-sort-head {
+  justify-content: center;
 }
 
-/*
- * The groups of columns told apart (#406): the hangar's a little lighter, the buy back's a little
- * darker, with a faint line between their columns. The head keeps its opaque ground, so the rows
- * don't show through while scrolling.
- */
-.shm-all-ships-table td.is-hangar {
-  background: rgb(255 255 255 / 0.05);
+.shm-all-ships-table thead :is(th:first-child, th:last-child) .shm-sort-head {
+  justify-content: inherit;
 }
 
-.shm-all-ships-table td.is-buyback {
-  background: rgb(0 0 0 / 0.1);
+/* The group heads with a line in the group's color: green the hangar, orange the buy back. */
+.shm-all-ships-groups th > span {
+  display: block;
+  padding-bottom: 3px;
+  color: var(--shm-text-secondary);
+  border-bottom: 1px solid currentColor;
 }
 
-.shm-all-ships-table thead th.is-hangar {
-  background:
-    linear-gradient(rgb(255 255 255 / 0.05), rgb(255 255 255 / 0.05)), var(--shm-surface-elevated);
+.shm-all-ships-groups th.is-hangar > span {
+  border-bottom-color: rgb(var(--shm-success-rgb) / 0.45);
 }
 
-.shm-all-ships-table thead th.is-buyback {
-  background: linear-gradient(rgb(0 0 0 / 0.1), rgb(0 0 0 / 0.1)), var(--shm-surface-elevated);
+.shm-all-ships-groups th.is-buyback > span {
+  border-bottom-color: color-mix(in srgb, var(--shm-warning) 45%, transparent);
 }
 
-.shm-all-ships-table :is(td, th):is(.is-hangar, .is-buyback) {
-  padding-right: 8px;
-  border-left: 1px solid rgb(255 255 255 / 0.06);
+/* The rows: a faint line between them, a stronger one at every $100 while sorted by value. */
+.shm-all-ships-table tbody tr {
+  transition: background-color 100ms ease;
+}
+
+.shm-all-ships-table tbody :is(th, td) {
+  height: 30px;
+  border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.07);
+}
+
+.shm-all-ships-table tbody tr:first-child :is(th, td) {
+  border-top-color: transparent;
+}
+
+.shm-all-ships-table tbody tr.is-band-start :is(th, td) {
+  border-top-color: color-mix(in srgb, var(--shm-text) 38%, transparent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .shm-all-ships-table tbody tr:hover {
+    background-color: rgb(var(--shm-accent-rgb) / 0.07);
+  }
+}
+
+/* A ship RSI doesn't sell any more: faded. */
+.shm-all-ships-table tbody tr.is-not-sold {
+  opacity: 0.55;
 }
 
 .shm-all-ships-table .shm-all-ships-name {
-  position: sticky;
-  left: 0;
-  z-index: 1;
-  /* One width, whatever ships are shown: the table doesn't jump sideways while filtering. */
-  width: 200px;
-  min-width: 200px;
-  max-width: 200px;
-  padding-right: 12px;
   font-weight: normal;
-  text-align: left;
-  background: var(--shm-surface-elevated);
 }
 
-.shm-all-ships-table thead .shm-all-ships-name {
-  z-index: 3;
+.shm-all-ships-ship {
+  display: flex;
+  gap: 7px;
+  align-items: baseline;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.shm-all-ships-ship-name {
+  flex: none;
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--shm-text-strong);
+  font-weight: 600;
+  text-overflow: ellipsis;
 }
 
 .shm-all-ships-maker {
-  display: block;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--shm-text-faint);
+  font-size: calc(12px * var(--shm-font-scale));
+  text-overflow: ellipsis;
+}
+
+.shm-all-ships-tag {
+  flex: none;
+  align-self: center;
+  padding: 0 5px;
   color: var(--shm-text-muted);
+  font-size: calc(10px * var(--shm-font-scale));
+  font-weight: 700;
+  line-height: calc(15px * var(--shm-font-scale));
+  background: rgb(var(--shm-accent-rgb) / 0.12);
+  border-radius: 4px;
+}
+
+.shm-all-ships-tag.is-available {
+  color: var(--shm-accent);
+  background: rgb(var(--shm-accent-rgb) / 0.14);
+}
+
+/* The value, and below it the warbond price and what it saves. */
+.shm-all-ships-table td.shm-all-ships-value {
+  line-height: calc(16px * var(--shm-font-scale));
+  text-align: right;
+}
+
+.shm-all-ships-value > span {
+  display: block;
+  font-variant-numeric: tabular-nums;
+}
+
+.shm-all-ships-value > span:first-child {
+  color: var(--shm-text-strong);
+  font-weight: 600;
+}
+
+.shm-all-ships-warbond {
+  color: var(--shm-upgraded);
   font-size: calc(11px * var(--shm-font-scale));
+  font-weight: 600;
 }
 
-.shm-all-ships-table td {
-  vertical-align: middle;
+.shm-all-ships-saves {
+  color: var(--shm-text-faint);
+  font-size: calc(10px * var(--shm-font-scale));
 }
 
-/* The checkmark columns with room on both sides, also before the tinted "Hangar". */
-.shm-all-ships-table .is-center {
-  padding-right: 12px;
+/* The counts: tinted while the group has any, empty ones as a faint dot. */
+.shm-all-ships-table td.is-count {
+  color: var(--shm-text-strong);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  background-clip: padding-box;
 }
 
-.shm-all-ships-table .shm-icon {
-  width: 1.1em;
-  height: 1.1em;
+.shm-all-ships-table td.is-count.is-from {
+  color: var(--shm-text-secondary);
 }
 
-/* The upgrade buttons in a table row: no wider than their labels. */
-.shm-all-ships-table .shm-upgrade-buttons {
+.shm-all-ships-table td.is-count.is-none {
+  color: var(--shm-text-faint);
+  font-weight: 400;
+  opacity: 0.6;
+}
+
+.shm-all-ships-table td.is-hangar.is-tinted {
+  background-color: rgb(var(--shm-success-rgb) / 0.07);
+}
+
+.shm-all-ships-table td.is-buyback.is-tinted {
+  background-color: color-mix(in srgb, var(--shm-warning) 7%, transparent);
+}
+
+.shm-all-ships-table td.is-tinted.is-first {
+  border-radius: 6px 0 0 6px;
+}
+
+.shm-all-ships-table td.is-tinted.is-last {
+  border-radius: 0 6px 6px 0;
+}
+
+/* The Pledge Store: "Warbond" in the warbond's yellow, "Standard" or "Ship upgrade". */
+.shm-all-ships-store .shm-upgrade-buttons {
   flex-wrap: nowrap;
-  justify-content: flex-start;
+  gap: 5px;
+}
+
+.shm-all-ships-store .shm-button {
+  height: 24px;
+  padding: 0 8px;
+}
+
+.shm-all-ships-store .shm-upgrade-warbond {
+  color: var(--shm-upgraded);
+  background: rgb(var(--shm-upgraded-rgb) / 0.15);
+  border-color: transparent;
+}
+
+.shm-all-ships-note {
+  color: var(--shm-text-faint);
+  font-size: calc(12px * var(--shm-font-scale));
+  white-space: nowrap;
+}
+
+.shm-all-ships-source {
+  margin: 0;
+  padding: 12px 24px 16px;
+  color: var(--shm-text-faint);
+  font-size: calc(11px * var(--shm-font-scale));
+  line-height: calc(16px * var(--shm-font-scale));
+  border-top: 1px solid var(--shm-separator, rgb(var(--shm-accent-rgb) / 0.14));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shm-all-ships-table tbody tr {
+    transition: none;
+  }
 }
 </style>

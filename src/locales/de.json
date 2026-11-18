@@ -658,7 +658,9 @@
       "priceAsc": "Niedrigster Standardpreis zuerst",
       "discountDesc": "Höchster Rabatt zuerst",
       "discountAsc": "Niedrigster Rabatt zuerst"
-    }
+    },
+    "openWarbondShort": "Warbond",
+    "openStandardShort": "Standard"
   },
   "events": {
     "title": "Events",
@@ -1510,7 +1512,7 @@
     "button": "Alle Schiffe",
     "buttonHint": "Alle Schiffe des Pledge Store nach Wert, mit dem, was dein Hangar und dein Buy Back davon haben",
     "title": "Alle Schiffe nach Wert",
-    "intro": "Jedes Schiff aus RSIs Ship-Upgrade-Tool mit seinem Wert, dem, was dein Hangar und dein Buy Back davon haben, und wie du es bekommst.",
+    "intro": "Jedes Schiff aus RSIs Upgrade-Tool, das günstigste zuerst – mit dem, was dein Hangar und dein Buy Back davon haben, und wie du es bekommst.",
     "count": {
       "one": "$1 Schiff",
       "other": "$1 Schiffe"
@@ -1533,7 +1535,7 @@
     "notRead": "Noch nicht gelesen",
     "noShips": "Die Schiffe des Pledge Store sind noch nicht gelesen.",
     "search": "Schiffe und Hersteller durchsuchen …",
-    "priceRange": "Wert in $",
+    "priceRange": "Wert",
     "priceFrom": "Wert ab",
     "priceTo": "Wert bis",
     "filtersLabel": "Nur zeigen",
@@ -1545,6 +1547,20 @@
       "other": "$1 von $2 Schiffen"
     },
     "noResults": "Kein Schiff passt zur Suche und zu den Filtern.",
-    "reset": "Zurücksetzen"
+    "reset": "Zurücksetzen",
+    "histogram": "Schiffe je 50 Dollar Wert",
+    "filterOwned": "In meinem Hangar oder Buy Back",
+    "countOwned": {
+      "one": "$1 davon in deinem Hangar oder Buy Back",
+      "other": "$1 davon in deinem Hangar oder Buy Back"
+    },
+    "filteredBy": "gefiltert nach $1",
+    "bandNote": "eine Linie trennt je 100 Dollar",
+    "colPledgeStore": "Pledge Store",
+    "notSold": "Nicht erhältlich",
+    "notOnSale": "Gerade nicht im Verkauf",
+    "warbondPrice": "Warbond $1",
+    "saves": "spart $1",
+    "source": "Werte aus RSIs Ship-Upgrade-Tool. „Immer kaufbar“ und „Nicht erhältlich“ aus dem Star Citizen Wiki (CC BY-SA 4.0), über die Projekt-Website."
   }
 }
