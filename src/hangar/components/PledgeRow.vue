@@ -18,6 +18,7 @@ import GiftOverlay from './GiftOverlay.vue';
 import ProtectedBadge from './ProtectedBadge.vue';
 import PriceIncreaseBadge from '@/price-increases/components/PriceIncreaseBadge.vue';
 import { openCcuAdvice } from '@/price-increases/ccu-advice-request';
+import { openShipRemoval } from '@/store/open-current-warbonds';
 import { futureDiscount } from '@/price-increases/future-discount';
 import { formatExpectedTime } from '@/price-increases/price-increase-label';
 import UpgradeLog from './UpgradeLog.vue';
@@ -127,6 +128,9 @@ const removal = computed(() => {
   const limited = limitedSaleNote([entry.removal], removals.value.limited, locale.value) ?? '';
   return {
     critical,
+    shipId: ship.id,
+    /** The button to the ship in the Pledge Store tab (#381). */
+    showHint: i18n.t('shipRemovals.showShipHint', [ship.name]),
     /** The tooltip: the ship, the date and, if so, that there are too few CCUs to it. */
     hint: [about, shortage, limited].filter(Boolean).join(' '),
     /** Expanded: the counts before the shortage they show. */
@@ -405,6 +409,18 @@ const toggle = () => {
         >
           <SvgIcon name="scale-balanced" />
           {{ i18n.t('ccuAdvice.button') }}
+        </button>
+        <!-- Its base ship leaves the Pledge Store (#381): its CCUs from and to it there. -->
+        <button
+          v-if="removal"
+          v-tooltip="removal.showHint"
+          type="button"
+          class="shm-button shm-origin-button shm-removal-button"
+          :class="removal.critical ? 'is-danger' : 'is-warning'"
+          @click="openShipRemoval(removal.shipId)"
+        >
+          <SvgIcon name="basket-shopping" />
+          {{ i18n.t('notifications.showInStore') }}
         </button>
       </div>
       <div class="shm-details-main">

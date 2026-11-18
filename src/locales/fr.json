@@ -1468,6 +1468,7 @@
     "ccuHint": "Le $1 quitte le Pledge Store le $2. Ce CCU ne pourra alors s’appliquer qu’à un pledge avec ce vaisseau.",
     "ccusTo": "CCU vers le $1 : $2 dans votre hangar, $3 dans votre buy back.",
     "ccuCritical": "Vous avez moins de CCU vers le $1 que depuis lui : tous les CCU depuis ce vaisseau n’auront pas de vaisseau auquel s’appliquer.",
+    "showShipHint": "Ouvre « Vaisseaux qui quittent le Pledge Store » avec vos CCU depuis et vers le $1.",
     "limitedSale": {
       "one": "Le $1 est en vente en ce moment, mais ne fait pas partie des vaisseaux toujours disponibles.",
       "other": "Les $1 sont en vente en ce moment, mais ne font pas partie des vaisseaux toujours disponibles."

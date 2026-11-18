@@ -5,7 +5,8 @@ import { countdown, formatExpectedTime } from '@/price-increases/price-increase-
 import type { Ship } from '@/ships/ships';
 import { useCountdownNow } from '@/shared/use-countdown-now';
 import { vTooltip } from '@/shared/tooltip/tooltip';
-import { computed, ref } from 'vue';
+import { removalRowId, shipRemovalRequest } from '@/store/open-current-warbonds';
+import { computed, ref, watch } from 'vue';
 import type { RemovalCcus } from '../removal-ccus';
 import RemovalCcuTable from './RemovalCcuTable.vue';
 import { limitedSaleNote } from '../removal-availability';
@@ -16,8 +17,9 @@ import { useProvidedRemovalCcus } from '../use-removal-ccus';
  * The ships CIG takes out of the Pledge Store for good (#288, part of Ship Removals #285), in the
  * Pledge Store tab: grouped by date, each ship with the date, a countdown (as the price increases'
  * badges, #195) and the source of the announcement. Built from the rows of the manager's lists, so
- * it fits every theme. Opened, a ship shows the CCUs from and to it (#380). Notifications open the tab at its title
- * (`shm-store-removals-title`).
+ * it fits every theme. Opened, a ship shows the CCUs from and to it (#380). Notifications open the
+ * tab at its title (`shm-store-removals-title`), a CCU of My Hangar at its base ship's row, expanded
+ * (#381, `openShipRemoval`).
  */
 
 const props = defineProps<{
@@ -42,6 +44,16 @@ function toggle(id: number) {
   if (!next.delete(id)) next.add(id);
   expanded.value = next;
 }
+/** A ship opened from My Hangar (#381): expanded, others stay as they are. */
+watch(
+  shipRemovalRequest,
+  (request) => {
+    if (!request) return;
+    expanded.value = new Set(expanded.value).add(request.shipId);
+    shipRemovalRequest.value = undefined;
+  },
+  { immediate: true },
+);
 /** Clicks on the row toggle it, except on its links (the source). */
 function toggleFrom(event: MouseEvent, id: number) {
   if ((event.target as Element).closest('a')) return;
@@ -94,6 +106,7 @@ const hint = (removal: ShipRemoval) =>
       <div class="shm-rows">
         <article
           v-for="removal in group.removals"
+          :id="removalRowId(removal.ship.id)"
           :key="removal.ship.id"
           class="shm-row shm-removal"
           :class="{ 'is-expanded': expanded.has(removal.ship.id) }"
@@ -172,6 +185,34 @@ const hint = (removal: ShipRemoval) =>
 
 .shm-store-removals .shm-store-intro {
   margin-bottom: 4px;
+}
+
+/* Opened from My Hangar (#381): below RSI's fixed top bar, marked for a moment (open-tab-at.ts). */
+.shm-removal {
+  scroll-margin-top: 90px;
+}
+
+.shm-removal.is-flashed {
+  animation: shm-removal-flash 1.6s ease-out;
+}
+
+@keyframes shm-removal-flash {
+  0%,
+  40% {
+    background: rgb(var(--shm-accent-rgb) / 0.2);
+  }
+
+  100% {
+    background: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shm-removal.is-flashed {
+    animation: none;
+    outline: 1px solid var(--shm-accent);
+    outline-offset: -1px;
+  }
 }
 
 /* Plain text, not the monospace of the meta lines (IDs, prices, dates). */

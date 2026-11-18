@@ -1,10 +1,13 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it } from 'vitest';
-import { createApp, h, type App } from 'vue';
+import { createApp, h, shallowRef, type App } from 'vue';
 import { RSI_GAMES_LIBRARY_URL } from '@/config';
 import type { Pledge } from '../pledge';
 import { toPledgeView } from '../pledge-view';
 import { paintRebuys } from '@/store/paint-consultant/use-paint-consultant';
+import { REMOVAL_CCUS, removalCcusState } from '@/ship-removals/use-removal-ccus';
+import type { RemovalCcus } from '@/ship-removals/removal-ccus';
+import { shipRemovalRequest } from '@/store/open-current-warbonds';
 import PledgeRow from './PledgeRow.vue';
 
 let app: App | undefined;
@@ -13,7 +16,7 @@ afterEach(() => {
   paintRebuys.value = new Map();
 });
 
-function render(overrides: Partial<Pledge>, discountAmount?: number) {
+function render(overrides: Partial<Pledge>, discountAmount?: number, removals: RemovalCcus[] = []) {
   const pledge = {
     id: 1,
     name: 'Package - Nomad Star Citizen + Squadron 42 Combo',
@@ -45,6 +48,7 @@ function render(overrides: Partial<Pledge>, discountAmount?: number) {
         autoExpand: true,
       }),
   });
+  app.provide(REMOVAL_CCUS, shallowRef(removalCcusState(removals)));
   app.mount(root);
   return root;
 }
@@ -169,5 +173,41 @@ describe('PledgeRow', () => {
     const old = { id: 9, items: [{ title: 'Lynx - Moonrise Paint', kind: 'Skin' }] };
     const badge = render(old).querySelector('.shm-badge.is-rebuy');
     expect(badge?.textContent?.trim()).toBe('Melt – bought again at 35%');
+  });
+
+  it('opens the base ship of a CCU in the Pledge Store tab when it leaves the store (#381)', () => {
+    const ccu = { id: 3, title: 'Upgrade - Constellation Andromeda to Carrack', isGiftable: false };
+    const entry = (to: number): RemovalCcus => ({
+      removal: {
+        ship: { id: 45, name: 'Constellation Mk IV Andromeda' },
+        removedAt: { at: Date.parse('2027-01-27T00:00:00Z'), dayOnly: true },
+        source: 'https://robertsspaceindustries.com/en/comm-link/transmission/21350',
+      },
+      from: [{ source: 'hangar', id: 3, title: ccu.title }],
+      to: Array.from({ length: to }, (_, index) => ({
+        source: 'buyback',
+        id: 10 + index,
+        title: '',
+      })),
+      level: to >= 1 ? 'warning' : 'critical',
+    });
+
+    const warned = render(ccu, undefined, [entry(1)]);
+    const button = warned.querySelector<HTMLElement>('.shm-removal-button');
+    expect(button?.textContent?.trim()).toBe('Show in Pledge Store');
+    expect(button?.classList.contains('is-warning')).toBe(true);
+    button!.click();
+    expect(shipRemovalRequest.value).toEqual({ shipId: 45 });
+    expect(location.hash).toBe('#hangar-manager-store');
+    shipRemovalRequest.value = undefined;
+
+    app?.unmount();
+    const critical = render(ccu, undefined, [entry(0)]).querySelector('.shm-removal-button');
+    expect(critical?.classList.contains('is-danger')).toBe(true);
+
+    app?.unmount();
+    expect(
+      render({ id: 4 }, undefined, [entry(1)]).querySelector('.shm-removal-button'),
+    ).toBeNull();
   });
 });

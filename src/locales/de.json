@@ -1468,6 +1468,7 @@
     "ccuHint": "$1 verlässt am $2 den Pledge Store. Dieses CCU lässt sich danach nur noch auf ein Pledge mit diesem Schiff anwenden.",
     "ccusTo": "CCUs zu $1: $2 in deinem Hangar, $3 in deinem Buy Back.",
     "ccuCritical": "Du hast weniger CCUs zu $1 als CCUs von diesem Schiff: Nicht jedes davon hat ein Schiff, auf das es sich anwenden lässt.",
+    "showShipHint": "Öffnet „Schiffe, die den Pledge Store verlassen“ mit deinen CCUs von und zu $1.",
     "limitedSale": {
       "one": "$1 ist gerade im Verkauf, gehört aber nicht zu den immer erhältlichen Schiffen.",
       "other": "$1 sind gerade im Verkauf, gehören aber nicht zu den immer erhältlichen Schiffen."
