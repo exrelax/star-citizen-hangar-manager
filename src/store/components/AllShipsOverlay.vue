@@ -265,6 +265,7 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
 .shm-all-ships-table thead th {
   position: sticky;
   z-index: 2;
+  line-height: calc(16px * var(--shm-font-scale));
   background: var(--shm-surface-elevated);
   white-space: nowrap;
   vertical-align: bottom;
@@ -274,9 +275,14 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
   top: 0;
 }
 
-/* The second row of the head below the first: its height, set by the font size. */
+/* The second row of the head right below the first: its line and padding (store-table.css). */
 .shm-all-ships-table thead tr:nth-child(2) th {
-  top: calc(22px * var(--shm-font-scale));
+  top: calc(16px * var(--shm-font-scale) + 6px);
+}
+
+/* The first column of the second row is no first column of the table: it keeps its gap. */
+.shm-all-ships-table thead tr:nth-child(2) th.is-group {
+  padding-left: 24px;
 }
 
 .shm-all-ships-table .shm-all-ships-name {
