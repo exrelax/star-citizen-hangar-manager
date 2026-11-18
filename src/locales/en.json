@@ -1510,7 +1510,7 @@
     "button": "All ships",
     "buttonHint": "All ships of the Pledge Store by value, with what your hangar and buy back have of them",
     "title": "All ships by value",
-    "intro": "Every ship of RSI's ship upgrade tool, the most valuable first, with what your hangar and your buy back have of it.",
+    "intro": "Every ship of RSI's ship upgrade tool with its value, what your hangar and your buy back have of it, and how to get it.",
     "count": {
       "one": "$1 ship",
       "other": "$1 ships"

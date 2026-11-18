@@ -1510,7 +1510,7 @@
     "button": "Tous les vaisseaux",
     "buttonHint": "Tous les vaisseaux du Pledge Store par valeur, avec ce que ton hangar et ton buy back en ont",
     "title": "Tous les vaisseaux par valeur",
-    "intro": "Chaque vaisseau de l’outil d’upgrade de RSI, le plus cher d’abord, avec ce que ton hangar et ton buy back en ont.",
+    "intro": "Chaque vaisseau de l’outil d’upgrade de RSI avec sa valeur, ce que ton hangar et ton buy back en ont, et comment l’obtenir.",
     "count": {
       "one": "$1 vaisseau",
       "other": "$1 vaisseaux"

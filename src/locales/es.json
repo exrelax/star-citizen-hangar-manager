@@ -1510,7 +1510,7 @@
     "button": "Todas las naves",
     "buttonHint": "Todas las naves de la Pledge Store por valor, con lo que tienen de ellas tu hangar y tu buy back",
     "title": "Todas las naves por valor",
-    "intro": "Cada nave de la herramienta de mejoras de RSI, la más valiosa primero, con lo que tienen de ella tu hangar y tu buy back.",
+    "intro": "Cada nave de la herramienta de mejoras de RSI con su valor, lo que tienen de ella tu hangar y tu buy back, y cómo conseguirla.",
     "count": {
       "one": "$1 nave",
       "other": "$1 naves"

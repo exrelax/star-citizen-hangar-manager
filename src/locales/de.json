@@ -1510,7 +1510,7 @@
     "button": "Alle Schiffe",
     "buttonHint": "Alle Schiffe des Pledge Store nach Wert, mit dem, was dein Hangar und dein Buy Back davon haben",
     "title": "Alle Schiffe nach Wert",
-    "intro": "Jedes Schiff aus RSIs Ship-Upgrade-Tool, das wertvollste zuerst, mit dem, was dein Hangar und dein Buy Back davon haben.",
+    "intro": "Jedes Schiff aus RSIs Ship-Upgrade-Tool mit seinem Wert, dem, was dein Hangar und dein Buy Back davon haben, und wie du es bekommst.",
     "count": {
       "one": "$1 Schiff",
       "other": "$1 Schiffe"
