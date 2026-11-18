@@ -8,6 +8,7 @@ import { ownedCounts, type WarbondOffer } from '../warbond';
 import type { SightingEvent } from '../warbond-history';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import BaseShipsTable from './BaseShipsTable.vue';
+import ShipUpgradeButtons from './ShipUpgradeButtons.vue';
 // Shared, unscoped styles of the store's tables; a plain import, as `<style src>` of the same file
 // in several components breaks the build.
 import './store-table.css';
@@ -18,7 +19,7 @@ const expanded = ref(false);
 
 /** Clicks on the row toggle it, except on the upgrade button (RSI opens its overlay then). */
 function toggleFrom(event: MouseEvent) {
-  if ((event.target as Element).closest('.js-open-ship-upgrades')) return;
+  if ((event.target as Element).closest('.shm-upgrade-buttons')) return;
   expanded.value = !expanded.value;
 }
 
@@ -123,19 +124,12 @@ const earlier = computed(() =>
         </span>
       </span>
 
-      <!-- RSI's own opener (a click handler on the page): its overlay, with this warbond as target. -->
-      <a
-        v-tooltip="i18n.t('store.openUpgradeHint', [offer.target.ship.name])"
-        href="#"
-        class="shm-button shm-warbond-upgrade js-open-ship-upgrades"
-        data-apiurl="/pledge-store/api/upgrade/v2"
-        :data-toshipid="offer.target.ship.id"
-        :data-toskuid="offer.target.skuId"
-        @click.prevent
-      >
-        <SvgIcon name="basket-shopping" />
-        {{ i18n.t('store.openUpgrade') }}
-      </a>
+      <!-- RSI's own opener: its overlay, with this warbond as target ("Warbond upgrade", #392). -->
+      <ShipUpgradeButtons
+        :ship-id="offer.target.ship.id"
+        :ship-name="offer.target.ship.name"
+        :warbond-sku-id="offer.target.skuId"
+      />
 
       <button
         v-tooltip="i18n.t('pledge.toggleDetails')"
@@ -275,12 +269,6 @@ const earlier = computed(() =>
 .shm-warbond-badges-label {
   color: var(--shm-text-muted);
   font-size: calc(11px * var(--shm-font-scale));
-}
-
-/* The upgrade button on the right, next to the chevron, its label on one line. */
-.shm-warbond-upgrade {
-  flex: none;
-  white-space: nowrap;
 }
 
 /* No buttons under the image here: the content spans both columns. */

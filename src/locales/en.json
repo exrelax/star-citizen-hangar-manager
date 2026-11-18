@@ -584,6 +584,8 @@
     "warbondEdition": "Warbond Edition",
     "msrpHint": "Standard price of the ship",
     "openUpgrade": "Ship upgrade",
+    "openWarbondUpgrade": "Warbond upgrade",
+    "upgradeDemo": "Not available in demo mode: RSI’s dialog shows your real ships and CCUs.",
     "openUpgradeHint": "Opens RSI's ship upgrade dialog with the $1 (Warbond Edition) as target",
     "openUpgradeFromHint": "Opens RSI’s ship upgrade dialog with the $1 as base ship and the $2 as target",
     "inHangar": "In hangar:",

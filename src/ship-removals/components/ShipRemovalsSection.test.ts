@@ -119,28 +119,32 @@ describe('ShipRemovalsSection', () => {
     await new Promise((resolve) => setTimeout(resolve));
     await nextTick();
     const [andromeda, aquila] = [...root.querySelectorAll('.shm-removal')];
-    const button = andromeda!.querySelector<HTMLElement>('.js-open-ship-upgrades');
-    expect(button?.textContent?.trim()).toBe('Ship upgrade');
-    expect(button?.dataset).toMatchObject({
+    // "Warbond upgrade" (#392) left of "Ship upgrade", each with its SKU.
+    const buttons = [...andromeda!.querySelectorAll<HTMLElement>('.js-open-ship-upgrades')];
+    expect(buttons.map((button) => button.textContent?.trim())).toEqual([
+      'Warbond upgrade',
+      'Ship upgrade',
+    ]);
+    expect(buttons.map((button) => button.dataset.toskuid)).toEqual(['900', '901']);
+    expect(buttons[1]!.dataset).toMatchObject({
       apiurl: '/pledge-store/api/upgrade/v2',
       toshipid: '45',
-      toskuid: '901',
     });
     // Not on sale: no button.
-    expect(aquila!.querySelector('.shm-warbond-upgrade')).toBeNull();
+    expect(aquila!.querySelector('.shm-upgrade-buttons')).toBeNull();
     // Its click opens RSI's dialog, not the row.
-    button!.click();
+    buttons[1]!.click();
     await nextTick();
     expect(andromeda!.querySelector('.shm-removal-details')).toBeNull();
 
-    // In the demo it is disabled: RSI's dialog would show the real account.
+    // In the demo they are disabled: RSI's dialog would show the real account.
     app!.unmount();
     const demo = mount(removals, true);
     await new Promise((resolve) => setTimeout(resolve));
     await nextTick();
-    const disabled = demo.querySelector<HTMLButtonElement>('.shm-warbond-upgrade');
-    expect(disabled?.disabled).toBe(true);
-    expect(disabled?.classList.contains('js-open-ship-upgrades')).toBe(false);
+    const disabled = [...demo.querySelectorAll<HTMLButtonElement>('.shm-upgrade-buttons button')];
+    expect(disabled.map((button) => button.disabled)).toEqual([true, true]);
+    expect(demo.querySelector('.js-open-ship-upgrades')).toBeNull();
   });
 
   it('shows nothing without upcoming removals', () => {

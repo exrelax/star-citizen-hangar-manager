@@ -584,6 +584,8 @@
     "warbondEdition": "Warbond Edition",
     "msrpHint": "Precio estándar de la nave",
     "openUpgrade": "Mejora de nave",
+    "openWarbondUpgrade": "Mejora Warbond",
+    "upgradeDemo": "No disponible en el modo demo: el diálogo de RSI muestra tus naves y CCU reales.",
     "openUpgradeHint": "Abre el diálogo de mejoras de RSI con la $1 (Warbond Edition) como destino",
     "openUpgradeFromHint": "Abre el diálogo de mejoras de nave de RSI con la $1 como nave base y la $2 como destino",
     "inHangar": "En el hangar:",

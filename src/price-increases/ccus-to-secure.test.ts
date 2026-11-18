@@ -73,6 +73,18 @@ describe('ccusToSecure (#253)', () => {
     expect(warbondOnly).toEqual([]);
   });
 
+  it('names the cheapest warbond SKU of a ship for "Warbond upgrade" (#392)', () => {
+    const [withWarbond] = secure({
+      buyable: [sku(109), sku(109, 900), sku(109, 901)],
+      warbonds: [
+        { shipId: 109, skuId: 900, price: 140 },
+        { shipId: 109, skuId: 901, price: 130 },
+      ],
+    });
+    expect(withWarbond).toMatchObject({ skuId: 109, warbondSkuId: 901 });
+    expect(secure()[0]?.warbondSkuId).toBeUndefined();
+  });
+
   it('counts what the user has of each base ship', () => {
     const holdings = new Map([
       [32, { hangarShips: 1, hangarCcus: 3, buybackShips: 0, buybackCcus: 2 }],
