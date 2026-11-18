@@ -510,7 +510,7 @@ an account without stored data):
   the demo hangar and buy back, which then also has CCUs to the real ships not on sale.
 - The table of all ships (#385, #390): counts of the demo hangar and buy back, warbond prices of
   the demo's offers, always available and not sold any more from the ship facts, "Ship upgrade"
-  disabled.
+  disabled; sorted by each column, searched, narrowed by the price range and each filter (#406).
 - Ship Removals (#292, `demo-ship-removals.ts`, checked in `demo-ship-removals.test.ts`): one ship
   alone on a date with a time and two days with two ships each; ships with enough CCUs to them,
   with too few and without CCUs; the yellow-orange and red triangle in My Hangar with its button to

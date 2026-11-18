@@ -1531,6 +1531,20 @@
     "colShipsHint": "Einzelne Schiffs-Pledges (Standalone Ships) des Schiffs",
     "colOnSale": "Im Verkauf",
     "notRead": "Noch nicht gelesen",
-    "noShips": "Die Schiffe des Pledge Store sind noch nicht gelesen."
+    "noShips": "Die Schiffe des Pledge Store sind noch nicht gelesen.",
+    "search": "Schiffe und Hersteller durchsuchen …",
+    "priceRange": "Wert",
+    "priceFrom": "Wert ab",
+    "priceTo": "Wert bis",
+    "filtersLabel": "Nur zeigen",
+    "filterAlwaysAvailable": "Immer kaufbar",
+    "filterOnSale": "Im Verkauf",
+    "filterWarbond": "Warbond",
+    "countFiltered": {
+      "one": "$1 von $2 Schiff",
+      "other": "$1 von $2 Schiffen"
+    },
+    "noResults": "Kein Schiff passt zur Suche und zu den Filtern.",
+    "reset": "Zurücksetzen"
   }
 }

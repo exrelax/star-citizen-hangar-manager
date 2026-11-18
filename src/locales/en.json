@@ -1531,6 +1531,20 @@
     "colShipsHint": "Standalone ship pledges of the ship",
     "colOnSale": "On sale",
     "notRead": "Not read yet",
-    "noShips": "The Pledge Store's ships aren't read yet."
+    "noShips": "The Pledge Store's ships aren't read yet.",
+    "search": "Search ships and manufacturers …",
+    "priceRange": "Value",
+    "priceFrom": "Value from",
+    "priceTo": "Value up to",
+    "filtersLabel": "Show only",
+    "filterAlwaysAvailable": "Always available",
+    "filterOnSale": "On sale",
+    "filterWarbond": "Warbond",
+    "countFiltered": {
+      "one": "$1 of $2 ship",
+      "other": "$1 of $2 ships"
+    },
+    "noResults": "No ship matches the search and the filters.",
+    "reset": "Reset"
   }
 }

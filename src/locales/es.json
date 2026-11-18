@@ -1531,6 +1531,20 @@
     "colShipsHint": "Pledges de la nave sola (Standalone Ships)",
     "colOnSale": "En venta ahora",
     "notRead": "Aún no leído",
-    "noShips": "Las naves de la Pledge Store aún no se han leído."
+    "noShips": "Las naves de la Pledge Store aún no se han leído.",
+    "search": "Buscar naves y fabricantes …",
+    "priceRange": "Valor",
+    "priceFrom": "Valor desde",
+    "priceTo": "Valor hasta",
+    "filtersLabel": "Mostrar solo",
+    "filterAlwaysAvailable": "Siempre disponible",
+    "filterOnSale": "En venta",
+    "filterWarbond": "Warbond",
+    "countFiltered": {
+      "one": "$1 de $2 nave",
+      "other": "$1 de $2 naves"
+    },
+    "noResults": "Ninguna nave coincide con la búsqueda y los filtros.",
+    "reset": "Restablecer"
   }
 }

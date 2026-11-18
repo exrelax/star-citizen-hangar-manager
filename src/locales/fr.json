@@ -1531,6 +1531,20 @@
     "colShipsHint": "Pledges du vaisseau seul (Standalone Ships)",
     "colOnSale": "En vente",
     "notRead": "Pas encore lu",
-    "noShips": "Les vaisseaux du Pledge Store ne sont pas encore lus."
+    "noShips": "Les vaisseaux du Pledge Store ne sont pas encore lus.",
+    "search": "Chercher des vaisseaux et des constructeurs …",
+    "priceRange": "Valeur",
+    "priceFrom": "Valeur à partir de",
+    "priceTo": "Valeur jusqu’à",
+    "filtersLabel": "Afficher seulement",
+    "filterAlwaysAvailable": "Toujours disponible",
+    "filterOnSale": "En vente",
+    "filterWarbond": "Warbond",
+    "countFiltered": {
+      "one": "$1 sur $2 vaisseau",
+      "other": "$1 sur $2 vaisseaux"
+    },
+    "noResults": "Aucun vaisseau ne correspond à la recherche et aux filtres.",
+    "reset": "Réinitialiser"
   }
 }
