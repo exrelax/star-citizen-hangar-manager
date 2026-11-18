@@ -712,6 +712,11 @@ const GROUP_HEADS: Record<string, { label: MessageKey; hint: MessageKey }> = {
   vertical-align: middle;
 }
 
+/* The checkmark columns with room on both sides, also before the tinted "Hangar". */
+.shm-all-ships-table .is-center {
+  padding-right: 12px;
+}
+
 .shm-all-ships-table .shm-icon {
   width: 1.1em;
   height: 1.1em;
