@@ -584,6 +584,8 @@
     "warbondEdition": "Warbond Edition",
     "msrpHint": "Prix standard du vaisseau",
     "openUpgrade": "Amélioration",
+    "openWarbondUpgrade": "Amélioration Warbond",
+    "upgradeDemo": "Indisponible en mode démo : la fenêtre de RSI affiche vos vrais vaisseaux et CCU.",
     "openUpgradeHint": "Ouvre la fenêtre d'amélioration de RSI avec le $1 (Warbond Edition) comme cible",
     "openUpgradeFromHint": "Ouvre la fenêtre d’upgrade de vaisseau de RSI avec le $1 comme vaisseau de base et le $2 comme cible",
     "inHangar": "Au hangar :",

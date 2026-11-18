@@ -58,6 +58,7 @@ export const ICON_NAMES = {
     'shuttle-space',
     'square-up-right',
     'table-columns',
+    'tag',
     'trash',
     'triangle-exclamation',
     'user-tie',

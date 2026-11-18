@@ -52,3 +52,16 @@ export function standardSku(
   const warbondSkus = new Set(data.warbonds.map((warbond) => warbond.skuId));
   return data.buyable.find((entry) => entry.shipId === shipId && !warbondSkus.has(entry.skuId));
 }
+
+/** A ship's cheapest warbond SKU, the target of "Warbond upgrade" (#392); none without one. */
+export function warbondSku(
+  warbonds: readonly WarbondSku[],
+  shipId: number,
+): WarbondSku | undefined {
+  return warbonds
+    .filter((warbond) => warbond.shipId === shipId)
+    .reduce<WarbondSku | undefined>(
+      (cheapest, warbond) => (!cheapest || warbond.price < cheapest.price ? warbond : cheapest),
+      undefined,
+    );
+}

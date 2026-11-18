@@ -1,6 +1,6 @@
 import type { BuybackView } from '@/buyback/buyback-view';
 import type { BuybackPrice } from '@/buyback/buyback-price';
-import { standardSku, type Ship, type ShipSku, type WarbondSku } from '@/ships/ships';
+import { standardSku, warbondSku, type Ship, type ShipSku, type WarbondSku } from '@/ships/ships';
 import { cheapestBases, createShipLookup, type BaseShip, type Holdings } from '@/store/warbond';
 import { upcomingPriceIncreases, type ExpectedPriceIncrease } from './price-increases';
 
@@ -37,6 +37,8 @@ export interface SecureOffer {
    * while RSI doesn't sell CCUs to it (#311).
    */
   skuId?: number;
+  /** Its cheapest warbond SKU, while the upgrade tool offers one (#392). */
+  warbondSkuId?: number;
   /** Its standard price today. */
   price: number;
   /** What each CCU gains in discount: what the ship rises by, if known. */
@@ -111,7 +113,14 @@ export function ccusToSecure(input: SecureInput): SecureOffer[] {
     const price = ship.msrp;
     const gain =
       increase.price && Math.round((increase.price.to - increase.price.from) * 100) / 100;
-    const common = { increase, ship, price, ...(gain && gain > 0 && { gain }) };
+    const warbondSkuId = warbondSku(input.warbonds, ship.id)?.skuId;
+    const common = {
+      increase,
+      ship,
+      price,
+      ...(gain && gain > 0 && { gain }),
+      ...(warbondSkuId !== undefined && { warbondSkuId }),
+    };
     // Only while it is known which ships RSI sells CCUs to.
     if (!sku && !input.buyable.length) return [];
     if (!sku) {

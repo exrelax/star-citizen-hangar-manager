@@ -2,8 +2,8 @@
 import { i18n, locale, translate } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { countdown, formatExpectedTime } from '@/price-increases/price-increase-label';
-import { useDemoContext } from '@/demo/use-demo';
-import { standardSku, type Ship } from '@/ships/ships';
+import { standardSku, warbondSku, type Ship } from '@/ships/ships';
+import ShipUpgradeButtons from '@/store/components/ShipUpgradeButtons.vue';
 import { buyableShipsItem, current, warbondsItem } from '@/ships/ships-storage';
 import { useStored } from '@/storage/use-stored';
 import { useCountdownNow } from '@/shared/use-countdown-now';
@@ -23,7 +23,7 @@ import { useProvidedRemovalCcus } from '../use-removal-ccus';
  * it fits every theme. Opened, a ship shows the CCUs from and to it (#380). Notifications open the
  * tab at its title (`shm-store-removals-title`), a CCU of My Hangar at its base ship's row, expanded
  * (#381, `openShipRemoval`). A ship RSI sells CCUs to opens RSI's ship upgrade dialog with it as
- * target (#391), as the CCUs to secure do (SecureRow.vue).
+ * target (#391), and with its warbond (#392), as the CCUs to secure do (SecureRow.vue).
  */
 
 const props = defineProps<{
@@ -43,8 +43,9 @@ const skus = computed(() => ({
   warbonds: current(storedWarbonds.value ?? null)?.warbonds ?? [],
 }));
 const skuOf = (removal: ShipRemoval) => standardSku(skus.value, removal.ship.id)?.skuId;
-/** In the demo RSI's dialog would show the real account's ships and CCUs. */
-const demo = useDemoContext();
+/** Its cheapest warbond SKU, for "Warbond upgrade" (#392). */
+const warbondSkuOf = (removal: ShipRemoval) =>
+  warbondSku(skus.value.warbonds, removal.ship.id)?.skuId;
 
 const now = useCountdownNow(() => props.removals.map((removal) => removal.removedAt));
 const groups = computed(() => removalsByDate(props.removals, now.value));
@@ -74,7 +75,7 @@ watch(
 );
 /** Clicks on the row toggle it, except on its links and buttons (source, upgrade dialog). */
 function toggleFrom(event: MouseEvent, id: number) {
-  if ((event.target as Element).closest('a, button')) return;
+  if ((event.target as Element).closest('a, button, .shm-upgrade-buttons')) return;
   toggle(id);
 }
 /** The CCUs from and to a ship, as #287 counts them; none outside the manager view. */
@@ -167,32 +168,13 @@ const hint = (removal: ShipRemoval) =>
                 {{ label(removal) }}
               </span>
             </span>
-            <!-- RSI's own opener (a click handler on the page): its overlay, with this ship as target. -->
-            <template v-if="skuOf(removal)">
-              <button
-                v-if="demo"
-                v-tooltip="i18n.t('refund.requestDemo')"
-                type="button"
-                class="shm-button shm-warbond-upgrade"
-                disabled
-              >
-                <SvgIcon name="basket-shopping" />
-                {{ i18n.t('store.openUpgrade') }}
-              </button>
-              <a
-                v-else
-                v-tooltip="i18n.t('ccusToSecure.openUpgradeHint', [removal.ship.name])"
-                href="#"
-                class="shm-button shm-warbond-upgrade js-open-ship-upgrades"
-                data-apiurl="/pledge-store/api/upgrade/v2"
-                :data-toshipid="removal.ship.id"
-                :data-toskuid="skuOf(removal)"
-                @click.prevent
-              >
-                <SvgIcon name="basket-shopping" />
-                {{ i18n.t('store.openUpgrade') }}
-              </a>
-            </template>
+            <!-- RSI's dialog with this ship as target: its warbond (#392) and its standard edition. -->
+            <ShipUpgradeButtons
+              :ship-id="removal.ship.id"
+              :ship-name="removal.ship.name"
+              :sku-id="skuOf(removal)"
+              :warbond-sku-id="warbondSkuOf(removal)"
+            />
             <button
               v-tooltip="i18n.t('pledge.toggleDetails')"
               type="button"
@@ -257,12 +239,6 @@ const hint = (removal: ShipRemoval) =>
     outline: 1px solid var(--shm-accent);
     outline-offset: -1px;
   }
-}
-
-/* The upgrade button (#391) on the right, next to the chevron, its label on one line. */
-.shm-warbond-upgrade {
-  flex: none;
-  white-space: nowrap;
 }
 
 /* Plain text, not the monospace of the meta lines (IDs, prices, dates). */

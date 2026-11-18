@@ -663,8 +663,9 @@ opens the current ones. For each warbond ship:
 
 - **Prices**: the warbond price, the standard price (struck through) and the discount in dollars
   and percent, with the ship's image.
-- **Ship upgrade**: opens RSI's own ship upgrade dialog with the warbond edition of the ship
-  already chosen as target – only the ship to start from is left to pick.
+- **Warbond upgrade** (#392): opens RSI's own ship upgrade dialog with the warbond edition of the
+  ship already chosen as target – only the ship to start from is left to pick. In the demo mode the
+  upgrade buttons are disabled, since RSI's dialog shows your real ships and CCUs.
 - **Cheapest warbond CCUs** (in the opened item): the discount is the same whichever ship you start
   from, so the CCU from a more expensive ship costs less. The 10 ships with the cheapest CCU are
   listed with the CCU's price, a check for the ships always available in the Pledge Store (so you
@@ -700,7 +701,8 @@ every ship whose price is expected to rise (the project website's list, see [Buy
 and to which RSI sells CCUs right now – for every user, whether or not the hangar has CCUs to it. A CCU bought now
 keeps its price, but its upgrade value grows with the ship's: that is the discount. Each ship shows
 its price now and after (if announced), the countdown to the increase with the gain ("Price +$20:
-7 days"), and **Ship upgrade** with the ship as target. Opened, it lists the 10 cheapest CCUs to it,
+7 days"), and **Ship upgrade** with the ship as target – with **Warbond upgrade** left of it
+while a warbond CCU to the ship is offered (#392). Opened, it lists the 10 cheapest CCUs to it,
 like the warbond CCUs, with the gain per CCU and how often you already have each base ship in your
 hangar and buy back. Ships about to rise themselves aren't offered as base ships; a ship disappears
 once its price increase is past.
@@ -717,7 +719,8 @@ Removals #285): ships CIG takes out of the store for good, e.g. the Constellatio
 retirement window ends. They come from the project website's list and are grouped by date ("Jan
 27, 2027 · 4 ships"); each ship shows the date, the countdown ("Removal: 71 days", in the last
 hour "46:12") and a link to CIG's announcement; while RSI sells CCUs to it, its button "Ship
-upgrade" (#391) opens RSI's ship upgrade dialog with the ship as target. A CCU from such a ship can afterwards only be
+upgrade" (#391) opens RSI's ship upgrade dialog with the ship as target, "Warbond upgrade" (#392)
+with its warbond edition while one is offered. A CCU from such a ship can afterwards only be
 applied to a pledge with the ship you already have, or get with a CCU to it. Opened, a ship shows
 your CCUs from and to it (#380) in a table – in the hangar, in the buy back and together – and
 whether that is enough for the CCUs from it in your hangar – those in the buy back aren't yours

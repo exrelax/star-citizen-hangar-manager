@@ -4,6 +4,7 @@ import { i18n, locale } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import BaseShipsTable from '@/store/components/BaseShipsTable.vue';
+import ShipUpgradeButtons from '@/store/components/ShipUpgradeButtons.vue';
 import { computed, ref } from 'vue';
 import type { SecureOffer } from '../ccus-to-secure';
 import { formatExpectedTime } from '../price-increase-label';
@@ -11,7 +12,7 @@ import PriceIncreaseBadge from './PriceIncreaseBadge.vue';
 
 /**
  * A ship whose price is expected to rise, in the Pledge Store tab (#253): its price now and after,
- * the countdown, RSI's upgrade dialog with it as target, and – opened – the cheapest CCUs to it,
+ * the countdown, RSI's upgrade dialog with it as target (also its warbond, #392), and – opened – the cheapest CCUs to it,
  * each gaining the price increase as discount. Laid out like the warbond CCUs (WarbondRow.vue).
  * A ship RSI doesn't sell CCUs to right now (#311) shows the buy back's CCUs to it instead, and
  * no upgrade dialog.
@@ -20,9 +21,9 @@ const props = defineProps<{ offer: SecureOffer }>();
 
 const expanded = ref(false);
 
-/** Clicks on the row toggle it, except on the upgrade button (RSI opens its overlay then). */
+/** Clicks on the row toggle it, except on the upgrade buttons (RSI opens its overlay then). */
 function toggleFrom(event: MouseEvent) {
-  if ((event.target as Element).closest('.js-open-ship-upgrades')) return;
+  if ((event.target as Element).closest('.shm-upgrade-buttons')) return;
   expanded.value = !expanded.value;
 }
 
@@ -67,20 +68,13 @@ const buybackCount = computed(
         <PriceIncreaseBadge :match="match" place="hangar" />
       </span>
 
-      <!-- RSI's own opener (a click handler on the page): its overlay, with this ship as target. -->
-      <a
-        v-if="offer.skuId"
-        v-tooltip="i18n.t('ccusToSecure.openUpgradeHint', [offer.ship.name])"
-        href="#"
-        class="shm-button shm-warbond-upgrade js-open-ship-upgrades"
-        data-apiurl="/pledge-store/api/upgrade/v2"
-        :data-toshipid="offer.ship.id"
-        :data-toskuid="offer.skuId"
-        @click.prevent
-      >
-        <SvgIcon name="basket-shopping" />
-        {{ i18n.t('store.openUpgrade') }}
-      </a>
+      <!-- RSI's dialog with this ship as target: its warbond (#392) and its standard edition. -->
+      <ShipUpgradeButtons
+        :ship-id="offer.ship.id"
+        :ship-name="offer.ship.name"
+        :sku-id="offer.skuId"
+        :warbond-sku-id="offer.warbondSkuId"
+      />
 
       <button
         v-tooltip="i18n.t('pledge.toggleDetails')"
@@ -165,12 +159,6 @@ const buybackCount = computed(
 
 .shm-secure .shm-main {
   min-width: 40%;
-}
-
-/* The upgrade button on the right, next to the chevron, its label on one line. */
-.shm-warbond-upgrade {
-  flex: none;
-  white-space: nowrap;
 }
 
 .shm-secure-source {
