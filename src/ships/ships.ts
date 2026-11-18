@@ -40,3 +40,15 @@ export interface UpgradeToolData {
   buyable: ShipSku[];
   warbonds: WarbondSku[];
 }
+
+/**
+ * A ship's standard SKU on sale (not a warbond edition), the target of RSI's ship upgrade dialog;
+ * none while RSI sells no CCUs to the ship.
+ */
+export function standardSku(
+  data: { buyable: readonly ShipSku[]; warbonds: readonly WarbondSku[] },
+  shipId: number,
+): ShipSku | undefined {
+  const warbondSkus = new Set(data.warbonds.map((warbond) => warbond.skuId));
+  return data.buyable.find((entry) => entry.shipId === shipId && !warbondSkus.has(entry.skuId));
+}

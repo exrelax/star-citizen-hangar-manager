@@ -1,6 +1,9 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createApp, h, nextTick, type App } from 'vue';
+import { fakeBrowser } from 'wxt/testing/fake-browser';
+import { createApp, h, nextTick, shallowRef, type App } from 'vue';
+import { DEMO_CONTEXT, type DemoContext } from '@/demo/use-demo';
+import { buyableShipsItem, SHIPS_VERSION, warbondsItem } from '@/ships/ships-storage';
 import type { ShipRemoval } from '../ship-removals';
 import { openShipRemoval, shipRemovalRequest } from '@/store/open-current-warbonds';
 import ShipRemovalsSection from './ShipRemovalsSection.vue';
@@ -24,10 +27,11 @@ afterEach(() => {
   document.body.innerHTML = '';
 });
 
-function mount(removals: ShipRemoval[]) {
+function mount(removals: ShipRemoval[], demo = false) {
   const root = document.createElement('div');
   document.body.append(root);
   app = createApp({ render: () => h(ShipRemovalsSection, { removals, ships: [] }) });
+  app.provide(DEMO_CONTEXT, shallowRef(demo ? ({} as DemoContext) : null));
   app.mount(root);
   return root;
 }
@@ -92,6 +96,51 @@ describe('ShipRemovalsSection', () => {
     ]);
     await nextTick();
     expect(root.querySelector('#shm-store-removal-45 .shm-removal-details')).not.toBeNull();
+  });
+
+  it("opens RSI's ship upgrade dialog for a ship on sale, with its standard SKU (#391)", async () => {
+    fakeBrowser.reset();
+    await buyableShipsItem.setValue({
+      version: SHIPS_VERSION,
+      skus: [
+        { shipId: 45, skuId: 900, title: 'Warbond Edition', price: 300 },
+        { shipId: 45, skuId: 901, title: 'Standard Edition', price: 350 },
+      ],
+    });
+    await warbondsItem.setValue({
+      version: SHIPS_VERSION,
+      warbonds: [{ shipId: 45, skuId: 900, price: 300 }],
+    });
+    const removals = [
+      removal(45, 'Constellation Mk IV Andromeda', '2027-01-27T00:00:00Z', true),
+      removal(47, 'Constellation Mk IV Aquila', '2027-01-27T00:00:00Z', true),
+    ];
+    const root = mount(removals);
+    await new Promise((resolve) => setTimeout(resolve));
+    await nextTick();
+    const [andromeda, aquila] = [...root.querySelectorAll('.shm-removal')];
+    const button = andromeda!.querySelector<HTMLElement>('.js-open-ship-upgrades');
+    expect(button?.textContent?.trim()).toBe('Ship upgrade');
+    expect(button?.dataset).toMatchObject({
+      apiurl: '/pledge-store/api/upgrade/v2',
+      toshipid: '45',
+      toskuid: '901',
+    });
+    // Not on sale: no button.
+    expect(aquila!.querySelector('.shm-warbond-upgrade')).toBeNull();
+    // Its click opens RSI's dialog, not the row.
+    button!.click();
+    await nextTick();
+    expect(andromeda!.querySelector('.shm-removal-details')).toBeNull();
+
+    // In the demo it is disabled: RSI's dialog would show the real account.
+    app!.unmount();
+    const demo = mount(removals, true);
+    await new Promise((resolve) => setTimeout(resolve));
+    await nextTick();
+    const disabled = demo.querySelector<HTMLButtonElement>('.shm-warbond-upgrade');
+    expect(disabled?.disabled).toBe(true);
+    expect(disabled?.classList.contains('js-open-ship-upgrades')).toBe(false);
   });
 
   it('shows nothing without upcoming removals', () => {
