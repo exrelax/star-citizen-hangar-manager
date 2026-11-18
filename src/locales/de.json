@@ -1467,6 +1467,14 @@
     "announced": "Das Datum hat CIG angekündigt.",
     "ccuHint": "$1 verlässt am $2 den Pledge Store. Dieses CCU lässt sich danach nur noch auf ein Pledge mit diesem Schiff anwenden.",
     "ccusTo": "CCUs zu $1: $2 in deinem Hangar, $3 in deinem Buy Back.",
-    "ccuCritical": "Du hast weniger CCUs zu $1 als CCUs von diesem Schiff: Nicht jedes davon hat ein Schiff, auf das es sich anwenden lässt."
+    "ccuCritical": "Du hast weniger CCUs zu $1 als CCUs von diesem Schiff: Nicht jedes davon hat ein Schiff, auf das es sich anwenden lässt.",
+    "limitedSale": {
+      "one": "$1 ist gerade im Verkauf, gehört aber nicht zu den immer erhältlichen Schiffen.",
+      "other": "$1 sind gerade im Verkauf, gehören aber nicht zu den immer erhältlichen Schiffen."
+    },
+    "limitedSaleEvent": {
+      "one": "Nach dem Ende von $1 am $2 ist das Schiff womöglich nicht mehr erhältlich.",
+      "other": "Nach dem Ende von $1 am $2 sind die Schiffe womöglich nicht mehr erhältlich."
+    }
   }
 }

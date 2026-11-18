@@ -1467,6 +1467,14 @@
     "announced": "The date is CIG’s announcement.",
     "ccuHint": "The $1 leaves the Pledge Store on $2. This CCU can then only be applied to a pledge with that ship.",
     "ccusTo": "CCUs to the $1: $2 in your hangar, $3 in your buy back.",
-    "ccuCritical": "You have fewer CCUs to the $1 than from it: not every CCU from it has a ship to be applied to."
+    "ccuCritical": "You have fewer CCUs to the $1 than from it: not every CCU from it has a ship to be applied to.",
+    "limitedSale": {
+      "one": "The $1 is on sale right now, but isn't one of the always available ships.",
+      "other": "The $1 are on sale right now, but aren't among the always available ships."
+    },
+    "limitedSaleEvent": {
+      "one": "It may not be on sale any more once $1 ends on $2.",
+      "other": "They may not be on sale any more once $1 ends on $2."
+    }
   }
 }
