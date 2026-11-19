@@ -159,6 +159,19 @@ export interface Settings {
     /** How the plan is shown. */
     layout: ConsultantLayout;
   };
+  /** The CCU Consultant (#106, #110). */
+  ccuConsultant: {
+    /**
+     * CCUs whose base ship is always available in the Pledge Store don't count as missing their
+     * base ship, and get the label "Always available". Off: every CCU without its base ship counts.
+     */
+    considerAlwaysAvailable: boolean;
+    /**
+     * The source of the ships' facts (`FactSource.id`) that tells which ships are always available;
+     * `null` for the first one that does.
+     */
+    alwaysAvailableSource: string | null;
+  };
   /** Links shown next to ships. */
   shipLinks: {
     erkul: boolean;
@@ -209,6 +222,7 @@ export const DEFAULT_SETTINGS: Settings = {
     reboughtDetection: 'plan',
     layout: 'choose',
   },
+  ccuConsultant: { considerAlwaysAvailable: true, alwaysAvailableSource: null },
   shipLinks: { erkul: true, fleetyards: true },
   demo: DEFAULT_DEMO_SETTINGS,
 };
@@ -332,6 +346,17 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
         oneOf(CONSULTANT_LAYOUTS),
         DEFAULT_SETTINGS.paintConsultant.layout,
       ),
+    },
+    ccuConsultant: {
+      considerAlwaysAvailable: valid(
+        stored?.ccuConsultant?.considerAlwaysAvailable,
+        isBoolean,
+        DEFAULT_SETTINGS.ccuConsultant.considerAlwaysAvailable,
+      ),
+      alwaysAvailableSource:
+        typeof stored?.ccuConsultant?.alwaysAvailableSource === 'string'
+          ? stored.ccuConsultant.alwaysAvailableSource
+          : null,
     },
     shipLinks: {
       erkul: stored?.shipLinks?.erkul ?? DEFAULT_SETTINGS.shipLinks.erkul,

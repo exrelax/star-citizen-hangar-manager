@@ -266,6 +266,13 @@
     "sidebarNotificationsHint": "Aparece mientras haya una notificación: cuando los pledges marcados para fundir ya se pueden fundir, con botones para mostrarlos o seleccionarlos, y los marcados que aún esperan; cuántas pinturas se pueden recomprar con más descuento (se descarta con su ×). Las notificaciones que se pueden marcar como hechas: una a una o todas a la vez. Sin permiso del navegador.",
     "sidebarSelectionHint": "Se muestra mientras haya pledges seleccionados. Sin él, las filas no tienen control de selección.",
     "sidebarPaintConsultantHint": "Aparece mientras haya pinturas que se puedan recomprar con un descuento por volumen mayor: cuántas, y el crédito de tienda que libera. Oculto mientras «Ocultar el valor de fusión» esté activado.",
+    "ccuConsultant": "CCU Consultant",
+    "ccuAlwaysAvailable": "Tener en cuenta las naves siempre disponibles",
+    "ccuAlwaysAvailableHint": "Activado: un CCU cuya nave base está siempre disponible en la Pledge Store no cuenta como sin nave base y recibe la etiqueta «Siempre disponible». Desactivado: cuenta todo CCU sin su nave base en tu hangar o recompra.",
+    "ccuSource": "Fuente de la lista",
+    "ccuSourceDate": "Qué naves están siempre disponibles, a fecha de $1.",
+    "ccuSourceNone": "Aún no hay lista disponible",
+    "ccuAttribution": "Lista de $1, compartida bajo",
     "paintConsultant": "Asesor de descuentos de pinturas",
     "consultantLayout": "Presentación",
     "consultantLayoutOptions": {

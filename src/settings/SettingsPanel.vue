@@ -13,6 +13,7 @@ import {
 } from './categories';
 import { DEVELOPMENT_SHOWN } from './development';
 import AboutSection from './sections/AboutSection.vue';
+import CcuConsultantSection from './sections/CcuConsultantSection.vue';
 import AppearanceSection from './sections/AppearanceSection.vue';
 import DemoSection from './sections/DemoSection.vue';
 import DevelopmentSection from './sections/DevelopmentSection.vue';
@@ -49,6 +50,7 @@ const SECTIONS: Record<SettingsCategory, Component> = {
   filters: FilterSection,
   sidebar: SidebarSection,
   notifications: NotificationsSection,
+  ccuConsultant: CcuConsultantSection,
   paintConsultant: PaintConsultantSection,
   smartUpdates: SmartUpdateSection,
   experimental: ExperimentalSection,
