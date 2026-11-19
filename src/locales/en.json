@@ -1137,8 +1137,8 @@
     "skipped": "$1 selected can't be exchanged and are left out",
     "listLabel": "Pledges to exchange",
     "intro": {
-      "one": "You are about to exchange $1 pledge. This will remove it, including any upgrades (such as customizations or CCUs), from your account, awarding $2 in store credit.",
-      "other": "You are about to exchange $1 pledges. This will remove them, including any upgrades (such as customizations or CCUs), from your account, awarding $2 in store credit. They are exchanged one after the other; the first one RSI refuses stops the rest."
+      "one": "You are about to exchange $1 pledge. This will remove it, including any upgrades (such as customizations or CCUs), from your account, awarding $2 in store credit. Right before, the Hangar Manager reads it from RSI again: if it has changed, nothing is exchanged.",
+      "other": "You are about to exchange $1 pledges. This will remove them, including any upgrades (such as customizations or CCUs), from your account, awarding $2 in store credit. They are exchanged one after the other; the first one RSI refuses stops the rest. Right before, the Hangar Manager reads them from RSI again: if one of them has changed, nothing is exchanged."
     },
     "lastGameAccessText": "The selection contains every pledge on your account that gives access to Star Citizen. Without them you can no longer play.",
     "warnings": {
@@ -1178,6 +1178,7 @@
       "one": "Exchange $1 pledge for $2",
       "other": "Exchange $1 pledges for $2"
     },
+    "checking": "Checking the pledges at RSI …",
     "submitting": "Exchanging $1 of $2 …",
     "success": {
       "one": "$1 pledge exchanged, your ledger was credited with $2.",
@@ -1187,7 +1188,20 @@
     "failed": {
       "one": "RSI refused “$1”: $2. $3 more pledge was not sent and stays in your hangar.",
       "other": "RSI refused “$1”: $2. $3 more pledges were not sent and stay in your hangar."
-    }
+    },
+    "changed": {
+      "one": "$1 pledge is no longer as shown here. Nothing was exchanged: check it in the list and select it again.",
+      "other": "$1 pledges are no longer as shown here. Nothing was exchanged: check them in the list and select them again."
+    },
+    "changes": {
+      "gone": "Gone",
+      "notMeltable": "Can't be exchanged any more",
+      "name": "Name changed",
+      "value": "Value changed",
+      "items": "Items changed",
+      "other": "Changed"
+    },
+    "unchecked": "The pledges couldn't be read from RSI again ($1). Nothing was exchanged."
   },
   "meltMark": {
     "mark": "Mark to melt",

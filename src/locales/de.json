@@ -1137,8 +1137,8 @@
     "skipped": "$1 ausgewählte lassen sich nicht einschmelzen und bleiben außen vor",
     "listLabel": "Einzuschmelzende Pledges",
     "intro": {
-      "one": "Du bist dabei, $1 Pledge einzuschmelzen. Dadurch wird es einschließlich aller Upgrades (z. B. Anpassungen oder CCUs) von deinem Konto entfernt, und du erhältst $2 als Store Credits.",
-      "other": "Du bist dabei, $1 Pledges einzuschmelzen. Dadurch werden sie einschließlich aller Upgrades (z. B. Anpassungen oder CCUs) von deinem Konto entfernt, und du erhältst $2 als Store Credits. Sie werden nacheinander eingeschmolzen; lehnt RSI eines ab, stoppen die übrigen."
+      "one": "Du bist dabei, $1 Pledge einzuschmelzen. Dadurch wird es einschließlich aller Upgrades (z. B. Anpassungen oder CCUs) von deinem Konto entfernt, und du erhältst $2 als Store Credits. Unmittelbar davor liest der Hangar Manager es erneut bei RSI: Hat es sich geändert, wird nichts eingeschmolzen.",
+      "other": "Du bist dabei, $1 Pledges einzuschmelzen. Dadurch werden sie einschließlich aller Upgrades (z. B. Anpassungen oder CCUs) von deinem Konto entfernt, und du erhältst $2 als Store Credits. Sie werden nacheinander eingeschmolzen; lehnt RSI eines ab, stoppen die übrigen. Unmittelbar davor liest der Hangar Manager sie erneut bei RSI: Hat sich eines davon geändert, wird nichts eingeschmolzen."
     },
     "lastGameAccessText": "Die Auswahl enthält alle Pledges deines Kontos, die Zugang zu Star Citizen geben. Ohne sie kannst du nicht mehr spielen.",
     "warnings": {
@@ -1178,6 +1178,7 @@
       "one": "$1 Pledge für $2 einschmelzen",
       "other": "$1 Pledges für $2 einschmelzen"
     },
+    "checking": "Prüfe die Pledges bei RSI …",
     "submitting": "Schmelze $1 von $2 ein …",
     "success": {
       "one": "$1 Pledge eingeschmolzen, deinem Konto wurden $2 gutgeschrieben.",
@@ -1187,7 +1188,20 @@
     "failed": {
       "one": "RSI hat „$1“ abgelehnt: $2. $3 weiteres Pledge wurde nicht gesendet und bleibt in deinem Hangar.",
       "other": "RSI hat „$1“ abgelehnt: $2. $3 weitere Pledges wurden nicht gesendet und bleiben in deinem Hangar."
-    }
+    },
+    "changed": {
+      "one": "$1 Pledge ist nicht mehr so wie hier gezeigt. Es wurde nichts eingeschmolzen: Prüfe es in der Liste und wähle es neu aus.",
+      "other": "$1 Pledges sind nicht mehr so wie hier gezeigt. Es wurde nichts eingeschmolzen: Prüfe sie in der Liste und wähle sie neu aus."
+    },
+    "changes": {
+      "gone": "Nicht mehr vorhanden",
+      "notMeltable": "Nicht mehr einschmelzbar",
+      "name": "Name geändert",
+      "value": "Wert geändert",
+      "items": "Inhalt geändert",
+      "other": "Geändert"
+    },
+    "unchecked": "Die Pledges konnten nicht erneut bei RSI gelesen werden ($1). Es wurde nichts eingeschmolzen."
   },
   "meltMark": {
     "mark": "Zum Einschmelzen merken",

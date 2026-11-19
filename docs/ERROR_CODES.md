@@ -55,13 +55,14 @@ or order IDs (they read `<id>`), no name and no address.
 
 ## My Hangar
 
-| Code                      | What didn't work                                             | What the Hangar Manager did                                                      | What you can do                                                   |
-| ------------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| `HANGAR-IMAGES-FAIL`      | The Ship Matrix didn't answer for the images of CCUs         | Stored the hangar; some CCUs show no ship image                                  | Nothing; the next refresh tries again.                            |
-| `HANGAR-LINKS-FAIL`       | FleetYards didn't answer for the links of the hangar's ships | Kept the links known before; new ships have none until the next refresh          | Nothing; the next refresh tries again.                            |
-| `HANGAR-EXCHANGE-FAIL`    | Melting (exchanging) a pledge failed at RSI                  | Nothing was melted; the dialog showed the reason                                 | Check the reason in the dialog (e.g. the password) and try again. |
-| `HANGAR-GIFT-FAIL`        | Gifting a pledge failed at RSI                               | Nothing was gifted; the dialog showed the reason                                 | Check the reason in the dialog and try again.                     |
-| `HANGAR-UPGRADE-LOG-FAIL` | A pledge's upgrade log couldn't be read                      | Showed the pledge without its applied upgrades; read again when opened next time | Open the pledge again later.                                      |
+| Code                         | What didn't work                                                         | What the Hangar Manager did                                                      | What you can do                                                   |
+| ---------------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `HANGAR-IMAGES-FAIL`         | The Ship Matrix didn't answer for the images of CCUs                     | Stored the hangar; some CCUs show no ship image                                  | Nothing; the next refresh tries again.                            |
+| `HANGAR-LINKS-FAIL`          | FleetYards didn't answer for the links of the hangar's ships             | Kept the links known before; new ships have none until the next refresh          | Nothing; the next refresh tries again.                            |
+| `HANGAR-EXCHANGE-FAIL`       | Melting (exchanging) a pledge failed at RSI                              | Nothing was melted; the dialog showed the reason                                 | Check the reason in the dialog (e.g. the password) and try again. |
+| `HANGAR-EXCHANGE-CHECK-FAIL` | The pledges to melt couldn't be read from RSI again right before melting | Nothing was melted; the dialog showed the reason                                 | Check that you are still logged in and try again.                 |
+| `HANGAR-GIFT-FAIL`           | Gifting a pledge failed at RSI                                           | Nothing was gifted; the dialog showed the reason                                 | Check the reason in the dialog and try again.                     |
+| `HANGAR-UPGRADE-LOG-FAIL`    | A pledge's upgrade log couldn't be read                                  | Showed the pledge without its applied upgrades; read again when opened next time | Open the pledge again later.                                      |
 
 ## Reading RSI's pages
 

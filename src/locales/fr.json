@@ -1137,8 +1137,8 @@
     "skipped": "$1 sélectionnés ne peuvent pas être fondus et sont ignorés",
     "listLabel": "Pledges à fondre",
     "intro": {
-      "one": "Vous êtes sur le point de fondre $1 pledge. Il sera retiré de votre compte, y compris ses améliorations (personnalisations ou CCU), et vous recevrez $2 en crédit boutique.",
-      "other": "Vous êtes sur le point de fondre $1 pledges. Ils seront retirés de votre compte, y compris leurs améliorations (personnalisations ou CCU), et vous recevrez $2 en crédit boutique. Ils sont fondus l’un après l’autre ; le premier refusé par RSI arrête les suivants."
+      "one": "Vous êtes sur le point de fondre $1 pledge. Il sera retiré de votre compte, y compris ses améliorations (personnalisations ou CCU), et vous recevrez $2 en crédit boutique. Juste avant, le Hangar Manager le relit chez RSI : s’il a changé, rien n’est fondu.",
+      "other": "Vous êtes sur le point de fondre $1 pledges. Ils seront retirés de votre compte, y compris leurs améliorations (personnalisations ou CCU), et vous recevrez $2 en crédit boutique. Ils sont fondus l’un après l’autre ; le premier refusé par RSI arrête les suivants. Juste avant, le Hangar Manager les relit chez RSI : si l’un d’eux a changé, rien n’est fondu."
     },
     "lastGameAccessText": "La sélection contient tous les pledges de votre compte qui donnent accès à Star Citizen. Sans eux, vous ne pourrez plus jouer.",
     "warnings": {
@@ -1178,6 +1178,7 @@
       "one": "Fondre $1 pledge pour $2",
       "other": "Fondre $1 pledges pour $2"
     },
+    "checking": "Vérification des pledges chez RSI …",
     "submitting": "Fonte de $1 sur $2 …",
     "success": {
       "one": "$1 pledge fondu, votre compte a été crédité de $2.",
@@ -1187,7 +1188,20 @@
     "failed": {
       "one": "RSI a refusé « $1 » : $2. $3 autre pledge n’a pas été envoyé et reste dans votre hangar.",
       "other": "RSI a refusé « $1 » : $2. $3 autres pledges n’ont pas été envoyés et restent dans votre hangar."
-    }
+    },
+    "changed": {
+      "one": "$1 pledge n’est plus tel qu’affiché ici. Rien n’a été fondu : vérifiez-le dans la liste et sélectionnez-le à nouveau.",
+      "other": "$1 pledges ne sont plus tels qu’affichés ici. Rien n’a été fondu : vérifiez-les dans la liste et sélectionnez-les à nouveau."
+    },
+    "changes": {
+      "gone": "N’existe plus",
+      "notMeltable": "Ne peut plus être fondu",
+      "name": "Nom modifié",
+      "value": "Valeur modifiée",
+      "items": "Contenu modifié",
+      "other": "Modifié"
+    },
+    "unchecked": "Les pledges n’ont pas pu être relus chez RSI ($1). Rien n’a été fondu."
   },
   "meltMark": {
     "mark": "Marquer pour fondre",

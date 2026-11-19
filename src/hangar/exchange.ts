@@ -5,6 +5,7 @@ import { recordUpdate } from '@/storage/meta';
 import { hangarMeta, hangarSnapshot } from './hangar-storage';
 import type { PledgeView } from './pledge-view';
 import type { PledgeDiscount } from './ship-prices';
+import type { PledgeMismatch, VerifyResult } from './verify-pledges';
 
 /*
  * Exchanging ("melting") a pledge for store credit, as RSI's "Exchange" button in "My Gear" does
@@ -95,28 +96,55 @@ export interface BulkExchangeResult {
   exchanged: number[];
   /** The pledge RSI refused, and why; the ones after it were not sent. */
   failed?: { id: number; message: string };
+  /** Pledges RSI lists differently than the dialog showed them (#415): nothing was sent. */
+  mismatches?: PledgeMismatch[];
+  /** The pledges couldn't be read again (#415), and why: nothing was sent. */
+  unchecked?: string;
 }
 
 /**
- * Exchanges the pledges one after the other with the same password, `delayMs` apart. Stops at the
- * first one RSI refuses (e.g. a wrong password refuses the first one, before anything is
- * exchanged): the rest stay in the hangar. `onExchanged` reports every confirmed one right away.
+ * Exchanges the pledges one after the other with the same password, `delayMs` apart. First reads
+ * them from RSI again (`verify`, #415): if one changed, is gone or can't be read, nothing is sent.
+ * Stops at the first one RSI refuses (e.g. a wrong password refuses the first one, before anything
+ * is exchanged): the rest stay in the hangar. `onChecked` reports the end of the check,
+ * `onExchanged` every confirmed exchange right away.
  */
 export async function reclaimPledges(
   pledgeIds: readonly number[],
   password: string,
   {
     delayMs = 0,
+    onChecked,
     onExchanged,
+    verify,
     reclaim = reclaimPledge,
   }: {
     delayMs?: number;
+    onChecked?: () => void;
     onExchanged?: (pledgeId: number) => void;
+    /** Reads the pledges of these ids from RSI again; required, so no run skips it. */
+    verify: (pledgeIds: readonly number[]) => Promise<VerifyResult>;
     reclaim?: (pledgeId: number, password: string) => Promise<void>;
-  } = {},
+  },
 ): Promise<BulkExchangeResult> {
+  const ids = [...pledgeIds];
   const exchanged: number[] = [];
-  for (const [index, id] of pledgeIds.entries()) {
+  let checked: VerifyResult;
+  try {
+    checked = await verify(ids);
+  } catch (failure) {
+    void logError(
+      'HANGAR-EXCHANGE-CHECK-FAIL',
+      `Bulk melting of ${ids.length}: ${reasonOf(failure)}`,
+      {
+        error: failure,
+      },
+    );
+    return { exchanged, unchecked: failure instanceof Error ? failure.message : String(failure) };
+  }
+  if (checked.status !== 'match') return { exchanged, mismatches: checked.mismatches };
+  onChecked?.();
+  for (const [index, id] of ids.entries()) {
     if (index > 0 && delayMs > 0) await new Promise((resolve) => setTimeout(resolve, delayMs));
     try {
       await reclaim(id, password);

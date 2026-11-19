@@ -75,10 +75,48 @@ describe('losesAllGameAccess', () => {
 });
 
 describe('reclaimPledges', () => {
+  const verify = vi.fn(async () => ({ status: 'match' as const, requests: 1 }));
+
+  it('checks the same pledges first, in the same order, before sending any', async () => {
+    const calls: string[] = [];
+    const check = vi.fn(async (ids: readonly number[]) => {
+      calls.push(`check ${ids.join(',')}`);
+      return { status: 'match' as const, requests: 1 };
+    });
+    const reclaim = vi.fn(async (id: number) => {
+      calls.push(`melt ${id}`);
+    });
+    await reclaimPledges([3, 1], 'secret', { reclaim, verify: check });
+    expect(calls).toEqual(['check 3,1', 'melt 3', 'melt 1']);
+  });
+
+  it('sends nothing if a pledge changed or is gone', async () => {
+    const reclaim = vi.fn(async () => {});
+    const mismatches = [{ id: 2, stored: {} as never, changes: ['gone' as const] }];
+    const result = await reclaimPledges([1, 2], 'secret', {
+      reclaim,
+      verify: async () => ({ status: 'mismatch', mismatches, requests: 1 }),
+    });
+    expect(result).toEqual({ exchanged: [], mismatches });
+    expect(reclaim).not.toHaveBeenCalled();
+  });
+
+  it('sends nothing if the pledges can not be read again', async () => {
+    const reclaim = vi.fn(async () => {});
+    const result = await reclaimPledges([1, 2], 'secret', {
+      reclaim,
+      verify: async () => {
+        throw new Error('logged out');
+      },
+    });
+    expect(result).toEqual({ exchanged: [], unchecked: 'logged out' });
+    expect(reclaim).not.toHaveBeenCalled();
+  });
+
   it('exchanges all pledges one after the other with the same password', async () => {
     const reclaim = vi.fn(async () => {});
     const onExchanged = vi.fn();
-    const result = await reclaimPledges([1, 2, 3], 'secret', { reclaim, onExchanged });
+    const result = await reclaimPledges([1, 2, 3], 'secret', { reclaim, onExchanged, verify });
     expect(result).toEqual({ exchanged: [1, 2, 3] });
     expect(reclaim.mock.calls).toEqual([
       [1, 'secret'],
@@ -92,7 +130,7 @@ describe('reclaimPledges', () => {
     const reclaim = vi.fn(async (id: number) => {
       if (id === 2) throw new Error('Invalid password');
     });
-    const result = await reclaimPledges([1, 2, 3], 'secret', { reclaim });
+    const result = await reclaimPledges([1, 2, 3], 'secret', { reclaim, verify });
     expect(result).toEqual({ exchanged: [1], failed: { id: 2, message: 'Invalid password' } });
     expect(reclaim).toHaveBeenCalledTimes(2);
   });
@@ -101,7 +139,7 @@ describe('reclaimPledges', () => {
     vi.useFakeTimers();
     try {
       const reclaim = vi.fn(async () => {});
-      const running = reclaimPledges([1, 2], 'secret', { reclaim, delayMs: 1000 });
+      const running = reclaimPledges([1, 2], 'secret', { reclaim, verify, delayMs: 1000 });
       await vi.advanceTimersByTimeAsync(0);
       expect(reclaim).toHaveBeenCalledTimes(1);
       await vi.advanceTimersByTimeAsync(1000);
