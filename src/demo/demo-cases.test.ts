@@ -15,6 +15,16 @@ import {
 } from '@/store/warbond-history-view';
 import { creditForCases } from './demo-store-credit';
 import { allShips } from '@/store/all-ships';
+import {
+  ALL_SHIPS_FILTERS,
+  allShipsView,
+  type AllShipsFilter,
+  type AllShipsQuery,
+} from '@/store/all-ships-view';
+import type { FilterState } from '@/hangar/filters';
+import { upcomingPriceIncreases } from '@/price-increases/price-increases';
+import { upcomingShipRemovals } from '@/ship-removals/ship-removals';
+import { demoShipRemovals } from './demo-ship-removals';
 import { demoCompletedPlans, demoRunningPlan, RUNNING_PLAN_STAGES } from './demo-running-plan';
 
 /*
@@ -194,5 +204,81 @@ describe('the table of all ships in the default demo (#385, #390)', () => {
     }
     expect(rows.some((row) => row.warbondPrice !== undefined)).toBe(true);
     expect(rows.some((row) => row.warbondPrice === undefined)).toBe(true);
+  });
+});
+
+describe('the price increases, ships leaving and filters of the all ships table (#390)', () => {
+  // RSI sells CCUs to most ships, as the stored upgrade tool says; not to every seventh.
+  const buyable = new Set(catalog.ships.map((ship) => ship.id).filter((id) => id % 7 !== 0));
+  const demo = generatedDemo(catalog, 'any demo key', TODAY, NOW, undefined, buyable);
+  const store = demoStoreData(catalog, demo.pledges, NOW);
+  const { removals } = demoShipRemovals({
+    ships: catalog.ships,
+    hangar: demo.pledges,
+    buyback: demo.buyback,
+    buyable,
+    warbondShips: new Set(store.warbonds.map((offer) => offer.ship.id)),
+    avoid: new Set(demo.priceIncreases.map((increase) => increase.ship.id)),
+    now: NOW,
+  });
+  const increases = upcomingPriceIncreases(demo.priceIncreases, NOW);
+  const rows = allShips({
+    ships: store.ships,
+    buyable: [...buyable].map((shipId) => ({
+      shipId,
+      skuId: 100_000 + shipId,
+      title: 'Standard Edition',
+      price: 1,
+    })),
+    warbonds: store.warbonds.map((offer) => ({
+      shipId: offer.ship.id,
+      skuId: offer.skuId,
+      price: offer.price,
+    })),
+    hangar: demo.pledges,
+    buyback: demo.buyback,
+    increases,
+    removals: upcomingShipRemovals(removals, NOW),
+  });
+  const view = (include: AllShipsFilter[], exclude: AllShipsFilter[] = []) => {
+    const filters = new Map<AllShipsFilter, FilterState>([
+      ...include.map((filter) => [filter, 'include'] as const),
+      ...exclude.map((filter) => [filter, 'exclude'] as const),
+    ]);
+    const query: AllShipsQuery = { search: '', min: 0, max: Infinity, filters };
+    return allShipsView(rows, query);
+  };
+
+  it('shows price increases confirmed and expected, with and without a new price', () => {
+    const shown = rows.flatMap((row) => row.priceIncrease ?? []);
+    expect(shown.some((increase) => increase.confirmed)).toBe(true);
+    expect(shown.some((increase) => !increase.confirmed)).toBe(true);
+    expect(shown.some((increase) => increase.price)).toBe(true);
+    expect(shown.some((increase) => !increase.price)).toBe(true);
+    // On its last day (the warning color) and before.
+    const DAY = 24 * 60 * 60 * 1000;
+    expect(shown.some((increase) => increase.priceIncreaseAt.at - NOW < DAY)).toBe(true);
+    expect(shown.some((increase) => increase.priceIncreaseAt.at - NOW > DAY)).toBe(true);
+  });
+
+  it('shows ships leaving on a day and at a time', () => {
+    const leaving = rows.flatMap((row) => row.removal ?? []);
+    expect(leaving.some((removal) => removal.removedAt.dayOnly)).toBe(true);
+    expect(leaving.some((removal) => !removal.removedAt.dayOnly)).toBe(true);
+  });
+
+  it('shows ships on sale and not, each filter included and excluded (#406, #410, #413)', () => {
+    // "Always available" comes from the website's ship facts, the same in the demo and outside.
+    for (const filter of ALL_SHIPS_FILTERS.filter((filter) => filter !== 'alwaysAvailable')) {
+      expect(view([filter]).length, `${filter} included`).toBeGreaterThan(0);
+      // The bundled catalog's ships all are in the demo hangar or buy back; a stored one has more.
+      if (filter !== 'owned') {
+        expect(view([], [filter]).length, `${filter} excluded`).toBeGreaterThan(0);
+      }
+    }
+    expect(view(['priceIncrease', 'onSale']).length).toBeGreaterThan(0);
+    expect(view(['onSale'], ['leaving']).length).toBeGreaterThan(0);
+    // No match: every warbond offer is on sale.
+    expect(view(['warbond'], ['onSale'])).toEqual([]);
   });
 });
