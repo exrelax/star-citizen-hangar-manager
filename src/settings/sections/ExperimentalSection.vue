@@ -5,6 +5,7 @@ import { BULK_MELTING_SETTING_ID } from '../anchors';
 import SettingCheck from '../SettingCheck.vue';
 import SettingsGroup from '../SettingsGroup.vue';
 import type { Settings } from '../settings';
+import { nextTick, ref, useTemplateRef } from 'vue';
 
 /*
  * Features that may not always work as intended, off by default, with a clear warning: using
@@ -13,6 +14,31 @@ import type { Settings } from '../settings';
 
 defineProps<{ settings: Settings }>();
 const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
+
+/*
+ * Bulk melting asks before it is turned on (#331): several exchanges in a row with one click may
+ * count as a macro under RSI's Terms of Service, and melting can't be undone. Only "Turn on" turns
+ * it on; turning it off needs no question.
+ */
+const askingBulk = ref(false);
+const cancelButton = useTemplateRef<HTMLButtonElement>('cancelButton');
+
+async function changeBulkMelting(on: boolean) {
+  if (!on) {
+    askingBulk.value = false;
+    emit('update', { bulkMelting: false });
+    return;
+  }
+  askingBulk.value = true;
+  // "Cancel" has the focus, so Return never turns it on by accident.
+  await nextTick();
+  cancelButton.value?.focus();
+}
+
+function turnOnBulkMelting() {
+  askingBulk.value = false;
+  emit('update', { bulkMelting: true });
+}
 </script>
 
 <template>
@@ -27,10 +53,21 @@ const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
       class="shm-setting-anchor"
       :checked="settings.bulkMelting"
       :hint="i18n.t('settings.bulkMeltingHint')"
-      @change="(bulkMelting) => emit('update', { bulkMelting })"
+      @change="changeBulkMelting"
     >
       {{ i18n.t('settings.bulkMelting') }}
     </SettingCheck>
+    <div v-if="askingBulk" class="shm-setting-row shm-experimental-confirm" role="alert">
+      <p>{{ i18n.t('settings.bulkMeltingConfirm') }}</p>
+      <div class="shm-experimental-confirm-actions">
+        <button ref="cancelButton" type="button" class="shm-button" @click="askingBulk = false">
+          {{ i18n.t('settings.bulkMeltingCancel') }}
+        </button>
+        <button type="button" class="shm-button is-danger" @click="turnOnBulkMelting">
+          {{ i18n.t('settings.bulkMeltingTurnOn') }}
+        </button>
+      </div>
+    </div>
     <SettingCheck
       :checked="settings.translateRsiTexts"
       :hint="i18n.t('settings.translateRsiTextsHint')"
@@ -53,6 +90,26 @@ const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
   border: 1px solid var(--shm-warning);
   border-radius: var(--shm-radius-control);
   background: color-mix(in srgb, var(--shm-warning) 12%, transparent);
+}
+
+.shm-experimental-confirm {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.shm-experimental-confirm p {
+  margin: 0;
+  color: var(--shm-text);
+}
+
+/* As in an alert: the button that goes ahead on the right, "Cancel" left of it. */
+.shm-experimental-confirm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .shm-experimental-warning svg {
