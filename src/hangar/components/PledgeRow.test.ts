@@ -246,7 +246,7 @@ describe('PledgeRow', () => {
     it('marks a CCU whose base ship is on the list, covered or not, naming source and date', () => {
       for (const covered of [false, true]) {
         const root = render(ccu, undefined, [], { coverage: coverage(covered), list: list() });
-        expect(label(root)?.textContent?.trim()).toBe('Always available');
+        expect(label(root)?.textContent?.trim()).toBe('Base always available');
         expect(label(root)?.getAttribute('aria-description')).toBe(
           'The base ship Aurora MR is always available in the Pledge Store, so you can get onto ' +
             'it later to apply this CCU. Source: Star Citizen Wiki, as of Nov 18, 2026.',
