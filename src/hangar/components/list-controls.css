@@ -122,6 +122,8 @@
 
 .shm-filter-pill .shm-select-menu-list {
   top: calc(100% + 4px);
+  /* As small as the pills and the sort menu's list. */
+  font-size: calc(12px * var(--shm-font-scale));
 }
 
 @media (prefers-reduced-motion: reduce) {
