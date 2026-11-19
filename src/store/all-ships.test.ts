@@ -181,4 +181,26 @@ describe('allShips', () => {
     });
     expect(rows({ facts: old }).find((row) => row.ship.id === 1)?.purchasable).toBeUndefined();
   });
+
+  it('shows the next price increase and the removal of a ship, matched by its id (#410)', () => {
+    const at = (day: number) => ({ at: Date.UTC(2026, 10, day, 16) });
+    const later = { ship: { id: 109, name: 'Prospector' }, priceIncreaseAt: at(25) };
+    const next = {
+      ship: { id: 109, name: 'Prospector' },
+      priceIncreaseAt: at(19),
+      price: { from: 155, to: 175 },
+      confirmed: true as const,
+    };
+    const removal = {
+      ship: { id: 45, name: 'Constellation Mk IV Andromeda' },
+      removedAt: { at: Date.UTC(2027, 0, 27), dayOnly: true as const },
+      source: 'https://example.org',
+    };
+    // The lists come with the next first.
+    const list = rows({ increases: [next, later], removals: [removal] });
+    expect(list.find((row) => row.ship.id === 109)?.priceIncrease).toBe(next);
+    expect(list.find((row) => row.ship.id === 45)?.removal).toBe(removal);
+    expect(list.find((row) => row.ship.id === 9)).not.toHaveProperty('priceIncrease');
+    expect(list.find((row) => row.ship.id === 9)).not.toHaveProperty('removal');
+  });
 });

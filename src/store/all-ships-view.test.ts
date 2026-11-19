@@ -45,12 +45,21 @@ const ROWS = [
     skuId: 7,
     hangarFrom: 31,
     buybackShips: 2,
+    priceIncrease: {
+      ship: { id: 3, name: 'Prospector' },
+      priceIncreaseAt: { at: Date.UTC(2026, 10, 19, 16) },
+    },
   }),
   row(4, 'Aurora Mk I ES', 20, {
     manufacturer: 'Roberts Space Industries',
     alwaysAvailable: false,
     purchasable: false,
     hangarShips: 1,
+    removal: {
+      ship: { id: 4, name: 'Aurora Mk I ES' },
+      removedAt: { at: Date.UTC(2027, 0, 27), dayOnly: true },
+      source: 'https://example.org',
+    },
   }),
 ];
 const all: AllShipsQuery = { search: '', min: 0, max: 10_000, filters: new Set() };
@@ -126,6 +135,11 @@ describe('allShipsView: search, price range and filters', () => {
     expect(only('warbond')).toEqual(['Liberator']);
     expect(only('onSale', 'warbond')).toEqual(['Liberator']);
     expect(only('alwaysAvailable', 'warbond')).toEqual([]);
+    // A price increase ahead, leaving the Pledge Store (#410).
+    expect(only('priceIncrease')).toEqual(['Prospector']);
+    expect(only('leaving')).toEqual(['Aurora Mk I ES']);
+    expect(only('priceIncrease', 'onSale')).toEqual(['Prospector']);
+    expect(only('priceIncrease', 'leaving')).toEqual([]);
     // Something of it in the hangar or the buy back.
     expect(only('owned')).toEqual(['Aurora Mk I ES', 'Prospector', 'Liberator', 'Polaris']);
     expect(

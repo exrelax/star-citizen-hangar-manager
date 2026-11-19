@@ -1542,6 +1542,9 @@
     "filterAlwaysAvailable": "Immer kaufbar",
     "filterOnSale": "Im Verkauf",
     "filterWarbond": "Warbond",
+    "filterPriceIncrease": "Preiserhöhung",
+    "filterLeaving": "Wird entfernt",
+    "risenPrice": "Preis nach der Erhöhung",
     "countFiltered": {
       "one": "$1 von $2 Schiff",
       "other": "$1 von $2 Schiffen"

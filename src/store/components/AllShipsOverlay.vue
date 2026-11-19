@@ -2,6 +2,14 @@
 import type { BuybackView } from '@/buyback/buyback-view';
 import { formatUsd } from '@/hangar/discount-format';
 import type { PledgeView } from '@/hangar/pledge-view';
+import { priceIncreaseLabel } from '@/price-increases/price-increase-label';
+import {
+  upcomingPriceIncreases,
+  type ExpectedPriceIncrease,
+} from '@/price-increases/price-increases';
+import { removalLabel } from '@/ship-removals/removal-label';
+import { upcomingShipRemovals, type ShipRemoval } from '@/ship-removals/ship-removals';
+import { useCountdownNow } from '@/shared/use-countdown-now';
 import { i18n, locale, type MessageKey } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { useSettings } from '@/settings/use-settings';
@@ -44,7 +52,8 @@ import '@/hangar/components/list-controls.css';
  * have of it (tinted while they have any) and how to get it in the Pledge Store. Sorted by any
  * column, searched and filtered (#406, `all-ships-view.ts`). The head stays in view while the
  * table scrolls in the dialog. Teleported out of the manager like its other dialogs, so it
- * carries the theme itself.
+ * carries the theme itself. A ship whose price rises soon shows it with its new price, a ship
+ * leaving the Pledge Store with its date (#410), each with a filter.
  */
 
 const props = defineProps<{
@@ -54,6 +63,9 @@ const props = defineProps<{
   warbonds: readonly WarbondTarget[];
   pledges: readonly PledgeView[];
   buyback: readonly BuybackView[];
+  /** The expected price increases and the ship removals (the demo's in the demo, #410). */
+  increases: readonly ExpectedPriceIncrease[];
+  removals: readonly ShipRemoval[];
   /** Whether the hangar and the buy back were read: else their columns say so. */
   hangarRead: boolean;
   buybackRead: boolean;
@@ -64,6 +76,32 @@ const emit = defineEmits<{ close: [] }>();
 const { settings } = useSettings();
 const facts = useShipFacts();
 const storedBuyable = useStored(buyableShipsItem);
+
+/** The page's clock for the countdowns of the price increases and removals. */
+const now = useCountdownNow(() => [
+  ...props.increases.map((increase) => increase.priceIncreaseAt),
+  ...props.removals.map((removal) => removal.removedAt),
+]);
+/*
+ * Those still ahead: the rows are built again only once one of them is over, not at every tick of
+ * the countdowns.
+ */
+const upcomingKey = computed(() =>
+  [
+    ...upcomingPriceIncreases(props.increases, now.value),
+    ...upcomingShipRemovals(props.removals, now.value),
+  ]
+    .map((entry) => entry.ship.id)
+    .join(),
+);
+const upcoming = computed(() => {
+  void upcomingKey.value;
+  const at = Date.now();
+  return {
+    increases: upcomingPriceIncreases(props.increases, at),
+    removals: upcomingShipRemovals(props.removals, at),
+  };
+});
 
 const rows = computed(() =>
   allShips({
@@ -77,8 +115,22 @@ const rows = computed(() =>
     facts: facts.value,
     hangar: props.pledges,
     buyback: props.buyback,
+    increases: upcoming.value.increases,
+    removals: upcoming.value.removals,
   }),
 );
+
+/** The badges of a price increase and a removal, with their countdowns (as in the Pledge Store tab). */
+const increaseLabel = (row: AllShipsRow) =>
+  row.priceIncrease &&
+  priceIncreaseLabel(
+    { increase: row.priceIncrease, reason: 'ship' },
+    'store',
+    now.value,
+    locale.value,
+  );
+const leavingLabel = (row: AllShipsRow) =>
+  row.removal && removalLabel(row.removal, now.value, locale.value);
 
 /** Sorted by a click on a column head, a second click reverses it; by value, lowest first. */
 const sort = ref<AllShipsSort>(DEFAULT_ALL_SHIPS_SORT);
@@ -101,6 +153,8 @@ const FILTER_LABELS: Record<AllShipsFilter, MessageKey> = {
   alwaysAvailable: 'allShips.filterAlwaysAvailable',
   onSale: 'allShips.filterOnSale',
   warbond: 'allShips.filterWarbond',
+  priceIncrease: 'allShips.filterPriceIncrease',
+  leaving: 'allShips.filterLeaving',
   owned: 'allShips.filterOwned',
 };
 function toggleFilter(filter: AllShipsFilter) {
@@ -445,6 +499,21 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
                         class="shm-all-ships-tag"
                         >{{ i18n.t('allShips.notSold') }}</span
                       >
+                      <span
+                        v-if="increaseLabel(row)"
+                        v-tooltip="increaseLabel(row)!.hint"
+                        class="shm-all-ships-tag is-increase"
+                        :class="{ 'is-soon': increaseLabel(row)!.soon }"
+                        tabindex="0"
+                        >{{ increaseLabel(row)!.text }}</span
+                      >
+                      <span
+                        v-if="leavingLabel(row)"
+                        v-tooltip="leavingLabel(row)!.hint"
+                        class="shm-all-ships-tag is-leaving"
+                        tabindex="0"
+                        >{{ leavingLabel(row)!.text }}</span
+                      >
                     </span>
                   </th>
                   <td class="shm-all-ships-value">
@@ -457,6 +526,12 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
                         i18n.t('allShips.saves', [usd(row.ship.msrp - row.warbondPrice)])
                       }}</span>
                     </template>
+                    <span
+                      v-if="row.priceIncrease?.price"
+                      v-tooltip="i18n.t('allShips.risenPrice')"
+                      class="shm-all-ships-risen shm-value"
+                      >→ {{ usd(row.priceIncrease.price.to) }}</span
+                    >
                   </td>
                   <template v-for="(columns, group) in GROUPS" :key="group">
                     <template v-if="read(group)">
@@ -888,6 +963,24 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
   background: rgb(var(--shm-accent-rgb) / 0.14);
 }
 
+/*
+ * A price increase ahead (#410): an information as in My Hangar, tinted in the warning color on its
+ * last day; a ship leaving the Pledge Store: a warning, as in the Pledge Store tab.
+ */
+.shm-all-ships-tag:is(.is-increase, .is-leaving) {
+  cursor: help;
+}
+
+.shm-all-ships-tag.is-increase {
+  color: var(--shm-text-strong);
+}
+
+.shm-all-ships-tag.is-increase.is-soon,
+.shm-all-ships-tag.is-leaving {
+  color: var(--shm-warning);
+  background: color-mix(in srgb, var(--shm-warning) 14%, transparent);
+}
+
 /* The value, and below it the warbond price and what it saves. */
 .shm-all-ships-table td.shm-all-ships-value {
   line-height: calc(16px * var(--shm-font-scale));
@@ -906,6 +999,12 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
 
 .shm-all-ships-warbond {
   color: var(--shm-upgraded);
+  font-size: calc(11px * var(--shm-font-scale));
+  font-weight: 600;
+}
+
+.shm-all-ships-risen {
+  color: var(--shm-text-secondary);
   font-size: calc(11px * var(--shm-font-scale));
   font-weight: 600;
 }

@@ -1,6 +1,8 @@
 import type { BuybackView } from '@/buyback/buyback-view';
 import { ccusByShip, ccusIn } from '@/hangar/ccus-by-ship';
 import type { PledgeView } from '@/hangar/pledge-view';
+import type { ExpectedPriceIncrease } from '@/price-increases/price-increases';
+import type { ShipRemoval } from '@/ship-removals/ship-removals';
 import type { ShipFactsLookup } from '@/ships/ship-facts';
 import { standardSku, warbondSku, type Ship, type ShipSku, type WarbondSku } from '@/ships/ships';
 import { createShipLookup } from './warbond';
@@ -10,7 +12,8 @@ import { createShipLookup } from './warbond';
  * value, highest first, with its warbond price, whether it is always available and sold at all
  * (the ship facts, #109), what of it the hangar and the buy back have, and whether it is on sale
  * now (with the SKUs for RSI's upgrade dialog). CCUs are matched as everywhere (`ccusByShip`);
- * standalone ships by their name in the upgrade tool.
+ * standalone ships by their name in the upgrade tool. A ship also shows its next price increase
+ * and whether it leaves the Pledge Store (#410), both matched by its id.
  */
 
 export interface AllShipsRow {
@@ -32,6 +35,10 @@ export interface AllShipsRow {
   /** On sale now: its standard SKU and warbond SKU for "Ship upgrade" and "Warbond upgrade". */
   skuId?: number;
   warbondSkuId?: number;
+  /** Its next price increase still ahead (#410). */
+  priceIncrease?: ExpectedPriceIncrease;
+  /** It leaves the Pledge Store (#410). */
+  removal?: ShipRemoval;
 }
 
 export interface AllShipsInput {
@@ -41,6 +48,16 @@ export interface AllShipsInput {
   facts?: ShipFactsLookup;
   hangar: readonly PledgeView[];
   buyback: readonly BuybackView[];
+  /** The price increases and ship removals still ahead, the next first. */
+  increases?: readonly ExpectedPriceIncrease[];
+  removals?: readonly ShipRemoval[];
+}
+
+/** The first entry of each ship: of a list with the next first, its next one. */
+function firstByShip<T extends { ship: { id: number } }>(list: readonly T[] = []) {
+  const byShip = new Map<number, T>();
+  for (const entry of list) if (!byShip.has(entry.ship.id)) byShip.set(entry.ship.id, entry);
+  return byShip;
 }
 
 const collator = new Intl.Collator('en', { sensitivity: 'base', numeric: true });
@@ -62,6 +79,8 @@ export function allShips(input: AllShipsInput): AllShipsRow[] {
       hangarShips,
     );
   }
+  const increases = firstByShip(input.increases);
+  const removals = firstByShip(input.removals);
   const buybackShips = new Map<number, number>();
   for (const pledge of input.buyback) {
     if (pledge.isStandaloneShip)
@@ -79,6 +98,8 @@ export function allShips(input: AllShipsInput): AllShipsRow[] {
       const alwaysAvailable = input.facts?.isAlwaysAvailable(ship.id);
       const purchasable = input.facts?.isPurchasable(ship.id);
       const manufacturer = input.facts?.ship(ship.id)?.manufacturer;
+      const priceIncrease = increases.get(ship.id);
+      const removal = removals.get(ship.id);
       return {
         ship,
         ...(manufacturer && { manufacturer }),
@@ -93,6 +114,8 @@ export function allShips(input: AllShipsInput): AllShipsRow[] {
         buybackShips: buybackShips.get(ship.id) ?? 0,
         ...(sku && { skuId: sku.skuId }),
         ...(warbond && { warbondSkuId: warbond.skuId }),
+        ...(priceIncrease && { priceIncrease }),
+        ...(removal && { removal }),
       };
     })
     .sort((a, b) => b.ship.msrp - a.ship.msrp || collator.compare(a.ship.name, b.ship.name));
