@@ -31,6 +31,8 @@ import TabBar from '@/shared/components/TabBar.vue';
 import { i18n } from '@/i18n';
 import SettingsPanel from '@/settings/SettingsPanel.vue';
 import { REMOVAL_CCUS, useRemovalCcus } from '@/ship-removals/use-removal-ccus';
+import { CCU_COVERAGE, useCcuCoverage } from '@/ccu-consultant/coverage';
+import { current as currentShips, shipsItem } from '@/ships/ships-storage';
 import StoreTab from '@/store/components/StoreTab.vue';
 import ShipUpgradeButtons from '@/store/components/ShipUpgradeButtons.vue';
 import CcuAdviceOverlay from '@/price-increases/components/CcuAdviceOverlay.vue';
@@ -139,6 +141,16 @@ provide(
         : undefined;
     },
   ),
+);
+// What gives each CCU's base ship (#108), for the rows (#111): of the shown hangar and buy back.
+const storedShips = useStored(shipsItem);
+provide(
+  CCU_COVERAGE,
+  useCcuCoverage(() => ({
+    ships: currentShips(storedShips.value ?? null)?.ships ?? [],
+    hangar: pledges.value,
+    buyback: buybackPledges.value,
+  })),
 );
 // The ones that can be melted now, for the sidebar's notification and its "Show" and "Select".
 const now = useNow();

@@ -1608,5 +1608,22 @@
     "tosHint": "RSI's Terms of Service, on the RSI website.",
     "gotIt": "Got it",
     "gotItHint": "Hides this note for good. It stays in the settings under “About”."
+  },
+  "ccuCoverage": {
+    "title": "Base ship",
+    "baseShip": "the base ship",
+    "summary": "$1 in the hangar, $2 in the buy back",
+    "none": "none in the hangar or buy back",
+    "empty": "Neither $1 nor a CCU to it is in your hangar or buy back.",
+    "hangar": "Hangar",
+    "buyback": "Buy Back",
+    "kinds": {
+      "ship": "Ship",
+      "ccu": "CCU"
+    },
+    "show": {
+      "hangar": "Shows the pledge in “My Gear”.",
+      "buyback": "Shows the pledge in the buy back."
+    }
   }
 }

@@ -4,7 +4,7 @@ import { shipKey } from '@/hangar/ship-images';
 import { ccuShips } from '@/hangar/upgrade-log';
 import type { Ship } from '@/ships/ships';
 import { createShipLookup } from '@/store/warbond';
-import { computed, type ComputedRef } from 'vue';
+import { computed, inject, shallowRef, type ComputedRef, type InjectionKey, type Ref } from 'vue';
 
 /*
  * The base ship coverage of every CCU of the hangar (#108), the core of the CCU Consultant (#106).
@@ -31,7 +31,12 @@ export interface CoverageMatch {
   kind: CoverageKind;
   /** The pledge's id in My Hangar or the buy back. */
   id: number;
+  /** Shown instead of the id, if set (made-up ids of the demo). */
+  displayId?: string;
   title: string;
+  /** Its page in RSI's list, and in the buy back its position, for a link to it. */
+  page?: number;
+  position?: number;
 }
 
 export interface CcuCoverage {
@@ -48,11 +53,13 @@ export interface CcuCoverage {
 export interface CoverageInput {
   /** The upgrade tool's ships, for their ids and RSI's other names; may be empty. */
   ships: readonly Ship[];
-  hangar: readonly Pick<PledgeView, 'id' | 'title' | 'isCcu' | 'upgrade' | 'items'>[];
-  buyback: readonly Pick<
+  hangar: readonly (Pick<PledgeView, 'id' | 'title' | 'isCcu' | 'upgrade' | 'items'> &
+    Partial<Pick<PledgeView, 'displayId' | 'page'>>)[];
+  buyback: readonly (Pick<
     BuybackView,
     'id' | 'title' | 'isCcu' | 'upgrade' | 'unavailable' | 'ships'
-  >[];
+  > &
+    Partial<Pick<BuybackView, 'displayId' | 'page' | 'position'>>)[];
 }
 
 /** Every match of a ship, by the ship's key. */
@@ -76,6 +83,21 @@ export function ccuCoverage(input: CoverageInput): Map<number, CcuCoverage> {
     matches.set(key, list);
   };
 
+  /** A match with what a link to the pledge needs. */
+  const matchOf = (
+    source: CoverageSource,
+    kind: CoverageKind,
+    pledge: CoverageInput['hangar'][number] | CoverageInput['buyback'][number],
+  ): CoverageMatch => ({
+    source,
+    kind,
+    id: pledge.id,
+    title: pledge.title,
+    ...(pledge.displayId !== undefined && { displayId: pledge.displayId }),
+    ...(pledge.page !== undefined && { page: pledge.page }),
+    ...('position' in pledge && pledge.position !== undefined && { position: pledge.position }),
+  });
+
   const bases: { id: number; key?: string; name?: string; shipId?: number }[] = [];
   for (const pledge of input.hangar) {
     if (pledge.isCcu) {
@@ -88,7 +110,7 @@ export function ccuCoverage(input: CoverageInput): Map<number, CcuCoverage> {
         ...(from && { name: from }),
         ...(from && lookup.shipOf(from) && { shipId: lookup.shipOf(from)!.id }),
       });
-      add(keyOf(to), { source: 'hangar', kind: 'ccu', id: pledge.id, title: pledge.title });
+      add(keyOf(to), matchOf('hangar', 'ccu', pledge));
       continue;
     }
     // Each ship once per pledge, e.g. a package with two of the same.
@@ -96,24 +118,19 @@ export function ccuCoverage(input: CoverageInput): Map<number, CcuCoverage> {
       pledge.items.filter((item) => item.kind === 'Ship').map((item) => keyOf(item.title)),
     );
     for (const key of keys) {
-      add(key, { source: 'hangar', kind: 'ship', id: pledge.id, title: pledge.title });
+      add(key, matchOf('hangar', 'ship', pledge));
     }
   }
   for (const pledge of input.buyback) {
     if (pledge.isCcu) {
       if (pledge.unavailable) continue;
       const to = ccuShips(pledge.title)?.to;
-      add(keyOf(to, pledge.upgrade?.toShipId), {
-        source: 'buyback',
-        kind: 'ccu',
-        id: pledge.id,
-        title: pledge.title,
-      });
+      add(keyOf(to, pledge.upgrade?.toShipId), matchOf('buyback', 'ccu', pledge));
       continue;
     }
     const keys = new Set(pledge.ships.map((ship) => keyOf(ship.name)));
     for (const key of keys) {
-      add(key, { source: 'buyback', kind: 'ship', id: pledge.id, title: pledge.title });
+      add(key, matchOf('buyback', 'ship', pledge));
     }
   }
 
@@ -141,3 +158,11 @@ export function ccuCoverage(input: CoverageInput): Map<number, CcuCoverage> {
 /** The coverage of every CCU, worked out again whenever the hangar, buy back or ships change. */
 export const useCcuCoverage = (input: () => CoverageInput): ComputedRef<Map<number, CcuCoverage>> =>
   computed(() => ccuCoverage(input()));
+
+export const CCU_COVERAGE: InjectionKey<Readonly<Ref<Map<number, CcuCoverage>>>> =
+  Symbol('shm-ccu-coverage');
+
+/** The coverage provided by the manager view (see `App.vue`); none outside of it. */
+export function useProvidedCcuCoverage(): Readonly<Ref<Map<number, CcuCoverage>>> {
+  return inject(CCU_COVERAGE, shallowRef(new Map()));
+}

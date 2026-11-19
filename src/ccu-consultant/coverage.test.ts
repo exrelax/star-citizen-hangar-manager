@@ -152,6 +152,25 @@ describe('ccuCoverage (#108)', () => {
     expect(result.covered).toBe(true);
   });
 
+  it('keeps what a link to each pledge needs', () => {
+    const result = coverage({
+      hangar: [
+        ccu(10, 'Avenger Titan', 'Cutlass Black'),
+        { ...pledge(20, 'Avenger Titan', ['Avenger Titan']), page: 3, displayId: 'ABC' },
+      ],
+      buyback: [{ ...buybackShip(30, 'Avenger Titan', ['Avenger Titan']), page: 2, position: 260 }],
+    }).get(10)!;
+    expect(result.hangar.ships[0]).toEqual({
+      source: 'hangar',
+      kind: 'ship',
+      id: 20,
+      displayId: 'ABC',
+      title: 'Avenger Titan',
+      page: 3,
+    });
+    expect(result.buyback.ships[0]).toMatchObject({ page: 2, position: 260 });
+  });
+
   it('has an entry for every CCU of the hangar and none for other pledges', () => {
     const result = coverage({
       hangar: [
