@@ -562,6 +562,7 @@ html .shm-theme-modern .shm-badge.is-upgraded {
 }
 
 html .shm-theme-modern .shm-badge.is-giftable,
+html .shm-theme-modern .shm-badge.is-always-available,
 html .shm-theme-modern .shm-badge.is-rebuy {
   color: var(--shm-success);
   background: rgb(var(--shm-success-rgb) / 0.14);
@@ -589,6 +590,12 @@ html .shm-theme-modern .shm-badge.is-unavailable {
 html .shm-theme-modern .shm-badge.is-price-increase.is-warning {
   color: var(--shm-warning);
   background: color-mix(in srgb, var(--shm-warning) 16%, transparent);
+}
+
+/* A CCU without its base ship (#114): red like the note in the opened row. */
+html .shm-theme-modern .shm-badge.is-base-missing {
+  color: var(--shm-danger);
+  background: color-mix(in srgb, var(--shm-danger) 16%, transparent);
 }
 
 /* A CCU whose base ship leaves the store, with too few CCUs to it (#289): red, not yellow. */

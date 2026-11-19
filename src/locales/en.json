@@ -1619,6 +1619,10 @@
     "alwaysAvailable": "Base always available",
     "alwaysAvailableHint": "The base ship $1 is always available in the Pledge Store, so you can get onto it later to apply this CCU. Source: $2, as of $3.",
     "alwaysAvailableHintUndated": "The base ship $1 is always available in the Pledge Store, so you can get onto it later to apply this CCU. Source: $2.",
+    "missing": "Base ship missing",
+    "missingNote": "Neither $1 nor a CCU to it is in your hangar or buy back, and it’s probably not always available in the Pledge Store.",
+    "missingNoteAll": "Neither $1 nor a CCU to it is in your hangar or buy back.",
+    "missingLink": "$1 in the Pledge Store",
     "hangar": "Hangar",
     "buyback": "Buy Back",
     "kinds": {

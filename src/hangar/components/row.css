@@ -419,6 +419,40 @@
   color: var(--shm-warning);
 }
 
+/* A CCU without its base ship (#114): a hint in red, not an error. */
+.shm-badge.is-base-missing {
+  color: var(--shm-danger);
+  border-color: color-mix(in srgb, var(--shm-danger) 60%, transparent);
+  cursor: help;
+}
+
+.shm-base-missing-note {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  padding: 8px 10px;
+  background: color-mix(in srgb, var(--shm-danger) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--shm-danger) 30%, transparent);
+}
+
+.shm-base-missing-note > .shm-icon {
+  flex: none;
+  color: var(--shm-danger);
+}
+
+.shm-base-missing-note strong {
+  display: block;
+  color: var(--shm-text-strong);
+}
+
+.shm-base-missing-note .shm-hint-link .shm-icon {
+  margin-left: 2px;
+}
+
+.shm-theme-modern .shm-base-missing-note {
+  border-radius: var(--shm-radius-group);
+}
+
 /* Fewer CCUs to the ship than from it (#287): red in both places. */
 .shm-badge.shm-removal-badge.is-critical {
   color: var(--shm-danger);
