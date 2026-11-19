@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "revision": 5,
-  "changedAt": "2026-11-18T20:03:14.965Z",
-  "generatedAt": "2026-11-18T20:03:14.965Z",
+  "revision": 6,
+  "changedAt": "2026-11-19T17:31:21.887Z",
+  "generatedAt": "2026-11-19T17:31:21.887Z",
   "sources": [
     {
       "id": "ship-matrix",
@@ -101,7 +101,7 @@
     {"id":106,"name":"Reliant Sen","manufacturer":"MISC","wikiName":"Reliant Sen","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[],"msrp":[{"value":85,"from":"2026-11-12"}],"retired":[]},
     {"id":107,"name":"Reliant Tana","manufacturer":"MISC","wikiName":"Reliant Tana","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[],"msrp":[{"value":75,"from":"2026-11-12"}],"retired":[]},
     {"id":108,"name":"Blade","manufacturer":"Esperia","wikiName":"Blade","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[],"msrp":[],"retired":[]},
-    {"id":109,"name":"Prospector","manufacturer":"MISC","wikiName":"Prospector","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[{"from":"2026-11-12"}],"msrp":[{"value":155,"from":"2026-11-12"}],"retired":[]},
+    {"id":109,"name":"Prospector","manufacturer":"MISC","wikiName":"Prospector","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[{"from":"2026-11-12"}],"msrp":[{"value":155,"from":"2026-11-12","to":"2026-11-19"},{"value":175,"from":"2026-11-19"}],"retired":[]},
     {"id":110,"name":"Buccaneer","manufacturer":"Drake Interplanetary","wikiName":"Buccaneer","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[],"msrp":[{"value":110,"from":"2026-11-12"}],"retired":[]},
     {"id":111,"name":"Dragonfly Yellowjacket","manufacturer":"Drake Interplanetary","wikiName":"Dragonfly Yellowjacket","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[],"msrp":[{"value":40,"from":"2026-11-12"}],"retired":[]},
     {"id":112,"name":"Dragonfly Black","manufacturer":"Drake Interplanetary","wikiName":"Dragonfly","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[{"from":"2026-11-12"}],"msrp":[{"value":40,"from":"2026-11-12"}],"retired":[]},
