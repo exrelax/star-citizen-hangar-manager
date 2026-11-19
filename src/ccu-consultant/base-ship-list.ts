@@ -1,3 +1,5 @@
+import type { RefinementOption } from '@/hangar/filters';
+import { i18n } from '@/i18n';
 import type { Ship } from '@/ships/ships';
 import type { AlwaysAvailableList } from './always-available';
 import type { CcuCoverage, CoverageMatch } from './coverage';
@@ -106,4 +108,28 @@ export function baseShipList(
     total,
     groups: { missing: sorted('missing'), buyback: sorted('buyback'), always: sorted('always') },
   };
+}
+
+/**
+ * The refinement of the filter "CCUs" (#461, #419): all CCUs, those without base ship and – while
+ * always available ships are considered – those whose base ship is always available; by the
+ * same rule as the list above, the note on the rows (#114) and the label (#112).
+ */
+export function ccuRefinement<T extends { id: number }>(
+  coverages: ReadonlyMap<number, CcuCoverage>,
+  always: AlwaysAvailableList | undefined,
+): RefinementOption<T>[] {
+  const standing = (entry: T) => {
+    const coverage = coverages.get(entry.id);
+    return coverage ? standingOf(coverage, always) : undefined;
+  };
+  const missing = i18n.t('ccuConsultant.standing.missing');
+  const alwaysLabel = i18n.t('ccuConsultant.standing.always');
+  return [
+    { id: 'all', label: i18n.t('filter.ccuCoverage.all') },
+    { id: 'missing', label: missing, matches: (entry) => standing(entry) === 'missing' },
+    ...(always
+      ? [{ id: 'always', label: alwaysLabel, matches: (entry: T) => standing(entry) === 'always' }]
+      : []),
+  ];
 }

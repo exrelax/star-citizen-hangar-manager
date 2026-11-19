@@ -104,6 +104,9 @@
       "notOwned": "Pour les vaisseaux que tu n’as pas",
       "notOwnedShort": "Vaisseaux que tu n’as pas"
     },
+    "ccuCoverage": {
+      "all": "Tous les CCU"
+    },
     "ccus": "CCU",
     "gameAccess": "Accès au jeu",
     "giftable": "Offrables",
