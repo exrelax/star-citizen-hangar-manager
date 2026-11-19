@@ -60,13 +60,14 @@ export function pageFromUrl(search: string): number {
 }
 
 /** Tabs of the manager view, each with its own hash as deep link. */
-export const MANAGER_TABS = ['hangar', 'buyback', 'store', 'settings'] as const;
+export const MANAGER_TABS = ['hangar', 'buyback', 'store', 'consultants', 'settings'] as const;
 export type ManagerTab = (typeof MANAGER_TABS)[number];
 
 const TAB_HASHES: Record<ManagerTab, string> = {
   hangar: MANAGER_HASH,
   buyback: `${MANAGER_HASH}-bb`,
   store: `${MANAGER_HASH}-store`,
+  consultants: `${MANAGER_HASH}-consultants`,
   settings: `${MANAGER_HASH}-settings`,
 };
 
