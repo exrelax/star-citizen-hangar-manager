@@ -32,6 +32,7 @@ import { i18n } from '@/i18n';
 import SettingsPanel from '@/settings/SettingsPanel.vue';
 import { REMOVAL_CCUS, useRemovalCcus } from '@/ship-removals/use-removal-ccus';
 import { CCU_COVERAGE, COVERAGE_SOURCES, useCcuCoverage } from '@/ccu-consultant/coverage';
+import { followListHistory, listViewRequest } from '@/hangar/list-jump';
 import { current as currentShips, shipsItem } from '@/ships/ships-storage';
 import StoreTab from '@/store/components/StoreTab.vue';
 import ShipUpgradeButtons from '@/store/components/ShipUpgradeButtons.vue';
@@ -45,13 +46,16 @@ import { invisibleDemoUntilItem, isInvisibleDemo } from '@/demo/invisible-demo';
 import {
   computed,
   inject,
+  nextTick,
   onMounted,
   onUnmounted,
   provide,
   reactive,
   ref,
+  useTemplateRef,
   watch,
   watchEffect,
+  type ComponentPublicInstance,
 } from 'vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { openTabAt } from '@/hangar/open-tab-at';
@@ -238,6 +242,19 @@ const followHash = () => {
 };
 onMounted(() => addEventListener('hashchange', followHash));
 onUnmounted(() => removeEventListener('hashchange', followHash));
+// A pledge opened in a list from elsewhere (#436), and Back and Forward between such views.
+const tabBar = useTemplateRef<ComponentPublicInstance>('tabBar');
+watch(listViewRequest, async (request) => {
+  if (!request) return;
+  showTab(request.tab);
+  if (!request.top) return;
+  await nextTick();
+  // The opened pledge at the top of its list, below the tabs.
+  (tabBar.value?.$el as HTMLElement | undefined)?.scrollIntoView({ block: 'start' });
+});
+let stopListHistory: (() => void) | undefined;
+onMounted(() => (stopListHistory = followListHistory()));
+onUnmounted(() => stopListHistory?.());
 
 /*
  * The sidebar lives below RSI's page navigation on the left, outside the manager: an element of
@@ -335,6 +352,7 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
   </Teleport>
 
   <TabBar
+    ref="tabBar"
     class="shm-manager-tabs"
     :items="tabItems"
     :selected="activeTab"

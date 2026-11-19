@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useDemoContext } from '@/demo/use-demo';
 import { i18n, locale } from '@/i18n';
-import { computed, ref, watch } from 'vue';
+import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
+import { listViewRequest, takeExpand } from '../list-jump';
 import { REFUND_DAYS, REFUND_URGENT_DAYS, RSI_GAMES_LIBRARY_URL } from '@/config';
 import { refundWindow, today } from '@/orders/refund';
 import { formatDiscount, formatPercent, formatUsd } from '../discount-format';
@@ -192,6 +193,21 @@ watch(
   },
 );
 
+// Back to a list after opening a pledge from this CCU's "Base ship" (#436): expanded again and in
+// view.
+const row = useTemplateRef<HTMLElement>('row');
+watch(
+  listViewRequest,
+  async () => {
+    if (!takeExpand(props.pledge.id, 'row')) return;
+    expanded.value = true;
+    openedAutomatically = false;
+    await nextTick();
+    row.value?.scrollIntoView({ block: 'center' });
+  },
+  { immediate: true },
+);
+
 // The manager lives on the hangar page, so this is its path including the locale prefix.
 const pathname = location.pathname;
 const demo = useDemoContext();
@@ -204,7 +220,7 @@ const toggle = () => {
 </script>
 
 <template>
-  <div class="shm-row" :class="{ 'is-expanded': expanded, 'is-selected': selected }">
+  <div ref="row" class="shm-row" :class="{ 'is-expanded': expanded, 'is-selected': selected }">
     <!-- Selects the pledge for the sidebar; outside the summary, so it doesn't open the row. -->
     <button
       type="button"

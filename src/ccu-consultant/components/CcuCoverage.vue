@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { useDemoContext } from '@/demo/use-demo';
-import { buybackHref, myGearHref } from '@/hangar/route';
+import { hangarFilterStates } from '@/hangar/hangar-filter-request';
+import { listViewRequest, openPledgeInList, takeExpand, urlOfView } from '@/hangar/list-jump';
+import { searchFromUrl } from '@/hangar/route';
 import { i18n, locale } from '@/i18n';
 import { HIDDEN } from '@/orders/orders';
 import { useSettings } from '@/settings/use-settings';
 import { vTooltip } from '@/shared/tooltip/tooltip';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import {
   useProvidedCoverageSources,
   type CcuCoverage,
@@ -18,16 +19,18 @@ import CoverageCardView from './CoverageCardView.vue';
 /*
  * What gives a CCU's base ship (#111), a section of the expanded CCU row like "Applied upgrades":
  * collapsed the counts in the hangar and the buy back, expanded the pledges – ships and CCUs to the
- * base ship – each with a link to it in "My Gear" or the buy back. On every CCU, covered or not
- * (#108). In the demo the links stay inert: they would reveal the real ids.
+ * base ship – each opening it in "My Hangar" or "Buy Back", searched by its id (#436; in the demo
+ * its made-up one). On every CCU, covered or not (#108).
  */
 
 const props = defineProps<{ coverage: CcuCoverage }>();
 
 const { settings } = useSettings();
-const demo = useDemoContext();
 const open = ref(false);
-const pathname = location.pathname;
+// Back to the list it was opened from (#436): open again.
+watch(listViewRequest, () => takeExpand(props.coverage.id, 'coverage') && (open.value = true), {
+  immediate: true,
+});
 
 const number = computed(() => new Intl.NumberFormat(locale.value));
 const groups = computed(() =>
@@ -68,13 +71,26 @@ function tooltipOf(match: CoverageMatch) {
 
 const idOf = (match: CoverageMatch) =>
   settings.value.hidePledgeIds ? HIDDEN : (match.displayId ?? match.id);
-/** The pledge in "My Gear" or the buy back, as the rows link to it; none in the demo. */
-function hrefOf(match: CoverageMatch): string | undefined {
-  if (demo.value || match.page === undefined) return undefined;
-  if (match.source === 'hangar') return myGearHref(pathname, match.page, match.id);
-  return settings.value.buybackLinkMode === 'single' && match.position !== undefined
-    ? buybackHref(pathname, match.position + 1, match.id, 1)
-    : buybackHref(pathname, match.page, match.id);
+/** What the list finds the pledge by: its id, in the demo its made-up one. */
+const termOf = (match: CoverageMatch) => String(match.displayId ?? match.id);
+/** The pledge in "My Hangar" or "Buy Back", searched by its id (#436). */
+const hrefOf = (match: CoverageMatch) =>
+  urlOfView(location.href, { tab: match.source, search: termOf(match) });
+
+/**
+ * Opens the pledge in its list; Back returns to this CCU row as it is now (the list's search and
+ * filters, the row expanded with this section open). A new tab or window opens the link itself.
+ */
+function openMatch(event: MouseEvent, match: CoverageMatch) {
+  if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+    return;
+  event.preventDefault();
+  openPledgeInList(match.source, termOf(match), {
+    tab: 'hangar',
+    search: searchFromUrl(location.search),
+    filters: [...hangarFilterStates.value],
+    expand: props.coverage.id,
+  });
 }
 </script>
 
@@ -110,10 +126,12 @@ function hrefOf(match: CoverageMatch): string | undefined {
               <span class="shm-ccu-coverage-kind" :class="`is-${match.kind}`">
                 {{ i18n.t(`ccuCoverage.kinds.${match.kind}`) }}
               </span>
-              <a v-if="hrefOf(match)" class="shm-ccu-coverage-title" :href="hrefOf(match)">{{
-                match.title
-              }}</a>
-              <span v-else class="shm-ccu-coverage-title">{{ match.title }}</span>
+              <a
+                class="shm-ccu-coverage-title"
+                :href="hrefOf(match)"
+                @click="openMatch($event, match)"
+                >{{ match.title }}</a
+              >
               <span class="shm-upgrade-log-id shm-pledge-id">#{{ idOf(match) }}</span>
             </li>
           </ul>

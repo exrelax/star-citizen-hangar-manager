@@ -13,6 +13,7 @@ import { BUYBACK_SORTS, sortEntries, type BuybackSort } from '@/hangar/sorting';
 import { useSettings } from '@/settings/use-settings';
 import { hasPriceChangeWithin } from '@/price-increases/price-change-filter';
 import { buybackFilterRequest } from '../buyback-filter-request';
+import { listViewRequest } from '@/hangar/list-jump';
 import { useNow } from '@/shared/use-now';
 
 const props = defineProps<{
@@ -90,6 +91,7 @@ const filterHint = (filter: BuybackFilter) => {
     :sort="settings.sort.buyback"
     :highlights="highlights"
     :include-request="buybackFilterRequest"
+    :view-request="listViewRequest?.tab === 'buyback' ? listViewRequest : null"
     @update:sort="setSort"
   >
     <template #row="{ entry, autoExpand }">
