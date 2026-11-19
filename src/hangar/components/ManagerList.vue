@@ -70,6 +70,11 @@ const props = defineProps<{
    */
   includeRequest?: { filter: F; at: number; clear?: boolean } | null;
   /**
+   * A view of the list to show (#436): a pledge opened from elsewhere in the manager (its id as the
+   * search, no filters), or the view to come back to with the browser's Back.
+   */
+  viewRequest?: { search: string; filters?: [string, FilterState][]; at: number } | null;
+  /**
    * The classes that highlight in every row what the included filters are about (#216, see
    * `highlights.ts`), from their states.
    */
@@ -191,6 +196,16 @@ watch(
     filterStates.value = new Map([[request.filter, 'include']]);
   },
   { immediate: true },
+);
+
+watch(
+  () => props.viewRequest,
+  (request) => {
+    if (!request) return;
+    clearRequested();
+    query.value = request.search;
+    filterStates.value = new Map((request.filters ?? []) as [F, FilterState][]);
+  },
 );
 
 // Off once nothing matches it any more (e.g. all marked pledges melted).

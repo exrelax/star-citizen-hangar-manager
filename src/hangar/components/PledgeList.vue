@@ -23,6 +23,7 @@ import { useNow } from '@/shared/use-now';
 import { FILTER_HIGHLIGHTS } from '@/config';
 import { highlightClasses } from '../highlights';
 import ManagerList from './ManagerList.vue';
+import { listViewRequest } from '../list-jump';
 import PledgeRow from './PledgeRow.vue';
 
 const props = defineProps<{ pledges: PledgeView[]; settings: Settings; active: boolean }>();
@@ -126,6 +127,7 @@ const filterHint = (filter: PledgeFilter) => {
     :highlights="highlights"
     :filter-request="viewFilterRequest"
     :include-request="hangarFilterRequest"
+    :view-request="listViewRequest?.tab === 'hangar' ? listViewRequest : null"
     @clear-request="clearHangarFilter()"
     @update:sort="setSort"
     @visible="showVisible"
