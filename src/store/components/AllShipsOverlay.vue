@@ -509,12 +509,12 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
 <style src="@/shared/overlay.css"></style>
 
 <style>
-/* As wide as the design: the table of nine columns and its toolbar. */
+/* As wide as the table of nine columns needs, growing with the text size (#409). */
 .shm-all-ships.shm-overlay-dialog {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  width: min(1040px, 100%);
+  width: min(calc(1120px * var(--shm-font-scale)), 100%);
   /* One height, whatever the filters show: the dialog doesn't jump. */
   height: min(1000px, calc(100vh - 120px));
   padding-bottom: 0;
@@ -703,10 +703,13 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
   outline: none;
 }
 
-/* Fixed columns: the table doesn't jump sideways while filtering. */
+/*
+ * Fixed columns: the table doesn't jump sideways while filtering. They grow with the text size,
+ * so every text fits in its cell at each size (#409).
+ */
 .shm-all-ships-table {
   width: 100%;
-  min-width: 900px;
+  min-width: calc(1024px * var(--shm-font-scale));
   table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
@@ -714,15 +717,16 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
 }
 
 .shm-all-ships-col-value {
-  width: 98px;
+  width: calc(112px * var(--shm-font-scale));
 }
 
 .shm-all-ships-col-count {
-  width: 64px;
+  width: calc(78px * var(--shm-font-scale));
 }
 
+/* "Warbond" and "Standard" side by side: their padding stays, icons and labels grow. */
 .shm-all-ships-col-store {
-  width: 214px;
+  width: calc(68px + 152px * var(--shm-font-scale));
 }
 
 .shm-all-ships-table th,
@@ -767,6 +771,30 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
 
 .shm-all-ships-table thead .shm-sort-head {
   justify-content: center;
+}
+
+/*
+ * A count's head in two lines where it doesn't fit in one ("CCUs" over "from"), mostly with the
+ * sort arrow next to it; the heads of a row stand on one line at the bottom.
+ */
+.shm-all-ships-table thead tr:nth-child(2) th {
+  vertical-align: bottom;
+}
+
+.shm-all-ships-table thead th.is-count {
+  padding-right: 2px;
+  padding-left: 2px;
+  white-space: normal;
+}
+
+.shm-all-ships-table thead th.is-count .shm-sort-head {
+  align-items: flex-end;
+  max-width: 100%;
+  text-wrap: balance;
+}
+
+.shm-all-ships-table thead th.is-count .shm-sort-arrow {
+  margin-bottom: calc(3px * var(--shm-font-scale));
 }
 
 .shm-all-ships-table thead :is(th:first-child, th:last-child) .shm-sort-head {
@@ -822,35 +850,30 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
   font-weight: normal;
 }
 
+/* Name, manufacturer and tags in one line; what doesn't fit goes to the next, never cut off. */
 .shm-all-ships-ship {
   display: flex;
-  gap: 7px;
+  flex-wrap: wrap;
+  gap: 0 7px;
   align-items: baseline;
   min-width: 0;
-  white-space: nowrap;
 }
 
 .shm-all-ships-ship-name {
-  flex: none;
-  max-width: 100%;
-  overflow: hidden;
   color: var(--shm-text-strong);
   font-weight: 600;
-  text-overflow: ellipsis;
 }
 
 .shm-all-ships-maker {
-  flex: 0 1 auto;
-  min-width: 0;
-  overflow: hidden;
   color: var(--shm-text-faint);
   font-size: calc(12px * var(--shm-font-scale));
-  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .shm-all-ships-tag {
   flex: none;
   align-self: center;
+  white-space: nowrap;
   padding: 0 5px;
   color: var(--shm-text-muted);
   font-size: calc(10px * var(--shm-font-scale));
