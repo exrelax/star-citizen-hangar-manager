@@ -34,6 +34,7 @@ import { REMOVAL_CCUS, useRemovalCcus } from '@/ship-removals/use-removal-ccus';
 import { CCU_COVERAGE, COVERAGE_SOURCES, useCcuCoverage } from '@/ccu-consultant/coverage';
 import { ALWAYS_AVAILABLE, alwaysAvailableList } from '@/ccu-consultant/always-available';
 import CcuConsultant from '@/ccu-consultant/components/CcuConsultant.vue';
+import { OWNED_SHIPS, ownedShips } from '@/hangar/paint-ships';
 import { useShipFacts } from '@/ships/use-ship-facts';
 import { followListHistory, listViewRequest } from '@/hangar/list-jump';
 import { current as currentShips, shipsItem } from '@/ships/ships-storage';
@@ -168,6 +169,17 @@ provide(
     buyback: new Map(buybackPledges.value.map((pledge) => [pledge.id, pledge])),
     ships: currentShips(storedShips.value ?? null)?.ships ?? [],
   })),
+);
+// The hangar's ships, for "Paints" by owned ships (#336) in both lists; the demo's in the demo.
+provide(
+  OWNED_SHIPS,
+  computed(() =>
+    ownedShips(
+      pledges.value.flatMap((pledge) =>
+        pledge.items.filter((item) => item.kind === 'Ship').map((item) => item.title),
+      ),
+    ),
+  ),
 );
 // The always available ships of the CCU Consultant (#110), for the label on CCU rows (#112).
 const shipFacts = useShipFacts();

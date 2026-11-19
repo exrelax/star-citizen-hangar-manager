@@ -349,6 +349,13 @@ html .shm-theme-modern .shm-filter.is-excluded .shm-filter-count {
   opacity: 0.8;
 }
 
+/* The second part of a refinable pill (#419): one capsule, split by a thin line. */
+html .shm-theme-modern .shm-filter-pill .shm-filter.shm-filter-refine {
+  width: 24px;
+  border: 0;
+  margin-left: 1px;
+}
+
 html .shm-theme-modern .shm-filter-reset {
   height: 26px;
   color: var(--shm-accent);

@@ -94,8 +94,16 @@
   },
   "filter": {
     "label": "Filter pledges",
+    "refine": "Refine “$1”",
     "lti": "LTI",
     "paints": "Paints",
+    "paintShips": {
+      "all": "All paints",
+      "owned": "For owned ships",
+      "ownedShort": "Owned ships",
+      "notOwned": "For ships not owned",
+      "notOwnedShort": "Ships not owned"
+    },
     "ccus": "CCUs",
     "gameAccess": "Game access",
     "giftable": "Giftable",

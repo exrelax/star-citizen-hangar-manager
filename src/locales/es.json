@@ -94,8 +94,16 @@
   },
   "filter": {
     "label": "Filtrar pledges",
+    "refine": "Afinar «$1»",
     "lti": "LTI",
     "paints": "Pinturas",
+    "paintShips": {
+      "all": "Todas las pinturas",
+      "owned": "Para naves que tienes",
+      "ownedShort": "Naves que tienes",
+      "notOwned": "Para naves que no tienes",
+      "notOwnedShort": "Naves que no tienes"
+    },
     "ccus": "CCU",
     "gameAccess": "Acceso al juego",
     "giftable": "Regalables",
