@@ -17,6 +17,7 @@ import {
 } from '../exchange';
 import { pledgeKind } from '../pledge-kind';
 import { useDemoContext } from '@/demo/use-demo';
+import { demoMeltRun } from '@/demo/demo-melt-check';
 import type { PledgeView } from '../pledge-view';
 import { useRsiText } from '../rsi-text';
 import { summarize } from '../summary';
@@ -191,15 +192,23 @@ const ready = computed(
     consentExperimental.value &&
     (!props.extraConsent || consentExtra.value) &&
     (!hasDanger.value || consentWarnings.value) &&
-    password.value !== '' &&
+    // The demo sends nothing, so it needs no password.
+    (password.value !== '' || !!demo.value) &&
     !submitting.value,
 );
 
-/** The demo shows the dialog, but melts nothing: its pledge ids are made up. */
+/**
+ * The demo plays the run (#416): the check turns out as its settings say, and "all match" goes on
+ * pledge by pledge – with the demo's own check and exchange, which never send a request: its pledge
+ * ids are made up.
+ */
 const demo = useDemoContext();
+const run = () =>
+  demo.value
+    ? { ...demoMeltRun(demo.value.meltCheck, list), delayMs: 0 }
+    : { verify, delayMs: BULK_EXCHANGE_DELAY_MS };
 
 async function submit() {
-  if (demo.value) return;
   if (!ready.value) {
     error.value = i18n.t('exchange.missing');
     return;
@@ -212,8 +221,7 @@ async function submit() {
       list.map((pledge) => pledge.id),
       password.value,
       {
-        delayMs: BULK_EXCHANGE_DELAY_MS,
-        verify,
+        ...run(),
         onChecked: () => (checking.value = false),
         onExchanged: (id) => (exchanged.value = [...exchanged.value, id]),
       },
@@ -222,7 +230,8 @@ async function submit() {
     mismatches.value = result.mismatches ?? [];
     unchecked.value = result.unchecked;
     finished.value = true;
-    if (exchanged.value.length) emit('exchanged', [...exchanged.value]);
+    // Not in the demo: nothing was exchanged, the consultant's plan stays as it is.
+    if (exchanged.value.length && !demo.value) emit('exchanged', [...exchanged.value]);
   } finally {
     submitting.value = false;
     checking.value = false;
@@ -238,6 +247,8 @@ let removed = false;
 async function finish() {
   if (removed) return;
   removed = true;
+  // The demo stored nothing and exchanged nothing: the real hangar stays as it is.
+  if (demo.value) return;
   // What the check read: the list shows these pledges as they are now.
   await storeMismatches(mismatches.value);
   if (!exchanged.value.length) return;
@@ -485,10 +496,10 @@ onUnmounted(() => {
               {{ i18n.t('exchange.cancel') }}
             </button>
             <button
-              v-tooltip="demo ? i18n.t('exchange.demo') : undefined"
+              v-tooltip="demo ? i18n.t('bulkExchange.demoHint') : undefined"
               type="submit"
               class="shm-button is-danger shm-action-submit"
-              :disabled="!ready || !!demo"
+              :disabled="!ready"
             >
               {{
                 checking

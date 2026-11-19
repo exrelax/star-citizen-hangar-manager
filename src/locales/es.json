@@ -381,7 +381,16 @@
         "off": "Ninguno"
       },
       "hangar": "Hangar",
-      "resetHint": "Todos los ajustes de la demo vuelven a sus valores predeterminados y se borran las marcas de la demo."
+      "resetHint": "Todos los ajustes de la demo vuelven a sus valores predeterminados y se borran las marcas de la demo.",
+      "meltCheck": "Comprobación antes de fundir varios",
+      "meltCheckHint": "Cómo resulta la comprobación de los pledges justo antes de fundir varios, también con las pinturas de relleno. La demo solo la muestra: no se lee nada de RSI ni se funde nada.",
+      "meltCheckOutcomes": {
+        "match": "Todos los pledges coinciden",
+        "changed": "Un pledge ha cambiado",
+        "gone": "Un pledge ya no existe",
+        "notMeltable": "Un pledge ya no se puede fundir",
+        "unreadable": "No se puede leer RSI"
+      }
     },
     "on": "Activado",
     "errorLog": "Registro de errores",
@@ -1204,7 +1213,8 @@
       "items": "Contenido cambiado",
       "other": "Cambiado"
     },
-    "unchecked": "No se pudieron volver a leer los pledges en RSI ($1). No se fundió nada."
+    "unchecked": "No se pudieron volver a leer los pledges en RSI ($1). No se fundió nada.",
+    "demoHint": "La demo solo muestra la comprobación y la fundición: no se lee nada de RSI ni se funde nada. El resultado de la comprobación se elige en los ajustes de la demo."
   },
   "meltMark": {
     "mark": "Marcar para fundir",

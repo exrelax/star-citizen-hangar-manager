@@ -16,6 +16,7 @@ import {
   type DemoStates,
 } from '@/demo/demo-settings';
 import { RUNNING_PLAN_STAGES, type RunningPlanStage } from '@/demo/demo-running-plan';
+import { MELT_CHECK_OUTCOMES, type MeltCheckOutcome } from '@/demo/demo-melt-check';
 import type { DemoComposition } from '@/demo/generate-hangar';
 import { newDemoHangar, resetDemoData } from '@/demo/use-demo';
 import { CREDIT_CASES, creditForCases, type CreditCase } from '@/demo/demo-store-credit';
@@ -251,6 +252,29 @@ async function reset() {
     >
       {{ i18n.t('settings.demo.realStoreData') }}
     </SettingCheck>
+  </SettingsGroup>
+
+  <!-- The check right before bulk melting (#415, #416). -->
+  <SettingsGroup :disabled="off">
+    <SettingRow
+      :label="i18n.t('settings.demo.meltCheck')"
+      :hint="i18n.t('settings.demo.meltCheckHint')"
+      for="shm-demo-melt-check"
+      hint-id="shm-demo-melt-check-hint"
+    >
+      <select
+        id="shm-demo-melt-check"
+        class="shm-select"
+        :value="settings.demo.meltCheck"
+        :disabled="off"
+        aria-describedby="shm-demo-melt-check-hint"
+        @change="set({ meltCheck: ($event.target as HTMLSelectElement).value as MeltCheckOutcome })"
+      >
+        <option v-for="outcome in MELT_CHECK_OUTCOMES" :key="outcome" :value="outcome">
+          {{ i18n.t(`settings.demo.meltCheckOutcomes.${outcome}`) }}
+        </option>
+      </select>
+    </SettingRow>
   </SettingsGroup>
 
   <SettingsGroup :disabled="off">
