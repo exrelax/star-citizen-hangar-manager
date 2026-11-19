@@ -266,6 +266,13 @@
     "sidebarNotificationsHint": "Erscheint, solange es eine Benachrichtigung gibt: wenn zum Einschmelzen gemerkte Pledges jetzt eingeschmolzen werden können – mit Buttons, um sie anzuzeigen oder auszuwählen – und die gemerkten, die noch warten; wie viele Paints sich mit mehr Rabatt zurückkaufen lassen (mit ihrem × ausblendbar). Abhakbare Benachrichtigungen: einzeln oder alle auf einmal. Ohne Berechtigung des Browsers.",
     "sidebarSelectionHint": "Erscheint, solange Pledges ausgewählt sind. Ohne sie haben die Zeilen keine Auswahl.",
     "sidebarPaintConsultantHint": "Erscheint, solange sich Paints mit höherem Mengenrabatt zurückkaufen lassen: wie viele, und wie viele Store Credits dabei frei werden. Ausgeblendet, solange „Schmelzwert ausblenden“ an ist.",
+    "ccuConsultant": "CCU Consultant",
+    "ccuAlwaysAvailable": "Immer kaufbare Schiffe berücksichtigen",
+    "ccuAlwaysAvailableHint": "An: Ein CCU, dessen Basisschiff im Pledge Store immer kaufbar ist, gilt nicht als ohne Basisschiff und bekommt das Label „Immer kaufbar“. Aus: Jedes CCU ohne sein Basisschiff in deinem Hangar oder Buy Back zählt.",
+    "ccuSource": "Quelle der Liste",
+    "ccuSourceDate": "Welche Schiffe immer kaufbar sind, Stand $1.",
+    "ccuSourceNone": "Noch keine Liste verfügbar",
+    "ccuAttribution": "Liste von $1, geteilt unter",
     "paintConsultant": "Paint-Rabatt-Berater",
     "consultantLayout": "Darstellung",
     "consultantLayoutOptions": {

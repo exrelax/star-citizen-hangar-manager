@@ -16,6 +16,7 @@ export const SETTINGS_CATEGORIES = [
   'filters',
   'sidebar',
   'notifications',
+  'ccuConsultant',
   'paintConsultant',
   'smartUpdates',
   'experimental',
@@ -40,6 +41,7 @@ export const CATEGORY_INFO: Record<SettingsCategory, CategoryInfo> = {
   filters: { title: 'settings.filters', icon: 'filter' },
   sidebar: { title: 'settings.sidebar', icon: 'table-columns' },
   notifications: { title: 'notifications.title', icon: 'bell' },
+  ccuConsultant: { title: 'settings.ccuConsultant', icon: 'shuttle-space' },
   paintConsultant: { title: 'settings.paintConsultant', icon: 'fill-drip' },
   smartUpdates: { title: 'settings.smartUpdates', icon: 'rotate' },
   experimental: { title: 'settings.experimental', icon: 'flask' },
@@ -58,7 +60,7 @@ export const CATEGORY_GROUPS: { title: MessageKey; categories: SettingsCategory[
   { title: 'settings.categoryGroups.lists', categories: ['lists', 'filters', 'sidebar'] },
   {
     title: 'settings.categoryGroups.automation',
-    categories: ['notifications', 'paintConsultant', 'smartUpdates'],
+    categories: ['notifications', 'ccuConsultant', 'paintConsultant', 'smartUpdates'],
   },
   {
     title: 'settings.categoryGroups.more',

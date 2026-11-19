@@ -65,6 +65,7 @@ describe('withDefaults', () => {
         reboughtDetection: 'plan',
         layout: 'choose',
       },
+      ccuConsultant: { considerAlwaysAvailable: true, alwaysAvailableSource: null },
       shipLinks: { erkul: false, fleetyards: true },
     });
   });
@@ -92,8 +93,17 @@ describe('withDefaults', () => {
         sidebarCollapsed: ['events'],
         sidebar: 'no',
         sidebarHidden: 'summary',
+        ccuConsultant: { considerAlwaysAvailable: 'no', alwaysAvailableSource: 5 },
       } as never),
     ).toEqual(DEFAULT_SETTINGS);
+  });
+
+  it('keeps the CCU Consultant settings (#110)', () => {
+    expect(
+      withDefaults({
+        ccuConsultant: { considerAlwaysAvailable: false, alwaysAvailableSource: 'wiki' },
+      } as never).ccuConsultant,
+    ).toEqual({ considerAlwaysAvailable: false, alwaysAvailableSource: 'wiki' });
   });
 
   it('keeps the table layout of the Paint Discount Consultant', () => {

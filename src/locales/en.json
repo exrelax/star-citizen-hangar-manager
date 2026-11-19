@@ -266,6 +266,13 @@
     "sidebarNotificationsHint": "Shown while there is a notification: when pledges marked to melt can be melted now – with buttons to show or select them – and the marked ones still waiting; how many paints can be bought again with more discount (dismissable with its ×). Notifications that can be checked off: one by one or all at once. No browser permission needed.",
     "sidebarSelectionHint": "Shown while pledges are selected. Without it, the rows have no select control.",
     "sidebarPaintConsultantHint": "Shown while paints can be bought again with a higher volume discount: how many, and the store credit it frees. Hidden while “Hide melt value” is on.",
+    "ccuConsultant": "CCU Consultant",
+    "ccuAlwaysAvailable": "Consider always available ships",
+    "ccuAlwaysAvailableHint": "On: a CCU whose base ship is always available in the Pledge Store doesn't count as missing its base ship, and gets the label “Always available”. Off: every CCU without its base ship in your hangar or buy back counts.",
+    "ccuSource": "Source of the list",
+    "ccuSourceDate": "Which ships are always available, as of $1.",
+    "ccuSourceNone": "No list available yet",
+    "ccuAttribution": "List from $1, shared under",
     "paintConsultant": "Paint Discount Consultant",
     "consultantLayout": "Layout",
     "consultantLayoutOptions": {
