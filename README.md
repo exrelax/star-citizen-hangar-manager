@@ -92,6 +92,14 @@ never sees your RSI login and has no server, no account and no tracking. For the
 FleetYards.net and erkul.games it asks FleetYards.net about ship models – with nothing but their
 names. Details: [privacy policy](https://exrelax.github.io/star-citizen-hangar-manager/privacy.html).
 
+## Terms of Service and your account
+
+CIG's Terms of Service forbid bots, and it isn't clear whether the smart updates could count as
+one. The Hangar Manager sends as few requests to the RSI website as it can, does no botting (it
+never buys anything on its own, e.g. in timed sales) and gives no advantage over other players: it
+wants to be fair to CIG and never to break the Terms of Service on purpose.
+[Terms of Service](https://robertsspaceindustries.com/tos)
+
 ## Help and feedback
 
 - Found a bug or have an idea? Open an

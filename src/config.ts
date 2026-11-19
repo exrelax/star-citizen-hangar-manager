@@ -24,6 +24,11 @@ export const AUTO_LANGUAGE_SOURCE: 'ui' | 'preferred' = 'preferred';
 export const FEATURES = {
   /** The active tab's highlight slides over to the tab clicked (see `TabBar.vue`). */
   tabSlideAnimation: true,
+  /**
+   * The note on RSI's Terms of Service once in the sidebar's "Notifications", until "Got it"
+   * (#330). Off: only the settings ("About") show it.
+   */
+  tosSidebarNote: false,
 } as const;
 
 /** RSI's hangar page, which hosts the manager (the popup's links add the tab's hash). */

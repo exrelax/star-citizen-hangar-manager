@@ -1580,5 +1580,13 @@
     "warbondPrice": "Warbond $1",
     "saves": "spart $1",
     "source": "Werte aus RSIs Ship-Upgrade-Tool. „Immer kaufbar“ und „Nicht erhältlich“ aus dem Star Citizen Wiki (CC BY-SA 4.0), über die Projekt-Website."
+  },
+  "accountSafety": {
+    "title": "Nutzungsbedingungen und dein Konto",
+    "note": "Die Nutzungsbedingungen von CIG verbieten Bots, und es ist nicht klar, ob die intelligenten Updates darunterfallen können. Der Hangar Manager schickt so wenige Anfragen wie möglich an die RSI-Website, betreibt kein Botting (er kauft nie selbst etwas, z. B. bei zeitlich begrenzten Sales) und verschafft keinen Vorteil gegenüber anderen Spielern: Er will fair gegenüber CIG sein und die Nutzungsbedingungen nie absichtlich verletzen.",
+    "tos": "Nutzungsbedingungen",
+    "tosHint": "Die Nutzungsbedingungen von RSI, auf der RSI-Website.",
+    "gotIt": "Verstanden",
+    "gotItHint": "Blendet diesen Hinweis dauerhaft aus. In den Einstellungen unter „Über“ bleibt er."
   }
 }

@@ -51,6 +51,8 @@ import {
   isPaintNotificationShown,
 } from '@/store/paint-consultant/paint-notification';
 import { useStored } from '@/storage/use-stored';
+import { RSI_TOS_URL, riskNoteSeenItem } from '@/account-safety/risk-note';
+import { FEATURES } from '@/config';
 import type { BuybackView } from '@/buyback/buyback-view';
 import { showBuybackFilter } from '@/buyback/buyback-filter-request';
 import { isKindOn } from '@/notifications/kinds';
@@ -177,7 +179,8 @@ const noteCount = computed(
     (priceNoteCount.value ? 1 : 0) +
     advisorShown.value.length +
     removalShown.value.length +
-    (showBrowserHint.value ? 1 : 0),
+    (showBrowserHint.value ? 1 : 0) +
+    (showRiskNote.value ? 1 : 0),
 );
 const noteTime = computed(
   () => new Intl.DateTimeFormat(locale.value, { dateStyle: 'medium', timeStyle: 'short' }),
@@ -272,6 +275,17 @@ const paintNoteCount = computed(() => {
   if (!dismissed || !isPaintNotificationShown(rebuyIds.value, dismissed)) return 0;
   return rebuyIds.value.length;
 });
+/*
+ * The risk for the RSI account (#330), once: until "Got it" (synced). Not a kind of notification
+ * to turn off; the settings keep it under "About".
+ */
+const riskNoteSeen = useStored(riskNoteSeenItem);
+// Not before it is read: it would show for a moment. Behind a feature toggle (`config.ts`).
+const showRiskNote = computed(() => FEATURES.tosSidebarNote && riskNoteSeen.value === false);
+function confirmRiskNote() {
+  void riskNoteSeenItem.setValue(true);
+}
+
 /*
  * A hint that browser notifications can be turned on (#152), with a button to the setting, until
  * they are on in this browser or the hint is dismissed with its X (synced).
@@ -641,6 +655,32 @@ async function move(box: Box, step: -1 | 1) {
       >
         <template v-if="box === 'notifications'">
           <!-- Only shown with at least one notification (see `isShown`). -->
+          <!-- First: the account's risk, until "Got it" (#330). -->
+          <div v-if="showRiskNote" class="shm-sidebar-melt-ready" role="note">
+            <SvgIcon name="triangle-exclamation" />
+            <p>
+              <strong>{{ i18n.t('accountSafety.title') }}</strong>
+              {{ i18n.t('accountSafety.note') }}
+              <a
+                v-tooltip="i18n.t('accountSafety.tosHint')"
+                :href="RSI_TOS_URL"
+                target="_blank"
+                rel="noopener noreferrer"
+                >{{ i18n.t('accountSafety.tos') }}</a
+              >
+            </p>
+            <div v-mark-wrapped class="shm-sidebar-actions">
+              <button
+                v-tooltip="i18n.t('accountSafety.gotItHint')"
+                type="button"
+                class="shm-button shm-sidebar-button"
+                @click="confirmRiskNote"
+              >
+                <SvgIcon name="check" />
+                {{ i18n.t('accountSafety.gotIt') }}
+              </button>
+            </div>
+          </div>
           <div v-if="readyCount" class="shm-sidebar-melt-ready" role="status">
             <SvgIcon name="recycle" />
             <p>
@@ -1344,6 +1384,23 @@ async function move(box: Box, step: -1 | 1) {
 
 .shm-sidebar-melt-ready p {
   margin: 0;
+}
+
+/* A note's title on a line of its own, e.g. the account's risk (#330). */
+.shm-sidebar-melt-ready p strong {
+  display: block;
+  margin-bottom: 2px;
+}
+
+/* A link in a note's text, in the accent of the theme (not RSI's link color). */
+.shm-sidebar-melt-ready p a {
+  color: var(--shm-accent);
+  text-decoration: none;
+}
+
+.shm-sidebar-melt-ready p a:hover,
+.shm-sidebar-melt-ready p a:focus-visible {
+  text-decoration: underline;
 }
 
 .shm-sidebar-melt-ready .shm-sidebar-actions {

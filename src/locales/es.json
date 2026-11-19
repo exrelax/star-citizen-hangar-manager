@@ -1580,5 +1580,13 @@
     "warbondPrice": "warbond $1",
     "saves": "ahorra $1",
     "source": "Valores de la herramienta de mejoras de RSI. «Siempre disponible» y «No a la venta» del Star Citizen Wiki (CC BY-SA 4.0), a través de la web del proyecto."
+  },
+  "accountSafety": {
+    "title": "Términos de servicio y tu cuenta",
+    "note": "Los Términos de servicio de CIG prohíben los bots, y no está claro si las actualizaciones inteligentes podrían contar como uno. El Hangar Manager envía las mínimas peticiones posibles a la web de RSI, no hace botting (nunca compra nada por sí solo, p. ej. en ventas por tiempo limitado) y no da ventaja sobre otros jugadores: quiere ser justo con CIG y nunca incumplir los Términos de servicio a propósito.",
+    "tos": "Términos de servicio",
+    "tosHint": "Los Términos de servicio de RSI, en la web de RSI.",
+    "gotIt": "Entendido",
+    "gotItHint": "Oculta este aviso para siempre. Sigue en los ajustes, en “Acerca de”."
   }
 }
