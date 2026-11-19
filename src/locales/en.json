@@ -139,6 +139,7 @@
     "hangar": "My Hangar",
     "buyback": "Buy Back",
     "store": "Pledge Store",
+    "consultants": "Consultants",
     "settings": "Settings"
   },
   "settings": {
@@ -1640,6 +1641,61 @@
         "yes": "Probably giftable when bought back with money",
         "no": "Probably not giftable"
       }
+    }
+  },
+  "ccuConsultant": {
+    "title": "CCU Consultant",
+    "question": "Can you apply every CCU?",
+    "intro": {
+      "one": "A CCU only works on its base ship – in your hangar, or reached with a CCU to it. Checked for your $1 CCU.",
+      "other": "A CCU only works on its base ship – in your hangar, or reached with a CCU to it. Checked for all $1 CCUs."
+    },
+    "noCcus": "There are no CCUs in your hangar.",
+    "standing": {
+      "hangar": "In your hangar",
+      "buyback": "Only via buy back",
+      "always": "Base always available",
+      "missing": "Without base ship"
+    },
+    "barLabel": "$1 CCUs covered in your hangar, $2 by always available ships, $3 only via buy back, $4 without base ship.",
+    "groups": "CCUs by base ship",
+    "hint": {
+      "missing": "Neither the base ship nor a CCU to it is in your hangar or buy back, and it is probably not always available. Get one while it is for sale.",
+      "missingAll": "Neither the base ship nor a CCU to it is in your hangar or buy back. Get one while it is for sale.",
+      "buyback": "Covered – but only by your buy back. Buying it back costs its price or a buy back token, and RSI may stop selling a CCU back.",
+      "always": "Nothing of these base ships is in your hangar or buy back, but RSI always sells them. Source: $1, list of $2.",
+      "alwaysUndated": "Nothing of these base ships is in your hangar or buy back, but RSI always sells them. Source: $1."
+    },
+    "col": {
+      "ship": "Base ship",
+      "ccus": "CCUs from it",
+      "cover": "Base ship coverage",
+      "found": "Found"
+    },
+    "unknownShip": "Unknown base ship",
+    "notAlways": "Not always available",
+    "price": "Standard price $1",
+    "cover": {
+      "buyback": "In your buy back",
+      "always": "Always available",
+      "alwaysSub": "In the Pledge Store whenever you need it",
+      "missing": "Nothing found",
+      "missingSub": "Neither it nor a CCU to it in your hangar or buy back"
+    },
+    "openBuyback": "Opens it in Buy Back",
+    "moreMatches": {
+      "one": "+ $1 more",
+      "other": "+ $1 more"
+    },
+    "fewerMatches": "Show fewer",
+    "pledgeStore": "Pledge Store",
+    "pledgeStoreHint": "Opens $1 in the Pledge Store",
+    "empty": {
+      "missing": "Every CCU can be applied",
+      "missingText": "Each base ship is in your hangar, in your buy back or always in the Pledge Store.",
+      "missingTextAll": "Each base ship is in your hangar or in your buy back.",
+      "buyback": "No CCU depends on your buy back alone.",
+      "always": "No CCU relies on an always available base ship alone."
     }
   }
 }

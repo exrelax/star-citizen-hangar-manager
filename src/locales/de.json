@@ -139,6 +139,7 @@
     "hangar": "My Hangar",
     "buyback": "Buy Back",
     "store": "Pledge Store",
+    "consultants": "Berater",
     "settings": "Einstellungen"
   },
   "settings": {
@@ -1640,6 +1641,61 @@
         "yes": "Vermutlich verschenkbar, mit Geld zurückgekauft",
         "no": "Vermutlich nicht verschenkbar"
       }
+    }
+  },
+  "ccuConsultant": {
+    "title": "CCU Consultant",
+    "question": "Lässt sich jedes CCU anwenden?",
+    "intro": {
+      "one": "Ein CCU funktioniert nur auf seinem Basisschiff – in deinem Hangar oder über ein CCU dorthin erreichbar. Geprüft für dein $1 CCU.",
+      "other": "Ein CCU funktioniert nur auf seinem Basisschiff – in deinem Hangar oder über ein CCU dorthin erreichbar. Geprüft für alle $1 CCUs."
+    },
+    "noCcus": "In deinem Hangar sind keine CCUs.",
+    "standing": {
+      "hangar": "In deinem Hangar",
+      "buyback": "Nur über Buy Back",
+      "always": "Basis immer kaufbar",
+      "missing": "Ohne Basisschiff"
+    },
+    "barLabel": "$1 CCUs durch deinen Hangar abgedeckt, $2 durch immer kaufbare Schiffe, $3 nur über Buy Back, $4 ohne Basisschiff.",
+    "groups": "CCUs nach Basisschiff",
+    "hint": {
+      "missing": "Weder das Basisschiff noch ein CCU dorthin ist in deinem Hangar oder Buy Back, und es ist vermutlich nicht immer kaufbar. Hol dir eins, solange es angeboten wird.",
+      "missingAll": "Weder das Basisschiff noch ein CCU dorthin ist in deinem Hangar oder Buy Back. Hol dir eins, solange es angeboten wird.",
+      "buyback": "Abgedeckt – aber nur durch dein Buy Back. Zurückkaufen kostet seinen Preis oder einen Buy Back Token, und RSI kann aufhören, ein CCU zurückzuverkaufen.",
+      "always": "Von diesen Basisschiffen ist nichts in deinem Hangar oder Buy Back, aber RSI verkauft sie immer. Quelle: $1, Liste vom $2.",
+      "alwaysUndated": "Von diesen Basisschiffen ist nichts in deinem Hangar oder Buy Back, aber RSI verkauft sie immer. Quelle: $1."
+    },
+    "col": {
+      "ship": "Basisschiff",
+      "ccus": "CCUs davon",
+      "cover": "Abdeckung des Basisschiffs",
+      "found": "Gefunden"
+    },
+    "unknownShip": "Unbekanntes Basisschiff",
+    "notAlways": "Nicht immer kaufbar",
+    "price": "Standardpreis $1",
+    "cover": {
+      "buyback": "In deinem Buy Back",
+      "always": "Immer kaufbar",
+      "alwaysSub": "Im Pledge Store, wann immer du es brauchst",
+      "missing": "Nichts gefunden",
+      "missingSub": "Weder das Schiff noch ein CCU dorthin in deinem Hangar oder Buy Back"
+    },
+    "openBuyback": "Öffnet es im Buy Back",
+    "moreMatches": {
+      "one": "+ $1 weiteres",
+      "other": "+ $1 weitere"
+    },
+    "fewerMatches": "Weniger zeigen",
+    "pledgeStore": "Pledge Store",
+    "pledgeStoreHint": "Öffnet $1 im Pledge Store",
+    "empty": {
+      "missing": "Jedes CCU lässt sich anwenden",
+      "missingText": "Jedes Basisschiff ist in deinem Hangar, in deinem Buy Back oder immer im Pledge Store.",
+      "missingTextAll": "Jedes Basisschiff ist in deinem Hangar oder in deinem Buy Back.",
+      "buyback": "Kein CCU hängt allein an deinem Buy Back.",
+      "always": "Kein CCU hängt allein an einem immer kaufbaren Basisschiff."
     }
   }
 }

@@ -57,11 +57,15 @@ export function urlOfView(href: string, view: Pick<ListView, 'tab' | 'search'>):
 
 /**
  * Shows the pledge in its list, searched by its id (`term`: the id the list finds it by, in the
- * demo its made-up one). `from` is the view to come back to with Back.
+ * demo its made-up one). `from` is the view of a list to come back to with Back; from another tab
+ * (e.g. "Consultants", #113) Back returns to that tab by its hash.
  */
-export function openPledgeInList(tab: ListTab, term: string, from: ListView): void {
+export function openPledgeInList(tab: ListTab, term: string, from?: ListView): void {
   const target: ListView = { tab, search: term };
-  history.replaceState({ ...(history.state ?? {}), [STATE_KEY]: from }, '', location.href);
+  // Without a view of its own, an older one the entry may still keep mustn't come back.
+  const state = { ...((history.state ?? {}) as Record<string, unknown>) };
+  delete state[STATE_KEY];
+  history.replaceState(from ? { ...state, [STATE_KEY]: from } : state, '', location.href);
   history.pushState({ [STATE_KEY]: target }, '', urlOfView(location.href, target));
   show(target);
 }

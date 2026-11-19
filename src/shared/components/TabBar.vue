@@ -14,8 +14,8 @@ import { nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vu
  */
 
 const props = defineProps<{
-  /** `iconSet`: the sprite of `icon`, Font Awesome unless set. */
-  items: readonly { id: T; label: string; icon?: IconName; iconSet?: IconSet }[];
+  /** `iconSet`: the sprite of `icon`, Font Awesome unless set; `count`: shown after the label. */
+  items: readonly { id: T; label: string; icon?: IconName; iconSet?: IconSet; count?: string }[];
   selected: T;
   /** Accessible name of the group. */
   label: string;
@@ -94,6 +94,7 @@ if (slide) {
     >
       <SvgIcon v-if="item.icon" :name="item.icon" :set="item.iconSet" />
       {{ item.label }}
+      <span v-if="item.count !== undefined" class="shm-tab-count">{{ item.count }}</span>
     </button>
   </div>
 </template>
@@ -120,6 +121,11 @@ if (slide) {
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
   cursor: pointer;
+}
+
+.shm-tab-count {
+  color: var(--shm-text-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 .shm-tab:hover,

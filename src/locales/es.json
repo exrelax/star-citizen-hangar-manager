@@ -139,6 +139,7 @@
     "hangar": "My Hangar",
     "buyback": "Buy Back",
     "store": "Pledge Store",
+    "consultants": "Asesores",
     "settings": "Ajustes"
   },
   "settings": {
@@ -1640,6 +1641,61 @@
         "yes": "Probablemente se puede regalar si se recompra con dinero",
         "no": "Probablemente no se puede regalar"
       }
+    }
+  },
+  "ccuConsultant": {
+    "title": "CCU Consultant",
+    "question": "¿Puedes aplicar todos tus CCU?",
+    "intro": {
+      "one": "Un CCU solo funciona sobre su nave base: en tu hangar o alcanzada con un CCU hacia ella. Comprobado para tu $1 CCU.",
+      "other": "Un CCU solo funciona sobre su nave base: en tu hangar o alcanzada con un CCU hacia ella. Comprobado para tus $1 CCU."
+    },
+    "noCcus": "No hay CCU en tu hangar.",
+    "standing": {
+      "hangar": "En tu hangar",
+      "buyback": "Solo por recompra",
+      "always": "Base siempre disponible",
+      "missing": "Sin nave base"
+    },
+    "barLabel": "$1 CCU cubiertos por tu hangar, $2 por naves siempre disponibles, $3 solo por recompra, $4 sin nave base.",
+    "groups": "CCU por nave base",
+    "hint": {
+      "missing": "Ni la nave base ni un CCU hacia ella están en tu hangar o recompra, y probablemente no está siempre disponible. Consigue una mientras esté a la venta.",
+      "missingAll": "Ni la nave base ni un CCU hacia ella están en tu hangar o recompra. Consigue una mientras esté a la venta.",
+      "buyback": "Cubierto, pero solo por tu recompra. Recomprarlo cuesta su precio o un token de recompra, y RSI puede dejar de revender un CCU.",
+      "always": "No hay nada de estas naves base en tu hangar o recompra, pero RSI siempre las vende. Fuente: $1, lista del $2.",
+      "alwaysUndated": "No hay nada de estas naves base en tu hangar o recompra, pero RSI siempre las vende. Fuente: $1."
+    },
+    "col": {
+      "ship": "Nave base",
+      "ccus": "CCU desde ella",
+      "cover": "Cobertura de la nave base",
+      "found": "Encontrado"
+    },
+    "unknownShip": "Nave base desconocida",
+    "notAlways": "No siempre disponible",
+    "price": "Precio estándar $1",
+    "cover": {
+      "buyback": "En tu recompra",
+      "always": "Siempre disponible",
+      "alwaysSub": "En la Pledge Store cuando la necesites",
+      "missing": "No se encontró nada",
+      "missingSub": "Ni ella ni un CCU hacia ella en tu hangar o recompra"
+    },
+    "openBuyback": "Lo abre en Buy Back",
+    "moreMatches": {
+      "one": "+ $1 más",
+      "other": "+ $1 más"
+    },
+    "fewerMatches": "Mostrar menos",
+    "pledgeStore": "Pledge Store",
+    "pledgeStoreHint": "Abre $1 en la Pledge Store",
+    "empty": {
+      "missing": "Puedes aplicar todos los CCU",
+      "missingText": "Cada nave base está en tu hangar, en tu recompra o siempre en la Pledge Store.",
+      "missingTextAll": "Cada nave base está en tu hangar o en tu recompra.",
+      "buyback": "Ningún CCU depende solo de tu recompra.",
+      "always": "Ningún CCU depende solo de una nave base siempre disponible."
     }
   }
 }

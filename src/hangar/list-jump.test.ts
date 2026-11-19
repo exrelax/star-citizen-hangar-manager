@@ -50,4 +50,18 @@ describe('list jumps (#436)', () => {
     expect(takeExpand(42, 'coverage')).toBe(true);
     expect(takeExpand(42, 'row')).toBe(false);
   });
+
+  it('from another tab keeps no view to come back to, not even an older one (#113)', () => {
+    history.replaceState({ shmListView: { tab: 'hangar', search: 'old' }, other: 1 }, '', '#x');
+    openPledgeInList('buyback', '7');
+    history.back();
+    // The entry left behind keeps RSI's state, but no view of a list.
+    return new Promise<void>((resolve) =>
+      setTimeout(() => {
+        expect(viewOfState(history.state)).toBeUndefined();
+        expect(history.state).toMatchObject({ other: 1 });
+        resolve();
+      }, 0),
+    );
+  });
 });

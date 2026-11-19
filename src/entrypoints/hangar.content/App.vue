@@ -33,6 +33,7 @@ import SettingsPanel from '@/settings/SettingsPanel.vue';
 import { REMOVAL_CCUS, useRemovalCcus } from '@/ship-removals/use-removal-ccus';
 import { CCU_COVERAGE, COVERAGE_SOURCES, useCcuCoverage } from '@/ccu-consultant/coverage';
 import { ALWAYS_AVAILABLE, alwaysAvailableList } from '@/ccu-consultant/always-available';
+import CcuConsultant from '@/ccu-consultant/components/CcuConsultant.vue';
 import { useShipFacts } from '@/ships/use-ship-facts';
 import { followListHistory, listViewRequest } from '@/hangar/list-jump';
 import { current as currentShips, shipsItem } from '@/ships/ships-storage';
@@ -68,6 +69,7 @@ const TAB_ICONS: Record<ManagerTab, { icon: IconName; iconSet?: IconSet }> = {
   hangar: { icon: 'hangar', iconSet: 'custom' },
   buyback: { icon: 'recycle' },
   store: { icon: 'basket-shopping' },
+  consultants: { icon: 'lightbulb' },
   settings: { icon: 'gear' },
 };
 
@@ -230,7 +232,7 @@ const status = computed(() => {
 });
 
 // The tab is part of the URL (`#hangar-manager`, `#hangar-manager-bb`, `#hangar-manager-store`,
-// `#hangar-manager-settings`), so it can be linked to and survives a reload.
+// `#hangar-manager-consultants`, `#hangar-manager-settings`), so it can be linked to and survives a reload.
 const activeTab = ref<ManagerTab>(tabFromHash(location.hash) ?? 'hangar');
 /** Tabs opened so far: the big lists are built on first use and then kept. */
 const opened = reactive(new Set<ManagerTab>([activeTab.value]));
@@ -243,13 +245,21 @@ function showTab(tab: ManagerTab) {
   if (url.href !== location.href) history.replaceState(history.state, '', url.href);
 }
 
-// Follows hash changes from outside, e.g. a link or an edited address bar.
+// Follows hash changes from outside, e.g. a link or an edited address bar, and Back and Forward
+// to an entry of another tab: between entries added by `pushState` (#436) there is no
+// `hashchange`, e.g. back from a pledge opened in "Buy Back" to "Consultants" (#113).
 const followHash = () => {
   const tab = tabFromHash(location.hash);
   if (tab && tab !== activeTab.value) showTab(tab);
 };
-onMounted(() => addEventListener('hashchange', followHash));
-onUnmounted(() => removeEventListener('hashchange', followHash));
+onMounted(() => {
+  addEventListener('hashchange', followHash);
+  addEventListener('popstate', followHash);
+});
+onUnmounted(() => {
+  removeEventListener('hashchange', followHash);
+  removeEventListener('popstate', followHash);
+});
 // A pledge opened in a list from elsewhere (#436), and Back and Forward between such views.
 const tabBar = useTemplateRef<ComponentPublicInstance>('tabBar');
 watch(listViewRequest, async (request) => {
@@ -431,6 +441,17 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
       :hangar-read="demo || !!syncedAt"
       :buyback-read="demo || !!buyback.syncedAt.value"
     />
+  </div>
+  <!-- The consultants (#113): so far the CCU Consultant. -->
+  <div
+    v-if="opened.has('consultants')"
+    v-show="activeTab === 'consultants'"
+    id="shm-panel-consultants"
+    class="shm-consultants"
+    role="tabpanel"
+    aria-labelledby="shm-tab-consultants"
+  >
+    <CcuConsultant v-if="listsReady" :settings="settings" @update="updateSettings" />
   </div>
   <div
     v-if="activeTab === 'settings'"

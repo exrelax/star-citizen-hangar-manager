@@ -139,6 +139,7 @@
     "hangar": "My Hangar",
     "buyback": "Buy Back",
     "store": "Pledge Store",
+    "consultants": "Conseillers",
     "settings": "Paramètres"
   },
   "settings": {
@@ -1640,6 +1641,61 @@
         "yes": "Probablement offrable si racheté avec de l’argent",
         "no": "Probablement pas offrable"
       }
+    }
+  },
+  "ccuConsultant": {
+    "title": "CCU Consultant",
+    "question": "Peux-tu appliquer tous tes CCU ?",
+    "intro": {
+      "one": "Un CCU ne s’applique qu’à son vaisseau de base : dans ton hangar, ou atteint par un CCU vers lui. Vérifié pour ton $1 CCU.",
+      "other": "Un CCU ne s’applique qu’à son vaisseau de base : dans ton hangar, ou atteint par un CCU vers lui. Vérifié pour tes $1 CCU."
+    },
+    "noCcus": "Ton hangar ne contient aucun CCU.",
+    "standing": {
+      "hangar": "Dans ton hangar",
+      "buyback": "Seulement par le rachat",
+      "always": "Base toujours disponible",
+      "missing": "Sans vaisseau de base"
+    },
+    "barLabel": "$1 CCU couverts par ton hangar, $2 par des vaisseaux toujours disponibles, $3 seulement par le rachat, $4 sans vaisseau de base.",
+    "groups": "CCU par vaisseau de base",
+    "hint": {
+      "missing": "Ni le vaisseau de base ni un CCU vers lui ne sont dans ton hangar ou ton rachat, et il n’est probablement pas toujours disponible. Procure-t’en un tant qu’il est en vente.",
+      "missingAll": "Ni le vaisseau de base ni un CCU vers lui ne sont dans ton hangar ou ton rachat. Procure-t’en un tant qu’il est en vente.",
+      "buyback": "Couvert, mais seulement par ton rachat. Le racheter coûte son prix ou un jeton de rachat, et RSI peut cesser de revendre un CCU.",
+      "always": "Rien de ces vaisseaux de base n’est dans ton hangar ou ton rachat, mais RSI les vend toujours. Source : $1, liste du $2.",
+      "alwaysUndated": "Rien de ces vaisseaux de base n’est dans ton hangar ou ton rachat, mais RSI les vend toujours. Source : $1."
+    },
+    "col": {
+      "ship": "Vaisseau de base",
+      "ccus": "CCU depuis lui",
+      "cover": "Couverture du vaisseau de base",
+      "found": "Trouvé"
+    },
+    "unknownShip": "Vaisseau de base inconnu",
+    "notAlways": "Pas toujours disponible",
+    "price": "Prix standard $1",
+    "cover": {
+      "buyback": "Dans ton rachat",
+      "always": "Toujours disponible",
+      "alwaysSub": "Dans le Pledge Store dès que tu en as besoin",
+      "missing": "Rien trouvé",
+      "missingSub": "Ni lui ni un CCU vers lui dans ton hangar ou ton rachat"
+    },
+    "openBuyback": "L’ouvre dans Buy Back",
+    "moreMatches": {
+      "one": "+ $1 autre",
+      "other": "+ $1 autres"
+    },
+    "fewerMatches": "Afficher moins",
+    "pledgeStore": "Pledge Store",
+    "pledgeStoreHint": "Ouvre $1 dans le Pledge Store",
+    "empty": {
+      "missing": "Tous les CCU peuvent être appliqués",
+      "missingText": "Chaque vaisseau de base est dans ton hangar, dans ton rachat ou toujours dans le Pledge Store.",
+      "missingTextAll": "Chaque vaisseau de base est dans ton hangar ou dans ton rachat.",
+      "buyback": "Aucun CCU ne dépend uniquement de ton rachat.",
+      "always": "Aucun CCU ne dépend uniquement d’un vaisseau de base toujours disponible."
     }
   }
 }
