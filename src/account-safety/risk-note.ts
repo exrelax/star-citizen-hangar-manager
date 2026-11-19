@@ -15,3 +15,8 @@ export const RSI_TOS_URL = 'https://robertsspaceindustries.com/tos';
 export const riskNoteSeenItem = storage.defineItem<boolean>('sync:accountSafety.riskNoteSeen', {
   fallback: false,
 });
+
+/** The demo's own "Got it" (#416): closing the note in the demo leaves the real one as it is. */
+export const demoRiskNoteSeenItem = storage.defineItem<boolean>('local:demo.riskNoteSeen', {
+  fallback: false,
+});

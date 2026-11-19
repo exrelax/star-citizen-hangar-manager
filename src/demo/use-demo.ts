@@ -25,6 +25,7 @@ import { demoStoreNotes } from './demo-store-notes';
 import { demoStoreData } from './demo-store';
 import { demoShipRemovals, type DemoShipRemovals } from './demo-ship-removals';
 import { demoDismissedRemovalNotesItem } from '@/ship-removals/removal-notes';
+import { demoRiskNoteSeenItem } from '@/account-safety/risk-note';
 import type { StoreData } from '@/store/warbond';
 import type { StoreItem } from '@/store/items/store-items';
 import {
@@ -36,6 +37,7 @@ import {
 } from './demo-running-plan';
 import { localToday } from '@/orders/refund';
 import type { DemoSettings } from './demo-settings';
+import type { MeltCheckOutcome } from './demo-melt-check';
 import {
   createFakeIds,
   demoBuyback,
@@ -87,6 +89,8 @@ export async function resetDemoData(): Promise<void> {
     demoDismissedAdvisorNotesItem.removeValue(),
     // The ship removals' notifications closed with × (#292).
     demoDismissedRemovalNotesItem.removeValue(),
+    // The note on RSI's Terms of Service closed with "Got it" (#416).
+    demoRiskNoteSeenItem.removeValue(),
   ]);
   demoResets.value++;
 }
@@ -180,6 +184,8 @@ export interface DemoContext {
    * ("2026-11-08T15:00"), for the countdown of a mark to melt.
    */
   justBought?: { pledgeId: number; at: string };
+  /** How the check right before bulk melting turns out (#416), from the demo settings. */
+  meltCheck: MeltCheckOutcome;
 }
 
 export const DEMO_CONTEXT: InjectionKey<Ref<DemoContext | null>> = Symbol('shm-demo');
@@ -392,6 +398,7 @@ export function useDemo(
         currency: 'USD',
       },
       justBought,
+      meltCheck: settings().meltCheck,
     };
   });
   const demoBuybackPledges = computed(() => {

@@ -381,7 +381,16 @@
         "off": "None"
       },
       "hangar": "Hangar",
-      "resetHint": "All demo settings back to their defaults; the demo’s marks are cleared."
+      "resetHint": "All demo settings back to their defaults; the demo’s marks are cleared.",
+      "meltCheck": "Check before bulk melting",
+      "meltCheckHint": "How the check of the pledges right before bulk melting turns out, also for the filler paints. The demo only shows it: nothing is read from RSI or melted.",
+      "meltCheckOutcomes": {
+        "match": "All pledges match",
+        "changed": "A pledge changed",
+        "gone": "A pledge is gone",
+        "notMeltable": "A pledge can't be exchanged any more",
+        "unreadable": "RSI can't be read"
+      }
     },
     "on": "On",
     "errorLog": "Error log",
@@ -1204,7 +1213,8 @@
       "items": "Items changed",
       "other": "Changed"
     },
-    "unchecked": "The pledges couldn't be read from RSI again ($1). Nothing was exchanged."
+    "unchecked": "The pledges couldn't be read from RSI again ($1). Nothing was exchanged.",
+    "demoHint": "The demo only shows the check and the exchange: nothing is read from RSI or exchanged. How the check turns out is set in the demo settings."
   },
   "meltMark": {
     "mark": "Mark to melt",

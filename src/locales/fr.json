@@ -381,7 +381,16 @@
         "off": "Aucun"
       },
       "hangar": "Hangar",
-      "resetHint": "Tous les réglages de la démo reviennent à leurs valeurs par défaut ; les marques de la démo sont effacées."
+      "resetHint": "Tous les réglages de la démo reviennent à leurs valeurs par défaut ; les marques de la démo sont effacées.",
+      "meltCheck": "Vérification avant la fonte groupée",
+      "meltCheckHint": "Le résultat de la vérification des pledges juste avant la fonte groupée, aussi pour les peintures de remplissage. La démo ne fait que l’afficher : rien n’est lu chez RSI ni fondu.",
+      "meltCheckOutcomes": {
+        "match": "Tous les pledges correspondent",
+        "changed": "Un pledge a changé",
+        "gone": "Un pledge n’existe plus",
+        "notMeltable": "Un pledge ne peut plus être fondu",
+        "unreadable": "RSI illisible"
+      }
     },
     "on": "Activé",
     "errorLog": "Journal des erreurs",
@@ -1204,7 +1213,8 @@
       "items": "Contenu modifié",
       "other": "Modifié"
     },
-    "unchecked": "Les pledges n’ont pas pu être relus chez RSI ($1). Rien n’a été fondu."
+    "unchecked": "Les pledges n’ont pas pu être relus chez RSI ($1). Rien n’a été fondu.",
+    "demoHint": "La démo ne fait qu’afficher la vérification et la fonte : rien n’est lu chez RSI ni fondu. Le résultat de la vérification se choisit dans les paramètres de la démo."
   },
   "meltMark": {
     "mark": "Marquer pour fondre",

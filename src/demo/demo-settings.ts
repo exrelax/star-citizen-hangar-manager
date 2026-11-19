@@ -1,6 +1,7 @@
 import { DEMO } from '@/config';
 import { RUNNING_PLAN_STAGES, type RunningPlanStage } from './demo-running-plan';
 import type { DemoComposition } from './generate-hangar';
+import { MELT_CHECK_OUTCOMES, type MeltCheckOutcome } from './demo-melt-check';
 
 /*
  * The settings of the demo mode (#178), stored with the other settings and never sent anywhere:
@@ -67,6 +68,11 @@ export interface DemoSettings {
    * still comes from the demo hangar and buy back.
    */
   realStoreData: boolean;
+  /**
+   * How the check right before bulk melting turns out (#415, #416): all pledges match, the first
+   * changed, gone or no longer meltable, or RSI not readable. Nothing is read or melted.
+   */
+  meltCheck: MeltCheckOutcome;
 }
 
 /** The range of each kind's number and of the list sizes. */
@@ -97,6 +103,7 @@ export const DEFAULT_DEMO_SETTINGS: DemoSettings = {
   newPlan: true,
   completedPlans: true,
   realStoreData: false,
+  meltCheck: 'match',
 };
 
 const wholeIn =
@@ -162,5 +169,8 @@ export function demoSettingsOf(stored: Partial<DemoSettings> | null | undefined)
     newPlan: valid(stored?.newPlan, isBoolean, defaults.newPlan),
     completedPlans: valid(stored?.completedPlans, isBoolean, defaults.completedPlans),
     realStoreData: valid(stored?.realStoreData, isBoolean, defaults.realStoreData),
+    meltCheck: MELT_CHECK_OUTCOMES.includes(stored?.meltCheck as MeltCheckOutcome)
+      ? stored!.meltCheck!
+      : defaults.meltCheck,
   };
 }

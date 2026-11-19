@@ -51,7 +51,7 @@ import {
   isPaintNotificationShown,
 } from '@/store/paint-consultant/paint-notification';
 import { useStored } from '@/storage/use-stored';
-import { RSI_TOS_URL, riskNoteSeenItem } from '@/account-safety/risk-note';
+import { demoRiskNoteSeenItem, RSI_TOS_URL, riskNoteSeenItem } from '@/account-safety/risk-note';
 import { FEATURES } from '@/config';
 import type { BuybackView } from '@/buyback/buyback-view';
 import { showBuybackFilter } from '@/buyback/buyback-filter-request';
@@ -279,11 +279,17 @@ const paintNoteCount = computed(() => {
  * The risk for the RSI account (#330), once: until "Got it" (synced). Not a kind of notification
  * to turn off; the settings keep it under "About".
  */
-const riskNoteSeen = useStored(riskNoteSeenItem);
+const realRiskNoteSeen = useStored(riskNoteSeenItem);
+// The demo has its own (#416).
+const demoRiskNoteSeen = useStored(demoRiskNoteSeenItem);
 // Not before it is read: it would show for a moment. Behind a feature toggle (`config.ts`).
-const showRiskNote = computed(() => FEATURES.tosSidebarNote && riskNoteSeen.value === false);
+const showRiskNote = computed(
+  () =>
+    FEATURES.tosSidebarNote &&
+    (demo.value ? demoRiskNoteSeen.value : realRiskNoteSeen.value) === false,
+);
 function confirmRiskNote() {
-  void riskNoteSeenItem.setValue(true);
+  void (demo.value ? demoRiskNoteSeenItem : riskNoteSeenItem).setValue(true);
 }
 
 /*
