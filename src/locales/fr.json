@@ -97,6 +97,13 @@
     "refine": "Affiner « $1 »",
     "lti": "LTI",
     "paints": "Peintures",
+    "paintShips": {
+      "all": "Toutes les peintures",
+      "owned": "Pour tes vaisseaux",
+      "ownedShort": "Tes vaisseaux",
+      "notOwned": "Pour les vaisseaux que tu n’as pas",
+      "notOwnedShort": "Vaisseaux que tu n’as pas"
+    },
     "ccus": "CCU",
     "gameAccess": "Accès au jeu",
     "giftable": "Offrables",

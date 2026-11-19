@@ -23,6 +23,8 @@ import { useNow } from '@/shared/use-now';
 import { FILTER_HIGHLIGHTS } from '@/config';
 import { highlightClasses } from '../highlights';
 import ManagerList from './ManagerList.vue';
+import { paintRefinement, useProvidedOwnedShips } from '../paint-ships';
+import { isPaintItem } from '../pledge-view';
 import { listViewRequest } from '../list-jump';
 import PledgeRow from './PledgeRow.vue';
 
@@ -50,6 +52,14 @@ const predicates = computed(() => ({
     hasPriceChangeWithin(pledge, now.value, props.settings.priceIncreaseDays),
 }));
 const hasPriceChange = computed(() => props.pledges.some(predicates.value.priceChange));
+/** "Paints" for owned ships or for ships not owned (#336), by the hangar's ships. */
+const ownedShips = useProvidedOwnedShips();
+const refinements = computed(() => ({
+  paints: paintRefinement<PledgeView>(ownedShips.value, (pledge) => [
+    pledge.title,
+    ...pledge.items.filter(isPaintItem).map((item) => item.title),
+  ]),
+}));
 
 const filterGroups = computed(() =>
   FILTER_CATEGORIES.map((category) => ({
@@ -119,6 +129,7 @@ const filterHint = (filter: PledgeFilter) => {
     :entries="sorted"
     :filter-groups="filterGroups"
     :predicates="predicates"
+    :refinements="refinements"
     :filter-label="filterLabel"
     :filter-hint="filterHint"
     :active="active"

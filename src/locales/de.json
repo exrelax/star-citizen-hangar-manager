@@ -97,6 +97,13 @@
     "refine": "„$1“ eingrenzen",
     "lti": "LTI",
     "paints": "Paints",
+    "paintShips": {
+      "all": "Alle Paints",
+      "owned": "Für Schiffe in deinem Hangar",
+      "ownedShort": "Schiffe im Hangar",
+      "notOwned": "Für Schiffe, die du nicht hast",
+      "notOwnedShort": "Schiffe nicht im Hangar"
+    },
     "ccus": "CCUs",
     "gameAccess": "Spielzugang",
     "giftable": "Verschenkbar",

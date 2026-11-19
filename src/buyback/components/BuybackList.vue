@@ -9,6 +9,7 @@ import { computed } from 'vue';
 import { BUYBACK_FILTER_PREDICATES, type BuybackFilter, type BuybackView } from '../buyback-view';
 import { giftableHint } from '../giftable-hint';
 import BuybackRow from './BuybackRow.vue';
+import { paintRefinement, useProvidedOwnedShips } from '@/hangar/paint-ships';
 import { BUYBACK_SORTS, sortEntries, type BuybackSort } from '@/hangar/sorting';
 import { useSettings } from '@/settings/use-settings';
 import { hasPriceChangeWithin } from '@/price-increases/price-change-filter';
@@ -41,6 +42,15 @@ const predicates = computed(() => ({
 }));
 /** Offered only while a pledge has a price increase in the period. */
 const hasPriceIncrease = computed(() => props.pledges.some(predicates.value.priceIncrease));
+/** "Paints" for ships the hangar has or doesn't have (#336). */
+const ownedShips = useProvidedOwnedShips();
+const refinements = computed(() => ({
+  paints: paintRefinement<BuybackView>(ownedShips.value, (pledge) => [
+    pledge.title,
+    pledge.contained,
+    ...pledge.items,
+  ]),
+}));
 
 const filterGroups = computed(() =>
   FILTER_CATEGORIES.map((category) => ({
@@ -84,6 +94,7 @@ const filterHint = (filter: BuybackFilter) => {
     :entries="sorted"
     :filter-groups="filterGroups"
     :predicates="predicates"
+    :refinements="refinements"
     :filter-label="filterLabel"
     :filter-hint="filterHint"
     :active="active"
