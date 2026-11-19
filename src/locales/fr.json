@@ -1542,6 +1542,9 @@
     "filterAlwaysAvailable": "Toujours disponible",
     "filterOnSale": "En vente",
     "filterWarbond": "Warbond",
+    "filterPriceIncrease": "Hausse de prix",
+    "filterLeaving": "Retiré",
+    "risenPrice": "Prix après la hausse",
     "countFiltered": {
       "one": "$1 sur $2 vaisseau",
       "other": "$1 sur $2 vaisseaux"

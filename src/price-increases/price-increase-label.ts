@@ -20,8 +20,11 @@ import { endOf, type ExpectedPriceIncrease, type ExpectedTime } from './price-in
  * base ship rises loses upgrade value: a warning in both places ("Upgrade value −$20").
  */
 
-/** Where the label is shown. */
-export type PriceIncreasePlace = 'buyback' | 'hangar';
+/**
+ * Where the label is shown: the buy back, My Hangar, or the table of all ships of the Pledge Store
+ * tab (#410), where it only tells the price increase, as an information.
+ */
+export type PriceIncreasePlace = 'buyback' | 'hangar' | 'store';
 
 export interface PriceIncreaseLabel {
   text: string;
@@ -136,12 +139,14 @@ export function priceIncreaseLabel(
         ]),
       );
     }
-    lines.push(
-      translate(
-        locale,
-        place === 'buyback' ? 'priceIncrease.hintBuyback' : 'priceIncrease.hintHangar',
-      ),
-    );
+    if (place !== 'store') {
+      lines.push(
+        translate(
+          locale,
+          place === 'buyback' ? 'priceIncrease.hintBuyback' : 'priceIncrease.hintHangar',
+        ),
+      );
+    }
   }
   if (price) {
     lines.push(

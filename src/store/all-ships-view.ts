@@ -5,7 +5,8 @@ import type { AllShipsRow } from './all-ships';
 /*
  * What the table of all ships (#385) shows (#406): sorted by any column (by default by value,
  * lowest first), found by name and manufacturer, within a price range, and only the ships always
- * available, on sale, with a warbond or in the hangar or buy back, as chosen.
+ * available, on sale, with a warbond, with a price increase ahead, leaving the Pledge Store (#410)
+ * or in the hangar or buy back, as chosen.
  */
 
 export const ALL_SHIPS_COLUMNS = [
@@ -49,13 +50,22 @@ export const ALL_SHIPS_SORT_COLUMNS: Record<AllShipsColumn, SortColumn<AllShipsR
   onSale: { key: (row) => flag(isOnSale(row)), first: 'desc' },
 };
 
-export const ALL_SHIPS_FILTERS = ['alwaysAvailable', 'onSale', 'warbond', 'owned'] as const;
+export const ALL_SHIPS_FILTERS = [
+  'alwaysAvailable',
+  'onSale',
+  'warbond',
+  'priceIncrease',
+  'leaving',
+  'owned',
+] as const;
 export type AllShipsFilter = (typeof ALL_SHIPS_FILTERS)[number];
 
 const FILTER_PREDICATES: Record<AllShipsFilter, (row: AllShipsRow) => boolean> = {
   alwaysAvailable: (row) => row.alwaysAvailable === true,
   onSale: isOnSale,
   warbond: (row) => row.warbondPrice !== undefined,
+  priceIncrease: (row) => row.priceIncrease !== undefined,
+  leaving: (row) => row.removal !== undefined,
   owned: (row) => ownsAny(row),
 };
 

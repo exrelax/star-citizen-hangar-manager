@@ -15,6 +15,10 @@ import {
 import { useStoreData } from '../use-store-data';
 import { buildWarbondOffers } from '../warbond';
 import { useCcusToSecure } from '@/price-increases/use-ccus-to-secure';
+import {
+  priceIncreasesItem,
+  storedPriceIncreases,
+} from '@/price-increases/price-increases-storage';
 import { confirmationNote } from '@/price-increases/price-increase-label';
 import SecureRow from '@/price-increases/components/SecureRow.vue';
 import RefreshIcon from '@/hangar/components/RefreshIcon.vue';
@@ -113,6 +117,17 @@ const removals = computed(() =>
     : storedShipRemovals(storedRemovals.value ?? null),
 );
 
+/**
+ * The expected price increases (#195), for the table of all ships (#410): public data; the demo
+ * has its own (#255), unless it shows the real Pledge Store data, as the CCUs to secure.
+ */
+const storedIncreases = useStored(priceIncreasesItem);
+const increases = computed(
+  () =>
+    (realInDemo.value ? undefined : demoContext.value?.priceIncreases) ??
+    storedPriceIncreases(storedIncreases.value ?? null),
+);
+
 /** The CCUs to secure before a price increase (#253). */
 const secure = useCcusToSecure(
   () => props.pledges,
@@ -175,6 +190,8 @@ const displayClasses = computed(() => ({
       :warbonds="storeData.warbonds"
       :pledges="pledges"
       :buyback="buyback"
+      :increases="increases"
+      :removals="removals"
       :hangar-read="hangarRead !== false"
       :buyback-read="buybackRead !== false"
       @close="allShipsOpen = false"

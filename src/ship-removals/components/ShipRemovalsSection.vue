@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { i18n, locale, translate } from '@/i18n';
+import { i18n, locale } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
-import { countdown, formatExpectedTime } from '@/price-increases/price-increase-label';
+import { formatExpectedTime } from '@/price-increases/price-increase-label';
 import { standardSku, warbondSku, type Ship } from '@/ships/ships';
 import ShipUpgradeButtons from '@/store/components/ShipUpgradeButtons.vue';
 import { buyableShipsItem, current } from '@/ships/ships-storage';
@@ -13,6 +13,7 @@ import { removalRowId, shipRemovalRequest } from '@/store/open-current-warbonds'
 import { computed, ref, watch } from 'vue';
 import type { RemovalCcus } from '../removal-ccus';
 import RemovalCcuTable from './RemovalCcuTable.vue';
+import { removalLabel } from '../removal-label';
 import { limitedSaleNote } from '../removal-availability';
 import { removalsByDate, type ShipRemoval } from '../ship-removals';
 import { useProvidedRemovalCcus } from '../use-removal-ccus';
@@ -93,16 +94,7 @@ const entryOf = (removal: ShipRemoval): RemovalCcus =>
     to: [],
   };
 
-const when = (removal: ShipRemoval) => formatExpectedTime(removal.removedAt, locale.value);
-const label = (removal: ShipRemoval) =>
-  translate(locale.value, 'shipRemovals.label', [
-    countdown(removal.removedAt, now.value, locale.value),
-  ]);
-const hint = (removal: ShipRemoval) =>
-  `${translate(locale.value, 'shipRemovals.hint', [removal.ship.name, when(removal)])}\n${translate(
-    locale.value,
-    'shipRemovals.announced',
-  )}`;
+const label = (removal: ShipRemoval) => removalLabel(removal, now.value, locale.value);
 </script>
 
 <template>
@@ -168,11 +160,11 @@ const hint = (removal: ShipRemoval) =>
             </span>
             <span class="shm-badges">
               <span
-                v-tooltip="hint(removal)"
+                v-tooltip="label(removal).hint"
                 class="shm-badge is-price-increase is-warning"
                 tabindex="0"
               >
-                {{ label(removal) }}
+                {{ label(removal).text }}
               </span>
             </span>
             <!-- RSI's dialog with this ship as target: its warbond (#392) and its standard edition. -->

@@ -1542,6 +1542,9 @@
     "filterAlwaysAvailable": "Always available",
     "filterOnSale": "On sale",
     "filterWarbond": "Warbond",
+    "filterPriceIncrease": "Price increase",
+    "filterLeaving": "Leaving",
+    "risenPrice": "Price after the increase",
     "countFiltered": {
       "one": "$1 of $2 ship",
       "other": "$1 of $2 ships"

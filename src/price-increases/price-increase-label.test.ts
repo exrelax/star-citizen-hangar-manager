@@ -104,6 +104,15 @@ describe('priceIncreaseLabel with the change (#251)', () => {
     expect(label({ increase: prospector, reason: 'ship' }, 'buyback').tone).toBe('warning');
   });
 
+  it('only tells the price increase in the table of all ships (#410)', () => {
+    const ship = priceIncreaseLabel({ increase: prospector, reason: 'ship' }, 'store', NOW, 'en')!;
+    expect(ship.text).toBe('Price +$20: 9 days');
+    expect(ship.tone).toBe('info');
+    expect(ship.hint).toContain('The price of Prospector is expected to go from $155 to $175.');
+    expect(ship.hint).not.toContain('Melting');
+    expect(ship.hint).not.toContain('Buy it back');
+  });
+
   it('warns of a CCU losing upgrade value, also in My Hangar', () => {
     const loses: CcuPriceChange = {
       base: prospector,

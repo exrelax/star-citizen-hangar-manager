@@ -1542,6 +1542,9 @@
     "filterAlwaysAvailable": "Siempre disponible",
     "filterOnSale": "En venta",
     "filterWarbond": "Warbond",
+    "filterPriceIncrease": "Subida de precio",
+    "filterLeaving": "Se retira",
+    "risenPrice": "Precio tras la subida",
     "countFiltered": {
       "one": "$1 de $2 nave",
       "other": "$1 de $2 naves"
