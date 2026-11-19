@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useId } from 'vue';
+import { nextTick, useId } from 'vue';
 import '@/shared/styles/switch.css';
 
 /**
@@ -7,8 +7,23 @@ import '@/shared/styles/switch.css';
  * and an optional hint on the left, a switch on the right; the whole row toggles it. `disabled`
  * while the setting it depends on is off; `indented` below the setting it belongs to.
  */
-defineProps<{ checked: boolean; hint?: string; disabled?: boolean; indented?: boolean }>();
+const props = defineProps<{
+  checked: boolean;
+  hint?: string;
+  disabled?: boolean;
+  indented?: boolean;
+}>();
 const emit = defineEmits<{ change: [checked: boolean] }>();
+
+/**
+ * The switch shows the setting, not the click: a parent that doesn't take the change at once
+ * (e.g. asks first, #331) keeps it as it was.
+ */
+function change(event: Event) {
+  const input = event.target as HTMLInputElement;
+  emit('change', input.checked);
+  void nextTick(() => (input.checked = props.checked));
+}
 
 const id = useId();
 </script>
@@ -31,7 +46,7 @@ const id = useId();
         :disabled="disabled"
         :aria-labelledby="`${id}-label`"
         :aria-describedby="hint ? `${id}-hint` : undefined"
-        @change="emit('change', ($event.target as HTMLInputElement).checked)"
+        @change="change"
       />
     </label>
   </div>
