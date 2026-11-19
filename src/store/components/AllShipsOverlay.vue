@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { BuybackView } from '@/buyback/buyback-view';
 import { formatUsd } from '@/hangar/discount-format';
+import { nextFilterState, type FilterState } from '@/hangar/filters';
 import type { PledgeView } from '@/hangar/pledge-view';
 import { priceIncreaseLabel } from '@/price-increases/price-increase-label';
 import {
@@ -26,6 +27,7 @@ import { allShips, type AllShipsRow } from '../all-ships';
 import {
   ALL_SHIPS_FILTERS,
   ALL_SHIPS_SORT_COLUMNS,
+  allShipsFilterCounts,
   allShipsView,
   DEFAULT_ALL_SHIPS_SORT,
   isOnSale,
@@ -148,7 +150,8 @@ const setHigh = (event: Event) =>
 /** The upper end of the scale: no upper end. */
 const upper = computed(() => (high.value >= VALUE_SCALE.end ? Infinity : high.value));
 
-const filters = ref(new Set<AllShipsFilter>());
+// Off, only ships with it, only ships without it (#413); replaced on every change.
+const filters = ref<ReadonlyMap<AllShipsFilter, FilterState>>(new Map());
 const FILTER_LABELS: Record<AllShipsFilter, MessageKey> = {
   alwaysAvailable: 'allShips.filterAlwaysAvailable',
   onSale: 'allShips.filterOnSale',
@@ -157,44 +160,47 @@ const FILTER_LABELS: Record<AllShipsFilter, MessageKey> = {
   leaving: 'allShips.filterLeaving',
   owned: 'allShips.filterOwned',
 };
-function toggleFilter(filter: AllShipsFilter) {
-  const next = new Set(filters.value);
-  if (!next.delete(filter)) next.add(filter);
+/** A click on a filter: off → only ships with it → ships without it → off, as in My Hangar. */
+function cycleFilter(filter: AllShipsFilter) {
+  const next = new Map(filters.value);
+  const state = nextFilterState(next.get(filter));
+  if (state) next.set(filter, state);
+  else next.delete(filter);
   filters.value = next;
 }
-/** How many ships each filter keeps, as the chips of My Hangar show it. */
-const filterCounts = computed(
-  () =>
-    Object.fromEntries(
-      ALL_SHIPS_FILTERS.map((filter) => [
-        filter,
-        allShipsView(rows.value, {
-          search: '',
-          min: 0,
-          max: Infinity,
-          filters: new Set([filter]),
-        }).length,
-      ]),
-    ) as Record<AllShipsFilter, number>,
-);
+/** Tooltip of a filter: its state and what a click does, as in My Hangar. */
+function filterTitle(filter: AllShipsFilter) {
+  const state = filters.value.get(filter);
+  return i18n.t(
+    state === 'include'
+      ? 'filter.stateInclude'
+      : state === 'exclude'
+        ? 'filter.stateExclude'
+        : 'filter.stateOff',
+    [i18n.t(FILTER_LABELS[filter])],
+  );
+}
+
+const query = computed(() => ({
+  search: search.value,
+  min: low.value,
+  max: upper.value,
+  filters: filters.value,
+}));
+/** How many ships each filter keeps or hides, counted as the chips of My Hangar. */
+const filterCounts = computed(() => allShipsFilterCounts(rows.value, query.value));
 
 const narrowed = computed(
   () => !!search.value.trim() || !!filters.value.size || low.value > 0 || upper.value < Infinity,
 );
 function reset() {
   search.value = '';
-  filters.value = new Set();
+  filters.value = new Map();
   low.value = 0;
   high.value = VALUE_SCALE.end;
 }
 
-const shown = computed(() =>
-  allShipsView(
-    rows.value,
-    { search: search.value, min: low.value, max: upper.value, filters: filters.value },
-    sort.value,
-  ),
-);
+const shown = computed(() => allShipsView(rows.value, query.value, sort.value));
 
 /** The lines between the $100 bands, while sorted by value. */
 const bandStarts = computed(() => {
@@ -212,16 +218,22 @@ const bandStarts = computed(() => {
 /** "244 ships · 207 of them in your hangar or buy back · a line marks every $100". */
 const count = computed(() => {
   const total = rows.value.length;
-  const active = ALL_SHIPS_FILTERS.filter((filter) => filters.value.has(filter));
+  // Included filters by name, then the excluded ones as "not …".
+  const named = (state: FilterState) =>
+    ALL_SHIPS_FILTERS.filter((filter) => filters.value.get(filter) === state).map((filter) =>
+      i18n.t(FILTER_LABELS[filter]),
+    );
+  const active = [
+    ...named('include'),
+    ...named('exclude').map((label) => i18n.t('allShips.filterNot', [label])),
+  ];
   const main = narrowed.value
     ? i18n.n('allShips.countFiltered', total, [shown.value.length, total])
     : i18n.n('allShips.count', total);
   const owned = rows.value.filter(ownsAny).length;
   const sub = active.length
     ? i18n.t('allShips.filteredBy', [
-        new Intl.ListFormat(locale.value, { type: 'conjunction' }).format(
-          active.map((filter) => i18n.t(FILTER_LABELS[filter])),
-        ),
+        new Intl.ListFormat(locale.value, { type: 'conjunction' }).format(active),
       ])
     : i18n.n('allShips.countOwned', owned);
   const parts = [sub, ...(sort.value.column === 'value' ? [i18n.t('allShips.bandNote')] : [])];
@@ -358,14 +370,30 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
                 <button
                   v-for="filter in ALL_SHIPS_FILTERS"
                   :key="filter"
+                  v-tooltip="filterTitle(filter)"
                   type="button"
                   class="shm-filter"
-                  :class="{ 'is-active': filters.has(filter) }"
-                  :aria-pressed="filters.has(filter)"
-                  @click="toggleFilter(filter)"
+                  :class="{
+                    'is-active': filters.get(filter) === 'include',
+                    'is-excluded': filters.get(filter) === 'exclude',
+                  }"
+                  :aria-pressed="
+                    filters.get(filter) === 'include'
+                      ? 'true'
+                      : filters.get(filter) === 'exclude'
+                        ? 'mixed'
+                        : 'false'
+                  "
+                  @click="cycleFilter(filter)"
                 >
+                  <span
+                    v-if="filters.get(filter) === 'exclude'"
+                    class="shm-filter-not"
+                    aria-hidden="true"
+                    >−</span
+                  >
                   <span class="shm-filter-label">{{ i18n.t(FILTER_LABELS[filter]) }}</span>
-                  <span class="shm-filter-count">{{ filterCounts[filter] }}</span>
+                  <span class="shm-filter-count">{{ filterCounts.get(filter) }}</span>
                 </button>
                 <button v-if="narrowed" type="button" class="shm-filter-reset" @click="reset">
                   {{ i18n.t('allShips.reset') }}

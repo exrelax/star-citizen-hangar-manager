@@ -1,3 +1,9 @@
+import {
+  filterCounts,
+  matchesFilterStates,
+  type FilterPredicates,
+  type FilterStates,
+} from '@/hangar/filters';
 import { matchesSearch, normalizeSearchText, parseSearchQuery } from '@/hangar/search';
 import { sortRows, type SortColumn, type TableSort } from '@/shared/table-sort';
 import type { AllShipsRow } from './all-ships';
@@ -6,7 +12,8 @@ import type { AllShipsRow } from './all-ships';
  * What the table of all ships (#385) shows (#406): sorted by any column (by default by value,
  * lowest first), found by name and manufacturer, within a price range, and only the ships always
  * available, on sale, with a warbond, with a price increase ahead, leaving the Pledge Store (#410)
- * or in the hangar or buy back, as chosen.
+ * or in the hangar or buy back, as chosen. Each filter has the three states of My Hangar's filters
+ * (#413): off, only ships with it, only ships without it.
  */
 
 export const ALL_SHIPS_COLUMNS = [
@@ -60,7 +67,7 @@ export const ALL_SHIPS_FILTERS = [
 ] as const;
 export type AllShipsFilter = (typeof ALL_SHIPS_FILTERS)[number];
 
-const FILTER_PREDICATES: Record<AllShipsFilter, (row: AllShipsRow) => boolean> = {
+const FILTER_PREDICATES: FilterPredicates<AllShipsRow, AllShipsFilter> = {
   alwaysAvailable: (row) => row.alwaysAvailable === true,
   onSale: isOnSale,
   warbond: (row) => row.warbondPrice !== undefined,
@@ -102,8 +109,8 @@ export interface AllShipsQuery {
   /** The value range, both ends included; `Infinity` for no upper end. */
   min: number;
   max: number;
-  /** Each one chosen narrows the table: a ship has to meet all. */
-  filters: ReadonlySet<AllShipsFilter>;
+  /** The active filters, included or excluded: a ship has to pass all. */
+  filters: FilterStates<AllShipsFilter>;
 }
 
 /** The lowest and highest value of the ships, for the price range. */
@@ -113,19 +120,36 @@ export function priceBounds(rows: readonly AllShipsRow[]): { min: number; max: n
   return { min: Math.min(...values), max: Math.max(...values) };
 }
 
+/** The ships within the query's search and value range, before the filters. */
+function searched(rows: readonly AllShipsRow[], query: AllShipsQuery): readonly AllShipsRow[] {
+  const words = parseSearchQuery(query.search);
+  return rows.filter(
+    (row) =>
+      row.ship.msrp >= query.min &&
+      row.ship.msrp <= query.max &&
+      // As the lists' search: each word starts a word of the name or the manufacturer.
+      matchesSearch(normalizeSearchText(`${row.ship.name} ${row.manufacturer ?? ''}`), words),
+  );
+}
+
 /** The ships of the query in the order of `sort`. */
 export function allShipsView(
   rows: readonly AllShipsRow[],
   query: AllShipsQuery,
   sort: AllShipsSort = DEFAULT_ALL_SHIPS_SORT,
 ): AllShipsRow[] {
-  const words = parseSearchQuery(query.search);
-  const filters = [...query.filters].map((filter) => FILTER_PREDICATES[filter]);
-  const shown = rows.filter((row) => {
-    if (row.ship.msrp < query.min || row.ship.msrp > query.max) return false;
-    if (!filters.every((matches) => matches(row))) return false;
-    // As the lists' search: each word starts a word of the name or the manufacturer.
-    return matchesSearch(normalizeSearchText(`${row.ship.name} ${row.manufacturer ?? ''}`), words);
-  });
+  const shown = searched(rows, query).filter((row) =>
+    matchesFilterStates(row, query.filters, FILTER_PREDICATES),
+  );
   return sortRows(shown, sort, ALL_SHIPS_SORT_COLUMNS);
 }
+
+/**
+ * The count of each filter button, as My Hangar counts them (`filterCounts`): the ships with the
+ * filter's property among those within the search, the value range and the other active filters.
+ */
+export const allShipsFilterCounts = (
+  rows: readonly AllShipsRow[],
+  query: AllShipsQuery,
+): Map<AllShipsFilter, number> =>
+  filterCounts(searched(rows, query), ALL_SHIPS_FILTERS, query.filters, FILTER_PREDICATES);

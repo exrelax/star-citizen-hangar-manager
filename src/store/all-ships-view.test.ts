@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import type { FilterState } from '@/hangar/filters';
 import type { AllShipsRow } from './all-ships';
 import {
   ALL_SHIPS_COLUMNS,
+  allShipsFilterCounts,
   allShipsView,
   priceBounds,
   valueBand,
@@ -62,7 +64,13 @@ const ROWS = [
     },
   }),
 ];
-const all: AllShipsQuery = { search: '', min: 0, max: 10_000, filters: new Set() };
+const all: AllShipsQuery = { search: '', min: 0, max: 10_000, filters: new Map() };
+/** The filters included, and with `exclude` the ones excluded. */
+const states = (include: AllShipsFilter[], exclude: AllShipsFilter[] = []) =>
+  new Map<AllShipsFilter, FilterState>([
+    ...include.map((filter) => [filter, 'include'] as const),
+    ...exclude.map((filter) => [filter, 'exclude'] as const),
+  ]);
 const names = (query: Partial<AllShipsQuery> = {}, column?: AllShipsColumn, desc = false) =>
   allShipsView(
     ROWS,
@@ -129,7 +137,7 @@ describe('allShipsView: search, price range and filters', () => {
   });
 
   it('narrows by each filter, and by several together', () => {
-    const only = (...filters: AllShipsFilter[]) => names({ filters: new Set(filters) });
+    const only = (...filters: AllShipsFilter[]) => names({ filters: states(filters) });
     expect(only('alwaysAvailable')).toEqual(['Prospector']);
     expect(only('onSale')).toEqual(['Prospector', 'Liberator']);
     expect(only('warbond')).toEqual(['Liberator']);
@@ -143,12 +151,57 @@ describe('allShipsView: search, price range and filters', () => {
     // Something of it in the hangar or the buy back.
     expect(only('owned')).toEqual(['Aurora Mk I ES', 'Prospector', 'Liberator', 'Polaris']);
     expect(
-      allShipsView([...ROWS, row(5, 'Idris-P', 1900)], { ...all, filters: new Set(['owned']) }),
+      allShipsView([...ROWS, row(5, 'Idris-P', 1900)], { ...all, filters: states(['owned']) }),
     ).toHaveLength(4);
   });
 
   it('combines search, range and filters', () => {
-    expect(names({ search: 'p', min: 100, filters: new Set(['onSale']) })).toEqual(['Prospector']);
+    expect(names({ search: 'p', min: 100, filters: states(['onSale']) })).toEqual(['Prospector']);
+  });
+
+  it('excludes the ships of a filter, alone and with included ones (#413)', () => {
+    const without = (exclude: AllShipsFilter[], include: AllShipsFilter[] = []) =>
+      names({ filters: states(include, exclude) });
+    expect(without(['alwaysAvailable'])).toEqual(['Aurora Mk I ES', 'Liberator', 'Polaris']);
+    expect(without(['onSale'])).toEqual(['Aurora Mk I ES', 'Polaris']);
+    expect(without(['warbond'])).toEqual(['Aurora Mk I ES', 'Prospector', 'Polaris']);
+    expect(without(['priceIncrease'])).toEqual(['Aurora Mk I ES', 'Liberator', 'Polaris']);
+    expect(without(['leaving'])).toEqual(['Prospector', 'Liberator', 'Polaris']);
+    expect(without(['onSale', 'leaving'])).toEqual(['Polaris']);
+    expect(without(['warbond'], ['onSale'])).toEqual(['Prospector']);
+    // Excluding what every ship has hides them all.
+    expect(without(['owned'])).toEqual([]);
+    expect(
+      allShipsView([...ROWS, row(5, 'Idris-P', 1900)], { ...all, filters: states([], ['owned']) }),
+    ).toEqual([expect.objectContaining({ ship: expect.objectContaining({ name: 'Idris-P' }) })]);
+  });
+
+  it('counts each filter as My Hangar does: among the search, range and other filters', () => {
+    const counts = (query: Partial<AllShipsQuery>) =>
+      Object.fromEntries(allShipsFilterCounts(ROWS, { ...all, ...query }));
+    expect(counts({})).toEqual({
+      alwaysAvailable: 1,
+      onSale: 2,
+      warbond: 1,
+      priceIncrease: 1,
+      leaving: 1,
+      owned: 4,
+    });
+    // Included: the ships left; off: the ships left after including it.
+    expect(counts({ filters: states(['onSale']) })).toMatchObject({
+      onSale: 2,
+      warbond: 1,
+      leaving: 0,
+    });
+    // Excluded: the ships it hides; the others count among the ships left.
+    expect(counts({ filters: states([], ['onSale']) })).toMatchObject({
+      onSale: 2,
+      leaving: 1,
+      warbond: 0,
+      owned: 2,
+    });
+    expect(counts({ search: 'roberts' })).toMatchObject({ owned: 2, onSale: 0, leaving: 1 });
+    expect(counts({ min: 100, max: 700 })).toMatchObject({ owned: 2, onSale: 2 });
   });
 });
 
