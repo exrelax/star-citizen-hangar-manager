@@ -1,7 +1,8 @@
 /*
- * The risk for the RSI account (#330): the Hangar Manager isn't approved by RSI, and RSI's Terms
- * of Service forbid tools and automated access it hasn't approved. The note is in the README, on
- * the website and in the settings ("About"), and shows once in the sidebar until "Got it".
+ * RSI's Terms of Service and the account (#330): CIG's Terms of Service forbid bots, and it isn't
+ * clear whether the smart updates could count as one. The note is in the README, on the website
+ * and in the settings (under the version in "About"). Once in the sidebar until "Got it" only
+ * with `FEATURES.tosSidebarNote`.
  */
 
 /** RSI's Terms of Service. */

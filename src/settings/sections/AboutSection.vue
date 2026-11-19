@@ -35,12 +35,6 @@ const LINKS: { label: MessageKey; hint: MessageKey; icon: IconName; url: string 
     url: REPOSITORY_LINKS.changelog,
   },
   {
-    label: 'accountSafety.settingsLabel',
-    hint: 'accountSafety.settingsHint',
-    icon: 'triangle-exclamation',
-    url: RSI_TOS_URL,
-  },
-  {
     label: 'settings.license',
     hint: 'settings.licenseHint',
     icon: 'scale-balanced',
@@ -55,6 +49,13 @@ const version = extensionVersion();
   <p class="shm-settings-intro">
     {{ i18n.t('extName') }}
     <span class="shm-about-version">{{ i18n.t('settings.version', [version]) }}</span>
+  </p>
+  <!-- RSI's Terms of Service and the account (#330). -->
+  <p class="shm-hint shm-about-tos">
+    {{ i18n.t('accountSafety.note') }}
+    <a :href="RSI_TOS_URL" target="_blank" rel="noopener noreferrer">{{
+      i18n.t('accountSafety.tos')
+    }}</a>
   </p>
   <SettingsGroup :footer="i18n.t('settings.disclaimer')">
     <a
@@ -78,6 +79,21 @@ const version = extensionVersion();
 </template>
 
 <style scoped>
+.shm-about-tos {
+  max-width: 62ch;
+  margin: -4px 0 16px;
+}
+
+.shm-about-tos a {
+  color: var(--shm-accent);
+  text-decoration: none;
+}
+
+.shm-about-tos a:hover,
+.shm-about-tos a:focus-visible {
+  text-decoration: underline;
+}
+
 .shm-about-version {
   margin-left: 6px;
   font-variant-numeric: tabular-nums;

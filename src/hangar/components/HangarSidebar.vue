@@ -52,6 +52,7 @@ import {
 } from '@/store/paint-consultant/paint-notification';
 import { useStored } from '@/storage/use-stored';
 import { RSI_TOS_URL, riskNoteSeenItem } from '@/account-safety/risk-note';
+import { FEATURES } from '@/config';
 import type { BuybackView } from '@/buyback/buyback-view';
 import { showBuybackFilter } from '@/buyback/buyback-filter-request';
 import { isKindOn } from '@/notifications/kinds';
@@ -279,8 +280,8 @@ const paintNoteCount = computed(() => {
  * to turn off; the settings keep it under "About".
  */
 const riskNoteSeen = useStored(riskNoteSeenItem);
-// Not before it is read: it would show for a moment.
-const showRiskNote = computed(() => riskNoteSeen.value === false);
+// Not before it is read: it would show for a moment. Behind a feature toggle (`config.ts`).
+const showRiskNote = computed(() => FEATURES.tosSidebarNote && riskNoteSeen.value === false);
 function confirmRiskNote() {
   void riskNoteSeenItem.setValue(true);
 }

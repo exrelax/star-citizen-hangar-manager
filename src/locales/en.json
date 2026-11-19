@@ -1583,12 +1583,10 @@
   },
   "accountSafety": {
     "title": "Terms of Service and your account",
-    "note": "The Hangar Manager isn't approved by RSI. RSI's Terms of Service forbid tools and automated access RSI hasn't approved, and RSI may suspend or close accounts for it. Using the Hangar Manager is at your own risk.",
+    "note": "CIG's Terms of Service forbid bots, and it isn't clear whether the smart updates could count as one. The Hangar Manager sends as few requests to the RSI website as it can, does no botting (it never buys anything on its own, e.g. in timed sales) and gives no advantage over other players: it wants to be fair to CIG and never to break the Terms of Service on purpose.",
     "tos": "Terms of Service",
     "tosHint": "RSI's Terms of Service, on the RSI website.",
     "gotIt": "Got it",
-    "gotItHint": "Hides this note for good. It stays in the settings under “About”.",
-    "settingsLabel": "Your account and RSI's Terms of Service",
-    "settingsHint": "The Hangar Manager isn't approved by RSI. RSI's Terms of Service forbid tools not approved by RSI; using it is at your own risk."
+    "gotItHint": "Hides this note for good. It stays in the settings under “About”."
   }
 }

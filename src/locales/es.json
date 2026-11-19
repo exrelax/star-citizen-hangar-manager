@@ -1583,12 +1583,10 @@
   },
   "accountSafety": {
     "title": "Términos de servicio y tu cuenta",
-    "note": "El Hangar Manager no está aprobado por RSI. Los Términos de servicio de RSI prohíben herramientas y accesos automatizados que RSI no haya aprobado, y RSI puede suspender o cerrar cuentas por ello. Usas el Hangar Manager bajo tu propio riesgo.",
+    "note": "Los Términos de servicio de CIG prohíben los bots, y no está claro si las actualizaciones inteligentes podrían contar como uno. El Hangar Manager envía las mínimas peticiones posibles a la web de RSI, no hace botting (nunca compra nada por sí solo, p. ej. en ventas por tiempo limitado) y no da ventaja sobre otros jugadores: quiere ser justo con CIG y nunca incumplir los Términos de servicio a propósito.",
     "tos": "Términos de servicio",
     "tosHint": "Los Términos de servicio de RSI, en la web de RSI.",
     "gotIt": "Entendido",
-    "gotItHint": "Oculta este aviso para siempre. Sigue en los ajustes, en “Acerca de”.",
-    "settingsLabel": "Tu cuenta y los Términos de servicio de RSI",
-    "settingsHint": "El Hangar Manager no está aprobado por RSI. Los Términos de servicio de RSI prohíben herramientas no aprobadas; lo usas bajo tu propio riesgo."
+    "gotItHint": "Oculta este aviso para siempre. Sigue en los ajustes, en “Acerca de”."
   }
 }

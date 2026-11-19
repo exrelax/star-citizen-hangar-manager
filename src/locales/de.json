@@ -1583,12 +1583,10 @@
   },
   "accountSafety": {
     "title": "Nutzungsbedingungen und dein Konto",
-    "note": "Der Hangar Manager ist nicht von RSI genehmigt. Die Nutzungsbedingungen von RSI verbieten Tools und automatisierte Zugriffe, die RSI nicht genehmigt hat, und RSI kann Konten deshalb sperren oder schließen. Du nutzt den Hangar Manager auf eigenes Risiko.",
+    "note": "Die Nutzungsbedingungen von CIG verbieten Bots, und es ist nicht klar, ob die intelligenten Updates darunterfallen können. Der Hangar Manager schickt so wenige Anfragen wie möglich an die RSI-Website, betreibt kein Botting (er kauft nie selbst etwas, z. B. bei zeitlich begrenzten Sales) und verschafft keinen Vorteil gegenüber anderen Spielern: Er will fair gegenüber CIG sein und die Nutzungsbedingungen nie absichtlich verletzen.",
     "tos": "Nutzungsbedingungen",
     "tosHint": "Die Nutzungsbedingungen von RSI, auf der RSI-Website.",
     "gotIt": "Verstanden",
-    "gotItHint": "Blendet diesen Hinweis dauerhaft aus. In den Einstellungen unter „Über“ bleibt er.",
-    "settingsLabel": "Dein Konto und die Nutzungsbedingungen von RSI",
-    "settingsHint": "Der Hangar Manager ist nicht von RSI genehmigt. Die Nutzungsbedingungen von RSI verbieten nicht genehmigte Tools; du nutzt ihn auf eigenes Risiko."
+    "gotItHint": "Blendet diesen Hinweis dauerhaft aus. In den Einstellungen unter „Über“ bleibt er."
   }
 }
