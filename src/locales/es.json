@@ -94,6 +94,7 @@
   },
   "filter": {
     "label": "Filtrar pledges",
+    "refine": "Afinar «$1»",
     "lti": "LTI",
     "paints": "Pinturas",
     "ccus": "CCU",

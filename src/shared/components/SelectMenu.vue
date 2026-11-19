@@ -15,6 +15,12 @@ const props = defineProps<{
   /** Accessible name of the button, e.g. "Sort". */
   label: string;
   icon?: IconName<'fa'>;
+  /** Only the icon on the button, the choice in its accessible name (e.g. a filter pill, #419). */
+  iconOnly?: boolean;
+  /** Where the list lines up with the button: its right edge (default) or its left one. */
+  align?: 'start' | 'end';
+  /** More classes of the button, to style it as part of something else. */
+  buttonClass?: string;
 }>();
 const emit = defineEmits<{ 'update:modelValue': [value: V] }>();
 
@@ -114,6 +120,7 @@ onUnmounted(() => removeEventListener('pointerdown', onOutside, true));
       ref="button"
       type="button"
       class="shm-select-menu-button"
+      :class="buttonClass"
       aria-haspopup="listbox"
       :aria-expanded="open"
       :aria-controls="id"
@@ -121,7 +128,7 @@ onUnmounted(() => removeEventListener('pointerdown', onOutside, true));
       @click="open ? close() : show()"
       @keydown="onButtonKey"
     >
-      <span>{{ selectedLabel }}</span>
+      <span v-if="!iconOnly">{{ selectedLabel }}</span>
       <SvgIcon v-if="icon" :name="icon" />
     </button>
     <ul
@@ -129,6 +136,7 @@ onUnmounted(() => removeEventListener('pointerdown', onOutside, true));
       :id="id"
       ref="list"
       class="shm-select-menu-list"
+      :class="{ 'is-start': align === 'start' }"
       role="listbox"
       tabindex="-1"
       :aria-label="label"
@@ -196,6 +204,11 @@ onUnmounted(() => removeEventListener('pointerdown', onOutside, true));
   border: 1px solid rgb(var(--shm-accent-rgb) / 0.3);
   box-shadow: 0 12px 30px rgb(0 0 0 / 0.45);
   outline: none;
+}
+
+.shm-select-menu-list.is-start {
+  right: auto;
+  left: 0;
 }
 
 .shm-select-menu-option {

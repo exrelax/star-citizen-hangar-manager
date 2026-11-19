@@ -66,6 +66,62 @@ export function filterCounts<T, F extends string>(
   return counts;
 }
 
+/**
+ * A finer choice of a filter while it is included (#419), e.g. "Paints" narrowed down to the
+ * paints for owned ships (#336). The first option is "all": the filter as it is. The others narrow
+ * it down, each by its own `matches`, also in opposite directions. An excluded filter has none.
+ */
+export interface RefinementOption<T> {
+  id: string;
+  /** Its name in the list of options, e.g. "For owned ships". */
+  label: string;
+  /** Its name in the pill after the filter's, e.g. "Owned ships"; the label if none. */
+  short?: string;
+  /** Narrows the filter down; none for the first option, "all". */
+  matches?: (entry: T) => boolean;
+}
+
+/** The refinements of a list's filters; filters without one aren't in it. */
+export type FilterRefinements<T, F extends string> = Partial<
+  Record<F, readonly RefinementOption<T>[]>
+>;
+
+/** The option chosen per filter, by its id; a filter not in it is at "all". */
+export type RefinementStates<F extends string> = ReadonlyMap<F, string>;
+
+/** The option of a filter chosen in `chosen`, if it narrows the filter down (not "all"). */
+export function chosenRefinement<T, F extends string>(
+  filter: F,
+  refinements: FilterRefinements<T, F> | undefined,
+  chosen: RefinementStates<F>,
+): RefinementOption<T> | undefined {
+  const options = refinements?.[filter];
+  const id = chosen.get(filter);
+  if (!options || id === undefined) return undefined;
+  const index = options.findIndex((option) => option.id === id);
+  return index > 0 ? options[index] : undefined;
+}
+
+/**
+ * The predicates with each refined filter narrowed down to its chosen option, for the list and
+ * the counts (`filterCounts`) alike. The same object while nothing is refined.
+ */
+export function refinedPredicates<T, F extends string>(
+  predicates: FilterPredicates<T, F>,
+  refinements: FilterRefinements<T, F> | undefined,
+  chosen: RefinementStates<F>,
+): FilterPredicates<T, F> {
+  let refined: FilterPredicates<T, F> | undefined;
+  for (const filter of chosen.keys()) {
+    const matches = chosenRefinement(filter, refinements, chosen)?.matches;
+    if (!matches) continue;
+    refined ??= { ...predicates };
+    const base = predicates[filter];
+    refined[filter] = (entry) => base(entry) && matches(entry);
+  }
+  return refined ?? predicates;
+}
+
 /** Order of a list's filter buttons and which of them are shown (settings, `FILTERS` in config). */
 export interface FilterLayout<F extends string> {
   order: F[];

@@ -81,6 +81,55 @@
   font-weight: 700;
 }
 
+/*
+ * A pill whose filter offers a finer choice while included (#419): the filter and a second part
+ * with a chevron, which opens the list of options below the pill (SelectMenu's list).
+ */
+.shm-filter-pill {
+  position: relative;
+  display: inline-flex;
+}
+
+.shm-filter-pill .shm-select-menu {
+  position: static;
+}
+
+.shm-filter-pill.is-refinable > .shm-filter {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.shm-filter-pill .shm-filter.shm-filter-refine {
+  justify-content: center;
+  width: 26px;
+  padding: 0;
+  /* SelectMenu's button has no border of its own: the pill's, with a line between its parts. */
+  border: 1px solid var(--shm-accent);
+  border-left-color: rgb(var(--shm-surface-rgb) / 0.6);
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.shm-filter-pill .shm-filter-refine .shm-icon {
+  width: 10px;
+  height: 10px;
+  transition: transform 0.15s;
+}
+
+.shm-filter-pill .shm-filter-refine[aria-expanded='true'] .shm-icon {
+  transform: rotate(180deg);
+}
+
+.shm-filter-pill .shm-select-menu-list {
+  top: calc(100% + 4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shm-filter-pill .shm-filter-refine .shm-icon {
+    transition: none;
+  }
+}
+
 .shm-filter-reset {
   height: 28px;
   padding: 0 10px;

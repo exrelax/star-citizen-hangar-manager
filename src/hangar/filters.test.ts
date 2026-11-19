@@ -2,11 +2,13 @@ import { BUYBACK_FILTER_CATEGORIES, BUYBACK_FILTERS } from '@/buyback/buyback-vi
 import { FILTERS } from '@/config';
 import { describe, expect, it } from 'vitest';
 import {
+  chosenRefinement,
   filterCounts,
   matchesFilterStates,
   nextFilterState,
   normalizeFilterGroups,
   normalizeFilterLayout,
+  refinedPredicates,
   PLEDGE_FILTER_CATEGORIES,
   PLEDGE_FILTER_PREDICATES,
   PLEDGE_FILTERS,
@@ -227,5 +229,83 @@ describe('filter categories', () => {
     expect(groups.types.order.slice(0, 2)).toEqual(['paints', 'ships']);
     expect(groups.types.shown).not.toContain('paints');
     expect(groups.features).toEqual(FILTERS.hangar.features);
+  });
+});
+
+describe('refined filters (#419)', () => {
+  type Entry = { id: number; paint: boolean; owned: boolean };
+  type F = 'paints' | 'other';
+  const entries: Entry[] = [
+    { id: 1, paint: true, owned: true },
+    { id: 2, paint: true, owned: false },
+    { id: 3, paint: true, owned: true },
+    { id: 4, paint: false, owned: true },
+  ];
+  const predicates = {
+    paints: (entry: Entry) => entry.paint,
+    other: (entry: Entry) => entry.owned,
+  };
+  const refinements = {
+    paints: [
+      { id: 'all', label: 'All paints' },
+      {
+        id: 'owned',
+        label: 'For owned ships',
+        short: 'Owned ships',
+        matches: (e: Entry) => e.owned,
+      },
+      { id: 'notOwned', label: 'For ships not owned', matches: (e: Entry) => !e.owned },
+    ],
+  };
+
+  it('narrows a filter down to the chosen option, "all" leaves it as it is', () => {
+    expect(refinedPredicates(predicates, refinements, new Map())).toBe(predicates);
+    expect(refinedPredicates(predicates, refinements, new Map([['paints', 'all']]))).toBe(
+      predicates,
+    );
+    const owned = refinedPredicates<Entry, F>(
+      predicates,
+      refinements,
+      new Map([['paints', 'owned']]),
+    );
+    expect(entries.filter(owned.paints).map((e) => e.id)).toEqual([1, 3]);
+    const notOwned = refinedPredicates<Entry, F>(
+      predicates,
+      refinements,
+      new Map([['paints', 'notOwned']]),
+    );
+    expect(entries.filter(notOwned.paints).map((e) => e.id)).toEqual([2]);
+    // Other filters keep their predicate.
+    expect(owned.other).toBe(predicates.other);
+  });
+
+  it('knows only options of the filter, never "all" as a refinement', () => {
+    expect(
+      chosenRefinement<Entry, F>('paints', refinements, new Map([['paints', 'owned']]))?.id,
+    ).toBe('owned');
+    expect(chosenRefinement<Entry, F>('paints', refinements, new Map([['paints', 'all']]))).toBe(
+      undefined,
+    );
+    expect(chosenRefinement<Entry, F>('paints', refinements, new Map([['paints', 'gone']]))).toBe(
+      undefined,
+    );
+    expect(chosenRefinement<Entry, F>('other', refinements, new Map([['other', 'owned']]))).toBe(
+      undefined,
+    );
+  });
+
+  it('counts by the refined filter, also for the other filters', () => {
+    const states = new Map<F, FilterState>([['paints', 'include']]);
+    const refined = refinedPredicates<Entry, F>(
+      predicates,
+      refinements,
+      new Map([['paints', 'notOwned']]),
+    );
+    expect(filterCounts(entries, ['paints', 'other'], states, refined)).toEqual(
+      new Map([
+        ['paints', 1],
+        ['other', 0],
+      ]),
+    );
   });
 });

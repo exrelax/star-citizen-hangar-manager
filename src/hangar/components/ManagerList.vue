@@ -23,11 +23,14 @@ import {
   watch,
 } from 'vue';
 import {
+  chosenRefinement,
   filterCounts as countFilters,
   matchesFilterStates,
   nextFilterState,
+  refinedPredicates,
   type FilterCategory,
   type FilterPredicates,
+  type FilterRefinements,
   type FilterState,
 } from '../filters';
 import SvgIcon from '@/icons/SvgIcon.vue';
@@ -49,6 +52,8 @@ const props = defineProps<{
   filterGroups: readonly { category: FilterCategory; filters: readonly F[] }[];
   /** The property behind each filter (see `filters.ts`). */
   predicates: FilterPredicates<T, F>;
+  /** The finer choices of filters while they are included (#419), with their labels. */
+  refinements?: FilterRefinements<T, F>;
   filterLabel: (filter: F) => string;
   /** An explanation of a filter, shown in its tooltip before the state. */
   filterHint?: (filter: F) => string | undefined;
@@ -152,6 +157,37 @@ function cycleFilter(filter: F) {
   filterStates.value = next;
 }
 
+/**
+ * The option chosen per refined filter (#419), by its id. Only an included filter keeps one:
+ * excluding the filter or turning it off puts it back to "all".
+ */
+const refinementStates = shallowRef<ReadonlyMap<F, string>>(new Map());
+watch(filterStates, (states) => {
+  const kept = [...refinementStates.value].filter(([filter]) => states.get(filter) === 'include');
+  if (kept.length !== refinementStates.value.size) refinementStates.value = new Map(kept);
+});
+function refine(filter: F, option: string) {
+  const next = new Map(refinementStates.value);
+  if (option === props.refinements?.[filter]?.[0]?.id) next.delete(filter);
+  else next.set(filter, option);
+  refinementStates.value = next;
+}
+/** The options of a filter offered now: while it is included. */
+const refinementOf = (filter: F) =>
+  filterStates.value.get(filter) === 'include' ? props.refinements?.[filter] : undefined;
+const refinementOptions = (filter: F) =>
+  (refinementOf(filter) ?? []).map((option) => ({ value: option.id, label: option.label }));
+/** The pill's label: the filter's, and the option chosen after it, e.g. "Paints · Owned ships". */
+function pillLabel(filter: F) {
+  const label = props.filterLabel(filter);
+  const option = chosenRefinement(filter, props.refinements, refinementStates.value);
+  return option ? `${label} · ${option.short ?? option.label}` : label;
+}
+/** The predicates with the chosen options (filters.ts). */
+const predicates = computed(() =>
+  refinedPredicates(props.predicates, props.refinements, refinementStates.value),
+);
+
 /** The filter requested from outside while it is on (see `filterRequest`). */
 const requested = shallowRef<((entry: T) => boolean) | null>(null);
 
@@ -163,6 +199,7 @@ function clearRequested() {
 
 const resetFilters = () => {
   filterStates.value = new Map();
+  refinementStates.value = new Map();
   clearRequested();
 };
 
@@ -176,6 +213,7 @@ watch(
     query.value = '';
     filterStates.value = new Map();
     requested.value = request.matches;
+    refinementStates.value = new Map();
   },
   { immediate: true },
 );
@@ -194,6 +232,7 @@ watch(
     query.value = '';
     clearRequested();
     filterStates.value = new Map([[request.filter, 'include']]);
+    refinementStates.value = new Map();
   },
   { immediate: true },
 );
@@ -205,6 +244,7 @@ watch(
     clearRequested();
     query.value = request.search;
     filterStates.value = new Map((request.filters ?? []) as [F, FilterState][]);
+    refinementStates.value = new Map();
   },
 );
 
@@ -234,7 +274,7 @@ const searched = computed(() => {
 
 /** Per filter: entries with it among those passing search and the other filters (filters.ts). */
 const filterCounts = computed(() =>
-  countFilters(searched.value, filters.value, filterStates.value, props.predicates),
+  countFilters(searched.value, filters.value, filterStates.value, predicates.value),
 );
 
 /** Ids of the entries matching search and filters; `null` while neither is active. */
@@ -243,14 +283,14 @@ const visibleIds = computed(() => {
   if (searched.value === props.entries && states.size === 0) return null;
   const ids = new Set<number>();
   for (const entry of searched.value) {
-    if (matchesFilterStates(entry, states, props.predicates)) ids.add(entry.id);
+    if (matchesFilterStates(entry, states, predicates.value)) ids.add(entry.id);
   }
   return ids;
 });
 
 /** Tooltip of a filter: its explanation, its state and what a click does. */
 function filterTitle(filter: F) {
-  const label = props.filterLabel(filter);
+  const label = pillLabel(filter);
   const state = filterStates.value.get(filter);
   const action = i18n.t(
     state === 'include'
@@ -376,34 +416,52 @@ const countLabel = computed(() =>
             {{ i18n.t(`filter.categories.${group.category}`) }}
           </span>
           <div class="shm-filter-buttons">
-            <button
+            <!-- A pill: the filter, and while it is included its finer choice, if any (#419). -->
+            <span
               v-for="filter in group.filters"
               :key="filter"
-              v-tooltip="filterTitle(filter)"
-              type="button"
-              class="shm-filter"
-              :class="{
-                'is-active': filterStates.get(filter) === 'include',
-                'is-excluded': filterStates.get(filter) === 'exclude',
-              }"
-              :aria-pressed="
-                filterStates.get(filter) === 'include'
-                  ? 'true'
-                  : filterStates.get(filter) === 'exclude'
-                    ? 'mixed'
-                    : 'false'
-              "
-              @click="cycleFilter(filter)"
+              class="shm-filter-pill"
+              :class="{ 'is-refinable': refinementOf(filter) }"
             >
-              <span
-                v-if="filterStates.get(filter) === 'exclude'"
-                class="shm-filter-not"
-                aria-hidden="true"
-                >−</span
+              <button
+                v-tooltip="filterTitle(filter)"
+                type="button"
+                class="shm-filter"
+                :class="{
+                  'is-active': filterStates.get(filter) === 'include',
+                  'is-excluded': filterStates.get(filter) === 'exclude',
+                }"
+                :aria-pressed="
+                  filterStates.get(filter) === 'include'
+                    ? 'true'
+                    : filterStates.get(filter) === 'exclude'
+                      ? 'mixed'
+                      : 'false'
+                "
+                @click="cycleFilter(filter)"
               >
-              <span class="shm-filter-label">{{ filterLabel(filter) }}</span>
-              <span class="shm-filter-count">{{ filterCounts.get(filter) }}</span>
-            </button>
+                <span
+                  v-if="filterStates.get(filter) === 'exclude'"
+                  class="shm-filter-not"
+                  aria-hidden="true"
+                  >−</span
+                >
+                <span class="shm-filter-label">{{ pillLabel(filter) }}</span>
+                <span class="shm-filter-count">{{ filterCounts.get(filter) }}</span>
+              </button>
+              <SelectMenu
+                v-if="refinementOf(filter)"
+                v-tooltip="i18n.t('filter.refine', [filterLabel(filter)])"
+                :options="refinementOptions(filter)"
+                :model-value="refinementStates.get(filter) ?? refinementOptions(filter)[0]!.value"
+                :label="i18n.t('filter.refine', [filterLabel(filter)])"
+                icon="chevron-down"
+                icon-only
+                align="start"
+                button-class="shm-filter is-active shm-filter-refine"
+                @update:model-value="refine(filter, $event)"
+              />
+            </span>
             <!-- After the last group's buttons, so it doesn't add a line when it appears. -->
             <button
               v-if="(filterStates.size || requested) && index === shownGroups.length - 1"
