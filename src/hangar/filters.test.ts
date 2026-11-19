@@ -357,11 +357,28 @@ describe('the "CCUs" filter by base ship coverage (#461)', () => {
     expect(listed('all', always)).toEqual({
       ids: [1, 2, 3, 4],
       count: 4,
-      options: ['All CCUs', 'Without base ship', 'Base always available'],
+      options: ['All CCUs', 'Without base ship', 'Base always available', 'Base limited'],
     });
     expect(listed('missing', always).ids).toEqual([2]);
     expect(listed('missing', always).count).toBe(1);
-    expect(listed('always', always).ids).toEqual([1]);
+  });
+
+  it('splits the CCUs by their base ship: always available or limited, covered or not', () => {
+    const both = new Map(coverages);
+    both.set(5, coverage(5, 7, true));
+    const refinements = { ccus: ccuRefinement<PledgeView>(both, always) };
+    const entries = [...ccus, pledge(5, { isCcu: true }), pledge(6, { isCcu: true })];
+    const ids = (option: string) => {
+      const predicates = refinedPredicates(
+        PLEDGE_FILTER_PREDICATES,
+        refinements,
+        new Map<PledgeFilter, string>([['ccus', option]]),
+      );
+      return entries.filter((e) => matchesFilterStates(e, states, predicates)).map((e) => e.id);
+    };
+    // 5 is covered by the buy back, its base ship always available; 6 has no coverage known.
+    expect(ids('always')).toEqual([1, 5]);
+    expect(ids('limited')).toEqual([2, 3, 4]);
   });
 
   it('counts always available base ships as missing while they are not considered', () => {
@@ -370,5 +387,6 @@ describe('the "CCUs" filter by base ship coverage (#461)', () => {
     expect(off.options).toEqual(['All CCUs', 'Without base ship']);
     // A choice no longer offered falls back to all CCUs.
     expect(listed('always', undefined).ids).toEqual([1, 2, 3, 4]);
+    expect(listed('limited', undefined).ids).toEqual([1, 2, 3, 4]);
   });
 });

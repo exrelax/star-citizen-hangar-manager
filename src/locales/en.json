@@ -105,7 +105,8 @@
       "notOwnedShort": "Ships not owned"
     },
     "ccuCoverage": {
-      "all": "All CCUs"
+      "all": "All CCUs",
+      "limited": "Base limited"
     },
     "ccus": "CCUs",
     "gameAccess": "Game access",

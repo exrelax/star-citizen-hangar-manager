@@ -105,7 +105,8 @@
       "notOwnedShort": "Naves que no tienes"
     },
     "ccuCoverage": {
-      "all": "Todos los CCU"
+      "all": "Todos los CCU",
+      "limited": "Base limitada"
     },
     "ccus": "CCU",
     "gameAccess": "Acceso al juego",

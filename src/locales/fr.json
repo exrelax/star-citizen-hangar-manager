@@ -105,7 +105,8 @@
       "notOwnedShort": "Vaisseaux que tu n’as pas"
     },
     "ccuCoverage": {
-      "all": "Tous les CCU"
+      "all": "Tous les CCU",
+      "limited": "Base limitée"
     },
     "ccus": "CCU",
     "gameAccess": "Accès au jeu",

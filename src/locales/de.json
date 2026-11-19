@@ -105,7 +105,8 @@
       "notOwnedShort": "Schiffe nicht im Hangar"
     },
     "ccuCoverage": {
-      "all": "Alle CCUs"
+      "all": "Alle CCUs",
+      "limited": "Basis begrenzt kaufbar"
     },
     "ccus": "CCUs",
     "gameAccess": "Spielzugang",
