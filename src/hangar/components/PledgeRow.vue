@@ -22,6 +22,8 @@ import { openShipRemoval } from '@/store/open-current-warbonds';
 import { futureDiscount } from '@/price-increases/future-discount';
 import { formatExpectedTime } from '@/price-increases/price-increase-label';
 import UpgradeLog from './UpgradeLog.vue';
+import CcuCoverage from '@/ccu-consultant/components/CcuCoverage.vue';
+import { useProvidedCcuCoverage } from '@/ccu-consultant/coverage';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { selection } from '../selection';
 import { formatTimeLeft, toggleMeltMark } from '../melt-marks';
@@ -110,6 +112,9 @@ const future = computed(() => {
  * date, and – expanded – how many CCUs to that ship the hangar and the buy back have. Red with
  * fewer CCUs to the ship than from it (#287): not every CCU from it has a ship to go on.
  */
+/** What gives the base ship of a CCU (#108, #111). */
+const coverages = useProvidedCcuCoverage();
+const coverage = computed(() => coverages.value.get(props.pledge.id));
 const removals = useProvidedRemovalCcus();
 const removal = computed(() => {
   const entry = removals.value.byHangarCcu.get(props.pledge.id);
@@ -452,6 +457,7 @@ const toggle = () => {
             </span>
           </li>
         </ul>
+        <CcuCoverage v-if="pledge.isCcu && coverage" :coverage="coverage" />
         <UpgradeLog
           v-if="pledge.isUpgraded"
           :pledge-id="pledge.id"

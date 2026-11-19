@@ -1608,5 +1608,22 @@
     "tosHint": "Les Conditions d’utilisation de RSI, sur le site de RSI.",
     "gotIt": "Compris",
     "gotItHint": "Masque cet avis définitivement. Il reste dans les paramètres, sous « À propos »."
+  },
+  "ccuCoverage": {
+    "title": "Vaisseau de base",
+    "baseShip": "le vaisseau de base",
+    "summary": "$1 dans le hangar, $2 dans le rachat",
+    "none": "aucun dans le hangar ni le rachat",
+    "empty": "Ni $1 ni un CCU vers lui ne sont dans votre hangar ou rachat.",
+    "hangar": "Hangar",
+    "buyback": "Rachat",
+    "kinds": {
+      "ship": "Vaisseau",
+      "ccu": "CCU"
+    },
+    "show": {
+      "hangar": "Affiche le pledge dans « My Gear ».",
+      "buyback": "Affiche le pledge dans le rachat."
+    }
   }
 }

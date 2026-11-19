@@ -1608,5 +1608,22 @@
     "tosHint": "Los Términos de servicio de RSI, en la web de RSI.",
     "gotIt": "Entendido",
     "gotItHint": "Oculta este aviso para siempre. Sigue en los ajustes, en “Acerca de”."
+  },
+  "ccuCoverage": {
+    "title": "Nave base",
+    "baseShip": "la nave base",
+    "summary": "$1 en el hangar, $2 en la recompra",
+    "none": "ninguna en el hangar ni en la recompra",
+    "empty": "Ni $1 ni un CCU hacia ella están en tu hangar o recompra.",
+    "hangar": "Hangar",
+    "buyback": "Recompra",
+    "kinds": {
+      "ship": "Nave",
+      "ccu": "CCU"
+    },
+    "show": {
+      "hangar": "Muestra el pledge en «My Gear».",
+      "buyback": "Muestra el pledge en la recompra."
+    }
   }
 }
