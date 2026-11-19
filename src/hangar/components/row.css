@@ -457,6 +457,8 @@
   border-color: var(--shm-warning);
 }
 
+/* A CCU whose base ship is always available in the Pledge Store (#112). */
+.shm-badge.is-always-available,
 .shm-badge.is-giftable {
   color: var(--shm-success);
   border-color: rgb(var(--shm-success-rgb) / 0.6);

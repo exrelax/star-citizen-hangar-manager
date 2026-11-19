@@ -1615,6 +1615,9 @@
     "summary": "$1 en el hangar, $2 en la recompra",
     "none": "ninguna en el hangar ni en la recompra",
     "empty": "Ni $1 ni un CCU hacia ella están en tu hangar o recompra.",
+    "alwaysAvailable": "Siempre disponible",
+    "alwaysAvailableHint": "La nave base $1 está siempre disponible en la Pledge Store, así que puedes conseguirla más adelante para aplicar este CCU. Fuente: $2, a fecha de $3.",
+    "alwaysAvailableHintUndated": "La nave base $1 está siempre disponible en la Pledge Store, así que puedes conseguirla más adelante para aplicar este CCU. Fuente: $2.",
     "hangar": "Hangar",
     "buyback": "Recompra",
     "kinds": {

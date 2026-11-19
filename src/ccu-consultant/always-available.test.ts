@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { DEFAULT_SETTINGS, type Settings } from '@/settings/settings';
 import { createShipFactsLookup, type ShipFacts } from '@/ships/ship-facts';
 import {
+  alwaysAvailableList,
   alwaysAvailableSources,
   chosenAlwaysAvailableSource,
   countsAsAlwaysAvailable,
+  listDate,
 } from './always-available';
 
 const facts = (sources: ShipFacts['sources']): ShipFacts =>
@@ -59,5 +61,24 @@ describe('always available ships of the CCU Consultant (#110)', () => {
     expect(countsAsAlwaysAvailable(settings({ considerAlwaysAvailable: false }), wikiOnly, 1)).toBe(
       false,
     );
+  });
+
+  it('gives the list with its source and date while the setting is on (#112)', () => {
+    const list = alwaysAvailableList(settings({ alwaysAvailableSource: 'other' }), lookup);
+    expect(list?.source.id).toBe('other');
+    expect(list?.changedAt).toBe('2026-11-18T00:00:00Z');
+    expect(list?.has(1)).toBe(true);
+    expect(list?.has(2)).toBe(false);
+    expect(alwaysAvailableList(settings({ considerAlwaysAvailable: false }), lookup)).toBe(
+      undefined,
+    );
+    expect(alwaysAvailableList(settings(), undefined)).toBe(undefined);
+    expect(alwaysAvailableList(settings(), createShipFactsLookup(facts([matrix])))).toBe(undefined);
+  });
+
+  it('formats the date of the list, none while it is unknown', () => {
+    expect(listDate('2026-11-18T12:00:00Z', 'en')).toBe('Nov 18, 2026');
+    expect(listDate('', 'en')).toBe(undefined);
+    expect(listDate('not a date', 'en')).toBe(undefined);
   });
 });

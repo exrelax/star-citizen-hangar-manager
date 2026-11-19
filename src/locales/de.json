@@ -1615,6 +1615,9 @@
     "summary": "$1 im Hangar, $2 im Buy Back",
     "none": "keins im Hangar oder Buy Back",
     "empty": "Weder $1 noch ein CCU dorthin sind in deinem Hangar oder Buy Back.",
+    "alwaysAvailable": "Immer kaufbar",
+    "alwaysAvailableHint": "Das Basisschiff $1 ist im Pledge Store immer kaufbar, du kannst es also später holen, um dieses CCU anzuwenden. Quelle: $2, Stand $3.",
+    "alwaysAvailableHintUndated": "Das Basisschiff $1 ist im Pledge Store immer kaufbar, du kannst es also später holen, um dieses CCU anzuwenden. Quelle: $2.",
     "hangar": "Hangar",
     "buyback": "Buy Back",
     "kinds": {

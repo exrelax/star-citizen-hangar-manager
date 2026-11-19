@@ -1615,6 +1615,9 @@
     "summary": "$1 in the hangar, $2 in the buy back",
     "none": "none in the hangar or buy back",
     "empty": "Neither $1 nor a CCU to it is in your hangar or buy back.",
+    "alwaysAvailable": "Always available",
+    "alwaysAvailableHint": "The base ship $1 is always available in the Pledge Store, so you can get onto it later to apply this CCU. Source: $2, as of $3.",
+    "alwaysAvailableHintUndated": "The base ship $1 is always available in the Pledge Store, so you can get onto it later to apply this CCU. Source: $2.",
     "hangar": "Hangar",
     "buyback": "Buy Back",
     "kinds": {

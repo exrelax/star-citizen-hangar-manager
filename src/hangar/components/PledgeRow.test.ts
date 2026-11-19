@@ -8,6 +8,8 @@ import { paintRebuys } from '@/store/paint-consultant/use-paint-consultant';
 import { REMOVAL_CCUS, removalCcusState } from '@/ship-removals/use-removal-ccus';
 import type { RemovalCcus } from '@/ship-removals/removal-ccus';
 import { shipRemovalRequest } from '@/store/open-current-warbonds';
+import { ALWAYS_AVAILABLE, type AlwaysAvailableList } from '@/ccu-consultant/always-available';
+import { CCU_COVERAGE, type CcuCoverage } from '@/ccu-consultant/coverage';
 import PledgeRow from './PledgeRow.vue';
 
 let app: App | undefined;
@@ -16,7 +18,12 @@ afterEach(() => {
   paintRebuys.value = new Map();
 });
 
-function render(overrides: Partial<Pledge>, discountAmount?: number, removals: RemovalCcus[] = []) {
+function render(
+  overrides: Partial<Pledge>,
+  discountAmount?: number,
+  removals: RemovalCcus[] = [],
+  consultant?: { coverage: CcuCoverage; list?: AlwaysAvailableList },
+) {
   const pledge = {
     id: 1,
     name: 'Package - Nomad Star Citizen + Squadron 42 Combo',
@@ -49,6 +56,10 @@ function render(overrides: Partial<Pledge>, discountAmount?: number, removals: R
       }),
   });
   app.provide(REMOVAL_CCUS, shallowRef(removalCcusState(removals)));
+  if (consultant) {
+    app.provide(CCU_COVERAGE, shallowRef(new Map([[pledge.id, consultant.coverage]])));
+    app.provide(ALWAYS_AVAILABLE, shallowRef(consultant.list));
+  }
   app.mount(root);
   return root;
 }
@@ -209,5 +220,54 @@ describe('PledgeRow', () => {
     expect(
       render({ id: 4 }, undefined, [entry(1)]).querySelector('.shm-removal-button'),
     ).toBeNull();
+  });
+
+  describe('the label "Always available" of a CCU (#112)', () => {
+    const ccu: Partial<Pledge> = {
+      name: 'Upgrade - Aurora MR to Avenger Titan',
+      title: 'Upgrade - Aurora MR to Avenger Titan',
+      isUpgraded: false,
+      items: [{ title: 'Aurora MR to Avenger Titan', kind: 'Upgrade' }],
+    };
+    const coverage = (covered: boolean): CcuCoverage => ({
+      id: 1,
+      baseShip: { id: 7, name: 'Aurora MR' },
+      hangar: { ships: [], ccus: [] },
+      buyback: { ships: [], ccus: [] },
+      covered,
+    });
+    const list = (changedAt = '2026-11-18T12:00:00Z'): AlwaysAvailableList => ({
+      source: { id: 'wiki', name: 'Star Citizen Wiki', url: 'https://w', facts: [] },
+      changedAt,
+      has: (id) => id === 7,
+    });
+    const label = (root: HTMLElement) => root.querySelector('.shm-badge.is-always-available');
+
+    it('marks a CCU whose base ship is on the list, covered or not, naming source and date', () => {
+      for (const covered of [false, true]) {
+        const root = render(ccu, undefined, [], { coverage: coverage(covered), list: list() });
+        expect(label(root)?.textContent?.trim()).toBe('Always available');
+        expect(label(root)?.getAttribute('aria-description')).toBe(
+          'The base ship Aurora MR is always available in the Pledge Store, so you can get onto ' +
+            'it later to apply this CCU. Source: Star Citizen Wiki, as of Nov 18, 2026.',
+        );
+        app!.unmount();
+        app = undefined;
+      }
+    });
+
+    it('names only the source without a date of the list', () => {
+      const root = render(ccu, undefined, [], { coverage: coverage(false), list: list('') });
+      expect(label(root)?.getAttribute('aria-description')).toMatch(/Source: Star Citizen Wiki\.$/);
+    });
+
+    it('shows none for a base ship not on the list, nor while the setting is off', () => {
+      const other = { ...coverage(false), baseShip: { id: 8, name: 'Idris-P' } };
+      expect(label(render(ccu, undefined, [], { coverage: other, list: list() }))).toBeNull();
+      app!.unmount();
+      expect(label(render(ccu, undefined, [], { coverage: coverage(false) }))).toBeNull();
+      app!.unmount();
+      expect(label(render(ccu))).toBeNull();
+    });
   });
 });

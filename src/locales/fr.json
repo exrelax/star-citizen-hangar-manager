@@ -1615,6 +1615,9 @@
     "summary": "$1 dans le hangar, $2 dans le rachat",
     "none": "aucun dans le hangar ni le rachat",
     "empty": "Ni $1 ni un CCU vers lui ne sont dans votre hangar ou rachat.",
+    "alwaysAvailable": "Toujours disponible",
+    "alwaysAvailableHint": "Le vaisseau de base $1 est toujours disponible dans le Pledge Store : tu pourras l’obtenir plus tard pour appliquer ce CCU. Source : $2, au $3.",
+    "alwaysAvailableHintUndated": "Le vaisseau de base $1 est toujours disponible dans le Pledge Store : tu pourras l’obtenir plus tard pour appliquer ce CCU. Source : $2.",
     "hangar": "Hangar",
     "buyback": "Rachat",
     "kinds": {
