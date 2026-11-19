@@ -76,6 +76,10 @@ export const ERROR_CODES = {
     failed: 'Melting (exchanging) a pledge failed at RSI',
     instead: 'Nothing was melted; the dialog showed the reason',
   },
+  'HANGAR-EXCHANGE-CHECK-FAIL': {
+    failed: "The pledges to melt couldn't be read from RSI again right before melting",
+    instead: 'Nothing was melted; the dialog showed the reason',
+  },
   'HANGAR-GIFT-FAIL': {
     failed: 'Gifting a pledge failed at RSI',
     instead: 'Nothing was gifted; the dialog showed the reason',

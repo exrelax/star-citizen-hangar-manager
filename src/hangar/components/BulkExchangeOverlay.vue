@@ -21,12 +21,20 @@ import type { PledgeView } from '../pledge-view';
 import { useRsiText } from '../rsi-text';
 import { summarize } from '../summary';
 import { maybeRunSmartUpdate } from '../sync-state';
+import {
+  checkBeforeExchange,
+  storeMismatches,
+  storedPledges,
+  type PledgeChange,
+  type PledgeMismatch,
+} from '../verify-pledges';
 
 /*
  * Bulk melting (an experimental setting): exchanges the selected pledges of "My Hangar" at once,
  * one after the other with the same password. Like the single exchange dialog it lists what is
  * lost beyond the pledges – summed up over all of them – and asks for RSI's acknowledgements, plus
- * one for the experimental feature. It stops at the first pledge RSI refuses.
+ * one for the experimental feature. Right before, it reads the pledges from RSI again and sends
+ * nothing if one is no longer as shown (#415). It stops at the first pledge RSI refuses.
  */
 
 const props = defineProps<{
@@ -48,6 +56,16 @@ const emit = defineEmits<{
   exchanged: [ids: number[]];
 }>();
 
+/**
+ * The pledges as the dialog opened with them: shown and sent are this one list, even if the
+ * hangar changes meanwhile (the check then finds the difference).
+ */
+const list = [...props.pledges];
+/** Their stored versions at that moment, what the check compares RSI's with. */
+const shownPledges = storedPledges(list.map((pledge) => pledge.id));
+// Read when sending; a failure shows there.
+shownPledges.catch(() => {});
+
 const { settings } = useSettings();
 /** RSI's own texts: in English unless the setting translates them (see rsi-text.ts). */
 const rsi = useRsiText();
@@ -59,7 +77,7 @@ const money = (amount: number) => (hideValue.value ? HIDDEN : formatUsd(amount, 
 const pledgeId = (pledge: PledgeView) =>
   settings.value.hidePledgeIds ? HIDDEN : (pledge.displayId ?? pledge.id);
 
-const total = computed(() => summarize(props.pledges));
+const total = computed(() => summarize(list));
 /** The pledges per type, always shown (unlike the sidebar, where it is a setting). */
 const types = computed(() => {
   const number = new Intl.NumberFormat(locale.value);
@@ -67,12 +85,12 @@ const types = computed(() => {
     .map(({ type, count }) => `${number.format(count)} ${i18n.t(`filter.${type}`)}`)
     .join(' · ');
 });
-const losesGameAccess = computed(() => losesAllGameAccess(props.pledges, props.hangar));
-const allBuybackable = computed(() => props.pledges.every((pledge) => pledge.isBuybackable));
+const losesGameAccess = computed(() => losesAllGameAccess(list, props.hangar));
+const allBuybackable = computed(() => list.every((pledge) => pledge.isBuybackable));
 
 /** The warnings of every pledge, by pledge id. */
 const warningsOf = computed(
-  () => new Map(props.pledges.map((pledge) => [pledge.id, exchangeWarnings(pledge, today.value)])),
+  () => new Map(list.map((pledge) => [pledge.id, exchangeWarnings(pledge, today.value)])),
 );
 
 type Kind = ExchangeWarning['kind'];
@@ -131,21 +149,40 @@ const consentExperimental = ref(false);
 const consentExtra = ref(false);
 const password = ref('');
 const submitting = ref(false);
+/** Reading the pledges from RSI again, before the first is sent. */
+const checking = ref(false);
 const error = ref<string>();
 
 /** The pledges RSI exchanged so far, and the one it refused. */
 const exchanged = ref<number[]>([]);
 const failed = ref<{ id: number; message: string }>();
 const finished = ref(false);
+/** Pledges RSI lists differently, or the reason they couldn't be read: nothing was sent. */
+const mismatches = ref<PledgeMismatch[]>([]);
+const unchecked = ref<string>();
+
+/** What changed of each pledge, e.g. "Value changed · Items changed". */
+const changeText = (changes: readonly PledgeChange[]) =>
+  changes.map((change) => i18n.t(`bulkExchange.changes.${change}`)).join(' · ');
+/** A pledge's title in the dialog's list, the stored one for a pledge not listed (any more). */
+const titleOf = (mismatch: PledgeMismatch) =>
+  list.find((pledge) => pledge.id === mismatch.id)?.title ?? mismatch.stored.title;
+
+/** The check of the run: these pledges, as shown, still listed so by RSI. */
+async function verify(ids: readonly number[]) {
+  const shown = await shownPledges;
+  if (shown.map((pledge) => pledge.id).join() !== ids.join()) {
+    throw new Error('The pledges to send are not the ones shown');
+  }
+  return checkBeforeExchange(shown);
+}
 
 const exchangedValue = computed(() =>
-  summarize(props.pledges.filter((pledge) => exchanged.value.includes(pledge.id))),
+  summarize(list.filter((pledge) => exchanged.value.includes(pledge.id))),
 );
-const failedPledge = computed(() => props.pledges.find((pledge) => pledge.id === failed.value?.id));
+const failedPledge = computed(() => list.find((pledge) => pledge.id === failed.value?.id));
 /** Not sent because RSI refused one before them. */
-const notSent = computed(
-  () => props.pledges.length - exchanged.value.length - (failed.value ? 1 : 0),
-);
+const notSent = computed(() => list.length - exchanged.value.length - (failed.value ? 1 : 0));
 
 const ready = computed(
   () =>
@@ -168,21 +205,27 @@ async function submit() {
     return;
   }
   submitting.value = true;
+  checking.value = true;
   error.value = undefined;
   try {
     const result = await reclaimPledges(
-      props.pledges.map((pledge) => pledge.id),
+      list.map((pledge) => pledge.id),
       password.value,
       {
         delayMs: BULK_EXCHANGE_DELAY_MS,
+        verify,
+        onChecked: () => (checking.value = false),
         onExchanged: (id) => (exchanged.value = [...exchanged.value, id]),
       },
     );
     failed.value = result.failed;
+    mismatches.value = result.mismatches ?? [];
+    unchecked.value = result.unchecked;
     finished.value = true;
     if (exchanged.value.length) emit('exchanged', [...exchanged.value]);
   } finally {
     submitting.value = false;
+    checking.value = false;
     password.value = '';
   }
 }
@@ -193,8 +236,11 @@ async function submit() {
  */
 let removed = false;
 async function finish() {
-  if (removed || !exchanged.value.length) return;
+  if (removed) return;
   removed = true;
+  // What the check read: the list shows these pledges as they are now.
+  await storeMismatches(mismatches.value);
+  if (!exchanged.value.length) return;
   await removeFromStoredHangar(exchanged.value);
   // Also picks the pledges up in the buy back.
   void maybeRunSmartUpdate({ force: true });
@@ -243,11 +289,11 @@ onUnmounted(() => {
         class="shm-overlay-dialog shm-action-dialog"
         role="dialog"
         aria-modal="true"
-        :aria-label="i18n.n('bulkExchange.title', pledges.length)"
+        :aria-label="i18n.n('bulkExchange.title', list.length)"
         tabindex="-1"
       >
         <header class="shm-overlay-header">
-          <h3>{{ i18n.n('bulkExchange.title', pledges.length) }}</h3>
+          <h3>{{ i18n.n('bulkExchange.title', list.length) }}</h3>
           <button
             v-tooltip="i18n.t('order.close')"
             type="button"
@@ -264,7 +310,7 @@ onUnmounted(() => {
         <div class="shm-action-summary">
           <div class="shm-action-item">
             <strong class="shm-action-title">
-              {{ i18n.n('bulkExchange.count', pledges.length) }}
+              {{ i18n.n('bulkExchange.count', list.length) }}
             </strong>
             <!-- What kind of pledges they are, e.g. "2 Ships · 1 CCU · 1 Paint". -->
             <span v-if="types" class="shm-bulk-types">{{ types }}</span>
@@ -281,7 +327,7 @@ onUnmounted(() => {
 
         <ul class="shm-bulk-list" :aria-label="i18n.t('bulkExchange.listLabel')">
           <li
-            v-for="pledge in pledges"
+            v-for="pledge in list"
             :key="pledge.id"
             :class="{
               'is-done': exchanged.includes(pledge.id),
@@ -331,6 +377,18 @@ onUnmounted(() => {
             }}
             <span>{{ i18n.t('bulkExchange.successNote') }}</span>
           </p>
+          <div v-if="mismatches.length" class="shm-action-error" role="alert">
+            <p>{{ i18n.n('bulkExchange.changed', mismatches.length, [mismatches.length]) }}</p>
+            <ul class="shm-bulk-changes">
+              <li v-for="mismatch in mismatches" :key="mismatch.id">
+                <strong>{{ titleOf(mismatch) }}</strong>
+                {{ changeText(mismatch.changes) }}
+              </li>
+            </ul>
+          </div>
+          <p v-if="unchecked" class="shm-action-error" role="alert">
+            {{ i18n.t('bulkExchange.unchecked', [unchecked]) }}
+          </p>
           <p v-if="failed" class="shm-action-error" role="alert">
             {{
               i18n.n('bulkExchange.failed', notSent, [
@@ -378,7 +436,7 @@ onUnmounted(() => {
 
           <!-- RSI's texts of the dialog, for all pledges. -->
           <p>
-            {{ i18n.n('bulkExchange.intro', pledges.length, [pledges.length, money(total.value)]) }}
+            {{ i18n.n('bulkExchange.intro', list.length, [list.length, money(total.value)]) }}
           </p>
           <p v-if="!allBuybackable" class="shm-exchange-final">
             {{ rsi('exchange.notBuybackable') }}
@@ -433,12 +491,11 @@ onUnmounted(() => {
               :disabled="!ready || !!demo"
             >
               {{
-                submitting
-                  ? i18n.t('bulkExchange.submitting', [exchanged.length + 1, pledges.length])
-                  : i18n.n('bulkExchange.submit', pledges.length, [
-                      pledges.length,
-                      money(total.value),
-                    ])
+                checking
+                  ? i18n.t('bulkExchange.checking')
+                  : submitting
+                    ? i18n.t('bulkExchange.submitting', [exchanged.length + 1, list.length])
+                    : i18n.n('bulkExchange.submit', list.length, [list.length, money(total.value)])
               }}
             </button>
           </div>
@@ -582,6 +639,15 @@ onUnmounted(() => {
 .shm-bulk-types {
   color: var(--shm-text-secondary);
   font-size: calc(12px * var(--shm-font-scale));
+}
+
+.shm-bulk-changes {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+.shm-bulk-changes strong {
+  margin-right: 6px;
 }
 
 .shm-bulk-list li.is-done {

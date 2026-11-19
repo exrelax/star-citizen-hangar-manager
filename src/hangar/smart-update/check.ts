@@ -387,7 +387,7 @@ export async function checkPages<T extends ListEntry>(
 }
 
 /** Keeps what the extension added to a pledge (RSI category, CCU target image) on its new version. */
-function withExtensionData(fresh: Pledge, old: Pledge): Pledge {
+export function withExtensionData(fresh: Pledge, old: Pledge): Pledge {
   const pledge: Pledge = { ...fresh };
   if (old.category) pledge.category = old.category;
   if (fresh.upgrade && old.upgrade?.targetImage) {

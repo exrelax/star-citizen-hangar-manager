@@ -1137,8 +1137,8 @@
     "skipped": "$1 seleccionados no se pueden fundir y se omiten",
     "listLabel": "Pledges a fundir",
     "intro": {
-      "one": "Estás a punto de fundir $1 pledge. Se eliminará de tu cuenta, incluidas sus mejoras (como personalizaciones o CCU), y recibirás $2 en crédito de tienda.",
-      "other": "Estás a punto de fundir $1 pledges. Se eliminarán de tu cuenta, incluidas sus mejoras (como personalizaciones o CCU), y recibirás $2 en crédito de tienda. Se funden uno tras otro; el primero que RSI rechace detiene el resto."
+      "one": "Estás a punto de fundir $1 pledge. Se eliminará de tu cuenta, incluidas sus mejoras (como personalizaciones o CCU), y recibirás $2 en crédito de tienda. Justo antes, el Hangar Manager lo vuelve a leer en RSI: si ha ha cambiado, no se funde nada.",
+      "other": "Estás a punto de fundir $1 pledges. Se eliminarán de tu cuenta, incluidas sus mejoras (como personalizaciones o CCU), y recibirás $2 en crédito de tienda. Se funden uno tras otro; el primero que RSI rechace detiene el resto. Justo antes, el Hangar Manager los vuelve a leer en RSI: si alguno ha ha cambiado, no se funde nada."
     },
     "lastGameAccessText": "La selección contiene todos los pledges de tu cuenta que dan acceso a Star Citizen. Sin ellos ya no podrás jugar.",
     "warnings": {
@@ -1178,6 +1178,7 @@
       "one": "Fundir $1 pledge por $2",
       "other": "Fundir $1 pledges por $2"
     },
+    "checking": "Comprobando los pledges en RSI …",
     "submitting": "Fundiendo $1 de $2 …",
     "success": {
       "one": "$1 pledge fundido, se abonaron $2 a tu cuenta.",
@@ -1187,7 +1188,20 @@
     "failed": {
       "one": "RSI rechazó «$1»: $2. $3 pledge más no se envió y sigue en tu hangar.",
       "other": "RSI rechazó «$1»: $2. Otros $3 pledges no se enviaron y siguen en tu hangar."
-    }
+    },
+    "changed": {
+      "one": "$1 pledge ya no es como se muestra aquí. No se fundió nada: revísalo en la lista y vuelve a seleccionarlo.",
+      "other": "$1 pledges ya no son como se muestran aquí. No se fundió nada: revísalos en la lista y vuelve a seleccionarlos."
+    },
+    "changes": {
+      "gone": "Ya no existe",
+      "notMeltable": "Ya no se puede fundir",
+      "name": "Nombre cambiado",
+      "value": "Valor cambiado",
+      "items": "Contenido cambiado",
+      "other": "Cambiado"
+    },
+    "unchecked": "No se pudieron volver a leer los pledges en RSI ($1). No se fundió nada."
   },
   "meltMark": {
     "mark": "Marcar para fundir",
