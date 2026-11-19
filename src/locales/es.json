@@ -268,7 +268,7 @@
     "sidebarPaintConsultantHint": "Aparece mientras haya pinturas que se puedan recomprar con un descuento por volumen mayor: cuántas, y el crédito de tienda que libera. Oculto mientras «Ocultar el valor de fusión» esté activado.",
     "ccuConsultant": "CCU Consultant",
     "ccuAlwaysAvailable": "Tener en cuenta las naves siempre disponibles",
-    "ccuAlwaysAvailableHint": "Activado: un CCU cuya nave base está siempre disponible en la Pledge Store no cuenta como sin nave base y recibe la etiqueta «Siempre disponible». Desactivado: cuenta todo CCU sin su nave base en tu hangar o recompra.",
+    "ccuAlwaysAvailableHint": "Activado: un CCU cuya nave base está siempre disponible en la Pledge Store no cuenta como sin nave base y recibe la etiqueta «Base siempre disponible». Desactivado: cuenta todo CCU sin su nave base en tu hangar o recompra.",
     "ccuSource": "Fuente de la lista",
     "ccuSourceDate": "Qué naves están siempre disponibles, a fecha de $1.",
     "ccuSourceNone": "Aún no hay lista disponible",
@@ -1615,6 +1615,9 @@
     "summary": "$1 en el hangar, $2 en la recompra",
     "none": "ninguna en el hangar ni en la recompra",
     "empty": "Ni $1 ni un CCU hacia ella están en tu hangar o recompra.",
+    "alwaysAvailable": "Base siempre disponible",
+    "alwaysAvailableHint": "La nave base $1 está siempre disponible en la Pledge Store, así que puedes conseguirla más adelante para aplicar este CCU. Fuente: $2, a fecha de $3.",
+    "alwaysAvailableHintUndated": "La nave base $1 está siempre disponible en la Pledge Store, así que puedes conseguirla más adelante para aplicar este CCU. Fuente: $2.",
     "hangar": "Hangar",
     "buyback": "Recompra",
     "kinds": {

@@ -25,6 +25,7 @@ import { formatExpectedTime } from '@/price-increases/price-increase-label';
 import UpgradeLog from './UpgradeLog.vue';
 import CcuCoverage from '@/ccu-consultant/components/CcuCoverage.vue';
 import { useProvidedCcuCoverage } from '@/ccu-consultant/coverage';
+import { listDate, useProvidedAlwaysAvailable } from '@/ccu-consultant/always-available';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { selection } from '../selection';
 import { formatTimeLeft, toggleMeltMark } from '../melt-marks';
@@ -116,6 +117,17 @@ const future = computed(() => {
 /** What gives the base ship of a CCU (#108, #111). */
 const coverages = useProvidedCcuCoverage();
 const coverage = computed(() => coverages.value.get(props.pledge.id));
+// A CCU whose base ship is always available in the Pledge Store (#112), with or without coverage.
+const alwaysAvailableShips = useProvidedAlwaysAvailable();
+const alwaysAvailable = computed(() => {
+  const list = alwaysAvailableShips.value;
+  const ship = coverage.value?.baseShip;
+  if (!list || ship?.id === undefined || !list.has(ship.id)) return undefined;
+  const date = listDate(list.changedAt, locale.value);
+  return date
+    ? i18n.t('ccuCoverage.alwaysAvailableHint', [ship.name, list.source.name, date])
+    : i18n.t('ccuCoverage.alwaysAvailableHintUndated', [ship.name, list.source.name]);
+});
 const removals = useProvidedRemovalCcus();
 const removal = computed(() => {
   const entry = removals.value.byHangarCcu.get(props.pledge.id);
@@ -334,6 +346,13 @@ const toggle = () => {
           :ccu="pledge.ccuPriceChange"
           place="hangar"
         />
+        <span
+          v-if="alwaysAvailable"
+          v-tooltip="alwaysAvailable"
+          class="shm-badge is-always-available"
+        >
+          {{ i18n.t('ccuCoverage.alwaysAvailable') }}
+        </span>
         <span
           v-if="pledge.insurance"
           v-tooltip="i18n.t('insurance.badgeTitle')"

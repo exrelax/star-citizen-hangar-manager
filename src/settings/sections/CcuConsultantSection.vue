@@ -2,6 +2,7 @@
 import {
   alwaysAvailableSources,
   chosenAlwaysAvailableSource,
+  listDate as dateOfList,
 } from '@/ccu-consultant/always-available';
 import { i18n, locale } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
@@ -35,13 +36,7 @@ const source = computed(() => chosenAlwaysAvailableSource(props.settings, facts.
 const off = computed(() => !props.settings.ccuConsultant.considerAlwaysAvailable);
 
 /** The date of the list, e.g. "Nov 18, 2026"; none while it isn't known. */
-const listDate = computed(() => {
-  const at = facts.value?.changedAt;
-  const date = at ? new Date(at) : undefined;
-  return date && !Number.isNaN(date.getTime())
-    ? new Intl.DateTimeFormat(locale.value, { dateStyle: 'medium' }).format(date)
-    : undefined;
-});
+const listDate = computed(() => dateOfList(facts.value?.changedAt, locale.value));
 const sourceOptions = computed(() =>
   sources.value.map((entry) => ({ value: entry.id, label: entry.name })),
 );

@@ -32,6 +32,8 @@ import { i18n } from '@/i18n';
 import SettingsPanel from '@/settings/SettingsPanel.vue';
 import { REMOVAL_CCUS, useRemovalCcus } from '@/ship-removals/use-removal-ccus';
 import { CCU_COVERAGE, COVERAGE_SOURCES, useCcuCoverage } from '@/ccu-consultant/coverage';
+import { ALWAYS_AVAILABLE, alwaysAvailableList } from '@/ccu-consultant/always-available';
+import { useShipFacts } from '@/ships/use-ship-facts';
 import { followListHistory, listViewRequest } from '@/hangar/list-jump';
 import { current as currentShips, shipsItem } from '@/ships/ships-storage';
 import StoreTab from '@/store/components/StoreTab.vue';
@@ -164,6 +166,12 @@ provide(
     buyback: new Map(buybackPledges.value.map((pledge) => [pledge.id, pledge])),
     ships: currentShips(storedShips.value ?? null)?.ships ?? [],
   })),
+);
+// The always available ships of the CCU Consultant (#110), for the label on CCU rows (#112).
+const shipFacts = useShipFacts();
+provide(
+  ALWAYS_AVAILABLE,
+  computed(() => alwaysAvailableList(settings.value, shipFacts.value)),
 );
 // The ones that can be melted now, for the sidebar's notification and its "Show" and "Select".
 const now = useNow();

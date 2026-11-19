@@ -268,7 +268,7 @@
     "sidebarPaintConsultantHint": "Affiché tant que des peintures peuvent être rachetées avec une remise sur volume plus élevée : combien, et le crédit boutique libéré. Masqué tant que « Masquer la valeur de fusion » est activé.",
     "ccuConsultant": "CCU Consultant",
     "ccuAlwaysAvailable": "Tenir compte des vaisseaux toujours disponibles",
-    "ccuAlwaysAvailableHint": "Activé : un CCU dont le vaisseau de base est toujours disponible dans le Pledge Store ne compte pas comme sans vaisseau de base et reçoit l’étiquette « Toujours disponible ». Désactivé : tout CCU sans son vaisseau de base dans votre hangar ou rachat compte.",
+    "ccuAlwaysAvailableHint": "Activé : un CCU dont le vaisseau de base est toujours disponible dans le Pledge Store ne compte pas comme sans vaisseau de base et reçoit l’étiquette « Base toujours disponible ». Désactivé : tout CCU sans son vaisseau de base dans votre hangar ou rachat compte.",
     "ccuSource": "Source de la liste",
     "ccuSourceDate": "Les vaisseaux toujours disponibles, au $1.",
     "ccuSourceNone": "Aucune liste disponible pour l’instant",
@@ -1615,6 +1615,9 @@
     "summary": "$1 dans le hangar, $2 dans le rachat",
     "none": "aucun dans le hangar ni le rachat",
     "empty": "Ni $1 ni un CCU vers lui ne sont dans votre hangar ou rachat.",
+    "alwaysAvailable": "Base toujours disponible",
+    "alwaysAvailableHint": "Le vaisseau de base $1 est toujours disponible dans le Pledge Store : tu pourras l’obtenir plus tard pour appliquer ce CCU. Source : $2, au $3.",
+    "alwaysAvailableHintUndated": "Le vaisseau de base $1 est toujours disponible dans le Pledge Store : tu pourras l’obtenir plus tard pour appliquer ce CCU. Source : $2.",
     "hangar": "Hangar",
     "buyback": "Rachat",
     "kinds": {
