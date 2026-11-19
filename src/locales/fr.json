@@ -1580,5 +1580,15 @@
     "warbondPrice": "warbond $1",
     "saves": "économise $1",
     "source": "Valeurs de l’outil d’upgrade de RSI. « Toujours disponible » et « Plus vendu » d’après le Star Citizen Wiki (CC BY-SA 4.0), via le site du projet."
+  },
+  "accountSafety": {
+    "title": "Conditions d’utilisation et votre compte",
+    "note": "Le Hangar Manager n’est pas approuvé par RSI. Les Conditions d’utilisation de RSI interdisent les outils et accès automatisés que RSI n’a pas approuvés, et RSI peut suspendre ou fermer des comptes pour cette raison. Vous utilisez le Hangar Manager à vos propres risques.",
+    "tos": "Conditions d’utilisation",
+    "tosHint": "Les Conditions d’utilisation de RSI, sur le site de RSI.",
+    "gotIt": "Compris",
+    "gotItHint": "Masque cet avis définitivement. Il reste dans les paramètres, sous « À propos ».",
+    "settingsLabel": "Votre compte et les Conditions d’utilisation de RSI",
+    "settingsHint": "Le Hangar Manager n’est pas approuvé par RSI. Les Conditions d’utilisation de RSI interdisent les outils non approuvés ; vous l’utilisez à vos propres risques."
   }
 }

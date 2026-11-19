@@ -92,6 +92,14 @@ never sees your RSI login and has no server, no account and no tracking. For the
 FleetYards.net and erkul.games it asks FleetYards.net about ship models – with nothing but their
 names. Details: [privacy policy](https://exrelax.github.io/star-citizen-hangar-manager/privacy.html).
 
+## Terms of Service and your account
+
+The Hangar Manager isn't approved by RSI. RSI's
+[Terms of Service](https://robertsspaceindustries.com/tos) forbid tools and automated access to its
+website that RSI hasn't approved, and RSI may suspend or close accounts for it. The Hangar Manager
+reads RSI only as often as its features need, and changes your account only when you confirm it in
+a dialog. Still, using it is at your own risk.
+
 ## Help and feedback
 
 - Found a bug or have an idea? Open an

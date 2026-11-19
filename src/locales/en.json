@@ -1580,5 +1580,15 @@
     "warbondPrice": "warbond $1",
     "saves": "saves $1",
     "source": "Values from RSI’s ship upgrade tool. “Always available” and “Not sold” from the Star Citizen Wiki (CC BY-SA 4.0), via the project website."
+  },
+  "accountSafety": {
+    "title": "Terms of Service and your account",
+    "note": "The Hangar Manager isn't approved by RSI. RSI's Terms of Service forbid tools and automated access RSI hasn't approved, and RSI may suspend or close accounts for it. Using the Hangar Manager is at your own risk.",
+    "tos": "Terms of Service",
+    "tosHint": "RSI's Terms of Service, on the RSI website.",
+    "gotIt": "Got it",
+    "gotItHint": "Hides this note for good. It stays in the settings under “About”.",
+    "settingsLabel": "Your account and RSI's Terms of Service",
+    "settingsHint": "The Hangar Manager isn't approved by RSI. RSI's Terms of Service forbid tools not approved by RSI; using it is at your own risk."
   }
 }

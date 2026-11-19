@@ -5,6 +5,7 @@ import type { IconName } from '@/icons/icon-names';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import SettingsGroup from '../SettingsGroup.vue';
 import { extensionVersion } from '@/shared/extension-version';
+import { RSI_TOS_URL } from '@/account-safety/risk-note';
 
 /** The extension's version and pages on GitHub, for everyone (unlike the development section). */
 
@@ -32,6 +33,12 @@ const LINKS: { label: MessageKey; hint: MessageKey; icon: IconName; url: string 
     hint: 'settings.changelogHint',
     icon: 'clock-rotate-left',
     url: REPOSITORY_LINKS.changelog,
+  },
+  {
+    label: 'accountSafety.settingsLabel',
+    hint: 'accountSafety.settingsHint',
+    icon: 'triangle-exclamation',
+    url: RSI_TOS_URL,
   },
   {
     label: 'settings.license',

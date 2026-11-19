@@ -455,6 +455,29 @@ h1 {
   font-size: 13px;
 }
 
+/* The risk for the RSI account (#330), under the install buttons. */
+.tos-note {
+  margin-top: 24px;
+  padding: 16px 18px;
+}
+
+.tos-note h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+
+.tos-note h3 .icon {
+  color: var(--site-warning);
+}
+
+.tos-note p {
+  margin: 0;
+  font-size: 14px;
+}
+
 .install-notes {
   display: flex;
   flex-wrap: wrap;

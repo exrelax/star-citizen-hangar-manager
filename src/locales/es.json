@@ -1580,5 +1580,15 @@
     "warbondPrice": "warbond $1",
     "saves": "ahorra $1",
     "source": "Valores de la herramienta de mejoras de RSI. «Siempre disponible» y «No a la venta» del Star Citizen Wiki (CC BY-SA 4.0), a través de la web del proyecto."
+  },
+  "accountSafety": {
+    "title": "Términos de servicio y tu cuenta",
+    "note": "El Hangar Manager no está aprobado por RSI. Los Términos de servicio de RSI prohíben herramientas y accesos automatizados que RSI no haya aprobado, y RSI puede suspender o cerrar cuentas por ello. Usas el Hangar Manager bajo tu propio riesgo.",
+    "tos": "Términos de servicio",
+    "tosHint": "Los Términos de servicio de RSI, en la web de RSI.",
+    "gotIt": "Entendido",
+    "gotItHint": "Oculta este aviso para siempre. Sigue en los ajustes, en “Acerca de”.",
+    "settingsLabel": "Tu cuenta y los Términos de servicio de RSI",
+    "settingsHint": "El Hangar Manager no está aprobado por RSI. Los Términos de servicio de RSI prohíben herramientas no aprobadas; lo usas bajo tu propio riesgo."
   }
 }
