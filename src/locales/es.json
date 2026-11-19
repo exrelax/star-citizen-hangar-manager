@@ -1621,9 +1621,22 @@
       "ship": "Nave",
       "ccu": "CCU"
     },
-    "show": {
-      "hangar": "Muestra el pledge en «My Gear».",
-      "buyback": "Muestra el pledge en la recompra."
+    "card": {
+      "from": "Nave base",
+      "to": "Nave destino",
+      "value": "Valor",
+      "buybackPrice": "Precio de recompra",
+      "discount": "Descuento",
+      "surcharge": "Recargo",
+      "gift": "Regalo",
+      "giftable": {
+        "yes": "Se puede regalar",
+        "no": "No se puede regalar"
+      },
+      "probablyGiftable": {
+        "yes": "Probablemente se puede regalar si se recompra con dinero",
+        "no": "Probablemente no se puede regalar"
+      }
     }
   }
 }

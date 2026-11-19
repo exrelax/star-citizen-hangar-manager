@@ -1621,9 +1621,22 @@
       "ship": "Vaisseau",
       "ccu": "CCU"
     },
-    "show": {
-      "hangar": "Affiche le pledge dans « My Gear ».",
-      "buyback": "Affiche le pledge dans le rachat."
+    "card": {
+      "from": "Vaisseau de base",
+      "to": "Vaisseau cible",
+      "value": "Valeur",
+      "buybackPrice": "Prix de rachat",
+      "discount": "Remise",
+      "surcharge": "Supplément",
+      "gift": "Cadeau",
+      "giftable": {
+        "yes": "Peut être offert",
+        "no": "Ne peut pas être offert"
+      },
+      "probablyGiftable": {
+        "yes": "Probablement offrable si racheté avec de l’argent",
+        "no": "Probablement pas offrable"
+      }
     }
   }
 }
