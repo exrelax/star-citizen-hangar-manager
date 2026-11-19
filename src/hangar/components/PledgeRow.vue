@@ -24,7 +24,9 @@ import { futureDiscount } from '@/price-increases/future-discount';
 import { formatExpectedTime } from '@/price-increases/price-increase-label';
 import UpgradeLog from './UpgradeLog.vue';
 import CcuCoverage from '@/ccu-consultant/components/CcuCoverage.vue';
-import { useProvidedCcuCoverage } from '@/ccu-consultant/coverage';
+import { useProvidedCcuCoverage, useProvidedCoverageSources } from '@/ccu-consultant/coverage';
+import { standingOf } from '@/ccu-consultant/base-ship-list';
+import { rsiUrl } from '@/shared/rsi-api';
 import { listDate, useProvidedAlwaysAvailable } from '@/ccu-consultant/always-available';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { selection } from '../selection';
@@ -127,6 +129,30 @@ const alwaysAvailable = computed(() => {
   return date
     ? i18n.t('ccuCoverage.alwaysAvailableHint', [ship.name, list.source.name, date])
     : i18n.t('ccuCoverage.alwaysAvailableHintUndated', [ship.name, list.source.name]);
+});
+/**
+ * A CCU without its base ship (#114): neither the hangar nor the buy back gives it, and – while
+ * those are considered – it isn't always available. The same rule as the CCU Consultant's list.
+ */
+const coverageSources = useProvidedCoverageSources();
+const baseMissing = computed(() => {
+  const value = coverage.value;
+  if (!props.pledge.isCcu || !value) return undefined;
+  if (standingOf(value, alwaysAvailableShips.value) !== 'missing') return undefined;
+  const id = value.baseShip?.id;
+  const ship =
+    id !== undefined ? coverageSources.value.ships.find((entry) => entry.id === id) : undefined;
+  const name = ship?.name ?? value.baseShip?.name ?? i18n.t('ccuCoverage.baseShip');
+  return {
+    note: i18n.t(
+      alwaysAvailableShips.value ? 'ccuCoverage.missingNote' : 'ccuCoverage.missingNoteAll',
+      [name],
+    ),
+    ...(ship?.link && {
+      link: rsiUrl(ship.link),
+      linkLabel: i18n.t('ccuCoverage.missingLink', [ship.name]),
+    }),
+  };
 });
 const removals = useProvidedRemovalCcus();
 const removal = computed(() => {
@@ -346,6 +372,9 @@ const toggle = () => {
           :ccu="pledge.ccuPriceChange"
           place="hangar"
         />
+        <span v-if="baseMissing" v-tooltip="baseMissing.note" class="shm-badge is-base-missing">
+          {{ i18n.t('ccuCoverage.missing') }}
+        </span>
         <span
           v-if="alwaysAvailable"
           v-tooltip="alwaysAvailable"
@@ -479,6 +508,22 @@ const toggle = () => {
           <SvgIcon name="triangle-exclamation" />
           <span>{{ removal.details }}</span>
         </p>
+        <!-- No base ship for this CCU (#114): a hint, with the ship in the Pledge Store. -->
+        <div v-if="baseMissing" class="shm-hint shm-base-missing-note">
+          <SvgIcon name="triangle-exclamation" />
+          <span>
+            <strong>{{ i18n.t('ccuCoverage.missing') }}</strong>
+            {{ baseMissing.note }}
+            <a
+              v-if="baseMissing.link"
+              class="shm-hint-link"
+              :href="baseMissing.link"
+              target="_blank"
+              rel="noopener"
+              >{{ baseMissing.linkLabel }} <SvgIcon name="square-up-right"
+            /></a>
+          </span>
+        </div>
         <ul v-if="pledge.items.length" class="shm-items">
           <li
             v-for="(item, index) in pledge.items"

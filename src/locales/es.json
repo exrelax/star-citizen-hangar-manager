@@ -1619,6 +1619,10 @@
     "alwaysAvailable": "Base siempre disponible",
     "alwaysAvailableHint": "La nave base $1 está siempre disponible en la Pledge Store, así que puedes conseguirla más adelante para aplicar este CCU. Fuente: $2, a fecha de $3.",
     "alwaysAvailableHintUndated": "La nave base $1 está siempre disponible en la Pledge Store, así que puedes conseguirla más adelante para aplicar este CCU. Fuente: $2.",
+    "missing": "Falta la nave base",
+    "missingNote": "Ni $1 ni un CCU hacia ella están en tu hangar o recompra, y probablemente no está siempre disponible en la Pledge Store.",
+    "missingNoteAll": "Ni $1 ni un CCU hacia ella están en tu hangar o recompra.",
+    "missingLink": "$1 en la Pledge Store",
     "hangar": "Hangar",
     "buyback": "Recompra",
     "kinds": {

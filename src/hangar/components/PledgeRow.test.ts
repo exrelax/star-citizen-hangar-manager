@@ -9,7 +9,8 @@ import { REMOVAL_CCUS, removalCcusState } from '@/ship-removals/use-removal-ccus
 import type { RemovalCcus } from '@/ship-removals/removal-ccus';
 import { shipRemovalRequest } from '@/store/open-current-warbonds';
 import { ALWAYS_AVAILABLE, type AlwaysAvailableList } from '@/ccu-consultant/always-available';
-import { CCU_COVERAGE, type CcuCoverage } from '@/ccu-consultant/coverage';
+import { CCU_COVERAGE, COVERAGE_SOURCES, type CcuCoverage } from '@/ccu-consultant/coverage';
+import type { Ship } from '@/ships/ships';
 import PledgeRow from './PledgeRow.vue';
 
 let app: App | undefined;
@@ -22,7 +23,7 @@ function render(
   overrides: Partial<Pledge>,
   discountAmount?: number,
   removals: RemovalCcus[] = [],
-  consultant?: { coverage: CcuCoverage; list?: AlwaysAvailableList },
+  consultant?: { coverage: CcuCoverage; list?: AlwaysAvailableList; ships?: Ship[] },
 ) {
   const pledge = {
     id: 1,
@@ -59,6 +60,10 @@ function render(
   if (consultant) {
     app.provide(CCU_COVERAGE, shallowRef(new Map([[pledge.id, consultant.coverage]])));
     app.provide(ALWAYS_AVAILABLE, shallowRef(consultant.list));
+    app.provide(
+      COVERAGE_SOURCES,
+      shallowRef({ hangar: new Map(), buyback: new Map(), ships: consultant.ships ?? [] }),
+    );
   }
   app.mount(root);
   return root;
@@ -268,6 +273,73 @@ describe('PledgeRow', () => {
       expect(label(render(ccu, undefined, [], { coverage: coverage(false) }))).toBeNull();
       app!.unmount();
       expect(label(render(ccu))).toBeNull();
+    });
+  });
+
+  describe('the note on a CCU without its base ship (#114)', () => {
+    const ccu: Partial<Pledge> = {
+      name: 'Upgrade - Cutlass Red to Mantis',
+      title: 'Upgrade - Cutlass Red to Mantis',
+      isUpgraded: false,
+      upgrade: {
+        matchItems: [{ name: 'Cutlass Red' }],
+        targetItems: [{ name: 'Mantis' }],
+        type: 'R',
+      } as Pledge['upgrade'],
+      items: [{ title: 'Cutlass Red to Mantis', kind: 'Upgrade' }],
+    };
+    const coverage = (covered = false): CcuCoverage => ({
+      id: 1,
+      baseShip: { id: 9, name: 'Cutlass Red' },
+      hangar: { ships: [], ccus: [] },
+      buyback: covered
+        ? { ships: [], ccus: [{ source: 'buyback', kind: 'ccu', id: 5, title: 'To Cutlass Red' }] }
+        : { ships: [], ccus: [] },
+      covered,
+    });
+    const list = (ids: number[]): AlwaysAvailableList => ({
+      source: { id: 'wiki', name: 'Star Citizen Wiki', url: 'https://w', facts: [] },
+      changedAt: '',
+      has: (id) => ids.includes(id),
+    });
+    const ships: Ship[] = [
+      { id: 9, name: 'Cutlass Red', msrp: 135, link: '/pledge/ships/drake-cutlass/cutlass-red' },
+    ];
+    const badge = (root: HTMLElement) => root.querySelector('.shm-badge.is-base-missing');
+    const note = (root: HTMLElement) => root.querySelector('.shm-base-missing-note');
+
+    it('tells that the base ship is probably not always available, with its Pledge Store page', () => {
+      const root = render(ccu, undefined, [], { coverage: coverage(), list: list([]), ships });
+      expect(badge(root)?.textContent?.trim()).toBe('Base ship missing');
+      const text =
+        'Neither Cutlass Red nor a CCU to it is in your hangar or buy back, and it’s probably ' +
+        'not always available in the Pledge Store.';
+      expect(badge(root)?.getAttribute('aria-description')).toBe(text);
+      expect(note(root)?.textContent).toContain(text);
+      const link = note(root)?.querySelector('a');
+      expect(link?.textContent?.trim()).toBe('Cutlass Red in the Pledge Store');
+      expect(link?.href).toBe(
+        'https://robertsspaceindustries.com/pledge/ships/drake-cutlass/cutlass-red',
+      );
+    });
+
+    it('leaves out the availability while always available ships are not considered', () => {
+      const root = render(ccu, undefined, [], { coverage: coverage() });
+      expect(badge(root)?.getAttribute('aria-description')).toBe(
+        'Neither Cutlass Red nor a CCU to it is in your hangar or buy back.',
+      );
+      expect(note(root)?.querySelector('a')).toBeNull();
+    });
+
+    it('shows none for a covered CCU or an always available base ship', () => {
+      expect(
+        badge(render(ccu, undefined, [], { coverage: coverage(true), list: list([]) })),
+      ).toBeNull();
+      app!.unmount();
+      const root = render(ccu, undefined, [], { coverage: coverage(), list: list([9]) });
+      expect(badge(root)).toBeNull();
+      expect(note(root)).toBeNull();
+      expect(root.querySelector('.shm-badge.is-always-available')).not.toBeNull();
     });
   });
 });
