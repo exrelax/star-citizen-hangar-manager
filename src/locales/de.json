@@ -1621,9 +1621,22 @@
       "ship": "Schiff",
       "ccu": "CCU"
     },
-    "show": {
-      "hangar": "Zeigt das Pledge in „My Gear“.",
-      "buyback": "Zeigt das Pledge im Buy Back."
+    "card": {
+      "from": "Basisschiff",
+      "to": "Zielschiff",
+      "value": "Wert",
+      "buybackPrice": "Buy-Back-Preis",
+      "discount": "Rabatt",
+      "surcharge": "Aufpreis",
+      "gift": "Verschenken",
+      "giftable": {
+        "yes": "Verschenkbar",
+        "no": "Nicht verschenkbar"
+      },
+      "probablyGiftable": {
+        "yes": "Vermutlich verschenkbar, mit Geld zurückgekauft",
+        "no": "Vermutlich nicht verschenkbar"
+      }
     }
   }
 }

@@ -31,7 +31,7 @@ import TabBar from '@/shared/components/TabBar.vue';
 import { i18n } from '@/i18n';
 import SettingsPanel from '@/settings/SettingsPanel.vue';
 import { REMOVAL_CCUS, useRemovalCcus } from '@/ship-removals/use-removal-ccus';
-import { CCU_COVERAGE, useCcuCoverage } from '@/ccu-consultant/coverage';
+import { CCU_COVERAGE, COVERAGE_SOURCES, useCcuCoverage } from '@/ccu-consultant/coverage';
 import { current as currentShips, shipsItem } from '@/ships/ships-storage';
 import StoreTab from '@/store/components/StoreTab.vue';
 import ShipUpgradeButtons from '@/store/components/ShipUpgradeButtons.vue';
@@ -150,6 +150,15 @@ provide(
     ships: currentShips(storedShips.value ?? null)?.ships ?? [],
     hangar: pledges.value,
     buyback: buybackPledges.value,
+  })),
+);
+// The details of each entry under "Base ship" (#426): its pledge and its ships.
+provide(
+  COVERAGE_SOURCES,
+  computed(() => ({
+    hangar: new Map(pledges.value.map((pledge) => [pledge.id, pledge])),
+    buyback: new Map(buybackPledges.value.map((pledge) => [pledge.id, pledge])),
+    ships: currentShips(storedShips.value ?? null)?.ships ?? [],
   })),
 );
 // The ones that can be melted now, for the sidebar's notification and its "Show" and "Select".

@@ -1,4 +1,4 @@
-import { createApp, reactive, type Directive } from 'vue';
+import { createApp, markRaw, reactive, type Component, type Directive } from 'vue';
 import TooltipOverlay from './TooltipOverlay.vue';
 
 /*
@@ -7,13 +7,25 @@ import TooltipOverlay from './TooltipOverlay.vue';
  * element; one shared overlay (TooltipOverlay.vue) shows the tooltip of the element under the
  * mouse or with keyboard focus. The overlay is teleported out of the manager, since the rows clip
  * what sticks out (`content-visibility`, rounded cards).
+ *
+ * `{ text, card }` shows a component as a larger card instead of the text (#426), e.g. the details
+ * of a pledge; `text` stays its accessible description. A card also opens with a tap, and closes
+ * with a tap elsewhere.
  */
 
-export type TooltipValue = string | { title?: string; text: string } | null | undefined;
+/** A component shown as the tooltip, with its props. */
+export interface TooltipCard {
+  component: Component;
+  props: Record<string, unknown>;
+}
+
+export type TooltipValue =
+  string | { title?: string; text: string; card?: TooltipCard } | null | undefined;
 
 export interface TooltipContent {
   title?: string;
   text: string;
+  card?: TooltipCard;
 }
 
 /** Delay before a tooltip shows under the mouse; none while another one is open. */
@@ -33,7 +45,11 @@ let overlayMounted = false;
 export function toContent(value: TooltipValue): TooltipContent | undefined {
   if (!value) return undefined;
   const content = typeof value === 'string' ? { text: value } : value;
-  return content.text || content.title ? content : undefined;
+  if (!content.text && !content.title) return undefined;
+  // Not made reactive: a component is no state.
+  return content.card
+    ? { ...content, card: { ...content.card, component: markRaw(content.card.component) } }
+    : content;
 }
 
 /** The tooltip of an element as plain text (also its accessible description). */
@@ -60,6 +76,12 @@ export function showTooltip(anchor: HTMLElement) {
   // Fixed to the viewport: scrolling would move the element away from it.
   addEventListener('scroll', hideTooltip, { capture: true, once: true });
   addEventListener('keydown', hideOnEscape, { capture: true });
+  if (content.card) addEventListener('pointerdown', hideOnTapElsewhere, { capture: true });
+}
+
+/** A card opened with a tap closes with a tap anywhere else. */
+function hideOnTapElsewhere(event: PointerEvent) {
+  if (!tooltipState.anchor?.contains(event.target as Node)) hideTooltip();
 }
 
 export function hideTooltip() {
@@ -68,6 +90,7 @@ export function hideTooltip() {
   tooltipState.content = undefined;
   removeEventListener('scroll', hideTooltip, { capture: true });
   removeEventListener('keydown', hideOnEscape, { capture: true });
+  removeEventListener('pointerdown', hideOnTapElsewhere, { capture: true });
 }
 
 function hideOnEscape(event: KeyboardEvent) {
@@ -109,27 +132,47 @@ export const vTooltip: Directive<HTMLElement, TooltipValue> = {
   mounted(el, { value }) {
     update(el, value);
     const enter = (event: PointerEvent) => {
-      // A tap fires it too; touch has no hover, so no tooltip there.
+      // A tap fires it too; touch has no hover, so no tooltip there – but a card (see `tap`).
       if (event.pointerType === 'touch' || !contents.has(el)) return;
       clearTimeout(timer);
       if (tooltipState.anchor) showTooltip(el);
       else timer = setTimeout(() => showTooltip(el), SHOW_DELAY_MS);
     };
-    const leave = () => {
+    const leave = (event?: Event) => {
+      // A card stays open for a tap on it, e.g. on its link.
+      if (event instanceof PointerEvent && event.pointerType === 'touch') return;
       clearTimeout(timer);
       if (tooltipState.anchor === el) hideTooltip();
+    };
+    /** A tap opens a card at once; its first tap only opens it, the next one acts. */
+    let opening = false;
+    const tap = (event: PointerEvent) => {
+      if (event.pointerType !== 'touch' || !contents.get(el)?.card) return;
+      if (tooltipState.anchor === el) return;
+      opening = true;
+      showTooltip(el);
+    };
+    /** The click of the tap that opened the card doesn't follow a link inside. */
+    const click = (event: MouseEvent) => {
+      if (!opening) return;
+      opening = false;
+      event.preventDefault();
     };
     // From the keyboard only: a click focuses a button too.
     const focus = () => el.matches(':focus-visible') && showTooltip(el);
     el.addEventListener('pointerenter', enter);
     el.addEventListener('pointerleave', leave);
     el.addEventListener('pointerdown', leave);
+    el.addEventListener('pointerdown', tap);
+    el.addEventListener('click', click, { capture: true });
     el.addEventListener('focusin', focus);
     el.addEventListener('focusout', leave);
     cleanups.set(el, () => {
       el.removeEventListener('pointerenter', enter);
       el.removeEventListener('pointerleave', leave);
       el.removeEventListener('pointerdown', leave);
+      el.removeEventListener('pointerdown', tap);
+      el.removeEventListener('click', click, { capture: true });
       el.removeEventListener('focusin', focus);
       el.removeEventListener('focusout', leave);
       leave();

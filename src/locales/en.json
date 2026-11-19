@@ -1621,9 +1621,22 @@
       "ship": "Ship",
       "ccu": "CCU"
     },
-    "show": {
-      "hangar": "Shows the pledge in “My Gear”.",
-      "buyback": "Shows the pledge in the buy back."
+    "card": {
+      "from": "Base ship",
+      "to": "Target ship",
+      "value": "Value",
+      "buybackPrice": "Buy back price",
+      "discount": "Discount",
+      "surcharge": "Surcharge",
+      "gift": "Gift",
+      "giftable": {
+        "yes": "Giftable",
+        "no": "Not giftable"
+      },
+      "probablyGiftable": {
+        "yes": "Probably giftable when bought back with money",
+        "no": "Probably not giftable"
+      }
     }
   }
 }

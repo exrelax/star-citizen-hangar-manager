@@ -6,7 +6,14 @@ import { HIDDEN } from '@/orders/orders';
 import { useSettings } from '@/settings/use-settings';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { computed, ref } from 'vue';
-import type { CcuCoverage, CoverageMatch, CoverageSource } from '../coverage';
+import {
+  useProvidedCoverageSources,
+  type CcuCoverage,
+  type CoverageMatch,
+  type CoverageSource,
+} from '../coverage';
+import { coverageCard, type CardPledge } from '../coverage-card';
+import CoverageCardView from './CoverageCardView.vue';
 
 /*
  * What gives a CCU's base ship (#111), a section of the expanded CCU row like "Applied upgrades":
@@ -39,6 +46,25 @@ const summary = computed(() =>
       ])
     : i18n.t('ccuCoverage.none'),
 );
+
+const sources = useProvidedCoverageSources();
+/** The card of an entry on hover and focus (#426), its title and id as the description. */
+function tooltipOf(match: CoverageMatch) {
+  const text = `${match.title} #${idOf(match)}`;
+  const pledge =
+    match.source === 'hangar'
+      ? sources.value.hangar.get(match.id)
+      : sources.value.buyback.get(match.id);
+  if (!pledge) return text;
+  const entry = { source: match.source, pledge } as CardPledge;
+  return {
+    text,
+    card: {
+      component: CoverageCardView,
+      props: { match, card: coverageCard(match, entry, sources.value.ships) },
+    },
+  };
+}
 
 const idOf = (match: CoverageMatch) =>
   settings.value.hidePledgeIds ? HIDDEN : (match.displayId ?? match.id);
@@ -76,17 +102,17 @@ function hrefOf(match: CoverageMatch): string | undefined {
         <div v-if="group.matches.length" class="shm-ccu-coverage-group">
           <h4>{{ i18n.t(`ccuCoverage.${group.source}`) }}</h4>
           <ul>
-            <li v-for="match in group.matches" :key="`${match.kind}-${match.id}`">
+            <li
+              v-for="match in group.matches"
+              :key="`${match.kind}-${match.id}`"
+              v-tooltip="tooltipOf(match)"
+            >
               <span class="shm-ccu-coverage-kind" :class="`is-${match.kind}`">
                 {{ i18n.t(`ccuCoverage.kinds.${match.kind}`) }}
               </span>
-              <a
-                v-if="hrefOf(match)"
-                v-tooltip="i18n.t(`ccuCoverage.show.${match.source}`)"
-                class="shm-ccu-coverage-title"
-                :href="hrefOf(match)"
-                >{{ match.title }}</a
-              >
+              <a v-if="hrefOf(match)" class="shm-ccu-coverage-title" :href="hrefOf(match)">{{
+                match.title
+              }}</a>
               <span v-else class="shm-ccu-coverage-title">{{ match.title }}</span>
               <span class="shm-upgrade-log-id shm-pledge-id">#{{ idOf(match) }}</span>
             </li>

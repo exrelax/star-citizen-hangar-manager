@@ -166,3 +166,18 @@ export const CCU_COVERAGE: InjectionKey<Readonly<Ref<Map<number, CcuCoverage>>>>
 export function useProvidedCcuCoverage(): Readonly<Ref<Map<number, CcuCoverage>>> {
   return inject(CCU_COVERAGE, shallowRef(new Map()));
 }
+
+/** The shown pledges and the upgrade tool's ships, for the details of an entry (#426). */
+export interface CoverageSources {
+  hangar: ReadonlyMap<number, PledgeView>;
+  buyback: ReadonlyMap<number, BuybackView>;
+  ships: readonly Ship[];
+}
+
+export const COVERAGE_SOURCES: InjectionKey<Readonly<Ref<CoverageSources>>> =
+  Symbol('shm-coverage-sources');
+
+/** The sources provided by the manager view (see `App.vue`); empty outside of it. */
+export function useProvidedCoverageSources(): Readonly<Ref<CoverageSources>> {
+  return inject(COVERAGE_SOURCES, shallowRef({ hangar: new Map(), buyback: new Map(), ships: [] }));
+}

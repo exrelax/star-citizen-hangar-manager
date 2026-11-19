@@ -76,3 +76,14 @@ describe('vTooltip', () => {
     expect(button.getAttribute('aria-description')).toBeNull();
   });
 });
+
+describe('toContent with a card (#426)', () => {
+  it('keeps the card with its text as the description', async () => {
+    const { toContent } = await import('./tooltip');
+    const component = { render: () => null };
+    const content = toContent({ text: 'Pledge #1', card: { component, props: { a: 1 } } });
+    expect(content?.text).toBe('Pledge #1');
+    expect(content?.card?.props).toEqual({ a: 1 });
+    expect(toContent({ text: '', card: { component, props: {} } })).toBeUndefined();
+  });
+});

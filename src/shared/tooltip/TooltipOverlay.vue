@@ -44,7 +44,7 @@ watch(() => [tooltipState.anchor, tooltipState.content], place);
     ref="overlay"
     role="tooltip"
     class="shm-tooltip"
-    :class="themeClasses(settings)"
+    :class="[themeClasses(settings), { 'is-card': tooltipState.content.card }]"
     :style="[
       fontScaleStyle(settings),
       position
@@ -52,10 +52,17 @@ watch(() => [tooltipState.anchor, tooltipState.content], place);
         : { top: '0', left: '0', visibility: 'hidden' },
     ]"
   >
-    <strong v-if="tooltipState.content.title">{{ tooltipState.content.title }}</strong>
-    <span v-if="tooltipState.content.text" class="shm-tooltip-text">{{
-      tooltipState.content.text
-    }}</span>
+    <component
+      :is="tooltipState.content.card.component"
+      v-if="tooltipState.content.card"
+      v-bind="tooltipState.content.card.props"
+    />
+    <template v-else>
+      <strong v-if="tooltipState.content.title">{{ tooltipState.content.title }}</strong>
+      <span v-if="tooltipState.content.text" class="shm-tooltip-text">{{
+        tooltipState.content.text
+      }}</span>
+    </template>
   </div>
 </template>
 
@@ -94,6 +101,13 @@ watch(() => [tooltipState.anchor, tooltipState.content], place);
 /* A tooltip with a heading is an explanation: a bit more room. */
 .shm-tooltip:has(strong) {
   padding: 10px 12px;
+}
+
+/* A card (#426): more room, its own layout. */
+.shm-tooltip.is-card {
+  max-width: min(360px, calc(100vw - 16px));
+  padding: 12px;
+  white-space: normal;
 }
 
 html .shm-tooltip.shm-theme-modern {
