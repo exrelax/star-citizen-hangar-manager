@@ -9,6 +9,8 @@ import { computed } from 'vue';
 import { BUYBACK_FILTER_PREDICATES, type BuybackFilter, type BuybackView } from '../buyback-view';
 import { giftableHint } from '../giftable-hint';
 import BuybackRow from './BuybackRow.vue';
+import GroupRow from '@/hangar/components/GroupRow.vue';
+import { buybackFacts } from '@/hangar/grouping';
 import { paintRefinement, useProvidedOwnedShips } from '@/hangar/paint-ships';
 import { BUYBACK_SORTS, sortEntries, type BuybackSort } from '@/hangar/sorting';
 import { useSettings } from '@/settings/use-settings';
@@ -68,6 +70,9 @@ const sortOptions = computed(() =>
   BUYBACK_SORTS.map((value) => ({ value, label: i18n.t(`sort.${value}`) })),
 );
 const setSort = (buyback: BuybackSort) => update({ sort: { ...props.settings.sort, buyback } });
+/** The grouped view (#447), remembered for this list. */
+const setGrouped = (buyback: boolean) =>
+  update({ grouped: { ...props.settings.grouped, buyback } });
 
 /** What the included filters are about, highlighted in the rows (#216). */
 const highlights = (states: FilterStates<BuybackFilter>) =>
@@ -103,10 +108,19 @@ const filterHint = (filter: BuybackFilter) => {
     :highlights="highlights"
     :include-request="buybackFilterRequest"
     :view-request="listViewRequest?.tab === 'buyback' ? listViewRequest : null"
+    :grouping="{ on: settings.grouped.buyback, factsOf: buybackFacts }"
     @update:sort="setSort"
+    @update:grouped="setGrouped"
   >
     <template #row="{ entry, autoExpand }">
       <BuybackRow :pledge="entry" :auto-expand="autoExpand" :link-mode="settings.buybackLinkMode" />
+    </template>
+    <template #group="{ group }">
+      <GroupRow :group="group">
+        <template #item="{ entry }">
+          <BuybackRow :pledge="entry" :auto-expand="false" :link-mode="settings.buybackLinkMode" />
+        </template>
+      </GroupRow>
     </template>
   </ManagerList>
 </template>

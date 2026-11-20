@@ -30,7 +30,13 @@
     "demoBadgeHint": "Demo mode: the lists show made-up pledge IDs and data. Click to open the demo settings, e.g. to adjust the demo or turn it off.",
     "demoBadgeLabel": "Demo mode: open the demo settings",
     "storeCreditHint": "The account's store credit, as RSI shows it at the last refresh or check. Hidden while “Hide melt value” is on.",
-    "clearSearch": "Clear search"
+    "clearSearch": "Clear search",
+    "group": "Group",
+    "groupHint": "Shows the same items as one group with their count, e.g. all CCUs from the same ship to the same ship. Remembered for this list.",
+    "groupCount": {
+      "one": "$1 group",
+      "other": "$1 groups"
+    }
   },
   "sort": {
     "label": "Sort",
@@ -1763,5 +1769,23 @@
     "readFailed": "Your cart couldn’t be read.",
     "tierAria": "$1 from $2 paints",
     "demoHint": "Not available in demo mode: it would change your real cart."
+  },
+  "group": {
+    "select": "Select all $1 items: $2",
+    "toggle": "Show or hide the items of the group",
+    "someGift": "Some gift",
+    "someMelt": "Some melt",
+    "differ": "Differ: $1",
+    "sumUnknown": {
+      "one": "$1 + $2 unknown",
+      "other": "$1 + $2 unknown"
+    },
+    "extras": {
+      "gear": "gear",
+      "paint": "paint",
+      "bisPaint": "BIS paint",
+      "insurance": "insurance",
+      "upgraded": "upgraded"
+    }
   }
 }

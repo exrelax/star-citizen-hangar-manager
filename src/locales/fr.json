@@ -30,7 +30,13 @@
     "demoBadgeHint": "Mode démo : les listes affichent des ID de pledge et des données inventés. Clique pour ouvrir les paramètres de la démo, p. ex. pour l’ajuster ou la désactiver.",
     "demoBadgeLabel": "Mode démo : ouvrir les paramètres de la démo",
     "storeCreditHint": "Le crédit boutique du compte, tel que RSI l’affiche lors de la dernière actualisation ou vérification. Masqué tant que « Masquer la valeur de fusion » est activé.",
-    "clearSearch": "Effacer la recherche"
+    "clearSearch": "Effacer la recherche",
+    "group": "Grouper",
+    "groupHint": "Affiche les mêmes éléments en un groupe avec leur nombre, p. ex. tous les CCU du même vaisseau vers le même vaisseau. Mémorisé pour cette liste.",
+    "groupCount": {
+      "one": "$1 groupe",
+      "other": "$1 groupes"
+    }
   },
   "sort": {
     "label": "Tri",
@@ -1763,5 +1769,23 @@
     "readFailed": "Ton panier n’a pas pu être lu.",
     "tierAria": "$1 dès $2 peintures",
     "demoHint": "Non disponible en mode démo : cela modifierait ton vrai panier."
+  },
+  "group": {
+    "select": "Sélectionner les $1 éléments : $2",
+    "toggle": "Afficher ou masquer les éléments du groupe",
+    "someGift": "Gift en partie",
+    "someMelt": "Melt en partie",
+    "differ": "Différences : $1",
+    "sumUnknown": {
+      "one": "$1 + $2 inconnu",
+      "other": "$1 + $2 inconnus"
+    },
+    "extras": {
+      "gear": "équipement",
+      "paint": "peinture",
+      "bisPaint": "peinture BIS",
+      "insurance": "assurance",
+      "upgraded": "amélioré"
+    }
   }
 }

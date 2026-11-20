@@ -30,7 +30,13 @@
     "demoBadgeHint": "Modo demo: las listas muestran ID de pledge y datos inventados. Haz clic para abrir los ajustes de la demo, p. ej. para ajustarla o desactivarla.",
     "demoBadgeLabel": "Modo demo: abrir los ajustes de la demo",
     "storeCreditHint": "El crédito de tienda de la cuenta, tal como RSI lo muestra en la última actualización o comprobación. Oculto mientras «Ocultar el valor de fusión» esté activado.",
-    "clearSearch": "Borrar la búsqueda"
+    "clearSearch": "Borrar la búsqueda",
+    "group": "Agrupar",
+    "groupHint": "Muestra los mismos elementos como un grupo con su número, p. ej. todos los CCU de la misma nave a la misma nave. Se recuerda para esta lista.",
+    "groupCount": {
+      "one": "$1 grupo",
+      "other": "$1 grupos"
+    }
   },
   "sort": {
     "label": "Orden",
@@ -1763,5 +1769,23 @@
     "readFailed": "No se pudo leer tu carrito.",
     "tierAria": "$1 desde $2 pinturas",
     "demoHint": "No disponible en el modo demo: cambiaría tu carrito real."
+  },
+  "group": {
+    "select": "Seleccionar los $1 elementos: $2",
+    "toggle": "Mostrar u ocultar los elementos del grupo",
+    "someGift": "Algunos gift",
+    "someMelt": "Algunos melt",
+    "differ": "Difieren: $1",
+    "sumUnknown": {
+      "one": "$1 + $2 desconocido",
+      "other": "$1 + $2 desconocidos"
+    },
+    "extras": {
+      "gear": "equipo",
+      "paint": "pintura",
+      "bisPaint": "pintura BIS",
+      "insurance": "seguro",
+      "upgraded": "mejorado"
+    }
   }
 }

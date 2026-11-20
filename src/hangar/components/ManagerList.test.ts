@@ -1,4 +1,5 @@
 // @vitest-environment happy-dom
+/* eslint-disable vue/one-component-per-file -- each test mounts a list of its own */
 import { afterEach, describe, expect, it } from 'vitest';
 import { createApp, h, nextTick, type App } from 'vue';
 import type { FilterRefinements } from '../filters';
@@ -140,5 +141,73 @@ describe('ManagerList: refined filters (#419)', () => {
     await nextTick();
     expect(other.querySelector('.shm-filter-refine')).toBeNull();
     expect(rows(root)).toEqual(['1', '3', '4']);
+  });
+});
+
+describe('ManagerList: the grouped view (#447)', () => {
+  type Item = { id: number; searchText: string; kind: string; value: number };
+  const items: Item[] = [
+    { id: 1, searchText: 'nova raft', kind: 'a', value: 30 },
+    { id: 2, searchText: 'arrow', kind: 'b', value: 20 },
+    { id: 3, searchText: 'nova raft', kind: 'a', value: 10 },
+  ];
+  function renderGrouped(on: boolean) {
+    const toggled: boolean[] = [];
+    const root = document.createElement('div');
+    document.body.append(root);
+    app = createApp({
+      render: () =>
+        h(
+          ManagerList<Item, 'big', string>,
+          {
+            entries: items,
+            filterGroups: [{ category: 'types', filters: ['big'] }],
+            predicates: { big: (e: Item) => e.value >= 20 },
+            filterLabel: () => 'Big',
+            active: false,
+            grouping: {
+              on,
+              factsOf: (e: Item) => ({ key: e.kind, extras: {}, value: e.value, giftable: true }),
+            },
+            'onUpdate:grouped': (value: boolean) => toggled.push(value),
+          },
+          {
+            row: ({ entry }: { entry: Item }) => h('div', { class: 'row' }, String(entry.id)),
+            group: ({ group }: { group: { items: Item[]; count: number } }) =>
+              h(
+                'div',
+                { class: 'group' },
+                `${group.items.map((e) => e.id).join('+')}×${group.count}`,
+              ),
+          },
+        ),
+    });
+    app.mount(root);
+    return { root, toggled };
+  }
+  const shown = (root: HTMLElement) =>
+    [...root.querySelectorAll('.row, .group')].map((e) => e.textContent);
+
+  it('shows groups in the order of their first item, a group of one as its row', () => {
+    const { root } = renderGrouped(true);
+    expect(shown(root)).toEqual(['1+3×2', '2']);
+    expect(root.querySelector('.shm-count')?.textContent).toContain('2 groups');
+  });
+
+  it('groups what search and filters leave', async () => {
+    const { root } = renderGrouped(true);
+    root.querySelector<HTMLButtonElement>('.shm-filter')!.click();
+    await nextTick();
+    // Only 1 and 2 are big: 1 is a group of one now.
+    expect(shown(root)).toEqual(['1', '2']);
+  });
+
+  it('is the plain list while off, and its toggle asks to turn it on', () => {
+    const { root, toggled } = renderGrouped(false);
+    expect(shown(root)).toEqual(['1', '2', '3']);
+    const toggle = root.querySelector<HTMLButtonElement>('.shm-group-toggle')!;
+    expect(toggle.getAttribute('aria-pressed')).toBe('false');
+    toggle.click();
+    expect(toggled).toEqual([true]);
   });
 });

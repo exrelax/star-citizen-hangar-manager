@@ -30,6 +30,8 @@ import { useProvidedAlwaysAvailable } from '@/ccu-consultant/always-available';
 import { isPaintItem } from '../pledge-view';
 import { listViewRequest } from '../list-jump';
 import PledgeRow from './PledgeRow.vue';
+import GroupRow from './GroupRow.vue';
+import { pledgeFacts } from '../grouping';
 
 const props = defineProps<{ pledges: PledgeView[]; settings: Settings; active: boolean }>();
 
@@ -85,6 +87,10 @@ const sortOptions = computed(() =>
   HANGAR_SORTS.map((value) => ({ value, label: i18n.t(`sort.${value}`) })),
 );
 const setSort = (hangar: HangarSort) => update({ sort: { ...props.settings.sort, hangar } });
+/** The grouped view (#447), remembered for this list. */
+const setGrouped = (hangar: boolean) => update({ grouped: { ...props.settings.grouped, hangar } });
+/** Groups can be selected where single pledges can. */
+const canSelect = computed(() => canSelectPledges(props.settings));
 
 /** What the included filters and the sorting are about, highlighted in the rows (#216). */
 const highlights = (states: FilterStates<PledgeFilter>) =>
@@ -148,13 +154,22 @@ const filterHint = (filter: PledgeFilter) => {
     :filter-request="viewFilterRequest"
     :include-request="hangarFilterRequest"
     :view-request="listViewRequest?.tab === 'hangar' ? listViewRequest : null"
+    :grouping="{ on: settings.grouped.hangar, factsOf: pledgeFacts }"
     @clear-request="clearHangarFilter()"
     @update:sort="setSort"
     @visible="showVisible"
     @filter-states="showFilterStates"
+    @update:grouped="setGrouped"
   >
     <template #row="{ entry, autoExpand }">
       <PledgeRow :pledge="entry" :auto-expand="autoExpand" />
+    </template>
+    <template #group="{ group }">
+      <GroupRow :group="group" :selectable="canSelect">
+        <template #item="{ entry }">
+          <PledgeRow :pledge="entry" :auto-expand="false" />
+        </template>
+      </GroupRow>
     </template>
   </ManagerList>
 </template>

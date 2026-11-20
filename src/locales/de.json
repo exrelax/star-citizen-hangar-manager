@@ -30,7 +30,13 @@
     "demoBadgeHint": "Demo-Modus: Die Listen zeigen erfundene Pledge-IDs und Daten. Klicken öffnet die Demo-Einstellungen, z. B. um die Demo anzupassen oder abzuschalten.",
     "demoBadgeLabel": "Demo-Modus: Demo-Einstellungen öffnen",
     "storeCreditHint": "Die Store Credits des Accounts, wie RSI sie beim letzten Neueinlesen oder Check zeigt. Ausgeblendet, solange „Schmelzwert ausblenden“ an ist.",
-    "clearSearch": "Suche leeren"
+    "clearSearch": "Suche leeren",
+    "group": "Gruppieren",
+    "groupHint": "Zeigt gleiche Einträge als eine Gruppe mit ihrer Anzahl, z. B. alle CCUs vom selben Schiff zum selben Schiff. Wird für diese Liste gemerkt.",
+    "groupCount": {
+      "one": "$1 Gruppe",
+      "other": "$1 Gruppen"
+    }
   },
   "sort": {
     "label": "Sortierung",
@@ -1763,5 +1769,23 @@
     "readFailed": "Dein Warenkorb ließ sich nicht lesen.",
     "tierAria": "$1 ab $2 Paints",
     "demoHint": "Im Demo-Modus nicht verfügbar: Es würde deinen echten Warenkorb ändern."
+  },
+  "group": {
+    "select": "Alle $1 Einträge auswählen: $2",
+    "toggle": "Einträge der Gruppe zeigen oder ausblenden",
+    "someGift": "Teils Gift",
+    "someMelt": "Teils Melt",
+    "differ": "Unterschiede: $1",
+    "sumUnknown": {
+      "one": "$1 + $2 unbekannt",
+      "other": "$1 + $2 unbekannt"
+    },
+    "extras": {
+      "gear": "Gear",
+      "paint": "Paint",
+      "bisPaint": "BIS-Paint",
+      "insurance": "Versicherung",
+      "upgraded": "upgegradet"
+    }
   }
 }
