@@ -115,8 +115,11 @@ const emit = defineEmits<{
 
 defineSlots<{
   row(props: { entry: T; autoExpand: boolean }): unknown;
-  /** A group of several entries in the grouped view (#447). */
-  group?(props: { group: ItemGroup<T> }): unknown;
+  /**
+   * A group of several entries in the grouped view (#447); `open`: a jump to one of its pledges
+   * opens its dialog (#449).
+   */
+  group?(props: { group: ItemGroup<T>; open: { id: number; at: number } | null }): unknown;
   /** More controls beside the sort, e.g. the period of the warbond history. */
   side?(): unknown;
 }>();
@@ -248,11 +251,38 @@ watch(
   { immediate: true },
 );
 
+/** A jump to a pledge in the grouped view (#449): its group's dialog opens instead of a search. */
+const groupOpen = shallowRef<{ id: number; at: number } | null>(null);
+/** The entry a search for one pledge's id means, by its id or the demo's made-up one. */
+const entryOfId = (term: string) =>
+  /^[\dA-Z]+$/.test(term)
+    ? props.entries.find(
+        (entry) =>
+          String(entry.id) === term || (entry as { displayId?: string }).displayId === term,
+      )
+    : undefined;
+
 watch(
   () => props.viewRequest,
   (request) => {
     if (!request) return;
     clearRequested();
+    const jumpedTo = props.grouping?.on && !request.filters ? entryOfId(request.search) : undefined;
+    // Only a pledge of a group of several opens a dialog; one of its own is searched as before.
+    const grouping = props.grouping;
+    const inGroup =
+      jumpedTo &&
+      grouping &&
+      props.entries.filter(
+        (entry) => grouping.factsOf(entry).key === grouping.factsOf(jumpedTo).key,
+      ).length > 1;
+    if (jumpedTo && inGroup) {
+      query.value = '';
+      filterStates.value = new Map();
+      refinementStates.value = new Map();
+      groupOpen.value = { id: jumpedTo.id, at: request.at };
+      return;
+    }
     query.value = request.search;
     filterStates.value = new Map((request.filters ?? []) as [F, FilterState][]);
     refinementStates.value = new Map();
@@ -344,6 +374,14 @@ const rendered = computed(() => matching.value.slice(0, renderLimit.value));
 /** The groups drawn, like the rows a batch at a time; each a group or a single entry. */
 const renderedGroups = computed(() => grouped.value?.slice(0, renderLimit.value) ?? []);
 const shownLength = computed(() => grouped.value?.length ?? matching.value.length);
+// The group a jump opens is drawn, wherever it is in the list.
+watch(groupOpen, (request) => {
+  const index = request
+    ? (grouped.value?.findIndex((group) => group.items.some((item) => item.id === request.id)) ??
+      -1)
+    : -1;
+  if (index >= renderLimit.value) renderLimit.value = index + 1;
+});
 watch(matching, () => (renderLimit.value = LIST_RENDER_BATCH));
 watch(grouped, () => (renderLimit.value = LIST_RENDER_BATCH));
 
@@ -545,7 +583,7 @@ const countLabel = computed(() => {
             :entry="group.items[0]!"
             :auto-expand="group.items[0]!.id === onlyVisibleId"
           />
-          <slot v-else name="group" :group="group" />
+          <slot v-else name="group" :group="group" :open="groupOpen" />
         </template>
       </template>
       <template v-else>

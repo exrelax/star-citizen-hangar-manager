@@ -165,7 +165,7 @@ const filterHint = (filter: PledgeFilter) => {
     <template #row="{ entry, autoExpand }">
       <PledgeRow :pledge="entry" :auto-expand="autoExpand" />
     </template>
-    <template #group="{ group }">
+    <template #group="{ group, open }">
       <GroupRow
         :group="group"
         :kind="pledgeGroupKind(group)"
@@ -173,9 +173,11 @@ const filterHint = (filter: PledgeFilter) => {
         :badges="pledgeGroupBadges(group)"
         :note="extrasNote(group.extras)"
         :selectable="canSelect"
+        :list-classes="displayClasses"
+        :open="open"
       >
-        <template #item="{ entry }">
-          <PledgeRow :pledge="entry" :auto-expand="false" />
+        <template #item="{ entry, autoExpand }">
+          <PledgeRow :pledge="entry" :auto-expand="autoExpand" />
         </template>
       </GroupRow>
     </template>

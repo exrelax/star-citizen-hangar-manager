@@ -116,16 +116,22 @@ const filterHint = (filter: BuybackFilter) => {
     <template #row="{ entry, autoExpand }">
       <BuybackRow :pledge="entry" :auto-expand="autoExpand" :link-mode="settings.buybackLinkMode" />
     </template>
-    <template #group="{ group }">
+    <template #group="{ group, open }">
       <GroupRow
         :group="group"
         :kind="buybackGroupKind(group)"
         :ships="group.items[0]!.ships.map((ship) => ship.name)"
         :badges="buybackGroupBadges(group)"
         :note="extrasNote(group.extras)"
+        :list-classes="displayClasses"
+        :open="open"
       >
-        <template #item="{ entry }">
-          <BuybackRow :pledge="entry" :auto-expand="false" :link-mode="settings.buybackLinkMode" />
+        <template #item="{ entry, autoExpand }">
+          <BuybackRow
+            :pledge="entry"
+            :auto-expand="autoExpand"
+            :link-mode="settings.buybackLinkMode"
+          />
         </template>
       </GroupRow>
     </template>

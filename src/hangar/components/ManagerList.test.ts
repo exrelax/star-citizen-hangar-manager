@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 /* eslint-disable vue/one-component-per-file -- each test mounts a list of its own */
 import { afterEach, describe, expect, it } from 'vitest';
-import { createApp, h, nextTick, type App } from 'vue';
+import { createApp, h, nextTick, shallowRef, type App } from 'vue';
 import type { FilterRefinements } from '../filters';
 import ManagerList from './ManagerList.vue';
 
@@ -209,5 +209,66 @@ describe('ManagerList: the grouped view (#447)', () => {
     expect(toggle.getAttribute('aria-pressed')).toBe('false');
     toggle.click();
     expect(toggled).toEqual([true]);
+  });
+});
+
+describe('ManagerList: a jump in the grouped view (#449)', () => {
+  type Item = { id: number; searchText: string; kind: string };
+  const items: Item[] = [
+    { id: 11, searchText: 'nova 11', kind: 'a' },
+    { id: 12, searchText: 'arrow 12', kind: 'b' },
+    { id: 13, searchText: 'nova 13', kind: 'a' },
+  ];
+  function renderJump(search: string) {
+    const opened: unknown[] = [];
+    const root = document.createElement('div');
+    document.body.append(root);
+    const request = shallowRef<{ search: string; at: number } | null>(null);
+    app = createApp({
+      render: () =>
+        h(
+          ManagerList<Item, 'x', string>,
+          {
+            entries: items,
+            filterGroups: [],
+            predicates: { x: () => true },
+            filterLabel: () => 'X',
+            active: false,
+            grouping: {
+              on: true,
+              factsOf: (e: Item) => ({ key: e.kind, extras: {}, giftable: true }),
+            },
+            viewRequest: request.value,
+          },
+          {
+            row: ({ entry }: { entry: Item }) => h('div', { class: 'row' }, String(entry.id)),
+            group: ({ group, open }: { group: { items: Item[] }; open: unknown }) => {
+              opened.push(open);
+              return h('div', { class: 'group' }, group.items.map((e) => e.id).join('+'));
+            },
+          },
+        ),
+    });
+    app.mount(root);
+    // The jump comes after the list is there, as from the CCU Consultant (#436).
+    request.value = { search, at: 1 };
+    return { root, opened };
+  }
+  const shown = (root: HTMLElement) =>
+    [...root.querySelectorAll('.row, .group')].map((e) => e.textContent);
+
+  it('opens the group of a pledge of several, without searching its id', async () => {
+    const { root, opened } = renderJump('13');
+    await nextTick();
+    await nextTick();
+    expect(shown(root)).toEqual(['11+13', '12']);
+    expect(opened.at(-1)).toEqual({ id: 13, at: 1 });
+  });
+
+  it('searches a pledge of its own as before', async () => {
+    const { root } = renderJump('12');
+    await nextTick();
+    await nextTick();
+    expect(shown(root)).toEqual(['12']);
   });
 });
