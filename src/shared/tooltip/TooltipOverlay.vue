@@ -2,7 +2,13 @@
 import { useSettings } from '@/settings/use-settings';
 import { fontScaleStyle, themeClasses } from '@/themes/theme';
 import { nextTick, ref, useTemplateRef, watch } from 'vue';
-import { tooltipState } from './tooltip';
+import {
+  hideTooltipSoon,
+  keepTooltip,
+  hideUnlessFocusInside,
+  onTooltipKey,
+  tooltipState,
+} from './tooltip';
 
 /*
  * The one overlay of all tooltips (see tooltip.ts), mounted to the page's body on first use. It
@@ -36,21 +42,35 @@ async function place() {
 }
 
 watch(() => [tooltipState.anchor, tooltipState.content], place);
+// Its element, for an interactive tooltip (focus and clicks inside it).
+watch(overlay, (element) => (tooltipState.overlay = element ?? undefined));
 </script>
 
 <template>
   <div
     v-if="tooltipState.content"
     ref="overlay"
-    role="tooltip"
+    :role="tooltipState.content.interactive ? 'dialog' : 'tooltip'"
+    :aria-label="tooltipState.content.interactive ? tooltipState.content.text : undefined"
     class="shm-tooltip"
-    :class="[themeClasses(settings), { 'is-card': tooltipState.content.card }]"
+    :class="[
+      themeClasses(settings),
+      {
+        'is-card': tooltipState.content.card,
+        'is-interactive': tooltipState.content.interactive,
+      },
+    ]"
     :style="[
       fontScaleStyle(settings),
       position
         ? { top: `${position.top}px`, left: `${position.left}px` }
         : { top: '0', left: '0', visibility: 'hidden' },
     ]"
+    @pointerenter="tooltipState.content?.interactive && keepTooltip()"
+    @pointerleave="tooltipState.content?.interactive && hideTooltipSoon()"
+    @focusin="tooltipState.content?.interactive && keepTooltip()"
+    @focusout="tooltipState.content?.interactive && hideUnlessFocusInside()"
+    @keydown="onTooltipKey"
   >
     <component
       :is="tooltipState.content.card.component"
@@ -108,6 +128,11 @@ watch(() => [tooltipState.anchor, tooltipState.content], place);
   max-width: min(360px, calc(100vw - 16px));
   padding: 12px;
   white-space: normal;
+}
+
+/* One to act in (#434): it takes the mouse, for its links. */
+.shm-tooltip.is-interactive {
+  pointer-events: auto;
 }
 
 html .shm-tooltip.shm-theme-modern {

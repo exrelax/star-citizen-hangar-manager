@@ -49,6 +49,11 @@ import {
   shipRemovalsMeta,
   type ShipRemovalsSnapshot,
 } from '@/ship-removals/ship-removals-storage';
+import {
+  tokenRenewalsItem,
+  tokenRenewalsMeta,
+  type TokenRenewalsSnapshot,
+} from '@/buyback-tokens/token-renewals-storage';
 import type { BuybackSnapshot } from '@/buyback/buyback';
 import type { HangarSnapshot } from '@/hangar/pledge';
 import type { OrdersSnapshot } from '@/orders/orders';
@@ -87,6 +92,7 @@ export type StorageId =
   | 'events'
   | 'priceIncreases'
   | 'shipRemovals'
+  | 'buybackTokenRenewals'
   | 'storeCredit'
   | 'paintPlan'
   | 'paintHistory'
@@ -282,6 +288,17 @@ export const STORAGES: readonly StorageDefinition[] = [
     usedBy: [],
     kind: 'data',
     count: (value: ShipRemovalsSnapshot | null) => value?.shipRemovals.length ?? 0,
+    readAgain: 'auto',
+  },
+  {
+    id: 'buybackTokenRenewals',
+    meta: tokenRenewalsMeta,
+    item: tokenRenewalsItem,
+    content: 'Buy back token renewals: dates, whether confirmed, note, source',
+    source: 'The project website (GitHub Pages, data/buyback-tokens.json)',
+    usedBy: [],
+    kind: 'data',
+    count: (value: TokenRenewalsSnapshot | null) => value?.renewals.length ?? 0,
     readAgain: 'auto',
   },
   {

@@ -18,6 +18,7 @@ import {
 } from '@/demo/demo-settings';
 import { RUNNING_PLAN_STAGES, type RunningPlanStage } from '@/demo/demo-running-plan';
 import { MELT_CHECK_OUTCOMES, type MeltCheckOutcome } from '@/demo/demo-melt-check';
+import { TOKEN_RENEWAL_CASES, type TokenRenewalCase } from '@/demo/demo-token-renewal';
 import type { DemoComposition } from '@/demo/generate-hangar';
 import { newDemoHangar, resetDemoData } from '@/demo/use-demo';
 import { CREDIT_CASES, creditForCases, type CreditCase } from '@/demo/demo-store-credit';
@@ -273,6 +274,28 @@ async function reset() {
       >
         <option v-for="count in DEMO.maxBuybackTokens + 1" :key="count" :value="count - 1">
           {{ count - 1 }}
+        </option>
+      </select>
+    </SettingRow>
+    <!-- The next renewal of the tokens in their tooltip (#434). -->
+    <SettingRow
+      :label="i18n.t('settings.demo.tokenRenewal')"
+      :hint="i18n.t('settings.demo.tokenRenewalHint')"
+      for="shm-demo-token-renewal"
+      hint-id="shm-demo-token-renewal-hint"
+    >
+      <select
+        id="shm-demo-token-renewal"
+        class="shm-select"
+        :value="settings.demo.tokenRenewal"
+        :disabled="off"
+        aria-describedby="shm-demo-token-renewal-hint"
+        @change="
+          set({ tokenRenewal: ($event.target as HTMLSelectElement).value as TokenRenewalCase })
+        "
+      >
+        <option v-for="kind in TOKEN_RENEWAL_CASES" :key="kind" :value="kind">
+          {{ i18n.t(`settings.demo.tokenRenewalCases.${kind}`) }}
         </option>
       </select>
     </SettingRow>

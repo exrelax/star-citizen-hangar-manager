@@ -284,6 +284,11 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   price increases, by the same loader and on the same schedule, the dev build from the working
   copy, checked by [`src/ship-removals/ship-removals.ts`](../src/ship-removals/ship-removals.ts).
   See [below](#editing-the-ship-removals) for how to edit it.
+- **Buy back token renewals**: `data/buyback-tokens.json` lists when RSI renews the buy back
+  tokens, by source, for the tooltip of the tokens at the top right (#434). Read like the ship
+  removals, by the same loader and on the same schedule, the dev build from the working copy,
+  checked by [`src/buyback-tokens/token-renewals.ts`](../src/buyback-tokens/token-renewals.ts).
+  See [below](#editing-the-buy-back-token-renewals) for how to edit it.
 - **Warbond history**: `data/warbond-history.json` lists earlier warbond offers (`offers`: the
   ship's upgrade tool `id` and `name`, an optional `skuId`, `price`, `msrp`, `firstSeen`,
   `lastSeen` as ISO dates, optional `events` with `id` and `name`), offers seen before a browser
@@ -415,6 +420,41 @@ values are an example):
 An entry without a required field, or with one that doesn't fit, is left out. A ship has one
 entry: a second one for the same ship is ignored. Ships removed on the same date are told
 together.
+
+### Editing the buy back token renewals
+
+CIG announces once a year on Spectrum when it renews the buy back tokens, e.g. the
+[2026 Buy Back Token Schedule](https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/2026-buy-back-token-schedule):
+a new token each quarter, on its first Monday. `sources` lists where the dates come from, each
+with its dates:
+
+```json
+{
+  "name": "Spectrum: 2026 Buy Back Token Schedule",
+  "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/2026-buy-back-token-schedule",
+  "renewals": [
+    { "at": "2026-01-05", "confirmed": true },
+    {
+      "at": "2027-01-04",
+      "confirmed": false,
+      "note": { "en": "Estimated: the first Monday of the quarter, as in 2026.", "de": "…" }
+    }
+  ]
+}
+```
+
+- **`name`** and **`url`** (required): the source as the tooltip links it, an `https` URL. The
+  source of an estimate is what it is based on, e.g. the schedule of the year before.
+- **`at`** (required): a day (`"2027-01-04"`, counting until it is over, UTC) or a time in UTC.
+  Past dates are ignored, so they can stay.
+- **`confirmed`**: `true` for a date CIG announced. Without it the date counts as an estimate, and
+  the tooltip says so ("probably … (estimated)").
+- **`note`** (optional for a confirmed date): for an estimate, briefly what it is based on. One text
+  or one per language, like the texts of the events.
+
+To add a year: once CIG announces the schedule, add a source with its link and the dates as
+`confirmed`, and drop the estimate of that year's first date. Dates from rumours don't go in. The
+tooltip shows the earliest date not over yet, of all sources; without one it shows no date.
 
 ## Configuration
 

@@ -305,6 +305,16 @@ export const PRICE_INCREASES = {
  * The ship removals (#285): ships CIG takes out of the Pledge Store for good, on the project
  * website like the events, read the same way (`SITE_DATA`).
  */
+/**
+ * When RSI renews the buy back tokens (#434): dates CIG announced or estimated, each with its
+ * source, on the project website (`data/buyback-tokens.json`), read like its other data files.
+ */
+export const BUYBACK_TOKENS = {
+  url: 'https://exrelax.github.io/star-citizen-hangar-manager/data/buyback-tokens.json',
+  /** The format the extension reads; files of other versions are ignored. */
+  schemaVersion: 1,
+} as const;
+
 export const SHIP_REMOVALS = {
   url: 'https://exrelax.github.io/star-citizen-hangar-manager/data/ship-removals.json',
   /** The format the extension reads; files of other versions are ignored. */

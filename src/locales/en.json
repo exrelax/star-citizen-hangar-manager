@@ -404,6 +404,14 @@
       "resetHint": "All demo settings back to their defaults; the demo’s marks are cleared.",
       "buybackTokens": "Buy back tokens",
       "buybackTokensHint": "The buy back tokens at the top right of the Hangar Manager. Without any, it shows 0.",
+      "tokenRenewal": "Next renewal of the buy back tokens",
+      "tokenRenewalHint": "The date in the tooltip of the buy back tokens: the project website’s, one announced by CIG, an estimated one or none.",
+      "tokenRenewalCases": {
+        "real": "From the project website",
+        "confirmed": "Announced by CIG",
+        "estimated": "Estimated",
+        "none": "None known"
+      },
       "meltCheck": "Check before bulk melting",
       "meltCheckHint": "How the check of the pledges right before bulk melting turns out, also for the filler paints. The demo only shows it: nothing is read from RSI or melted.",
       "meltCheckOutcomes": {
@@ -510,6 +518,11 @@
       "content": "Ships taken out of the Pledge Store for good, from the project website, with their dates",
       "missing": "Until then no ships leaving the Pledge Store show: not in the Pledge Store tab, in My Hangar or in the sidebar."
     },
+    "buybackTokenRenewals": {
+      "name": "Buy back token renewals",
+      "content": "When RSI renews the buy back tokens, from the project website, with their sources",
+      "missing": "Until then the tooltip of the buy back tokens names no next renewal."
+    },
     "storeCredit": {
       "name": "Store credit",
       "content": "The account's store credit, as its account menu shows it",
@@ -600,6 +613,9 @@
     "tokens": "Buy back tokens: $1",
     "tokensLabel": "Buy back tokens",
     "tokensHint": "Pledges you can still buy back with store credit (one token per pledge), as RSI shows them on “Buy Back Pledges” at the last refresh or check. Buying back with money needs no token.",
+    "renewal": "RSI renews the tokens on $1.",
+    "renewalEstimated": "RSI probably renews the tokens on $1 (estimated).",
+    "renewalSource": "Source:",
     "toCart": "To Cart",
     "addToCart": "Add to cart on RSI and open the cart (new tab). RSI empties the cart for buy back pledges.",
     "cartFailed": "Could not add to the RSI cart: $1",

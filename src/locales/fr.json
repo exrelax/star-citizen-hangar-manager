@@ -404,6 +404,14 @@
       "resetHint": "Tous les réglages de la démo reviennent à leurs valeurs par défaut ; les marques de la démo sont effacées.",
       "buybackTokens": "Jetons de rachat",
       "buybackTokensHint": "Les jetons de rachat en haut à droite du Hangar Manager. Sans aucun, il affiche 0.",
+      "tokenRenewal": "Prochain renouvellement des jetons de rachat",
+      "tokenRenewalHint": "La date dans l’info-bulle des jetons de rachat : celle du site du projet, une annoncée par CIG, une estimée ou aucune.",
+      "tokenRenewalCases": {
+        "real": "Du site du projet",
+        "confirmed": "Annoncée par CIG",
+        "estimated": "Estimée",
+        "none": "Aucune connue"
+      },
       "meltCheck": "Vérification avant la fonte groupée",
       "meltCheckHint": "Le résultat de la vérification des pledges juste avant la fonte groupée, aussi pour les peintures de remplissage. La démo ne fait que l’afficher : rien n’est lu chez RSI ni fondu.",
       "meltCheckOutcomes": {
@@ -510,6 +518,11 @@
       "content": "Les vaisseaux retirés définitivement du Pledge Store, depuis le site du projet, avec leurs dates",
       "missing": "D’ici là, ni l’onglet Pledge Store, ni My Hangar, ni la barre latérale ne montrent les vaisseaux qui quittent le Pledge Store."
     },
+    "buybackTokenRenewals": {
+      "name": "Renouvellement des jetons de rachat",
+      "content": "Quand RSI renouvelle les jetons de rachat, depuis le site du projet, avec leurs sources",
+      "missing": "D’ici là, l’info-bulle des jetons de rachat n’indique pas le prochain renouvellement."
+    },
     "storeCredit": {
       "name": "Crédit boutique",
       "content": "Le crédit boutique du compte, comme son menu de compte l’affiche",
@@ -600,6 +613,9 @@
     "tokens": "Jetons de rachat : $1",
     "tokensLabel": "Jetons de rachat",
     "tokensHint": "Nombre de pledges que tu peux encore racheter avec du crédit boutique (un jeton par pledge), tel que RSI l’affichait sur « Buy Back Pledges » lors de la dernière actualisation ou vérification. Un rachat avec de l’argent ne nécessite pas de jeton.",
+    "renewal": "RSI renouvelle les jetons le $1.",
+    "renewalEstimated": "RSI renouvelle probablement les jetons le $1 (estimation).",
+    "renewalSource": "Source :",
     "toCart": "Au panier",
     "addToCart": "Ajouter au panier RSI et ouvrir le panier (nouvel onglet). RSI vide le panier pour les pledges du buy back.",
     "cartFailed": "Impossible d’ajouter au panier RSI : $1",

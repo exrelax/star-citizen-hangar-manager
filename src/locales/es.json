@@ -404,6 +404,14 @@
       "resetHint": "Todos los ajustes de la demo vuelven a sus valores predeterminados y se borran las marcas de la demo.",
       "buybackTokens": "Tokens de recompra",
       "buybackTokensHint": "Los tokens de recompra arriba a la derecha del Hangar Manager. Sin ninguno, muestra 0.",
+      "tokenRenewal": "Próxima renovación de los tokens de recompra",
+      "tokenRenewalHint": "La fecha en la descripción de los tokens de recompra: la de la web del proyecto, una anunciada por CIG, una estimada o ninguna.",
+      "tokenRenewalCases": {
+        "real": "De la web del proyecto",
+        "confirmed": "Anunciada por CIG",
+        "estimated": "Estimada",
+        "none": "Ninguna conocida"
+      },
       "meltCheck": "Comprobación antes de fundir varios",
       "meltCheckHint": "Cómo resulta la comprobación de los pledges justo antes de fundir varios, también con las pinturas de relleno. La demo solo la muestra: no se lee nada de RSI ni se funde nada.",
       "meltCheckOutcomes": {
@@ -510,6 +518,11 @@
       "content": "Las naves que se retiran definitivamente de la Pledge Store, desde el sitio web del proyecto, con sus fechas",
       "missing": "Hasta entonces, ni la pestaña Pledge Store, ni My Hangar, ni la barra lateral muestran las naves que dejan la Pledge Store."
     },
+    "buybackTokenRenewals": {
+      "name": "Renovación de los tokens de recompra",
+      "content": "Cuándo renueva RSI los tokens de recompra, de la web del proyecto, con sus fuentes",
+      "missing": "Hasta entonces, la descripción de los tokens de recompra no indica la próxima renovación."
+    },
     "storeCredit": {
       "name": "Crédito de tienda",
       "content": "El crédito de tienda de la cuenta, como lo muestra su menú de cuenta",
@@ -600,6 +613,9 @@
     "tokens": "Tokens de recompra: $1",
     "tokensLabel": "Tokens de recompra",
     "tokensHint": "Cuántos pledges puedes recomprar aún con crédito de tienda (un token por pledge), según lo mostraba RSI en «Buy Back Pledges» en la última actualización o comprobación. Recomprar con dinero no necesita token.",
+    "renewal": "RSI renueva los tokens el $1.",
+    "renewalEstimated": "RSI probablemente renueva los tokens el $1 (estimado).",
+    "renewalSource": "Fuente:",
     "toCart": "Al carrito",
     "addToCart": "Añadir al carrito de RSI y abrir el carrito (nueva pestaña). RSI vacía el carrito para los pledges del buy back.",
     "cartFailed": "No se ha podido añadir al carrito de RSI: $1",
