@@ -22,17 +22,23 @@ export function parseBuybackPage(doc: Document): BuybackListPage {
 /**
  * The buy back tokens from RSI's yellow box above the list: how many pledges can still be bought
  * back with store credit ("You have <strong>2</strong> opportunity to buy back a pledge with store
- * credits."). Unset without the box or a number in it.
+ * credits."). With no token left RSI shows no box, but notes in the page's header that "store
+ * credits cannot be used to “buy back” a pledge" (#433): that is 0. Unset without either, e.g. on
+ * another page, or with a box without a number.
  */
 export function parseBuybackTokens(doc: Document): number | undefined {
   const box = doc.querySelector('.buy-back-warning');
-  if (!box) return undefined;
+  if (!box)
+    return NO_TOKENS_NOTE.test(text(doc.querySelector('.buy-back-pledges header'))) ? 0 : undefined;
   const count = text(box.querySelector('strong')) || /you have (\d+|no)\b/i.exec(text(box))?.[1];
   if (count === undefined) return undefined;
   if (/^no$/i.test(count)) return 0;
   const tokens = Number(count);
   return Number.isInteger(tokens) && tokens >= 0 ? tokens : undefined;
 }
+
+/** RSI's note in the buy back's header while no token is left. */
+const NO_TOKENS_NOTE = /store credits? cannot be used to\W+buy back/i;
 
 function parseEntry(li: HTMLElement): BuybackPledge | undefined {
   // Regular pledges link to `/pledge/buyback/<id>`; CCUs open a dialog with `data-pledgeid`.

@@ -81,3 +81,14 @@ describe('the demo settings in the generated demo', () => {
     );
   });
 });
+
+describe('the demo’s buy back tokens (#433)', () => {
+  it('keeps 0 up to the most an account can have, else the default', () => {
+    expect(DEFAULT_DEMO_SETTINGS.buybackTokens).toBe(2);
+    expect(demoSettingsOf({ buybackTokens: 0 }).buybackTokens).toBe(0);
+    expect(demoSettingsOf({ buybackTokens: 1 }).buybackTokens).toBe(1);
+    expect(demoSettingsOf({ buybackTokens: 3 }).buybackTokens).toBe(2);
+    expect(demoSettingsOf({ buybackTokens: -1 }).buybackTokens).toBe(2);
+    expect(demoSettingsOf({ buybackTokens: 1.5 }).buybackTokens).toBe(2);
+  });
+});

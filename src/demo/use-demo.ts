@@ -170,8 +170,8 @@ export interface DemoContext {
   shipRemovals: DemoShipRemovals;
   /** The catalog's items, for the Paint Discount Consultant of the generated demo (#131). */
   storeItems?: readonly StoreItem[];
-  /** Buy back tokens shown instead of the account's, with the generated buy back (#177). */
-  tokens?: number;
+  /** Buy back tokens shown instead of the account's, by the demo settings: 0 or more (#433). */
+  tokens: number;
   /** The store credit shown instead of the account's. */
   storeCredit: StoreCredit;
   /**
@@ -363,13 +363,13 @@ export function useDemo(
       fakeId,
       realOrder,
       upgradeLog,
+      tokens: settings().buybackTokens,
       ...(account && {
         generatedUpgradeLog: (pledgeId: number) => account.account.upgradeLogs.get(pledgeId),
         orderDetails: (order: Order) => {
           const entry = generatedOrders.get(order.id);
           return entry ? demoOrderDetails(order, [entry.title], entry.total) : undefined;
         },
-        tokens: account.generatedBuyback.tokens,
         storeItems: catalog.value.items,
         priceIncreases: account.priceIncreases,
       }),

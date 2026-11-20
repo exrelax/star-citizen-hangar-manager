@@ -402,6 +402,8 @@
       },
       "hangar": "Hangar",
       "resetHint": "Tous les réglages de la démo reviennent à leurs valeurs par défaut ; les marques de la démo sont effacées.",
+      "buybackTokens": "Jetons de rachat",
+      "buybackTokensHint": "Les jetons de rachat en haut à droite du Hangar Manager. Sans aucun, il affiche 0.",
       "meltCheck": "Vérification avant la fonte groupée",
       "meltCheckHint": "Le résultat de la vérification des pledges juste avant la fonte groupée, aussi pour les peintures de remplissage. La démo ne fait que l’afficher : rien n’est lu chez RSI ni fondu.",
       "meltCheckOutcomes": {

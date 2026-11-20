@@ -402,6 +402,8 @@
       },
       "hangar": "Hangar",
       "resetHint": "All demo settings back to their defaults; the demo’s marks are cleared.",
+      "buybackTokens": "Buy back tokens",
+      "buybackTokensHint": "The buy back tokens at the top right of the Hangar Manager. Without any, it shows 0.",
       "meltCheck": "Check before bulk melting",
       "meltCheckHint": "How the check of the pledges right before bulk melting turns out, also for the filler paints. The demo only shows it: nothing is read from RSI or melted.",
       "meltCheckOutcomes": {

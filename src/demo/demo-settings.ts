@@ -73,6 +73,8 @@ export interface DemoSettings {
    * changed, gone or no longer meltable, or RSI not readable. Nothing is read or melted.
    */
   meltCheck: MeltCheckOutcome;
+  /** The buy back tokens at the top right (#433): none or up to the most an account can have. */
+  buybackTokens: number;
 }
 
 /** The range of each kind's number and of the list sizes. */
@@ -104,6 +106,7 @@ export const DEFAULT_DEMO_SETTINGS: DemoSettings = {
   completedPlans: true,
   realStoreData: false,
   meltCheck: 'match',
+  buybackTokens: DEMO.maxBuybackTokens,
 };
 
 const wholeIn =
@@ -172,5 +175,10 @@ export function demoSettingsOf(stored: Partial<DemoSettings> | null | undefined)
     meltCheck: MELT_CHECK_OUTCOMES.includes(stored?.meltCheck as MeltCheckOutcome)
       ? stored!.meltCheck!
       : defaults.meltCheck,
+    buybackTokens: valid(
+      stored?.buybackTokens,
+      wholeIn({ min: 0, max: DEMO.maxBuybackTokens }),
+      defaults.buybackTokens,
+    ),
   };
 }
