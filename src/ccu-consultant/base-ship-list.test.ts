@@ -117,30 +117,59 @@ describe('CCUs soon without base ship (#454)', () => {
     [1, arrow],
   ]);
 
-  it('lists the CCUs without other cover from a leaving ship apart, the next date first', () => {
+  it('lists leaving ships with fewer ways to them than CCUs from them, the next date first', () => {
     const list = baseShipList(
       [
-        coverage(10, { id: 3, name: 'Razor' }),
-        coverage(11, { id: 3, name: 'Razor' }),
+        coverage(10, { id: 3, name: 'Razor' }, [], [match('buyback', 80)]),
+        coverage(11, { id: 3, name: 'Razor' }, [], [match('buyback', 80)]),
+        // A CCU to the Razor in the buy back gives it to one CCU only: one is short.
+        coverage(14, { id: 3, name: 'Razor' }, [], [match('buyback', 80)]),
         // Always available today, but leaving: the list passed leaves it out (`withoutLeaving`).
         coverage(12, { id: 1, name: 'Arrow' }),
         coverage(13, { id: 2, name: 'Cutlass Red' }),
-        // Covered by the buy back: not soon without base ship.
-        coverage(14, { id: 3, name: 'Razor' }, [], [match('buyback', 80)]),
       ],
       withoutLeaving(always(1), leaving),
       ships,
       leaving,
     );
-    expect(list.soon.map((row) => [row.name, row.ccus, row.removal?.ship.id])).toEqual([
-      ['Arrow', [12], 1],
-      ['Razor', [10, 11], 3],
+    expect(
+      list.soon.map((row) => [row.name, row.ccus, row.removal?.ship.id, row.ways, row.short]),
+    ).toEqual([
+      ['Arrow', [12], 1, { hangar: 0, buyback: 0 }, 1],
+      ['Razor', [10, 11, 14], 3, { hangar: 0, buyback: 1 }, 2],
     ]);
     expect(list.soonCount).toBe(3);
+    // Without any way only here; with too few also where their cover puts them.
     expect(list.groups.missing.map((row) => row.name)).toEqual(['Cutlass Red']);
+    expect(list.groups.buyback.map((row) => [row.name, row.ccus])).toEqual([
+      ['Razor', [10, 11, 14]],
+    ]);
     expect(list.groups.always).toEqual([]);
-    // They count as without base ship, the tab's count included.
-    expect(list.counts).toEqual({ hangar: 0, buyback: 1, always: 0, missing: 4 });
+    expect(list.counts).toEqual({ hangar: 0, buyback: 3, always: 0, missing: 2 });
+  });
+
+  it('leaves out a leaving ship with a way for each CCU from it', () => {
+    const list = baseShipList(
+      [
+        coverage(
+          10,
+          { id: 3, name: 'Razor' },
+          [match('hangar', 90, 'ship')],
+          [match('buyback', 80)],
+        ),
+        coverage(
+          11,
+          { id: 3, name: 'Razor' },
+          [match('hangar', 90, 'ship')],
+          [match('buyback', 80)],
+        ),
+      ],
+      always(),
+      ships,
+      leaving,
+    );
+    expect(list.soon).toEqual([]);
+    expect(list.soonCount).toBe(0);
   });
 
   it('has none without leaving ships', () => {

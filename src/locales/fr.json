@@ -1716,7 +1716,8 @@
       "ccus": "CCU depuis lui",
       "cover": "Couverture du vaisseau de base",
       "found": "Trouvé",
-      "leaves": "Quitte le Pledge Store"
+      "leaves": "Quitte le Pledge Store",
+      "ways": "Accès"
     },
     "unknownShip": "Vaisseau de base inconnu",
     "notAlways": "Pas toujours disponible",
@@ -1745,8 +1746,13 @@
     },
     "soon": {
       "title": "Bientôt sans vaisseau de base",
-      "hint": "Ces vaisseaux de base sont encore disponibles, mais quittent le Pledge Store – même ceux toujours disponibles jusqu’ici. Procurez-vous-en un, ou un CCU vers lui, avant cette date : ensuite, les CCU depuis lui n’ont plus de vaisseau de base.",
-      "until": "Dans le Pledge Store jusqu’au $1"
+      "hint": "Ces vaisseaux de base quittent le Pledge Store – même ceux toujours disponibles jusqu’ici. Chaque vaisseau ou CCU vers l’un d’eux dans votre hangar ou votre buy back donne le vaisseau à un CCU depuis lui, et il y en a moins que de CCU. Procurez-vous ceux qui manquent avant la date : ensuite, ces CCU n’ont plus de vaisseau de base.",
+      "until": "Dans le Pledge Store jusqu’au $1",
+      "ways": "$1 dans votre hangar · $2 dans votre buy back",
+      "short": {
+        "one": "Il en manque $1",
+        "other": "Il en manque $1"
+      }
     }
   },
   "cartPaints": {

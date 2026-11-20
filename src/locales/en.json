@@ -1716,7 +1716,8 @@
       "ccus": "CCUs from it",
       "cover": "Base ship coverage",
       "found": "Found",
-      "leaves": "Leaves the Pledge Store"
+      "leaves": "Leaves the Pledge Store",
+      "ways": "Ways to it"
     },
     "unknownShip": "Unknown base ship",
     "notAlways": "Not always available",
@@ -1745,8 +1746,13 @@
     },
     "soon": {
       "title": "Soon without base ship",
-      "hint": "These base ships can still be had, but leave the Pledge Store – also those always available until now. Get one, or a CCU to it, before then: afterwards the CCUs from it have no base ship.",
-      "until": "In the Pledge Store until $1"
+      "hint": "These base ships leave the Pledge Store – also those always available until now. Each ship or CCU to one of them in your hangar or buy back gives the ship to one CCU from it, and there are fewer of them than CCUs. Get the missing ones before the date: afterwards those CCUs have no base ship.",
+      "until": "In the Pledge Store until $1",
+      "ways": "$1 in your hangar · $2 in your buy back",
+      "short": {
+        "one": "$1 too few",
+        "other": "$1 too few"
+      }
     }
   },
   "cartPaints": {

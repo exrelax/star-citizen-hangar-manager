@@ -1716,7 +1716,8 @@
       "ccus": "CCUs davon",
       "cover": "Abdeckung des Basisschiffs",
       "found": "Gefunden",
-      "leaves": "Verlässt den Pledge Store"
+      "leaves": "Verlässt den Pledge Store",
+      "ways": "Wege dorthin"
     },
     "unknownShip": "Unbekanntes Basisschiff",
     "notAlways": "Nicht immer kaufbar",
@@ -1745,8 +1746,13 @@
     },
     "soon": {
       "title": "Bald ohne Basisschiff",
-      "hint": "Diese Basisschiffe gibt es noch, aber sie verlassen den Pledge Store – auch die bisher immer kaufbaren. Hol dir eins oder ein CCU dorthin, bevor es so weit ist: Danach haben die CCUs davon kein Basisschiff mehr.",
-      "until": "Im Pledge Store bis $1"
+      "hint": "Diese Basisschiffe verlassen den Pledge Store – auch die bisher immer kaufbaren. Jedes Schiff oder CCU dorthin in deinem Hangar oder Buy Back gibt einem CCU davon das Schiff, und davon gibt es weniger als CCUs. Hol dir die fehlenden vor dem Datum: Danach haben diese CCUs kein Basisschiff mehr.",
+      "until": "Im Pledge Store bis $1",
+      "ways": "$1 im Hangar · $2 im Buy Back",
+      "short": {
+        "one": "$1 zu wenig",
+        "other": "$1 zu wenig"
+      }
     }
   },
   "cartPaints": {

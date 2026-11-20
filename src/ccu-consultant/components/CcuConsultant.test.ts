@@ -207,10 +207,47 @@ describe('CCUs soon without base ship (#454)', () => {
     );
     expect(row[0]).toBe('ArrowIn the Pledge Store until Jan 27, 2027');
     expect(row[1]).toBe('2');
-    expect(row[2]).toMatch(/^Removal: .+Show in Pledge Store$/);
+    // No ship or CCU to it: both CCUs from it are short.
+    expect(row[2]).toBe('0 2 too few');
+    expect(row[3]).toMatch(/^Removal: .+Show in Pledge Store$/);
     // The ships leaving the Pledge Store are left out of the table above.
     expect(cells(root)[0]?.[0]).toContain('Cutlass Red');
     expect(cells(root)).toHaveLength(2);
+  });
+
+  it('counts the ways to a leaving ship covered too few times', () => {
+    const viaBuyback = (id: number) => ({
+      ...coverage(id, 1, 'Arrow'),
+      buyback: {
+        ships: [],
+        ccus: [{ source: 'buyback' as const, kind: 'ccu' as const, id: 600, title: 'To Arrow' }],
+      },
+      covered: true,
+    });
+    const { root } = render(
+      [viaBuyback(13), viaBuyback(14), viaBuyback(15)],
+      true,
+      new Map([[1, removal(1, 'Arrow')]]),
+    );
+    // Covered today by the buy back, but two of three will be short: the tab counts them.
+    expect(tabs(root)).toEqual([
+      'Without base ship 2',
+      'Only via buy back 3',
+      'Base always available 0',
+    ]);
+    const title = root.querySelector('.shm-ccu-consultant-soon-title');
+    expect(title?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Soon without base ship 2');
+    const soon = root.querySelectorAll('.shm-ccu-consultant-table');
+    const row = [...soon[soon.length - 1]!.querySelectorAll('tbody td')].map((cell) =>
+      cell.textContent!.replace(/\s+/g, ' ').trim(),
+    );
+    expect(row[1]).toBe('3');
+    const ways = soon[soon.length - 1]!.querySelector('.shm-ccu-consultant-ways');
+    expect(ways?.textContent).toBe('1');
+    expect(ways?.nextElementSibling?.textContent?.trim()).toBe(
+      '0 in your hangar · 1 in your buy back',
+    );
+    expect(row[2]).toMatch(/2 too few$/);
   });
 
   it('has no such section without leaving ships', () => {

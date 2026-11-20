@@ -91,19 +91,30 @@ const barLabel = computed(() =>
 const groups = computed(() =>
   BASE_SHIP_GROUPS.filter((group) => group !== 'always' || consider.value),
 );
+/** The ships and CCUs that give a leaving base ship (#454). */
+const waysOf = (row: BaseShipRow) => (row.ways ? row.ways.hangar + row.ways.buyback : 0);
 const chosen = ref<BaseShipGroup>();
+/**
+ * The CCUs of each group's tab. "Without base ship" also counts the CCUs that will be short of a
+ * way to a leaving base ship (#454) though covered today; those without any way are among its own.
+ */
+const tabCount = (id: BaseShipGroup) =>
+  list.value.counts[id] +
+  (id === 'missing'
+    ? list.value.soon.reduce((sum, row) => sum + (waysOf(row) ? (row.short ?? 0) : 0), 0)
+    : 0);
 /** The group shown: the one chosen, else the first one with CCUs (those without base ship first). */
 const group = computed(
   (): BaseShipGroup =>
     (chosen.value && groups.value.includes(chosen.value) ? chosen.value : undefined) ??
-    groups.value.find((id) => list.value.counts[id] > 0) ??
+    groups.value.find((id) => tabCount(id) > 0) ??
     'missing',
 );
 const groupItems = computed(() =>
   groups.value.map((id) => ({
     id,
     label: i18n.t(`ccuConsultant.standing.${id}`),
-    count: format(list.value.counts[id]),
+    count: format(tabCount(id)),
   })),
 );
 const rows = computed(() => list.value.groups[group.value]);
@@ -373,6 +384,7 @@ const hrefOf = (match: CoverageMatch) =>
                   <tr>
                     <th scope="col">{{ i18n.t('ccuConsultant.col.ship') }}</th>
                     <th scope="col" class="is-number">{{ i18n.t('ccuConsultant.col.ccus') }}</th>
+                    <th scope="col">{{ i18n.t('ccuConsultant.col.ways') }}</th>
                     <th scope="col">{{ i18n.t('ccuConsultant.col.leaves') }}</th>
                   </tr>
                 </thead>
@@ -386,6 +398,25 @@ const hrefOf = (match: CoverageMatch) =>
                       </span>
                     </td>
                     <td class="is-number is-strong">{{ format(row.ccus.length) }}</td>
+                    <td>
+                      <span class="shm-ccu-consultant-ways">{{ format(waysOf(row)) }}</span>
+                      <span v-if="waysOf(row)" class="shm-ccu-consultant-meta">
+                        {{
+                          i18n.t('ccuConsultant.soon.ways', [
+                            format(row.ways?.hangar ?? 0),
+                            format(row.ways?.buyback ?? 0),
+                          ])
+                        }}
+                      </span>
+                      <span class="shm-ccu-consultant-cover is-missing is-short">
+                        <SvgIcon name="triangle-exclamation" />
+                        {{
+                          i18n.n('ccuConsultant.soon.short', row.short ?? 0, [
+                            format(row.short ?? 0),
+                          ])
+                        }}
+                      </span>
+                    </td>
                     <td>
                       <div class="shm-ccu-consultant-leaves">
                         <span
@@ -693,6 +724,16 @@ const hrefOf = (match: CoverageMatch) =>
 }
 
 /* "Soon without base ship" (#454): set apart from the table above. */
+.shm-ccu-consultant-cover.is-short {
+  white-space: nowrap;
+}
+
+.shm-ccu-consultant-ways {
+  display: block;
+  color: var(--shm-text-strong);
+  font-variant-numeric: tabular-nums;
+}
+
 .shm-ccu-consultant-soon-title {
   display: flex;
   align-items: baseline;
