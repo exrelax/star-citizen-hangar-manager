@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { i18n, type MessageKey } from '@/i18n';
+import { i18n, locale, type MessageKey } from '@/i18n';
+import { today } from '@/orders/refund';
+import { useProvidedCoverageSources } from '@/ccu-consultant/coverage';
+import type { GroupBadgeContext } from '../group-badges';
 import type { Settings } from '@/settings/settings';
 import { computed, onUnmounted } from 'vue';
 import {
@@ -71,6 +74,15 @@ const refinements = computed(() => ({
     ...pledge.items.filter(isPaintItem).map((item) => item.title),
   ]),
   ccus: ccuRefinement<PledgeView>(coverages.value, alwaysAvailable.value),
+}));
+/** What a group's labels taken from its items need (#487): the CCU Consultant's, today. */
+const coverageSources = useProvidedCoverageSources();
+const badgeContext = computed((): GroupBadgeContext => ({
+  coverageOf: (id) => coverages.value.get(id),
+  ...(alwaysAvailable.value && { alwaysAvailable: alwaysAvailable.value }),
+  ships: coverageSources.value.ships,
+  today: today.value,
+  locale: locale.value,
 }));
 
 const filterGroups = computed(() =>
@@ -170,7 +182,7 @@ const filterHint = (filter: PledgeFilter) => {
         :group="group"
         :kind="pledgeGroupKind(group)"
         :ships="group.items[0]!.ships.map((ship) => ship.name)"
-        :badges="pledgeGroupBadges(group)"
+        :badges="pledgeGroupBadges(group, badgeContext)"
         :note="extrasNote(group.extras)"
         :selectable="canSelect"
         :list-classes="displayClasses"

@@ -67,3 +67,56 @@ describe('the badges of a group row (#448)', () => {
     expect(extrasNote([])).toBeUndefined();
   });
 });
+
+describe('the labels a group row takes from its items (#487)', () => {
+  const coverage = (id: number, base: number, covered = false) => ({
+    id,
+    baseShip: { id: base, name: base === 7 ? 'Arrow' : 'Marauder' },
+    hangar: { ships: [], ccus: [] },
+    buyback: { ships: [], ccus: [] },
+    covered,
+  });
+  const always = {
+    source: { id: 'wiki', name: 'Star Citizen Wiki', url: 'https://w', facts: [] },
+    changedAt: '',
+    has: (id: number) => id === 7,
+  };
+  const ccu = (id: number, placedAt?: string) =>
+    pledge({ id, isCcu: true, ...(placedAt && { order: { placedAt } as PledgeView['order'] }) });
+  const context = (coverages: ReturnType<typeof coverage>[]) => ({
+    coverageOf: (id: number) => coverages.find((c) => c.id === id),
+    alwaysAvailable: always,
+    ships: [],
+    today: '2026-11-20',
+    locale: 'en' as const,
+  });
+
+  it('shows the CCU Consultant’s labels of all or some items, with the single row’s tooltip', () => {
+    const arrow = pledgeGroupBadges(
+      groupOf([ccu(1), ccu(2)]),
+      context([coverage(1, 7), coverage(2, 7)]),
+    );
+    expect(texts(arrow)).toEqual(['Base always available', 'Gift', 'Melt']);
+    expect(arrow[0]!.hint).toMatch(/^The base ship Arrow is always available/);
+    const marauder = pledgeGroupBadges(
+      groupOf([ccu(3), ccu(4)]),
+      context([coverage(3, 8), coverage(4, 8, true)]),
+    );
+    expect(texts(marauder)).toEqual(['Some base ship missing', 'Gift', 'Melt']);
+    expect(marauder[0]!.hint).toMatch(/1 of 2$/);
+  });
+
+  it('shows the refund countdown of the item with the least time left', () => {
+    const badges = pledgeGroupBadges(
+      groupOf([ccu(5, '2026-11-13'), ccu(6, '2026-10-30'), ccu(7)]),
+      context([]),
+    );
+    // Bought on Oct 30: refundable until Nov 29, 9 days left.
+    expect(texts(badges)[0]).toBe('Refund: 9 days');
+    expect(badges[0]!.className).toBe('is-refund');
+    expect(badges[0]!.hint).toMatch(/2 of 3 items can still be refunded\.$/);
+    const last = pledgeGroupBadges(groupOf([ccu(8, '2026-10-21')]), context([]));
+    expect(texts(last)[0]).toBe('Refund: last day');
+    expect(last[0]!.className).toBe('is-refund is-urgent');
+  });
+});

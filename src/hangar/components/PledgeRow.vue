@@ -25,9 +25,8 @@ import { formatExpectedTime } from '@/price-increases/price-increase-label';
 import UpgradeLog from './UpgradeLog.vue';
 import CcuCoverage from '@/ccu-consultant/components/CcuCoverage.vue';
 import { useProvidedCcuCoverage, useProvidedCoverageSources } from '@/ccu-consultant/coverage';
-import { standingOf } from '@/ccu-consultant/base-ship-list';
-import { rsiUrl } from '@/shared/rsi-api';
-import { listDate, useProvidedAlwaysAvailable } from '@/ccu-consultant/always-available';
+import { useProvidedAlwaysAvailable } from '@/ccu-consultant/always-available';
+import { alwaysAvailableHintOf, baseMissingOf } from '@/ccu-consultant/ccu-labels';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { selection } from '../selection';
 import { formatTimeLeft, toggleMeltMark } from '../melt-marks';
@@ -121,39 +120,15 @@ const coverages = useProvidedCcuCoverage();
 const coverage = computed(() => coverages.value.get(props.pledge.id));
 // A CCU whose base ship is always available in the Pledge Store (#112), with or without coverage.
 const alwaysAvailableShips = useProvidedAlwaysAvailable();
-const alwaysAvailable = computed(() => {
-  const list = alwaysAvailableShips.value;
-  const ship = coverage.value?.baseShip;
-  if (!list || ship?.id === undefined || !list.has(ship.id)) return undefined;
-  const date = listDate(list.changedAt, locale.value);
-  return date
-    ? i18n.t('ccuCoverage.alwaysAvailableHint', [ship.name, list.source.name, date])
-    : i18n.t('ccuCoverage.alwaysAvailableHintUndated', [ship.name, list.source.name]);
-});
-/**
- * A CCU without its base ship (#114): neither the hangar nor the buy back gives it, and – while
- * those are considered – it isn't always available. The same rule as the CCU Consultant's list.
- */
+const alwaysAvailable = computed(() =>
+  alwaysAvailableHintOf(coverage.value, alwaysAvailableShips.value, locale.value),
+);
 const coverageSources = useProvidedCoverageSources();
-const baseMissing = computed(() => {
-  const value = coverage.value;
-  if (!props.pledge.isCcu || !value) return undefined;
-  if (standingOf(value, alwaysAvailableShips.value) !== 'missing') return undefined;
-  const id = value.baseShip?.id;
-  const ship =
-    id !== undefined ? coverageSources.value.ships.find((entry) => entry.id === id) : undefined;
-  const name = ship?.name ?? value.baseShip?.name ?? i18n.t('ccuCoverage.baseShip');
-  return {
-    note: i18n.t(
-      alwaysAvailableShips.value ? 'ccuCoverage.missingNote' : 'ccuCoverage.missingNoteAll',
-      [name],
-    ),
-    ...(ship?.link && {
-      link: rsiUrl(ship.link),
-      linkLabel: i18n.t('ccuCoverage.missingLink', [ship.name]),
-    }),
-  };
-});
+const baseMissing = computed(() =>
+  props.pledge.isCcu
+    ? baseMissingOf(coverage.value, alwaysAvailableShips.value, coverageSources.value.ships)
+    : undefined,
+);
 const removals = useProvidedRemovalCcus();
 const removal = computed(() => {
   const entry = removals.value.byHangarCcu.get(props.pledge.id);

@@ -1790,12 +1790,15 @@
       "melt": "Algunos melt",
       "upgraded": "Algunos mejorados",
       "unavailable": "Algunos no disponibles",
-      "probablyGiftable": "Algunos probablemente regalables"
+      "probablyGiftable": "Algunos probablemente regalables",
+      "baseMissing": "Falta la nave base en algunos",
+      "alwaysAvailable": "Base siempre disponible en algunos"
     },
     "items": {
       "one": "$1 elemento",
       "other": "$1 elementos"
     },
-    "selected": "$1 de $2 seleccionados"
+    "selected": "$1 de $2 seleccionados",
+    "refundCount": "$1 de $2 elementos aún se pueden reembolsar."
   }
 }

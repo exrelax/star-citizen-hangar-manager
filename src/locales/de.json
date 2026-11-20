@@ -1790,12 +1790,15 @@
       "melt": "Teils Melt",
       "upgraded": "Teils upgegradet",
       "unavailable": "Teils nicht verfügbar",
-      "probablyGiftable": "Teils vermutlich verschenkbar"
+      "probablyGiftable": "Teils vermutlich verschenkbar",
+      "baseMissing": "Teils Basisschiff fehlt",
+      "alwaysAvailable": "Teils Basis immer kaufbar"
     },
     "items": {
       "one": "$1 Eintrag",
       "other": "$1 Einträge"
     },
-    "selected": "$1 von $2 ausgewählt"
+    "selected": "$1 von $2 ausgewählt",
+    "refundCount": "$1 von $2 Einträgen lassen sich noch erstatten."
   }
 }

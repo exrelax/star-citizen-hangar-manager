@@ -1790,12 +1790,15 @@
       "melt": "Some melt",
       "upgraded": "Some upgraded",
       "unavailable": "Some not available",
-      "probablyGiftable": "Some probably giftable"
+      "probablyGiftable": "Some probably giftable",
+      "baseMissing": "Some base ship missing",
+      "alwaysAvailable": "Some base always available"
     },
     "items": {
       "one": "$1 item",
       "other": "$1 items"
     },
-    "selected": "$1 of $2 selected"
+    "selected": "$1 of $2 selected",
+    "refundCount": "$1 of $2 items can still be refunded."
   }
 }
