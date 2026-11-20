@@ -24,6 +24,9 @@ import { FILTER_HIGHLIGHTS } from '@/config';
 import { highlightClasses } from '../highlights';
 import ManagerList from './ManagerList.vue';
 import { paintRefinement, useProvidedOwnedShips } from '../paint-ships';
+import { ccuRefinement } from '@/ccu-consultant/base-ship-list';
+import { useProvidedCcuCoverage } from '@/ccu-consultant/coverage';
+import { useProvidedAlwaysAvailable } from '@/ccu-consultant/always-available';
 import { isPaintItem } from '../pledge-view';
 import { listViewRequest } from '../list-jump';
 import PledgeRow from './PledgeRow.vue';
@@ -52,13 +55,19 @@ const predicates = computed(() => ({
     hasPriceChangeWithin(pledge, now.value, props.settings.priceIncreaseDays),
 }));
 const hasPriceChange = computed(() => props.pledges.some(predicates.value.priceChange));
-/** "Paints" for owned ships or for ships not owned (#336), by the hangar's ships. */
+/**
+ * "Paints" for owned ships or for ships not owned (#336), by the hangar's ships; "CCUs" without
+ * base ship or with an always available one (#461), by the CCU Consultant's coverage.
+ */
 const ownedShips = useProvidedOwnedShips();
+const coverages = useProvidedCcuCoverage();
+const alwaysAvailable = useProvidedAlwaysAvailable();
 const refinements = computed(() => ({
   paints: paintRefinement<PledgeView>(ownedShips.value, (pledge) => [
     pledge.title,
     ...pledge.items.filter(isPaintItem).map((item) => item.title),
   ]),
+  ccus: ccuRefinement<PledgeView>(coverages.value, alwaysAvailable.value),
 }));
 
 const filterGroups = computed(() =>

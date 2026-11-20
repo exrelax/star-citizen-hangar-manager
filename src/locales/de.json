@@ -104,6 +104,10 @@
       "notOwned": "Für Schiffe, die du nicht hast",
       "notOwnedShort": "Schiffe nicht im Hangar"
     },
+    "ccuCoverage": {
+      "all": "Alle CCUs",
+      "limited": "Basis begrenzt kaufbar"
+    },
     "ccus": "CCUs",
     "gameAccess": "Spielzugang",
     "giftable": "Verschenkbar",

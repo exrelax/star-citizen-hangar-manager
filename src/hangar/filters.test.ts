@@ -18,6 +18,9 @@ import {
   type PledgeFilter,
 } from './filters';
 import type { PledgeView } from './pledge-view';
+import type { AlwaysAvailableList } from '@/ccu-consultant/always-available';
+import { ccuRefinement } from '@/ccu-consultant/base-ship-list';
+import type { CcuCoverage } from '@/ccu-consultant/coverage';
 
 const pledge = (id: number, overrides: Partial<PledgeView> = {}) =>
   ({
@@ -307,5 +310,83 @@ describe('refined filters (#419)', () => {
         ['other', 0],
       ]),
     );
+  });
+});
+
+describe('the "CCUs" filter by base ship coverage (#461)', () => {
+  const none = { ships: [], ccus: [] };
+  const coverage = (id: number, base: number, buyback = false, hangar = false): CcuCoverage => ({
+    id,
+    baseShip: { id: base, name: `Ship ${base}` },
+    hangar: hangar
+      ? { ships: [{ source: 'hangar', kind: 'ship', id: 900, title: 'S' }], ccus: [] }
+      : none,
+    buyback: buyback
+      ? { ships: [], ccus: [{ source: 'buyback', kind: 'ccu', id: 800, title: 'C' }] }
+      : none,
+    covered: buyback || hangar,
+  });
+  const coverages = new Map(
+    [coverage(1, 7), coverage(2, 8), coverage(3, 8, true), coverage(4, 9, false, true)].map((c) => [
+      c.id,
+      c,
+    ]),
+  );
+  const always: AlwaysAvailableList = {
+    source: { id: 'wiki', name: 'Star Citizen Wiki', url: 'https://w', facts: [] },
+    changedAt: '',
+    has: (id) => id === 7,
+  };
+  const ccus = [1, 2, 3, 4].map((id) => pledge(id, { isCcu: true }));
+  const states = new Map<PledgeFilter, FilterState>([['ccus', 'include']]);
+  const listed = (option: string, list: AlwaysAvailableList | undefined) => {
+    const refinements = { ccus: ccuRefinement<PledgeView>(coverages, list) };
+    const predicates = refinedPredicates(
+      PLEDGE_FILTER_PREDICATES,
+      refinements,
+      new Map<PledgeFilter, string>([['ccus', option]]),
+    );
+    return {
+      ids: ccus.filter((entry) => matchesFilterStates(entry, states, predicates)).map((e) => e.id),
+      count: filterCounts(ccus, ['ccus'], states, predicates).get('ccus'),
+      options: refinements.ccus.map((o) => o.label),
+    };
+  };
+
+  it('lists the CCUs without base ship and those with an always available one', () => {
+    expect(listed('all', always)).toEqual({
+      ids: [1, 2, 3, 4],
+      count: 4,
+      options: ['All CCUs', 'Without base ship', 'Base always available', 'Base limited'],
+    });
+    expect(listed('missing', always).ids).toEqual([2]);
+    expect(listed('missing', always).count).toBe(1);
+  });
+
+  it('splits the CCUs by their base ship: always available or limited, covered or not', () => {
+    const both = new Map(coverages);
+    both.set(5, coverage(5, 7, true));
+    const refinements = { ccus: ccuRefinement<PledgeView>(both, always) };
+    const entries = [...ccus, pledge(5, { isCcu: true }), pledge(6, { isCcu: true })];
+    const ids = (option: string) => {
+      const predicates = refinedPredicates(
+        PLEDGE_FILTER_PREDICATES,
+        refinements,
+        new Map<PledgeFilter, string>([['ccus', option]]),
+      );
+      return entries.filter((e) => matchesFilterStates(e, states, predicates)).map((e) => e.id);
+    };
+    // 5 is covered by the buy back, its base ship always available; 6 has no coverage known.
+    expect(ids('always')).toEqual([1, 5]);
+    expect(ids('limited')).toEqual([2, 3, 4]);
+  });
+
+  it('counts always available base ships as missing while they are not considered', () => {
+    const off = listed('missing', undefined);
+    expect(off.ids).toEqual([1, 2]);
+    expect(off.options).toEqual(['All CCUs', 'Without base ship']);
+    // A choice no longer offered falls back to all CCUs.
+    expect(listed('always', undefined).ids).toEqual([1, 2, 3, 4]);
+    expect(listed('limited', undefined).ids).toEqual([1, 2, 3, 4]);
   });
 });

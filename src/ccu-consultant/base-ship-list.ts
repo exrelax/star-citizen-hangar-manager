@@ -1,3 +1,5 @@
+import type { RefinementOption } from '@/hangar/filters';
+import { i18n } from '@/i18n';
 import type { Ship } from '@/ships/ships';
 import type { AlwaysAvailableList } from './always-available';
 import type { CcuCoverage, CoverageMatch } from './coverage';
@@ -106,4 +108,49 @@ export function baseShipList(
     total,
     groups: { missing: sorted('missing'), buyback: sorted('buyback'), always: sorted('always') },
   };
+}
+
+/**
+ * The refinement of the filter "CCUs" (#461, #419): all CCUs; those without base ship, by the same
+ * rule as the list above and the note on the rows (#114); and – while always available ships are
+ * considered – those whose base ship is always available, like the label (#112), and their
+ * opposite, those whose base ship is limited: not always available. Covered or not; a CCU whose
+ * base ship isn't known is in neither of the two.
+ */
+export function ccuRefinement<T extends { id: number }>(
+  coverages: ReadonlyMap<number, CcuCoverage>,
+  always: AlwaysAvailableList | undefined,
+): RefinementOption<T>[] {
+  const coverageOf = (entry: T) => coverages.get(entry.id);
+  const standing = (entry: T) => {
+    const coverage = coverageOf(entry);
+    return coverage ? standingOf(coverage, always) : undefined;
+  };
+  /** Whether the base ship is always available; unknown without a list or a base ship. */
+  const baseAlways = (entry: T) => {
+    const id = coverageOf(entry)?.baseShip?.id;
+    return always && id !== undefined ? always.has(id) : undefined;
+  };
+  return [
+    { id: 'all', label: i18n.t('filter.ccuCoverage.all') },
+    {
+      id: 'missing',
+      label: i18n.t('ccuConsultant.standing.missing'),
+      matches: (entry) => standing(entry) === 'missing',
+    },
+    ...(always
+      ? [
+          {
+            id: 'always',
+            label: i18n.t('ccuConsultant.standing.always'),
+            matches: (entry: T) => baseAlways(entry) === true,
+          },
+          {
+            id: 'limited',
+            label: i18n.t('filter.ccuCoverage.limited'),
+            matches: (entry: T) => baseAlways(entry) === false,
+          },
+        ]
+      : []),
+  ];
 }

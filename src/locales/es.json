@@ -104,6 +104,10 @@
       "notOwned": "Para naves que no tienes",
       "notOwnedShort": "Naves que no tienes"
     },
+    "ccuCoverage": {
+      "all": "Todos los CCU",
+      "limited": "Base limitada"
+    },
     "ccus": "CCU",
     "gameAccess": "Acceso al juego",
     "giftable": "Regalables",
