@@ -11,6 +11,7 @@ import type { DemoCatalog } from './catalog';
 import { generateDemoAccount, type DemoAccount } from './generate-states';
 import { generateBuyback, type DemoBuyback } from './generate-buyback';
 import { missingBaseOf } from './demo-groups';
+import { buybackCases, ccuCaseBasesOf, coverageFillers, reservedShips } from './demo-ccu-cases';
 import { demoPaintCases, paintCaseShips, storePaints } from './demo-paint-cases';
 import { toBuybackView } from '@/buyback/buyback-view';
 import { createAvailabilityCheck } from '@/buyback/buyback-availability';
@@ -140,25 +141,39 @@ export function generatedDemo(
   priceIncreases: ExpectedPriceIncrease[];
 } {
   const account = generateDemoAccount(catalog, key, settings, buyable);
-  // A ship RSI doesn't sell CCUs to, with CCUs to it in the buy back (#311).
+  // Nothing in the buy back gives the base ship of the CCUs without one (#450), nor those of the
+  // CCU Consultant's cases (#425) but their own pledges.
+  const ccuBases = ccuCaseBasesOf(account.pledges, catalog);
+  const reserved = new Set([missingBaseOf(account.pledges), ...reservedShips(ccuBases)]);
+  const buybackCatalog = {
+    ...catalog,
+    ships: catalog.ships.filter((ship) => !reserved.has(ship.id)),
+  };
+  // A ship RSI doesn't sell CCUs to, with CCUs to it in the buy back (#311): never a base ship of
+  // the cases, which RSI sells CCUs to.
   const notOnSale = demoNotOnSaleShip(catalog, buyable);
   // With the real Pledge Store data also to the website's ships not on sale (#310).
   const realNotOnSale = realNotOnSaleShips(catalog, realIncreases, now, buyable).filter(
     (ship) => ship.id !== notOnSale?.id,
   );
-  // Nothing in the buy back gives the base ship of the CCUs without one (#450).
-  const missingBase = missingBaseOf(account.pledges);
-  const buybackCatalog = {
-    ...catalog,
-    ships: catalog.ships.filter((ship) => ship.id !== missingBase),
-  };
-  const generatedBuyback = withPaintCases(
-    generateBuyback(buybackCatalog, key, today, buybackComposition(settings.buybackPledges), [
-      ...(notOnSale ? [notOnSale] : []),
-      ...realNotOnSale,
-    ]),
-    demoPaintCases(storePaints(catalog), paintCaseShips(account.pledges, catalog)),
-  );
+  const buybackWith = (fillers: ReturnType<typeof coverageFillers>) =>
+    withPaintCases(
+      generateBuyback(
+        buybackCatalog,
+        key,
+        today,
+        buybackComposition(settings.buybackPledges),
+        [...(notOnSale ? [notOnSale] : []), ...realNotOnSale],
+        [...buybackCases(ccuBases, catalog), ...fillers],
+      ),
+      demoPaintCases(storePaints(catalog), paintCaseShips(account.pledges, catalog)),
+    );
+  let generatedBuyback = buybackWith([]);
+  // Without CCUs lacking a base ship (#425): the buy back gives each one's base ship.
+  if (!settings.ccuCoverageGaps) {
+    const fillers = coverageFillers(account.pledges, generatedBuyback.pledges);
+    if (fillers.length) generatedBuyback = buybackWith(fillers);
+  }
   // One order snapshot for both lists, like the order sync's.
   const orders: OrdersSnapshot = {
     ...account.orders,
@@ -168,7 +183,7 @@ export function generatedDemo(
   const priceOf = createPriceLookup(catalog.ships.map(({ name, msrp }) => ({ name, price: msrp })));
   const itemPriceOf = createItemPriceLookup(catalog.items);
   // The demo's expected price increases (#194), matched like the website's.
-  const priceIncreases = demoPriceIncreases(
+  const increases = demoPriceIncreases(
     catalog,
     account.pledges,
     generatedBuyback.pledges,
@@ -178,6 +193,13 @@ export function generatedDemo(
     // The ships of the demo's warbond offers, as its Pledge Store tab shows them (#392).
     new Set(demoStoreData(catalog, account.pledges, now).warbonds.map((offer) => offer.ship.id)),
   );
+  // Without CCUs whose discount is at risk (#425, #455): no base ship of a CCU rises in price.
+  const bases = new Set(
+    account.pledges.flatMap((pledge) => pledge.upgrade?.matchItems.map((item) => item.id) ?? []),
+  );
+  const priceIncreases = settings.ccuDiscountAtRisk
+    ? increases
+    : increases.filter((increase) => !bases.has(increase.ship.id));
   const matcher = createPriceIncreaseMatcher(priceIncreases, now);
   const views = account.pledges.map((pledge, position) => {
     const view = withOrder(toPledgeView(pledge, {}, position, priceOf, itemPriceOf), orders);

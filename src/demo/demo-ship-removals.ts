@@ -17,7 +17,10 @@ import type { Ship } from '@/ships/ships';
  * - two ships on a later day: one with fewer CCUs to it than from it in the hangar (red), and one
  *   of the demo's warbond offers ("Warbond upgrade" next to "Ship upgrade", #392);
  * - on the later day also a ship on sale with CCUs from it in the hangar and nothing else giving
- *   it: the CCU Consultant's "Soon without base ship" (#454).
+ *   it: the CCU Consultant's "Soon without base ship" (#454);
+ * - the base ships of two of the CCU Consultant's cases (#425, `demo-ccu-cases.ts`): one always
+ *   available today with CCUs from it and nothing giving it ("Soon without base ship" too), and one
+ *   the buy back gives as often as the hangar has CCUs from it, which the section leaves out.
  * Ships with a price increase of the demo are avoided while others fit. A case the demo hangar
  * can't give (e.g. without CCUs) is left out.
  */
@@ -45,6 +48,11 @@ export interface DemoShipRemovalsInput {
   warbondShips: ReadonlySet<number>;
   /** The ships of the demo's price increases, avoided while others fit. */
   avoid: ReadonlySet<number>;
+  /**
+   * The base ships of the CCU Consultant's cases (#425): two that leave too, and the others, which
+   * stay so their groups keep showing.
+   */
+  ccuCases?: { leaving?: number; covered?: number; stay?: readonly number[] };
   now: number;
 }
 
@@ -70,7 +78,11 @@ export function demoShipRemovals(input: DemoShipRemovalsInput): DemoShipRemovals
     buyback: input.buyback,
     now,
   });
-  const used = new Set<number>();
+  const used = new Set<number>(
+    [input.ccuCases?.leaving, input.ccuCases?.covered, ...(input.ccuCases?.stay ?? [])].filter(
+      (id) => id !== undefined,
+    ),
+  );
   const onSale = (entry: RemovalCcus) => !input.buyable || input.buyable.has(entry.removal.ship.id);
   /** The first entry that fits, preferring ships without a price increase. */
   const pick = (fits: (entry: RemovalCcus) => boolean, order = candidates) => {
@@ -118,6 +130,10 @@ export function demoShipRemovals(input: DemoShipRemovalsInput): DemoShipRemovals
 
   const removal = (entry: RemovalCcus | undefined, removedAt: DayOrTime): ShipRemoval[] =>
     entry ? [{ ...entry.removal, removedAt }] : [];
+  const byShip = (id: number | undefined) =>
+    candidates.find((entry) => entry.removal.ship.id === id);
+  const leaving = byShip(input.ccuCases?.leaving);
+  const covered = byShip(input.ccuCases?.covered);
   // On the hour of a fixed time of day, so a notification closed with × stays closed that day.
   const soon = { at: day(now, 4).at + 18 * HOUR };
   const next = day(now, 18);
@@ -127,13 +143,15 @@ export function demoShipRemovals(input: DemoShipRemovalsInput): DemoShipRemovals
       ...removal(alone, soon),
       ...removal(warning, next),
       ...removal(standard, next),
+      ...removal(leaving, next),
       ...removal(uncovered, later),
       ...removal(critical, later),
       ...removal(warbond, later),
+      ...removal(covered, later),
     ],
     limited: new Set(warning ? [warning.removal.ship.id] : []),
     onSale: new Set(
-      [warning, standard, uncovered, critical, warbond].flatMap((entry) =>
+      [warning, standard, uncovered, critical, warbond, leaving, covered].flatMap((entry) =>
         entry && onSale(entry) ? [entry.removal.ship.id] : [],
       ),
     ),

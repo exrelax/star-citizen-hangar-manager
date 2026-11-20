@@ -391,6 +391,10 @@
       "completedPlans": "Abgeschlossene Pläne des Paint-Rabatt-Beraters",
       "realStoreData": "Echte Pledge Store Daten zeigen",
       "realStoreDataHint": "Zeigt im Pledge Store Tab die echten Warbond CCUs, ihre Historie, die Events und die Schiffe mit erwarteter Preiserhöhung statt der Demo-Daten. Was RSI verkauft, ist öffentlich; was du besitzt, kommt weiterhin aus dem Demo-Hangar und dem Buy Back.",
+      "ccuCoverageGaps": "CCUs ohne Basisschiff",
+      "ccuCoverageGapsHint": "Einige CCUs haben kein Basisschiff im Demo-Hangar oder Buy Back oder zu wenige Wege dorthin. Aus gibt das Demo Buy Back jedem eines, sodass der CCU Consultant und seine Box in der Sidebar keine zeigen.",
+      "ccuDiscountAtRisk": "CCUs mit Rabatt in Gefahr",
+      "ccuDiscountAtRiskHint": "Einige Basisschiffe der Demo-CCUs werden teurer. Aus wird keines teurer, sodass „Rabatt in Gefahr“ im CCU Consultant leer ist.",
       "runningPlanStage": "Stand des laufenden Plans",
       "runningPlanStages": {
         "cart": "Erst einschmelzen: Paints fehlen im Warenkorb",

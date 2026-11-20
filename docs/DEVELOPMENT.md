@@ -560,6 +560,14 @@ an account without stored data):
   With the upgrade tool's ships on sale also a leaving ship with "Ship upgrade" only, with "Warbond
   upgrade" next to it and without either (#391, #392), and ships to secure with and without
   "Warbond upgrade"; the upgrade buttons are disabled in the demo.
+- The CCU Consultant (#425, `demo-ccu-cases.ts`, checked in `demo-ccu-cases.test.ts`): CCUs
+  covered by a hangar ship, a package, an upgraded pledge, a hangar CCU, a buy back ship and a buy
+  back CCU, by several at once and not at all, also with a buy back CCU RSI can't sell again;
+  each group ("Without base ship", "Only via buy back", "Base always available") with groups of
+  the same CCUs, a base ship with and without a Pledge Store link, "Base always available" covered
+  and not; "Soon without base ship" with a ship always available today, while a leaving ship the
+  buy back covers stays out; "Discount at risk" confirmed and expected. The demo settings "CCUs
+  without base ship coverage" and "CCUs with their discount at risk" empty the box and the tabs.
 - Sample notifications: events, new and gone warbond CCUs, changed store items – never a browser
   notification.
 - The settings without real account data (#132).

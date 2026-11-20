@@ -391,6 +391,10 @@
       "completedPlans": "Planes terminados del asesor de descuentos de pinturas",
       "realStoreData": "Mostrar los datos reales del Pledge Store",
       "realStoreDataHint": "Muestra en la pestaña Pledge Store los CCU warbond reales, su historial, los eventos y las naves cuyo precio se espera que suba, en lugar de los de la demo. Lo que vende RSI es público; lo que posees sigue saliendo del hangar y del buy back de la demo.",
+      "ccuCoverageGaps": "CCU sin nave base",
+      "ccuCoverageGapsHint": "Algunos CCU no tienen nave base en el hangar o la recompra de la demo, o tienen muy pocas formas de conseguirla. Desactivado, la recompra de la demo le da una a cada uno, así que el CCU Consultant y su recuadro en la barra lateral no muestran ninguno.",
+      "ccuDiscountAtRisk": "CCU con el descuento en riesgo",
+      "ccuDiscountAtRiskHint": "El precio de algunas naves base de los CCU de la demo sube. Desactivado, no sube ninguno, así que «Descuento en riesgo» del CCU Consultant está vacío.",
       "runningPlanStage": "Fase del plan en curso",
       "runningPlanStages": {
         "cart": "Fundir primero: faltan pinturas en el carrito",

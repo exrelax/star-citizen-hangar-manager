@@ -37,7 +37,7 @@ const skus: ShipSku[] = [...buyable].map((id) => ({
   price: 1,
 }));
 
-describe.each(['key-a', 'key-b', 'key-c'])('the ship removals of the demo %s', (key) => {
+describe.each(['key-a', 'key-d', 'key-c'])('the ship removals of the demo %s', (key) => {
   const demo = generatedDemo(catalog, key, TODAY, NOW, undefined, buyable);
   const store = demoStoreData(catalog, demo.pledges, NOW);
   const warbonds = store.warbonds.map((offer) => ({

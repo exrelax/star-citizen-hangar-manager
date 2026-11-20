@@ -120,6 +120,14 @@ export function demoPriceIncreases(
   const bases = new Set(
     hangar.flatMap((pledge) => pledge.upgrade?.matchItems.map((item) => item.name) ?? []),
   );
+  // Ordinary CCUs: not of the Grouped View's groups or the CCU Consultant's cases. By the upgrade
+  // tool's ids: a name may stand for another ship ("Razor LX").
+  const shipById = (id: number | undefined) => catalog.ships.find((ship) => ship.id === id);
+  const ordinaryCcus = hangar.flatMap((pledge) => {
+    const base = shipById(pledge.upgrade?.matchItems[0]?.id);
+    const target = shipById(pledge.upgrade?.targetItems[0]?.id);
+    return !pledge.demoGroup && !pledge.demoCcuCase && base && target ? [{ base, target }] : [];
+  });
   const secureCandidates = ccuTargetsOf(catalog.ships)
     .filter(
       (ship) =>
@@ -159,6 +167,12 @@ export function demoPriceIncreases(
     ...increase(free(hangarShip), day(now, 9)),
     // Outside the period of the settings (14 days by default).
     ...increase(free(...[...buybackCcuTargets].reverse()), at(now, 30)),
+    // The base ship of a CCU in My Hangar, only expected, without a new price: the CCU Consultant's
+    // "Discount at risk" (#455, #425) next to the confirmed one below. Its target doesn't rise.
+    ...increase(
+      ordinaryCcus.find(({ base, target }) => !used.has(base.name) && !used.has(target.name))?.base,
+      day(now, 11),
+    ),
     // The Price Increase Advisor's (#255).
     ...(pivotShip
       ? [

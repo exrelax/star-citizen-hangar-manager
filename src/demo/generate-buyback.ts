@@ -119,6 +119,8 @@ export function generateBuyback(
    * with the real Pledge Store data, those of the website's price increases (#310).
    */
   notOnSale: readonly Ship[] = [],
+  /** Pledges to add, e.g. those of the CCU Consultant's cases (#425). */
+  extra: readonly Omit<BuybackPledge, 'id'>[] = [],
 ): DemoBuyback {
   const random = createRandom(`${key}:buyback`);
   const sorted = ccuTargetsOf(catalog.ships).sort((a, b) => a.msrp - b.msrp);
@@ -163,6 +165,7 @@ export function generateBuyback(
   });
   made.push(...unavailableCcus(sorted));
   for (const ship of notOnSale) made.push(...ccusToNotOnSale(sorted, ship));
+  made.push(...extra);
   times(composition.paints, (index) => {
     const entry = random.pick(`paint:${index}`, itemsOf('Paints'));
     return entry && storeItemPledge(entry);

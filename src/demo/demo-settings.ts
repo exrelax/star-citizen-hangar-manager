@@ -80,6 +80,16 @@ export interface DemoSettings {
   tokenRenewal: TokenRenewalCase;
   /** Paints in the demo's cart on RSI's cart page (#459): 10 reach the best tier, no note then. */
   cartPaints: number;
+  /**
+   * CCUs without a base ship in the hangar or buy back (#425): off, the buy back gives every CCU's
+   * base ship, so the CCU Consultant and its sidebar box (#115) have none.
+   */
+  ccuCoverageGaps: boolean;
+  /**
+   * CCUs whose base ship rises in price (#425): off, no base ship of a CCU does, so the CCU
+   * Consultant's "Discount at risk" (#455) has none.
+   */
+  ccuDiscountAtRisk: boolean;
 }
 
 /** The range of each kind's number and of the list sizes. */
@@ -114,6 +124,8 @@ export const DEFAULT_DEMO_SETTINGS: DemoSettings = {
   buybackTokens: DEMO.maxBuybackTokens,
   tokenRenewal: 'real',
   cartPaints: 2,
+  ccuCoverageGaps: true,
+  ccuDiscountAtRisk: true,
 };
 
 const wholeIn =
@@ -191,5 +203,7 @@ export function demoSettingsOf(stored: Partial<DemoSettings> | null | undefined)
       ? stored!.tokenRenewal!
       : defaults.tokenRenewal,
     cartPaints: valid(stored?.cartPaints, wholeIn({ min: 1, max: 10 }), defaults.cartPaints),
+    ccuCoverageGaps: valid(stored?.ccuCoverageGaps, isBoolean, defaults.ccuCoverageGaps),
+    ccuDiscountAtRisk: valid(stored?.ccuDiscountAtRisk, isBoolean, defaults.ccuDiscountAtRisk),
   };
 }
