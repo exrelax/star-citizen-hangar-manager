@@ -31,6 +31,7 @@ describe('withDefaults', () => {
       themedActionDialogs: false,
       translateRsiTexts: false,
       upgradeDialogAlwaysAvailable: true,
+      upgradeDialogBaseCounts: true,
       cartPaintDiscount: true,
       bulkMelting: true,
       hideSupersededInsurances: true,
@@ -151,5 +152,15 @@ describe('the "Always available" labels in RSI’s ship upgrade dialog (#401)', 
     expect(
       withDefaults({ upgradeDialogAlwaysAvailable: 'no' as never }).upgradeDialogAlwaysAvailable,
     ).toBe(true);
+  });
+});
+
+describe('the counts on the base ships of RSI’s ship upgrade dialog (#506)', () => {
+  it('are on by default and can be turned off', () => {
+    expect(withDefaults({}).upgradeDialogBaseCounts).toBe(true);
+    expect(withDefaults({ upgradeDialogBaseCounts: false }).upgradeDialogBaseCounts).toBe(false);
+    expect(withDefaults({ upgradeDialogBaseCounts: 'no' as never }).upgradeDialogBaseCounts).toBe(
+      true,
+    );
   });
 });

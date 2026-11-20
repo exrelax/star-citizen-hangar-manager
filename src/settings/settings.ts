@@ -77,6 +77,11 @@ export interface Settings {
   translateRsiTexts: boolean;
   /** Labels the always available target ships in RSI's own ship upgrade dialog (#401). */
   upgradeDialogAlwaysAvailable: boolean;
+  /**
+   * Shows on the base ships of RSI's own ship upgrade dialog how often the hangar has each ship and
+   * how many CCUs to it the hangar and the buy back have (#506).
+   */
+  upgradeDialogBaseCounts: boolean;
   /** A note in RSI's cart on paints below the best volume discount, with fillers to add (#458). */
   cartPaintDiscount: boolean;
   /**
@@ -191,6 +196,7 @@ export const DEFAULT_SETTINGS: Settings = {
   themedActionDialogs: false,
   translateRsiTexts: false,
   upgradeDialogAlwaysAvailable: true,
+  upgradeDialogBaseCounts: true,
   cartPaintDiscount: true,
   bulkMelting: false,
   hideSupersededInsurances: true,
@@ -285,6 +291,7 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
     themedActionDialogs: pick('themedActionDialogs', isBoolean),
     translateRsiTexts: pick('translateRsiTexts', isBoolean),
     upgradeDialogAlwaysAvailable: pick('upgradeDialogAlwaysAvailable', isBoolean),
+    upgradeDialogBaseCounts: pick('upgradeDialogBaseCounts', isBoolean),
     cartPaintDiscount: pick('cartPaintDiscount', isBoolean),
     bulkMelting: pick('bulkMelting', isBoolean),
     hideSupersededInsurances: pick('hideSupersededInsurances', isBoolean),

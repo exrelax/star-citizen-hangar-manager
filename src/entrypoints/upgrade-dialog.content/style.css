@@ -13,3 +13,31 @@
   white-space: nowrap;
   cursor: help;
 }
+
+/*
+ * The counts on the base ships (#506): on the ship's image, bottom left, as a small dark plate – the
+ * items have a fixed height, so their text has no room for another line.
+ */
+.ShipUpgradeModal .ShipSelector.from .ShipItem-thumbnail-clip {
+  position: relative;
+}
+
+.ShipUpgradeModal .shm-base-counts {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  z-index: 1;
+  max-width: calc(100% - 16px);
+  margin: 0;
+  padding: 3px 7px;
+  overflow: hidden;
+  color: #e6f2f7;
+  font-family: inherit;
+  font-size: 11px;
+  line-height: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: rgb(10 20 28 / 0.78);
+  border-radius: 2px;
+  cursor: help;
+}

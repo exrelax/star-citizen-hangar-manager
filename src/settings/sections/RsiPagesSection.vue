@@ -24,6 +24,13 @@ const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
       {{ i18n.t('settings.upgradeDialogAlwaysAvailable') }}
     </SettingCheck>
     <SettingCheck
+      :checked="settings.upgradeDialogBaseCounts"
+      :hint="i18n.t('settings.upgradeDialogBaseCountsHint')"
+      @change="(upgradeDialogBaseCounts) => emit('update', { upgradeDialogBaseCounts })"
+    >
+      {{ i18n.t('settings.upgradeDialogBaseCounts') }}
+    </SettingCheck>
+    <SettingCheck
       :checked="settings.cartPaintDiscount"
       :hint="i18n.t('settings.cartPaintDiscountHint')"
       @change="(cartPaintDiscount) => emit('update', { cartPaintDiscount })"

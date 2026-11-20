@@ -15,6 +15,10 @@ import type { ShipFactsLookup } from './ship-facts';
  *       .ShipItem-general-information-name   "Mustang Alpha"
  *       .ShipItem-general-information-status-and-stock   "in stock", where the label goes
  *
+ * On the base ships, the counts of #506 go on the ship's image (`.ShipItem-thumbnail-clip`, bottom
+ * left): how often the hangar has the ship and how many CCUs to it the hangar and the buy back
+ * have. The items have a fixed height, so nothing may go into their text.
+ *
  * When the markup doesn't fit any more, nothing shows and `onMismatch` reports it once.
  */
 
@@ -25,6 +29,10 @@ const ITEM = '.ShipItem';
 const NAME = '.ShipItem-general-information-name';
 const SPOT = '.ShipItem-general-information-status-and-stock';
 const LABEL_CLASS = 'shm-always-available-label';
+/** The base ships' side, where the counts (#506) go. */
+const FROM = '.ShipSelector.from';
+const THUMB = '.ShipItem-thumbnail-clip';
+const COUNTS_CLASS = 'shm-base-counts';
 
 /** How long an opened dialog may lack its ship lists before it counts as changed markup. */
 const MISMATCH_AFTER_MS = 5000;
@@ -71,6 +79,13 @@ export interface UpgradeDialogOptions {
   isAlwaysAvailable: (target: UpgradeTarget) => boolean;
   /** The label's text and its tooltip, in the language shown. */
   texts: () => { label: string; hint: string };
+  /**
+   * The counts of a base ship (#506), as its line and tooltip; none while the setting is off or
+   * nothing is known of the ship.
+   */
+  countsOf?: (target: UpgradeTarget) => { text: string; hint: string } | undefined;
+  /** The dialog opened (again): the counts' data can be read now. */
+  onOpen?: () => void;
   /** The dialog's markup doesn't fit: called once. */
   onMismatch: (reason: string) => void;
 }
@@ -99,6 +114,29 @@ export function applyLabels(root: ParentNode, options: UpgradeDialogOptions): vo
     label.setAttribute('aria-description', texts.hint);
     if (label.parentElement !== spot) spot.append(label);
   }
+  applyCounts(root, options);
+}
+
+/** Adds, updates or removes the counts (#506) on every base ship shown now. */
+function applyCounts(root: ParentNode, options: UpgradeDialogOptions): void {
+  const items = [...root.querySelectorAll(MODAL)].flatMap((modal) =>
+    [...modal.querySelectorAll(FROM)].flatMap((side) => [...side.querySelectorAll(ITEM)]),
+  );
+  for (const item of items) {
+    const existing = item.querySelector<HTMLElement>(`.${COUNTS_CLASS}`);
+    const counts = options.countsOf?.(targetOf(item));
+    const thumb = counts && item.querySelector(THUMB);
+    if (!counts || !thumb) {
+      existing?.remove();
+      continue;
+    }
+    const line = existing ?? document.createElement('p');
+    line.className = COUNTS_CLASS;
+    if (line.textContent !== counts.text) line.textContent = counts.text;
+    line.title = counts.hint;
+    line.setAttribute('aria-description', counts.hint);
+    if (line.parentElement !== thumb) thumb.append(line);
+  }
 }
 
 /**
@@ -124,7 +162,10 @@ export function watchUpgradeDialog(
       openedAt = undefined;
       return;
     }
-    openedAt ??= Date.now();
+    if (openedAt === undefined) {
+      openedAt = Date.now();
+      options.onOpen?.();
+    }
     const sides = [...modal.querySelectorAll(SELECTORS)];
     if (!sides.length) {
       if (Date.now() - openedAt > MISMATCH_AFTER_MS) mismatch('no lists of ships');
@@ -135,6 +176,12 @@ export function watchUpgradeDialog(
       mismatch('no ship id or name');
     } else if (items.length && !items.some((item) => item.querySelector(SPOT))) {
       mismatch('no place for the label');
+    } else if (
+      options.countsOf &&
+      modal.querySelector(`${FROM} ${ITEM}`) &&
+      !modal.querySelector(`${FROM} ${ITEM} ${THUMB}`)
+    ) {
+      mismatch('no place for the counts');
     }
     applyLabels(root, options);
   };
@@ -157,7 +204,9 @@ export function watchUpgradeDialog(
       observer.disconnect();
       clearInterval(timer);
       if (frame) cancelAnimationFrame(frame);
-      for (const label of root.querySelectorAll(`.${LABEL_CLASS}`)) label.remove();
+      for (const label of root.querySelectorAll(`.${LABEL_CLASS}, .${COUNTS_CLASS}`)) {
+        label.remove();
+      }
     },
   };
 }
