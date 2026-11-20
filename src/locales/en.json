@@ -1598,6 +1598,9 @@
   "allShips": {
     "button": "All ships",
     "buttonHint": "All ships of the Pledge Store by value, with what your hangar and buy back have of them",
+    "loading": "Reading the ships from RSI …",
+    "failed": "The ships couldn't be read from RSI: $1",
+    "signedOut": "The ships couldn't be read: you're signed out of RSI.",
     "title": "All ships by value",
     "intro": "Every ship of RSI’s upgrade tool, cheapest first – with what your hangar and buy back have of it, and how to get it.",
     "count": {

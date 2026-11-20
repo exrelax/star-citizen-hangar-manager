@@ -32,13 +32,16 @@ ul.pledges > li.shm-highlight {
 }
 
 /*
- * Above the manager on the right, outside its tabs (#374): in the space between RSI's line at the
- * top of the page and the manager.
+ * Above the manager on the right, outside its tabs (#374, #452): in the space between RSI's line at
+ * the top of the page and the manager. "All ships" and "Ship upgrade" side by side.
  */
 .shm-manager .shm-page-actions {
   position: absolute;
   right: 0;
   bottom: calc(100% + 8px);
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
 /*

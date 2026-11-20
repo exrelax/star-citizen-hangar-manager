@@ -15,16 +15,10 @@ import {
 import { useStoreData } from '../use-store-data';
 import { buildWarbondOffers } from '../warbond';
 import { useCcusToSecure } from '@/price-increases/use-ccus-to-secure';
-import {
-  priceIncreasesItem,
-  storedPriceIncreases,
-} from '@/price-increases/price-increases-storage';
 import { confirmationNote } from '@/price-increases/price-increase-label';
 import SecureRow from '@/price-increases/components/SecureRow.vue';
 import RefreshIcon from '@/hangar/components/RefreshIcon.vue';
 import WarbondRow from './WarbondRow.vue';
-import AllShipsOverlay from './AllShipsOverlay.vue';
-import SvgIcon from '@/icons/SvgIcon.vue';
 import PaintConsultant from './PaintConsultant.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import EventList from '@/events/components/EventList.vue';
@@ -50,13 +44,7 @@ const props = defineProps<{
   buyback: BuybackView[];
   settings: Settings;
   active: boolean;
-  /** Whether the hangar and the buy back were read, for the table of all ships (#385). */
-  hangarRead?: boolean;
-  buybackRead?: boolean;
 }>();
-
-/** The table of all ships by value (#385), in an overlay. */
-const allShipsOpen = ref(false);
 
 const { data, fetchedAt, loaded } = useStoreData();
 
@@ -117,17 +105,6 @@ const removals = computed(() =>
     : storedShipRemovals(storedRemovals.value ?? null),
 );
 
-/**
- * The expected price increases (#195), for the table of all ships (#410): public data; the demo
- * has its own (#255), unless it shows the real Pledge Store data, as the CCUs to secure.
- */
-const storedIncreases = useStored(priceIncreasesItem);
-const increases = computed(
-  () =>
-    (realInDemo.value ? undefined : demoContext.value?.priceIncreases) ??
-    storedPriceIncreases(storedIncreases.value ?? null),
-);
-
 /** The CCUs to secure before a price increase (#253). */
 const secure = useCcusToSecure(
   () => props.pledges,
@@ -172,30 +149,6 @@ const displayClasses = computed(() => ({
 
 <template>
   <section class="shm-store" :class="displayClasses" aria-labelledby="shm-store-title">
-    <!-- All ships by value (#385): what each is worth and what the hangar has of it. -->
-    <div v-if="storeData?.ships.length" class="shm-store-actions">
-      <button
-        v-tooltip="i18n.t('allShips.buttonHint')"
-        type="button"
-        class="shm-button"
-        @click="allShipsOpen = true"
-      >
-        <SvgIcon name="list" />
-        {{ i18n.t('allShips.button') }}
-      </button>
-    </div>
-    <AllShipsOverlay
-      v-if="allShipsOpen && storeData"
-      :ships="storeData.ships"
-      :warbonds="storeData.warbonds"
-      :pledges="pledges"
-      :buyback="buyback"
-      :increases="increases"
-      :removals="removals"
-      :hangar-read="hangarRead !== false"
-      :buyback-read="buybackRead !== false"
-      @close="allShipsOpen = false"
-    />
     <EventList :events="events" />
     <h3 id="shm-store-title" class="shm-store-title">{{ i18n.t('store.warbondTitle') }}</h3>
     <TabBar
@@ -314,12 +267,6 @@ const displayClasses = computed(() => ({
 
 <style scoped>
 /* The tab's own actions, above everything on the right (#385). */
-.shm-store-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 12px;
-}
-
 .shm-store {
   margin-top: 20px;
 }
