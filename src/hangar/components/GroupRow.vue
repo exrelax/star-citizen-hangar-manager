@@ -139,7 +139,8 @@ const extras = computed(() =>
 .shm-group-items {
   display: flex;
   flex-direction: column;
-  gap: inherit;
+  /* Rows of their own, with rounded corners in "Modern Hangar": a little room between them. */
+  gap: 6px;
   margin: 4px 0 8px 24px;
   padding-left: 12px;
   border-left: 2px solid rgb(var(--shm-accent-rgb) / 0.3);

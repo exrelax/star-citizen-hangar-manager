@@ -10,7 +10,8 @@ import { ccuShips } from './upgrade-log';
  *
  * - The key says what an item is: a CCU by its base and target ship; a ship or package by the
  *   ships it holds and – for a package – its name; anything else (gear, paints, flair, subscriber
- *   items, …) by its name and kind. Buy back items by the same rules, from what its page tells.
+ *   items, …) by what it holds – the same helmet of two years' events is the same item –, by its
+ *   name only without items. Buy back items by the same rules, from what its page tells.
  * - Extras don't change the key: added gear, the insurance, a Best in Show or other added paint,
  *   having been upgraded. A pledge with applied upgrades groups by the ship it is now. The group
  *   tells which extras differ among its items.
@@ -205,12 +206,16 @@ export function pledgeFacts(pledge: PledgeView): GroupFacts {
     );
     return { key: `ships:${shipsKey(ships)}|${packageName}`, extras, ...base };
   }
-  const kind = pledge.isPaint
-    ? 'paint'
-    : pledge.reward
-      ? 'reward'
-      : (pledge.items[0]?.kind ?? 'item');
-  return { key: `item:${name(kind)}:${pledgeName(pledge.title)}`, extras: {}, ...base };
+  // By what it holds: the same helmet of several years' events ("2952 Day of the Vara - …",
+  // "Day of the Vara 2956 - …") is the same item. By its name only without items.
+  const contents = pledge.items.map((item) => `${name(item.kind ?? '')}:${name(item.title)}`);
+  return {
+    key: contents.length
+      ? `item:${contents.sort().join('+')}`
+      : `item:${pledge.isPaint ? 'paint' : 'item'}:${pledgeName(pledge.title)}`,
+    extras: {},
+    ...base,
+  };
 }
 
 /** The facts of a pledge of "Buy Back": the same rules, from what its page tells. */
@@ -241,6 +246,7 @@ export function buybackFacts(pledge: BuybackView): GroupFacts {
     const packageName = packageNameOf(pledge.title, ships, pledge.isStandaloneShip);
     return { key: `ships:${shipsKey(ships)}|${packageName}`, extras, ...base };
   }
-  const kind = pledge.isPaint ? 'paint' : 'item';
-  return { key: `item:${kind}:${pledgeName(pledge.title)}`, extras: {}, ...base };
+  // By what it holds, as in the hangar: its items, else the one item "Contained" names.
+  const contents = pledge.items.length ? pledge.items : [pledge.contained];
+  return { key: `item:${contents.map(name).sort().join('+')}`, extras: {}, ...base };
 }
