@@ -1598,6 +1598,9 @@
   "allShips": {
     "button": "Todas las naves",
     "buttonHint": "Todas las naves de la Pledge Store por valor, con lo que tienen de ellas tu hangar y tu buy back",
+    "loading": "Leyendo las naves de RSI …",
+    "failed": "No se pudieron leer las naves de RSI: $1",
+    "signedOut": "No se pudieron leer las naves: has cerrado sesión en RSI.",
     "title": "Todas las naves por valor",
     "intro": "Cada nave de la herramienta de mejoras de RSI, la más barata primero – con lo que tienen de ella tu hangar y tu buy back, y cómo conseguirla.",
     "count": {

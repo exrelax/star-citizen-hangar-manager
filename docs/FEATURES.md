@@ -659,7 +659,7 @@ That is about 34 reads of the upgrade tool and 65 requests for the items per hou
 and 156 with the former 5-minute interval of the items. The refresh button and the initial load
 always read both; the count line says when the offers were updated.
 
-**All ships** (#385), a button at the top of the Pledge Store tab, opens a table of every ship of
+**All ships** (#385, #452), a button above the Hangar Manager left of "Ship upgrade", opens a table of every ship of
 RSI's upgrade tool, the cheapest first, with a line at every $100. Each ship shows its value and
 current warbond price (with what it saves), whether it is always available or not sold any more
 (both from the project website's ship facts, the Star Citizen Wiki; ships no longer sold are

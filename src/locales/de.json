@@ -1598,6 +1598,9 @@
   "allShips": {
     "button": "Alle Schiffe",
     "buttonHint": "Alle Schiffe des Pledge Store nach Wert, mit dem, was dein Hangar und dein Buy Back davon haben",
+    "loading": "Schiffe werden von RSI gelesen …",
+    "failed": "Die Schiffe ließen sich nicht von RSI lesen: $1",
+    "signedOut": "Die Schiffe ließen sich nicht lesen: Du bist bei RSI abgemeldet.",
     "title": "Alle Schiffe nach Wert",
     "intro": "Jedes Schiff aus RSIs Upgrade-Tool, das günstigste zuerst – mit dem, was dein Hangar und dein Buy Back davon haben, und wie du es bekommst.",
     "count": {

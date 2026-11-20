@@ -43,6 +43,7 @@ import { useShipFacts } from '@/ships/use-ship-facts';
 import { followListHistory, listViewRequest } from '@/hangar/list-jump';
 import { current as currentShips, shipsItem } from '@/ships/ships-storage';
 import StoreTab from '@/store/components/StoreTab.vue';
+import AllShipsButton from '@/store/components/AllShipsButton.vue';
 import ShipUpgradeButtons from '@/store/components/ShipUpgradeButtons.vue';
 import CcuAdviceOverlay from '@/price-increases/components/CcuAdviceOverlay.vue';
 import { ccuAdviceRequest, closeCcuAdvice } from '@/price-increases/ccu-advice-request';
@@ -339,10 +340,20 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
 <!-- Reuses the markup classes of the original hangar page so the view inherits the site's look. -->
 <template>
   <!--
-    RSI's ship upgrade dialog without a preset (#374), as the button of "My Gear": above the manager on
-    the right, outside the tabs, so every tab has it.
+    RSI's ship upgrade dialog without a preset (#374), as the button of "My Gear", and the table of all
+    ships (#452): above the manager on the right, outside the tabs, so every tab has them.
   -->
-  <ShipUpgradeButtons class="shm-page-actions" />
+  <div v-if="listsReady" class="shm-page-actions">
+    <!-- The table of all ships (#385, #452), left of "Ship upgrade". -->
+    <AllShipsButton
+      :pledges="pledges"
+      :buyback="buybackPledges"
+      :settings="settings"
+      :hangar-read="demo || !!syncedAt"
+      :buyback-read="demo || !!buyback.syncedAt.value"
+    />
+    <ShipUpgradeButtons />
+  </div>
   <div class="top">
     <!--
       The refresh button with the state of the list (the hangar's in the settings). Before the title, so
@@ -466,8 +477,6 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
       :buyback="buybackPledges"
       :settings="settings"
       :active="activeTab === 'store'"
-      :hangar-read="demo || !!syncedAt"
-      :buyback-read="demo || !!buyback.syncedAt.value"
     />
   </div>
   <!-- The consultants (#113): so far the CCU Consultant. -->

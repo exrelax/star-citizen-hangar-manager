@@ -1598,6 +1598,9 @@
   "allShips": {
     "button": "Tous les vaisseaux",
     "buttonHint": "Tous les vaisseaux du Pledge Store par valeur, avec ce que ton hangar et ton buy back en ont",
+    "loading": "Lecture des vaisseaux depuis RSI …",
+    "failed": "Impossible de lire les vaisseaux depuis RSI : $1",
+    "signedOut": "Impossible de lire les vaisseaux : tu es déconnecté de RSI.",
     "title": "Tous les vaisseaux par valeur",
     "intro": "Chaque vaisseau de l’outil d’upgrade de RSI, le moins cher d’abord – avec ce que ton hangar et ton buy back en ont, et comment l’obtenir.",
     "count": {
