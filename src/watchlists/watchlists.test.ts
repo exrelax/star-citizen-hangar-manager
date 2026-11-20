@@ -1,0 +1,122 @@
+import { describe, expect, it } from 'vitest';
+import {
+  addItem,
+  createWatchlist,
+  itemKey,
+  listsWith,
+  presenceOf,
+  removeItem,
+  setItemCount,
+  updateWatchlist,
+  withLastSeen,
+  type PledgeLists,
+  type WatchItem,
+} from './watchlists';
+
+const NOW = Date.parse('2026-11-20T12:00:00Z');
+const LATER = NOW + 60_000;
+const list = () => createWatchlist({ name: '  Melt after the IAE  ' }, NOW, 'list1');
+
+describe('a watchlist (#465)', () => {
+  it('is made with a trimmed name, no date and no reminder', () => {
+    expect(list()).toEqual({
+      id: 'list1',
+      name: 'Melt after the IAE',
+      description: '',
+      reminder: false,
+      items: [],
+      createdAt: NOW,
+      changedAt: NOW,
+    });
+  });
+
+  it('has a reminder only with a date, and drops both with the date', () => {
+    const dated = createWatchlist({ name: 'IAE', dueAt: LATER }, NOW, 'x');
+    expect(dated.reminder).toBe(true);
+    const off = updateWatchlist(dated, { reminder: false }, LATER);
+    expect(off).toMatchObject({ dueAt: LATER, reminder: false, changedAt: LATER });
+    const undated = updateWatchlist(dated, { dueAt: null }, LATER);
+    expect(undated.dueAt).toBeUndefined();
+    expect('dueAt' in undated).toBe(false);
+    expect(undated.reminder).toBe(false);
+  });
+
+  it('keeps an item once, with its count for store items only', () => {
+    let current = addItem(
+      list(),
+      { kind: 'hangar', pledgeId: 7, name: 'Cutlass', value: 100 },
+      NOW,
+    );
+    current = addItem(current, { kind: 'hangar', pledgeId: 7, name: 'Cutlass Black' }, LATER);
+    current = addItem(
+      current,
+      { kind: 'storeCcu', fromShipId: 1, toShipId: 2, name: 'Aurora to Mustang', count: 3 },
+      LATER,
+    );
+    expect(current.items).toEqual([
+      { kind: 'hangar', pledgeId: 7, name: 'Cutlass Black', addedAt: NOW },
+      {
+        kind: 'storeCcu',
+        fromShipId: 1,
+        toShipId: 2,
+        name: 'Aurora to Mustang',
+        count: 3,
+        addedAt: LATER,
+      },
+    ]);
+    const key = itemKey({ kind: 'storeCcu', fromShipId: 1, toShipId: 2 });
+    expect(setItemCount(current, key, 500, LATER).items[1]!.count).toBe(99);
+    expect(setItemCount(current, 'h:7', 4, LATER)).toBe(current);
+    expect(removeItem(current, 'h:7', LATER).items).toHaveLength(1);
+    expect(removeItem(current, 'h:8', LATER)).toBe(current);
+  });
+
+  it('finds the watchlists an item is on', () => {
+    const a = addItem(list(), { kind: 'buyback', pledgeId: 3, name: 'Paint' }, NOW);
+    const b = createWatchlist({ name: 'Other' }, NOW, 'list2');
+    expect(listsWith([a, b], 'b:3').map((entry) => entry.id)).toEqual(['list1']);
+  });
+});
+
+describe('items that left the hangar or the buy back (#465)', () => {
+  const item = (kind: 'hangar' | 'buyback', pledgeId: number, addedAt = NOW): WatchItem => ({
+    kind,
+    pledgeId,
+    name: 'Old name',
+    addedAt,
+  });
+  const lists: PledgeLists = {
+    hangar: { pledges: [{ id: 1, title: 'Carrack', valueUsd: 600 }], updatedAt: LATER },
+    buyback: { pledges: [{ id: 2, title: 'Melted', price: { amount: 30 } }], updatedAt: LATER },
+  };
+
+  it('is present while its list has it', () => {
+    expect(presenceOf(item('hangar', 1), lists)).toEqual({ state: 'present' });
+    expect(presenceOf(item('buyback', 2), lists)).toEqual({ state: 'present' });
+  });
+
+  it('is gone once its list was read without it, with where it went', () => {
+    expect(presenceOf(item('hangar', 2), lists)).toEqual({ state: 'gone', nowIn: 'buyback' });
+    expect(presenceOf(item('buyback', 1), lists)).toEqual({ state: 'gone', nowIn: 'hangar' });
+    expect(presenceOf(item('hangar', 9), lists)).toEqual({ state: 'gone' });
+  });
+
+  it("isn't known as gone while its list wasn't read since it was added", () => {
+    expect(presenceOf(item('hangar', 9, LATER + 1), lists)).toEqual({ state: 'unknown' });
+    expect(presenceOf(item('hangar', 9), {})).toEqual({ state: 'unknown' });
+  });
+
+  it('takes the names and values the lists show now, a gone item keeps its own', () => {
+    const watched = {
+      ...list(),
+      items: [item('hangar', 1), item('buyback', 2), item('hangar', 9)],
+    };
+    const seen = withLastSeen(watched, lists);
+    expect(seen.items.map(({ name, value }) => [name, value])).toEqual([
+      ['Carrack', 600],
+      ['Melted', 30],
+      ['Old name', undefined],
+    ]);
+    expect(withLastSeen(seen, lists)).toBe(seen);
+  });
+});

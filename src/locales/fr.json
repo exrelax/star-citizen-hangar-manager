@@ -556,6 +556,11 @@
       "content": "Les plans terminés du conseiller de remise sur les peintures : peintures fondues et achetées, crédit boutique avant et après",
       "missing": "Ils ne peuvent pas être relus : le conseiller n’affiche aucun plan terminé jusqu’à la fin du prochain."
     },
+    "watchlists": {
+      "name": "Watchlists",
+      "content": "Tes watchlists avec leurs éléments, synchronisées sur tes appareils",
+      "missing": "Tes watchlists disparaissent alors sur tous tes appareils."
+    },
     "settings": {
       "name": "Paramètres",
       "content": "Langue, thème, options d’affichage et de confidentialité, filtres, tri",
@@ -1883,5 +1888,12 @@
   },
   "consultants": {
     "paintLater": "Le Conseiller de remises sur les peintures apparaît ici dès que des peintures peuvent être rachetées moins cher."
+  },
+  "watchlists": {
+    "quota": {
+      "list": "Cette watchlist est trop grande pour le stockage synchronisé du navigateur. Retire quelques éléments ou mets-les sur une autre watchlist.",
+      "total": "Le stockage synchronisé du navigateur est plein. Retire les éléments ou les watchlists dont tu n'as plus besoin.",
+      "items": "Le stockage synchronisé du navigateur ne peut plus contenir de listes. Supprime une watchlist dont tu n'as plus besoin."
+    }
   }
 }

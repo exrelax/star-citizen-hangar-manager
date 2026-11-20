@@ -556,6 +556,11 @@
       "content": "The Paint Discount Consultant's completed plans: paints melted and bought, store credit before and after",
       "missing": "It can't be read again: the consultant shows no completed plans until the next one ends."
     },
+    "watchlists": {
+      "name": "Watchlists",
+      "content": "Your watchlists with their items, synced across your devices",
+      "missing": "Your watchlists are gone on every device."
+    },
     "settings": {
       "name": "Settings",
       "content": "Language, theme, display and privacy options, filters, sorting",
@@ -1883,5 +1888,12 @@
   },
   "consultants": {
     "paintLater": "The Paint Discount Consultant shows here once paints can be bought again for less."
+  },
+  "watchlists": {
+    "quota": {
+      "list": "This watchlist is too big for the browser's synced storage. Remove some items, or put them on another watchlist.",
+      "total": "The browser's synced storage is full. Remove items or watchlists you no longer need.",
+      "items": "The browser's synced storage holds no more lists. Delete a watchlist you no longer need."
+    }
   }
 }
