@@ -1805,7 +1805,8 @@
     "hideCcus": "Hide the CCUs",
     "openHangar": "Opens the CCU in My Hangar",
     "openGroup": "Opens these CCUs in My Hangar",
-    "groupHint": "Shows the same CCUs of a base ship as one entry with their count. Remembered for the CCU Consultant."
+    "groupHint": "Shows the same CCUs of a base ship as one entry with their count. Remembered for the CCU Consultant.",
+    "ccuKinds": "$1 different"
   },
   "cartPaints": {
     "title": "Paint volume discount",

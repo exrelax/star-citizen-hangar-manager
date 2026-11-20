@@ -27,11 +27,20 @@ const ccu = (id: number, to: string, value: number, giftable = true): PledgeView
 
 const ccus = [ccu(1, 'Prowler', 20), ccu(2, 'Prowler', 25, false), ccu(3, 'Hammerhead', 40)];
 
+const toggled: boolean[] = [];
+let root: HTMLElement;
 function render(grouped: boolean) {
-  const root = document.createElement('div');
+  root = document.createElement('div');
   document.body.append(root);
   app = createApp({
-    render: () => h(ConsultantCcuList, { ccus, grouped, hideValues: false, hideIds: false }),
+    render: () =>
+      h(ConsultantCcuList, {
+        ccus,
+        grouped,
+        hideValues: false,
+        hideIds: false,
+        'onUpdate:grouped': (value: boolean) => toggled.push(value),
+      }),
   });
   app.mount(root);
   return [...root.querySelectorAll('li')].map((item) =>
@@ -45,6 +54,14 @@ describe('the CCUs of a base ship in the CCU Consultant (#456)', () => {
       'Upgrade - Cutlass Red to Prowler Standard Edition×2$45 −$15Some giftMelt',
       'Upgrade - Cutlass Red to Hammerhead Standard Edition#3$40GiftMelt',
     ]);
+  });
+
+  it('has the toggle of the grouped view above the list', () => {
+    render(true);
+    const toggle = root.querySelector<HTMLButtonElement>('.shm-consultant-group-toggle')!;
+    expect(toggle.getAttribute('aria-pressed')).toBe('true');
+    toggle.click();
+    expect(toggled).toEqual([false]);
   });
 
   it('lists each CCU on its own without grouping', () => {

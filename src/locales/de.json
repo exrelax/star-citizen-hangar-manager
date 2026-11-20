@@ -1805,7 +1805,8 @@
     "hideCcus": "CCUs ausblenden",
     "openHangar": "Öffnet das CCU in My Hangar",
     "openGroup": "Öffnet diese CCUs in My Hangar",
-    "groupHint": "Zeigt gleiche CCUs eines Basisschiffs als einen Eintrag mit ihrer Anzahl. Für den CCU Consultant gemerkt."
+    "groupHint": "Zeigt gleiche CCUs eines Basisschiffs als einen Eintrag mit ihrer Anzahl. Für den CCU Consultant gemerkt.",
+    "ccuKinds": "$1 verschiedene"
   },
   "cartPaints": {
     "title": "Mengenrabatt für Paints",

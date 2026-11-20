@@ -1805,7 +1805,8 @@
     "hideCcus": "Ocultar los CCU",
     "openHangar": "Abre el CCU en My Hangar",
     "openGroup": "Abre estos CCU en My Hangar",
-    "groupHint": "Muestra los CCU iguales de una nave base como una sola entrada con su cantidad. Se recuerda para el CCU Consultant."
+    "groupHint": "Muestra los CCU iguales de una nave base como una sola entrada con su cantidad. Se recuerda para el CCU Consultant.",
+    "ccuKinds": "$1 distintos"
   },
   "cartPaints": {
     "title": "Descuento por volumen en pinturas",

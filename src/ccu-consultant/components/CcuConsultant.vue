@@ -24,6 +24,7 @@ import type { PledgeView } from '@/hangar/pledge-view';
 import { openCcuAdvice } from '@/price-increases/ccu-advice-request';
 import CcuShips from '@/price-increases/components/CcuShips.vue';
 import ConsultantCcuList from './ConsultantCcuList.vue';
+import { groupItems as groupCcus, pledgeFacts } from '@/hangar/grouping';
 import { countdown, formatExpectedTime } from '@/price-increases/price-increase-label';
 import { useCcuAdvice } from '@/price-increases/use-ccu-advice';
 import { useNow } from '@/shared/use-now';
@@ -115,6 +116,15 @@ const pledgesById = computed(
   () => new Map((props.pledges ?? []).map((pledge) => [pledge.id, pledge])),
 );
 const ccusOf = (row: BaseShipRow) => row.ccus.flatMap((id) => pledgesById.value.get(id) ?? []);
+/** "Show the 28 CCUs · 5 different": how many kinds of CCUs the grouped list has. */
+const showCcusText = (row: BaseShipRow) => {
+  const count = row.ccus.length;
+  const kinds = groupCcus(ccusOf(row), pledgeFacts).length;
+  const show = i18n.n('ccuConsultant.showCcus', count, [format(count)]);
+  return kinds > 1 && kinds < count
+    ? `${show} · ${i18n.t('ccuConsultant.ccuKinds', [format(kinds)])}`
+    : show;
+};
 const setGrouped = (consultant: boolean) =>
   emit('update', { grouped: { ...props.settings.grouped, consultant } });
 
@@ -340,33 +350,19 @@ const hrefOf = (match: CoverageMatch) =>
             }}
           </p>
         </div>
-        <div class="shm-ccu-consultant-options">
-          <label
-            v-tooltip="i18n.t('settings.ccuAlwaysAvailableHint')"
-            class="shm-ccu-consultant-option"
-          >
-            <input
-              type="checkbox"
-              role="switch"
-              class="shm-switch is-small"
-              :checked="consider"
-              @change="setConsider(($event.target as HTMLInputElement).checked)"
-            />
-            <span>{{ i18n.t('settings.ccuAlwaysAvailable') }}</span>
-          </label>
-          <!-- The CCUs of a base ship grouped (#456), like the grouped view of the lists. -->
-          <button
-            v-if="list.total"
-            v-tooltip="i18n.t('ccuConsultant.groupHint')"
-            type="button"
-            class="shm-ccu-consultant-group-toggle"
-            :aria-pressed="settings.grouped.consultant"
-            @click="setGrouped(!settings.grouped.consultant)"
-          >
-            <SvgIcon name="layer-group" />
-            {{ i18n.t('manager.group') }}
-          </button>
-        </div>
+        <label
+          v-tooltip="i18n.t('settings.ccuAlwaysAvailableHint')"
+          class="shm-ccu-consultant-option"
+        >
+          <input
+            type="checkbox"
+            role="switch"
+            class="shm-switch is-small"
+            :checked="consider"
+            @change="setConsider(($event.target as HTMLInputElement).checked)"
+          />
+          <span>{{ i18n.t('settings.ccuAlwaysAvailable') }}</span>
+        </label>
       </div>
 
       <template v-if="list.total">
@@ -614,9 +610,7 @@ const hrefOf = (match: CoverageMatch) =>
                         {{
                           openCcus.has(`${group}:${row.key}`)
                             ? i18n.t('ccuConsultant.hideCcus')
-                            : i18n.n('ccuConsultant.showCcus', row.ccus.length, [
-                                format(row.ccus.length),
-                              ])
+                            : showCcusText(row)
                         }}
                       </button>
                     </td>
@@ -694,6 +688,7 @@ const hrefOf = (match: CoverageMatch) =>
                         :grouped="settings.grouped.consultant"
                         :hide-values="settings.hideMeltValue"
                         :hide-ids="settings.hidePledgeIds"
+                        @update:grouped="setGrouped"
                       />
                     </td>
                   </tr>
@@ -751,9 +746,7 @@ const hrefOf = (match: CoverageMatch) =>
                           {{
                             openCcus.has(`${section.id}:${row.key}`)
                               ? i18n.t('ccuConsultant.hideCcus')
-                              : i18n.n('ccuConsultant.showCcus', row.ccus.length, [
-                                  format(row.ccus.length),
-                                ])
+                              : showCcusText(row)
                           }}
                         </button>
                       </td>
@@ -829,6 +822,7 @@ const hrefOf = (match: CoverageMatch) =>
                           :grouped="settings.grouped.consultant"
                           :hide-values="settings.hideMeltValue"
                           :hide-ids="settings.hidePledgeIds"
+                          @update:grouped="setGrouped"
                         />
                       </td>
                     </tr>
@@ -1109,37 +1103,6 @@ const hrefOf = (match: CoverageMatch) =>
   margin-top: 4px;
   color: var(--shm-accent);
   font-size: calc(12px * var(--shm-font-scale));
-}
-
-/* The options of the head: the switch, and below it the grouped view's toggle (#456). */
-.shm-ccu-consultant-options {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
-}
-
-.shm-ccu-consultant-group-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 2px 0;
-  color: var(--shm-text-muted);
-  font: inherit;
-  font-size: calc(12px * var(--shm-font-scale));
-  background: none;
-  border: 0;
-  cursor: pointer;
-}
-
-.shm-ccu-consultant-group-toggle:hover,
-.shm-ccu-consultant-group-toggle:focus-visible {
-  color: var(--shm-text-strong);
-  outline: none;
-}
-
-.shm-ccu-consultant-group-toggle[aria-pressed='true'] {
-  color: var(--shm-accent);
 }
 
 .shm-ccu-consultant-ccus-toggle {
