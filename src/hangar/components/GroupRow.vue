@@ -15,8 +15,9 @@ import { selection } from '../selection';
  * look alike: the first item's image with its kind, name and ships, and – as what tells a group at
  * once – a stack with the count beside the name. The sums of value and discount instead of an id
  * and a date, the items' badges by all, some or none (`group-badges.ts`) and the extras that
- * differ. Selecting it selects all its items (My Hangar). A click opens the group dialog (#449)
- * with its items as the list's rows (the `item` slot); a jump to one of its pledges (`open`) too.
+ * differ. Selecting it selects all its items (My Hangar). Two ways to its items (#488), both as the
+ * list's rows (the `item` slot): a click expands the group in place and a second collapses it; a
+ * button of its own opens the group dialog (#449), as a jump to one of its pledges (`open`) does.
  */
 
 const props = defineProps<{
@@ -38,7 +39,10 @@ const props = defineProps<{
 defineSlots<{ item(props: { entry: T; autoExpand: boolean }): unknown }>();
 
 const first = computed(() => props.group.items[0]!);
+/** Its items shown below it in the list. */
 const expanded = ref(false);
+/** Its dialog. */
+const dialogOpen = ref(false);
 /** The pledge the dialog was opened for by a jump, highlighted there. */
 const highlight = ref<number>();
 watch(
@@ -48,12 +52,12 @@ watch(
     // A jump to a pledge of another group closes this one's dialog: one dialog at a time.
     if (!props.group.items.some((item) => item.id === request.id)) return close();
     highlight.value = request.id;
-    expanded.value = true;
+    dialogOpen.value = true;
   },
   { immediate: true },
 );
 function close() {
-  expanded.value = false;
+  dialogOpen.value = false;
   highlight.value = undefined;
 }
 
@@ -80,8 +84,11 @@ const countLabel = computed(() => i18n.n('group.items', props.group.count, [prop
 </script>
 
 <template>
-  <div class="shm-group">
-    <div class="shm-row shm-group-row" :class="{ 'is-selected': checked === 'true' }">
+  <div class="shm-group" :class="{ 'is-expanded': expanded }">
+    <div
+      class="shm-row shm-group-row"
+      :class="{ 'is-selected': checked === 'true', 'is-expanded': expanded }"
+    >
       <button
         v-if="selectable"
         type="button"
@@ -137,10 +144,19 @@ const countLabel = computed(() => i18n.n('group.items', props.group.count, [prop
           </span>
         </span>
         <button
+          v-tooltip="i18n.t('group.openDialog')"
+          type="button"
+          class="shm-chevron shm-group-open"
+          aria-haspopup="dialog"
+          :aria-label="i18n.t('group.openDialog')"
+          @click.stop="dialogOpen = true"
+        >
+          <SvgIcon name="up-right-and-down-left-from-center" />
+        </button>
+        <button
           v-tooltip="i18n.t('group.toggle')"
           type="button"
           class="shm-chevron"
-          aria-haspopup="dialog"
           :aria-expanded="expanded"
           :aria-label="i18n.t('group.toggle')"
           @click.stop="expanded = !expanded"
@@ -149,8 +165,13 @@ const countLabel = computed(() => i18n.n('group.items', props.group.count, [prop
         </button>
       </div>
     </div>
+    <div v-if="expanded" class="shm-group-items">
+      <template v-for="entry in group.items" :key="entry.id">
+        <slot name="item" :entry="entry" :auto-expand="false" />
+      </template>
+    </div>
     <GroupDialog
-      v-if="expanded"
+      v-if="dialogOpen"
       :group="group"
       :value="value"
       :discount="discount"
@@ -196,6 +217,38 @@ const countLabel = computed(() => i18n.n('group.items', props.group.count, [prop
 .shm-group-count .shm-icon {
   width: 11px;
   height: 11px;
+}
+
+/* The items of an expanded group below it, as rows of their own. */
+.shm-group-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 6px 0 8px 24px;
+  padding-left: 12px;
+  border-left: 2px solid rgb(var(--shm-accent-rgb) / 0.3);
+}
+
+/* "Modern Hangar" lays the row out as a grid: the dialog's button gets a column of its own. */
+html .shm-theme-modern .shm-group-row .shm-row-summary {
+  grid-template-areas:
+    'thumb main open chevron'
+    'thumb badges open chevron';
+  grid-template-columns: 128px minmax(0, 1fr) auto auto;
+}
+
+html .shm-theme-modern .shm-group-row .shm-group-open {
+  grid-area: open;
+}
+
+/* The dialog's button: no turn when the group expands, unlike the chevron. */
+.is-expanded .shm-group-open .shm-icon {
+  transform: none;
+}
+
+.shm-group-open .shm-icon {
+  width: 12px;
+  height: 12px;
 }
 
 /* A stack of cards behind the image: a group at a glance, also without reading. */

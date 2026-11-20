@@ -1772,7 +1772,7 @@
   },
   "group": {
     "select": "Seleccionar los $1 elementos: $2",
-    "toggle": "Abrir el grupo con sus elementos",
+    "toggle": "Mostrar u ocultar los elementos del grupo",
     "sumUnknown": {
       "one": "$1 + $2 desconocido",
       "other": "$1 + $2 desconocidos"
@@ -1799,6 +1799,7 @@
       "other": "$1 elementos"
     },
     "selected": "$1 de $2 seleccionados",
-    "refundCount": "$1 de $2 elementos aún se pueden reembolsar."
+    "refundCount": "$1 de $2 elementos aún se pueden reembolsar.",
+    "openDialog": "Abrir el grupo en un diálogo"
   }
 }

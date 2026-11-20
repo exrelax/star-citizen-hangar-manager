@@ -1772,7 +1772,7 @@
   },
   "group": {
     "select": "Select all $1 items: $2",
-    "toggle": "Open the group with its items",
+    "toggle": "Show or hide the items of the group",
     "sumUnknown": {
       "one": "$1 + $2 unknown",
       "other": "$1 + $2 unknown"
@@ -1799,6 +1799,7 @@
       "other": "$1 items"
     },
     "selected": "$1 of $2 selected",
-    "refundCount": "$1 of $2 items can still be refunded."
+    "refundCount": "$1 of $2 items can still be refunded.",
+    "openDialog": "Open the group in a dialog"
   }
 }

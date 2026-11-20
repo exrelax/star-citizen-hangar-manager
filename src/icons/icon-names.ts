@@ -64,6 +64,7 @@ export const ICON_NAMES = {
     'tag',
     'trash',
     'triangle-exclamation',
+    'up-right-and-down-left-from-center',
     'user-tie',
     'wand-magic-sparkles',
     'xmark-large',

@@ -1772,7 +1772,7 @@
   },
   "group": {
     "select": "Alle $1 Einträge auswählen: $2",
-    "toggle": "Gruppe mit ihren Einträgen öffnen",
+    "toggle": "Einträge der Gruppe zeigen oder ausblenden",
     "sumUnknown": {
       "one": "$1 + $2 unbekannt",
       "other": "$1 + $2 unbekannt"
@@ -1799,6 +1799,7 @@
       "other": "$1 Einträge"
     },
     "selected": "$1 von $2 ausgewählt",
-    "refundCount": "$1 von $2 Einträgen lassen sich noch erstatten."
+    "refundCount": "$1 von $2 Einträgen lassen sich noch erstatten.",
+    "openDialog": "Gruppe in einem Dialog öffnen"
   }
 }
