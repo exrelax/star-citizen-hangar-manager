@@ -1772,7 +1772,7 @@
   },
   "group": {
     "select": "Alle $1 Einträge auswählen: $2",
-    "toggle": "Einträge der Gruppe zeigen oder ausblenden",
+    "toggle": "Gruppe mit ihren Einträgen öffnen",
     "sumUnknown": {
       "one": "$1 + $2 unbekannt",
       "other": "$1 + $2 unbekannt"
@@ -1795,6 +1795,7 @@
     "items": {
       "one": "$1 Eintrag",
       "other": "$1 Einträge"
-    }
+    },
+    "selected": "$1 von $2 ausgewählt"
   }
 }

@@ -3,7 +3,8 @@ import { i18n, locale } from '@/i18n';
 import type { IconName } from '@/icons/icon-names';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
+import GroupDialog from './GroupDialog.vue';
 import { formatUsd } from '../discount-format';
 import type { GroupBadge } from '../group-badges';
 import type { GroupSum, ItemGroup } from '../grouping';
@@ -14,8 +15,8 @@ import { selection } from '../selection';
  * look alike: the first item's image with its kind, name and ships, and – as what tells a group at
  * once – a stack with the count beside the name. The sums of value and discount instead of an id
  * and a date, the items' badges by all, some or none (`group-badges.ts`) and the extras that
- * differ. Selecting it selects all its items (My Hangar). A click shows its items below as normal
- * rows, by the `item` slot, until the group dialog (#449).
+ * differ. Selecting it selects all its items (My Hangar). A click opens the group dialog (#449)
+ * with its items as the list's rows (the `item` slot); a jump to one of its pledges (`open`) too.
  */
 
 const props = defineProps<{
@@ -29,11 +30,32 @@ const props = defineProps<{
   note?: string;
   /** Its items can be selected (My Hangar). */
   selectable?: boolean;
+  /** The list's display classes, for the rows in the dialog. */
+  listClasses?: Record<string, boolean>;
+  /** A jump to a pledge (#436): the dialog opens if it is one of this group's. */
+  open?: { id: number; at: number } | null;
 }>();
-defineSlots<{ item(props: { entry: T }): unknown }>();
+defineSlots<{ item(props: { entry: T; autoExpand: boolean }): unknown }>();
 
 const first = computed(() => props.group.items[0]!);
 const expanded = ref(false);
+/** The pledge the dialog was opened for by a jump, highlighted there. */
+const highlight = ref<number>();
+watch(
+  () => props.open,
+  (request) => {
+    if (!request) return;
+    // A jump to a pledge of another group closes this one's dialog: one dialog at a time.
+    if (!props.group.items.some((item) => item.id === request.id)) return close();
+    highlight.value = request.id;
+    expanded.value = true;
+  },
+  { immediate: true },
+);
+function close() {
+  expanded.value = false;
+  highlight.value = undefined;
+}
 
 const ids = computed(() => props.group.items.map((item) => item.id));
 const selectedCount = computed(() => ids.value.filter((id) => selection.has(id)).length);
@@ -58,11 +80,8 @@ const countLabel = computed(() => i18n.n('group.items', props.group.count, [prop
 </script>
 
 <template>
-  <div class="shm-group" :class="{ 'is-expanded': expanded }">
-    <div
-      class="shm-row shm-group-row"
-      :class="{ 'is-selected': checked === 'true', 'is-expanded': expanded }"
-    >
+  <div class="shm-group">
+    <div class="shm-row shm-group-row" :class="{ 'is-selected': checked === 'true' }">
       <button
         v-if="selectable"
         type="button"
@@ -121,6 +140,7 @@ const countLabel = computed(() => i18n.n('group.items', props.group.count, [prop
           v-tooltip="i18n.t('group.toggle')"
           type="button"
           class="shm-chevron"
+          aria-haspopup="dialog"
           :aria-expanded="expanded"
           :aria-label="i18n.t('group.toggle')"
           @click.stop="expanded = !expanded"
@@ -129,11 +149,22 @@ const countLabel = computed(() => i18n.n('group.items', props.group.count, [prop
         </button>
       </div>
     </div>
-    <div v-if="expanded" class="shm-group-items">
-      <template v-for="entry in group.items" :key="entry.id">
-        <slot name="item" :entry="entry" />
+    <GroupDialog
+      v-if="expanded"
+      :group="group"
+      :value="value"
+      :discount="discount"
+      :badges="badges"
+      :note="note"
+      :selectable="selectable"
+      :list-classes="listClasses"
+      :highlight="highlight"
+      @close="close"
+    >
+      <template #item="{ entry, autoExpand }">
+        <slot name="item" :entry="entry" :auto-expand="autoExpand" />
       </template>
-    </div>
+    </GroupDialog>
   </div>
 </template>
 
@@ -172,15 +203,5 @@ const countLabel = computed(() => i18n.n('group.items', props.group.count, [prop
   box-shadow:
     3px -3px 0 -1px rgb(var(--shm-accent-rgb) / 0.35),
     6px -6px 0 -2px rgb(var(--shm-accent-rgb) / 0.18);
-}
-
-.shm-group-items {
-  display: flex;
-  flex-direction: column;
-  /* Rows of their own, with rounded corners in "Modern Hangar": a little room between them. */
-  gap: 6px;
-  margin: 4px 0 8px 24px;
-  padding-left: 12px;
-  border-left: 2px solid rgb(var(--shm-accent-rgb) / 0.3);
 }
 </style>
