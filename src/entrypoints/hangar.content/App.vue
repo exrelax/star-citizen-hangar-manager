@@ -79,8 +79,13 @@ const TAB_ICONS: Record<ManagerTab, { icon: IconName; iconSet?: IconSet }> = {
   settings: { icon: 'gear' },
 };
 
+/** The settings show only their icon, named in its tooltip (#513): room for more tabs. */
 const tabItems = computed(() =>
-  MANAGER_TABS.map((tab) => ({ id: tab, label: i18n.t(`tabs.${tab}`), ...TAB_ICONS[tab] })),
+  MANAGER_TABS.map((tab) =>
+    tab === 'settings'
+      ? { id: tab, label: i18n.t('tabs.settingsName'), iconOnly: true, ...TAB_ICONS[tab] }
+      : { id: tab, label: i18n.t(`tabs.${tab}`), ...TAB_ICONS[tab] },
+  ),
 );
 
 const hangar = useHangarPledges();

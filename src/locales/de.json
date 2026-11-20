@@ -158,7 +158,8 @@
     "buyback": "Buy Back",
     "store": "Pledge Store",
     "consultants": "Berater",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "settingsName": "Einstellungen des Hangar Managers"
   },
   "settings": {
     "appearance": "Darstellung",

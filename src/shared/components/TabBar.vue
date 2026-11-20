@@ -2,6 +2,7 @@
 import { FEATURES } from '@/config';
 import type { IconName, IconSet } from '@/icons/icon-names';
 import SvgIcon from '@/icons/SvgIcon.vue';
+import { vTooltip } from '@/shared/tooltip/tooltip';
 import { nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 
 /*
@@ -16,7 +17,8 @@ import { nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vu
 const props = defineProps<{
   /**
    * `iconSet`: the sprite of `icon`, Font Awesome unless set; `count`: shown after the label, with
-   * `countTone` as a tinted pill (`underline` tabs).
+   * `countTone` as a tinted pill (`underline` tabs); `iconOnly`: only the icon, the label as its
+   * tooltip and accessible name (#513).
    */
   items: readonly {
     id: T;
@@ -25,6 +27,7 @@ const props = defineProps<{
     iconSet?: IconSet;
     count?: string;
     countTone?: 'danger' | 'warning' | 'neutral';
+    iconOnly?: boolean;
   }[];
   selected: T;
   /** Accessible name of the group. */
@@ -71,11 +74,29 @@ if (slide) {
       place(true);
     },
   );
+  /*
+   * The bar and each tab: a tab's width also changes on its own, e.g. its label in another language
+   * once the language setting is read, and moves the active one with it (#513).
+   */
+  const observeAll = () => {
+    observer?.disconnect();
+    if (!bar.value || !observer) return;
+    observer.observe(bar.value);
+    for (const tab of bar.value.querySelectorAll('.shm-tab')) observer.observe(tab);
+  };
   onMounted(() => {
     place(false);
     observer = new ResizeObserver(() => place(false));
-    if (bar.value) observer.observe(bar.value);
+    observeAll();
   });
+  watch(
+    () => props.items.map((item) => item.id).join(),
+    async () => {
+      await nextTick();
+      observeAll();
+      place(false);
+    },
+  );
   onUnmounted(() => observer?.disconnect());
 }
 </script>
@@ -88,6 +109,7 @@ if (slide) {
       'has-indicator': slide && indicator,
       'is-fit-content': fitContent,
       'is-underline': underline,
+      'has-icon-only': items.some((item) => item.iconOnly),
     }"
     :role="panels ? 'tablist' : 'group'"
     :aria-label="label"
@@ -107,17 +129,19 @@ if (slide) {
       v-for="item in items"
       :id="panels && `${panels}-tab-${item.id}`"
       :key="item.id"
+      v-tooltip="item.iconOnly ? item.label : undefined"
       type="button"
       :role="panels ? 'tab' : undefined"
       class="shm-tab"
-      :class="{ 'is-active': selected === item.id }"
+      :class="{ 'is-active': selected === item.id, 'is-icon-only': item.iconOnly }"
+      :aria-label="item.iconOnly ? item.label : undefined"
       :aria-selected="panels ? selected === item.id : undefined"
       :aria-pressed="panels ? undefined : selected === item.id"
       :aria-controls="panels && `${panels}-panel-${item.id}`"
       @click="emit('select', item.id)"
     >
       <SvgIcon v-if="item.icon" :name="item.icon" :set="item.iconSet" />
-      <span class="shm-tab-label">{{ item.label }}</span>
+      <span v-if="!item.iconOnly" class="shm-tab-label">{{ item.label }}</span>
       <!-- A space, so the tab's name reads "Label 3", not "Label3". -->
       <template v-if="item.count !== undefined">
         {{ ' '
@@ -191,6 +215,27 @@ if (slide) {
 .shm-tab-count.is-warning {
   color: var(--shm-warning);
   background: color-mix(in srgb, var(--shm-warning) 18%, transparent);
+}
+
+/*
+ * A tab with only its icon (#513): as narrow as the icon allows, its hit area at least 44 × 44 px
+ * (Apple Human Interface Guidelines) without changing the bar's height.
+ */
+.shm-tab.is-icon-only {
+  position: relative;
+  flex: none;
+  justify-content: center;
+  min-width: 44px;
+}
+
+.shm-tab.is-icon-only::before {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: max(100%, 44px);
+  content: '';
+  transform: translateY(-50%);
 }
 
 /* Underline tabs (`underline`): the parts of one section, further apart. */

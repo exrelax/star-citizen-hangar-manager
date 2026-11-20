@@ -229,6 +229,21 @@ html .shm-theme-modern .shm-tabs.is-fit-content {
   display: flex;
 }
 
+/* With a tab of only its icon (#513): the others share the room left, it keeps its own width. */
+html .shm-theme-modern .shm-tabs.has-icon-only {
+  display: flex;
+}
+
+html .shm-theme-modern .shm-tabs.has-icon-only .shm-tab {
+  flex: 1 1 0;
+}
+
+html .shm-theme-modern .shm-tabs.has-icon-only .shm-tab.is-icon-only {
+  flex: none;
+  width: 44px;
+  padding: 0;
+}
+
 html .shm-theme-modern .shm-tabs.is-fit-content .shm-tab {
   flex: 1 1 auto;
 }

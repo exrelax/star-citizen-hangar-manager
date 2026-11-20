@@ -158,7 +158,8 @@
     "buyback": "Buy Back",
     "store": "Pledge Store",
     "consultants": "Asesores",
-    "settings": "Ajustes"
+    "settings": "Ajustes",
+    "settingsName": "Ajustes del Hangar Manager"
   },
   "settings": {
     "appearance": "Aspecto",
