@@ -54,6 +54,8 @@ import {
   tokenRenewalsMeta,
   type TokenRenewalsSnapshot,
 } from '@/buyback-tokens/token-renewals-storage';
+import { watchlistsItem } from '@/watchlists/watchlists-storage';
+import type { Watchlist } from '@/watchlists/watchlists';
 import type { BuybackSnapshot } from '@/buyback/buyback';
 import type { HangarSnapshot } from '@/hangar/pledge';
 import type { OrdersSnapshot } from '@/orders/orders';
@@ -96,6 +98,7 @@ export type StorageId =
   | 'storeCredit'
   | 'paintPlan'
   | 'paintHistory'
+  | 'watchlists'
   | 'settings';
 
 export interface StorageDefinition {
@@ -110,8 +113,11 @@ export interface StorageDefinition {
   source: string;
   /** What shows or needs it. */
   usedBy: string[];
-  /** Data read from RSI (removed by "Reset" in the settings), or the settings. */
-  kind: 'data' | 'settings';
+  /**
+   * Data read from RSI (removed by "Reset" in the settings), what the user keeps in the synced
+   * storage across devices (never removed by a reset of this browser's copy), or the settings.
+   */
+  kind: 'data' | 'synced' | 'settings';
   /** Number of entries of a stored value, shown in the settings. */
   count?: (value: never) => number;
   /**
@@ -334,6 +340,16 @@ export const STORAGES: readonly StorageDefinition[] = [
     readAgain: 'never',
   },
   {
+    id: 'watchlists',
+    item: watchlistsItem,
+    content: 'Watchlists: name, description, date, reminder and the items on each (#465)',
+    source: 'The watchlists the user made, in the synced storage (one key per list)',
+    usedBy: ['Watchlists'],
+    kind: 'synced',
+    count: (value: Watchlist[] | null) => value?.length ?? 0,
+    readAgain: 'never',
+  },
+  {
     id: 'settings',
     item: settingsItem,
     content: 'Settings: language, theme, display and privacy options, filters, sorting',
@@ -343,5 +359,8 @@ export const STORAGES: readonly StorageDefinition[] = [
   },
 ];
 
-/** Storages whose data can be read again from RSI: hangar, buy back, orders, ships, … */
-export const LOCAL_COPY = STORAGES.filter((storage) => storage.kind !== 'settings');
+/**
+ * The local copy: hangar, buy back, orders, ships, … – not the settings and not what the user keeps
+ * in the synced storage (the watchlists), which a reset of this browser must never remove.
+ */
+export const LOCAL_COPY = STORAGES.filter((storage) => storage.kind === 'data');

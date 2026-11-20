@@ -556,6 +556,11 @@
       "content": "Los planes terminados del asesor de descuentos de pinturas: pinturas fundidas y compradas, store credit antes y después",
       "missing": "No se pueden volver a leer: el asesor no muestra planes terminados hasta que termine el siguiente."
     },
+    "watchlists": {
+      "name": "Watchlists",
+      "content": "Tus watchlists con sus elementos, sincronizadas en tus dispositivos",
+      "missing": "Tus watchlists desaparecen entonces en todos tus dispositivos."
+    },
     "settings": {
       "name": "Ajustes",
       "content": "Idioma, tema, opciones de visualización y privacidad, filtros, orden",
@@ -1883,5 +1888,12 @@
   },
   "consultants": {
     "paintLater": "El Asesor de descuentos de pinturas aparece aquí en cuanto se puedan volver a comprar pinturas por menos."
+  },
+  "watchlists": {
+    "quota": {
+      "list": "Esta watchlist es demasiado grande para el almacenamiento sincronizado del navegador. Quita algunos elementos o pásalos a otra watchlist.",
+      "total": "El almacenamiento sincronizado del navegador está lleno. Quita elementos o watchlists que ya no necesites.",
+      "items": "El almacenamiento sincronizado del navegador no admite más listas. Elimina una watchlist que ya no necesites."
+    }
   }
 }

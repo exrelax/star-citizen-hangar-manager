@@ -556,6 +556,11 @@
       "content": "Die abgeschlossenen Pläne des Paint-Rabatt-Beraters: eingeschmolzene und gekaufte Paints, Store Credits vorher und nachher",
       "missing": "Sie lassen sich nicht neu einlesen: Der Berater zeigt keine abgeschlossenen Pläne, bis der nächste endet."
     },
+    "watchlists": {
+      "name": "Watchlists",
+      "content": "Deine Watchlists mit ihren Einträgen, auf allen Geräten synchronisiert",
+      "missing": "Deine Watchlists sind dann auf allen Geräten weg."
+    },
     "settings": {
       "name": "Einstellungen",
       "content": "Sprache, Theme, Anzeige- und Datenschutzoptionen, Filter, Sortierung",
@@ -1883,5 +1888,12 @@
   },
   "consultants": {
     "paintLater": "Der Paint-Rabatt-Berater erscheint hier, sobald sich Paints günstiger neu kaufen lassen."
+  },
+  "watchlists": {
+    "quota": {
+      "list": "Diese Watchlist ist zu groß für den synchronisierten Speicher des Browsers. Entferne einige Einträge oder verteile sie auf eine andere Watchlist.",
+      "total": "Der synchronisierte Speicher des Browsers ist voll. Entferne Einträge oder Watchlists, die du nicht mehr brauchst.",
+      "items": "Der synchronisierte Speicher des Browsers fasst keine weiteren Listen. Lösche eine Watchlist, die du nicht mehr brauchst."
+    }
   }
 }
