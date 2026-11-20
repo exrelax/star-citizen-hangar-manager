@@ -3,7 +3,8 @@ import type { Pledge, PledgeItem } from '@/hangar/pledge';
 import type { Ship } from '@/ships/ships';
 import type { StoreItem } from '@/store/items/store-items';
 import type { DemoCatalog } from './catalog';
-import { demoMissingBase, withDemoGroups, withoutShip, type DemoGroupRole } from './demo-groups';
+import { demoCcuBases, hangarCases, reservedShips, type DemoCcuCase } from './demo-ccu-cases';
+import { demoMissingBase, withDemoGroups, type DemoGroupRole } from './demo-groups';
 import { createRandom, type DemoRandom } from './random';
 
 /*
@@ -43,6 +44,8 @@ export interface DemoPledge extends Pledge {
   demoPivot?: 'ship' | 'ccuTo' | 'ccuFrom';
   /** Its part in the groups of the Grouped View (#450, `demo-groups.ts`). */
   demoGroup?: DemoGroupRole;
+  /** Its part in the CCU Consultant's cases (#425, `demo-ccu-cases.ts`). */
+  demoCcuCase?: DemoCcuCase;
 }
 
 const USD = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
@@ -334,7 +337,13 @@ export function generateHangar(
   // The base ship of the CCUs that show "Base ship missing" in the Grouped View (#450): no other
   // pledge has it.
   const missingBase = composition.ccus > 0 ? demoMissingBase(random, catalog) : undefined;
-  const pool = missingBase ? withoutShip(catalog, missingBase) : catalog;
+  // The base ships of the CCU Consultant's cases (#425): no other pledge has them either.
+  const ccuBases =
+    composition.ccus > 0
+      ? demoCcuBases(random, catalog, new Set(missingBase ? [missingBase.id] : []), buyable)
+      : {};
+  const reserved = new Set([...(missingBase ? [missingBase.id] : []), ...reservedShips(ccuBases)]);
+  const pool = { ...catalog, ships: catalog.ships.filter((ship) => !reserved.has(ship.id)) };
   const pivot =
     composition.ships > 0 && composition.ccus > 1
       ? demoPivotShip(random, pool, buyable)
@@ -357,7 +366,9 @@ export function generateHangar(
   // A paint comes first: the newest pledge, bought a few hours ago with store credit (#176).
   const paint = shuffled.find((pledge) => pledge.demoKind === 'paints');
   const ordered = paint ? [paint, ...shuffled.filter((pledge) => pledge !== paint)] : shuffled;
-  return withSurcharge(withDemoGroups(ordered, catalog, random, missingBase), catalog).map(
+  // The CCU Consultant's cases (#425) among the oldest pledges, after the groups.
+  const grouped = withDemoGroups(ordered, pool, random, missingBase);
+  return withSurcharge([...grouped, ...hangarCases(ccuBases, pool, random)], catalog).map(
     (pledge, position) => ({
       ...pledge,
       id: DEMO.idBase - position,
@@ -387,6 +398,7 @@ function withSurcharge(pledges: DemoPledge[], catalog: DemoCatalog): DemoPledge[
       pledge.upgrade &&
       !pledge.demoPivot &&
       !pledge.demoGroup &&
+      !pledge.demoCcuCase &&
       /standard edition$/i.test(pledge.title) &&
       targets.includes(pledge.upgrade.targetItems[0]!.name),
   );

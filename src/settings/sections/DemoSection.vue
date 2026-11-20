@@ -256,6 +256,20 @@ async function reset() {
     </SettingCheck>
   </SettingsGroup>
 
+  <!-- The CCU Consultant's cases (#425): its box and tabs with and without CCUs. -->
+  <SettingsGroup :disabled="off">
+    <SettingCheck
+      v-for="key in ['ccuCoverageGaps', 'ccuDiscountAtRisk'] as const"
+      :key="key"
+      :checked="settings.demo[key]"
+      :disabled="off"
+      :hint="i18n.t(`settings.demo.${key}Hint`)"
+      @change="(on) => set({ [key]: on })"
+    >
+      {{ i18n.t(`settings.demo.${key}`) }}
+    </SettingCheck>
+  </SettingsGroup>
+
   <!-- The buy back tokens at the top right, also none (#433). -->
   <SettingsGroup :disabled="off">
     <SettingRow

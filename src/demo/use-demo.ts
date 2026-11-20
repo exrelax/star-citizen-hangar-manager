@@ -27,6 +27,8 @@ import { HANGAR_PAGE_SIZE } from '@/config';
 import { demoStoreNotes } from './demo-store-notes';
 import { demoStoreData } from './demo-store';
 import { demoShipRemovals, type DemoShipRemovals } from './demo-ship-removals';
+import { ccuCaseBasesOf } from './demo-ccu-cases';
+import { missingBaseOf } from './demo-groups';
 import { demoDismissedRemovalNotesItem } from '@/ship-removals/removal-notes';
 import { demoRiskNoteSeenItem } from '@/account-safety/risk-note';
 import type { StoreData } from '@/store/warbond';
@@ -194,6 +196,11 @@ export interface DemoContext {
   justBought?: { pledgeId: number; at: string };
   /** How the check right before bulk melting turns out (#416), from the demo settings. */
   meltCheck: MeltCheckOutcome;
+  /**
+   * A base ship of the CCU Consultant's cases shown without its Pledge Store page (#425), as the
+   * upgrade tool leaves out the page of some ships.
+   */
+  withoutStoreLink?: number;
 }
 
 export const DEMO_CONTEXT: InjectionKey<Ref<DemoContext | null>> = Symbol('shm-demo');
@@ -360,6 +367,8 @@ export function useDemo(
     );
     const now = Date.now();
     const storeData = demoStoreData(catalog.value, demoPledges.value, now, events.value);
+    // The base ships of the CCU Consultant's cases (#425).
+    const ccuBases = account ? ccuCaseBasesOf(account.account.pledges, catalog.value) : {};
     const shipRemovals = demoShipRemovals({
       ships: catalog.value.ships,
       hangar: demoPledges.value,
@@ -367,6 +376,17 @@ export function useDemo(
       buyable: buyable.value,
       warbondShips: new Set(storeData.warbonds.map((warbond) => warbond.ship.id)),
       avoid: new Set((account?.priceIncreases ?? []).map((increase) => increase.ship.id)),
+      ccuCases: {
+        leaving: ccuBases.leaving?.id,
+        covered: ccuBases.buyback?.id,
+        // The Grouped View's group without base ship stays too (#450).
+        stay: [
+          ...[ccuBases.always, ccuBases.unavailable].flatMap((ship) => (ship ? [ship.id] : [])),
+          ...(account ? [missingBaseOf(account.account.pledges)] : []).filter(
+            (id) => id !== undefined,
+          ),
+        ],
+      },
       now,
     });
     return {
@@ -414,6 +434,7 @@ export function useDemo(
       },
       justBought,
       meltCheck: settings().meltCheck,
+      ...(ccuBases.unavailable && { withoutStoreLink: ccuBases.unavailable.id }),
     };
   });
   const demoBuybackPledges = computed(() => {

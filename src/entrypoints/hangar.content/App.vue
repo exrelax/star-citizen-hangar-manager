@@ -155,10 +155,18 @@ const removalCcusState = useRemovalCcus(
 provide(REMOVAL_CCUS, removalCcusState);
 // What gives each CCU's base ship (#108), for the rows (#111): of the shown hangar and buy back.
 const storedShips = useStored(shipsItem);
+// The upgrade tool's ships; in the demo one without its Pledge Store page (#425).
+const coverageShips = computed(() => {
+  const ships = currentShips(storedShips.value ?? null)?.ships ?? [];
+  const without = demoView.context.value?.withoutStoreLink;
+  return without === undefined
+    ? ships
+    : ships.map((ship) => (ship.id === without ? { ...ship, link: undefined } : ship));
+});
 provide(
   CCU_COVERAGE,
   useCcuCoverage(() => ({
-    ships: currentShips(storedShips.value ?? null)?.ships ?? [],
+    ships: coverageShips.value,
     hangar: pledges.value,
     buyback: buybackPledges.value,
   })),
@@ -169,7 +177,7 @@ provide(
   computed(() => ({
     hangar: new Map(pledges.value.map((pledge) => [pledge.id, pledge])),
     buyback: new Map(buybackPledges.value.map((pledge) => [pledge.id, pledge])),
-    ships: currentShips(storedShips.value ?? null)?.ships ?? [],
+    ships: coverageShips.value,
   })),
 );
 // The hangar's ships, for "Paints" by owned ships (#336) in both lists; the demo's in the demo.

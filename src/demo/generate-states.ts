@@ -18,7 +18,8 @@ import {
   type DemoPledge,
 } from './generate-hangar';
 import { createRandom, type DemoRandom } from './random';
-import { extrasGroup } from './demo-groups';
+import { extrasGroup, missingBaseOf } from './demo-groups';
+import { ccuCaseBasesOf, reservedShips } from './demo-ccu-cases';
 import { demoPaintCases, paintCaseShips, storePaints } from './demo-paint-cases';
 import { DEFAULT_DEMO_SETTINGS, type DemoSettings, type DemoStates } from './demo-settings';
 
@@ -218,6 +219,15 @@ export function withStates(
       set(pledge, (current) => ({ ...current, isGiftable: true, isExchangeable: true }));
     }
   });
+  // The CCU Consultant's cases (#425): of the two same CCUs one giftable, the other not, so their
+  // group differs.
+  for (const role of ['always', 'buyback', 'leaving'] as const) {
+    generated
+      .filter((pledge) => pledge.demoCcuCase === role)
+      .forEach((pledge, index) =>
+        set(pledge, (current) => ({ ...current, isGiftable: index !== 1, isExchangeable: true })),
+      );
+  }
   // Also the same items chance added to the groups of gear and a package.
   const noneGroups = new Set(
     generated
@@ -261,13 +271,21 @@ export function withStates(
       }),
     );
 
-  // Upgraded ships with their applied CCUs.
+  // Upgraded ships with their applied CCUs – never to a base ship nothing else may give (#450, #425).
+  const reserved = new Set([
+    missingBaseOf(generated),
+    ...reservedShips(ccuCaseBasesOf(generated, catalog)),
+  ]);
+  const upgradeCatalog = {
+    ...catalog,
+    ships: catalog.ships.filter((ship) => !reserved.has(ship.id)),
+  };
   // Not the Price Increase Advisor's ship (#255): it stays itself.
   ofKind(generated, 'ships')
     .filter((pledge) => !pledge.demoPivot)
     .slice(states.upgraded ? -DEMO.upgradedPledges : generated.length)
     .forEach((pledge, index) => {
-      const result = upgraded(byId.get(pledge.id)!, catalog, random, index);
+      const result = upgraded(byId.get(pledge.id)!, upgradeCatalog, random, index);
       byId.set(pledge.id, result.pledge);
       if (result.log.length) upgradeLogs.set(pledge.id, result.log);
     });
