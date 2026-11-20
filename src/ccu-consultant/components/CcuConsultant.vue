@@ -23,6 +23,8 @@ import type { BuybackView } from '@/buyback/buyback-view';
 import type { PledgeView } from '@/hangar/pledge-view';
 import { openCcuAdvice } from '@/price-increases/ccu-advice-request';
 import CcuShips from '@/price-increases/components/CcuShips.vue';
+import ConsultantCcuList from './ConsultantCcuList.vue';
+import { groupItems as groupCcus, pledgeFacts } from '@/hangar/grouping';
 import { countdown, formatExpectedTime } from '@/price-increases/price-increase-label';
 import { useCcuAdvice } from '@/price-increases/use-ccu-advice';
 import { useNow } from '@/shared/use-now';
@@ -103,6 +105,29 @@ const barLabel = computed(() =>
 const groups = computed(() =>
   BASE_SHIP_GROUPS.filter((group) => group !== 'always' || consider.value),
 );
+/** The CCUs from a base ship, opened below its row (#456), by `<section>:<row key>`. */
+const openCcus = ref(new Set<string>());
+function toggleCcus(key: string) {
+  const next = new Set(openCcus.value);
+  if (!next.delete(key)) next.add(key);
+  openCcus.value = next;
+}
+const pledgesById = computed(
+  () => new Map((props.pledges ?? []).map((pledge) => [pledge.id, pledge])),
+);
+const ccusOf = (row: BaseShipRow) => row.ccus.flatMap((id) => pledgesById.value.get(id) ?? []);
+/** "Show the 28 CCUs · 5 different": how many kinds of CCUs the grouped list has. */
+const showCcusText = (row: BaseShipRow) => {
+  const count = row.ccus.length;
+  const kinds = groupCcus(ccusOf(row), pledgeFacts).length;
+  const show = i18n.n('ccuConsultant.showCcus', count, [format(count)]);
+  return kinds > 1 && kinds < count
+    ? `${show} · ${i18n.t('ccuConsultant.ccuKinds', [format(kinds)])}`
+    : show;
+};
+const setGrouped = (consultant: boolean) =>
+  emit('update', { grouped: { ...props.settings.grouped, consultant } });
+
 /** The ships and CCUs that give a leaving base ship (#454). */
 const waysOf = (row: BaseShipRow) => (row.ways ? row.ways.hangar + row.ways.buyback : 0);
 const chosen = ref<BaseShipGroup>();
@@ -534,7 +559,20 @@ const hrefOf = (match: CoverageMatch) =>
           role="tabpanel"
           :aria-labelledby="`shm-ccu-consultant-tab-${group}`"
         >
-          <p class="shm-ccu-consultant-hint">{{ hint }}</p>
+          <div class="shm-ccu-consultant-panel-head">
+            <p class="shm-ccu-consultant-hint">{{ hint }}</p>
+            <!-- The CCUs of each base ship as groups (#456), like the toggle of the lists. -->
+            <button
+              v-tooltip="i18n.t('ccuConsultant.groupHint')"
+              type="button"
+              class="shm-ccu-consultant-group-toggle"
+              :aria-pressed="settings.grouped.consultant"
+              @click="setGrouped(!settings.grouped.consultant)"
+            >
+              <SvgIcon name="layer-group" />
+              {{ i18n.t('manager.group') }}
+            </button>
+          </div>
 
           <div v-if="!rows.length" class="shm-ccu-consultant-empty" :class="`is-${group}`">
             <template v-if="group === 'missing'">
@@ -569,77 +607,104 @@ const hrefOf = (match: CoverageMatch) =>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="row in rows" :key="row.key">
-                  <td>
-                    <span class="shm-ccu-consultant-ship">{{ nameOf(row) }}</span>
-                    <span v-if="metaOf(row)" class="shm-ccu-consultant-meta">{{
-                      metaOf(row)
-                    }}</span>
-                  </td>
-                  <td class="is-number is-strong">{{ format(row.ccus.length) }}</td>
-                  <td>
-                    <span class="shm-ccu-consultant-cover" :class="`is-${group}`">
-                      <SvgIcon
-                        :name="
-                          group === 'buyback'
-                            ? 'clock-rotate-left'
-                            : group === 'always'
-                              ? 'basket-shopping'
-                              : 'triangle-exclamation'
-                        "
+                <template v-for="row in rows" :key="row.key">
+                  <tr>
+                    <td>
+                      <span class="shm-ccu-consultant-ship">{{ nameOf(row) }}</span>
+                      <span v-if="metaOf(row)" class="shm-ccu-consultant-meta">{{
+                        metaOf(row)
+                      }}</span>
+                      <button
+                        type="button"
+                        class="shm-ccu-consultant-more shm-ccu-consultant-ccus-toggle"
+                        :aria-expanded="openCcus.has(`${group}:${row.key}`)"
+                        @click="toggleCcus(`${group}:${row.key}`)"
+                      >
+                        {{
+                          openCcus.has(`${group}:${row.key}`)
+                            ? i18n.t('ccuConsultant.hideCcus')
+                            : showCcusText(row)
+                        }}
+                      </button>
+                    </td>
+                    <td class="is-number is-strong">{{ format(row.ccus.length) }}</td>
+                    <td>
+                      <span class="shm-ccu-consultant-cover" :class="`is-${group}`">
+                        <SvgIcon
+                          :name="
+                            group === 'buyback'
+                              ? 'clock-rotate-left'
+                              : group === 'always'
+                                ? 'basket-shopping'
+                                : 'triangle-exclamation'
+                          "
+                        />
+                        {{ i18n.t(`ccuConsultant.cover.${group}`) }}
+                      </span>
+                      <ul v-if="group === 'buyback'" class="shm-ccu-consultant-matches">
+                        <li v-for="match in shownMatches(row)" :key="match.id">
+                          <a
+                            v-tooltip="i18n.t('ccuConsultant.openBuyback')"
+                            :href="hrefOf(match)"
+                            @click="openMatch($event, match)"
+                            >{{ match.title }}</a
+                          >
+                          <span class="shm-pledge-id">#{{ idOf(match) }}</span>
+                        </li>
+                      </ul>
+                      <button
+                        v-if="group === 'buyback' && row.matches.length > MATCHES_SHOWN"
+                        type="button"
+                        class="shm-ccu-consultant-more"
+                        :aria-expanded="openRows.has(row.key)"
+                        @click="toggleRow(row)"
+                      >
+                        {{
+                          openRows.has(row.key)
+                            ? i18n.t('ccuConsultant.fewerMatches')
+                            : i18n.n(
+                                'ccuConsultant.moreMatches',
+                                row.matches.length - MATCHES_SHOWN,
+                                [format(row.matches.length - MATCHES_SHOWN)],
+                              )
+                        }}
+                      </button>
+                      <span v-if="group !== 'buyback'" class="shm-ccu-consultant-meta">
+                        {{
+                          i18n.t(
+                            group === 'always'
+                              ? 'ccuConsultant.cover.alwaysSub'
+                              : 'ccuConsultant.cover.missingSub',
+                          )
+                        }}
+                      </span>
+                      <a
+                        v-if="group === 'missing' && row.link"
+                        v-tooltip="i18n.t('ccuConsultant.pledgeStoreHint', [nameOf(row)])"
+                        class="shm-ccu-consultant-store"
+                        :href="rsiUrl(row.link)"
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        {{ i18n.t('ccuConsultant.pledgeStore') }}
+                        <SvgIcon name="square-up-right" />
+                      </a>
+                    </td>
+                  </tr>
+                  <tr
+                    v-if="openCcus.has(`${group}:${row.key}`)"
+                    class="shm-ccu-consultant-ccus-row"
+                  >
+                    <td colspan="3">
+                      <ConsultantCcuList
+                        :ccus="ccusOf(row)"
+                        :grouped="settings.grouped.consultant"
+                        :hide-values="settings.hideMeltValue"
+                        :hide-ids="settings.hidePledgeIds"
                       />
-                      {{ i18n.t(`ccuConsultant.cover.${group}`) }}
-                    </span>
-                    <ul v-if="group === 'buyback'" class="shm-ccu-consultant-matches">
-                      <li v-for="match in shownMatches(row)" :key="match.id">
-                        <a
-                          v-tooltip="i18n.t('ccuConsultant.openBuyback')"
-                          :href="hrefOf(match)"
-                          @click="openMatch($event, match)"
-                          >{{ match.title }}</a
-                        >
-                        <span class="shm-pledge-id">#{{ idOf(match) }}</span>
-                      </li>
-                    </ul>
-                    <button
-                      v-if="group === 'buyback' && row.matches.length > MATCHES_SHOWN"
-                      type="button"
-                      class="shm-ccu-consultant-more"
-                      :aria-expanded="openRows.has(row.key)"
-                      @click="toggleRow(row)"
-                    >
-                      {{
-                        openRows.has(row.key)
-                          ? i18n.t('ccuConsultant.fewerMatches')
-                          : i18n.n(
-                              'ccuConsultant.moreMatches',
-                              row.matches.length - MATCHES_SHOWN,
-                              [format(row.matches.length - MATCHES_SHOWN)],
-                            )
-                      }}
-                    </button>
-                    <span v-if="group !== 'buyback'" class="shm-ccu-consultant-meta">
-                      {{
-                        i18n.t(
-                          group === 'always'
-                            ? 'ccuConsultant.cover.alwaysSub'
-                            : 'ccuConsultant.cover.missingSub',
-                        )
-                      }}
-                    </span>
-                    <a
-                      v-if="group === 'missing' && row.link"
-                      v-tooltip="i18n.t('ccuConsultant.pledgeStoreHint', [nameOf(row)])"
-                      class="shm-ccu-consultant-store"
-                      :href="rsiUrl(row.link)"
-                      target="_blank"
-                      rel="noopener"
-                    >
-                      {{ i18n.t('ccuConsultant.pledgeStore') }}
-                      <SvgIcon name="square-up-right" />
-                    </a>
-                  </td>
-                </tr>
+                    </td>
+                  </tr>
+                </template>
               </tbody>
             </table>
           </div>
@@ -676,76 +741,103 @@ const hrefOf = (match: CoverageMatch) =>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="row in section.rows" :key="row.key">
-                    <td>
-                      <span class="shm-ccu-consultant-ship">{{ nameOf(row) }}</span>
-                      <span class="shm-ccu-consultant-meta">{{ soonMetaOf(row) }}</span>
-                      <span v-if="limitedOf(row)" class="shm-ccu-consultant-meta">
-                        {{ limitedOf(row) }}
-                      </span>
-                    </td>
-                    <td class="is-number is-strong">{{ format(row.ccus.length) }}</td>
-                    <td>
-                      <span class="shm-ccu-consultant-ways">{{ format(waysOf(row)) }}</span>
-                      <span v-if="waysOf(row)" class="shm-ccu-consultant-meta">
-                        {{
-                          i18n.t('ccuConsultant.soon.ways', [
-                            format(row.ways?.hangar ?? 0),
-                            format(row.ways?.buyback ?? 0),
-                          ])
-                        }}
-                      </span>
-                      <span class="shm-ccu-consultant-cover is-missing is-short">
-                        <SvgIcon name="triangle-exclamation" />
-                        {{
-                          i18n.n('ccuConsultant.soon.short', row.short ?? 0, [
-                            format(row.short ?? 0),
-                          ])
-                        }}
-                      </span>
-                    </td>
-                    <td>
-                      <div class="shm-ccu-consultant-leaves">
-                        <span
-                          v-if="row.removal"
-                          v-tooltip="removalLabelOf(row)?.hint"
-                          class="shm-badge is-price-increase is-warning"
-                          tabindex="0"
+                  <template v-for="row in section.rows" :key="row.key">
+                    <tr>
+                      <td>
+                        <span class="shm-ccu-consultant-ship">{{ nameOf(row) }}</span>
+                        <span class="shm-ccu-consultant-meta">{{ soonMetaOf(row) }}</span>
+                        <span v-if="limitedOf(row)" class="shm-ccu-consultant-meta">
+                          {{ limitedOf(row) }}
+                        </span>
+                        <button
+                          type="button"
+                          class="shm-ccu-consultant-more shm-ccu-consultant-ccus-toggle"
+                          :aria-expanded="openCcus.has(`${section.id}:${row.key}`)"
+                          @click="toggleCcus(`${section.id}:${row.key}`)"
                         >
-                          {{ removalLabelOf(row)?.text }}
+                          {{
+                            openCcus.has(`${section.id}:${row.key}`)
+                              ? i18n.t('ccuConsultant.hideCcus')
+                              : showCcusText(row)
+                          }}
+                        </button>
+                      </td>
+                      <td class="is-number is-strong">{{ format(row.ccus.length) }}</td>
+                      <td>
+                        <span class="shm-ccu-consultant-ways">{{ format(waysOf(row)) }}</span>
+                        <span v-if="waysOf(row)" class="shm-ccu-consultant-meta">
+                          {{
+                            i18n.t('ccuConsultant.soon.ways', [
+                              format(row.ways?.hangar ?? 0),
+                              format(row.ways?.buyback ?? 0),
+                            ])
+                          }}
                         </span>
-                        <ShipUpgradeButtons
-                          v-if="row.shipId !== undefined && skuOf(row) !== undefined"
-                          :ship-id="row.shipId"
-                          :ship-name="nameOf(row)"
-                          :sku-id="skuOf(row)"
+                        <span class="shm-ccu-consultant-cover is-missing is-short">
+                          <SvgIcon name="triangle-exclamation" />
+                          {{
+                            i18n.n('ccuConsultant.soon.short', row.short ?? 0, [
+                              format(row.short ?? 0),
+                            ])
+                          }}
+                        </span>
+                      </td>
+                      <td>
+                        <div class="shm-ccu-consultant-leaves">
+                          <span
+                            v-if="row.removal"
+                            v-tooltip="removalLabelOf(row)?.hint"
+                            class="shm-badge is-price-increase is-warning"
+                            tabindex="0"
+                          >
+                            {{ removalLabelOf(row)?.text }}
+                          </span>
+                          <ShipUpgradeButtons
+                            v-if="row.shipId !== undefined && skuOf(row) !== undefined"
+                            :ship-id="row.shipId"
+                            :ship-name="nameOf(row)"
+                            :sku-id="skuOf(row)"
+                          />
+                          <span v-else-if="!row.removal" class="shm-ccu-consultant-meta">
+                            {{ i18n.t('ccuConsultant.tooFew.notOnSale') }}
+                          </span>
+                        </div>
+                        <button
+                          v-if="row.removal && row.shipId !== undefined"
+                          v-tooltip="i18n.t('shipRemovals.showShipHint', [nameOf(row)])"
+                          type="button"
+                          class="shm-ccu-consultant-more shm-ccu-consultant-removal-link"
+                          @click="openShipRemoval(row.shipId)"
+                        >
+                          {{ i18n.t('notifications.showInStore') }}
+                        </button>
+                        <a
+                          v-else-if="row.link"
+                          v-tooltip="i18n.t('ccuConsultant.pledgeStoreHint', [nameOf(row)])"
+                          class="shm-ccu-consultant-store"
+                          :href="rsiUrl(row.link)"
+                          target="_blank"
+                          rel="noopener"
+                        >
+                          {{ i18n.t('ccuConsultant.pledgeStore') }}
+                          <SvgIcon name="square-up-right" />
+                        </a>
+                      </td>
+                    </tr>
+                    <tr
+                      v-if="openCcus.has(`${section.id}:${row.key}`)"
+                      class="shm-ccu-consultant-ccus-row"
+                    >
+                      <td colspan="4">
+                        <ConsultantCcuList
+                          :ccus="ccusOf(row)"
+                          :grouped="settings.grouped.consultant"
+                          :hide-values="settings.hideMeltValue"
+                          :hide-ids="settings.hidePledgeIds"
                         />
-                        <span v-else-if="!row.removal" class="shm-ccu-consultant-meta">
-                          {{ i18n.t('ccuConsultant.tooFew.notOnSale') }}
-                        </span>
-                      </div>
-                      <button
-                        v-if="row.removal && row.shipId !== undefined"
-                        v-tooltip="i18n.t('shipRemovals.showShipHint', [nameOf(row)])"
-                        type="button"
-                        class="shm-ccu-consultant-more shm-ccu-consultant-removal-link"
-                        @click="openShipRemoval(row.shipId)"
-                      >
-                        {{ i18n.t('notifications.showInStore') }}
-                      </button>
-                      <a
-                        v-else-if="row.link"
-                        v-tooltip="i18n.t('ccuConsultant.pledgeStoreHint', [nameOf(row)])"
-                        class="shm-ccu-consultant-store"
-                        :href="rsiUrl(row.link)"
-                        target="_blank"
-                        rel="noopener"
-                      >
-                        {{ i18n.t('ccuConsultant.pledgeStore') }}
-                        <SvgIcon name="square-up-right" />
-                      </a>
-                    </td>
-                  </tr>
+                      </td>
+                    </tr>
+                  </template>
                 </tbody>
               </table>
             </div>
@@ -1022,6 +1114,53 @@ const hrefOf = (match: CoverageMatch) =>
   margin-top: 4px;
   color: var(--shm-accent);
   font-size: calc(12px * var(--shm-font-scale));
+}
+
+/* The hint and, on its right, the toggle of the grouped view (#456), as above the lists. */
+.shm-ccu-consultant-panel-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.shm-ccu-consultant-panel-head .shm-ccu-consultant-hint {
+  flex: 1;
+}
+
+.shm-ccu-consultant-group-toggle {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 2px 0;
+  color: var(--shm-text-muted);
+  font: inherit;
+  font-size: calc(12px * var(--shm-font-scale));
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.shm-ccu-consultant-group-toggle:hover,
+.shm-ccu-consultant-group-toggle:focus-visible {
+  color: var(--shm-text-strong);
+  outline: none;
+}
+
+.shm-ccu-consultant-group-toggle[aria-pressed='true'] {
+  color: var(--shm-accent);
+}
+
+.shm-ccu-consultant-ccus-toggle {
+  display: block;
+}
+
+/* The CCUs of an opened base ship (#456): below its row, indented like the coverage section. */
+.shm-ccu-consultant-ccus-row td {
+  padding-top: 0;
+  padding-bottom: 12px;
+  padding-left: 28px !important;
 }
 
 /* "Discount at risk" (#455): the CCU's two ships next to its name, the advice's buttons in a row. */

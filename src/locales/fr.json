@@ -1722,7 +1722,7 @@
       "ccus": "CCU depuis lui",
       "cover": "Couverture du vaisseau de base",
       "found": "Trouvé",
-      "leaves": "Quitte le Pledge Store",
+      "leaves": "Retrait",
       "ways": "Accès",
       "store": "Pledge Store"
     },
@@ -1797,7 +1797,16 @@
       "buyback": "Rachat seulement",
       "always": "Toujours en vente",
       "atRisk": "Remise menacée"
-    }
+    },
+    "showCcus": {
+      "one": "Afficher le CCU",
+      "other": "Afficher les $1 CCU"
+    },
+    "hideCcus": "Masquer les CCU",
+    "openHangar": "Ouvre le CCU dans My Hangar",
+    "openGroup": "Ouvre ces CCU dans My Hangar",
+    "groupHint": "Affiche les CCU identiques d’un vaisseau de base en une seule entrée avec leur nombre. Mémorisé pour le CCU Consultant.",
+    "ccuKinds": "$1 différents"
   },
   "cartPaints": {
     "title": "Remise de volume sur les peintures",

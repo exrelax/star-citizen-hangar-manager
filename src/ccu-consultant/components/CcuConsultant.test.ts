@@ -60,13 +60,19 @@ function render(
   return { root, updates };
 }
 
+/** A cell's text without the button that opens the base ship's CCUs (#456). */
+const cellText = (cell: Element) => {
+  const copy = cell.cloneNode(true) as Element;
+  copy.querySelector('.shm-ccu-consultant-ccus-toggle')?.remove();
+  return copy.textContent!.replace(/\s+/g, ' ').trim();
+};
 const tabs = (root: HTMLElement) =>
   [...root.querySelectorAll<HTMLElement>('.shm-tab')].map((tab) =>
     tab.textContent!.replace(/\s+/g, ' ').trim(),
   );
 const cells = (root: HTMLElement) =>
   [...root.querySelectorAll('tbody tr')].map((row) =>
-    [...row.querySelectorAll('td')].map((cell) => cell.textContent!.replace(/\s+/g, ' ').trim()),
+    [...row.querySelectorAll('td')].map(cellText),
   );
 
 describe('CcuConsultant (#113)', () => {
@@ -172,7 +178,9 @@ describe('CcuConsultant (#113)', () => {
     const { root } = render([many]);
     const links = () => root.querySelectorAll('.shm-ccu-consultant-matches a').length;
     expect(links()).toBe(3);
-    const more = root.querySelector<HTMLButtonElement>('.shm-ccu-consultant-more')!;
+    const more = root.querySelector<HTMLButtonElement>(
+      '.shm-ccu-consultant-more:not(.shm-ccu-consultant-ccus-toggle)',
+    )!;
     expect(more.textContent?.trim()).toBe('+ 2 more');
     more.click();
     await Promise.resolve();
@@ -204,9 +212,7 @@ describe('CCUs soon without base ship (#454)', () => {
     const title = root.querySelector('.shm-ccu-consultant-soon-title');
     expect(title?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Soon without base ship 2');
     const soon = root.querySelectorAll('.shm-ccu-consultant-table')[1]!;
-    const row = [...soon.querySelectorAll('tbody td')].map((cell) =>
-      cell.textContent!.replace(/\s+/g, ' ').trim(),
-    );
+    const row = [...soon.querySelectorAll('tbody td')].map((cell) => cellText(cell));
     expect(row[0]).toBe('ArrowIn the Pledge Store until Jan 27, 2027');
     expect(row[1]).toBe('2');
     // No ship or CCU to it: both CCUs from it are short.
@@ -242,7 +248,7 @@ describe('CCUs soon without base ship (#454)', () => {
     expect(title?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Soon without base ship 2');
     const soon = root.querySelectorAll('.shm-ccu-consultant-table');
     const row = [...soon[soon.length - 1]!.querySelectorAll('tbody td')].map((cell) =>
-      cell.textContent!.replace(/\s+/g, ' ').trim(),
+      cellText(cell),
     );
     expect(row[1]).toBe('3');
     const ways = soon[soon.length - 1]!.querySelector('.shm-ccu-consultant-ways');
@@ -277,7 +283,7 @@ describe('base ships with too few ways (#454)', () => {
     expect(title?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Too few ways to the base ship 2');
     const tables = root.querySelectorAll('.shm-ccu-consultant-table');
     const row = [...tables[tables.length - 1]!.querySelectorAll('tbody td')].map((cell) =>
-      cell.textContent!.replace(/\s+/g, ' ').trim(),
+      cellText(cell),
     );
     expect(row[0]).toBe('Cutlass RedNot always available · Standard price $135');
     expect(row[1]).toBe('3');
@@ -301,5 +307,17 @@ describe('the tab "Discount at risk" (#455)', () => {
     ).toBe(
       'No discount at risk No base ship of your CCUs gets more expensive within the next 14 days.',
     );
+  });
+});
+
+describe('the grouped view of the CCU Consultant (#456)', () => {
+  it('has its toggle above the tables, switched like the settings', () => {
+    const { root, updates } = render([coverage(10, 2, 'Cutlass Red')]);
+    const toggle = root.querySelector<HTMLButtonElement>(
+      '.shm-ccu-consultant-panel-head .shm-ccu-consultant-group-toggle',
+    )!;
+    expect(toggle.getAttribute('aria-pressed')).toBe('true');
+    toggle.click();
+    expect(updates.at(-1)?.grouped?.consultant).toBe(false);
   });
 });

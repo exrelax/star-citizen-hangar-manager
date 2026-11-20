@@ -1722,7 +1722,7 @@
       "ccus": "CCUs from it",
       "cover": "Base ship coverage",
       "found": "Found",
-      "leaves": "Leaves the Pledge Store",
+      "leaves": "Removal",
       "ways": "Ways to it",
       "store": "Pledge Store"
     },
@@ -1797,7 +1797,16 @@
       "buyback": "Buy back only",
       "always": "Always available",
       "atRisk": "Discount at risk"
-    }
+    },
+    "showCcus": {
+      "one": "Show the CCU",
+      "other": "Show the $1 CCUs"
+    },
+    "hideCcus": "Hide the CCUs",
+    "openHangar": "Opens the CCU in My Hangar",
+    "openGroup": "Opens these CCUs in My Hangar",
+    "groupHint": "Shows the same CCUs of a base ship as one entry with their count. Remembered for the CCU Consultant.",
+    "ccuKinds": "$1 different"
   },
   "cartPaints": {
     "title": "Paint volume discount",
