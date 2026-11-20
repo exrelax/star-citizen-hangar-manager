@@ -86,9 +86,9 @@ describe('CcuConsultant (#113)', () => {
     expect(box.querySelector('.shm-ccu-consultant-head input[role="switch"]')).not.toBeNull();
     expect(root.querySelector('.shm-ccu-consultant-intro')?.textContent).toContain('all 4 CCUs');
     expect(tabs(root)).toEqual([
-      'Without base ship 2',
-      'Only via buy back 1',
-      'Base always available 1',
+      'No base ship 2',
+      'Buy back only 1',
+      'Always available 1',
       'Discount at risk 0',
     ]);
     expect(cells(root)).toEqual([
@@ -118,11 +118,7 @@ describe('CcuConsultant (#113)', () => {
 
   it('lists every CCU without coverage while always available ships are not considered', () => {
     const { root } = render(ccus, false);
-    expect(tabs(root)).toEqual([
-      'Without base ship 3',
-      'Only via buy back 1',
-      'Discount at risk 0',
-    ]);
+    expect(tabs(root)).toEqual(['No base ship 3', 'Buy back only 1', 'Discount at risk 0']);
     expect(cells(root).map((row) => row[0])).toEqual([
       'Cutlass RedNot always available · Standard price $135',
       'ArrowNot always available',
@@ -132,7 +128,7 @@ describe('CcuConsultant (#113)', () => {
   it('says so when every CCU can be applied', () => {
     const { root } = render([coverage(12, 3, 'Razor', true), coverage(13, 1, 'Arrow')]);
     // The first group with CCUs is shown; the one without base ship is empty.
-    expect(root.querySelector('.shm-tab.is-active')?.textContent).toContain('Only via buy back');
+    expect(root.querySelector('.shm-tab.is-active')?.textContent).toContain('Buy back only');
     root.querySelector<HTMLElement>('.shm-tab')!.click();
     return Promise.resolve().then(() =>
       expect(root.querySelector('.shm-ccu-consultant-empty')?.textContent).toContain(
@@ -200,9 +196,9 @@ describe('CCUs soon without base ship (#454)', () => {
     );
     // Always available until now, but leaving: no longer "Base always available".
     expect(tabs(root)).toEqual([
-      'Without base ship 3',
-      'Only via buy back 0',
-      'Base always available 0',
+      'No base ship 3',
+      'Buy back only 0',
+      'Always available 0',
       'Discount at risk 0',
     ]);
     const title = root.querySelector('.shm-ccu-consultant-soon-title');
@@ -237,9 +233,9 @@ describe('CCUs soon without base ship (#454)', () => {
     );
     // Covered today by the buy back, but two of three will be short: the tab counts them.
     expect(tabs(root)).toEqual([
-      'Without base ship 2',
-      'Only via buy back 3',
-      'Base always available 0',
+      'No base ship 2',
+      'Buy back only 3',
+      'Always available 0',
       'Discount at risk 0',
     ]);
     const title = root.querySelector('.shm-ccu-consultant-soon-title');
@@ -276,7 +272,7 @@ describe('base ships with too few ways (#454)', () => {
       covered: true,
     });
     const { root } = render([viaBuyback(20), viaBuyback(21), viaBuyback(22)]);
-    expect(tabs(root)[0]).toBe('Without base ship 2');
+    expect(tabs(root)[0]).toBe('No base ship 2');
     const title = root.querySelector('.shm-ccu-consultant-soon-title');
     expect(title?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Too few ways to the base ship 2');
     const tables = root.querySelectorAll('.shm-ccu-consultant-table');

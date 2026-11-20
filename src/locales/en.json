@@ -1791,6 +1791,12 @@
       "swap": "Melt them before $5 and buy $1 × $2 → $3 for $4.",
       "secure": "CCUs to secure",
       "secureHint": "Opens the CCUs to secure before a price increase in the Pledge Store tab."
+    },
+    "tab": {
+      "missing": "No base ship",
+      "buyback": "Buy back only",
+      "always": "Always available",
+      "atRisk": "Discount at risk"
     }
   },
   "cartPaints": {

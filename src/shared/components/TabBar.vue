@@ -24,6 +24,11 @@ const props = defineProps<{
    * `<prefix>-panel-<id>`). Without it the items are toggle buttons.
    */
   panels?: string;
+  /**
+   * Segments as wide as their labels instead of equally wide ("Modern Hangar"), for labels of very
+   * different lengths. Labels never wrap; one that doesn't fit is cut with an ellipsis.
+   */
+  fitContent?: boolean;
 }>();
 const emit = defineEmits<{ select: [id: T] }>();
 
@@ -64,7 +69,7 @@ if (slide) {
   <div
     ref="bar"
     class="shm-tabs"
-    :class="{ 'has-indicator': slide && indicator }"
+    :class="{ 'has-indicator': slide && indicator, 'is-fit-content': fitContent }"
     :role="panels ? 'tablist' : 'group'"
     :aria-label="label"
   >
@@ -93,8 +98,11 @@ if (slide) {
       @click="emit('select', item.id)"
     >
       <SvgIcon v-if="item.icon" :name="item.icon" :set="item.iconSet" />
-      {{ item.label }}
-      <span v-if="item.count !== undefined" class="shm-tab-count">{{ item.count }}</span>
+      <span class="shm-tab-label">{{ item.label }}</span>
+      <!-- A space, so the tab's name reads "Label 3", not "Label3". -->
+      <template v-if="item.count !== undefined">
+        {{ ' ' }}<span class="shm-tab-count">{{ item.count }}</span>
+      </template>
     </button>
   </div>
 </template>
@@ -123,7 +131,20 @@ if (slide) {
   cursor: pointer;
 }
 
+.shm-tab {
+  min-width: 0;
+  white-space: nowrap;
+}
+
+/* A label that doesn't fit is cut, never wrapped: the tab keeps its height. */
+.shm-tab-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .shm-tab-count {
+  flex: none;
   color: var(--shm-text-muted);
   font-variant-numeric: tabular-nums;
 }

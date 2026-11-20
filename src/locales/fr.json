@@ -1791,6 +1791,12 @@
       "swap": "Les fondre avant le $5 et acheter $1 × $2 → $3 pour $4.",
       "secure": "CCU à sécuriser",
       "secureHint": "Ouvre dans l’onglet Pledge Store les CCU à sécuriser avant une hausse de prix."
+    },
+    "tab": {
+      "missing": "Sans base",
+      "buyback": "Rachat seulement",
+      "always": "Toujours en vente",
+      "atRisk": "Remise menacée"
     }
   },
   "cartPaints": {

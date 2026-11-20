@@ -135,7 +135,7 @@ const group = computed(
 const groupItems = computed(() =>
   groups.value.map((id) => ({
     id,
-    label: i18n.t(`ccuConsultant.standing.${id}`),
+    label: i18n.t(`ccuConsultant.tab.${id}`),
     count: format(tabCount(id)),
   })),
 );
@@ -169,7 +169,7 @@ const tabItems = computed(() => [
   ...groupItems.value,
   {
     id: 'atRisk' as const,
-    label: i18n.t('ccuConsultant.atRisk.title'),
+    label: i18n.t('ccuConsultant.tab.atRisk'),
     count: format(atRisk.value.count),
   },
 ]);
@@ -363,6 +363,7 @@ const hrefOf = (match: CoverageMatch) =>
 
         <TabBar
           class="shm-ccu-consultant-groups"
+          fit-content
           :items="tabItems"
           :selected="atRiskChosen ? 'atRisk' : group"
           :label="i18n.t('ccuConsultant.groups')"

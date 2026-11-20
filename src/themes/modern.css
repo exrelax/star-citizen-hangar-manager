@@ -221,6 +221,18 @@ html .shm-theme-modern .shm-tabs {
   border-radius: var(--shm-radius-group);
 }
 
+/*
+ * Segments as wide as their labels (`fitContent`): each gets its label's width and an equal share of
+ * the rest, so labels of very different lengths fit without wrapping.
+ */
+html .shm-theme-modern .shm-tabs.is-fit-content {
+  display: flex;
+}
+
+html .shm-theme-modern .shm-tabs.is-fit-content .shm-tab {
+  flex: 1 1 auto;
+}
+
 html .shm-theme-modern .shm-tab {
   justify-content: center;
   height: 32px;

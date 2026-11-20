@@ -1791,6 +1791,12 @@
       "swap": "Fúndelos antes del $5 y compra $1 × $2 → $3 por $4.",
       "secure": "CCU para asegurar",
       "secureHint": "Abre en la pestaña Pledge Store los CCU que puedes asegurar antes de una subida de precio."
+    },
+    "tab": {
+      "missing": "Sin nave base",
+      "buyback": "Solo recompra",
+      "always": "Siempre a la venta",
+      "atRisk": "Descuento en riesgo"
     }
   },
   "cartPaints": {
