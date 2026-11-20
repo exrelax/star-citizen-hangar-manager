@@ -1577,7 +1577,8 @@
     "summaryMissing": {
       "one": "Il manque $1 CCU vers le $2 pour les CCU depuis lui dans votre hangar. Sécurisez-le avant le $3.",
       "other": "Il manque $1 CCU vers le $2 pour les CCU depuis lui dans votre hangar. Sécurisez-les avant le $3."
-    }
+    },
+    "ccuSoonWithout": "Rien d’autre dans votre hangar ou votre buy back ne vous donne le $1 : une fois parti, ce CCU n’a plus de vaisseau de base."
   },
   "upgradeDialog": {
     "alwaysAvailable": "Toujours disponible",
@@ -1714,7 +1715,10 @@
       "ship": "Vaisseau de base",
       "ccus": "CCU depuis lui",
       "cover": "Couverture du vaisseau de base",
-      "found": "Trouvé"
+      "found": "Trouvé",
+      "leaves": "Quitte le Pledge Store",
+      "ways": "Accès",
+      "store": "Pledge Store"
     },
     "unknownShip": "Vaisseau de base inconnu",
     "notAlways": "Pas toujours disponible",
@@ -1740,6 +1744,21 @@
       "missingTextAll": "Chaque vaisseau de base est dans ton hangar ou dans ton rachat.",
       "buyback": "Aucun CCU ne dépend uniquement de ton rachat.",
       "always": "Aucun CCU ne dépend uniquement d’un vaisseau de base toujours disponible."
+    },
+    "soon": {
+      "title": "Bientôt sans vaisseau de base",
+      "hint": "Ces vaisseaux de base quittent le Pledge Store – même ceux toujours disponibles jusqu’ici. Chaque vaisseau ou CCU vers l’un d’eux dans votre hangar ou votre buy back donne le vaisseau à un CCU depuis lui, et il y en a moins que de CCU. Procurez-vous ceux qui manquent avant la date : ensuite, ces CCU n’ont plus de vaisseau de base.",
+      "until": "Dans le Pledge Store jusqu’au $1",
+      "ways": "$1 dans votre hangar · $2 dans votre buy back",
+      "short": {
+        "one": "Il en manque $1",
+        "other": "Il en manque $1"
+      }
+    },
+    "tooFew": {
+      "title": "Trop peu d’accès au vaisseau de base",
+      "hint": "Ces vaisseaux de base ne sont pas toujours disponibles. Chaque vaisseau ou CCU vers l’un d’eux dans votre hangar ou votre buy back donne le vaisseau à un CCU depuis lui, et il y en a moins que de CCU. Procurez-vous ceux qui manquent tant que le vaisseau est en vente : sinon, ces CCU n’ont pas de vaisseau de base.",
+      "notOnSale": "Pas en vente actuellement"
     }
   },
   "cartPaints": {

@@ -1577,7 +1577,8 @@
     "summaryMissing": {
       "one": "Für die CCUs von $2 in deinem Hangar fehlt $1 CCU zum Schiff. Sichere es dir vor dem $3.",
       "other": "Für die CCUs von $2 in deinem Hangar fehlen $1 CCUs zum Schiff. Sichere sie dir vor dem $3."
-    }
+    },
+    "ccuSoonWithout": "Nichts sonst in deinem Hangar oder Buy Back liefert $1 als Basisschiff: Danach hat dieses CCU kein Basisschiff mehr."
   },
   "upgradeDialog": {
     "alwaysAvailable": "Immer kaufbar",
@@ -1714,7 +1715,10 @@
       "ship": "Basisschiff",
       "ccus": "CCUs davon",
       "cover": "Abdeckung des Basisschiffs",
-      "found": "Gefunden"
+      "found": "Gefunden",
+      "leaves": "Verlässt den Pledge Store",
+      "ways": "Wege dorthin",
+      "store": "Pledge Store"
     },
     "unknownShip": "Unbekanntes Basisschiff",
     "notAlways": "Nicht immer kaufbar",
@@ -1740,6 +1744,21 @@
       "missingTextAll": "Jedes Basisschiff ist in deinem Hangar oder in deinem Buy Back.",
       "buyback": "Kein CCU hängt allein an deinem Buy Back.",
       "always": "Kein CCU hängt allein an einem immer kaufbaren Basisschiff."
+    },
+    "soon": {
+      "title": "Bald ohne Basisschiff",
+      "hint": "Diese Basisschiffe verlassen den Pledge Store – auch die bisher immer kaufbaren. Jedes Schiff oder CCU dorthin in deinem Hangar oder Buy Back gibt einem CCU davon das Schiff, und davon gibt es weniger als CCUs. Hol dir die fehlenden vor dem Datum: Danach haben diese CCUs kein Basisschiff mehr.",
+      "until": "Im Pledge Store bis $1",
+      "ways": "$1 im Hangar · $2 im Buy Back",
+      "short": {
+        "one": "$1 zu wenig",
+        "other": "$1 zu wenig"
+      }
+    },
+    "tooFew": {
+      "title": "Zu wenige Wege zum Basisschiff",
+      "hint": "Diese Basisschiffe sind nicht immer kaufbar. Jedes Schiff oder CCU dorthin in deinem Hangar oder Buy Back gibt einem CCU davon das Schiff, und davon gibt es weniger als CCUs. Hol dir die fehlenden, solange das Schiff verkauft wird: Sonst haben diese CCUs kein Basisschiff.",
+      "notOnSale": "Gerade nicht im Verkauf"
     }
   },
   "cartPaints": {

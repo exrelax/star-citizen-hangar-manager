@@ -2,7 +2,9 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { createApp, h, shallowRef, type App } from 'vue';
 import { DEFAULT_SETTINGS, type Settings } from '@/settings/settings';
-import { ALWAYS_AVAILABLE, type AlwaysAvailableList } from '../always-available';
+import { REMOVAL_CCUS, removalCcusState } from '@/ship-removals/use-removal-ccus';
+import type { ShipRemoval } from '@/ship-removals/ship-removals';
+import { ALWAYS_AVAILABLE, withoutLeaving, type AlwaysAvailableList } from '../always-available';
 import { CCU_COVERAGE, COVERAGE_SOURCES, type CcuCoverage } from '../coverage';
 import CcuConsultant from './CcuConsultant.vue';
 
@@ -25,7 +27,11 @@ const always: AlwaysAvailableList = {
   has: (id) => id === 1,
 };
 
-function render(coverages: CcuCoverage[], consider = true) {
+function render(
+  coverages: CcuCoverage[],
+  consider = true,
+  obtainable: ReadonlyMap<number, ShipRemoval> = new Map(),
+) {
   const updates: Partial<Settings>[] = [];
   const settings: Settings = {
     ...DEFAULT_SETTINGS,
@@ -37,7 +43,11 @@ function render(coverages: CcuCoverage[], consider = true) {
     render: () => h(CcuConsultant, { settings, onUpdate: (patch) => updates.push(patch) }),
   });
   app.provide(CCU_COVERAGE, shallowRef(new Map(coverages.map((c) => [c.id, c]))));
-  app.provide(ALWAYS_AVAILABLE, shallowRef(consider ? always : undefined));
+  app.provide(
+    ALWAYS_AVAILABLE,
+    shallowRef(withoutLeaving(consider ? always : undefined, obtainable)),
+  );
+  app.provide(REMOVAL_CCUS, shallowRef({ ...removalCcusState([]), obtainable }));
   app.provide(
     COVERAGE_SOURCES,
     shallowRef({
@@ -167,5 +177,109 @@ describe('CcuConsultant (#113)', () => {
     await Promise.resolve();
     expect(links()).toBe(5);
     expect(more.textContent?.trim()).toBe('Show fewer');
+  });
+});
+
+describe('CCUs soon without base ship (#454)', () => {
+  const removal = (id: number, name: string): ShipRemoval => ({
+    ship: { id, name },
+    removedAt: { at: Date.parse('2027-01-27T00:00:00Z'), dayOnly: true },
+    source: 'https://robertsspaceindustries.com/en/comm-link/transmission/21350',
+  });
+
+  it('lists them below the CCUs without base ship, with the date and the way to the ship', () => {
+    const { root } = render(
+      [coverage(10, 2, 'Cutlass Red'), coverage(13, 1, 'Arrow'), coverage(14, 1, 'Arrow')],
+      true,
+      new Map([[1, removal(1, 'Arrow')]]),
+    );
+    // Always available until now, but leaving: no longer "Base always available".
+    expect(tabs(root)).toEqual([
+      'Without base ship 3',
+      'Only via buy back 0',
+      'Base always available 0',
+    ]);
+    const title = root.querySelector('.shm-ccu-consultant-soon-title');
+    expect(title?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Soon without base ship 2');
+    const soon = root.querySelectorAll('.shm-ccu-consultant-table')[1]!;
+    const row = [...soon.querySelectorAll('tbody td')].map((cell) =>
+      cell.textContent!.replace(/\s+/g, ' ').trim(),
+    );
+    expect(row[0]).toBe('ArrowIn the Pledge Store until Jan 27, 2027');
+    expect(row[1]).toBe('2');
+    // No ship or CCU to it: both CCUs from it are short.
+    expect(row[2]).toBe('0 2 too few');
+    expect(row[3]).toMatch(/^Removal: .+Show in Pledge Store$/);
+    // The ships leaving the Pledge Store are left out of the table above.
+    expect(cells(root)[0]?.[0]).toContain('Cutlass Red');
+    expect(cells(root)).toHaveLength(2);
+  });
+
+  it('counts the ways to a leaving ship covered too few times', () => {
+    const viaBuyback = (id: number) => ({
+      ...coverage(id, 1, 'Arrow'),
+      buyback: {
+        ships: [],
+        ccus: [{ source: 'buyback' as const, kind: 'ccu' as const, id: 600, title: 'To Arrow' }],
+      },
+      covered: true,
+    });
+    const { root } = render(
+      [viaBuyback(13), viaBuyback(14), viaBuyback(15)],
+      true,
+      new Map([[1, removal(1, 'Arrow')]]),
+    );
+    // Covered today by the buy back, but two of three will be short: the tab counts them.
+    expect(tabs(root)).toEqual([
+      'Without base ship 2',
+      'Only via buy back 3',
+      'Base always available 0',
+    ]);
+    const title = root.querySelector('.shm-ccu-consultant-soon-title');
+    expect(title?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Soon without base ship 2');
+    const soon = root.querySelectorAll('.shm-ccu-consultant-table');
+    const row = [...soon[soon.length - 1]!.querySelectorAll('tbody td')].map((cell) =>
+      cell.textContent!.replace(/\s+/g, ' ').trim(),
+    );
+    expect(row[1]).toBe('3');
+    const ways = soon[soon.length - 1]!.querySelector('.shm-ccu-consultant-ways');
+    expect(ways?.textContent).toBe('1');
+    expect(ways?.nextElementSibling?.textContent?.trim()).toBe(
+      '0 in your hangar · 1 in your buy back',
+    );
+    expect(row[2]).toMatch(/2 too few$/);
+  });
+
+  it('has no such section without leaving ships', () => {
+    const { root } = render([coverage(10, 2, 'Cutlass Red')]);
+    expect(root.querySelector('.shm-ccu-consultant-soon-title')).toBeNull();
+  });
+});
+
+describe('base ships with too few ways (#454)', () => {
+  it('lists them in "Without base ship" with the ways and the shortage', () => {
+    const viaBuyback = (id: number) => ({
+      ...coverage(id, 2, 'Cutlass Red'),
+      buyback: {
+        ships: [],
+        ccus: [
+          { source: 'buyback' as const, kind: 'ccu' as const, id: 700, title: 'To Cutlass Red' },
+        ],
+      },
+      covered: true,
+    });
+    const { root } = render([viaBuyback(20), viaBuyback(21), viaBuyback(22)]);
+    expect(tabs(root)[0]).toBe('Without base ship 2');
+    const title = root.querySelector('.shm-ccu-consultant-soon-title');
+    expect(title?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Too few ways to the base ship 2');
+    const tables = root.querySelectorAll('.shm-ccu-consultant-table');
+    const row = [...tables[tables.length - 1]!.querySelectorAll('tbody td')].map((cell) =>
+      cell.textContent!.replace(/\s+/g, ' ').trim(),
+    );
+    expect(row[0]).toBe('Cutlass RedNot always available · Standard price $135');
+    expect(row[1]).toBe('3');
+    expect(row[2]).toMatch(/^1.*2 too few$/);
+    // Not on sale now (no SKU known), with its page in the Pledge Store.
+    expect(row[3]).toBe('Not on sale nowPledge Store');
   });
 });

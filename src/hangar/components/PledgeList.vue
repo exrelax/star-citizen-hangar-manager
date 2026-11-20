@@ -30,6 +30,7 @@ import { paintRefinement, useProvidedOwnedShips } from '../paint-ships';
 import { ccuRefinement } from '@/ccu-consultant/base-ship-list';
 import { useProvidedCcuCoverage } from '@/ccu-consultant/coverage';
 import { useProvidedAlwaysAvailable } from '@/ccu-consultant/always-available';
+import { useProvidedRemovalCcus } from '@/ship-removals/use-removal-ccus';
 import { isPaintItem } from '../pledge-view';
 import { listViewRequest } from '../list-jump';
 import PledgeRow from './PledgeRow.vue';
@@ -77,9 +78,11 @@ const refinements = computed(() => ({
 }));
 /** What a group's labels taken from its items need (#487): the CCU Consultant's, today. */
 const coverageSources = useProvidedCoverageSources();
+const removals = useProvidedRemovalCcus();
 const badgeContext = computed((): GroupBadgeContext => ({
   coverageOf: (id) => coverages.value.get(id),
   ...(alwaysAvailable.value && { alwaysAvailable: alwaysAvailable.value }),
+  leaving: removals.value.obtainable,
   ships: coverageSources.value.ships,
   today: today.value,
   locale: locale.value,

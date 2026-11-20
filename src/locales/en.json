@@ -1577,7 +1577,8 @@
     "summaryMissing": {
       "one": "$1 CCU to the $2 is missing for the CCUs from it in your hangar. Secure it before $3.",
       "other": "$1 CCUs to the $2 are missing for the CCUs from it in your hangar. Secure them before $3."
-    }
+    },
+    "ccuSoonWithout": "Nothing else in your hangar or buy back gives the $1: once it is gone, this CCU has no base ship."
   },
   "upgradeDialog": {
     "alwaysAvailable": "Always available",
@@ -1714,7 +1715,10 @@
       "ship": "Base ship",
       "ccus": "CCUs from it",
       "cover": "Base ship coverage",
-      "found": "Found"
+      "found": "Found",
+      "leaves": "Leaves the Pledge Store",
+      "ways": "Ways to it",
+      "store": "Pledge Store"
     },
     "unknownShip": "Unknown base ship",
     "notAlways": "Not always available",
@@ -1740,6 +1744,21 @@
       "missingTextAll": "Each base ship is in your hangar or in your buy back.",
       "buyback": "No CCU depends on your buy back alone.",
       "always": "No CCU relies on an always available base ship alone."
+    },
+    "soon": {
+      "title": "Soon without base ship",
+      "hint": "These base ships leave the Pledge Store – also those always available until now. Each ship or CCU to one of them in your hangar or buy back gives the ship to one CCU from it, and there are fewer of them than CCUs. Get the missing ones before the date: afterwards those CCUs have no base ship.",
+      "until": "In the Pledge Store until $1",
+      "ways": "$1 in your hangar · $2 in your buy back",
+      "short": {
+        "one": "$1 too few",
+        "other": "$1 too few"
+      }
+    },
+    "tooFew": {
+      "title": "Too few ways to the base ship",
+      "hint": "These base ships aren’t always available. Each ship or CCU to one of them in your hangar or buy back gives the ship to one CCU from it, and there are fewer of them than CCUs. Get the missing ones while the ship is on sale: otherwise those CCUs have no base ship.",
+      "notOnSale": "Not on sale now"
     }
   },
   "cartPaints": {

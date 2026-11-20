@@ -1577,7 +1577,8 @@
     "summaryMissing": {
       "one": "Falta $1 CCU hacia la $2 para los CCU desde ella en tu hangar. Asegúralo antes del $3.",
       "other": "Faltan $1 CCU hacia la $2 para los CCU desde ella en tu hangar. Asegúralos antes del $3."
-    }
+    },
+    "ccuSoonWithout": "Nada más en tu hangar o buy back te da la $1: cuando se vaya, este CCU no tendrá nave base."
   },
   "upgradeDialog": {
     "alwaysAvailable": "Siempre disponible",
@@ -1714,7 +1715,10 @@
       "ship": "Nave base",
       "ccus": "CCU desde ella",
       "cover": "Cobertura de la nave base",
-      "found": "Encontrado"
+      "found": "Encontrado",
+      "leaves": "Deja la Pledge Store",
+      "ways": "Accesos",
+      "store": "Pledge Store"
     },
     "unknownShip": "Nave base desconocida",
     "notAlways": "No siempre disponible",
@@ -1740,6 +1744,21 @@
       "missingTextAll": "Cada nave base está en tu hangar o en tu recompra.",
       "buyback": "Ningún CCU depende solo de tu recompra.",
       "always": "Ningún CCU depende solo de una nave base siempre disponible."
+    },
+    "soon": {
+      "title": "Pronto sin nave base",
+      "hint": "Estas naves base dejan la Pledge Store – también las que hasta ahora siempre estaban disponibles. Cada nave o CCU hacia una de ellas en tu hangar o buy back da la nave a un CCU desde ella, y hay menos que CCU. Consigue los que faltan antes de la fecha: después, esos CCU no tienen nave base.",
+      "until": "En la Pledge Store hasta el $1",
+      "ways": "$1 en tu hangar · $2 en tu buy back",
+      "short": {
+        "one": "Falta $1",
+        "other": "Faltan $1"
+      }
+    },
+    "tooFew": {
+      "title": "Muy pocos accesos a la nave base",
+      "hint": "Estas naves base no siempre están disponibles. Cada nave o CCU hacia una de ellas en tu hangar o buy back da la nave a un CCU desde ella, y hay menos que CCU. Consigue los que faltan mientras la nave esté a la venta: si no, esos CCU no tienen nave base.",
+      "notOnSale": "No está a la venta ahora"
     }
   },
   "cartPaints": {

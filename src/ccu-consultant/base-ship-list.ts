@@ -3,6 +3,7 @@ import { i18n } from '@/i18n';
 import type { Ship } from '@/ships/ships';
 import type { AlwaysAvailableList } from './always-available';
 import type { CcuCoverage, CoverageMatch } from './coverage';
+import type { ShipRemoval } from '@/ship-removals/ship-removals';
 
 /*
  * The CCU Consultant's list (#113): every CCU of the hangar by how its base ship is covered (#108),
@@ -12,6 +13,14 @@ import type { CcuCoverage, CoverageMatch } from './coverage';
  * - `always`: nothing does, but the ship is always available in the Pledge Store (#110, by the
  *   list the settings choose; never while "Consider always available ships" is off);
  * - `missing`: nothing does, and the ship probably can't be bought whenever needed.
+ *
+ * A base ship leaving the Pledge Store that can still be had now (#454, on sale or always available
+ * until its date) is counted: each ship or CCU to it gives it to one CCU. With fewer of them than
+ * CCUs from it, it stands apart as "Soon without base ship"; its CCUs without any stay out of
+ * `missing`. A base ship that isn't always available is counted the same way: with ways to it,
+ * but fewer than CCUs from it, it is listed under "Too few ways" – only as long as the ship is
+ * sold can the rest get it. The list of always available ships passed here leaves these ships out
+ * (`withoutLeaving`).
  */
 
 export type CcuStanding = 'hangar' | 'buyback' | 'always' | 'missing';
@@ -33,13 +42,38 @@ export interface BaseShipRow {
   link?: string;
   /** In the group `buyback`: what the buy back has of it, ships first. */
   matches: CoverageMatch[];
+  /** In the section "Soon without base ship" (#454): when it leaves the Pledge Store. */
+  removal?: ShipRemoval;
+  /**
+   * There: the pledges that give the ship – ships and CCUs to it –, in the hangar and the buy back
+   * (only CCUs RSI can sell again); each gives it to one CCU.
+   */
+  ways?: { hangar: number; buyback: number };
+  /** There: how many CCUs from it have no way to the ship once it is gone. */
+  short?: number;
 }
 
 export interface BaseShipList {
-  /** CCUs per standing; all of them add up to `total`. */
+  /** CCUs per standing; all of them add up to `total`. Those of `soon` count as `missing`. */
   counts: Record<CcuStanding, number>;
   total: number;
+  /** Without those of `soon`. */
   groups: Record<BaseShipGroup, BaseShipRow[]>;
+  /**
+   * Base ships leaving the Pledge Store that can still be had now (#454), with fewer ways to them
+   * – ships and CCUs to them – than CCUs from them: the next date first. Their CCUs without any
+   * way are not in `groups`; those with too few ways are also where their cover puts them.
+   */
+  soon: BaseShipRow[];
+  /** How many CCUs of `soon` have no way to their base ship once it is gone. */
+  soonCount: number;
+  /**
+   * Base ships not always available, with ways to them but fewer than CCUs from them: once the
+   * ship isn't sold any more, the rest have no base ship. The most short first.
+   */
+  tooFew: BaseShipRow[];
+  /** How many CCUs of `tooFew` have no way to their base ship. */
+  tooFewCount: number;
 }
 
 /** Where a CCU stands by its coverage and the list of always available ships (if considered). */
@@ -58,6 +92,8 @@ export function baseShipList(
   coverages: Iterable<CcuCoverage>,
   always: AlwaysAvailableList | undefined,
   ships: readonly Ship[],
+  /** The ships leaving the Pledge Store that can still be had now (#454), by ship id. */
+  leaving: ReadonlyMap<number, ShipRemoval> = new Map(),
 ): BaseShipList {
   const byId = new Map(ships.map((ship) => [ship.id, ship]));
   const counts: Record<CcuStanding, number> = { hangar: 0, buyback: 0, always: 0, missing: 0 };
@@ -66,16 +102,16 @@ export function baseShipList(
     buyback: new Map(),
     always: new Map(),
   };
+  /**
+   * Every base ship that isn't always available – also one leaving the Pledge Store (#454) –, with
+   * all CCUs from it, covered or not, and the ways to it.
+   */
+  const countedRows = new Map<string, BaseShipRow>();
   let total = 0;
-  for (const coverage of coverages) {
-    total++;
-    const standing = standingOf(coverage, always);
-    counts[standing]++;
-    if (standing === 'hangar') continue;
-    const base = coverage.baseShip;
-    const key = base?.id !== undefined ? `id:${base.id}` : `name:${base?.name.toLowerCase() ?? ''}`;
-    let row = rows[standing].get(key);
+  const rowOf = (target: Map<string, BaseShipRow>, key: string, coverage: CcuCoverage) => {
+    let row = target.get(key);
     if (!row) {
+      const base = coverage.baseShip;
       const ship = base?.id !== undefined ? byId.get(base.id) : undefined;
       row = {
         key,
@@ -86,8 +122,32 @@ export function baseShipList(
         ...(ship?.link && { link: ship.link }),
         matches: [],
       };
-      rows[standing].set(key, row);
+      target.set(key, row);
     }
+    return row;
+  };
+  for (const coverage of coverages) {
+    total++;
+    const standing = standingOf(coverage, always);
+    counts[standing]++;
+    const base = coverage.baseShip;
+    const key = base?.id !== undefined ? `id:${base.id}` : `name:${base?.name.toLowerCase() ?? ''}`;
+    const removal = base?.id !== undefined ? leaving.get(base.id) : undefined;
+    if (removal || (base?.id !== undefined && !always?.has(base.id))) {
+      // Each pledge gives the ship to one CCU: the ways to it are counted, not just found.
+      const row = rowOf(countedRows, key, coverage);
+      if (removal) row.removal = removal;
+      row.ccus.push(coverage.id);
+      row.ways = {
+        hangar: coverage.hangar.ships.length + coverage.hangar.ccus.length,
+        buyback: coverage.buyback.ships.length + coverage.buyback.ccus.length,
+      };
+      // A leaving ship without any way is only in `soon`; with too few, also where its cover
+      // puts it.
+      if (removal && standing === 'missing') continue;
+    }
+    if (standing === 'hangar') continue;
+    const row = rowOf(rows[standing], key, coverage);
     row.ccus.push(coverage.id);
     if (standing === 'buyback') {
       for (const match of [...coverage.buyback.ships, ...coverage.buyback.ccus]) {
@@ -95,6 +155,15 @@ export function baseShipList(
       }
     }
   }
+  const waysOf = (row: BaseShipRow) => (row.ways ? row.ways.hangar + row.ways.buyback : 0);
+  const short = [...countedRows.values()]
+    .filter((row) => waysOf(row) < row.ccus.length)
+    .map((row) => ({ ...row, short: row.ccus.length - waysOf(row) }));
+  const soon = short.filter((row) => row.removal);
+  // Without any way the CCUs are already without base ship.
+  const tooFew = short.filter((row) => !row.removal && waysOf(row) > 0);
+  const shortOf = (list: readonly BaseShipRow[]) =>
+    list.reduce((sum, row) => sum + (row.short ?? 0), 0);
   const sorted = (group: BaseShipGroup) =>
     [...rows[group].values()].sort(
       (a, b) =>
@@ -103,10 +172,25 @@ export function baseShipList(
         Number(a.name === undefined) - Number(b.name === undefined) ||
         (a.name ?? '').localeCompare(b.name ?? '', 'en'),
     );
+  const at = (row: BaseShipRow) => row.removal?.removedAt.at ?? 0;
   return {
     counts,
     total,
     groups: { missing: sorted('missing'), buyback: sorted('buyback'), always: sorted('always') },
+    soon: soon.sort(
+      (a, b) =>
+        at(a) - at(b) ||
+        (b.short ?? 0) - (a.short ?? 0) ||
+        (a.name ?? '').localeCompare(b.name ?? '', 'en'),
+    ),
+    soonCount: shortOf(soon),
+    tooFew: tooFew.sort(
+      (a, b) =>
+        (b.short ?? 0) - (a.short ?? 0) ||
+        b.ccus.length - a.ccus.length ||
+        (a.name ?? '').localeCompare(b.name ?? '', 'en'),
+    ),
+    tooFewCount: shortOf(tooFew),
   };
 }
 

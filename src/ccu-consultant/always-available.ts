@@ -58,6 +58,18 @@ export function alwaysAvailableList(
   };
 }
 
+/**
+ * The list without the ships leaving the Pledge Store (#454): always available today, but not any
+ * more after their date – a CCU from one of them needs a ship or a CCU to it of its own.
+ */
+export function withoutLeaving(
+  list: AlwaysAvailableList | undefined,
+  leaving: ReadonlyMap<number, unknown>,
+): AlwaysAvailableList | undefined {
+  if (!list || !leaving.size) return list;
+  return { ...list, has: (shipId) => !leaving.has(shipId) && list.has(shipId) };
+}
+
 /** The date of a list, e.g. "Nov 18, 2026"; none while it isn't known. */
 export function listDate(changedAt: string | undefined, locale: string): string | undefined {
   const date = changedAt ? new Date(changedAt) : undefined;

@@ -32,7 +32,11 @@ import { i18n } from '@/i18n';
 import SettingsPanel from '@/settings/SettingsPanel.vue';
 import { REMOVAL_CCUS, useRemovalCcus } from '@/ship-removals/use-removal-ccus';
 import { CCU_COVERAGE, COVERAGE_SOURCES, useCcuCoverage } from '@/ccu-consultant/coverage';
-import { ALWAYS_AVAILABLE, alwaysAvailableList } from '@/ccu-consultant/always-available';
+import {
+  ALWAYS_AVAILABLE,
+  alwaysAvailableList,
+  withoutLeaving,
+} from '@/ccu-consultant/always-available';
 import CcuConsultant from '@/ccu-consultant/components/CcuConsultant.vue';
 import { OWNED_SHIPS, ownedShips } from '@/hangar/paint-ships';
 import { useShipFacts } from '@/ships/use-ship-facts';
@@ -137,20 +141,18 @@ const meltMarks = useMeltMarks(
 );
 provide(MELT_MARKS, meltMarks);
 // The ships leaving the Pledge Store with the CCUs from and to them (#289), for the rows.
-provide(
-  REMOVAL_CCUS,
-  useRemovalCcus(
-    () => pledges.value,
-    () => buybackPledges.value,
-    // The demo's own (#292), unless it shows the real Pledge Store data (#310).
-    () => {
-      const context = demoView.context.value;
-      return context && !settings.value.demo.realStoreData
-        ? { ...context.shipRemovals, events: context.events }
-        : undefined;
-    },
-  ),
+const removalCcusState = useRemovalCcus(
+  () => pledges.value,
+  () => buybackPledges.value,
+  // The demo's own (#292), unless it shows the real Pledge Store data (#310).
+  () => {
+    const context = demoView.context.value;
+    return context && !settings.value.demo.realStoreData
+      ? { ...context.shipRemovals, events: context.events }
+      : undefined;
+  },
 );
+provide(REMOVAL_CCUS, removalCcusState);
 // What gives each CCU's base ship (#108), for the rows (#111): of the shown hangar and buy back.
 const storedShips = useStored(shipsItem);
 provide(
@@ -181,11 +183,17 @@ provide(
     ),
   ),
 );
-// The always available ships of the CCU Consultant (#110), for the label on CCU rows (#112).
+// The always available ships of the CCU Consultant (#110), for the label on CCU rows (#112) –
+// without the ones leaving the Pledge Store (#454).
 const shipFacts = useShipFacts();
 provide(
   ALWAYS_AVAILABLE,
-  computed(() => alwaysAvailableList(settings.value, shipFacts.value)),
+  computed(() =>
+    withoutLeaving(
+      alwaysAvailableList(settings.value, shipFacts.value),
+      removalCcusState.value.obtainable,
+    ),
+  ),
 );
 // The ones that can be melted now, for the sidebar's notification and its "Show" and "Select".
 const now = useNow();

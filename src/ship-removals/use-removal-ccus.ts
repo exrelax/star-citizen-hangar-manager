@@ -6,10 +6,10 @@ import { useShipFacts } from '@/ships/use-ship-facts';
 import { useNow } from '@/shared/use-now';
 import { useStored } from '@/storage/use-stored';
 import { computed, inject, shallowRef, type InjectionKey, type Ref } from 'vue';
-import { limitedSales, type LimitedSale } from './removal-availability';
+import { limitedSales, obtainableRemovals, type LimitedSale } from './removal-availability';
 import { removalCcus, type RemovalCcus } from './removal-ccus';
 import { shipRemovalsItem, storedShipRemovals } from './ship-removals-storage';
-import type { ShipRemoval } from './ship-removals';
+import { upcomingShipRemovals, type ShipRemoval } from './ship-removals';
 import type { StarCitizenEvent } from '@/events/events';
 
 /*
@@ -25,6 +25,8 @@ export interface DemoRemovalSource {
   removals: readonly ShipRemoval[];
   /** The ships on sale now but not always available. */
   limited: ReadonlySet<number>;
+  /** The ships on sale now (#454); without it, those of `limited`. */
+  onSale?: ReadonlySet<number>;
   /** The demo's events, for the note's running event. */
   events: readonly StarCitizenEvent[];
 }
@@ -36,14 +38,25 @@ export interface RemovalCcusState {
   byHangarCcu: ReadonlyMap<number, RemovalCcus>;
   /** The removed ships on sale now but not always available (#293), by ship id. */
   limited: ReadonlyMap<number, LimitedSale>;
+  /**
+   * The upcoming removals of ships that can still be had now – on sale or always available
+   * (#454) –, by ship id.
+   */
+  obtainable: ReadonlyMap<number, ShipRemoval>;
 }
 
-const NONE: RemovalCcusState = { list: [], byHangarCcu: new Map(), limited: new Map() };
+const NONE: RemovalCcusState = {
+  list: [],
+  byHangarCcu: new Map(),
+  limited: new Map(),
+  obtainable: new Map(),
+};
 
 /** The removals with each hangar CCU's removal by its pledge id; the next removal wins. */
 export function removalCcusState(
   list: readonly RemovalCcus[],
   limited: ReadonlyMap<number, LimitedSale> = new Map(),
+  obtainable: ReadonlyMap<number, ShipRemoval> = new Map(),
 ): RemovalCcusState {
   const byHangarCcu = new Map<number, RemovalCcus>();
   for (const entry of list) {
@@ -51,7 +64,7 @@ export function removalCcusState(
       if (ccu.source === 'hangar' && !byHangarCcu.has(ccu.id)) byHangarCcu.set(ccu.id, entry);
     }
   }
-  return { list, byHangarCcu, limited };
+  return { list, byHangarCcu, limited, obtainable };
 }
 
 export function useRemovalCcus(
@@ -78,26 +91,28 @@ export function useRemovalCcus(
       now: now.value,
     });
     const events = storedEvents.value;
-    const limited = limitedSales(
-      source
-        ? {
-            removals,
-            onSale: source.limited,
-            alwaysAvailable: (id) => !source.limited.has(id),
-            events: source.events,
-            now: now.value,
-          }
-        : {
-            removals,
-            onSale: new Set(
-              current(storedBuyable.value ?? null)?.skus.map((sku) => sku.shipId) ?? [],
-            ),
-            alwaysAvailable: (id) => shipFacts.value?.isAlwaysAvailable(id),
-            events: events?.version === EVENTS_VERSION ? events.events : [],
-            now: now.value,
-          },
-    );
-    return removalCcusState(list, limited);
+    const sale = source
+      ? {
+          onSale: source.limited,
+          alwaysAvailable: (id: number) => !source.limited.has(id),
+          events: source.events,
+        }
+      : {
+          onSale: new Set(
+            current(storedBuyable.value ?? null)?.skus.map((sku) => sku.shipId) ?? [],
+          ),
+          alwaysAvailable: (id: number) => shipFacts.value?.isAlwaysAvailable(id),
+          events: events?.version === EVENTS_VERSION ? events.events : [],
+        };
+    const limited = limitedSales({ removals, ...sale, now: now.value });
+    // The demo knows which of its ships are on sale; none of them counts as always available.
+    const obtainable = obtainableRemovals({
+      ...(source
+        ? { onSale: source.onSale ?? source.limited, alwaysAvailable: () => undefined }
+        : sale),
+      removals: upcomingShipRemovals(removals, now.value),
+    });
+    return removalCcusState(list, limited, obtainable);
   });
 }
 
