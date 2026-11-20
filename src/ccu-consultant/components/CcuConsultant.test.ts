@@ -309,3 +309,15 @@ describe('the tab "Discount at risk" (#455)', () => {
     );
   });
 });
+
+describe('the grouped view of the CCU Consultant (#456)', () => {
+  it('has its toggle above the tables, switched like the settings', () => {
+    const { root, updates } = render([coverage(10, 2, 'Cutlass Red')]);
+    const toggle = root.querySelector<HTMLButtonElement>(
+      '.shm-ccu-consultant-panel-head .shm-ccu-consultant-group-toggle',
+    )!;
+    expect(toggle.getAttribute('aria-pressed')).toBe('true');
+    toggle.click();
+    expect(updates.at(-1)?.grouped?.consultant).toBe(false);
+  });
+});

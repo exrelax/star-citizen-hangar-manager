@@ -559,7 +559,20 @@ const hrefOf = (match: CoverageMatch) =>
           role="tabpanel"
           :aria-labelledby="`shm-ccu-consultant-tab-${group}`"
         >
-          <p class="shm-ccu-consultant-hint">{{ hint }}</p>
+          <div class="shm-ccu-consultant-panel-head">
+            <p class="shm-ccu-consultant-hint">{{ hint }}</p>
+            <!-- The CCUs of each base ship as groups (#456), like the toggle of the lists. -->
+            <button
+              v-tooltip="i18n.t('ccuConsultant.groupHint')"
+              type="button"
+              class="shm-ccu-consultant-group-toggle"
+              :aria-pressed="settings.grouped.consultant"
+              @click="setGrouped(!settings.grouped.consultant)"
+            >
+              <SvgIcon name="layer-group" />
+              {{ i18n.t('manager.group') }}
+            </button>
+          </div>
 
           <div v-if="!rows.length" class="shm-ccu-consultant-empty" :class="`is-${group}`">
             <template v-if="group === 'missing'">
@@ -688,7 +701,6 @@ const hrefOf = (match: CoverageMatch) =>
                         :grouped="settings.grouped.consultant"
                         :hide-values="settings.hideMeltValue"
                         :hide-ids="settings.hidePledgeIds"
-                        @update:grouped="setGrouped"
                       />
                     </td>
                   </tr>
@@ -822,7 +834,6 @@ const hrefOf = (match: CoverageMatch) =>
                           :grouped="settings.grouped.consultant"
                           :hide-values="settings.hideMeltValue"
                           :hide-ids="settings.hidePledgeIds"
-                          @update:grouped="setGrouped"
                         />
                       </td>
                     </tr>
@@ -1103,6 +1114,42 @@ const hrefOf = (match: CoverageMatch) =>
   margin-top: 4px;
   color: var(--shm-accent);
   font-size: calc(12px * var(--shm-font-scale));
+}
+
+/* The hint and, on its right, the toggle of the grouped view (#456), as above the lists. */
+.shm-ccu-consultant-panel-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.shm-ccu-consultant-panel-head .shm-ccu-consultant-hint {
+  flex: 1;
+}
+
+.shm-ccu-consultant-group-toggle {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 2px 0;
+  color: var(--shm-text-muted);
+  font: inherit;
+  font-size: calc(12px * var(--shm-font-scale));
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.shm-ccu-consultant-group-toggle:hover,
+.shm-ccu-consultant-group-toggle:focus-visible {
+  color: var(--shm-text-strong);
+  outline: none;
+}
+
+.shm-ccu-consultant-group-toggle[aria-pressed='true'] {
+  color: var(--shm-accent);
 }
 
 .shm-ccu-consultant-ccus-toggle {

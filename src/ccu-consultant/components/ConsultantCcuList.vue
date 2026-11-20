@@ -6,7 +6,6 @@ import { openPledgeInList, urlOfView } from '@/hangar/list-jump';
 import type { PledgeView } from '@/hangar/pledge-view';
 import { i18n, locale } from '@/i18n';
 import { HIDDEN } from '@/orders/orders';
-import SvgIcon from '@/icons/SvgIcon.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { computed } from 'vue';
 
@@ -15,7 +14,7 @@ import { computed } from 'vue';
  * (#446) – the same CCUs as one entry with their count, the sums of value and discount and the
  * labels of all, some or none of them (#448) – or each on its own. An entry opens My Hangar: a
  * single CCU by its id (#436), a group searched by its ships, where the grouped view shows it as
- * one row. Above the list, the toggle of the grouped view, for all these lists of the consultant.
+ * one row. The toggle of the grouped view is the consultant's, above its tables.
  */
 
 const props = defineProps<{
@@ -25,7 +24,6 @@ const props = defineProps<{
   hideValues: boolean;
   hideIds: boolean;
 }>();
-const emit = defineEmits<{ 'update:grouped': [grouped: boolean] }>();
 
 const groups = computed((): ItemGroup<PledgeView>[] =>
   props.grouped
@@ -61,18 +59,6 @@ const idOf = (ccu: PledgeView) => (props.hideIds ? HIDDEN : (ccu.displayId ?? cc
 </script>
 
 <template>
-  <div class="shm-consultant-ccus-head">
-    <button
-      v-tooltip="i18n.t('ccuConsultant.groupHint')"
-      type="button"
-      class="shm-consultant-group-toggle"
-      :aria-pressed="grouped"
-      @click="emit('update:grouped', !grouped)"
-    >
-      <SvgIcon name="layer-group" />
-      {{ i18n.t('manager.group') }}
-    </button>
-  </div>
   <ul class="shm-consultant-ccus">
     <li v-for="group in groups" :key="group.count === 1 ? group.items[0]!.id : group.key">
       <a
@@ -110,35 +96,6 @@ const idOf = (ccu: PledgeView) => (props.hideIds ? HIDDEN : (ccu.displayId ?? cc
 <style src="@/hangar/components/row.css"></style>
 
 <style scoped>
-.shm-consultant-ccus-head {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 4px;
-}
-
-.shm-consultant-group-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 2px 0;
-  color: var(--shm-text-muted);
-  font: inherit;
-  font-size: calc(12px * var(--shm-font-scale));
-  background: none;
-  border: 0;
-  cursor: pointer;
-}
-
-.shm-consultant-group-toggle:hover,
-.shm-consultant-group-toggle:focus-visible {
-  color: var(--shm-text-strong);
-  outline: none;
-}
-
-.shm-consultant-group-toggle[aria-pressed='true'] {
-  color: var(--shm-accent);
-}
-
 .shm-consultant-ccus {
   display: flex;
   flex-direction: column;
