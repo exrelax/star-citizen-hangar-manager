@@ -10,6 +10,7 @@ import { BUYBACK_FILTER_PREDICATES, type BuybackFilter, type BuybackView } from 
 import { giftableHint } from '../giftable-hint';
 import BuybackRow from './BuybackRow.vue';
 import GroupRow from '@/hangar/components/GroupRow.vue';
+import { buybackGroupBadges, buybackGroupKind, extrasNote } from '@/hangar/group-badges';
 import { buybackFacts } from '@/hangar/grouping';
 import { paintRefinement, useProvidedOwnedShips } from '@/hangar/paint-ships';
 import { BUYBACK_SORTS, sortEntries, type BuybackSort } from '@/hangar/sorting';
@@ -116,7 +117,13 @@ const filterHint = (filter: BuybackFilter) => {
       <BuybackRow :pledge="entry" :auto-expand="autoExpand" :link-mode="settings.buybackLinkMode" />
     </template>
     <template #group="{ group }">
-      <GroupRow :group="group">
+      <GroupRow
+        :group="group"
+        :kind="buybackGroupKind(group)"
+        :ships="group.items[0]!.ships.map((ship) => ship.name)"
+        :badges="buybackGroupBadges(group)"
+        :note="extrasNote(group.extras)"
+      >
         <template #item="{ entry }">
           <BuybackRow :pledge="entry" :auto-expand="false" :link-mode="settings.buybackLinkMode" />
         </template>

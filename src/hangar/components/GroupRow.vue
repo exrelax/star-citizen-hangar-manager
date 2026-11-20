@@ -1,22 +1,32 @@
 <script setup lang="ts" generic="T extends { id: number; title: string; image?: string }">
 import { i18n, locale } from '@/i18n';
+import type { IconName } from '@/icons/icon-names';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { computed, ref } from 'vue';
 import { formatUsd } from '../discount-format';
-import type { GroupShare, GroupSum, ItemGroup } from '../grouping';
+import type { GroupBadge } from '../group-badges';
+import type { GroupSum, ItemGroup } from '../grouping';
 import { selection } from '../selection';
 
 /*
- * A group of the same items in the grouped view (#447), laid out like a single row (row.css): the
- * first item's image and name, the count, the sums of value and discount, whether its items are
- * giftable and meltable. Selecting it selects all its items (My Hangar). A click shows its items
- * below as normal rows, by the `item` slot; the group dialog (#449) and the full group row (#448)
- * follow.
+ * The row of a group in the grouped view (#447, #448), built like a single row (row.css) so both
+ * look alike: the first item's image with its kind, name and ships, and – as what tells a group at
+ * once – a stack with the count beside the name. The sums of value and discount instead of an id
+ * and a date, the items' badges by all, some or none (`group-badges.ts`) and the extras that
+ * differ. Selecting it selects all its items (My Hangar). A click shows its items below as normal
+ * rows, by the `item` slot, until the group dialog (#449).
  */
 
 const props = defineProps<{
   group: ItemGroup<T>;
+  /** The kind icon of its first item, as a single row shows it. */
+  kind?: IconName;
+  /** The ships of its first item besides the one in its name. */
+  ships?: readonly string[];
+  badges: readonly GroupBadge[];
+  /** The extras that differ among its items (`extrasNote`). */
+  note?: string;
   /** Its items can be selected (My Hangar). */
   selectable?: boolean;
 }>();
@@ -44,13 +54,7 @@ const value = computed(() => sumText(props.group.value));
 const discount = computed(() =>
   props.group.discount.total > 0 ? sumText(props.group.discount) : undefined,
 );
-const badge = (share: GroupShare | undefined, all: string, some: string) =>
-  share === undefined ? undefined : { text: share === 'some' ? some : all, off: share === 'none' };
-const gift = computed(() => badge(props.group.giftable, 'Gift', i18n.t('group.someGift')));
-const melt = computed(() => badge(props.group.meltable, 'Melt', i18n.t('group.someMelt')));
-const extras = computed(() =>
-  props.group.extras.map((extra) => i18n.t(`group.extras.${extra}`)).join(', '),
-);
+const countLabel = computed(() => i18n.n('group.items', props.group.count, [props.group.count]));
 </script>
 
 <template>
@@ -74,7 +78,7 @@ const extras = computed(() =>
         </svg>
       </button>
       <div class="shm-row-summary" @click="expanded = !expanded">
-        <span class="shm-thumb">
+        <span class="shm-thumb shm-group-thumb">
           <img
             v-if="first.image"
             :src="first.image"
@@ -84,14 +88,19 @@ const extras = computed(() =>
             width="128"
             height="72"
           />
-          <span class="shm-row-kind"><SvgIcon name="layer-group" /></span>
+          <span v-if="kind" class="shm-row-kind"><SvgIcon :name="kind" /></span>
         </span>
         <span class="shm-main">
-          <span class="shm-title">
-            {{ first.title }}
-            <span class="shm-group-count">×{{ group.count }}</span>
+          <span class="shm-title shm-group-title">
+            <span>{{ first.title }}</span>
+            <span v-tooltip="countLabel" class="shm-group-count" :aria-label="countLabel">
+              <SvgIcon name="layer-group" />×{{ group.count }}
+            </span>
           </span>
-          <span v-if="extras" class="shm-original">{{ i18n.t('group.differ', [extras]) }}</span>
+          <span v-if="ships?.length" class="shm-ships">
+            {{ i18n.t('pledge.shipsLabel') }} {{ ships.join(', ') }}
+          </span>
+          <span v-if="note" class="shm-original">{{ note }}</span>
           <span class="shm-meta">
             <span class="shm-value">{{ value }}</span>
             <span v-if="discount" class="shm-discount">−{{ discount }}</span>
@@ -99,12 +108,13 @@ const extras = computed(() =>
         </span>
         <span class="shm-badges">
           <span
-            v-for="entry in [gift, melt].filter((b) => b !== undefined)"
-            :key="entry!.text"
+            v-for="badge in badges"
+            :key="badge.key"
+            v-tooltip="badge.hint"
             class="shm-badge"
-            :class="{ 'is-off': entry!.off }"
+            :class="[badge.className, { 'is-off': badge.off }]"
           >
-            {{ entry!.text }}
+            {{ badge.text }}
           </span>
         </span>
         <button
@@ -129,11 +139,39 @@ const extras = computed(() =>
 
 <style>
 /* Not scoped: the rows inside are the lists' own (row.css). */
+.shm-group-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+}
+
+/* The stack with the count: what tells a group from a single row at once. */
 .shm-group-count {
-  margin-left: 6px;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  padding: 0 7px;
   color: var(--shm-accent);
+  font-size: calc(12px * var(--shm-font-scale));
   font-variant-numeric: tabular-nums;
   font-weight: 600;
+  line-height: 1.6;
+  background: rgb(var(--shm-accent-rgb) / 0.14);
+  border-radius: var(--shm-radius-pill);
+}
+
+.shm-group-count .shm-icon {
+  width: 11px;
+  height: 11px;
+}
+
+/* A stack of cards behind the image: a group at a glance, also without reading. */
+.shm-group-thumb {
+  box-shadow:
+    3px -3px 0 -1px rgb(var(--shm-accent-rgb) / 0.35),
+    6px -6px 0 -2px rgb(var(--shm-accent-rgb) / 0.18);
 }
 
 .shm-group-items {

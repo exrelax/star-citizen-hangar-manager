@@ -1773,19 +1773,28 @@
   "group": {
     "select": "Sélectionner les $1 éléments : $2",
     "toggle": "Afficher ou masquer les éléments du groupe",
-    "someGift": "Gift en partie",
-    "someMelt": "Melt en partie",
-    "differ": "Différences : $1",
     "sumUnknown": {
       "one": "$1 + $2 inconnu",
       "other": "$1 + $2 inconnus"
     },
     "extras": {
-      "gear": "équipement",
-      "paint": "peinture",
-      "bisPaint": "peinture BIS",
-      "insurance": "assurance",
-      "upgraded": "amélioré"
+      "gear": "certains avec équipement",
+      "paint": "certains avec peinture",
+      "bisPaint": "certains avec peinture BIS",
+      "insurance": "assurance différente",
+      "upgraded": "certains améliorés"
+    },
+    "someHint": "$1 sur $2",
+    "some": {
+      "gift": "Gift en partie",
+      "melt": "Melt en partie",
+      "upgraded": "Améliorés en partie",
+      "unavailable": "Indisponibles en partie",
+      "probablyGiftable": "Probablement offrables en partie"
+    },
+    "items": {
+      "one": "$1 élément",
+      "other": "$1 éléments"
     }
   }
 }
