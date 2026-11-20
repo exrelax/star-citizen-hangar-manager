@@ -3,10 +3,10 @@ import { ref } from 'vue';
 
 /*
  * The consultants of the tab "Consultants" (#113, #453): the CCU Consultant and the Paint Discount
- * Consultant, each shown only while it has something to offer – the CCU Consultant while the hangar
- * has CCUs, the Paint Discount Consultant while paints can be bought again for less (a new plan) or
- * a plan runs. With more than one, sub tabs choose between them; with one, its name is the heading.
- * With none, the CCU Consultant says why.
+ * Consultant, each shown only while it has something to show – the CCU Consultant while the hangar
+ * has CCUs, the Paint Discount Consultant while paints can be bought again for less (a new plan), a
+ * plan runs or there are completed plans to look back on. With more than one, sub tabs choose
+ * between them; with one, its name is the heading. With none, the CCU Consultant says why.
  */
 
 export const CONSULTANTS = ['ccu', 'paint'] as const;

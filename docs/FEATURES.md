@@ -782,8 +782,8 @@ project website; without them there is no note.
 RSI gives a volume discount on paints in the cart: 15 % from 2 paints, 20 % from 3, 25 % from 5,
 30 % from 7 and 35 % from 10. The tab **Consultants** shows how to turn it into store credit with
 the paints you already own, next to the CCU Consultant (#453): each consultant shows only while it
-has something to offer – the Paint Discount Consultant while paints can be bought again for less
-or a plan runs –, with a sub tab and its count for each; a single one shows its name as the
+has something to offer – the Paint Discount Consultant while paints can be bought again for less,
+a plan runs or there are completed plans –, with a sub tab and its count for each; a single one shows its name as the
 heading instead:
 
 - **The idea**: melt own paints that were bought with less discount than reachable now, buy them

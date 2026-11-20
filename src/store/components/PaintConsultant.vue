@@ -42,8 +42,9 @@ const props = defineProps<{
   active?: boolean;
 }>();
 /**
- * Whether the consultant has something to offer (#453) – a plan running or a new one, never with
- * "Hide melt value" or without the Pledge Store's items –, and how many paints it is about.
+ * Whether the consultant has something to show (#453) – a plan running, a new one or completed
+ * plans, never with "Hide melt value" or without the Pledge Store's items –, and how many paints its
+ * plan is about (none with only completed plans).
  */
 const emit = defineEmits<{ offer: [offer: { available: boolean; count: number }] }>();
 
@@ -189,9 +190,13 @@ watch(
     const available =
       !props.settings.hideMeltValue &&
       !!storeItems.value &&
-      (!!runningView.value || hasNewPlan.value);
+      (!!runningView.value || hasNewPlan.value || running.completed.value.length > 0);
     const count =
-      running.plan.value?.own.length ?? plan.value?.own.length ?? probablyRebought.value.length;
+      runningView.value || hasNewPlan.value
+        ? (running.plan.value?.own.length ??
+          plan.value?.own.length ??
+          probablyRebought.value.length)
+        : 0;
     return { available, count: available ? count : 0 };
   },
   (offer) => emit('offer', offer),
