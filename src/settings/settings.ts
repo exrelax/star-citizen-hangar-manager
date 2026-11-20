@@ -77,6 +77,8 @@ export interface Settings {
   translateRsiTexts: boolean;
   /** Labels the always available target ships in RSI's own ship upgrade dialog (#401). */
   upgradeDialogAlwaysAvailable: boolean;
+  /** A note in RSI's cart on paints below the best volume discount, with fillers to add (#458). */
+  cartPaintDiscount: boolean;
   /**
    * Experimental: exchanges (melts) all selected pledges of "My Hangar" at once, from the
    * sidebar's selection box (see `hangar/components/BulkExchangeOverlay.vue`).
@@ -187,6 +189,7 @@ export const DEFAULT_SETTINGS: Settings = {
   themedActionDialogs: false,
   translateRsiTexts: false,
   upgradeDialogAlwaysAvailable: true,
+  cartPaintDiscount: true,
   bulkMelting: false,
   hideSupersededInsurances: true,
   summaryTypes: false,
@@ -279,6 +282,7 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
     themedActionDialogs: pick('themedActionDialogs', isBoolean),
     translateRsiTexts: pick('translateRsiTexts', isBoolean),
     upgradeDialogAlwaysAvailable: pick('upgradeDialogAlwaysAvailable', isBoolean),
+    cartPaintDiscount: pick('cartPaintDiscount', isBoolean),
     bulkMelting: pick('bulkMelting', isBoolean),
     hideSupersededInsurances: pick('hideSupersededInsurances', isBoolean),
     summaryTypes: pick('summaryTypes', isBoolean),

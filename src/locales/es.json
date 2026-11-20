@@ -427,7 +427,9 @@
     "rsiPages": "Web de RSI",
     "rsiPagesIntro": "Añadidos a las páginas de RSI.",
     "upgradeDialogAlwaysAvailable": "Mostrar las naves siempre disponibles en el diálogo de mejoras de RSI",
-    "upgradeDialogAlwaysAvailableHint": "Marca las naves base y de destino siempre disponibles en la Pledge Store, para que puedas conseguirlas más tarde y aplicar un CCU. Según los datos de naves de la web del proyecto (Star Citizen Wiki)."
+    "upgradeDialogAlwaysAvailableHint": "Marca las naves base y de destino siempre disponibles en la Pledge Store, para que puedas conseguirlas más tarde y aplicar un CCU. Según los datos de naves de la web del proyecto (Star Citizen Wiki).",
+    "cartPaintDiscount": "Mostrar el descuento de pinturas en el carrito de RSI",
+    "cartPaintDiscountHint": "Una nota en el carrito de RSI mientras sus pinturas no reciben el mejor descuento por volumen: los niveles, las pinturas de relleno que alcanzan uno mejor, lo que ahorra y un botón que las añade; no se paga nada."
   },
   "storage": {
     "title": "Datos guardados",
@@ -1731,5 +1733,32 @@
       "buyback": "Ningún CCU depende solo de tu recompra.",
       "always": "Ningún CCU depende solo de una nave base siempre disponible."
     }
+  },
+  "cartPaints": {
+    "title": "Descuento por volumen en pinturas",
+    "now": {
+      "one": "Tu $1 pintura tiene un $2 de descuento.",
+      "other": "Tus $1 pinturas tienen un $2 de descuento."
+    },
+    "nowNone": {
+      "one": "Tu $1 pintura aún no tiene descuento por volumen.",
+      "other": "Tus $1 pinturas aún no tienen descuento por volumen."
+    },
+    "offer": {
+      "one": "Con $1 pintura de relleno más tienen un $2 de descuento y ahorras $3:",
+      "other": "Con $1 pinturas de relleno más tienen un $2 de descuento y ahorras $3:"
+    },
+    "creditPays": "Entonces cuestan, antes de impuestos, $1 de tus $2 de crédito. Funde las pinturas de relleno tras 24 horas: devuelven lo que costaron.",
+    "creditMissing": "Faltan $1 de crédito (antes de impuestos) para un $2 de descuento.",
+    "creditUnknown": "Hangar Manager aún no conoce tu crédito: ábrelo una vez para leerlo.",
+    "add": "Añadir pinturas de relleno para el mejor descuento",
+    "adding": "Añadiendo pinturas de relleno …",
+    "outcome": {
+      "added": "Las pinturas de relleno están en tu carrito. El asesor las recuerda y las marca para fundir cuando las compres.",
+      "partly": "Algunas pinturas de relleno no se pudieron añadir; las demás están en tu carrito.",
+      "none": "RSI no aceptó las pinturas de relleno. Tu carrito no ha cambiado."
+    },
+    "readFailed": "No se pudo leer tu carrito.",
+    "tierAria": "$1 desde $2 pinturas"
   }
 }

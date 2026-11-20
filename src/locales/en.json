@@ -427,7 +427,9 @@
     "rsiPages": "RSI website",
     "rsiPagesIntro": "Additions to RSI's own pages.",
     "upgradeDialogAlwaysAvailable": "Show always available ships in RSI's ship upgrade dialog",
-    "upgradeDialogAlwaysAvailableHint": "Labels the ships, base and target ships, that are always available in the Pledge Store, so you can get onto them later to apply a CCU. From the ship facts of the project website (Star Citizen Wiki)."
+    "upgradeDialogAlwaysAvailableHint": "Labels the ships, base and target ships, that are always available in the Pledge Store, so you can get onto them later to apply a CCU. From the ship facts of the project website (Star Citizen Wiki).",
+    "cartPaintDiscount": "Show the paint discount in RSI’s cart",
+    "cartPaintDiscountHint": "A note in RSI’s cart while its paints don’t get the best volume discount: the tiers, the filler paints that reach a better one, what that saves, and a button that adds them – nothing is checked out."
   },
   "storage": {
     "title": "Stored data",
@@ -1731,5 +1733,32 @@
       "buyback": "No CCU depends on your buy back alone.",
       "always": "No CCU relies on an always available base ship alone."
     }
+  },
+  "cartPaints": {
+    "title": "Paint volume discount",
+    "now": {
+      "one": "Your $1 paint gets $2 off.",
+      "other": "Your $1 paints get $2 off."
+    },
+    "nowNone": {
+      "one": "Your $1 paint gets no volume discount yet.",
+      "other": "Your $1 paints get no volume discount yet."
+    },
+    "offer": {
+      "one": "$1 filler paint more gets them $2 off and saves you $3:",
+      "other": "$1 filler paints more get them $2 off and save you $3:"
+    },
+    "creditPays": "Their cost then, before taxes: $1 of your $2 store credit. Melt the filler paints again after 24 hours: they give back what they cost.",
+    "creditMissing": "$1 store credit (before taxes) is missing for $2 off.",
+    "creditUnknown": "The Hangar Manager doesn’t know your store credit yet: open it once to read it.",
+    "add": "Add filler paints for the best discount",
+    "adding": "Adding filler paints …",
+    "outcome": {
+      "added": "The filler paints are in your cart. The Paint Discount Consultant keeps them, and marks them to melt once you bought them.",
+      "partly": "Some filler paints couldn’t be added; the rest are in your cart.",
+      "none": "RSI didn’t take the filler paints. Your cart is unchanged."
+    },
+    "readFailed": "Your cart couldn’t be read.",
+    "tierAria": "$1 from $2 paints"
   }
 }

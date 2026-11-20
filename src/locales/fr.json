@@ -427,7 +427,9 @@
     "rsiPages": "Site de RSI",
     "rsiPagesIntro": "Ajouts aux pages de RSI.",
     "upgradeDialogAlwaysAvailable": "Afficher les vaisseaux toujours disponibles dans la fenêtre d’upgrade de RSI",
-    "upgradeDialogAlwaysAvailableHint": "Marque les vaisseaux de base et cibles toujours disponibles dans le Pledge Store, pour que tu puisses y accéder plus tard et appliquer un CCU. D’après les données du site du projet (Star Citizen Wiki)."
+    "upgradeDialogAlwaysAvailableHint": "Marque les vaisseaux de base et cibles toujours disponibles dans le Pledge Store, pour que tu puisses y accéder plus tard et appliquer un CCU. D’après les données du site du projet (Star Citizen Wiki).",
+    "cartPaintDiscount": "Afficher la remise sur les peintures dans le panier de RSI",
+    "cartPaintDiscountHint": "Une note dans le panier de RSI tant que ses peintures n’ont pas la meilleure remise de volume : les paliers, les peintures de remplissage pour un meilleur palier, l’économie, et un bouton qui les ajoute – rien n’est payé."
   },
   "storage": {
     "title": "Données enregistrées",
@@ -1731,5 +1733,32 @@
       "buyback": "Aucun CCU ne dépend uniquement de ton rachat.",
       "always": "Aucun CCU ne dépend uniquement d’un vaisseau de base toujours disponible."
     }
+  },
+  "cartPaints": {
+    "title": "Remise de volume sur les peintures",
+    "now": {
+      "one": "Ta $1 peinture a $2 de remise.",
+      "other": "Tes $1 peintures ont $2 de remise."
+    },
+    "nowNone": {
+      "one": "Ta $1 peinture n’a pas encore de remise de volume.",
+      "other": "Tes $1 peintures n’ont pas encore de remise de volume."
+    },
+    "offer": {
+      "one": "Avec $1 peinture de remplissage de plus, elles ont $2 de remise et tu économises $3 :",
+      "other": "Avec $1 peintures de remplissage de plus, elles ont $2 de remise et tu économises $3 :"
+    },
+    "creditPays": "Elles coûtent alors, hors taxes, $1 de tes $2 de crédit. Refonds les peintures de remplissage après 24 heures : elles rendent ce qu’elles ont coûté.",
+    "creditMissing": "Il manque $1 de crédit (hors taxes) pour $2 de remise.",
+    "creditUnknown": "Le Hangar Manager ne connaît pas encore ton crédit : ouvre-le une fois pour le lire.",
+    "add": "Ajouter des peintures de remplissage pour la meilleure remise",
+    "adding": "Ajout des peintures de remplissage …",
+    "outcome": {
+      "added": "Les peintures de remplissage sont dans ton panier. Le conseiller les garde et les marque à fondre une fois achetées.",
+      "partly": "Certaines peintures de remplissage n’ont pas pu être ajoutées ; les autres sont dans ton panier.",
+      "none": "RSI n’a pas accepté les peintures de remplissage. Ton panier n’a pas changé."
+    },
+    "readFailed": "Ton panier n’a pas pu être lu.",
+    "tierAria": "$1 dès $2 peintures"
   }
 }

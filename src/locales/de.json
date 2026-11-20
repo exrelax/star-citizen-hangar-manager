@@ -427,7 +427,9 @@
     "rsiPages": "RSI Website",
     "rsiPagesIntro": "Ergänzungen auf RSIs eigenen Seiten.",
     "upgradeDialogAlwaysAvailable": "Immer kaufbare Schiffe in RSIs Ship-Upgrade-Dialog zeigen",
-    "upgradeDialogAlwaysAvailableHint": "Kennzeichnet die Basis- und Zielschiffe, die im Pledge Store immer kaufbar sind, sodass du später jederzeit auf sie kommst, um ein CCU anzuwenden. Aus den Schiffsdaten der Projekt-Website (Star Citizen Wiki)."
+    "upgradeDialogAlwaysAvailableHint": "Kennzeichnet die Basis- und Zielschiffe, die im Pledge Store immer kaufbar sind, sodass du später jederzeit auf sie kommst, um ein CCU anzuwenden. Aus den Schiffsdaten der Projekt-Website (Star Citizen Wiki).",
+    "cartPaintDiscount": "Paint-Rabatt im Warenkorb von RSI zeigen",
+    "cartPaintDiscountHint": "Ein Hinweis im Warenkorb von RSI, solange seine Paints nicht den besten Mengenrabatt bekommen: die Stufen, die Füll-Paints für eine bessere Stufe, was das spart, und ein Knopf, der sie hinzufügt – bezahlt wird nichts."
   },
   "storage": {
     "title": "Gespeicherte Daten",
@@ -1731,5 +1733,32 @@
       "buyback": "Kein CCU hängt allein an deinem Buy Back.",
       "always": "Kein CCU hängt allein an einem immer kaufbaren Basisschiff."
     }
+  },
+  "cartPaints": {
+    "title": "Mengenrabatt für Paints",
+    "now": {
+      "one": "Dein $1 Paint bekommt $2 Rabatt.",
+      "other": "Deine $1 Paints bekommen $2 Rabatt."
+    },
+    "nowNone": {
+      "one": "Dein $1 Paint bekommt noch keinen Mengenrabatt.",
+      "other": "Deine $1 Paints bekommen noch keinen Mengenrabatt."
+    },
+    "offer": {
+      "one": "Mit $1 Füll-Paint mehr bekommen sie $2 Rabatt, und du sparst $3:",
+      "other": "Mit $1 Füll-Paints mehr bekommen sie $2 Rabatt, und du sparst $3:"
+    },
+    "creditPays": "Dann kosten sie vor Steuern $1 deiner $2 Store Credits. Schmilz die Füll-Paints nach 24 Stunden wieder ein: Sie geben zurück, was sie gekostet haben.",
+    "creditMissing": "Für $2 Rabatt fehlen $1 Store Credits (vor Steuern).",
+    "creditUnknown": "Der Hangar Manager kennt deine Store Credits noch nicht: Öffne ihn einmal, um sie zu lesen.",
+    "add": "Füll-Paints für den besten Rabatt hinzufügen",
+    "adding": "Füll-Paints werden hinzugefügt …",
+    "outcome": {
+      "added": "Die Füll-Paints sind in deinem Warenkorb. Der Paint Discount Consultant merkt sie sich und markiert sie zum Einschmelzen, sobald du sie gekauft hast.",
+      "partly": "Einige Füll-Paints ließen sich nicht hinzufügen; die übrigen sind in deinem Warenkorb.",
+      "none": "RSI hat die Füll-Paints nicht angenommen. Dein Warenkorb ist unverändert."
+    },
+    "readFailed": "Dein Warenkorb ließ sich nicht lesen.",
+    "tierAria": "$1 ab $2 Paints"
   }
 }
