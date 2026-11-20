@@ -1,4 +1,5 @@
 import { DEMO } from '@/config';
+import { TOKEN_RENEWAL_CASES, type TokenRenewalCase } from './demo-token-renewal';
 import { RUNNING_PLAN_STAGES, type RunningPlanStage } from './demo-running-plan';
 import type { DemoComposition } from './generate-hangar';
 import { MELT_CHECK_OUTCOMES, type MeltCheckOutcome } from './demo-melt-check';
@@ -75,6 +76,8 @@ export interface DemoSettings {
   meltCheck: MeltCheckOutcome;
   /** The buy back tokens at the top right (#433): none or up to the most an account can have. */
   buybackTokens: number;
+  /** The next renewal of the tokens in their tooltip (#434): the website's, or a case of its own. */
+  tokenRenewal: TokenRenewalCase;
 }
 
 /** The range of each kind's number and of the list sizes. */
@@ -107,6 +110,7 @@ export const DEFAULT_DEMO_SETTINGS: DemoSettings = {
   realStoreData: false,
   meltCheck: 'match',
   buybackTokens: DEMO.maxBuybackTokens,
+  tokenRenewal: 'real',
 };
 
 const wholeIn =
@@ -180,5 +184,8 @@ export function demoSettingsOf(stored: Partial<DemoSettings> | null | undefined)
       wholeIn({ min: 0, max: DEMO.maxBuybackTokens }),
       defaults.buybackTokens,
     ),
+    tokenRenewal: TOKEN_RENEWAL_CASES.includes(stored?.tokenRenewal as TokenRenewalCase)
+      ? stored!.tokenRenewal!
+      : defaults.tokenRenewal,
   };
 }

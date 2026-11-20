@@ -18,6 +18,9 @@ import type { ExpectedPriceIncrease } from '@/price-increases/price-increases';
 import { demoDismissedAdvisorNotesItem } from '@/price-increases/advisor-notes';
 import { STORE_ITEMS_VERSION, storeItemsItem } from '@/store/items/store-items-storage';
 import { useStored } from '@/storage/use-stored';
+import { nextTokenRenewal, type TokenRenewal } from '@/buyback-tokens/token-renewals';
+import { storedTokenRenewals, tokenRenewalsItem } from '@/buyback-tokens/token-renewals-storage';
+import { demoTokenRenewal } from './demo-token-renewal';
 import { demoCatalog, FALLBACK_CATALOG, type DemoCatalog } from './catalog';
 import type { StorageId } from '@/storage/registry';
 import { HANGAR_PAGE_SIZE } from '@/config';
@@ -172,6 +175,11 @@ export interface DemoContext {
   storeItems?: readonly StoreItem[];
   /** Buy back tokens shown instead of the account's, by the demo settings: 0 or more (#433). */
   tokens: number;
+  /**
+   * The next renewal of the tokens instead of the website's (#434): `null` for none, unset for
+   * the website's own.
+   */
+  tokenRenewal?: TokenRenewal | null;
   /** The store credit shown instead of the account's. */
   storeCredit: StoreCredit;
   /**
@@ -231,6 +239,8 @@ export function useDemo(
 
   // With the real Pledge Store data, the buy back has CCUs to its ships not on sale (#310).
   const storedIncreases = useStored(priceIncreasesItem);
+  // The website's next renewal of the buy back tokens, for the demo's own cases (#434).
+  const renewals = useStored(tokenRenewalsItem);
   const realIncreases = computed(() =>
     settings().realStoreData ? storedPriceIncreases(storedIncreases.value ?? null) : [],
   );
@@ -364,6 +374,11 @@ export function useDemo(
       realOrder,
       upgradeLog,
       tokens: settings().buybackTokens,
+      tokenRenewal: demoTokenRenewal(
+        settings().tokenRenewal,
+        nextTokenRenewal(storedTokenRenewals(renewals.value ?? null), now),
+        now,
+      ),
       ...(account && {
         generatedUpgradeLog: (pledgeId: number) => account.account.upgradeLogs.get(pledgeId),
         orderDetails: (order: Order) => {

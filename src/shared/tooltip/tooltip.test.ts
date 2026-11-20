@@ -1,7 +1,15 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp, h, nextTick, ref, withDirectives, type App } from 'vue';
-import { hideTooltip, SHOW_DELAY_MS, tooltipState, vTooltip, type TooltipValue } from './tooltip';
+import {
+  HIDE_DELAY_MS,
+  hideTooltip,
+  SHOW_DELAY_MS,
+  showTooltip,
+  tooltipState,
+  vTooltip,
+  type TooltipValue,
+} from './tooltip';
 
 let app: App | undefined;
 beforeEach(() => vi.useFakeTimers());
@@ -85,5 +93,64 @@ describe('toContent with a card (#426)', () => {
     expect(content?.text).toBe('Pledge #1');
     expect(content?.card?.props).toEqual({ a: 1 });
     expect(toContent({ text: '', card: { component, props: {} } })).toBeUndefined();
+  });
+});
+
+describe('an interactive tooltip (#434)', () => {
+  const card = {
+    component: {
+      render: () => h('p', ['Next: ', h('a', { href: 'https://a.example' }, 'Source')]),
+    },
+    props: {},
+  };
+  const value = { text: 'Tokens: 0', card, interactive: true };
+  const link = () => overlay()?.querySelector('a');
+
+  it('stays open on the way to it and while the mouse is over it', async () => {
+    const { button } = render(value, 'Tokens');
+    button.dispatchEvent(pointer('pointerenter'));
+    vi.advanceTimersByTime(SHOW_DELAY_MS);
+    await nextTick();
+    expect(overlay()?.getAttribute('role')).toBe('dialog');
+    expect(overlay()?.classList.contains('is-interactive')).toBe(true);
+
+    button.dispatchEvent(pointer('pointerleave'));
+    await nextTick();
+    expect(overlay()).not.toBeNull();
+    overlay()!.dispatchEvent(pointer('pointerenter'));
+    vi.advanceTimersByTime(HIDE_DELAY_MS * 2);
+    await nextTick();
+    expect(overlay()).not.toBeNull();
+
+    overlay()!.dispatchEvent(pointer('pointerleave'));
+    vi.advanceTimersByTime(HIDE_DELAY_MS);
+    await nextTick();
+    expect(overlay()).toBeNull();
+  });
+
+  it('takes Tab into its link, and Escape back to its element', async () => {
+    const { button } = render(value, 'Tokens');
+    showTooltip(button);
+    await nextTick();
+    await nextTick();
+    button.focus();
+    button.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }));
+    expect(document.activeElement).toBe(link());
+
+    link()!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    await nextTick();
+    expect(overlay()).toBeNull();
+    expect(document.activeElement).toBe(button);
+  });
+
+  it('closes when Tab leaves its last control', async () => {
+    const { button } = render(value, 'Tokens');
+    showTooltip(button);
+    await nextTick();
+    await nextTick();
+    link()!.focus();
+    link()!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }));
+    await nextTick();
+    expect(overlay()).toBeNull();
   });
 });

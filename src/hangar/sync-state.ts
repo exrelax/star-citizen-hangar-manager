@@ -11,6 +11,7 @@ import { refreshStoreCredit } from '@/account/sync-store-credit';
 import { maybeRefreshEvents } from '@/events/sync-events';
 import { maybeRefreshPriceIncreases } from '@/price-increases/sync-price-increases';
 import { maybeRefreshShipRemovals } from '@/ship-removals/sync-ship-removals';
+import { maybeRefreshTokenRenewals } from '@/buyback-tokens/sync-token-renewals';
 import type { StorageId } from '@/storage/registry';
 import { reactive, readonly } from 'vue';
 import { recordCheck, recordSync, type CheckOutcome, type MetaItem } from '@/storage/meta';
@@ -211,13 +212,15 @@ export async function startStorageSync(id: StorageId): Promise<void> {
               ? maybeRefreshPriceIncreases({ force: true })
               : id === 'shipRemovals'
                 ? maybeRefreshShipRemovals({ force: true })
-                : id === 'shipStatus'
-                  ? maybeRefreshShipStatus({ force: true })
-                  : id === 'shipFacts'
-                    ? maybeRefreshShipFacts({ force: true })
-                    : id === 'warbondHistorySite'
-                      ? maybeRefreshSiteWarbondHistory({ force: true })
-                      : refreshUpgradeTool());
+                : id === 'buybackTokenRenewals'
+                  ? maybeRefreshTokenRenewals({ force: true })
+                  : id === 'shipStatus'
+                    ? maybeRefreshShipStatus({ force: true })
+                    : id === 'shipFacts'
+                      ? maybeRefreshShipFacts({ force: true })
+                      : id === 'warbondHistorySite'
+                        ? maybeRefreshSiteWarbondHistory({ force: true })
+                        : refreshUpgradeTool());
       section.complete(1, 1);
     }
   } catch (error) {
@@ -281,6 +284,8 @@ async function runSmartUpdateIfDue(force: boolean): Promise<void> {
   await maybeRefreshPriceIncreases();
   // The ship removals of the project website (#285): at the times of `SITE_DATA.schedule`.
   await maybeRefreshShipRemovals();
+  // When RSI renews the buy back tokens, from the project website (#434).
+  await maybeRefreshTokenRenewals();
   // Which ships are flight ready, from the Ship Matrix (#252): at the minutes of the Pledge Store
   // items (`SHIP_MATRIX`), once a day without smart updates.
   await maybeRefreshShipStatus();

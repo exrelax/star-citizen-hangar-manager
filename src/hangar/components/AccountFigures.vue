@@ -5,12 +5,18 @@ import { i18n, locale } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { useStored } from '@/storage/use-stored';
+import { useNow } from '@/shared/use-now';
+import TokensCard from '@/buyback-tokens/components/TokensCard.vue';
+import { nextTokenRenewal } from '@/buyback-tokens/token-renewals';
+import { renewalText } from '@/buyback-tokens/renewal-text';
+import { storedTokenRenewals, tokenRenewalsItem } from '@/buyback-tokens/token-renewals-storage';
 import { computed } from 'vue';
 
 /*
  * The account's figures at the top right of the manager, above the refresh button, on every tab
  * (#156): the store credit and the buy back tokens left. Each is an icon and its value; the
- * tooltip names it and explains it.
+ * tooltip names it and explains it – the tokens' also when RSI renews them next, with a link to the
+ * source of that date (#434), so it is a tooltip to act in, reachable with the keyboard.
  */
 
 const props = defineProps<{
@@ -40,6 +46,25 @@ const tokenCount = computed(() =>
 );
 
 const tip = (label: string, hint: string) => `${label}\n${hint}`;
+
+/** The next renewal of the tokens: the website's, in the demo the one of its settings. */
+const storedRenewals = useStored(tokenRenewalsItem);
+const now = useNow();
+const renewal = computed(() => {
+  const own = demo.value?.tokenRenewal;
+  if (own !== undefined) return own ?? undefined;
+  return nextTokenRenewal(storedTokenRenewals(storedRenewals.value ?? null), now.value);
+});
+const tokensTip = computed(() => {
+  const label = i18n.t('buyback.tokens', [tokenCount.value ?? '']);
+  const hint = i18n.t('buyback.tokensHint');
+  if (!renewal.value) return tip(label, hint);
+  return {
+    text: `${tip(label, hint)}\n${renewalText(renewal.value, locale.value)}`,
+    card: { component: TokensCard, props: { label, hint, renewal: renewal.value } },
+    interactive: true,
+  };
+});
 </script>
 
 <template>
@@ -59,8 +84,9 @@ const tip = (label: string, hint: string) => `${label}\n${hint}`;
     </div>
     <div
       v-if="tokenCount !== undefined"
-      v-tooltip="tip(i18n.t('buyback.tokens', [tokenCount]), i18n.t('buyback.tokensHint'))"
+      v-tooltip="tokensTip"
       class="shm-account-figure"
+      :tabindex="renewal ? 0 : undefined"
     >
       <dt>
         <SvgIcon name="buyback-token" set="custom" />

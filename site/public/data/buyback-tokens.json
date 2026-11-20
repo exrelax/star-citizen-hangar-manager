@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "sources": [
+    {
+      "name": "Spectrum: 2026 Buy Back Token Schedule",
+      "url": "https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/2026-buy-back-token-schedule",
+      "renewals": [
+        { "at": "2026-01-05", "confirmed": true },
+        { "at": "2026-04-06", "confirmed": true },
+        { "at": "2026-07-06", "confirmed": true },
+        { "at": "2026-10-05", "confirmed": true },
+        {
+          "at": "2027-01-04",
+          "confirmed": false,
+          "note": {
+            "en": "Estimated: the first Monday of the quarter, as in 2026.",
+            "de": "Geschätzt: der erste Montag des Quartals, wie 2026.",
+            "fr": "Estimation : le premier lundi du trimestre, comme en 2026.",
+            "es": "Estimado: el primer lunes del trimestre, como en 2026."
+          }
+        }
+      ]
+    }
+  ]
+}

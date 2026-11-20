@@ -11,6 +11,10 @@ import TooltipOverlay from './TooltipOverlay.vue';
  * `{ text, card }` shows a component as a larger card instead of the text (#426), e.g. the details
  * of a pledge; `text` stays its accessible description. A card also opens with a tap, and closes
  * with a tap elsewhere.
+ *
+ * `interactive: true` makes a card one to act in, e.g. with a link (#434): it stays open while the
+ * mouse moves over to it and while it is over it, Tab on the element moves into it, and Tab past
+ * its last control, Escape or a click elsewhere closes it.
  */
 
 /** A component shown as the tooltip, with its props. */
@@ -20,26 +24,44 @@ export interface TooltipCard {
 }
 
 export type TooltipValue =
-  string | { title?: string; text: string; card?: TooltipCard } | null | undefined;
+  | string
+  | { title?: string; text: string; card?: TooltipCard; interactive?: boolean }
+  | null
+  | undefined;
 
 export interface TooltipContent {
   title?: string;
   text: string;
   card?: TooltipCard;
+  /** A card to act in, e.g. with a link: it can be hovered and focused. */
+  interactive?: boolean;
 }
 
 /** Delay before a tooltip shows under the mouse; none while another one is open. */
 export const SHOW_DELAY_MS = 250;
+/** Time to move the mouse from the element over to an interactive tooltip. */
+export const HIDE_DELAY_MS = 300;
 
-/** The open tooltip, read by the overlay. */
+/** The open tooltip, read by the overlay; `overlay` is its element, set by the overlay. */
 export const tooltipState = reactive({
   content: undefined as TooltipContent | undefined,
   anchor: undefined as HTMLElement | undefined,
+  overlay: undefined as HTMLElement | undefined,
 });
 
 const contents = new WeakMap<HTMLElement, TooltipContent>();
 const cleanups = new WeakMap<HTMLElement, () => void>();
 let timer: ReturnType<typeof setTimeout> | undefined;
+let hideTimer: ReturnType<typeof setTimeout> | undefined;
+/** Focus going back to an element from its closed tooltip, which mustn't open it again. */
+let returning: HTMLElement | undefined;
+
+/** Focuses the element without opening its tooltip again. */
+function focusQuietly(element: HTMLElement) {
+  returning = element;
+  element.focus();
+  returning = undefined;
+}
 let overlayMounted = false;
 
 export function toContent(value: TooltipValue): TooltipContent | undefined {
@@ -69,6 +91,7 @@ function mountOverlay() {
 export function showTooltip(anchor: HTMLElement) {
   const content = contents.get(anchor);
   clearTimeout(timer);
+  clearTimeout(hideTimer);
   if (!content) return;
   mountOverlay();
   tooltipState.anchor = anchor;
@@ -79,12 +102,81 @@ export function showTooltip(anchor: HTMLElement) {
   if (content.card) addEventListener('pointerdown', hideOnTapElsewhere, { capture: true });
 }
 
-/** A card opened with a tap closes with a tap anywhere else. */
+/** A card opened with a tap closes with a tap anywhere else (not in an interactive one). */
 function hideOnTapElsewhere(event: PointerEvent) {
-  if (!tooltipState.anchor?.contains(event.target as Node)) hideTooltip();
+  const target = event.target as Node;
+  if (tooltipState.anchor?.contains(target) || tooltipState.overlay?.contains(target)) return;
+  hideTooltip();
+}
+
+const isInteractive = () => !!tooltipState.content?.interactive;
+
+/** Closes an interactive tooltip a moment later, unless the mouse or focus reaches it. */
+export function hideTooltipSoon() {
+  clearTimeout(hideTimer);
+  hideTimer = setTimeout(hideTooltip, HIDE_DELAY_MS);
+}
+
+/** The mouse or focus is in the interactive tooltip: it stays open. */
+export function keepTooltip() {
+  clearTimeout(hideTimer);
+}
+
+/** The controls of an interactive tooltip, in their order. */
+const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+const controlsOf = (element: HTMLElement | undefined) => [
+  ...(element?.querySelectorAll<HTMLElement>(FOCUSABLE) ?? []),
+];
+
+/** The next control of the page after `element`, to go on with after its tooltip's last one. */
+function focusAfter(element: HTMLElement) {
+  const all = [...document.querySelectorAll<HTMLElement>(FOCUSABLE)].filter(
+    (candidate) => candidate.tabIndex >= 0 && !tooltipState.overlay?.contains(candidate),
+  );
+  const next = all.find(
+    (candidate) =>
+      element.compareDocumentPosition(candidate) & Node.DOCUMENT_POSITION_FOLLOWING &&
+      !element.contains(candidate),
+  );
+  if (next) next.focus();
+  else focusQuietly(element);
+}
+
+/** Tab, Shift+Tab and Escape inside an interactive tooltip (see the overlay). */
+export function onTooltipKey(event: KeyboardEvent) {
+  const anchor = tooltipState.anchor;
+  if (!anchor || !isInteractive()) return;
+  const controls = controlsOf(tooltipState.overlay);
+  const index = controls.indexOf(document.activeElement as HTMLElement);
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    hideTooltip();
+    focusQuietly(anchor);
+  } else if (event.key === 'Tab' && event.shiftKey && index <= 0) {
+    event.preventDefault();
+    focusQuietly(anchor);
+  } else if (event.key === 'Tab' && !event.shiftKey && index === controls.length - 1) {
+    event.preventDefault();
+    hideTooltip();
+    focusAfter(anchor);
+  }
+}
+
+/**
+ * Focus left the interactive tooltip or its element: it closes unless focus went from one to the
+ * other. Checked once focus has moved, as not every focus change tells where it goes.
+ */
+export function hideUnlessFocusInside() {
+  void Promise.resolve().then(() => {
+    const focused = document.activeElement;
+    if (!tooltipState.anchor || !isInteractive()) return;
+    if (tooltipState.overlay?.contains(focused) || tooltipState.anchor.contains(focused)) return;
+    hideTooltip();
+  });
 }
 
 export function hideTooltip() {
+  clearTimeout(hideTimer);
   clearTimeout(timer);
   tooltipState.anchor = undefined;
   tooltipState.content = undefined;
@@ -94,6 +186,8 @@ export function hideTooltip() {
 }
 
 function hideOnEscape(event: KeyboardEvent) {
+  // Inside an interactive tooltip its own keys close it and return focus (`onTooltipKey`).
+  if (tooltipState.overlay?.contains(event.target as Node)) return;
   if (event.key === 'Escape') hideTooltip();
 }
 
@@ -142,7 +236,20 @@ export const vTooltip: Directive<HTMLElement, TooltipValue> = {
       // A card stays open for a tap on it, e.g. on its link.
       if (event instanceof PointerEvent && event.pointerType === 'touch') return;
       clearTimeout(timer);
-      if (tooltipState.anchor === el) hideTooltip();
+      if (tooltipState.anchor !== el) return;
+      // An interactive one stays open on the way to it, and while focus moves into it.
+      if (isInteractive() && event?.type === 'pointerleave') return hideTooltipSoon();
+      if (isInteractive() && event instanceof FocusEvent) return hideUnlessFocusInside();
+      hideTooltip();
+    };
+    /** Tab on the element moves into its interactive tooltip, if open. */
+    const key = (event: KeyboardEvent) => {
+      if (event.key !== 'Tab' || event.shiftKey || tooltipState.anchor !== el) return;
+      if (!isInteractive()) return;
+      const first = controlsOf(tooltipState.overlay)[0];
+      if (!first) return;
+      event.preventDefault();
+      first.focus();
     };
     /** A tap opens a card at once; its first tap only opens it, the next one acts. */
     let opening = false;
@@ -159,7 +266,7 @@ export const vTooltip: Directive<HTMLElement, TooltipValue> = {
       event.preventDefault();
     };
     // From the keyboard only: a click focuses a button too.
-    const focus = () => el.matches(':focus-visible') && showTooltip(el);
+    const focus = () => returning !== el && el.matches(':focus-visible') && showTooltip(el);
     el.addEventListener('pointerenter', enter);
     el.addEventListener('pointerleave', leave);
     el.addEventListener('pointerdown', leave);
@@ -167,7 +274,9 @@ export const vTooltip: Directive<HTMLElement, TooltipValue> = {
     el.addEventListener('click', click, { capture: true });
     el.addEventListener('focusin', focus);
     el.addEventListener('focusout', leave);
+    el.addEventListener('keydown', key);
     cleanups.set(el, () => {
+      el.removeEventListener('keydown', key);
       el.removeEventListener('pointerenter', enter);
       el.removeEventListener('pointerleave', leave);
       el.removeEventListener('pointerdown', leave);

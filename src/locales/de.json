@@ -404,6 +404,14 @@
       "resetHint": "Alle Einstellungen der Demo zurück auf ihre Standardwerte; die Markierungen der Demo werden gelöscht.",
       "buybackTokens": "Buy-Back-Tokens",
       "buybackTokensHint": "Die Buy-Back-Tokens oben rechts im Hangar Manager. Ohne Token steht dort 0.",
+      "tokenRenewal": "Nächste Erneuerung der Buy-Back-Tokens",
+      "tokenRenewalHint": "Das Datum im Tooltip der Buy-Back-Tokens: das der Projektwebsite, ein von CIG angekündigtes, ein geschätztes oder keines.",
+      "tokenRenewalCases": {
+        "real": "Von der Projektwebsite",
+        "confirmed": "Von CIG angekündigt",
+        "estimated": "Geschätzt",
+        "none": "Keines bekannt"
+      },
       "meltCheck": "Prüfung vor dem Bulk Melting",
       "meltCheckHint": "Wie die Prüfung der Pledges direkt vor dem Bulk Melting ausgeht, auch bei den Filler-Paints. Die Demo zeigt sie nur: Nichts wird bei RSI gelesen oder eingeschmolzen.",
       "meltCheckOutcomes": {
@@ -510,6 +518,11 @@
       "content": "Schiffe, die dauerhaft aus dem Pledge Store genommen werden, von der Projekt-Website, mit ihren Daten",
       "missing": "Bis dahin zeigen Pledge-Store-Tab, My Hangar und Sidebar keine Schiffe, die den Pledge Store verlassen."
     },
+    "buybackTokenRenewals": {
+      "name": "Erneuerung der Buy-Back-Tokens",
+      "content": "Wann RSI die Buy-Back-Tokens erneuert, von der Projektwebsite, mit Quellen",
+      "missing": "Bis dahin nennt der Tooltip der Buy-Back-Tokens keine nächste Erneuerung."
+    },
     "storeCredit": {
       "name": "Store Credits",
       "content": "Die Store Credits des Accounts, wie sein Account-Menü sie zeigt",
@@ -600,6 +613,9 @@
     "tokens": "Buy-Back-Tokens: $1",
     "tokensLabel": "Buy-Back-Tokens",
     "tokensHint": "So viele Pledges kannst du noch mit Store Credits zurückkaufen (ein Token pro Pledge), wie RSI es bei „Buy Back Pledges“ beim letzten Refresh oder Check anzeigte. Ein Rückkauf mit Geld braucht kein Token.",
+    "renewal": "RSI erneuert die Tokens am $1.",
+    "renewalEstimated": "RSI erneuert die Tokens voraussichtlich am $1 (geschätzt).",
+    "renewalSource": "Quelle:",
     "toCart": "In den Warenkorb",
     "addToCart": "In den RSI-Warenkorb legen und ihn öffnen (neuer Tab). Für Buy-Back-Pledges leert RSI den Warenkorb.",
     "cartFailed": "Konnte nicht in den RSI-Warenkorb gelegt werden: $1",

@@ -133,6 +133,7 @@ const fromWebsite = (id: StorageId) =>
   id === 'events' ||
   id === 'priceIncreases' ||
   id === 'shipRemovals' ||
+  id === 'buybackTokenRenewals' ||
   id === 'shipFacts' ||
   id === 'warbondHistorySite';
 
