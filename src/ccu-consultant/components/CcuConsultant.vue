@@ -314,12 +314,8 @@ const hrefOf = (match: CoverageMatch) =>
 </script>
 
 <template>
-  <section class="shm-ccu-consultant" aria-labelledby="shm-ccu-consultant-title">
-    <!-- The consultant's name; with several consultants in the tab, tabs instead (#453). -->
-    <h3 id="shm-ccu-consultant-title" class="shm-store-title shm-ccu-consultant-title">
-      <SvgIcon name="link" />
-      {{ i18n.t('ccuConsultant.title') }}
-    </h3>
+  <!-- Its name is the sub tab or the heading of the tab "Consultants" (#453). -->
+  <section class="shm-ccu-consultant" :aria-label="i18n.t('ccuConsultant.title')">
     <div class="shm-ccu-consultant-box">
       <div class="shm-ccu-consultant-head">
         <span class="shm-ccu-consultant-icon"><SvgIcon name="link" /></span>
@@ -836,20 +832,7 @@ const hrefOf = (match: CoverageMatch) =>
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-top: 20px;
-}
-
-.shm-ccu-consultant-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgb(var(--shm-accent-rgb) / 0.2);
-}
-
-.shm-ccu-consultant-title .shm-icon {
-  color: var(--shm-accent);
+  margin-top: 16px;
 }
 
 /* The consultant in a box of its own, like the running plan of the Paint Discount Consultant. */

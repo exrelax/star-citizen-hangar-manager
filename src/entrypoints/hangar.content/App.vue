@@ -37,7 +37,7 @@ import {
   alwaysAvailableList,
   withoutLeaving,
 } from '@/ccu-consultant/always-available';
-import CcuConsultant from '@/ccu-consultant/components/CcuConsultant.vue';
+import ConsultantsTab from '@/consultants/components/ConsultantsTab.vue';
 import { OWNED_SHIPS, ownedShips } from '@/hangar/paint-ships';
 import { useShipFacts } from '@/ships/use-ship-facts';
 import { followListHistory, listViewRequest } from '@/hangar/list-jump';
@@ -479,7 +479,7 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
       :active="activeTab === 'store'"
     />
   </div>
-  <!-- The consultants (#113): so far the CCU Consultant. -->
+  <!-- The consultants (#113, #453): the CCU Consultant and the Paint Discount Consultant. -->
   <div
     v-if="opened.has('consultants')"
     v-show="activeTab === 'consultants'"
@@ -488,11 +488,12 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
     role="tabpanel"
     aria-labelledby="shm-tab-consultants"
   >
-    <CcuConsultant
+    <ConsultantsTab
       v-if="listsReady"
       :settings="settings"
       :pledges="pledges"
       :buyback="buybackPledges"
+      :active="activeTab === 'consultants'"
       @update="updateSettings"
     />
   </div>

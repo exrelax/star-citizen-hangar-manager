@@ -1879,5 +1879,8 @@
     "selected": "$1 sur $2 sélectionnés",
     "refundCount": "$1 sur $2 éléments peuvent encore être remboursés.",
     "openDialog": "Ouvrir le groupe dans une boîte de dialogue"
+  },
+  "consultants": {
+    "paintLater": "Le Conseiller de remises sur les peintures apparaît ici dès que des peintures peuvent être rachetées moins cher."
   }
 }

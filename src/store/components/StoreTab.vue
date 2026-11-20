@@ -19,7 +19,6 @@ import { confirmationNote } from '@/price-increases/price-increase-label';
 import SecureRow from '@/price-increases/components/SecureRow.vue';
 import RefreshIcon from '@/hangar/components/RefreshIcon.vue';
 import WarbondRow from './WarbondRow.vue';
-import PaintConsultant from './PaintConsultant.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import EventList from '@/events/components/EventList.vue';
 import { EVENTS_VERSION, eventsItem } from '@/events/events-storage';
@@ -260,8 +259,6 @@ const displayClasses = computed(() => ({
       :ships="storeData?.ships ?? []"
       :warbonds="storeData?.warbonds ?? []"
     />
-
-    <PaintConsultant :settings="settings" :active="active" />
   </section>
 </template>
 

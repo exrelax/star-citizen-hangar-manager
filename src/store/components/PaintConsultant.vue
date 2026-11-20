@@ -29,7 +29,7 @@ import {
 import { rebuyPlanItemOf, storedPlanOf } from '../paint-consultant/rebuy-plan-storage';
 
 /*
- * The Paint Discount Consultant (#95) in the Pledge Store tab: which own paints to melt and buy
+ * The Paint Discount Consultant (#95) in the tab "Consultants" (#453): which own paints to melt and buy
  * again together with cheap filler paints at a higher volume discount, what the cart costs and
  * how much store credit it frees (see `paint-consultant/calculation.ts`). It explains every step
  * with the real values and says honestly that melt value turns into store credit. The running
@@ -38,9 +38,15 @@ import { rebuyPlanItemOf, storedPlanOf } from '../paint-consultant/rebuy-plan-st
 
 const props = defineProps<{
   settings: Settings;
-  /** The Pledge Store tab is shown: only then RSI's cart is read for the running plan. */
+  /** The consultant is shown: only then RSI's cart is read for the running plan. */
   active?: boolean;
 }>();
+/**
+ * Whether the consultant has something to show (#453) – a plan running, a new one or completed
+ * plans, never with "Hide melt value" or without the Pledge Store's items –, and how many paints its
+ * plan is about (none with only completed plans).
+ */
+const emit = defineEmits<{ offer: [offer: { available: boolean; count: number }] }>();
 
 /** RSI's article on the 24-hour cooldown before a pledge can be melted. */
 const COOLDOWN_SOURCE =
@@ -177,20 +183,36 @@ async function startPlan() {
 
 /** Pairs that look bought again without a kept plan (`reboughtDetection: 'guess'`). */
 const probablyRebought = computed(() => result.value?.probablyRebought ?? []);
+
+// What the tab "Consultants" shows of it (#453): the sub tab and its count.
+watch(
+  () => {
+    const available =
+      !props.settings.hideMeltValue &&
+      !!storeItems.value &&
+      (!!runningView.value || hasNewPlan.value || running.completed.value.length > 0);
+    const count =
+      runningView.value || hasNewPlan.value
+        ? (running.plan.value?.own.length ??
+          plan.value?.own.length ??
+          probablyRebought.value.length)
+        : 0;
+    return { available, count: available ? count : 0 };
+  },
+  (offer) => emit('offer', offer),
+  { immediate: true, deep: true },
+);
 </script>
 
 <template>
   <section
     class="shm-consultant"
     :class="{ 'is-ways': ways }"
-    aria-labelledby="shm-consultant-title"
+    :aria-label="i18n.t('consultant.title')"
   >
     <div class="shm-consultant-head">
       <div class="shm-consultant-head-text">
-        <!-- Styled like the warbond title above (`shm-store-title`, modern.css). -->
-        <h3 id="shm-consultant-title" class="shm-store-title shm-consultant-title">
-          {{ i18n.t('consultant.title') }}
-        </h3>
+        <!-- Its name is the sub tab or the heading of the tab "Consultants" (#453). -->
         <p
           v-if="ways"
           v-tooltip="i18n.t('consultant.intro')"
@@ -513,18 +535,7 @@ const probablyRebought = computed(() => result.value?.probablyRebought ?? []);
 
 <style>
 .shm-consultant {
-  margin-top: 32px;
-}
-
-.shm-consultant-title {
-  /* Below RSI's fixed top bar when scrolled to from My Hangar. */
-  scroll-margin-top: 90px;
-  margin: 0 0 4px;
-  color: var(--shm-text-strong);
-  font-size: calc(16px * var(--shm-font-scale));
-  font-weight: normal;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  margin-top: 16px;
 }
 
 /* The cards: the title and a short intro, the option next to them. */

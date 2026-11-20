@@ -271,6 +271,53 @@ html .shm-theme-modern .shm-tab:not(.is-active):hover {
   background: var(--shm-hover);
 }
 
+/*
+ * Underline tabs (`underline`, #453): the parts of one section below the segmented control – text
+ * tabs over a hairline, the active one white with an accent line.
+ */
+html .shm-theme-modern .shm-tabs.is-underline {
+  display: flex;
+  gap: 24px;
+  margin-top: 16px;
+  padding: 0;
+  background: none;
+  border-bottom: 1px solid rgb(var(--shm-accent-rgb) / 0.2);
+  border-radius: 0;
+}
+
+html .shm-theme-modern .shm-tabs.is-underline .shm-tab {
+  justify-content: flex-start;
+  height: auto;
+  margin-bottom: -1px;
+  padding: 10px 0 9px;
+  color: var(--shm-text-secondary);
+  background: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+html .shm-theme-modern .shm-tabs.is-underline .shm-tab.is-active {
+  color: var(--shm-text);
+  border-bottom-color: var(--shm-accent);
+}
+
+html .shm-theme-modern .shm-tabs.is-underline .shm-tab:not(.is-active):hover {
+  color: var(--shm-text);
+  background: none;
+}
+
+html .shm-theme-modern .shm-tabs.is-underline .shm-tab-indicator {
+  background: none;
+  border-bottom: 2px solid var(--shm-accent);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+html .shm-theme-modern .shm-tabs.is-underline.has-indicator .shm-tab.is-active {
+  border-bottom-color: transparent;
+}
+
 /* ---- Status, filters, search ---- */
 
 html .shm-theme-modern .shm-status {
@@ -487,6 +534,12 @@ html .shm-theme-modern .shm-store-title {
   font-weight: 700;
   letter-spacing: 0;
   text-transform: none;
+}
+
+/* A single consultant's name in the tab "Consultants" (#453): as big as the sub tabs it replaces. */
+html .shm-theme-modern .shm-consultants-heading .shm-store-title {
+  font-size: calc(15px * var(--shm-font-scale));
+  font-weight: 650;
 }
 
 html .shm-theme-modern .shm-warbond-heading {

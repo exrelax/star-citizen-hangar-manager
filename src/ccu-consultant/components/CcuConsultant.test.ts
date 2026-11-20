@@ -85,7 +85,8 @@ describe('CcuConsultant (#113)', () => {
 
   it('shows the groups with their counts, those without base ship first', async () => {
     const { root } = render(ccus);
-    expect(root.querySelector('h3')?.textContent?.trim()).toBe('CCU Consultant');
+    // Its name is the sub tab or the heading of the tab "Consultants" (#453).
+    expect(root.querySelector('section')?.getAttribute('aria-label')).toBe('CCU Consultant');
     // The question in the box, the switch next to it.
     const box = root.querySelector('.shm-ccu-consultant-box')!;
     expect(box.querySelector('h4')?.textContent).toBe('Can you apply every CCU?');
