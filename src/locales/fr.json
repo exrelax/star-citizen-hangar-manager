@@ -439,7 +439,8 @@
     "cartPaintDiscount": "Afficher la remise sur les peintures dans le panier de RSI",
     "cartPaintDiscountHint": "Une note dans le panier de RSI tant que ses peintures n’ont pas la meilleure remise de volume : les paliers, les peintures de remplissage pour un meilleur palier, l’économie, et un bouton qui les ajoute – rien n’est payé.",
     "upgradeDialogBaseCounts": "Afficher les CCU et vaisseaux possédés sur les vaisseaux de base de la fenêtre d’upgrade de RSI",
-    "upgradeDialogBaseCountsHint": "Indique sur chaque vaisseau de base combien de fois ton hangar l’a et combien de CCU vers lui ton hangar et ton buy back contiennent : chacun donne le vaisseau à un CCU depuis lui. D’après ton hangar et ton buy back enregistrés."
+    "upgradeDialogBaseCountsHint": "Indique sur chaque vaisseau de base combien de fois ton hangar l’a et combien de CCU vers lui ton hangar et ton buy back contiennent : chacun donne le vaisseau à un CCU depuis lui. D’après ton hangar et ton buy back enregistrés.",
+    "sidebarCcuConsultantHint": "Affichée tant que votre hangar a des CCU : combien n’ont pas de vaisseau de base, n’en auront bientôt plus ou ont trop peu d’accès, avec un bouton vers le CCU Consultant."
   },
   "storage": {
     "title": "Données enregistrées",
@@ -1806,7 +1807,11 @@
     "openHangar": "Ouvre le CCU dans My Hangar",
     "openGroup": "Ouvre ces CCU dans My Hangar",
     "groupHint": "Affiche les CCU identiques d’un vaisseau de base en une seule entrée avec leur nombre. Mémorisé pour le CCU Consultant.",
-    "ccuKinds": "$1 différents"
+    "ccuKinds": "$1 différents",
+    "boxOpen": "Ouvrir le CCU Consultant",
+    "boxMissingHint": "Les CCU dont ni le hangar ni le buy back ne donne le vaisseau de base, et dont le vaisseau de base n’est probablement pas toujours disponible.",
+    "boxTooFew": "Trop peu d’accès",
+    "boxTooFewHint": "Les CCU dont le vaisseau de base n’est pas toujours disponible, avec moins de vaisseaux et de CCU vers lui que de CCU depuis lui."
   },
   "cartPaints": {
     "title": "Remise de volume sur les peintures",

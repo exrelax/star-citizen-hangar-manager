@@ -439,7 +439,8 @@
     "cartPaintDiscount": "Mostrar el descuento de pinturas en el carrito de RSI",
     "cartPaintDiscountHint": "Una nota en el carrito de RSI mientras sus pinturas no reciben el mejor descuento por volumen: los niveles, las pinturas de relleno que alcanzan uno mejor, lo que ahorra y un botón que las añade; no se paga nada.",
     "upgradeDialogBaseCounts": "Mostrar CCU y naves propias en las naves base del diálogo de mejoras de RSI",
-    "upgradeDialogBaseCountsHint": "Muestra en cada nave base cuántas veces la tiene tu hangar y cuántos CCU hacia ella hay en tu hangar y buy back: cada uno da la nave a un CCU desde ella. Según tu hangar y buy back guardados."
+    "upgradeDialogBaseCountsHint": "Muestra en cada nave base cuántas veces la tiene tu hangar y cuántos CCU hacia ella hay en tu hangar y buy back: cada uno da la nave a un CCU desde ella. Según tu hangar y buy back guardados.",
+    "sidebarCcuConsultantHint": "Se muestra mientras tu hangar tenga CCU: cuántos no tienen nave base, pronto no la tendrán o tienen muy pocos accesos, con un botón al CCU Consultant."
   },
   "storage": {
     "title": "Datos guardados",
@@ -1806,7 +1807,11 @@
     "openHangar": "Abre el CCU en My Hangar",
     "openGroup": "Abre estos CCU en My Hangar",
     "groupHint": "Muestra los CCU iguales de una nave base como una sola entrada con su cantidad. Se recuerda para el CCU Consultant.",
-    "ccuKinds": "$1 distintos"
+    "ccuKinds": "$1 distintos",
+    "boxOpen": "Abrir el CCU Consultant",
+    "boxMissingHint": "CCU cuya nave base no da ni tu hangar ni tu buy back, y que probablemente no siempre está disponible.",
+    "boxTooFew": "Muy pocos accesos",
+    "boxTooFewHint": "CCU cuya nave base no siempre está disponible, con menos naves y CCU hacia ella que CCU desde ella."
   },
   "cartPaints": {
     "title": "Descuento por volumen en pinturas",

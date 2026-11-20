@@ -14,7 +14,6 @@ import '@/store/components/store-table.css';
 import { listDate, useProvidedAlwaysAvailable } from '../always-available';
 import {
   BASE_SHIP_GROUPS,
-  baseShipList,
   type BaseShipGroup,
   type BaseShipRow,
   type CcuStanding,
@@ -38,11 +37,8 @@ import { useStored } from '@/storage/use-stored';
 import ShipUpgradeButtons from '@/store/components/ShipUpgradeButtons.vue';
 import { openCcusToSecure, openShipRemoval } from '@/store/open-current-warbonds';
 import { discountAtRisk, type AtRiskRow } from '../discount-at-risk';
-import {
-  useProvidedCcuCoverage,
-  useProvidedCoverageSources,
-  type CoverageMatch,
-} from '../coverage';
+import { missingCounts, useBaseShipList } from '../use-base-ship-list';
+import type { CoverageMatch } from '../coverage';
 
 /*
  * The CCU Consultant in the tab "Consultants" (#113): whether every CCU of the hangar can be
@@ -62,18 +58,9 @@ const props = defineProps<{
 }>();
 const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
 
-const coverages = useProvidedCcuCoverage();
 const alwaysAvailable = useProvidedAlwaysAvailable();
-const sources = useProvidedCoverageSources();
 const removals = useProvidedRemovalCcus();
-const list = computed(() =>
-  baseShipList(
-    coverages.value.values(),
-    alwaysAvailable.value,
-    sources.value.ships,
-    removals.value.obtainable,
-  ),
-);
+const list = useBaseShipList();
 
 const consider = computed(() => props.settings.ccuConsultant.considerAlwaysAvailable);
 const setConsider = (value: boolean) =>
@@ -136,11 +123,7 @@ const chosen = ref<BaseShipGroup>();
  * way to a leaving base ship (#454) though covered today; those without any way are among its own.
  */
 const tabCount = (id: BaseShipGroup) =>
-  list.value.counts[id] +
-  (id === 'missing'
-    ? list.value.soon.reduce((sum, row) => sum + (waysOf(row) ? (row.short ?? 0) : 0), 0) +
-      list.value.tooFewCount
-    : 0);
+  id === 'missing' ? missingCounts(list.value).total : list.value.counts[id];
 /** The sections below the CCUs without base ship, in the tab "Without base ship". */
 const shortSections = computed(() =>
   group.value === 'missing'

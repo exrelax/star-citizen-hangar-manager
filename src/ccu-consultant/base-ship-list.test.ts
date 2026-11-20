@@ -3,6 +3,7 @@ import type { Ship } from '@/ships/ships';
 import type { ShipRemoval } from '@/ship-removals/ship-removals';
 import { withoutLeaving, type AlwaysAvailableList } from './always-available';
 import { baseMissingOf } from './ccu-labels';
+import { missingCounts } from './use-base-ship-list';
 import { baseShipList, standingOf } from './base-ship-list';
 import type { CcuCoverage, CoverageMatch } from './coverage';
 
@@ -229,5 +230,29 @@ describe('base ships with too few ways (#454)', () => {
     const list = baseShipList([coverage(10, { id: 2, name: 'Cutlass Red' })], always(), ships);
     expect(list.tooFew).toEqual([]);
     expect(list.groups.missing.map((row) => row.name)).toEqual(['Cutlass Red']);
+  });
+});
+
+describe('the counts of the sidebar box and the tab "Without base ship" (#115)', () => {
+  it('adds the CCUs without base ship, soon without one and with too few ways', () => {
+    const razor = {
+      ship: { id: 3, name: 'Razor' },
+      removedAt: { at: Date.parse('2027-01-27T00:00:00Z'), dayOnly: true },
+      source: 'https://robertsspaceindustries.com/en/comm-link/transmission/21350',
+    } as ShipRemoval;
+    const list = baseShipList(
+      [
+        coverage(10, { id: 2, name: 'Cutlass Red' }),
+        // Leaving, without any way: only in "soon".
+        coverage(11, { id: 3, name: 'Razor' }),
+        // Not always available, one way for two CCUs: one too few.
+        coverage(12, { id: 1, name: 'Arrow' }, [], [match('buyback', 80)]),
+        coverage(13, { id: 1, name: 'Arrow' }, [], [match('buyback', 80)]),
+      ],
+      always(),
+      ships,
+      new Map([[3, razor]]),
+    );
+    expect(missingCounts(list)).toEqual({ missing: 1, soon: 1, tooFew: 1, total: 3 });
   });
 });
