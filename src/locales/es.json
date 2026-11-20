@@ -1797,7 +1797,15 @@
       "buyback": "Solo recompra",
       "always": "Siempre a la venta",
       "atRisk": "Descuento en riesgo"
-    }
+    },
+    "showCcus": {
+      "one": "Mostrar el CCU",
+      "other": "Mostrar los $1 CCU"
+    },
+    "hideCcus": "Ocultar los CCU",
+    "openHangar": "Abre el CCU en My Hangar",
+    "openGroup": "Abre estos CCU en My Hangar",
+    "groupHint": "Muestra los CCU iguales de una nave base como una sola entrada con su cantidad. Se recuerda para el CCU Consultant."
   },
   "cartPaints": {
     "title": "Descuento por volumen en pinturas",

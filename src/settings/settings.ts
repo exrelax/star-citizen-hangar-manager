@@ -149,8 +149,11 @@ export interface Settings {
     hangar: HangarSort;
     buyback: BuybackSort;
   };
-  /** The grouped view of each list (#445, #447): the same items as one group. */
-  grouped: { hangar: boolean; buyback: boolean };
+  /**
+   * The grouped view of each list (#445, #447): the same items as one group; in the CCU
+   * Consultant (#456) the CCUs of a base ship.
+   */
+  grouped: { hangar: boolean; buyback: boolean; consultant: boolean };
   /** Order and period of the Pledge Store tab's Warbond CCU History (#297). */
   warbondHistory: HistoryChoice;
   /** Order of the warbond CCUs' tables "Your CCUs between" (#395); `null` for the default one. */
@@ -224,7 +227,7 @@ export const DEFAULT_SETTINGS: Settings = {
     buyback: normalizeFilterGroups(FILTERS.buyback, BUYBACK_FILTER_CATEGORIES, FILTERS.buyback),
   },
   sort: { hangar: 'newest', buyback: 'newest' },
-  grouped: { hangar: false, buyback: false },
+  grouped: { hangar: false, buyback: false, consultant: true },
   warbondHistory: { sort: 'newest', period: DEFAULT_HISTORY_PERIOD },
   ownedCcuSort: null,
   paintConsultant: {
@@ -333,6 +336,11 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
     grouped: {
       hangar: valid(stored?.grouped?.hangar, isBoolean, DEFAULT_SETTINGS.grouped.hangar),
       buyback: valid(stored?.grouped?.buyback, isBoolean, DEFAULT_SETTINGS.grouped.buyback),
+      consultant: valid(
+        stored?.grouped?.consultant,
+        isBoolean,
+        DEFAULT_SETTINGS.grouped.consultant,
+      ),
     },
     warbondHistory: warbondHistoryOf(stored?.warbondHistory),
     ownedCcuSort: isTableSort(stored?.ownedCcuSort, OWNED_CCU_COLUMNS)
