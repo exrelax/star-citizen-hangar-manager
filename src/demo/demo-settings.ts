@@ -78,6 +78,8 @@ export interface DemoSettings {
   buybackTokens: number;
   /** The next renewal of the tokens in their tooltip (#434): the website's, or a case of its own. */
   tokenRenewal: TokenRenewalCase;
+  /** Paints in the demo's cart on RSI's cart page (#459): 10 reach the best tier, no note then. */
+  cartPaints: number;
 }
 
 /** The range of each kind's number and of the list sizes. */
@@ -111,6 +113,7 @@ export const DEFAULT_DEMO_SETTINGS: DemoSettings = {
   meltCheck: 'match',
   buybackTokens: DEMO.maxBuybackTokens,
   tokenRenewal: 'real',
+  cartPaints: 2,
 };
 
 const wholeIn =
@@ -187,5 +190,6 @@ export function demoSettingsOf(stored: Partial<DemoSettings> | null | undefined)
     tokenRenewal: TOKEN_RENEWAL_CASES.includes(stored?.tokenRenewal as TokenRenewalCase)
       ? stored!.tokenRenewal!
       : defaults.tokenRenewal,
+    cartPaints: valid(stored?.cartPaints, wholeIn({ min: 1, max: 10 }), defaults.cartPaints),
   };
 }

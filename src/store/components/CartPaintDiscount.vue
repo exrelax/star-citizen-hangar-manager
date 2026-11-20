@@ -16,6 +16,8 @@ import {
 import { addLinesToCart, cartCheckOf, readCart, type CartLine } from '../paint-consultant/cart';
 import { currentPlanOf, rebuyPlanItem, storedPlanOf } from '../paint-consultant/rebuy-plan-storage';
 import PaintConfirm from './PaintConfirm.vue';
+import { demoCart } from '@/demo/demo-cart';
+import { vTooltip } from '@/shared/tooltip/tooltip';
 
 /*
  * The note on RSI's cart page (#458) while its paints don't get the best volume discount: the
@@ -24,6 +26,9 @@ import PaintConfirm from './PaintConfirm.vue';
  * button puts them into the cart (at most 5 of one SKU, the cart read before and after) and starts
  * a plan of the consultant with them, so they are marked to melt once bought (#105, #97). Nothing
  * is ever checked out. Off by the setting under "RSI website".
+ *
+ * The demo mode (#459) shows a cart of its own with the demo's store credit, never reading the real
+ * cart; its button is disabled, so the real cart and plan stay as they are.
  */
 
 const emit = defineEmits<{
@@ -39,8 +44,10 @@ const storedPlan = useStored(rebuyPlanItem);
 const items = computed(() =>
   storeItems.value?.version === STORE_ITEMS_VERSION ? storeItems.value.items : [],
 );
+const demo = computed(() => settings.value.demoMode);
 /** The store credit in USD, as the Hangar Manager read it last; unknown otherwise. */
 const credit = computed(() => {
+  if (demo.value) return settings.value.demo.storeCredit;
   const stored = storedCredit.value;
   const value = stored?.version === STORE_CREDIT_VERSION ? stored.credit : undefined;
   return value && value.currency === 'USD' ? value.amount : undefined;
@@ -49,6 +56,8 @@ const credit = computed(() => {
 const cart = ref<CartLine[]>();
 const failed = ref(false);
 async function refreshCart() {
+  // The demo never reads the real cart.
+  if (demo.value) return;
   try {
     cart.value = await readCart();
     failed.value = false;
@@ -58,9 +67,13 @@ async function refreshCart() {
 }
 defineExpose({ refreshCart });
 
+/** The cart the note is about: RSI's, in the demo its own. */
+const shownCart = computed(() =>
+  demo.value ? demoCart(items.value, settings.value.demo.cartPaints) : cart.value,
+);
 const result = computed(() =>
-  cart.value && items.value.length
-    ? cartPaintDiscount(cart.value, items.value, credit.value)
+  shownCart.value && items.value.length
+    ? cartPaintDiscount(shownCart.value, items.value, credit.value)
     : undefined,
 );
 /** The option shown: the best one the store credit pays, else the next tier. */
@@ -100,7 +113,7 @@ const runningPlan = computed(() => !!currentPlanOf(storedPlan.value));
 
 async function addFillers({ replace = false } = {}) {
   const option = result.value?.best;
-  if (!option || busy.value) return;
+  if (!option || busy.value || demo.value) return;
   if (!replace && runningPlan.value) {
     asking.value = true;
     return;
@@ -224,6 +237,17 @@ onUnmounted(() => {
       </p>
       <div class="shm-cart-paints-actions">
         <button
+          v-if="demo"
+          v-tooltip="i18n.t('cartPaints.demoHint')"
+          type="button"
+          class="shm-button is-primary"
+          disabled
+        >
+          <SvgIcon name="plus" />
+          {{ i18n.t('cartPaints.add') }}
+        </button>
+        <button
+          v-else
           type="button"
           class="shm-button is-primary"
           :disabled="busy || asking"

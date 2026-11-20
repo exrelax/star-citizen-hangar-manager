@@ -412,6 +412,8 @@
         "estimated": "Estimated",
         "none": "None known"
       },
+      "cartPaints": "Paints in the demo cart",
+      "cartPaintsHint": "The paint discount note on RSI’s cart page shows a cart of the demo with this many paints instead of yours, and the demo’s store credit. With 10 the cart has the best discount: no note.",
       "meltCheck": "Check before bulk melting",
       "meltCheckHint": "How the check of the pledges right before bulk melting turns out, also for the filler paints. The demo only shows it: nothing is read from RSI or melted.",
       "meltCheckOutcomes": {
@@ -1759,6 +1761,7 @@
       "none": "RSI didn’t take the filler paints. Your cart is unchanged."
     },
     "readFailed": "Your cart couldn’t be read.",
-    "tierAria": "$1 from $2 paints"
+    "tierAria": "$1 from $2 paints",
+    "demoHint": "Not available in demo mode: it would change your real cart."
   }
 }
