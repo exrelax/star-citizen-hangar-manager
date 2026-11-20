@@ -31,6 +31,7 @@ describe('withDefaults', () => {
       themedActionDialogs: false,
       translateRsiTexts: false,
       upgradeDialogAlwaysAvailable: true,
+      cartPaintDiscount: true,
       bulkMelting: true,
       hideSupersededInsurances: true,
       summaryTypes: false,
