@@ -18,6 +18,7 @@ import {
   type DemoPledge,
 } from './generate-hangar';
 import { createRandom, type DemoRandom } from './random';
+import { demoPaintCases, paintCaseShips, storePaints } from './demo-paint-cases';
 import { DEFAULT_DEMO_SETTINGS, type DemoSettings, type DemoStates } from './demo-settings';
 
 /*
@@ -297,6 +298,29 @@ export function withStates(
       };
     });
   }
+
+  // Paints for the filter "Paints" by owned ships (#336, #337): one of the store per case, on
+  // paints no other case uses (the newest one and the paint bought again keep theirs).
+  const cases = demoPaintCases(
+    storePaints(catalog),
+    paintCaseShips(
+      generated.map((pledge) => byId.get(pledge.id)!),
+      catalog,
+    ),
+  );
+  const free = paints.filter((p) => p !== generated[0] && p !== copy && p !== old);
+  [...cases.values()].forEach((entry, index) =>
+    set(free[index], (pledge) => ({
+      ...pledge,
+      title: `Paints - ${entry.name}`,
+      name: `Paints - ${entry.name}`,
+      items: [{ title: entry.name, kind: 'Skin', ...(entry.image && { image: entry.image }) }],
+      image: entry.image,
+      standardPrice: entry.price,
+      value: usdText(entry.price),
+      valueUsd: entry.price,
+    })),
+  );
 
   const pledges = generated.map((pledge) => byId.get(pledge.id)!);
   return { pledges, orders: ordersOf(pledges, random), upgradeLogs };
