@@ -166,34 +166,37 @@ onUnmounted(() => {
     :style="fontScaleStyle(settings)"
     aria-labelledby="shm-cart-paints-title"
   >
-    <div class="shm-cart-paints-head">
-      <SvgIcon name="fill-drip" />
-      <div>
-        <h2 id="shm-cart-paints-title">{{ i18n.t('cartPaints.title') }}</h2>
-        <p>
-          {{
-            result.current
-              ? i18n.n('cartPaints.now', result.paints, [
-                  result.paints,
-                  percent(result.current.percent),
-                ])
-              : i18n.n('cartPaints.nowNone', result.paints, [result.paints])
-          }}
-        </p>
+    <!-- The title on the left, the tiers at the top right. -->
+    <div class="shm-cart-paints-top">
+      <div class="shm-cart-paints-head">
+        <SvgIcon name="fill-drip" />
+        <div>
+          <h2 id="shm-cart-paints-title">{{ i18n.t('cartPaints.title') }}</h2>
+          <p>
+            {{
+              result.current
+                ? i18n.n('cartPaints.now', result.paints, [
+                    result.paints,
+                    percent(result.current.percent),
+                  ])
+                : i18n.n('cartPaints.nowNone', result.paints, [result.paints])
+            }}
+          </p>
+        </div>
       </div>
-    </div>
 
-    <div class="shm-cart-paints-tiers" role="img" :aria-label="tierAria">
-      <span
-        v-for="tier in tiers"
-        :key="tier.percent"
-        class="shm-cart-paints-tier"
-        :class="{ 'is-reached': tier.reached, 'is-target': tier.target }"
-      >
-        <span class="shm-cart-paints-tier-percent">{{ percent(tier.percent) }}</span>
-        <span class="shm-cart-paints-tier-bar" :style="{ height: tier.height }"></span>
-        <span class="shm-cart-paints-tier-count">×{{ tier.paints }}</span>
-      </span>
+      <div class="shm-cart-paints-tiers" role="img" :aria-label="tierAria">
+        <span
+          v-for="tier in tiers"
+          :key="tier.percent"
+          class="shm-cart-paints-tier"
+          :class="{ 'is-reached': tier.reached, 'is-target': tier.target }"
+        >
+          <span class="shm-cart-paints-tier-percent">{{ percent(tier.percent) }}</span>
+          <span class="shm-cart-paints-tier-bar" :style="{ height: tier.height }"></span>
+          <span class="shm-cart-paints-tier-count">×{{ tier.paints }}</span>
+        </span>
+      </div>
     </div>
 
     <p class="shm-cart-paints-offer">
@@ -253,11 +256,23 @@ onUnmounted(() => {
  * On RSI's cart page, outside the manager: not scoped, prefixed instead, and under the host, as
  * RSI's own rules for sections, headings and paragraphs would win otherwise.
  */
+/*
+ * RSI stacks the cart's parts 40px apart: the note sits closer to the shopping bag below it, and
+ * its empty host takes no room (and no gap) while there is no note.
+ */
+.shm-cart-paints-host:has(> .shm-cart-paints) {
+  margin-bottom: -24px;
+}
+
+.shm-cart-paints-host:not(:has(> .shm-cart-paints)) {
+  display: none;
+}
+
 .shm-cart-paints-host .shm-cart-paints {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin: 0 0 16px;
+  margin: 0;
   padding: 16px;
   color: var(--shm-text);
   font-family: var(--shm-font, inherit);
@@ -267,7 +282,17 @@ onUnmounted(() => {
   border: 1px solid rgb(var(--shm-accent-rgb) / 0.3);
 }
 
+.shm-cart-paints-host .shm-cart-paints-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px 24px;
+}
+
 .shm-cart-paints-host .shm-cart-paints-head {
+  flex: 1 1 240px;
+  min-width: 0;
   display: flex;
   gap: 12px;
   align-items: flex-start;
@@ -335,6 +360,14 @@ onUnmounted(() => {
   display: block;
   color: var(--shm-text-muted);
   font-size: calc(12px * var(--shm-font-scale, 1));
+}
+
+.shm-cart-paints-host .shm-cart-paints .shm-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: calc(13px * var(--shm-font-scale, 1));
 }
 
 .shm-cart-paints-host .shm-cart-paints-actions {
