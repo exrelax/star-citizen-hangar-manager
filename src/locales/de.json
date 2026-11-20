@@ -412,6 +412,8 @@
         "estimated": "Geschätzt",
         "none": "Keines bekannt"
       },
+      "cartPaints": "Paints im Demo-Warenkorb",
+      "cartPaintsHint": "Der Hinweis zum Paint-Rabatt im Warenkorb von RSI zeigt statt deines Warenkorbs einen der Demo mit so vielen Paints, dazu die Store Credits der Demo. Mit 10 hat der Warenkorb den besten Rabatt: kein Hinweis.",
       "meltCheck": "Prüfung vor dem Bulk Melting",
       "meltCheckHint": "Wie die Prüfung der Pledges direkt vor dem Bulk Melting ausgeht, auch bei den Filler-Paints. Die Demo zeigt sie nur: Nichts wird bei RSI gelesen oder eingeschmolzen.",
       "meltCheckOutcomes": {
@@ -1759,6 +1761,7 @@
       "none": "RSI hat die Füll-Paints nicht angenommen. Dein Warenkorb ist unverändert."
     },
     "readFailed": "Dein Warenkorb ließ sich nicht lesen.",
-    "tierAria": "$1 ab $2 Paints"
+    "tierAria": "$1 ab $2 Paints",
+    "demoHint": "Im Demo-Modus nicht verfügbar: Es würde deinen echten Warenkorb ändern."
   }
 }

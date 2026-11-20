@@ -412,6 +412,8 @@
         "estimated": "Estimada",
         "none": "Ninguna conocida"
       },
+      "cartPaints": "Pinturas en el carrito de demostración",
+      "cartPaintsHint": "La nota del descuento de pinturas en el carrito de RSI muestra un carrito de la demo con tantas pinturas en lugar del tuyo, y el crédito de la demo. Con 10 el carrito tiene el mejor descuento: sin nota.",
       "meltCheck": "Comprobación antes de fundir varios",
       "meltCheckHint": "Cómo resulta la comprobación de los pledges justo antes de fundir varios, también con las pinturas de relleno. La demo solo la muestra: no se lee nada de RSI ni se funde nada.",
       "meltCheckOutcomes": {
@@ -1759,6 +1761,7 @@
       "none": "RSI no aceptó las pinturas de relleno. Tu carrito no ha cambiado."
     },
     "readFailed": "No se pudo leer tu carrito.",
-    "tierAria": "$1 desde $2 pinturas"
+    "tierAria": "$1 desde $2 pinturas",
+    "demoHint": "No disponible en el modo demo: cambiaría tu carrito real."
   }
 }

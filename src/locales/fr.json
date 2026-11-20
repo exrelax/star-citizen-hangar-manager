@@ -412,6 +412,8 @@
         "estimated": "Estimée",
         "none": "Aucune connue"
       },
+      "cartPaints": "Peintures dans le panier de démo",
+      "cartPaintsHint": "La note de remise sur les peintures du panier de RSI montre un panier de la démo avec autant de peintures au lieu du tien, et le crédit de la démo. Avec 10, le panier a la meilleure remise : pas de note.",
       "meltCheck": "Vérification avant la fonte groupée",
       "meltCheckHint": "Le résultat de la vérification des pledges juste avant la fonte groupée, aussi pour les peintures de remplissage. La démo ne fait que l’afficher : rien n’est lu chez RSI ni fondu.",
       "meltCheckOutcomes": {
@@ -1759,6 +1761,7 @@
       "none": "RSI n’a pas accepté les peintures de remplissage. Ton panier n’a pas changé."
     },
     "readFailed": "Ton panier n’a pas pu être lu.",
-    "tierAria": "$1 dès $2 peintures"
+    "tierAria": "$1 dès $2 peintures",
+    "demoHint": "Non disponible en mode démo : cela modifierait ton vrai panier."
   }
 }

@@ -301,6 +301,27 @@ async function reset() {
     </SettingRow>
   </SettingsGroup>
 
+  <!-- The paint discount note in RSI's cart (#458, #459): the demo's own cart. -->
+  <SettingsGroup :disabled="off">
+    <SettingRow
+      :label="i18n.t('settings.demo.cartPaints')"
+      :hint="i18n.t('settings.demo.cartPaintsHint')"
+      for="shm-demo-cart-paints"
+      hint-id="shm-demo-cart-paints-hint"
+    >
+      <select
+        id="shm-demo-cart-paints"
+        class="shm-select"
+        :value="settings.demo.cartPaints"
+        :disabled="off"
+        aria-describedby="shm-demo-cart-paints-hint"
+        @change="set({ cartPaints: Number(($event.target as HTMLSelectElement).value) })"
+      >
+        <option v-for="count in 10" :key="count" :value="count">{{ count }}</option>
+      </select>
+    </SettingRow>
+  </SettingsGroup>
+
   <!-- The check right before bulk melting (#415, #416). -->
   <SettingsGroup :disabled="off">
     <SettingRow
