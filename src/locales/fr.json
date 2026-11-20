@@ -1790,12 +1790,15 @@
       "melt": "Melt en partie",
       "upgraded": "Améliorés en partie",
       "unavailable": "Indisponibles en partie",
-      "probablyGiftable": "Probablement offrables en partie"
+      "probablyGiftable": "Probablement offrables en partie",
+      "baseMissing": "Vaisseau de base manquant pour certains",
+      "alwaysAvailable": "Base toujours disponible pour certains"
     },
     "items": {
       "one": "$1 élément",
       "other": "$1 éléments"
     },
-    "selected": "$1 sur $2 sélectionnés"
+    "selected": "$1 sur $2 sélectionnés",
+    "refundCount": "$1 sur $2 éléments peuvent encore être remboursés."
   }
 }

@@ -1,5 +1,11 @@
 import type { BuybackView } from '@/buyback/buyback-view';
-import { i18n } from '@/i18n';
+import type { AlwaysAvailableList } from '@/ccu-consultant/always-available';
+import { alwaysAvailableHintOf, baseMissingOf } from '@/ccu-consultant/ccu-labels';
+import type { CcuCoverage } from '@/ccu-consultant/coverage';
+import { REFUND_DAYS, REFUND_URGENT_DAYS } from '@/config';
+import { i18n, type Locale } from '@/i18n';
+import { refundWindow } from '@/orders/refund';
+import type { Ship } from '@/ships/ships';
 import type { IconName } from '@/icons/icon-names';
 import type { GroupExtra, GroupShare, ItemGroup } from './grouping';
 import { insuranceLabel, type Insurance } from './insurance';
@@ -12,7 +18,21 @@ import { isRewardTitle } from './rewards';
  * as a single row's – all of them, some of them ("Some gift") or none (the off state) – and a note
  * on the extras that differ ("some with gear, different insurance"). An insurance shows while all
  * items have the same one; otherwise the note tells it.
+ *
+ * From the items' own labels too (#487): "Base ship missing" and "Base always available" of the CCU
+ * Consultant, with the single row's tooltip; the refund countdown of the item with the least time
+ * left, with how many items can still be refunded.
  */
+
+/** What the labels taken from the items need besides the items (My Hangar). */
+export interface GroupBadgeContext {
+  coverageOf: (id: number) => CcuCoverage | undefined;
+  alwaysAvailable?: AlwaysAvailableList;
+  ships: readonly Ship[];
+  /** Today (local ISO date), for the refund countdown. */
+  today: string;
+  locale: Locale;
+}
 
 export interface GroupBadge {
   key: string;
@@ -66,11 +86,81 @@ function flagBadge<T>(
   };
 }
 
-/** The badges of a group of "My Hangar": insurance, upgraded, Gift and Melt. */
-export function pledgeGroupBadges(group: ItemGroup<PledgeView>): GroupBadge[] {
+/** The refund countdown of the item with the least time left, as its single row shows it. */
+function refundBadge(items: readonly PledgeView[], today: string): GroupBadge | undefined {
+  const windows = items.flatMap((item) => {
+    const placedAt = item.order?.placedAt;
+    const window = placedAt ? refundWindow(placedAt, today) : undefined;
+    return window && placedAt ? [{ ...window, placedAt }] : [];
+  });
+  if (!windows.length) return undefined;
+  const next = windows.reduce((a, b) => (b.daysLeft < a.daysLeft ? b : a));
+  return {
+    key: 'refund',
+    text: next.daysLeft === 0 ? i18n.t('refund.lastDay') : i18n.n('refund.days', next.daysLeft),
+    className: `is-refund${next.daysLeft < REFUND_URGENT_DAYS ? ' is-urgent' : ''}`,
+    hint: [
+      i18n.t('refund.hint', [next.placedAt, REFUND_DAYS, next.until]),
+      i18n.t('group.refundCount', [windows.length, items.length]),
+    ].join('\n'),
+  };
+}
+
+/** A label of the CCU Consultant, by all or some items, with the first item's tooltip. */
+function ccuBadge(
+  key: 'baseMissing' | 'alwaysAvailable',
+  hints: readonly (string | undefined)[],
+): GroupBadge | undefined {
+  const count = hints.filter(Boolean).length;
+  if (!count) return undefined;
+  const all = count === hints.length;
+  return {
+    key,
+    text: all
+      ? i18n.t(key === 'baseMissing' ? 'ccuCoverage.missing' : 'ccuCoverage.alwaysAvailable')
+      : i18n.t(`group.some.${key}`),
+    className: key === 'baseMissing' ? 'is-base-missing' : 'is-always-available',
+    hint: all
+      ? hints.find(Boolean)
+      : `${hints.find(Boolean)}\n${i18n.t('group.someHint', [count, hints.length])}`,
+  };
+}
+
+/**
+ * The badges of a group of "My Hangar": the refund countdown, the CCU Consultant's labels,
+ * insurance, upgraded, Gift and Melt. Without `context`, only those of the items themselves.
+ */
+export function pledgeGroupBadges(
+  group: ItemGroup<PledgeView>,
+  context?: GroupBadgeContext,
+): GroupBadge[] {
   const { items } = group;
   const upgraded = shareOf(items, (item) => item.isUpgraded);
+  const ccus = context && items.every((item) => item.isCcu);
   return [
+    context && refundBadge(items, context.today),
+    ccus
+      ? ccuBadge(
+          'baseMissing',
+          items.map(
+            (item) =>
+              baseMissingOf(context.coverageOf(item.id), context.alwaysAvailable, context.ships)
+                ?.note,
+          ),
+        )
+      : undefined,
+    ccus
+      ? ccuBadge(
+          'alwaysAvailable',
+          items.map((item) =>
+            alwaysAvailableHintOf(
+              context.coverageOf(item.id),
+              context.alwaysAvailable,
+              context.locale,
+            ),
+          ),
+        )
+      : undefined,
     insuranceBadge(items.map((item) => item.insurance)),
     upgraded === 'none'
       ? undefined
