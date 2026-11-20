@@ -1879,5 +1879,8 @@
     "selected": "$1 of $2 selected",
     "refundCount": "$1 of $2 items can still be refunded.",
     "openDialog": "Open the group in a dialog"
+  },
+  "consultants": {
+    "paintLater": "The Paint Discount Consultant shows here once paints can be bought again for less."
   }
 }

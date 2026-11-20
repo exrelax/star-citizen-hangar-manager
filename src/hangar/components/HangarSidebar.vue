@@ -13,6 +13,7 @@ import { vTooltip } from '@/shared/tooltip/tooltip';
 import { useDemoContext } from '@/demo/use-demo';
 import SidebarBox from './SidebarBox.vue';
 import { missingCounts, useBaseShipList } from '@/ccu-consultant/use-base-ship-list';
+import { openConsultant } from '@/consultants/consultants';
 import { openTabAt } from '../open-tab-at';
 import { BROWSER_NOTIFICATIONS_SETTING_ID, BULK_MELTING_SETTING_ID } from '@/settings/anchors';
 import {
@@ -250,8 +251,7 @@ const TITLES = {
 // tab "Without base ship" counts them; shown while the hangar has CCUs.
 const ccuList = useBaseShipList();
 const ccuMissing = computed(() => missingCounts(ccuList.value));
-const openCcuConsultant = () =>
-  openTabAt('consultants', 'shm-ccu-consultant-title', { highlight: true });
+const openCcuConsultant = () => openConsultant('ccu', { highlight: true });
 
 // The Paint Discount Consultant at first glance (worked out once in App.vue).
 const consultant = maybePaintConsultant();

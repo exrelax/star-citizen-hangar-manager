@@ -14,8 +14,18 @@ import { nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vu
  */
 
 const props = defineProps<{
-  /** `iconSet`: the sprite of `icon`, Font Awesome unless set; `count`: shown after the label. */
-  items: readonly { id: T; label: string; icon?: IconName; iconSet?: IconSet; count?: string }[];
+  /**
+   * `iconSet`: the sprite of `icon`, Font Awesome unless set; `count`: shown after the label, with
+   * `countTone` as a tinted pill (`underline` tabs).
+   */
+  items: readonly {
+    id: T;
+    label: string;
+    icon?: IconName;
+    iconSet?: IconSet;
+    count?: string;
+    countTone?: 'danger' | 'warning' | 'neutral';
+  }[];
   selected: T;
   /** Accessible name of the group. */
   label: string;
@@ -29,6 +39,11 @@ const props = defineProps<{
    * different lengths. Labels never wrap; one that doesn't fit is cut with an ellipsis.
    */
   fitContent?: boolean;
+  /**
+   * Text tabs over an underline in every theme, for the parts of one section (the consultants of the
+   * tab "Consultants", #453) below the manager's own tabs.
+   */
+  underline?: boolean;
 }>();
 const emit = defineEmits<{ select: [id: T] }>();
 
@@ -69,7 +84,11 @@ if (slide) {
   <div
     ref="bar"
     class="shm-tabs"
-    :class="{ 'has-indicator': slide && indicator, 'is-fit-content': fitContent }"
+    :class="{
+      'has-indicator': slide && indicator,
+      'is-fit-content': fitContent,
+      'is-underline': underline,
+    }"
     :role="panels ? 'tablist' : 'group'"
     :aria-label="label"
   >
@@ -101,7 +120,12 @@ if (slide) {
       <span class="shm-tab-label">{{ item.label }}</span>
       <!-- A space, so the tab's name reads "Label 3", not "Label3". -->
       <template v-if="item.count !== undefined">
-        {{ ' ' }}<span class="shm-tab-count">{{ item.count }}</span>
+        {{ ' '
+        }}<span
+          class="shm-tab-count"
+          :class="item.countTone && ['is-pill', `is-${item.countTone}`]"
+          >{{ item.count }}</span
+        >
       </template>
     </button>
   </div>
@@ -147,6 +171,35 @@ if (slide) {
   flex: none;
   color: var(--shm-text-muted);
   font-variant-numeric: tabular-nums;
+}
+
+/* A count as a tinted pill: red for something missing, orange for something to watch. */
+.shm-tab-count.is-pill {
+  padding: 0 6px;
+  font-size: calc(11px * var(--shm-font-scale));
+  font-weight: 700;
+  line-height: 16px;
+  border-radius: var(--shm-radius-pill);
+  background: rgb(var(--shm-accent-rgb) / 0.16);
+}
+
+.shm-tab-count.is-danger {
+  color: var(--shm-danger);
+  background: color-mix(in srgb, var(--shm-danger) 18%, transparent);
+}
+
+.shm-tab-count.is-warning {
+  color: var(--shm-warning);
+  background: color-mix(in srgb, var(--shm-warning) 18%, transparent);
+}
+
+/* Underline tabs (`underline`): the parts of one section, further apart. */
+.shm-tabs.is-underline {
+  gap: 24px;
+}
+
+.shm-tabs.is-underline .shm-tab {
+  padding: 10px 0 9px;
 }
 
 .shm-tab:hover,

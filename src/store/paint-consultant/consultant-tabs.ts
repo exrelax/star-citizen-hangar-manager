@@ -1,4 +1,4 @@
-import { openTabAt } from '@/hangar/open-tab-at';
+import { openConsultant } from '@/consultants/consultants';
 import { ref } from 'vue';
 
 /*
@@ -30,10 +30,10 @@ export function shownTabOf(
 export const consultantTabRequest = ref<{ tab: ConsultantTab; at: number }>();
 
 /**
- * Shows the consultant: switches to the Pledge Store tab and scrolls to it, with the given part
- * selected if it is there.
+ * Shows the consultant: switches to the tab "Consultants" (#453) with the consultant chosen and
+ * scrolls to it, with the given part selected if it is there.
  */
 export function openPaintConsultant(tab?: ConsultantTab): void {
   if (tab) consultantTabRequest.value = { tab, at: Date.now() };
-  openTabAt('store', 'shm-consultant-title');
+  openConsultant('paint');
 }

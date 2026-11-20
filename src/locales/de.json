@@ -1879,5 +1879,8 @@
     "selected": "$1 von $2 ausgewählt",
     "refundCount": "$1 von $2 Einträgen lassen sich noch erstatten.",
     "openDialog": "Gruppe in einem Dialog öffnen"
+  },
+  "consultants": {
+    "paintLater": "Der Paint-Rabatt-Berater erscheint hier, sobald sich Paints günstiger neu kaufen lassen."
   }
 }
