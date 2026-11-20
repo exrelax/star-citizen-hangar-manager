@@ -176,8 +176,21 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
   gap: 6px;
 }
 
+/*
+ * In "Modern Hangar" a row is a card in the dialog's own color: here each gets a tinted surface and
+ * a fine ring, so the items stand apart without hovering.
+ */
+html .shm-theme-modern .shm-group-dialog-items .shm-row {
+  background: rgb(var(--shm-accent-rgb) / 0.06);
+  box-shadow: inset 0 0 0 1px var(--shm-separator);
+}
+
+html .shm-theme-modern .shm-group-dialog-items .shm-row.is-expanded {
+  box-shadow: inset 0 0 0 1px rgb(var(--shm-accent-rgb) / 0.45);
+}
+
 /* The pledge a jump opened the dialog for. */
-.shm-group-dialog-item.is-highlighted > .shm-row {
-  box-shadow: 0 0 0 2px var(--shm-accent);
+html .shm-group-dialog-item.is-highlighted > .shm-row {
+  box-shadow: inset 0 0 0 2px var(--shm-accent);
 }
 </style>
