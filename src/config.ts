@@ -451,9 +451,10 @@ export const DEMO = {
   upgradedPledges: 4,
   /**
    * Days left to refund for the first pledges with a money-paid order: their purchase date is
-   * set accordingly, so the demo always shows the refund tag – normal and in its last week.
+   * set accordingly, so the demo always shows the refund tag – normal and in its last week, also
+   * in the groups of the Grouped View (#450, `demo-groups.ts`).
    */
-  refundDaysLeft: [20, 3],
+  refundDaysLeft: [20, 12, 3],
   /**
    * Hours before the start of the current hour that the newest meltable pledge bought with store
    * credit was bought in the demo, so marking it to melt shows the countdown to RSI's 24 hours.

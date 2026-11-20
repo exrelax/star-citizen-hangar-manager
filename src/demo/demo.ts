@@ -10,6 +10,7 @@ import { createItemPriceLookup } from '@/store/items/item-prices';
 import type { DemoCatalog } from './catalog';
 import { generateDemoAccount, type DemoAccount } from './generate-states';
 import { generateBuyback, type DemoBuyback } from './generate-buyback';
+import { missingBaseOf } from './demo-groups';
 import { demoPaintCases, paintCaseShips, storePaints } from './demo-paint-cases';
 import { toBuybackView } from '@/buyback/buyback-view';
 import { createAvailabilityCheck } from '@/buyback/buyback-availability';
@@ -145,8 +146,14 @@ export function generatedDemo(
   const realNotOnSale = realNotOnSaleShips(catalog, realIncreases, now, buyable).filter(
     (ship) => ship.id !== notOnSale?.id,
   );
+  // Nothing in the buy back gives the base ship of the CCUs without one (#450).
+  const missingBase = missingBaseOf(account.pledges);
+  const buybackCatalog = {
+    ...catalog,
+    ships: catalog.ships.filter((ship) => ship.id !== missingBase),
+  };
   const generatedBuyback = withPaintCases(
-    generateBuyback(catalog, key, today, buybackComposition(settings.buybackPledges), [
+    generateBuyback(buybackCatalog, key, today, buybackComposition(settings.buybackPledges), [
       ...(notOnSale ? [notOnSale] : []),
       ...realNotOnSale,
     ]),

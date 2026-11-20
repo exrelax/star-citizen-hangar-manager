@@ -18,6 +18,7 @@ import {
   type DemoPledge,
 } from './generate-hangar';
 import { createRandom, type DemoRandom } from './random';
+import { extrasGroup } from './demo-groups';
 import { demoPaintCases, paintCaseShips, storePaints } from './demo-paint-cases';
 import { DEFAULT_DEMO_SETTINGS, type DemoSettings, type DemoStates } from './demo-settings';
 
@@ -147,7 +148,7 @@ function ordersOf(pledges: readonly DemoPledge[], random: DemoRandom): OrdersSna
     if (pledge.valueUsd <= 0) return;
     const orderId = orderIdOf(pledge.id);
     const warbond = /warbond/i.test(pledge.title);
-    // The first two money-paid pledges get the refund countdown (`DEMO.refundDaysLeft`).
+    // The first three money-paid pledges get the refund countdown (`DEMO.refundDaysLeft`).
     // The newest pledge was bought with store credit a few hours ago (`justBoughtOf`).
     const money =
       index > 0 && (warbond || index < 6 || random.chance(`order:${pledge.id}:money`, 0.2));
@@ -210,6 +211,24 @@ export function withStates(
       isExchangeable: !random.chance(`melt:${pledge.id}`, states.notMeltablePercent / 100),
     }));
   });
+  // The groups of the Grouped View (#450): all CCUs of a group giftable and meltable, the copies of
+  // gear and a package neither.
+  generated.forEach((pledge) => {
+    if (pledge.demoGroup === 'refund' || pledge.demoGroup === 'missing') {
+      set(pledge, (current) => ({ ...current, isGiftable: true, isExchangeable: true }));
+    }
+  });
+  // Also the same items chance added to the groups of gear and a package.
+  const noneGroups = new Set(
+    generated
+      .filter((pledge) => pledge.demoGroup === 'gear' || pledge.demoGroup === 'package')
+      .map((pledge) => pledge.title),
+  );
+  generated
+    .filter((pledge) => noneGroups.has(pledge.title))
+    .forEach((pledge) =>
+      set(pledge, (current) => ({ ...current, isGiftable: false, isExchangeable: false })),
+    );
   // The newest pledge (a paint, see `generateHangar`) can be melted: it was bought a few hours ago.
   set(generated[0], (pledge) => ({ ...pledge, isExchangeable: true }));
   const anyPaint = ofKind(generated, 'paints');
@@ -252,6 +271,12 @@ export function withStates(
       byId.set(pledge.id, result.pledge);
       if (result.log.length) upgradeLogs.set(pledge.id, result.log);
     });
+
+  // Ships equal to an upgraded pledge's current ship, with other extras (#450), the oldest pledges.
+  const firstUpgraded = [...upgradeLogs.keys()].map((id) => byId.get(id)!)[0];
+  const extras = firstUpgraded
+    ? extrasGroup(firstUpgraded, catalog, Math.min(...generated.map((pledge) => pledge.id)))
+    : [];
 
   // Protected game access: RSI protects one pledge per game – one for each game (SC on a reward
   // without a ship, SQ42 on a game package), or one for both.
@@ -322,7 +347,7 @@ export function withStates(
     })),
   );
 
-  const pledges = generated.map((pledge) => byId.get(pledge.id)!);
+  const pledges = [...generated.map((pledge) => byId.get(pledge.id)!), ...extras];
   return { pledges, orders: ordersOf(pledges, random), upgradeLogs };
 }
 
