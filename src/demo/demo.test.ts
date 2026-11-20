@@ -92,17 +92,19 @@ describe('demoHangar', () => {
     expect(demoPledge!.searchText).not.toContain('j4shjm5s2guf5');
   });
 
-  it('gives the first two pledges with an order recent purchase dates for the refund tags', () => {
+  it('gives the first three pledges with an order recent purchase dates for the refund tags', () => {
     const order = { amount: '$10.00 USD', placedAt: '2020-01-01', buyback: false };
     const withOrders = [
       pledge(99_996_003, { order: { ...order, id: 'A' } }),
       pledge(99_996_002, { order: { ...order, id: 'B' } }),
       pledge(99_996_001, { order: { ...order, id: 'C' } }),
+      pledge(99_996_000, { order: { ...order, id: 'D' } }),
     ];
     const demo = demoHangar(withOrders, KEY, '2026-11-03');
     const today = '2026-11-03';
     expect(demo.map((entry) => refundWindow(entry.order!.placedAt!, today)?.daysLeft)).toEqual([
       20,
+      12,
       3,
       undefined,
     ]);
@@ -131,8 +133,8 @@ describe('demoHangar', () => {
     const days = demo
       .filter((entry) => entry.order)
       .map((entry) => refundWindow(entry.order!.placedAt!, today)?.daysLeft);
-    expect(days.slice(0, 2)).toEqual([20, 3]);
-    expect(days.slice(2).every((left) => left === undefined)).toBe(true);
+    expect(days.slice(0, 3)).toEqual([20, 12, 3]);
+    expect(days.slice(3).every((left) => left === undefined)).toBe(true);
     const dates = demo.map((entry) => entry.createdAt!);
     expect(dates).toEqual([...dates].sort().reverse());
   });

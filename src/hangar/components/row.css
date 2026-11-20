@@ -127,6 +127,26 @@
   gap: 6px;
 }
 
+/*
+ * "Classic RSI" puts the tags beside the text: with many of them, or in a narrower place (the items
+ * of an expanded group, #488), they wrap to more lines instead of cutting the name to a few letters.
+ */
+html .shm-theme-rsi .shm-main {
+  flex: 1 1 auto;
+  min-width: min(240px, 40%);
+}
+
+html .shm-theme-rsi .shm-badges {
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+html .shm-theme-rsi .shm-badge {
+  white-space: nowrap;
+}
+
 .shm-badge {
   padding: 2px 7px;
   color: var(--shm-accent);

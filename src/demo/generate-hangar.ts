@@ -3,6 +3,7 @@ import type { Pledge, PledgeItem } from '@/hangar/pledge';
 import type { Ship } from '@/ships/ships';
 import type { StoreItem } from '@/store/items/store-items';
 import type { DemoCatalog } from './catalog';
+import { demoMissingBase, withDemoGroups, withoutShip, type DemoGroupRole } from './demo-groups';
 import { createRandom, type DemoRandom } from './random';
 
 /*
@@ -40,6 +41,8 @@ export interface DemoPledge extends Pledge {
    * it, the CCU from it.
    */
   demoPivot?: 'ship' | 'ccuTo' | 'ccuFrom';
+  /** Its part in the groups of the Grouped View (#450, `demo-groups.ts`). */
+  demoGroup?: DemoGroupRole;
 }
 
 const USD = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
@@ -51,13 +54,13 @@ const roundPrice = (value: number) =>
   value < 20 ? Math.round(value * 2) / 2 : Math.max(5, Math.round(value / 5) * 5);
 
 /** A pledge with RSI's defaults, as the parser leaves them for a plain store-credit pledge. */
-function basePledge(
+export function basePledge(
   title: string,
   value: number,
   items: PledgeItem[],
   demoKind: DemoPledgeKind,
   standardPrice: number,
-  extra: Partial<Pledge> = {},
+  extra: Partial<DemoPledge> = {},
 ): DemoPledge {
   return {
     id: 0,
@@ -85,7 +88,7 @@ function basePledge(
   };
 }
 
-const shipItem = (ship: Ship): PledgeItem => ({
+export const shipItem = (ship: Ship): PledgeItem => ({
   title: ship.name,
   kind: 'Ship',
   ...(ship.image && { image: ship.image }),
@@ -220,9 +223,23 @@ function ccu(random: DemoRandom, catalog: DemoCatalog, index: number, pivot?: Sh
   const value = warbond
     ? Math.max(5, price - warbondDiscount(random, `ccu:${index}:discount`, to.msrp))
     : price;
-  const title = `Upgrade - ${from.name} to ${to.name} ${warbond ? 'Warbond' : 'Standard'} Edition`;
-  return basePledge(title, value, [{ title }], 'ccus', price, {
+  return ccuPledge(from, to, value, warbond, {
     ...(isPivot && { demoPivot: index === 0 ? ('ccuTo' as const) : ('ccuFrom' as const) }),
+  });
+}
+
+/** A CCU from `from` to `to` that cost `value`, as RSI lists it. */
+export function ccuPledge(
+  from: Ship,
+  to: Ship,
+  value: number,
+  warbond: boolean,
+  extra: Partial<DemoPledge> = {},
+): DemoPledge {
+  const title = `Upgrade - ${from.name} to ${to.name} ${warbond ? 'Warbond' : 'Standard'} Edition`;
+  const price = Math.max(5, to.msrp - from.msrp);
+  return basePledge(title, value, [{ title }], 'ccus', price, {
+    ...extra,
     upgrade: {
       matchItems: [{ id: from.id, name: from.name }],
       targetItems: [{ id: to.id, name: to.name }],
@@ -314,13 +331,17 @@ export function generateHangar(
     }
   };
   // The Price Increase Advisor's chain (#255): only with a ship and two CCUs.
+  // The base ship of the CCUs that show "Base ship missing" in the Grouped View (#450): no other
+  // pledge has it.
+  const missingBase = composition.ccus > 0 ? demoMissingBase(random, catalog) : undefined;
+  const pool = missingBase ? withoutShip(catalog, missingBase) : catalog;
   const pivot =
     composition.ships > 0 && composition.ccus > 1
-      ? demoPivotShip(random, catalog, buyable)
+      ? demoPivotShip(random, pool, buyable)
       : undefined;
-  times(composition.ships, (index) => standaloneShip(random, catalog, index, pivot));
-  times(composition.packages, (index) => gamePackage(random, catalog, index));
-  times(composition.ccus, (index) => ccu(random, catalog, index, pivot));
+  times(composition.ships, (index) => standaloneShip(random, pool, index, pivot));
+  times(composition.packages, (index) => gamePackage(random, pool, index));
+  times(composition.ccus, (index) => ccu(random, pool, index, pivot));
   times(composition.paints, (index) =>
     storePledge(random, catalog, 'Paints', 'Skin', 'paints', index),
   );
@@ -330,16 +351,18 @@ export function generateHangar(
   times(composition.addOns, (index) =>
     storePledge(random, catalog, 'Add-Ons', 'Component', 'addOns', index),
   );
-  times(composition.packs, (index) => pack(random, catalog, index));
+  times(composition.packs, (index) => pack(random, pool, index));
   times(composition.rewards, (index) => reward(random, index));
   const shuffled = random.shuffle('order', pledges, (pledge) => pledges.indexOf(pledge).toString());
   // A paint comes first: the newest pledge, bought a few hours ago with store credit (#176).
   const paint = shuffled.find((pledge) => pledge.demoKind === 'paints');
   const ordered = paint ? [paint, ...shuffled.filter((pledge) => pledge !== paint)] : shuffled;
-  return withSurcharge(ordered, catalog).map((pledge, position) => ({
-    ...pledge,
-    id: DEMO.idBase - position,
-  }));
+  return withSurcharge(withDemoGroups(ordered, catalog, random, missingBase), catalog).map(
+    (pledge, position) => ({
+      ...pledge,
+      id: DEMO.idBase - position,
+    }),
+  );
 }
 
 /** How much more than the price difference the CCU with a surcharge cost. */
@@ -363,6 +386,7 @@ function withSurcharge(pledges: DemoPledge[], catalog: DemoCatalog): DemoPledge[
     (pledge) =>
       pledge.upgrade &&
       !pledge.demoPivot &&
+      !pledge.demoGroup &&
       /standard edition$/i.test(pledge.title) &&
       targets.includes(pledge.upgrade.targetItems[0]!.name),
   );
