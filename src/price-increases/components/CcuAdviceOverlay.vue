@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { storeCreditItem, STORE_CREDIT_VERSION } from '@/account/store-credit-storage';
 import { useDemoContext } from '@/demo/use-demo';
 import { formatUsd } from '@/hangar/discount-format';
 import type { BuybackView } from '@/buyback/buyback-view';
@@ -7,19 +6,18 @@ import type { PledgeView } from '@/hangar/pledge-view';
 import { setMeltMarks } from '@/hangar/melt-marks';
 import { useMarkedPledges } from '@/hangar/use-melt-marks';
 import { useShipFacts } from '@/ships/use-ship-facts';
-import { createShipLookup, holdingsByShip } from '@/store/warbond';
 import { i18n, locale } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { useSettings } from '@/settings/use-settings';
 import { vTooltip } from '@/shared/tooltip/tooltip';
-import { createShipStatusLookup, shipStatusItem } from '@/ships/ship-status';
-import { buyableShipsItem, current, shipsItem, warbondsItem } from '@/ships/ships-storage';
+import { current, shipsItem } from '@/ships/ships-storage';
 import { useStored } from '@/storage/use-stored';
 import { fontScaleStyle, themeClasses } from '@/themes/theme';
 import { computed, onMounted, onUnmounted, reactive, useTemplateRef } from 'vue';
 import { adviceEvents, type AdviceEvent, type AdviceRow } from '../advice-events';
-import { ccuAdvice, type CcuAdviceGroup } from '../ccu-advice';
+import type { CcuAdviceGroup } from '../ccu-advice';
 import { confirmationNote, formatExpectedTime } from '../price-increase-label';
+import { useCcuAdvice } from '../use-ccu-advice';
 import CcuShips from './CcuShips.vue';
 import PriceIncreaseBadge from './PriceIncreaseBadge.vue';
 
@@ -44,65 +42,16 @@ const { settings } = useSettings();
 const dialog = useTemplateRef<HTMLElement>('dialog');
 
 const ships = useStored(shipsItem);
-const buyable = useStored(buyableShipsItem);
-const warbonds = useStored(warbondsItem);
-const shipStatus = useStored(shipStatusItem);
-// The demo mode has a store credit of its own.
-const storedCredit = useStored(storeCreditItem);
 const demo = useDemoContext();
-const storeCredit = computed(() => {
-  const stored = storedCredit.value;
-  const value =
-    demo.value?.storeCredit ??
-    (stored?.version === STORE_CREDIT_VERSION ? stored.credit : undefined);
-  return value?.currency === 'USD' ? value.amount : undefined;
-});
-
-/** The ships with an upcoming price increase in the lists: no base ship for new CCUs. */
-const risingShipIds = computed(
-  () =>
-    new Set(
-      props.pledges.flatMap((pledge) =>
-        [
-          pledge.priceIncrease?.increase,
-          pledge.ccuPriceChange?.base,
-          pledge.ccuPriceChange?.target,
-        ].flatMap((increase) => (increase ? [increase.ship.id] : [])),
-      ),
-    ),
+const { groups, storeCredit } = useCcuAdvice(
+  () => props.pledges,
+  () => props.buyback,
 );
 
 /** Whether a ship is always available, from the website's ship facts (#109, #263). */
 const shipFacts = useShipFacts();
 /** Marked in the alternatives, like the Pledge Store tab's base ship tables (#273). */
 const alwaysAvailable = (id: number) => shipFacts.value?.isAlwaysAvailable(id) === true;
-
-const groups = computed((): CcuAdviceGroup[] | undefined => {
-  const shipList = current(ships.value ?? null)?.ships;
-  if (!shipList) return undefined;
-  // How many of each base ship, CCUs to it and buy back CCUs to it the user has.
-  const holdings = holdingsByShip(createShipLookup(shipList), props.pledges, props.buyback);
-  const facts = shipFacts.value;
-  return ccuAdvice({
-    pledges: props.pledges,
-    ships: shipList,
-    buyable: current(buyable.value ?? null)?.skus ?? [],
-    warbonds: current(warbonds.value ?? null)?.warbonds ?? [],
-    risingShipIds: risingShipIds.value,
-    // The Ship Matrix first, the website's ship facts where it has no value (#265).
-    statusOf: createShipStatusLookup(shipStatus.value, (id) => facts?.status(id)),
-    storeCredit: storeCredit.value,
-    isAlwaysAvailable: (id) => facts?.isAlwaysAvailable(id),
-    holdingsOf: (id) => {
-      const held = holdings.get(id);
-      return {
-        hangarShips: held?.hangarShips ?? 0,
-        hangarCcus: held?.hangarCcus ?? 0,
-        buybackCcus: held?.buybackCcus ?? 0,
-      };
-    },
-  });
-});
 
 /** The image of a rising ship, from the ship list: the price increases name only its id. */
 const shipImages = computed(

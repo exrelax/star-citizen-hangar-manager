@@ -19,7 +19,13 @@ import {
   type BaseShipRow,
   type CcuStanding,
 } from '../base-ship-list';
-import { formatExpectedTime } from '@/price-increases/price-increase-label';
+import type { BuybackView } from '@/buyback/buyback-view';
+import type { PledgeView } from '@/hangar/pledge-view';
+import { openCcuAdvice } from '@/price-increases/ccu-advice-request';
+import CcuShips from '@/price-increases/components/CcuShips.vue';
+import { countdown, formatExpectedTime } from '@/price-increases/price-increase-label';
+import { useCcuAdvice } from '@/price-increases/use-ccu-advice';
+import { useNow } from '@/shared/use-now';
 import { limitedSaleNote } from '@/ship-removals/removal-availability';
 import { removalLabel } from '@/ship-removals/removal-label';
 import { useProvidedRemovalCcus } from '@/ship-removals/use-removal-ccus';
@@ -28,7 +34,8 @@ import { buyableShipsItem, current, warbondsItem } from '@/ships/ships-storage';
 import { useCountdownNow } from '@/shared/use-countdown-now';
 import { useStored } from '@/storage/use-stored';
 import ShipUpgradeButtons from '@/store/components/ShipUpgradeButtons.vue';
-import { openShipRemoval } from '@/store/open-current-warbonds';
+import { openCcusToSecure, openShipRemoval } from '@/store/open-current-warbonds';
+import { discountAtRisk, type AtRiskRow } from '../discount-at-risk';
 import {
   useProvidedCcuCoverage,
   useProvidedCoverageSources,
@@ -45,7 +52,12 @@ import {
  * (#454) lists those whose base ship can still be had, but leaves the Pledge Store.
  */
 
-const props = defineProps<{ settings: Settings }>();
+const props = defineProps<{
+  settings: Settings;
+  /** The shown hangar and buy back, for the tab "Discount at risk" (#455). */
+  pledges?: readonly PledgeView[];
+  buyback?: readonly BuybackView[];
+}>();
 const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
 
 const coverages = useProvidedCcuCoverage();
@@ -123,11 +135,103 @@ const group = computed(
 const groupItems = computed(() =>
   groups.value.map((id) => ({
     id,
-    label: i18n.t(`ccuConsultant.standing.${id}`),
+    label: i18n.t(`ccuConsultant.tab.${id}`),
     count: format(tabCount(id)),
   })),
 );
 const rows = computed(() => list.value.groups[group.value]);
+
+/** The tab "Discount at risk" (#455): after the tabs of the base ship coverage, not in the bar. */
+const atRiskChosen = ref(false);
+const { groups: adviceGroups, storeCredit } = useCcuAdvice(
+  () => props.pledges ?? [],
+  () => props.buyback ?? [],
+);
+const clock = useNow();
+const atRisk = computed(() =>
+  discountAtRisk(adviceGroups.value ?? [], clock.value, props.settings.priceIncreaseDays),
+);
+const atRiskSections = computed(() =>
+  [
+    {
+      id: 'confirmed' as const,
+      rows: atRisk.value.confirmed,
+      count: atRisk.value.confirmed.reduce((sum, row) => sum + row.group.ccus.length, 0),
+    },
+    {
+      id: 'expected' as const,
+      rows: atRisk.value.expected,
+      count: atRisk.value.expected.reduce((sum, row) => sum + row.group.ccus.length, 0),
+    },
+  ].filter((section) => section.rows.length),
+);
+const tabItems = computed(() => [
+  ...groupItems.value,
+  {
+    id: 'atRisk' as const,
+    label: i18n.t('ccuConsultant.tab.atRisk'),
+    count: format(atRisk.value.count),
+  },
+]);
+function selectTab(id: BaseShipGroup | 'atRisk') {
+  atRiskChosen.value = id === 'atRisk';
+  if (id !== 'atRisk') chosen.value = id;
+}
+const baseName = (row: AtRiskRow) => row.group.base?.name ?? row.group.increase.ship.name;
+/** "−$145" for a negative amount, else "$620". */
+const money = (value: number) =>
+  props.settings.hideMeltValue
+    ? HIDDEN
+    : `${value < 0 ? '−' : ''}${formatUsd(Math.abs(value), locale.value)}`;
+const increaseText = (row: AtRiskRow) => {
+  const { increase } = row.group;
+  const when = formatExpectedTime(increase.priceIncreaseAt, locale.value);
+  const price = increase.price
+    ? i18n.t('ccuAdvice.eventPrice', [
+        baseName(row),
+        usd(increase.price.from),
+        usd(increase.price.to),
+      ])
+    : i18n.t('ccuAdvice.eventUnknown', [baseName(row)]);
+  return `${price} · ${i18n.t(
+    increase.confirmed ? 'ccuAdvice.eventWhenConfirmed' : 'ccuAdvice.eventWhen',
+    [when],
+  )}`;
+};
+/** What the Price Increase Advisor recommends, in short (#252). */
+const adviceText = (row: AtRiskRow) => {
+  const { group } = row;
+  if (group.switch) {
+    const plan = group.switch;
+    return i18n.t('ccuConsultant.atRisk.swap', [
+      format(group.ccus.length),
+      plan.from.name,
+      plan.to.name,
+      usd(plan.total),
+      formatExpectedTime(group.increase.priceIncreaseAt, locale.value),
+    ]);
+  }
+  if (group.noSwitch === 'notSold') return i18n.t('ccuAdvice.notSold', [baseName(row)]);
+  if (group.noSwitch === 'keepIsBetter') return i18n.t('ccuAdvice.keepIsBetter', [baseName(row)]);
+  return i18n.t('ccuAdvice.riseUnknown', [
+    baseName(row),
+    formatExpectedTime(group.increase.priceIncreaseAt, locale.value),
+  ]);
+};
+const creditText = (row: AtRiskRow) => {
+  const plan = row.group.switch;
+  if (!plan) return undefined;
+  if (!plan.storeCreditNeeded) return i18n.t('ccuAdvice.creditCovered');
+  return storeCredit.value === undefined || props.settings.hideMeltValue
+    ? i18n.t('ccuAdvice.creditNeeded', [usd(plan.storeCreditNeeded)])
+    : i18n.t('ccuAdvice.creditNeededHave', [usd(plan.storeCreditNeeded), usd(storeCredit.value)]);
+};
+const giftableText = (row: AtRiskRow) => {
+  const { giftable, ccus } = row.group;
+  if (ccus.length === 1) return i18n.t('ccuAdvice.giftableSingle');
+  if (giftable === ccus.length) return i18n.t('ccuAdvice.giftableAll', [format(giftable)]);
+  return i18n.n('ccuAdvice.giftable', giftable, [format(giftable), format(ccus.length)]);
+};
 
 const hint = computed(() => {
   if (group.value === 'missing') {
@@ -259,13 +363,172 @@ const hrefOf = (match: CoverageMatch) =>
 
         <TabBar
           class="shm-ccu-consultant-groups"
-          :items="groupItems"
-          :selected="group"
+          fit-content
+          :items="tabItems"
+          :selected="atRiskChosen ? 'atRisk' : group"
           :label="i18n.t('ccuConsultant.groups')"
           panels="shm-ccu-consultant"
-          @select="chosen = $event"
+          @select="selectTab"
         />
+        <!-- CCUs whose base ship rises in price (#455), with the Price Increase Advisor's advice. -->
         <div
+          v-if="atRiskChosen"
+          id="shm-ccu-consultant-panel-atRisk"
+          class="shm-ccu-consultant-panel"
+          role="tabpanel"
+          aria-labelledby="shm-ccu-consultant-tab-atRisk"
+        >
+          <p class="shm-ccu-consultant-hint">
+            {{
+              i18n.n('ccuConsultant.atRisk.hint', settings.priceIncreaseDays, [
+                format(settings.priceIncreaseDays),
+              ])
+            }}
+          </p>
+          <div v-if="!atRisk.count" class="shm-ccu-consultant-empty is-missing">
+            <SvgIcon name="circle-check" />
+            <span>
+              <strong>{{ i18n.t('ccuConsultant.atRisk.empty') }}</strong>
+              {{
+                i18n.n('ccuConsultant.atRisk.emptyText', settings.priceIncreaseDays, [
+                  format(settings.priceIncreaseDays),
+                ])
+              }}
+            </span>
+          </div>
+          <template v-for="section in atRiskSections" :key="section.id">
+            <h5
+              :id="`shm-ccu-consultant-atRisk-${section.id}`"
+              class="shm-ccu-consultant-soon-title"
+            >
+              {{ i18n.t(`ccuConsultant.atRisk.${section.id}`) }}
+              <span class="shm-ccu-consultant-soon-count">{{ format(section.count) }}</span>
+            </h5>
+            <div class="shm-ccu-consultant-table">
+              <table
+                class="shm-warbond-table"
+                :aria-labelledby="`shm-ccu-consultant-atRisk-${section.id}`"
+              >
+                <thead>
+                  <tr>
+                    <th scope="col">{{ i18n.t('ccuAdvice.colCcu') }}</th>
+                    <th scope="col">{{ i18n.t('ccuConsultant.atRisk.colIncrease') }}</th>
+                    <th scope="col">{{ i18n.t('ccuConsultant.atRisk.colDiscount') }}</th>
+                    <th scope="col">{{ i18n.t('ccuAdvice.howTitle') }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="row in section.rows"
+                    :key="`${row.group.increase.ship.id}>${row.group.target.id}`"
+                  >
+                    <td>
+                      <span class="shm-ccu-consultant-atrisk-ccu">
+                        <CcuShips :from="row.group.base" :to="row.group.target" />
+                        <span>
+                          <span class="shm-ccu-consultant-ship">
+                            {{
+                              i18n.t('ccuAdvice.ccuName', [baseName(row), row.group.target.name])
+                            }}
+                          </span>
+                          <span class="shm-ccu-consultant-meta">
+                            {{
+                              i18n.n('ccuConsultant.atRisk.ccus', row.group.ccus.length, [
+                                format(row.group.ccus.length),
+                                usd(row.group.meltValue),
+                              ])
+                            }}
+                          </span>
+                        </span>
+                      </span>
+                    </td>
+                    <td>
+                      <span
+                        v-tooltip="formatExpectedTime(row.group.increase.priceIncreaseAt, locale)"
+                        class="shm-badge is-price-increase is-warning"
+                        tabindex="0"
+                      >
+                        {{ countdown(row.group.increase.priceIncreaseAt, clock, locale) }}
+                      </span>
+                      <span class="shm-ccu-consultant-meta">{{ increaseText(row) }}</span>
+                      <a
+                        v-if="row.group.increase.source"
+                        class="shm-ccu-consultant-store"
+                        :href="row.group.increase.source"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {{ i18n.t('priceIncrease.source') }}
+                        <SvgIcon name="square-up-right" />
+                      </a>
+                    </td>
+                    <td>
+                      <template v-if="row.group.keep">
+                        <span class="shm-ccu-consultant-meta">
+                          {{
+                            i18n.t('ccuConsultant.atRisk.discount', [
+                              money(row.group.keep.discountNow),
+                              money(row.group.keep.discountAfter),
+                            ])
+                          }}
+                        </span>
+                        <span class="shm-ccu-consultant-cover is-missing is-short">
+                          <SvgIcon name="triangle-exclamation" />
+                          {{ i18n.t('ccuConsultant.atRisk.loss', [usd(row.loss ?? 0)]) }}
+                        </span>
+                      </template>
+                      <template v-else>
+                        <span
+                          v-if="row.group.discountNow !== undefined"
+                          class="shm-ccu-consultant-meta"
+                        >
+                          {{
+                            i18n.t('ccuConsultant.atRisk.discountNow', [
+                              money(row.group.discountNow),
+                            ])
+                          }}
+                        </span>
+                        <span class="shm-ccu-consultant-cover is-buyback">
+                          {{ i18n.t('ccuAdvice.mayBeLost') }}
+                        </span>
+                      </template>
+                    </td>
+                    <td>
+                      <span class="shm-ccu-consultant-advice">{{ adviceText(row) }}</span>
+                      <span v-if="creditText(row)" class="shm-ccu-consultant-meta">{{
+                        creditText(row)
+                      }}</span>
+                      <span v-if="row.group.giftable" class="shm-ccu-consultant-meta">
+                        {{ giftableText(row) }}
+                      </span>
+                      <span class="shm-ccu-consultant-actions">
+                        <button
+                          v-tooltip="i18n.t('ccuAdvice.buttonHint')"
+                          type="button"
+                          class="shm-ccu-consultant-more"
+                          @click="openCcuAdvice(row.group.ccus[0]!.id)"
+                        >
+                          {{ i18n.t('ccuAdvice.button') }}
+                        </button>
+                        <button
+                          v-if="row.group.switch"
+                          v-tooltip="i18n.t('ccuConsultant.atRisk.secureHint')"
+                          type="button"
+                          class="shm-ccu-consultant-more"
+                          @click="openCcusToSecure()"
+                        >
+                          {{ i18n.t('ccuConsultant.atRisk.secure') }}
+                        </button>
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </template>
+        </div>
+        <div
+          v-else
           :id="`shm-ccu-consultant-panel-${group}`"
           class="shm-ccu-consultant-panel"
           role="tabpanel"
@@ -759,6 +1022,30 @@ const hrefOf = (match: CoverageMatch) =>
   margin-top: 4px;
   color: var(--shm-accent);
   font-size: calc(12px * var(--shm-font-scale));
+}
+
+/* "Discount at risk" (#455): the CCU's two ships next to its name, the advice's buttons in a row. */
+.shm-ccu-consultant-atrisk-ccu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.shm-ccu-consultant-advice {
+  display: block;
+  color: var(--shm-text);
+  font-size: calc(13px * var(--shm-font-scale));
+}
+
+.shm-ccu-consultant-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 14px;
+  margin-top: 4px;
+}
+
+.shm-ccu-consultant-actions .shm-ccu-consultant-more {
+  margin: 0;
 }
 
 /* "Soon without base ship" (#454): set apart from the table above. */

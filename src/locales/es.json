@@ -1765,6 +1765,38 @@
       "title": "Muy pocos accesos a la nave base",
       "hint": "Estas naves base no siempre están disponibles. Cada nave o CCU hacia una de ellas en tu hangar o buy back da la nave a un CCU desde ella, y hay menos que CCU. Consigue los que faltan mientras la nave esté a la venta: si no, esos CCU no tienen nave base.",
       "notOnSale": "No está a la venta ahora"
+    },
+    "atRisk": {
+      "title": "Descuento en riesgo",
+      "hint": {
+        "one": "CCU cuya nave base sube de precio en el próximo día: pierden valor de mejora y con él su descuento. Con la forma de conservarlo, del Price Increase Advisor.",
+        "other": "CCU cuya nave base sube de precio en los próximos $1 días: pierden valor de mejora y con él su descuento. Con la forma de conservarlo, del Price Increase Advisor."
+      },
+      "empty": "Ningún descuento en riesgo",
+      "emptyText": {
+        "one": "Ninguna nave base de tus CCU sube de precio en el próximo día.",
+        "other": "Ninguna nave base de tus CCU sube de precio en los próximos $1 días."
+      },
+      "confirmed": "Confirmado por CIG",
+      "expected": "Esperado, no confirmado",
+      "colIncrease": "Subida de precio",
+      "colDiscount": "Descuento",
+      "ccus": {
+        "one": "$1 CCU · valor de fundición $2",
+        "other": "$1 CCU · valor de fundición $2"
+      },
+      "discount": "$1 hoy → $2 después",
+      "loss": "−$1 de descuento",
+      "discountNow": "$1 hoy",
+      "swap": "Fúndelos antes del $5 y compra $1 × $2 → $3 por $4.",
+      "secure": "CCU para asegurar",
+      "secureHint": "Abre en la pestaña Pledge Store los CCU que puedes asegurar antes de una subida de precio."
+    },
+    "tab": {
+      "missing": "Sin nave base",
+      "buyback": "Solo recompra",
+      "always": "Siempre a la venta",
+      "atRisk": "Descuento en riesgo"
     }
   },
   "cartPaints": {

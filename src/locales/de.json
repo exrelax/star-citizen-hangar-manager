@@ -1765,6 +1765,38 @@
       "title": "Zu wenige Wege zum Basisschiff",
       "hint": "Diese Basisschiffe sind nicht immer kaufbar. Jedes Schiff oder CCU dorthin in deinem Hangar oder Buy Back gibt einem CCU davon das Schiff, und davon gibt es weniger als CCUs. Hol dir die fehlenden, solange das Schiff verkauft wird: Sonst haben diese CCUs kein Basisschiff.",
       "notOnSale": "Gerade nicht im Verkauf"
+    },
+    "atRisk": {
+      "title": "Rabatt in Gefahr",
+      "hint": {
+        "one": "CCUs, deren Basisschiff innerhalb des nächsten Tages teurer wird: Sie verlieren Upgrade-Wert und damit ihren Rabatt. Mit dem Weg, ihn zu behalten, vom Price Increase Advisor.",
+        "other": "CCUs, deren Basisschiff innerhalb der nächsten $1 Tage teurer wird: Sie verlieren Upgrade-Wert und damit ihren Rabatt. Mit dem Weg, ihn zu behalten, vom Price Increase Advisor."
+      },
+      "empty": "Kein Rabatt in Gefahr",
+      "emptyText": {
+        "one": "Kein Basisschiff deiner CCUs wird innerhalb des nächsten Tages teurer.",
+        "other": "Kein Basisschiff deiner CCUs wird innerhalb der nächsten $1 Tage teurer."
+      },
+      "confirmed": "Von CIG bestätigt",
+      "expected": "Erwartet, nicht bestätigt",
+      "colIncrease": "Preiserhöhung",
+      "colDiscount": "Rabatt",
+      "ccus": {
+        "one": "$1 CCU · Einschmelzwert $2",
+        "other": "$1 CCUs · Einschmelzwert $2"
+      },
+      "discount": "$1 heute → $2 danach",
+      "loss": "−$1 Rabatt",
+      "discountNow": "$1 heute",
+      "swap": "Vor dem $5 einschmelzen und $1 × $2 → $3 für $4 kaufen.",
+      "secure": "CCUs zum Sichern",
+      "secureHint": "Öffnet im Pledge-Store-Tab die CCUs, die du vor einer Preiserhöhung sichern kannst."
+    },
+    "tab": {
+      "missing": "Ohne Basisschiff",
+      "buyback": "Nur Buy Back",
+      "always": "Immer kaufbar",
+      "atRisk": "Rabatt in Gefahr"
     }
   },
   "cartPaints": {
