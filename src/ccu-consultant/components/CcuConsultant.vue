@@ -101,8 +101,18 @@ const chosen = ref<BaseShipGroup>();
 const tabCount = (id: BaseShipGroup) =>
   list.value.counts[id] +
   (id === 'missing'
-    ? list.value.soon.reduce((sum, row) => sum + (waysOf(row) ? (row.short ?? 0) : 0), 0)
+    ? list.value.soon.reduce((sum, row) => sum + (waysOf(row) ? (row.short ?? 0) : 0), 0) +
+      list.value.tooFewCount
     : 0);
+/** The sections below the CCUs without base ship, in the tab "Without base ship". */
+const shortSections = computed(() =>
+  group.value === 'missing'
+    ? [
+        { id: 'soon' as const, rows: list.value.soon, count: list.value.soonCount },
+        { id: 'tooFew' as const, rows: list.value.tooFew, count: list.value.tooFewCount },
+      ].filter((section) => section.rows.length)
+    : [],
+);
 /** The group shown: the one chosen, else the first one with CCUs (those without base ship first). */
 const group = computed(
   (): BaseShipGroup =>
@@ -171,7 +181,7 @@ const soonMetaOf = (row: BaseShipRow) => {
   const price = row.price !== undefined ? i18n.t('ccuConsultant.price', [usd(row.price)]) : '';
   const until = row.removal
     ? i18n.t('ccuConsultant.soon.until', [formatExpectedTime(row.removal.removedAt, locale.value)])
-    : '';
+    : i18n.t('ccuConsultant.notAlways');
   return [until, price].filter(Boolean).join(' · ');
 };
 const storedBuyable = useStored(buyableShipsItem);
@@ -371,25 +381,39 @@ const hrefOf = (match: CoverageMatch) =>
             </table>
           </div>
 
-          <!-- Base ships leaving the Pledge Store (#454): today still to be had, soon not. -->
-          <template v-if="group === 'missing' && list.soon.length">
-            <h5 id="shm-ccu-consultant-soon" class="shm-ccu-consultant-soon-title">
-              {{ i18n.t('ccuConsultant.soon.title') }}
-              <span class="shm-ccu-consultant-soon-count">{{ format(list.soonCount) }}</span>
+          <!--
+            Base ships with fewer ways to them than CCUs from them (#454): leaving the Pledge Store
+            ("Soon without base ship"), and not always available ("Too few ways").
+          -->
+          <template v-for="section in shortSections" :key="section.id">
+            <h5 :id="`shm-ccu-consultant-${section.id}`" class="shm-ccu-consultant-soon-title">
+              {{ i18n.t(`ccuConsultant.${section.id}.title`) }}
+              <span class="shm-ccu-consultant-soon-count">{{ format(section.count) }}</span>
             </h5>
-            <p class="shm-ccu-consultant-hint">{{ i18n.t('ccuConsultant.soon.hint') }}</p>
+            <p class="shm-ccu-consultant-hint">{{ i18n.t(`ccuConsultant.${section.id}.hint`) }}</p>
             <div class="shm-ccu-consultant-table">
-              <table class="shm-warbond-table" aria-labelledby="shm-ccu-consultant-soon">
+              <table
+                class="shm-warbond-table"
+                :aria-labelledby="`shm-ccu-consultant-${section.id}`"
+              >
                 <thead>
                   <tr>
                     <th scope="col">{{ i18n.t('ccuConsultant.col.ship') }}</th>
                     <th scope="col" class="is-number">{{ i18n.t('ccuConsultant.col.ccus') }}</th>
                     <th scope="col">{{ i18n.t('ccuConsultant.col.ways') }}</th>
-                    <th scope="col">{{ i18n.t('ccuConsultant.col.leaves') }}</th>
+                    <th scope="col">
+                      {{
+                        i18n.t(
+                          section.id === 'soon'
+                            ? 'ccuConsultant.col.leaves'
+                            : 'ccuConsultant.col.store',
+                        )
+                      }}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="row in list.soon" :key="row.key">
+                  <tr v-for="row in section.rows" :key="row.key">
                     <td>
                       <span class="shm-ccu-consultant-ship">{{ nameOf(row) }}</span>
                       <span class="shm-ccu-consultant-meta">{{ soonMetaOf(row) }}</span>
@@ -428,14 +452,17 @@ const hrefOf = (match: CoverageMatch) =>
                           {{ removalLabelOf(row)?.text }}
                         </span>
                         <ShipUpgradeButtons
-                          v-if="row.shipId !== undefined"
+                          v-if="row.shipId !== undefined && skuOf(row) !== undefined"
                           :ship-id="row.shipId"
                           :ship-name="nameOf(row)"
                           :sku-id="skuOf(row)"
                         />
+                        <span v-else-if="!row.removal" class="shm-ccu-consultant-meta">
+                          {{ i18n.t('ccuConsultant.tooFew.notOnSale') }}
+                        </span>
                       </div>
                       <button
-                        v-if="row.shipId !== undefined"
+                        v-if="row.removal && row.shipId !== undefined"
                         v-tooltip="i18n.t('shipRemovals.showShipHint', [nameOf(row)])"
                         type="button"
                         class="shm-ccu-consultant-more shm-ccu-consultant-removal-link"
@@ -443,6 +470,17 @@ const hrefOf = (match: CoverageMatch) =>
                       >
                         {{ i18n.t('notifications.showInStore') }}
                       </button>
+                      <a
+                        v-else-if="row.link"
+                        v-tooltip="i18n.t('ccuConsultant.pledgeStoreHint', [nameOf(row)])"
+                        class="shm-ccu-consultant-store"
+                        :href="rsiUrl(row.link)"
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        {{ i18n.t('ccuConsultant.pledgeStore') }}
+                        <SvgIcon name="square-up-right" />
+                      </a>
                     </td>
                   </tr>
                 </tbody>

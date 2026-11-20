@@ -17,7 +17,9 @@ import type { ShipRemoval } from '@/ship-removals/ship-removals';
  * A base ship leaving the Pledge Store that can still be had now (#454, on sale or always available
  * until its date) is counted: each ship or CCU to it gives it to one CCU. With fewer of them than
  * CCUs from it, it stands apart as "Soon without base ship"; its CCUs without any stay out of
- * `missing`. The list of always available ships passed here leaves these ships out
+ * `missing`. A base ship that isn't always available is counted the same way: with ways to it,
+ * but fewer than CCUs from it, it is listed under "Too few ways" – only as long as the ship is
+ * sold can the rest get it. The list of always available ships passed here leaves these ships out
  * (`withoutLeaving`).
  */
 
@@ -65,6 +67,13 @@ export interface BaseShipList {
   soon: BaseShipRow[];
   /** How many CCUs of `soon` have no way to their base ship once it is gone. */
   soonCount: number;
+  /**
+   * Base ships not always available, with ways to them but fewer than CCUs from them: once the
+   * ship isn't sold any more, the rest have no base ship. The most short first.
+   */
+  tooFew: BaseShipRow[];
+  /** How many CCUs of `tooFew` have no way to their base ship. */
+  tooFewCount: number;
 }
 
 /** Where a CCU stands by its coverage and the list of always available ships (if considered). */
@@ -93,8 +102,11 @@ export function baseShipList(
     buyback: new Map(),
     always: new Map(),
   };
-  /** Every base ship leaving the Pledge Store (#454), with all CCUs from it, covered or not. */
-  const leavingRows = new Map<string, BaseShipRow>();
+  /**
+   * Every base ship that isn't always available – also one leaving the Pledge Store (#454) –, with
+   * all CCUs from it, covered or not, and the ways to it.
+   */
+  const countedRows = new Map<string, BaseShipRow>();
   let total = 0;
   const rowOf = (target: Map<string, BaseShipRow>, key: string, coverage: CcuCoverage) => {
     let row = target.get(key);
@@ -121,17 +133,18 @@ export function baseShipList(
     const base = coverage.baseShip;
     const key = base?.id !== undefined ? `id:${base.id}` : `name:${base?.name.toLowerCase() ?? ''}`;
     const removal = base?.id !== undefined ? leaving.get(base.id) : undefined;
-    if (removal) {
+    if (removal || (base?.id !== undefined && !always?.has(base.id))) {
       // Each pledge gives the ship to one CCU: the ways to it are counted, not just found.
-      const row = rowOf(leavingRows, key, coverage);
-      row.removal = removal;
+      const row = rowOf(countedRows, key, coverage);
+      if (removal) row.removal = removal;
       row.ccus.push(coverage.id);
       row.ways = {
         hangar: coverage.hangar.ships.length + coverage.hangar.ccus.length,
         buyback: coverage.buyback.ships.length + coverage.buyback.ccus.length,
       };
-      // Without any way, it is only here; with too few, also where its cover puts it.
-      if (standing === 'missing') continue;
+      // A leaving ship without any way is only in `soon`; with too few, also where its cover
+      // puts it.
+      if (removal && standing === 'missing') continue;
     }
     if (standing === 'hangar') continue;
     const row = rowOf(rows[standing], key, coverage);
@@ -143,9 +156,14 @@ export function baseShipList(
     }
   }
   const waysOf = (row: BaseShipRow) => (row.ways ? row.ways.hangar + row.ways.buyback : 0);
-  const soon = [...leavingRows.values()]
+  const short = [...countedRows.values()]
     .filter((row) => waysOf(row) < row.ccus.length)
     .map((row) => ({ ...row, short: row.ccus.length - waysOf(row) }));
+  const soon = short.filter((row) => row.removal);
+  // Without any way the CCUs are already without base ship.
+  const tooFew = short.filter((row) => !row.removal && waysOf(row) > 0);
+  const shortOf = (list: readonly BaseShipRow[]) =>
+    list.reduce((sum, row) => sum + (row.short ?? 0), 0);
   const sorted = (group: BaseShipGroup) =>
     [...rows[group].values()].sort(
       (a, b) =>
@@ -165,7 +183,14 @@ export function baseShipList(
         (b.short ?? 0) - (a.short ?? 0) ||
         (a.name ?? '').localeCompare(b.name ?? '', 'en'),
     ),
-    soonCount: soon.reduce((sum, row) => sum + (row.short ?? 0), 0),
+    soonCount: shortOf(soon),
+    tooFew: tooFew.sort(
+      (a, b) =>
+        (b.short ?? 0) - (a.short ?? 0) ||
+        b.ccus.length - a.ccus.length ||
+        (a.name ?? '').localeCompare(b.name ?? '', 'en'),
+    ),
+    tooFewCount: shortOf(tooFew),
   };
 }
 

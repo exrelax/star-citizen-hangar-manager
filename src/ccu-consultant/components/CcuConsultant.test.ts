@@ -255,3 +255,31 @@ describe('CCUs soon without base ship (#454)', () => {
     expect(root.querySelector('.shm-ccu-consultant-soon-title')).toBeNull();
   });
 });
+
+describe('base ships with too few ways (#454)', () => {
+  it('lists them in "Without base ship" with the ways and the shortage', () => {
+    const viaBuyback = (id: number) => ({
+      ...coverage(id, 2, 'Cutlass Red'),
+      buyback: {
+        ships: [],
+        ccus: [
+          { source: 'buyback' as const, kind: 'ccu' as const, id: 700, title: 'To Cutlass Red' },
+        ],
+      },
+      covered: true,
+    });
+    const { root } = render([viaBuyback(20), viaBuyback(21), viaBuyback(22)]);
+    expect(tabs(root)[0]).toBe('Without base ship 2');
+    const title = root.querySelector('.shm-ccu-consultant-soon-title');
+    expect(title?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Too few ways to the base ship 2');
+    const tables = root.querySelectorAll('.shm-ccu-consultant-table');
+    const row = [...tables[tables.length - 1]!.querySelectorAll('tbody td')].map((cell) =>
+      cell.textContent!.replace(/\s+/g, ' ').trim(),
+    );
+    expect(row[0]).toBe('Cutlass RedNot always available · Standard price $135');
+    expect(row[1]).toBe('3');
+    expect(row[2]).toMatch(/^1.*2 too few$/);
+    // Not on sale now (no SKU known), with its page in the Pledge Store.
+    expect(row[3]).toBe('Not on sale nowPledge Store');
+  });
+});

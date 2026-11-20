@@ -1717,7 +1717,8 @@
       "cover": "Base ship coverage",
       "found": "Found",
       "leaves": "Leaves the Pledge Store",
-      "ways": "Ways to it"
+      "ways": "Ways to it",
+      "store": "Pledge Store"
     },
     "unknownShip": "Unknown base ship",
     "notAlways": "Not always available",
@@ -1753,6 +1754,11 @@
         "one": "$1 too few",
         "other": "$1 too few"
       }
+    },
+    "tooFew": {
+      "title": "Too few ways to the base ship",
+      "hint": "These base ships aren’t always available. Each ship or CCU to one of them in your hangar or buy back gives the ship to one CCU from it, and there are fewer of them than CCUs. Get the missing ones while the ship is on sale: otherwise those CCUs have no base ship.",
+      "notOnSale": "Not on sale now"
     }
   },
   "cartPaints": {

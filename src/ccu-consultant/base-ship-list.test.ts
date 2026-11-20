@@ -187,3 +187,47 @@ describe('CCUs soon without base ship (#454)', () => {
     expect(baseMissingOf(cover, list, ships)?.note).toContain('Arrow');
   });
 });
+
+describe('base ships with too few ways (#454)', () => {
+  const viaBuyback = (id: number, base: { id: number; name: string }, ways: number[]) =>
+    coverage(
+      id,
+      base,
+      [],
+      ways.map((way) => match('buyback', way)),
+    );
+
+  it('lists base ships not always available with fewer ways than CCUs, the most short first', () => {
+    const cutlass = { id: 2, name: 'Cutlass Red' };
+    const razor = { id: 3, name: 'Razor' };
+    const list = baseShipList(
+      [
+        // Three CCUs from the Cutlass Red, one CCU to it in the buy back: two are short.
+        viaBuyback(10, cutlass, [80]),
+        viaBuyback(11, cutlass, [80]),
+        viaBuyback(12, cutlass, [80]),
+        // Two from the Razor, a ship and a CCU to it: enough.
+        coverage(13, razor, [match('hangar', 90, 'ship')], [match('buyback', 81)]),
+        coverage(14, razor, [match('hangar', 90, 'ship')], [match('buyback', 81)]),
+        // Always available: never short.
+        coverage(15, { id: 1, name: 'Arrow' }),
+        coverage(16, { id: 1, name: 'Arrow' }),
+      ],
+      always(1),
+      ships,
+    );
+    expect(list.tooFew.map((row) => [row.name, row.ccus, row.ways, row.short])).toEqual([
+      ['Cutlass Red', [10, 11, 12], { hangar: 0, buyback: 1 }, 2],
+    ]);
+    expect(list.tooFewCount).toBe(2);
+    expect(list.soon).toEqual([]);
+    // Where their cover puts them, as before.
+    expect(list.groups.buyback.map((row) => row.name)).toEqual(['Cutlass Red']);
+  });
+
+  it('leaves the CCUs without any way to "Without base ship"', () => {
+    const list = baseShipList([coverage(10, { id: 2, name: 'Cutlass Red' })], always(), ships);
+    expect(list.tooFew).toEqual([]);
+    expect(list.groups.missing.map((row) => row.name)).toEqual(['Cutlass Red']);
+  });
+});

@@ -1717,7 +1717,8 @@
       "cover": "Couverture du vaisseau de base",
       "found": "Trouvé",
       "leaves": "Quitte le Pledge Store",
-      "ways": "Accès"
+      "ways": "Accès",
+      "store": "Pledge Store"
     },
     "unknownShip": "Vaisseau de base inconnu",
     "notAlways": "Pas toujours disponible",
@@ -1753,6 +1754,11 @@
         "one": "Il en manque $1",
         "other": "Il en manque $1"
       }
+    },
+    "tooFew": {
+      "title": "Trop peu d’accès au vaisseau de base",
+      "hint": "Ces vaisseaux de base ne sont pas toujours disponibles. Chaque vaisseau ou CCU vers l’un d’eux dans votre hangar ou votre buy back donne le vaisseau à un CCU depuis lui, et il y en a moins que de CCU. Procurez-vous ceux qui manquent tant que le vaisseau est en vente : sinon, ces CCU n’ont pas de vaisseau de base.",
+      "notOnSale": "Pas en vente actuellement"
     }
   },
   "cartPaints": {
