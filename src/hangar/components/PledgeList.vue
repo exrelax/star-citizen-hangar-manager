@@ -31,6 +31,7 @@ import { isPaintItem } from '../pledge-view';
 import { listViewRequest } from '../list-jump';
 import PledgeRow from './PledgeRow.vue';
 import GroupRow from './GroupRow.vue';
+import { extrasNote, pledgeGroupBadges, pledgeGroupKind } from '../group-badges';
 import { pledgeFacts } from '../grouping';
 
 const props = defineProps<{ pledges: PledgeView[]; settings: Settings; active: boolean }>();
@@ -165,7 +166,14 @@ const filterHint = (filter: PledgeFilter) => {
       <PledgeRow :pledge="entry" :auto-expand="autoExpand" />
     </template>
     <template #group="{ group }">
-      <GroupRow :group="group" :selectable="canSelect">
+      <GroupRow
+        :group="group"
+        :kind="pledgeGroupKind(group)"
+        :ships="group.items[0]!.ships.map((ship) => ship.name)"
+        :badges="pledgeGroupBadges(group)"
+        :note="extrasNote(group.extras)"
+        :selectable="canSelect"
+      >
         <template #item="{ entry }">
           <PledgeRow :pledge="entry" :auto-expand="false" />
         </template>
