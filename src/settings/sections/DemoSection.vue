@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { DEMO } from '@/config';
 import { i18n } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import {
@@ -252,6 +253,29 @@ async function reset() {
     >
       {{ i18n.t('settings.demo.realStoreData') }}
     </SettingCheck>
+  </SettingsGroup>
+
+  <!-- The buy back tokens at the top right, also none (#433). -->
+  <SettingsGroup :disabled="off">
+    <SettingRow
+      :label="i18n.t('settings.demo.buybackTokens')"
+      :hint="i18n.t('settings.demo.buybackTokensHint')"
+      for="shm-demo-tokens"
+      hint-id="shm-demo-tokens-hint"
+    >
+      <select
+        id="shm-demo-tokens"
+        class="shm-select"
+        :value="settings.demo.buybackTokens"
+        :disabled="off"
+        aria-describedby="shm-demo-tokens-hint"
+        @change="set({ buybackTokens: Number(($event.target as HTMLSelectElement).value) })"
+      >
+        <option v-for="count in DEMO.maxBuybackTokens + 1" :key="count" :value="count - 1">
+          {{ count - 1 }}
+        </option>
+      </select>
+    </SettingRow>
   </SettingsGroup>
 
   <!-- The check right before bulk melting (#415, #416). -->

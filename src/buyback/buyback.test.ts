@@ -93,6 +93,28 @@ describe('parseBuybackTokens', () => {
     expect(parseBuybackTokens(doc(pageHtml('', [])))).toBeUndefined();
     expect(parse(pageHtml('', []))).not.toHaveProperty('tokens');
   });
+
+  it('reads 0 from the note RSI shows instead of the box when no token is left (#433)', () => {
+    const header = `<section class="buy-back-pledges"><header>
+      <h1>Reacquire your converted pledges</h1>
+      <p>The Pledge Buy Back system allows you to re-acquire pledges that you previously converted
+        to store credit, even if they are no longer available in the store.
+        <a href="/faq">Account FAQ</a></p>
+      <p>Note: Coupons and store credits cannot be used to “buy back” a pledge.
+        <a href="/faq">Account FAQ</a></p>
+    </header></section>`;
+    expect(parseBuybackTokens(doc(header))).toBe(0);
+    expect(parse(header + pageHtml('', [])).tokens).toBe(0);
+    // The box wins over the note.
+    const box = '<p class="buy-back-warning">You have <strong>1</strong> opportunity.</p>';
+    expect(parseBuybackTokens(doc(box + header))).toBe(1);
+    // The header without the note is no 0.
+    expect(
+      parseBuybackTokens(
+        doc('<section class="buy-back-pledges"><header><h1>Buy back</h1></header></section>'),
+      ),
+    ).toBeUndefined();
+  });
 });
 
 describe('parseBuybackDetail', () => {

@@ -402,6 +402,8 @@
       },
       "hangar": "Hangar",
       "resetHint": "Todos los ajustes de la demo vuelven a sus valores predeterminados y se borran las marcas de la demo.",
+      "buybackTokens": "Tokens de recompra",
+      "buybackTokensHint": "Los tokens de recompra arriba a la derecha del Hangar Manager. Sin ninguno, muestra 0.",
       "meltCheck": "Comprobación antes de fundir varios",
       "meltCheckHint": "Cómo resulta la comprobación de los pledges justo antes de fundir varios, también con las pinturas de relleno. La demo solo la muestra: no se lee nada de RSI ni se funde nada.",
       "meltCheckOutcomes": {

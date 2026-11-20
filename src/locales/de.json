@@ -402,6 +402,8 @@
       },
       "hangar": "Hangar",
       "resetHint": "Alle Einstellungen der Demo zurück auf ihre Standardwerte; die Markierungen der Demo werden gelöscht.",
+      "buybackTokens": "Buy-Back-Tokens",
+      "buybackTokensHint": "Die Buy-Back-Tokens oben rechts im Hangar Manager. Ohne Token steht dort 0.",
       "meltCheck": "Prüfung vor dem Bulk Melting",
       "meltCheckHint": "Wie die Prüfung der Pledges direkt vor dem Bulk Melting ausgeht, auch bei den Filler-Paints. Die Demo zeigt sie nur: Nichts wird bei RSI gelesen oder eingeschmolzen.",
       "meltCheckOutcomes": {
