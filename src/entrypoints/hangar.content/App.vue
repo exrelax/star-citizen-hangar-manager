@@ -471,7 +471,13 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
     role="tabpanel"
     aria-labelledby="shm-tab-consultants"
   >
-    <CcuConsultant v-if="listsReady" :settings="settings" @update="updateSettings" />
+    <CcuConsultant
+      v-if="listsReady"
+      :settings="settings"
+      :pledges="pledges"
+      :buyback="buybackPledges"
+      @update="updateSettings"
+    />
   </div>
   <div
     v-if="activeTab === 'settings'"

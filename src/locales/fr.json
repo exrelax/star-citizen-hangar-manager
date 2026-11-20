@@ -1765,6 +1765,32 @@
       "title": "Trop peu d’accès au vaisseau de base",
       "hint": "Ces vaisseaux de base ne sont pas toujours disponibles. Chaque vaisseau ou CCU vers l’un d’eux dans votre hangar ou votre buy back donne le vaisseau à un CCU depuis lui, et il y en a moins que de CCU. Procurez-vous ceux qui manquent tant que le vaisseau est en vente : sinon, ces CCU n’ont pas de vaisseau de base.",
       "notOnSale": "Pas en vente actuellement"
+    },
+    "atRisk": {
+      "title": "Remise menacée",
+      "hint": {
+        "one": "Les CCU dont le vaisseau de base devient plus cher dans la journée : ils perdent de la valeur d’upgrade, et avec elle leur remise. Avec le moyen de la garder, par le Price Increase Advisor.",
+        "other": "Les CCU dont le vaisseau de base devient plus cher dans les $1 prochains jours : ils perdent de la valeur d’upgrade, et avec elle leur remise. Avec le moyen de la garder, par le Price Increase Advisor."
+      },
+      "empty": "Aucune remise menacée",
+      "emptyText": {
+        "one": "Aucun vaisseau de base de vos CCU ne devient plus cher dans la journée.",
+        "other": "Aucun vaisseau de base de vos CCU ne devient plus cher dans les $1 prochains jours."
+      },
+      "confirmed": "Confirmé par CIG",
+      "expected": "Attendu, non confirmé",
+      "colIncrease": "Hausse de prix",
+      "colDiscount": "Remise",
+      "ccus": {
+        "one": "$1 CCU · valeur de fonte $2",
+        "other": "$1 CCU · valeur de fonte $2"
+      },
+      "discount": "$1 aujourd’hui → $2 après",
+      "loss": "−$1 de remise",
+      "discountNow": "$1 aujourd’hui",
+      "swap": "Les fondre avant le $5 et acheter $1 × $2 → $3 pour $4.",
+      "secure": "CCU à sécuriser",
+      "secureHint": "Ouvre dans l’onglet Pledge Store les CCU à sécuriser avant une hausse de prix."
     }
   },
   "cartPaints": {

@@ -1765,6 +1765,32 @@
       "title": "Too few ways to the base ship",
       "hint": "These base ships aren’t always available. Each ship or CCU to one of them in your hangar or buy back gives the ship to one CCU from it, and there are fewer of them than CCUs. Get the missing ones while the ship is on sale: otherwise those CCUs have no base ship.",
       "notOnSale": "Not on sale now"
+    },
+    "atRisk": {
+      "title": "Discount at risk",
+      "hint": {
+        "one": "CCUs whose base ship gets more expensive within the next day: they lose upgrade value, and with it their discount. With the way to keep it, from the Price Increase Advisor.",
+        "other": "CCUs whose base ship gets more expensive within the next $1 days: they lose upgrade value, and with it their discount. With the way to keep it, from the Price Increase Advisor."
+      },
+      "empty": "No discount at risk",
+      "emptyText": {
+        "one": "No base ship of your CCUs gets more expensive within the next day.",
+        "other": "No base ship of your CCUs gets more expensive within the next $1 days."
+      },
+      "confirmed": "Confirmed by CIG",
+      "expected": "Expected, not confirmed",
+      "colIncrease": "Price increase",
+      "colDiscount": "Discount",
+      "ccus": {
+        "one": "$1 CCU · melt value $2",
+        "other": "$1 CCUs · melt value $2"
+      },
+      "discount": "$1 today → $2 after",
+      "loss": "−$1 discount",
+      "discountNow": "$1 today",
+      "swap": "Melt them before $5 and buy $1 × $2 → $3 for $4.",
+      "secure": "CCUs to secure",
+      "secureHint": "Opens the CCUs to secure before a price increase in the Pledge Store tab."
     }
   },
   "cartPaints": {

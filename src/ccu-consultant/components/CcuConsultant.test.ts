@@ -89,6 +89,7 @@ describe('CcuConsultant (#113)', () => {
       'Without base ship 2',
       'Only via buy back 1',
       'Base always available 1',
+      'Discount at risk 0',
     ]);
     expect(cells(root)).toEqual([
       [
@@ -117,7 +118,11 @@ describe('CcuConsultant (#113)', () => {
 
   it('lists every CCU without coverage while always available ships are not considered', () => {
     const { root } = render(ccus, false);
-    expect(tabs(root)).toEqual(['Without base ship 3', 'Only via buy back 1']);
+    expect(tabs(root)).toEqual([
+      'Without base ship 3',
+      'Only via buy back 1',
+      'Discount at risk 0',
+    ]);
     expect(cells(root).map((row) => row[0])).toEqual([
       'Cutlass RedNot always available · Standard price $135',
       'ArrowNot always available',
@@ -198,6 +203,7 @@ describe('CCUs soon without base ship (#454)', () => {
       'Without base ship 3',
       'Only via buy back 0',
       'Base always available 0',
+      'Discount at risk 0',
     ]);
     const title = root.querySelector('.shm-ccu-consultant-soon-title');
     expect(title?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Soon without base ship 2');
@@ -234,6 +240,7 @@ describe('CCUs soon without base ship (#454)', () => {
       'Without base ship 2',
       'Only via buy back 3',
       'Base always available 0',
+      'Discount at risk 0',
     ]);
     const title = root.querySelector('.shm-ccu-consultant-soon-title');
     expect(title?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Soon without base ship 2');
@@ -281,5 +288,22 @@ describe('base ships with too few ways (#454)', () => {
     expect(row[2]).toMatch(/^1.*2 too few$/);
     // Not on sale now (no SKU known), with its page in the Pledge Store.
     expect(row[3]).toBe('Not on sale nowPledge Store');
+  });
+});
+
+describe('the tab "Discount at risk" (#455)', () => {
+  it('follows the tabs of the coverage and says when no discount is at risk', async () => {
+    const { root } = render([coverage(10, 2, 'Cutlass Red')]);
+    expect(tabs(root).at(-1)).toBe('Discount at risk 0');
+    // Not part of the coverage bar.
+    expect(root.querySelectorAll('.shm-ccu-consultant-legend li')).toHaveLength(4);
+    root.querySelectorAll<HTMLElement>('.shm-tab').item(3).click();
+    await Promise.resolve();
+    expect(root.querySelector('#shm-ccu-consultant-panel-atRisk')).not.toBeNull();
+    expect(
+      root.querySelector('.shm-ccu-consultant-empty')?.textContent?.replace(/\s+/g, ' ').trim(),
+    ).toBe(
+      'No discount at risk No base ship of your CCUs gets more expensive within the next 14 days.',
+    );
   });
 });
