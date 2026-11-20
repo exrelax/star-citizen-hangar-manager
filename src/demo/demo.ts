@@ -10,6 +10,7 @@ import { createItemPriceLookup } from '@/store/items/item-prices';
 import type { DemoCatalog } from './catalog';
 import { generateDemoAccount, type DemoAccount } from './generate-states';
 import { generateBuyback, type DemoBuyback } from './generate-buyback';
+import { demoPaintCases, paintCaseShips, storePaints } from './demo-paint-cases';
 import { toBuybackView } from '@/buyback/buyback-view';
 import { createAvailabilityCheck } from '@/buyback/buyback-availability';
 import { createBuybackImager } from '@/buyback/buyback-image';
@@ -144,12 +145,12 @@ export function generatedDemo(
   const realNotOnSale = realNotOnSaleShips(catalog, realIncreases, now, buyable).filter(
     (ship) => ship.id !== notOnSale?.id,
   );
-  const generatedBuyback = generateBuyback(
-    catalog,
-    key,
-    today,
-    buybackComposition(settings.buybackPledges),
-    [...(notOnSale ? [notOnSale] : []), ...realNotOnSale],
+  const generatedBuyback = withPaintCases(
+    generateBuyback(catalog, key, today, buybackComposition(settings.buybackPledges), [
+      ...(notOnSale ? [notOnSale] : []),
+      ...realNotOnSale,
+    ]),
+    demoPaintCases(storePaints(catalog), paintCaseShips(account.pledges, catalog)),
   );
   // One order snapshot for both lists, like the order sync's.
   const orders: OrdersSnapshot = {
@@ -203,6 +204,32 @@ export function buybackComposition(count: number): DemoBuybackComposition {
  * (`use-buyback-pledges.ts`) – prices of every source, images, availability and "probably
  * giftable" from the generated orders and gift flags – with made-up display ids.
  */
+/**
+ * The buy back's first paints take the cases of the filter "Paints" by owned ships (#336, #337),
+ * by the ships of the demo hangar – as in the hangar (`generate-states.ts`).
+ */
+function withPaintCases(
+  buyback: DemoBuyback,
+  cases: ReturnType<typeof demoPaintCases>,
+): DemoBuyback {
+  const chosen = [...cases.values()];
+  let next = 0;
+  return {
+    ...buyback,
+    pledges: buyback.pledges.map((pledge) => {
+      const entry = /^paints - /i.test(pledge.title) ? chosen[next] : undefined;
+      if (!entry) return pledge;
+      next++;
+      return {
+        ...pledge,
+        title: `Paints - ${entry.name}`,
+        contained: entry.name,
+        ...(entry.image ? { image: entry.image } : {}),
+      };
+    }),
+  };
+}
+
 function generatedBuybackViews(
   generated: DemoBuyback,
   catalog: DemoCatalog,
