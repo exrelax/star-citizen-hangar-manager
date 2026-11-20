@@ -1577,7 +1577,8 @@
     "summaryMissing": {
       "one": "Falta $1 CCU hacia la $2 para los CCU desde ella en tu hangar. Asegúralo antes del $3.",
       "other": "Faltan $1 CCU hacia la $2 para los CCU desde ella en tu hangar. Asegúralos antes del $3."
-    }
+    },
+    "ccuSoonWithout": "Nada más en tu hangar o buy back te da la $1: cuando se vaya, este CCU no tendrá nave base."
   },
   "upgradeDialog": {
     "alwaysAvailable": "Siempre disponible",
@@ -1714,7 +1715,8 @@
       "ship": "Nave base",
       "ccus": "CCU desde ella",
       "cover": "Cobertura de la nave base",
-      "found": "Encontrado"
+      "found": "Encontrado",
+      "leaves": "Deja la Pledge Store"
     },
     "unknownShip": "Nave base desconocida",
     "notAlways": "No siempre disponible",
@@ -1740,6 +1742,11 @@
       "missingTextAll": "Cada nave base está en tu hangar o en tu recompra.",
       "buyback": "Ningún CCU depende solo de tu recompra.",
       "always": "Ningún CCU depende solo de una nave base siempre disponible."
+    },
+    "soon": {
+      "title": "Pronto sin nave base",
+      "hint": "Estas naves base aún se pueden conseguir, pero dejan la Pledge Store – también las que hasta ahora siempre estaban disponibles. Consigue una, o un CCU hacia ella, antes de esa fecha: después, los CCU desde ella no tienen nave base.",
+      "until": "En la Pledge Store hasta el $1"
     }
   },
   "cartPaints": {

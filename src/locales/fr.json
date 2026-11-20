@@ -1577,7 +1577,8 @@
     "summaryMissing": {
       "one": "Il manque $1 CCU vers le $2 pour les CCU depuis lui dans votre hangar. Sécurisez-le avant le $3.",
       "other": "Il manque $1 CCU vers le $2 pour les CCU depuis lui dans votre hangar. Sécurisez-les avant le $3."
-    }
+    },
+    "ccuSoonWithout": "Rien d’autre dans votre hangar ou votre buy back ne vous donne le $1 : une fois parti, ce CCU n’a plus de vaisseau de base."
   },
   "upgradeDialog": {
     "alwaysAvailable": "Toujours disponible",
@@ -1714,7 +1715,8 @@
       "ship": "Vaisseau de base",
       "ccus": "CCU depuis lui",
       "cover": "Couverture du vaisseau de base",
-      "found": "Trouvé"
+      "found": "Trouvé",
+      "leaves": "Quitte le Pledge Store"
     },
     "unknownShip": "Vaisseau de base inconnu",
     "notAlways": "Pas toujours disponible",
@@ -1740,6 +1742,11 @@
       "missingTextAll": "Chaque vaisseau de base est dans ton hangar ou dans ton rachat.",
       "buyback": "Aucun CCU ne dépend uniquement de ton rachat.",
       "always": "Aucun CCU ne dépend uniquement d’un vaisseau de base toujours disponible."
+    },
+    "soon": {
+      "title": "Bientôt sans vaisseau de base",
+      "hint": "Ces vaisseaux de base sont encore disponibles, mais quittent le Pledge Store – même ceux toujours disponibles jusqu’ici. Procurez-vous-en un, ou un CCU vers lui, avant cette date : ensuite, les CCU depuis lui n’ont plus de vaisseau de base.",
+      "until": "Dans le Pledge Store jusqu’au $1"
     }
   },
   "cartPaints": {

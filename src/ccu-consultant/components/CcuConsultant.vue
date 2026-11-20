@@ -19,6 +19,16 @@ import {
   type BaseShipRow,
   type CcuStanding,
 } from '../base-ship-list';
+import { formatExpectedTime } from '@/price-increases/price-increase-label';
+import { limitedSaleNote } from '@/ship-removals/removal-availability';
+import { removalLabel } from '@/ship-removals/removal-label';
+import { useProvidedRemovalCcus } from '@/ship-removals/use-removal-ccus';
+import { standardSku } from '@/ships/ships';
+import { buyableShipsItem, current, warbondsItem } from '@/ships/ships-storage';
+import { useCountdownNow } from '@/shared/use-countdown-now';
+import { useStored } from '@/storage/use-stored';
+import ShipUpgradeButtons from '@/store/components/ShipUpgradeButtons.vue';
+import { openShipRemoval } from '@/store/open-current-warbonds';
 import {
   useProvidedCcuCoverage,
   useProvidedCoverageSources,
@@ -31,7 +41,8 @@ import {
  * ship (#110), only by the buy back, or not at all –, and the groups that may need something list
  * their base ships with the CCUs from them: what the buy back has of each (opened in "Buy Back",
  * #436), and a missing one's page in the Pledge Store. "Consider always available ships" can be
- * switched here as in the settings.
+ * switched here as in the settings. Below the CCUs without base ship, "Soon without base ship"
+ * (#454) lists those whose base ship can still be had, but leaves the Pledge Store.
  */
 
 const props = defineProps<{ settings: Settings }>();
@@ -40,8 +51,14 @@ const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
 const coverages = useProvidedCcuCoverage();
 const alwaysAvailable = useProvidedAlwaysAvailable();
 const sources = useProvidedCoverageSources();
+const removals = useProvidedRemovalCcus();
 const list = computed(() =>
-  baseShipList(coverages.value.values(), alwaysAvailable.value, sources.value.ships),
+  baseShipList(
+    coverages.value.values(),
+    alwaysAvailable.value,
+    sources.value.ships,
+    removals.value.obtainable,
+  ),
 );
 
 const consider = computed(() => props.settings.ccuConsultant.considerAlwaysAvailable);
@@ -130,6 +147,35 @@ function openMatch(event: MouseEvent, match: CoverageMatch) {
   event.preventDefault();
   openPledgeInList('buyback', String(match.displayId ?? match.id));
 }
+/**
+ * "Soon without base ship" (#454): when each base ship leaves the Pledge Store, as the Ship
+ * Removals show it (#288), and RSI's ship upgrade dialog with it as target (#391).
+ */
+const now = useCountdownNow(() => list.value.soon.flatMap((row) => row.removal?.removedAt ?? []));
+const removalLabelOf = (row: BaseShipRow) =>
+  row.removal ? removalLabel(row.removal, now.value, locale.value) : undefined;
+const limitedOf = (row: BaseShipRow) =>
+  row.removal ? limitedSaleNote([row.removal], removals.value.limited, locale.value) : undefined;
+const soonMetaOf = (row: BaseShipRow) => {
+  const price = row.price !== undefined ? i18n.t('ccuConsultant.price', [usd(row.price)]) : '';
+  const until = row.removal
+    ? i18n.t('ccuConsultant.soon.until', [formatExpectedTime(row.removal.removedAt, locale.value)])
+    : '';
+  return [until, price].filter(Boolean).join(' · ');
+};
+const storedBuyable = useStored(buyableShipsItem);
+const storedWarbonds = useStored(warbondsItem);
+/** The ship's standard SKU, not a warbond one, as in the Pledge Store tab. */
+const skuOf = (row: BaseShipRow) =>
+  row.shipId !== undefined
+    ? standardSku(
+        {
+          buyable: current(storedBuyable.value ?? null)?.skus ?? [],
+          warbonds: current(storedWarbonds.value ?? null)?.warbonds ?? [],
+        },
+        row.shipId,
+      )?.skuId
+    : undefined;
 const hrefOf = (match: CoverageMatch) =>
   urlOfView(location.href, { tab: 'buyback', search: String(match.displayId ?? match.id) });
 </script>
@@ -313,6 +359,65 @@ const hrefOf = (match: CoverageMatch) =>
               </tbody>
             </table>
           </div>
+
+          <!-- Base ships leaving the Pledge Store (#454): today still to be had, soon not. -->
+          <template v-if="group === 'missing' && list.soon.length">
+            <h5 id="shm-ccu-consultant-soon" class="shm-ccu-consultant-soon-title">
+              {{ i18n.t('ccuConsultant.soon.title') }}
+              <span class="shm-ccu-consultant-soon-count">{{ format(list.soonCount) }}</span>
+            </h5>
+            <p class="shm-ccu-consultant-hint">{{ i18n.t('ccuConsultant.soon.hint') }}</p>
+            <div class="shm-ccu-consultant-table">
+              <table class="shm-warbond-table" aria-labelledby="shm-ccu-consultant-soon">
+                <thead>
+                  <tr>
+                    <th scope="col">{{ i18n.t('ccuConsultant.col.ship') }}</th>
+                    <th scope="col" class="is-number">{{ i18n.t('ccuConsultant.col.ccus') }}</th>
+                    <th scope="col">{{ i18n.t('ccuConsultant.col.leaves') }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="row in list.soon" :key="row.key">
+                    <td>
+                      <span class="shm-ccu-consultant-ship">{{ nameOf(row) }}</span>
+                      <span class="shm-ccu-consultant-meta">{{ soonMetaOf(row) }}</span>
+                      <span v-if="limitedOf(row)" class="shm-ccu-consultant-meta">
+                        {{ limitedOf(row) }}
+                      </span>
+                    </td>
+                    <td class="is-number is-strong">{{ format(row.ccus.length) }}</td>
+                    <td>
+                      <div class="shm-ccu-consultant-leaves">
+                        <span
+                          v-if="row.removal"
+                          v-tooltip="removalLabelOf(row)?.hint"
+                          class="shm-badge is-price-increase is-warning"
+                          tabindex="0"
+                        >
+                          {{ removalLabelOf(row)?.text }}
+                        </span>
+                        <ShipUpgradeButtons
+                          v-if="row.shipId !== undefined"
+                          :ship-id="row.shipId"
+                          :ship-name="nameOf(row)"
+                          :sku-id="skuOf(row)"
+                        />
+                      </div>
+                      <button
+                        v-if="row.shipId !== undefined"
+                        v-tooltip="i18n.t('shipRemovals.showShipHint', [nameOf(row)])"
+                        type="button"
+                        class="shm-ccu-consultant-more shm-ccu-consultant-removal-link"
+                        @click="openShipRemoval(row.shipId)"
+                      >
+                        {{ i18n.t('notifications.showInStore') }}
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </template>
         </div>
       </template>
     </div>
@@ -585,6 +690,35 @@ const hrefOf = (match: CoverageMatch) =>
   margin-top: 4px;
   color: var(--shm-accent);
   font-size: calc(12px * var(--shm-font-scale));
+}
+
+/* "Soon without base ship" (#454): set apart from the table above. */
+.shm-ccu-consultant-soon-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 20px;
+  margin-bottom: 0;
+  color: var(--shm-text-strong);
+  font-size: calc(14px * var(--shm-font-scale));
+  font-weight: 600;
+}
+
+.shm-ccu-consultant-soon-count {
+  color: var(--shm-text-muted);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+.shm-ccu-consultant-leaves {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+
+.shm-ccu-consultant-removal-link {
+  margin-top: 4px;
 }
 
 /* The group tabs follow the legend closely, as one block of the box. */

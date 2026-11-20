@@ -3,6 +3,7 @@ import { i18n } from '@/i18n';
 import type { Ship } from '@/ships/ships';
 import type { AlwaysAvailableList } from './always-available';
 import type { CcuCoverage, CoverageMatch } from './coverage';
+import type { ShipRemoval } from '@/ship-removals/ship-removals';
 
 /*
  * The CCU Consultant's list (#113): every CCU of the hangar by how its base ship is covered (#108),
@@ -12,6 +13,10 @@ import type { CcuCoverage, CoverageMatch } from './coverage';
  * - `always`: nothing does, but the ship is always available in the Pledge Store (#110, by the
  *   list the settings choose; never while "Consider always available ships" is off);
  * - `missing`: nothing does, and the ship probably can't be bought whenever needed.
+ *
+ * Among the `missing` ones, those whose base ship leaves the Pledge Store but can still be had now
+ * (#454, on sale or always available until its date) stand apart as "Soon without base ship": the
+ * list of always available ships passed here leaves these ships out (`withoutLeaving`).
  */
 
 export type CcuStanding = 'hangar' | 'buyback' | 'always' | 'missing';
@@ -33,13 +38,23 @@ export interface BaseShipRow {
   link?: string;
   /** In the group `buyback`: what the buy back has of it, ships first. */
   matches: CoverageMatch[];
+  /** In the section "Soon without base ship" (#454): when it leaves the Pledge Store. */
+  removal?: ShipRemoval;
 }
 
 export interface BaseShipList {
-  /** CCUs per standing; all of them add up to `total`. */
+  /** CCUs per standing; all of them add up to `total`. Those of `soon` count as `missing`. */
   counts: Record<CcuStanding, number>;
   total: number;
+  /** Without those of `soon`. */
   groups: Record<BaseShipGroup, BaseShipRow[]>;
+  /**
+   * CCUs without base ship whose base ship leaves the Pledge Store but can still be had now (#454),
+   * by base ship: the next date first.
+   */
+  soon: BaseShipRow[];
+  /** How many CCUs `soon` has. */
+  soonCount: number;
 }
 
 /** Where a CCU stands by its coverage and the list of always available ships (if considered). */
@@ -58,6 +73,8 @@ export function baseShipList(
   coverages: Iterable<CcuCoverage>,
   always: AlwaysAvailableList | undefined,
   ships: readonly Ship[],
+  /** The ships leaving the Pledge Store that can still be had now (#454), by ship id. */
+  leaving: ReadonlyMap<number, ShipRemoval> = new Map(),
 ): BaseShipList {
   const byId = new Map(ships.map((ship) => [ship.id, ship]));
   const counts: Record<CcuStanding, number> = { hangar: 0, buyback: 0, always: 0, missing: 0 };
@@ -66,6 +83,8 @@ export function baseShipList(
     buyback: new Map(),
     always: new Map(),
   };
+  const soon = new Map<string, BaseShipRow>();
+  let soonCount = 0;
   let total = 0;
   for (const coverage of coverages) {
     total++;
@@ -74,7 +93,11 @@ export function baseShipList(
     if (standing === 'hangar') continue;
     const base = coverage.baseShip;
     const key = base?.id !== undefined ? `id:${base.id}` : `name:${base?.name.toLowerCase() ?? ''}`;
-    let row = rows[standing].get(key);
+    const removal =
+      standing === 'missing' && base?.id !== undefined ? leaving.get(base.id) : undefined;
+    if (removal) soonCount++;
+    const target = removal ? soon : rows[standing];
+    let row = target.get(key);
     if (!row) {
       const ship = base?.id !== undefined ? byId.get(base.id) : undefined;
       row = {
@@ -85,8 +108,9 @@ export function baseShipList(
         ...(ship && { price: ship.msrp }),
         ...(ship?.link && { link: ship.link }),
         matches: [],
+        ...(removal && { removal }),
       };
-      rows[standing].set(key, row);
+      target.set(key, row);
     }
     row.ccus.push(coverage.id);
     if (standing === 'buyback') {
@@ -103,10 +127,18 @@ export function baseShipList(
         Number(a.name === undefined) - Number(b.name === undefined) ||
         (a.name ?? '').localeCompare(b.name ?? '', 'en'),
     );
+  const at = (row: BaseShipRow) => row.removal?.removedAt.at ?? 0;
   return {
     counts,
     total,
     groups: { missing: sorted('missing'), buyback: sorted('buyback'), always: sorted('always') },
+    soon: [...soon.values()].sort(
+      (a, b) =>
+        at(a) - at(b) ||
+        b.ccus.length - a.ccus.length ||
+        (a.name ?? '').localeCompare(b.name ?? '', 'en'),
+    ),
+    soonCount,
   };
 }
 

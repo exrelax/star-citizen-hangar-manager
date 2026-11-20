@@ -29,6 +29,8 @@ export interface GroupBadgeContext {
   coverageOf: (id: number) => CcuCoverage | undefined;
   alwaysAvailable?: AlwaysAvailableList;
   ships: readonly Ship[];
+  /** The ships leaving the Pledge Store that can still be had now (#454), by ship id. */
+  leaving?: ReadonlyMap<number, unknown>;
   /** Today (local ISO date), for the refund countdown. */
   today: string;
   locale: Locale;
@@ -144,8 +146,12 @@ export function pledgeGroupBadges(
           'baseMissing',
           items.map(
             (item) =>
-              baseMissingOf(context.coverageOf(item.id), context.alwaysAvailable, context.ships)
-                ?.note,
+              baseMissingOf(
+                context.coverageOf(item.id),
+                context.alwaysAvailable,
+                context.ships,
+                context.leaving,
+              )?.note,
           ),
         )
       : undefined,

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { Ship } from '@/ships/ships';
-import type { AlwaysAvailableList } from './always-available';
+import type { ShipRemoval } from '@/ship-removals/ship-removals';
+import { withoutLeaving, type AlwaysAvailableList } from './always-available';
+import { baseMissingOf } from './ccu-labels';
 import { baseShipList, standingOf } from './base-ship-list';
 import type { CcuCoverage, CoverageMatch } from './coverage';
 
@@ -99,5 +101,60 @@ describe('the CCU Consultant’s list (#113)', () => {
       // A CCU whose title doesn't tell its base ship comes last.
       { key: 'name:', ccus: [17], matches: [] },
     ]);
+  });
+});
+
+describe('CCUs soon without base ship (#454)', () => {
+  const removal = (id: number, name: string, at: string): ShipRemoval => ({
+    ship: { id, name },
+    removedAt: { at: Date.parse(at), dayOnly: true },
+    source: 'https://robertsspaceindustries.com/en/comm-link/transmission/21350',
+  });
+  const razor = removal(3, 'Razor', '2027-01-27T00:00:00Z');
+  const arrow = removal(1, 'Arrow', '2026-12-20T00:00:00Z');
+  const leaving = new Map([
+    [3, razor],
+    [1, arrow],
+  ]);
+
+  it('lists the CCUs without other cover from a leaving ship apart, the next date first', () => {
+    const list = baseShipList(
+      [
+        coverage(10, { id: 3, name: 'Razor' }),
+        coverage(11, { id: 3, name: 'Razor' }),
+        // Always available today, but leaving: the list passed leaves it out (`withoutLeaving`).
+        coverage(12, { id: 1, name: 'Arrow' }),
+        coverage(13, { id: 2, name: 'Cutlass Red' }),
+        // Covered by the buy back: not soon without base ship.
+        coverage(14, { id: 3, name: 'Razor' }, [], [match('buyback', 80)]),
+      ],
+      withoutLeaving(always(1), leaving),
+      ships,
+      leaving,
+    );
+    expect(list.soon.map((row) => [row.name, row.ccus, row.removal?.ship.id])).toEqual([
+      ['Arrow', [12], 1],
+      ['Razor', [10, 11], 3],
+    ]);
+    expect(list.soonCount).toBe(3);
+    expect(list.groups.missing.map((row) => row.name)).toEqual(['Cutlass Red']);
+    expect(list.groups.always).toEqual([]);
+    // They count as without base ship, the tab's count included.
+    expect(list.counts).toEqual({ hangar: 0, buyback: 1, always: 0, missing: 4 });
+  });
+
+  it('has none without leaving ships', () => {
+    const list = baseShipList([coverage(10, { id: 3, name: 'Razor' })], always(), ships);
+    expect(list.soon).toEqual([]);
+    expect(list.soonCount).toBe(0);
+  });
+
+  it('no longer counts a leaving ship as always available, nor labels it "Base ship missing"', () => {
+    const list = withoutLeaving(always(1, 2), leaving)!;
+    expect([1, 2].map(list.has)).toEqual([false, true]);
+    expect(withoutLeaving(undefined, leaving)).toBeUndefined();
+    const cover = coverage(12, { id: 1, name: 'Arrow' });
+    expect(baseMissingOf(cover, list, ships, leaving)).toBeUndefined();
+    expect(baseMissingOf(cover, list, ships)?.note).toContain('Arrow');
   });
 });

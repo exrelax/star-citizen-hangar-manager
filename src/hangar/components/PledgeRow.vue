@@ -124,12 +124,17 @@ const alwaysAvailable = computed(() =>
   alwaysAvailableHintOf(coverage.value, alwaysAvailableShips.value, locale.value),
 );
 const coverageSources = useProvidedCoverageSources();
+const removals = useProvidedRemovalCcus();
 const baseMissing = computed(() =>
   props.pledge.isCcu
-    ? baseMissingOf(coverage.value, alwaysAvailableShips.value, coverageSources.value.ships)
+    ? baseMissingOf(
+        coverage.value,
+        alwaysAvailableShips.value,
+        coverageSources.value.ships,
+        removals.value.obtainable,
+      )
     : undefined,
 );
-const removals = useProvidedRemovalCcus();
 const removal = computed(() => {
   const entry = removals.value.byHangarCcu.get(props.pledge.id);
   if (!entry) return undefined;
@@ -145,6 +150,11 @@ const removal = computed(() => {
   const ccusTo = i18n.t('shipRemovals.ccusTo', [ship.name, count('hangar'), count('buyback')]);
   // On sale now, but not always available (#293): it may be gone before the date.
   const limited = limitedSaleNote([entry.removal], removals.value.limited, locale.value) ?? '';
+  // Nothing else gives the base ship (#454): soon without base ship.
+  const soon =
+    coverage.value && !coverage.value.covered && removals.value.obtainable.has(ship.id)
+      ? i18n.t('shipRemovals.ccuSoonWithout', [ship.name])
+      : '';
   return {
     critical,
     shipId: ship.id,
@@ -153,7 +163,7 @@ const removal = computed(() => {
     /** The tooltip: the ship, the date and, if so, that there are too few CCUs to it. */
     hint: [about, shortage, limited].filter(Boolean).join(' '),
     /** Expanded: the counts before the shortage they show. */
-    details: [about, ccusTo, shortage, limited].filter(Boolean).join(' '),
+    details: [about, ccusTo, shortage, soon, limited].filter(Boolean).join(' '),
   };
 });
 

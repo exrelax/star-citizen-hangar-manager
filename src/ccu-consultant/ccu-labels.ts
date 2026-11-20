@@ -25,13 +25,19 @@ export function alwaysAvailableHintOf(
     : i18n.t('ccuCoverage.alwaysAvailableHintUndated', [ship.name, list.source.name]);
 }
 
-/** "Base ship missing" of a CCU: its note and the ship's page, if it has no base ship. */
+/**
+ * "Base ship missing" of a CCU: its note and the ship's page, if it has no base ship. None for a
+ * base ship leaving the Pledge Store that can still be had now (#454, `leaving`): its warning
+ * (#289) tells it, with the ship's date.
+ */
 export function baseMissingOf(
   coverage: CcuCoverage | undefined,
   list: AlwaysAvailableList | undefined,
   ships: readonly Ship[],
+  leaving?: ReadonlyMap<number, unknown>,
 ): { note: string; link?: string; linkLabel?: string } | undefined {
   if (!coverage || standingOf(coverage, list) !== 'missing') return undefined;
+  if (coverage.baseShip?.id !== undefined && leaving?.has(coverage.baseShip.id)) return undefined;
   const id = coverage.baseShip?.id;
   const ship = id !== undefined ? ships.find((entry) => entry.id === id) : undefined;
   const name = ship?.name ?? coverage.baseShip?.name ?? i18n.t('ccuCoverage.baseShip');

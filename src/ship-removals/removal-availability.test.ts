@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import type { StarCitizenEvent } from '@/events/events';
-import { limitedSaleNote, limitedSales, limitedSaleText } from './removal-availability';
+import {
+  limitedSaleNote,
+  limitedSales,
+  limitedSaleText,
+  obtainableRemovals,
+} from './removal-availability';
 import type { ShipRemoval } from './ship-removals';
 
 const NOW = Date.parse('2026-11-20T12:00:00Z');
@@ -72,5 +77,17 @@ describe('limitedSaleText', () => {
       "The Constellation Mk IV Andromeda and Constellation Mk IV Aquila are on sale right now, but aren't among the always available ships.",
     );
     expect(limitedSaleNote([TAURUS], sales, 'en')).toBeUndefined();
+  });
+});
+
+describe('obtainableRemovals (#454)', () => {
+  it('keeps the ships on sale now or always available, by ship id', () => {
+    const result = obtainableRemovals(input());
+    expect([...result.keys()]).toEqual([45, 47]);
+    expect(result.get(45)).toBe(ANDROMEDA);
+  });
+
+  it('keeps an always available ship that isn’t on sale right now', () => {
+    expect([...obtainableRemovals(input({ onSale: new Set() })).keys()]).toEqual([47]);
   });
 });

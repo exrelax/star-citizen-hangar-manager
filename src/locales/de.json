@@ -1577,7 +1577,8 @@
     "summaryMissing": {
       "one": "Für die CCUs von $2 in deinem Hangar fehlt $1 CCU zum Schiff. Sichere es dir vor dem $3.",
       "other": "Für die CCUs von $2 in deinem Hangar fehlen $1 CCUs zum Schiff. Sichere sie dir vor dem $3."
-    }
+    },
+    "ccuSoonWithout": "Nichts sonst in deinem Hangar oder Buy Back liefert $1 als Basisschiff: Danach hat dieses CCU kein Basisschiff mehr."
   },
   "upgradeDialog": {
     "alwaysAvailable": "Immer kaufbar",
@@ -1714,7 +1715,8 @@
       "ship": "Basisschiff",
       "ccus": "CCUs davon",
       "cover": "Abdeckung des Basisschiffs",
-      "found": "Gefunden"
+      "found": "Gefunden",
+      "leaves": "Verlässt den Pledge Store"
     },
     "unknownShip": "Unbekanntes Basisschiff",
     "notAlways": "Nicht immer kaufbar",
@@ -1740,6 +1742,11 @@
       "missingTextAll": "Jedes Basisschiff ist in deinem Hangar oder in deinem Buy Back.",
       "buyback": "Kein CCU hängt allein an deinem Buy Back.",
       "always": "Kein CCU hängt allein an einem immer kaufbaren Basisschiff."
+    },
+    "soon": {
+      "title": "Bald ohne Basisschiff",
+      "hint": "Diese Basisschiffe gibt es noch, aber sie verlassen den Pledge Store – auch die bisher immer kaufbaren. Hol dir eins oder ein CCU dorthin, bevor es so weit ist: Danach haben die CCUs davon kein Basisschiff mehr.",
+      "until": "Im Pledge Store bis $1"
     }
   },
   "cartPaints": {

@@ -43,6 +43,22 @@ export function limitedSales(input: LimitedSaleInput): Map<number, LimitedSale> 
 }
 
 /**
+ * The ships leaving the Pledge Store that can still be had now – on sale, or always available
+ * (#454) –, by ship id: the CCU Consultant no longer counts them as always available, and lists
+ * the CCUs from them without other cover as "Soon without base ship".
+ */
+export function obtainableRemovals(
+  input: Pick<LimitedSaleInput, 'removals' | 'onSale' | 'alwaysAvailable'>,
+): Map<number, ShipRemoval> {
+  const result = new Map<number, ShipRemoval>();
+  for (const removal of input.removals) {
+    const { id } = removal.ship;
+    if (input.onSale.has(id) || input.alwaysAvailable(id) === true) result.set(id, removal);
+  }
+  return result;
+}
+
+/**
  * The note about ships on sale now but not always available: one ship by name, several as a
  * list; with the running event, that they may not be on sale any more once it ends.
  */

@@ -1577,7 +1577,8 @@
     "summaryMissing": {
       "one": "$1 CCU to the $2 is missing for the CCUs from it in your hangar. Secure it before $3.",
       "other": "$1 CCUs to the $2 are missing for the CCUs from it in your hangar. Secure them before $3."
-    }
+    },
+    "ccuSoonWithout": "Nothing else in your hangar or buy back gives the $1: once it is gone, this CCU has no base ship."
   },
   "upgradeDialog": {
     "alwaysAvailable": "Always available",
@@ -1714,7 +1715,8 @@
       "ship": "Base ship",
       "ccus": "CCUs from it",
       "cover": "Base ship coverage",
-      "found": "Found"
+      "found": "Found",
+      "leaves": "Leaves the Pledge Store"
     },
     "unknownShip": "Unknown base ship",
     "notAlways": "Not always available",
@@ -1740,6 +1742,11 @@
       "missingTextAll": "Each base ship is in your hangar or in your buy back.",
       "buyback": "No CCU depends on your buy back alone.",
       "always": "No CCU relies on an always available base ship alone."
+    },
+    "soon": {
+      "title": "Soon without base ship",
+      "hint": "These base ships can still be had, but leave the Pledge Store – also those always available until now. Get one, or a CCU to it, before then: afterwards the CCUs from it have no base ship.",
+      "until": "In the Pledge Store until $1"
     }
   },
   "cartPaints": {

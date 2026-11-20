@@ -1,3 +1,4 @@
+import { ccuCoverage } from '@/ccu-consultant/coverage';
 import { describe, expect, it } from 'vitest';
 import { hangarCcus, removalCcus } from '@/ship-removals/removal-ccus';
 import { removalNotes } from '@/ship-removals/removal-notes';
@@ -64,7 +65,7 @@ describe.each(['key-a', 'key-b', 'key-c'])('the ship removals of the demo %s', (
 
   it('has several ships on a day and one alone with a time, all ahead', () => {
     const groups = removalsByDate(removals, NOW);
-    expect(groups.map((group) => group.removals.length)).toEqual([1, 2, 2]);
+    expect(groups.map((group) => group.removals.length)).toEqual([1, 2, 3]);
     expect(groups[0]!.removedAt.dayOnly).toBeUndefined();
     expect(groups.slice(1).every((group) => group.removedAt.dayOnly)).toBe(true);
     expect(removals.every((removal) => removal.removedAt.at > NOW)).toBe(true);
@@ -96,6 +97,20 @@ describe.each(['key-a', 'key-b', 'key-c'])('the ship removals of the demo %s', (
       'warning',
       'critical',
     ]);
+  });
+
+  it('has a ship on sale with CCUs from it and nothing else giving it (#454)', () => {
+    const coverages = ccuCoverage({ ships, hangar: demo.pledges, buyback: demo.buyback });
+    const leaving = new Set(removals.map((removal) => removal.ship.id));
+    const skuShips = new Set(skus.map((sku) => sku.shipId));
+    expect(
+      [...coverages.values()].some(
+        (coverage) =>
+          !coverage.covered &&
+          leaving.has(coverage.baseShip?.id ?? -1) &&
+          skuShips.has(coverage.baseShip!.id!),
+      ),
+    ).toBe(true);
   });
 
   it('has a ship on sale but not always available, with CCUs from it in the hangar (#293)', () => {

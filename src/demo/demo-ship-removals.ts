@@ -15,7 +15,9 @@ import type { Ship } from '@/ships/ships';
  *   yellow-orange warning, #287), also on sale now but not always available (#293, with the demo's
  *   event if one runs), and one without CCUs (#380), on sale ("Ship upgrade" alone);
  * - two ships on a later day: one with fewer CCUs to it than from it in the hangar (red), and one
- *   of the demo's warbond offers ("Warbond upgrade" next to "Ship upgrade", #392).
+ *   of the demo's warbond offers ("Warbond upgrade" next to "Ship upgrade", #392);
+ * - on the later day also a ship on sale with CCUs from it in the hangar and nothing else giving
+ *   it: the CCU Consultant's "Soon without base ship" (#454).
  * Ships with a price increase of the demo are avoided while others fit. A case the demo hangar
  * can't give (e.g. without CCUs) is left out.
  */
@@ -50,6 +52,8 @@ export interface DemoShipRemovals {
   removals: ShipRemoval[];
   /** The ships on sale now but not always available (#293). */
   limited: ReadonlySet<number>;
+  /** The ships of `removals` on sale now (#454): all but the one alone, while it is known. */
+  onSale: ReadonlySet<number>;
 }
 
 export function demoShipRemovals(input: DemoShipRemovalsInput): DemoShipRemovals {
@@ -94,6 +98,23 @@ export function demoShipRemovals(input: DemoShipRemovalsInput): DemoShipRemovals
   const standard = quiet((entry) => onSale(entry) && !isWarbond(entry));
   // Not on sale while it is known which ships are.
   const alone = quiet((entry) => !input.buyable?.size || !input.buyable.has(entry.removal.ship.id));
+  // On sale, with CCUs from it in the hangar and nothing else giving it – no ship, no CCU to it:
+  // the CCU Consultant's "Soon without base ship" (#454).
+  const owned = new Set(
+    [
+      ...input.hangar.flatMap((pledge) =>
+        pledge.items.filter((item) => item.kind === 'Ship').map((item) => item.title),
+      ),
+      ...input.buyback.flatMap((pledge) => pledge.ships.map((ship) => ship.name)),
+    ].map((name) => name.toLowerCase()),
+  );
+  const uncovered = pick(
+    (entry) =>
+      from(entry) > 0 &&
+      !entry.to.length &&
+      onSale(entry) &&
+      !owned.has(entry.removal.ship.name.toLowerCase()),
+  );
 
   const removal = (entry: RemovalCcus | undefined, removedAt: DayOrTime): ShipRemoval[] =>
     entry ? [{ ...entry.removal, removedAt }] : [];
@@ -106,9 +127,15 @@ export function demoShipRemovals(input: DemoShipRemovalsInput): DemoShipRemovals
       ...removal(alone, soon),
       ...removal(warning, next),
       ...removal(standard, next),
+      ...removal(uncovered, later),
       ...removal(critical, later),
       ...removal(warbond, later),
     ],
     limited: new Set(warning ? [warning.removal.ship.id] : []),
+    onSale: new Set(
+      [warning, standard, uncovered, critical, warbond].flatMap((entry) =>
+        entry && onSale(entry) ? [entry.removal.ship.id] : [],
+      ),
+    ),
   };
 }

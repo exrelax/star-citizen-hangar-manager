@@ -2,7 +2,9 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { createApp, h, shallowRef, type App } from 'vue';
 import { DEFAULT_SETTINGS, type Settings } from '@/settings/settings';
-import { ALWAYS_AVAILABLE, type AlwaysAvailableList } from '../always-available';
+import { REMOVAL_CCUS, removalCcusState } from '@/ship-removals/use-removal-ccus';
+import type { ShipRemoval } from '@/ship-removals/ship-removals';
+import { ALWAYS_AVAILABLE, withoutLeaving, type AlwaysAvailableList } from '../always-available';
 import { CCU_COVERAGE, COVERAGE_SOURCES, type CcuCoverage } from '../coverage';
 import CcuConsultant from './CcuConsultant.vue';
 
@@ -25,7 +27,11 @@ const always: AlwaysAvailableList = {
   has: (id) => id === 1,
 };
 
-function render(coverages: CcuCoverage[], consider = true) {
+function render(
+  coverages: CcuCoverage[],
+  consider = true,
+  obtainable: ReadonlyMap<number, ShipRemoval> = new Map(),
+) {
   const updates: Partial<Settings>[] = [];
   const settings: Settings = {
     ...DEFAULT_SETTINGS,
@@ -37,7 +43,11 @@ function render(coverages: CcuCoverage[], consider = true) {
     render: () => h(CcuConsultant, { settings, onUpdate: (patch) => updates.push(patch) }),
   });
   app.provide(CCU_COVERAGE, shallowRef(new Map(coverages.map((c) => [c.id, c]))));
-  app.provide(ALWAYS_AVAILABLE, shallowRef(consider ? always : undefined));
+  app.provide(
+    ALWAYS_AVAILABLE,
+    shallowRef(withoutLeaving(consider ? always : undefined, obtainable)),
+  );
+  app.provide(REMOVAL_CCUS, shallowRef({ ...removalCcusState([]), obtainable }));
   app.provide(
     COVERAGE_SOURCES,
     shallowRef({
@@ -167,5 +177,44 @@ describe('CcuConsultant (#113)', () => {
     await Promise.resolve();
     expect(links()).toBe(5);
     expect(more.textContent?.trim()).toBe('Show fewer');
+  });
+});
+
+describe('CCUs soon without base ship (#454)', () => {
+  const removal = (id: number, name: string): ShipRemoval => ({
+    ship: { id, name },
+    removedAt: { at: Date.parse('2027-01-27T00:00:00Z'), dayOnly: true },
+    source: 'https://robertsspaceindustries.com/en/comm-link/transmission/21350',
+  });
+
+  it('lists them below the CCUs without base ship, with the date and the way to the ship', () => {
+    const { root } = render(
+      [coverage(10, 2, 'Cutlass Red'), coverage(13, 1, 'Arrow'), coverage(14, 1, 'Arrow')],
+      true,
+      new Map([[1, removal(1, 'Arrow')]]),
+    );
+    // Always available until now, but leaving: no longer "Base always available".
+    expect(tabs(root)).toEqual([
+      'Without base ship 3',
+      'Only via buy back 0',
+      'Base always available 0',
+    ]);
+    const title = root.querySelector('.shm-ccu-consultant-soon-title');
+    expect(title?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Soon without base ship 2');
+    const soon = root.querySelectorAll('.shm-ccu-consultant-table')[1]!;
+    const row = [...soon.querySelectorAll('tbody td')].map((cell) =>
+      cell.textContent!.replace(/\s+/g, ' ').trim(),
+    );
+    expect(row[0]).toBe('ArrowIn the Pledge Store until Jan 27, 2027');
+    expect(row[1]).toBe('2');
+    expect(row[2]).toMatch(/^Removal: .+Show in Pledge Store$/);
+    // The ships leaving the Pledge Store are left out of the table above.
+    expect(cells(root)[0]?.[0]).toContain('Cutlass Red');
+    expect(cells(root)).toHaveLength(2);
+  });
+
+  it('has no such section without leaving ships', () => {
+    const { root } = render([coverage(10, 2, 'Cutlass Red')]);
+    expect(root.querySelector('.shm-ccu-consultant-soon-title')).toBeNull();
   });
 });
