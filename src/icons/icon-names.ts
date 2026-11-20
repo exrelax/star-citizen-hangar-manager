@@ -41,6 +41,7 @@ export const ICON_NAMES = {
     'github',
     'globe-pointer',
     'grip-vertical',
+    'layer-group',
     'lightbulb',
     'link',
     'list',

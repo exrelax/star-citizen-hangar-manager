@@ -36,6 +36,7 @@ import {
 import SvgIcon from '@/icons/SvgIcon.vue';
 import SelectMenu from '@/shared/components/SelectMenu.vue';
 import { searchFromUrl, urlWithSearch } from '../route';
+import { groupItems, type GroupFacts, type ItemGroup } from '../grouping';
 import { matchesSearch, parseSearchQuery } from '../search';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 
@@ -84,6 +85,12 @@ const props = defineProps<{
    * `highlights.ts`), from their states.
    */
   highlights?: (states: ReadonlyMap<F, FilterState>) => readonly string[];
+  /**
+   * The grouped view (#445, #447): with `on`, the entries left by search and filters show as
+   * groups of the same items (`grouping.ts`), each by the `group` slot, a group of one by `row`.
+   * `factsOf` tells what an entry is; without it the list has no grouped view.
+   */
+  grouping?: { on: boolean; factsOf: (entry: T) => GroupFacts };
   /** Texts of a list of other entries than pledges (e.g. warbond offers); pledges' by default. */
   texts?: Partial<Record<CountText, PluralKey> & Record<ListText, MessageKey>>;
 }>();
@@ -102,10 +109,14 @@ const emit = defineEmits<{
   visible: [entries: T[]];
   /** The states of the filter buttons, whenever they change (e.g. for the sidebar's toggles). */
   'filter-states': [states: ReadonlyMap<F, FilterState>];
+  /** The toggle of the grouped view (#447). */
+  'update:grouped': [on: boolean];
 }>();
 
 defineSlots<{
   row(props: { entry: T; autoExpand: boolean }): unknown;
+  /** A group of several entries in the grouped view (#447). */
+  group?(props: { group: ItemGroup<T> }): unknown;
   /** More controls beside the sort, e.g. the period of the warbond history. */
   side?(): unknown;
 }>();
@@ -314,6 +325,14 @@ const matching = computed(() =>
 watch(matching, (entries) => emit('visible', entries), { immediate: true });
 watch(filterStates, (states) => emit('filter-states', states), { immediate: true });
 
+/**
+ * The grouped view: groups of the matching entries, in the order of their first entry – the list's
+ * order by a single entry, so turning it on keeps the order. `null` while it is off.
+ */
+const grouped = computed(() =>
+  props.grouping?.on ? groupItems(matching.value, props.grouping.factsOf) : null,
+);
+
 /** Id of the only entry shown, which then opens on its own; undefined for more or none. */
 const onlyVisibleId = computed(() =>
   matching.value.length === 1 ? matching.value[0]!.id : undefined,
@@ -322,7 +341,11 @@ const onlyVisibleId = computed(() =>
 // Progressive rendering: start with one batch, add small steps while the end is within reach.
 const renderLimit = ref(LIST_RENDER_BATCH);
 const rendered = computed(() => matching.value.slice(0, renderLimit.value));
+/** The groups drawn, like the rows a batch at a time; each a group or a single entry. */
+const renderedGroups = computed(() => grouped.value?.slice(0, renderLimit.value) ?? []);
+const shownLength = computed(() => grouped.value?.length ?? matching.value.length);
 watch(matching, () => (renderLimit.value = LIST_RENDER_BATCH));
+watch(grouped, () => (renderLimit.value = LIST_RENDER_BATCH));
 
 const sentinel = useTemplateRef<HTMLElement>('sentinel');
 let observer: IntersectionObserver | undefined;
@@ -343,7 +366,7 @@ const scheduleStep = () => {
 };
 const renderStep = async () => {
   pendingStep = undefined;
-  if (renderLimit.value >= matching.value.length) return;
+  if (renderLimit.value >= shownLength.value) return;
   renderLimit.value += LIST_RENDER_STEP;
   await nextTick();
   // Still in reach after the new rows (e.g. fast scrolling or a tall screen)? Add another step.
@@ -362,14 +385,18 @@ onUnmounted(() => {
   if (pendingStep !== undefined) cancelIdleCallback(pendingStep);
 });
 
-const countLabel = computed(() =>
-  visibleIds.value
+const countLabel = computed(() => {
+  const count = visibleIds.value
     ? i18n.n(countTextOf('countFiltered'), props.entries.length, [
         visibleIds.value.size,
         props.entries.length,
       ])
-    : i18n.n(countTextOf('count'), props.entries.length),
-);
+    : i18n.n(countTextOf('count'), props.entries.length);
+  // The grouped view also counts its groups.
+  return grouped.value
+    ? `${count} · ${i18n.n('manager.groupCount', grouped.value.length, [grouped.value.length])}`
+    : count;
+});
 </script>
 
 <template>
@@ -481,6 +508,17 @@ const countLabel = computed(() =>
       <span aria-live="polite">{{ countLabel }}</span>
       <span class="shm-count-side">
         <slot name="side" />
+        <button
+          v-if="grouping"
+          v-tooltip="i18n.t('manager.groupHint')"
+          type="button"
+          class="shm-group-toggle"
+          :aria-pressed="grouping.on"
+          @click="emit('update:grouped', !grouping.on)"
+        >
+          <SvgIcon name="layer-group" />
+          {{ i18n.t('manager.group') }}
+        </button>
         <SelectMenu
           v-if="sortOptions && sortOptions.length > 1 && sort"
           class="shm-sort"
@@ -494,9 +532,26 @@ const countLabel = computed(() =>
     </div>
 
     <!-- One grouped list (Modern Hangar) or separate rows (Classic RSI). -->
-    <div v-if="rendered.length" class="shm-rows" :class="highlights?.(filterStates)">
-      <template v-for="entry in rendered" :key="entry.id">
-        <slot name="row" :entry="entry" :auto-expand="entry.id === onlyVisibleId" />
+    <div
+      v-if="grouped ? renderedGroups.length : rendered.length"
+      class="shm-rows"
+      :class="highlights?.(filterStates)"
+    >
+      <template v-if="grouped">
+        <template v-for="group in renderedGroups" :key="group.key">
+          <slot
+            v-if="group.count === 1 || !$slots.group"
+            name="row"
+            :entry="group.items[0]!"
+            :auto-expand="group.items[0]!.id === onlyVisibleId"
+          />
+          <slot v-else name="group" :group="group" />
+        </template>
+      </template>
+      <template v-else>
+        <template v-for="entry in rendered" :key="entry.id">
+          <slot name="row" :entry="entry" :auto-expand="entry.id === onlyVisibleId" />
+        </template>
       </template>
     </div>
     <div ref="sentinel" class="shm-sentinel" aria-hidden="true"></div>
@@ -530,6 +585,28 @@ const countLabel = computed(() =>
   align-items: center;
   gap: 4px 16px;
   margin-left: auto;
+}
+
+.shm-group-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+  color: inherit;
+  font: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.shm-group-toggle:hover,
+.shm-group-toggle:focus-visible {
+  color: var(--shm-text-strong);
+  outline: none;
+}
+
+.shm-group-toggle[aria-pressed='true'] {
+  color: var(--shm-accent);
 }
 
 .shm-sentinel {

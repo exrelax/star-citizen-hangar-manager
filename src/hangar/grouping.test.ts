@@ -102,6 +102,24 @@ describe('the grouping of "My Hangar" (#446)', () => {
     expect(groups.map((g) => g.count)).toEqual([2, 1]);
   });
 
+  it('groups the same item of several years’ events by what it holds', () => {
+    const helmet = (title: string) =>
+      pledge(title, [{ title: 'Snarling Vanduul Helmet', kind: 'FPS Equipment' }], {
+        valueUsd: 0,
+        value: '$0.00 USD',
+      });
+    const skull = pledge('Add-Ons - Holographic Vanduul Skull', [
+      { title: 'Holographic Vanduul Skull' },
+    ]);
+    const groups = groupsOf([
+      helmet("Day of the Vara 2956 - 'Snarling Vanduul' Helmet"),
+      skull,
+      helmet("2953 Day of the Vara - 'Snarling Vanduul' Helmet"),
+      helmet("2952 Day of the Vara - 'Snarling Vanduul' Helmet"),
+    ]);
+    expect(groups.map((g) => g.count)).toEqual([3, 1]);
+  });
+
   it('sums value and discount, and tells giftable and meltable for all, some or none', () => {
     const a = ccu('Nova', 'RAFT', { valueUsd: 10.1, isGiftable: true, isExchangeable: true });
     const b = ccu('Nova', 'RAFT', { valueUsd: 20.2, isGiftable: false, isExchangeable: true });

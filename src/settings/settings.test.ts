@@ -57,6 +57,7 @@ describe('withDefaults', () => {
       filters: DEFAULT_SETTINGS.filters,
       // The buy back can't sort by value: back to the default.
       sort: { hangar: 'valueDesc', buyback: 'newest' },
+      grouped: DEFAULT_SETTINGS.grouped,
       warbondHistory: { sort: 'newest', period: 'event', eventId: 'iae-2956' },
       ownedCcuSort: { column: 'percent', direction: 'asc' },
       paintConsultant: {
