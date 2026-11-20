@@ -437,7 +437,9 @@
     "upgradeDialogAlwaysAvailable": "Show always available ships in RSI's ship upgrade dialog",
     "upgradeDialogAlwaysAvailableHint": "Labels the ships, base and target ships, that are always available in the Pledge Store, so you can get onto them later to apply a CCU. From the ship facts of the project website (Star Citizen Wiki).",
     "cartPaintDiscount": "Show the paint discount in RSI’s cart",
-    "cartPaintDiscountHint": "A note in RSI’s cart while its paints don’t get the best volume discount: the tiers, the filler paints that reach a better one, what that saves, and a button that adds them – nothing is checked out."
+    "cartPaintDiscountHint": "A note in RSI’s cart while its paints don’t get the best volume discount: the tiers, the filler paints that reach a better one, what that saves, and a button that adds them – nothing is checked out.",
+    "upgradeDialogBaseCounts": "Show CCUs and owned ships on the base ships of RSI's ship upgrade dialog",
+    "upgradeDialogBaseCountsHint": "Shows on each base ship how often your hangar has it and how many CCUs to it your hangar and buy back have: each gives the ship to one CCU from it. From your stored hangar and buy back."
   },
   "storage": {
     "title": "Stored data",
@@ -1582,7 +1584,11 @@
   },
   "upgradeDialog": {
     "alwaysAvailable": "Always available",
-    "alwaysAvailableHint": "Always available in the Pledge Store, so you can get onto the ship later to apply a CCU. Source: Star Citizen Wiki, via the Hangar Manager's project website."
+    "alwaysAvailableHint": "Always available in the Pledge Store, so you can get onto the ship later to apply a CCU. Source: Star Citizen Wiki, via the Hangar Manager's project website.",
+    "counts": "$1 owned · CCUs $2 + $3",
+    "countsNoBuyback": "$1 owned · CCUs $2",
+    "countsHint": "Pledges with this ship in your hangar: $1. CCUs to it: $2 in your hangar, $3 in your buy back (only those RSI can sell again). Each ship or CCU to it gives the ship to one CCU from it. From the Hangar Manager.",
+    "countsNoBuybackHint": "Pledges with this ship in your hangar: $1. CCUs to it in your hangar: $2. Each ship or CCU to it gives the ship to one CCU from it. The buy back isn’t read yet. From the Hangar Manager."
   },
   "allShips": {
     "button": "All ships",

@@ -437,7 +437,9 @@
     "upgradeDialogAlwaysAvailable": "Mostrar las naves siempre disponibles en el diálogo de mejoras de RSI",
     "upgradeDialogAlwaysAvailableHint": "Marca las naves base y de destino siempre disponibles en la Pledge Store, para que puedas conseguirlas más tarde y aplicar un CCU. Según los datos de naves de la web del proyecto (Star Citizen Wiki).",
     "cartPaintDiscount": "Mostrar el descuento de pinturas en el carrito de RSI",
-    "cartPaintDiscountHint": "Una nota en el carrito de RSI mientras sus pinturas no reciben el mejor descuento por volumen: los niveles, las pinturas de relleno que alcanzan uno mejor, lo que ahorra y un botón que las añade; no se paga nada."
+    "cartPaintDiscountHint": "Una nota en el carrito de RSI mientras sus pinturas no reciben el mejor descuento por volumen: los niveles, las pinturas de relleno que alcanzan uno mejor, lo que ahorra y un botón que las añade; no se paga nada.",
+    "upgradeDialogBaseCounts": "Mostrar CCU y naves propias en las naves base del diálogo de mejoras de RSI",
+    "upgradeDialogBaseCountsHint": "Muestra en cada nave base cuántas veces la tiene tu hangar y cuántos CCU hacia ella hay en tu hangar y buy back: cada uno da la nave a un CCU desde ella. Según tu hangar y buy back guardados."
   },
   "storage": {
     "title": "Datos guardados",
@@ -1582,7 +1584,11 @@
   },
   "upgradeDialog": {
     "alwaysAvailable": "Siempre disponible",
-    "alwaysAvailableHint": "Siempre disponible en la Pledge Store: puedes conseguir la nave más tarde para aplicar un CCU. Fuente: Star Citizen Wiki, a través de la web del proyecto del Hangar Manager."
+    "alwaysAvailableHint": "Siempre disponible en la Pledge Store: puedes conseguir la nave más tarde para aplicar un CCU. Fuente: Star Citizen Wiki, a través de la web del proyecto del Hangar Manager.",
+    "counts": "$1 en propiedad · CCU $2 + $3",
+    "countsNoBuyback": "$1 en propiedad · CCU $2",
+    "countsHint": "Pledges con esta nave en tu hangar: $1. CCU hacia ella: $2 en tu hangar, $3 en tu buy back (solo los que RSI puede volver a vender). Cada nave o CCU hacia ella da la nave a un CCU desde ella. Del Hangar Manager.",
+    "countsNoBuybackHint": "Pledges con esta nave en tu hangar: $1. CCU hacia ella en tu hangar: $2. Cada nave o CCU hacia ella da la nave a un CCU desde ella. El buy back aún no se ha leído. Del Hangar Manager."
   },
   "allShips": {
     "button": "Todas las naves",

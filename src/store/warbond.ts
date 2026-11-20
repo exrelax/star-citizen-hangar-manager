@@ -120,8 +120,8 @@ const CCU_TARGET = /\bto\s+(.+?)(?:\s+(?:warbond|standard)\s+edition)?\s*$/i;
 /** How often each ship (by the upgrade tool's id) is in the hangar and the buy back. */
 export function holdingsByShip(
   lookup: ShipLookup,
-  hangar: readonly PledgeView[],
-  buyback: readonly BuybackView[],
+  hangar: readonly Pick<PledgeView, 'isCcu' | 'upgrade' | 'items'>[],
+  buyback: readonly Pick<BuybackView, 'isCcu' | 'upgrade' | 'title' | 'ships'>[],
 ): Map<number, Holdings> {
   const holdings = new Map<number, Holdings>();
   const add = (id: number | undefined, key: keyof Holdings) => {

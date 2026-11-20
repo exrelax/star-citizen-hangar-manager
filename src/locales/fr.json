@@ -437,7 +437,9 @@
     "upgradeDialogAlwaysAvailable": "Afficher les vaisseaux toujours disponibles dans la fenêtre d’upgrade de RSI",
     "upgradeDialogAlwaysAvailableHint": "Marque les vaisseaux de base et cibles toujours disponibles dans le Pledge Store, pour que tu puisses y accéder plus tard et appliquer un CCU. D’après les données du site du projet (Star Citizen Wiki).",
     "cartPaintDiscount": "Afficher la remise sur les peintures dans le panier de RSI",
-    "cartPaintDiscountHint": "Une note dans le panier de RSI tant que ses peintures n’ont pas la meilleure remise de volume : les paliers, les peintures de remplissage pour un meilleur palier, l’économie, et un bouton qui les ajoute – rien n’est payé."
+    "cartPaintDiscountHint": "Une note dans le panier de RSI tant que ses peintures n’ont pas la meilleure remise de volume : les paliers, les peintures de remplissage pour un meilleur palier, l’économie, et un bouton qui les ajoute – rien n’est payé.",
+    "upgradeDialogBaseCounts": "Afficher les CCU et vaisseaux possédés sur les vaisseaux de base de la fenêtre d’upgrade de RSI",
+    "upgradeDialogBaseCountsHint": "Indique sur chaque vaisseau de base combien de fois ton hangar l’a et combien de CCU vers lui ton hangar et ton buy back contiennent : chacun donne le vaisseau à un CCU depuis lui. D’après ton hangar et ton buy back enregistrés."
   },
   "storage": {
     "title": "Données enregistrées",
@@ -1582,7 +1584,11 @@
   },
   "upgradeDialog": {
     "alwaysAvailable": "Toujours disponible",
-    "alwaysAvailableHint": "Toujours disponible dans le Pledge Store : tu peux accéder au vaisseau plus tard pour appliquer un CCU. Source : Star Citizen Wiki, via le site du projet du Hangar Manager."
+    "alwaysAvailableHint": "Toujours disponible dans le Pledge Store : tu peux accéder au vaisseau plus tard pour appliquer un CCU. Source : Star Citizen Wiki, via le site du projet du Hangar Manager.",
+    "counts": "Possédés $1 · CCU $2 + $3",
+    "countsNoBuyback": "Possédés $1 · CCU $2",
+    "countsHint": "Pledges avec ce vaisseau dans votre hangar : $1. CCU vers lui : $2 dans votre hangar, $3 dans votre buy back (seulement ceux que RSI peut revendre). Chaque vaisseau ou CCU vers lui donne le vaisseau à un CCU depuis lui. Par le Hangar Manager.",
+    "countsNoBuybackHint": "Pledges avec ce vaisseau dans votre hangar : $1. CCU vers lui dans votre hangar : $2. Chaque vaisseau ou CCU vers lui donne le vaisseau à un CCU depuis lui. Le buy back n’est pas encore lu. Par le Hangar Manager."
   },
   "allShips": {
     "button": "Tous les vaisseaux",
