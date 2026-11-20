@@ -38,7 +38,7 @@ describe('withDefaults', () => {
       summaryTypes: false,
       sidebar: false,
       sidebarHidden: ['selection'],
-      sidebarOrder: ['notifications', 'summary', 'selection', 'paintConsultant'],
+      sidebarOrder: ['notifications', 'summary', 'selection', 'paintConsultant', 'ccuConsultant'],
       sidebarCollapsed: [],
       hidePledgeIds: true,
       demoMode: true,

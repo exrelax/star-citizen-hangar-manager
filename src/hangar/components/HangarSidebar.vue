@@ -12,6 +12,7 @@ import { summarize, type PledgeSummary } from '../summary';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { useDemoContext } from '@/demo/use-demo';
 import SidebarBox from './SidebarBox.vue';
+import { missingCounts, useBaseShipList } from '@/ccu-consultant/use-base-ship-list';
 import { openTabAt } from '../open-tab-at';
 import { BROWSER_NOTIFICATIONS_SETTING_ID, BULK_MELTING_SETTING_ID } from '@/settings/anchors';
 import {
@@ -242,7 +243,15 @@ const TITLES = {
   summary: 'summary.title',
   selection: 'summary.selected',
   paintConsultant: 'consultant.boxTitle',
+  ccuConsultant: 'ccuConsultant.title',
 } as const;
+
+// The CCU Consultant at first glance (#115): the CCUs without base ship, now and later, as its
+// tab "Without base ship" counts them; shown while the hangar has CCUs.
+const ccuList = useBaseShipList();
+const ccuMissing = computed(() => missingCounts(ccuList.value));
+const openCcuConsultant = () =>
+  openTabAt('consultants', 'shm-ccu-consultant-title', { highlight: true });
 
 // The Paint Discount Consultant at first glance (worked out once in App.vue).
 const consultant = maybePaintConsultant();
@@ -475,7 +484,9 @@ const isShown = (box: Box) =>
       ? noteCount.value > 0
       : box === 'paintConsultant'
         ? !props.settings.hideMeltValue && (!!rebuyPlan.value || meltNow.value.length > 0)
-        : true);
+        : box === 'ccuConsultant'
+          ? ccuList.value.total > 0
+          : true);
 const boxes = computed(() => order.value.filter(isShown));
 
 const isCollapsed = (box: Box) => savedCollapsed.value.value.includes(box);
@@ -1131,6 +1142,40 @@ async function move(box: Box, step: -1 | 1) {
           </div>
         </template>
 
+        <!-- Shown while the hangar has CCUs (see `isShown`). -->
+        <template v-else-if="box === 'ccuConsultant'">
+          <dl v-if="ccuMissing.total" class="shm-sidebar-figures">
+            <div>
+              <dt v-tooltip="i18n.t('ccuConsultant.boxMissingHint')">
+                {{ i18n.t('ccuConsultant.standing.missing') }}
+              </dt>
+              <dd :class="{ 'is-warning': ccuMissing.missing }">
+                {{ number.format(ccuMissing.missing) }}
+              </dd>
+            </div>
+            <div v-if="ccuMissing.soon">
+              <dt>{{ i18n.t('ccuConsultant.soon.title') }}</dt>
+              <dd class="is-warning">{{ number.format(ccuMissing.soon) }}</dd>
+            </div>
+            <div v-if="ccuMissing.tooFew">
+              <dt v-tooltip="i18n.t('ccuConsultant.boxTooFewHint')">
+                {{ i18n.t('ccuConsultant.boxTooFew') }}
+              </dt>
+              <dd class="is-warning">{{ number.format(ccuMissing.tooFew) }}</dd>
+            </div>
+          </dl>
+          <p v-else class="shm-sidebar-ok">
+            <SvgIcon name="circle-check" />
+            {{ i18n.t('ccuConsultant.empty.missing') }}
+          </p>
+          <div class="shm-sidebar-actions">
+            <button type="button" class="shm-button shm-sidebar-button" @click="openCcuConsultant">
+              <SvgIcon name="link" />
+              {{ i18n.t('ccuConsultant.boxOpen') }}
+            </button>
+          </div>
+        </template>
+
         <template v-if="box === 'selection'" #actions>
           <button
             v-tooltip="i18n.t('summary.clear')"
@@ -1336,6 +1381,26 @@ async function move(box: Box, step: -1 | 1) {
 }
 
 .shm-sidebar-figures dd.is-discount {
+  color: var(--shm-success);
+}
+
+/* CCUs without base ship in the CCU Consultant's box (#115). */
+.shm-sidebar-figures dd.is-warning {
+  color: var(--shm-danger);
+}
+
+/* Every CCU can be applied: the CCU Consultant's box says so briefly. */
+.shm-sidebar-ok {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--shm-text);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+.shm-sidebar-ok .shm-icon {
+  flex: none;
   color: var(--shm-success);
 }
 

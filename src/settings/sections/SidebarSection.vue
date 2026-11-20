@@ -20,11 +20,13 @@ const LABELS: Record<SidebarBox, MessageKey> = {
   summary: 'summary.title',
   selection: 'summary.selected',
   paintConsultant: 'consultant.boxTitle',
+  ccuConsultant: 'ccuConsultant.title',
 };
 const HINTS: Partial<Record<SidebarBox, MessageKey>> = {
   notifications: 'settings.sidebarNotificationsHint',
   selection: 'settings.sidebarSelectionHint',
   paintConsultant: 'settings.sidebarPaintConsultantHint',
+  ccuConsultant: 'settings.sidebarCcuConsultantHint',
 };
 const hint = (box: SidebarBox) => {
   const key = HINTS[box];

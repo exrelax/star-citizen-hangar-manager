@@ -439,7 +439,8 @@
     "cartPaintDiscount": "Show the paint discount in RSI’s cart",
     "cartPaintDiscountHint": "A note in RSI’s cart while its paints don’t get the best volume discount: the tiers, the filler paints that reach a better one, what that saves, and a button that adds them – nothing is checked out.",
     "upgradeDialogBaseCounts": "Show CCUs and owned ships on the base ships of RSI's ship upgrade dialog",
-    "upgradeDialogBaseCountsHint": "Shows on each base ship how often your hangar has it and how many CCUs to it your hangar and buy back have: each gives the ship to one CCU from it. From your stored hangar and buy back."
+    "upgradeDialogBaseCountsHint": "Shows on each base ship how often your hangar has it and how many CCUs to it your hangar and buy back have: each gives the ship to one CCU from it. From your stored hangar and buy back.",
+    "sidebarCcuConsultantHint": "Shown while your hangar has CCUs: how many have no base ship, will soon have none, or have too few ways to it, with a button to the CCU Consultant."
   },
   "storage": {
     "title": "Stored data",
@@ -1806,7 +1807,11 @@
     "openHangar": "Opens the CCU in My Hangar",
     "openGroup": "Opens these CCUs in My Hangar",
     "groupHint": "Shows the same CCUs of a base ship as one entry with their count. Remembered for the CCU Consultant.",
-    "ccuKinds": "$1 different"
+    "ccuKinds": "$1 different",
+    "boxOpen": "Open the CCU Consultant",
+    "boxMissingHint": "CCUs neither the hangar nor the buy back gives the base ship to, and whose base ship is probably not always available.",
+    "boxTooFew": "Too few ways",
+    "boxTooFewHint": "CCUs whose base ship isn’t always available, with fewer ships and CCUs to it than CCUs from it."
   },
   "cartPaints": {
     "title": "Paint volume discount",

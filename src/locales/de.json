@@ -439,7 +439,8 @@
     "cartPaintDiscount": "Paint-Rabatt im Warenkorb von RSI zeigen",
     "cartPaintDiscountHint": "Ein Hinweis im Warenkorb von RSI, solange seine Paints nicht den besten Mengenrabatt bekommen: die Stufen, die Füll-Paints für eine bessere Stufe, was das spart, und ein Knopf, der sie hinzufügt – bezahlt wird nichts.",
     "upgradeDialogBaseCounts": "CCUs und eigene Schiffe an den Basisschiffen in RSIs Ship-Upgrade-Dialog zeigen",
-    "upgradeDialogBaseCountsHint": "Zeigt an jedem Basisschiff, wie oft dein Hangar es hat und wie viele CCUs dorthin in deinem Hangar und Buy Back sind: Jedes gibt einem CCU davon das Schiff. Aus deinem gespeicherten Hangar und Buy Back."
+    "upgradeDialogBaseCountsHint": "Zeigt an jedem Basisschiff, wie oft dein Hangar es hat und wie viele CCUs dorthin in deinem Hangar und Buy Back sind: Jedes gibt einem CCU davon das Schiff. Aus deinem gespeicherten Hangar und Buy Back.",
+    "sidebarCcuConsultantHint": "Wird gezeigt, solange dein Hangar CCUs hat: wie viele kein Basisschiff haben, bald keins mehr haben oder zu wenige Wege dorthin, mit einem Button zum CCU Consultant."
   },
   "storage": {
     "title": "Gespeicherte Daten",
@@ -1806,7 +1807,11 @@
     "openHangar": "Öffnet das CCU in My Hangar",
     "openGroup": "Öffnet diese CCUs in My Hangar",
     "groupHint": "Zeigt gleiche CCUs eines Basisschiffs als einen Eintrag mit ihrer Anzahl. Für den CCU Consultant gemerkt.",
-    "ccuKinds": "$1 verschiedene"
+    "ccuKinds": "$1 verschiedene",
+    "boxOpen": "CCU Consultant öffnen",
+    "boxMissingHint": "CCUs, deren Basisschiff weder dein Hangar noch dein Buy Back liefert und das vermutlich nicht immer kaufbar ist.",
+    "boxTooFew": "Zu wenige Wege",
+    "boxTooFewHint": "CCUs, deren Basisschiff nicht immer kaufbar ist, mit weniger Schiffen und CCUs dorthin als CCUs davon."
   },
   "cartPaints": {
     "title": "Mengenrabatt für Paints",
