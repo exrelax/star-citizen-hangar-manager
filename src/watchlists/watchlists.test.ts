@@ -2,6 +2,12 @@ import { describe, expect, it } from 'vitest';
 import {
   addItem,
   createWatchlist,
+  dueReminders,
+  isReminderDue,
+  nextReminderAt,
+  reminderKey,
+  withReminderDone,
+  withReminderRestored,
   itemKey,
   listsWith,
   presenceOf,
@@ -118,5 +124,34 @@ describe('items that left the hangar or the buy back (#465)', () => {
       ['Old name', undefined],
     ]);
     expect(withLastSeen(seen, lists)).toBe(seen);
+  });
+});
+
+describe('reminders (#469)', () => {
+  const dated = (id: string, dueAt: number, reminder = true) =>
+    createWatchlist({ name: id, dueAt, reminder }, NOW, id);
+
+  it('is due from its date on, while on and not dismissed', () => {
+    const due = dated('a', LATER);
+    expect(isReminderDue(due, NOW)).toBe(false);
+    expect(isReminderDue(due, LATER)).toBe(true);
+    expect(isReminderDue(dated('b', NOW, false), LATER)).toBe(false);
+    expect(isReminderDue(list(), LATER)).toBe(false);
+  });
+
+  it('stays dismissed for its date, and reminds again at a new one', () => {
+    const done = withReminderDone(dated('a', NOW));
+    expect(isReminderDue(done, LATER)).toBe(false);
+    const moved = updateWatchlist(done, { dueAt: LATER }, NOW);
+    expect(isReminderDue(moved, LATER)).toBe(true);
+    expect(isReminderDue(withReminderRestored(done), LATER)).toBe(true);
+    expect(reminderKey(moved)).toBe(`a@${LATER}`);
+  });
+
+  it('lists the due ones by date and tells the next one ahead', () => {
+    const lists = [dated('late', NOW - 1000), dated('early', NOW - 5000), dated('ahead', LATER)];
+    expect(dueReminders(lists, NOW).map((entry) => entry.id)).toEqual(['early', 'late']);
+    expect(nextReminderAt(lists, NOW)).toBe(LATER);
+    expect(nextReminderAt([dated('off', LATER, false)], NOW)).toBeUndefined();
   });
 });

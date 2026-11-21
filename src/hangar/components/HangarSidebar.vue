@@ -59,6 +59,13 @@ import type { BuybackView } from '@/buyback/buyback-view';
 import { showBuybackFilter } from '@/buyback/buyback-filter-request';
 import { isKindOn } from '@/notifications/kinds';
 import {
+  openWatchlist,
+  saveErrorOf,
+  storeWatchlist,
+  watchlists,
+} from '@/watchlists/use-watchlists';
+import { dueReminders, withReminderDone, type Watchlist } from '@/watchlists/watchlists';
+import {
   demoDismissedPriceIncreasesItem,
   dismissedPriceIncreasesItem,
   isPriceIncreaseNoteShown,
@@ -181,6 +188,7 @@ const noteCount = computed(
     (priceNoteCount.value ? 1 : 0) +
     advisorShown.value.length +
     removalShown.value.length +
+    remindersShown.value.length +
     (showBrowserHint.value ? 1 : 0) +
     (showRiskNote.value ? 1 : 0),
 );
@@ -426,6 +434,26 @@ function dismissRemovalNote(note: RemovalNote) {
   );
   void item.setValue(withDismissed(dismissed, note.key, ahead));
 }
+/*
+ * The reminders of watchlists whose date has come (#469): one per watchlist, opening it. Its ×
+ * dismisses it for this date on the watchlist itself, so it follows to other devices and a new date
+ * reminds again.
+ */
+const remindersShown = computed(() =>
+  isKindOn(props.settings.notificationsOff, 'watchlistReminders')
+    ? dueReminders(watchlists.value, now.value)
+    : [],
+);
+const reminderError = ref<string>();
+function dismissReminder(list: Watchlist) {
+  reminderError.value = undefined;
+  storeWatchlist(withReminderDone(list)).catch(
+    (cause: unknown) => (reminderError.value = saveErrorOf(cause)),
+  );
+}
+const reminderText = (list: Watchlist) =>
+  i18n.t('notifications.watchlistReminder', [list.name, noteTime.value.format(list.dueAt)]);
+
 /** One ship: its name; several: their count, each listed below. */
 function removalText(note: RemovalNote) {
   const when = formatExpectedTime(note.removedAt, locale.value);
@@ -923,6 +951,40 @@ async function move(box: Box, step: -1 | 1) {
               >
                 <SvgIcon name="basket-shopping" />
                 {{ i18n.t('notifications.showInStore') }}
+              </button>
+            </div>
+          </div>
+          <div
+            v-for="list in remindersShown"
+            :key="list.id"
+            class="shm-sidebar-melt-ready is-dismissable shm-sidebar-reminder"
+            role="status"
+          >
+            <SvgIcon name="bell" />
+            <p>{{ reminderText(list) }}</p>
+            <button
+              v-tooltip="i18n.t('notifications.dismissWatchlistReminderHint')"
+              type="button"
+              class="shm-sidebar-icon-button shm-sidebar-note-dismiss"
+              :aria-label="i18n.t('notifications.dismiss')"
+              @click="dismissReminder(list)"
+            >
+              <SvgIcon name="xmark" />
+            </button>
+            <p v-if="list.description" class="shm-sidebar-note shm-sidebar-reminder-text">
+              {{ list.description }}
+            </p>
+            <p v-if="reminderError" class="shm-sidebar-note is-error" role="alert">
+              {{ reminderError }}
+            </p>
+            <div v-mark-wrapped class="shm-sidebar-actions">
+              <button
+                type="button"
+                class="shm-button shm-sidebar-button"
+                @click="openWatchlist(list.id)"
+              >
+                <SvgIcon name="clipboard-list" />
+                {{ i18n.t('notifications.showWatchlist') }}
               </button>
             </div>
           </div>
@@ -1489,6 +1551,22 @@ async function move(box: Box, step: -1 | 1) {
 
 .shm-sidebar-melt-ready .shm-sidebar-actions.is-wrapped {
   grid-column: 2;
+}
+
+/* A watchlist's reminder (#469): its description below the text, at most three lines. */
+.shm-sidebar-melt-ready > .shm-sidebar-reminder-text {
+  display: -webkit-box;
+  margin: 4px 0 0;
+  overflow: hidden;
+  color: var(--shm-text-secondary);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.shm-sidebar-melt-ready > .shm-sidebar-note.is-error {
+  color: var(--shm-danger);
 }
 
 /* Ship removals (#290): the icon in the color of the highest level, each warning in its own. */

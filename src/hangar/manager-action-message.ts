@@ -12,7 +12,19 @@ export const MANAGER_ACTIONS = [
   'showPriceIncreases',
   'showShipRemovals',
 ] as const;
-export type ManagerAction = (typeof MANAGER_ACTIONS)[number];
+/** One of `MANAGER_ACTIONS`, or a watchlist to show by its id (a reminder, #469). */
+export type ManagerAction = (typeof MANAGER_ACTIONS)[number] | `showWatchlist:${string}`;
+
+const WATCHLIST_ACTION = /^showWatchlist:[a-z0-9]{1,32}$/;
+
+/** Whether `value` is an action the manager knows. */
+export const isManagerAction = (value: unknown): value is ManagerAction =>
+  typeof value === 'string' &&
+  ((MANAGER_ACTIONS as readonly string[]).includes(value) || WATCHLIST_ACTION.test(value));
+
+/** The watchlist an action shows, if it shows one. */
+export const watchlistOfAction = (action: ManagerAction): string | undefined =>
+  action.startsWith('showWatchlist:') ? action.slice('showWatchlist:'.length) : undefined;
 
 /** The message to a tab with the content script. */
 export interface ManagerActionMessage {
@@ -24,7 +36,7 @@ export const isManagerActionMessage = (message: unknown): message is ManagerActi
   typeof message === 'object' &&
   message !== null &&
   (message as ManagerActionMessage).type === 'shm:manager-action' &&
-  MANAGER_ACTIONS.includes((message as ManagerActionMessage).action);
+  isManagerAction((message as ManagerActionMessage).action);
 
 /** The URL parameter that carries the action into a tab opened for it. */
 export const ACTION_PARAM = 'shm-action';
@@ -32,7 +44,7 @@ export const ACTION_PARAM = 'shm-action';
 /** The action in a URL's query, if any. */
 export function actionFromSearch(search: string): ManagerAction | undefined {
   const action = new URLSearchParams(search).get(ACTION_PARAM);
-  return MANAGER_ACTIONS.find((known) => known === action);
+  return isManagerAction(action) ? action : undefined;
 }
 
 /**

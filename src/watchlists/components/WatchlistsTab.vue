@@ -17,7 +17,9 @@ import {
   removeWatchlist,
   saveErrorOf,
   storeWatchlist as store,
+  watchlistRequest,
   watchlists as lists,
+  WATCHLISTS_TOP_ID,
   watchlistsLoaded as loaded,
 } from '../use-watchlists';
 import WatchlistDialog from './WatchlistDialog.vue';
@@ -60,6 +62,16 @@ const pledgeLists = computed((): PledgeLists => ({
 /** The watchlist shown; all of them without. */
 const openId = ref<string>();
 const open = computed(() => lists.value.find((list) => list.id === openId.value));
+// A link to a watchlist (its reminder, #469): it opens once it is read.
+watch(
+  [watchlistRequest, loaded],
+  ([request, ready]) => {
+    if (!request || !ready) return;
+    if (lists.value.some((list) => list.id === request.id)) openId.value = request.id;
+    watchlistRequest.value = undefined;
+  },
+  { immediate: true },
+);
 // A watchlist deleted on another device goes back to all of them.
 watch(open, (list) => {
   if (!list && loaded.value) openId.value = undefined;
@@ -126,48 +138,50 @@ function removeEntry(list: Watchlist, key: string) {
 </script>
 
 <template>
-  <WatchlistView
-    v-if="open"
-    :key="open.id"
-    :list="open"
-    :pledges="pledges"
-    :buyback="buyback"
-    :settings="settings"
-    :lists="pledgeLists"
-    :active="active"
-    @back="openId = undefined"
-    @edit="openDialog(open)"
-    @delete="remove(open)"
-    @remove="removeEntry(open, $event)"
-  />
-  <section v-else class="shm-watchlists" aria-labelledby="shm-watchlists-title">
-    <header class="shm-watchlists-header">
-      <h3 id="shm-watchlists-title" class="shm-store-title shm-watchlists-title">
-        <SvgIcon name="clipboard-list" />
-        {{ i18n.t('tabs.watchlists') }}
-      </h3>
-      <button type="button" class="shm-button shm-watchlists-new" @click="openDialog()">
-        <SvgIcon name="plus" />
-        {{ i18n.t('watchlists.new') }}
-      </button>
-    </header>
-    <p class="shm-watchlists-intro">{{ i18n.t('watchlists.intro') }}</p>
-    <ul v-if="lists.length" class="shm-rows shm-watchlists-list">
-      <li v-for="list in lists" :key="list.id" class="shm-row shm-watchlists-row">
-        <button type="button" class="shm-watchlists-open" @click="openId = list.id">
-          <span class="shm-watchlists-text">
-            <span class="shm-watchlists-name">{{ list.name }}</span>
-            <WatchlistMeta :list="list" />
-            <span v-if="list.description" class="shm-watchlists-description">
-              {{ list.description }}
-            </span>
-          </span>
-          <SvgIcon class="shm-watchlists-chevron" name="chevron-right" />
+  <div :id="WATCHLISTS_TOP_ID" class="shm-watchlists-top">
+    <WatchlistView
+      v-if="open"
+      :key="open.id"
+      :list="open"
+      :pledges="pledges"
+      :buyback="buyback"
+      :settings="settings"
+      :lists="pledgeLists"
+      :active="active"
+      @back="openId = undefined"
+      @edit="openDialog(open)"
+      @delete="remove(open)"
+      @remove="removeEntry(open, $event)"
+    />
+    <section v-else class="shm-watchlists" aria-labelledby="shm-watchlists-title">
+      <header class="shm-watchlists-header">
+        <h3 id="shm-watchlists-title" class="shm-store-title shm-watchlists-title">
+          <SvgIcon name="clipboard-list" />
+          {{ i18n.t('tabs.watchlists') }}
+        </h3>
+        <button type="button" class="shm-button shm-watchlists-new" @click="openDialog()">
+          <SvgIcon name="plus" />
+          {{ i18n.t('watchlists.new') }}
         </button>
-      </li>
-    </ul>
-    <p v-else-if="loaded" class="shm-watchlists-empty">{{ i18n.t('watchlists.empty') }}</p>
-  </section>
+      </header>
+      <p class="shm-watchlists-intro">{{ i18n.t('watchlists.intro') }}</p>
+      <ul v-if="lists.length" class="shm-rows shm-watchlists-list">
+        <li v-for="list in lists" :key="list.id" class="shm-row shm-watchlists-row">
+          <button type="button" class="shm-watchlists-open" @click="openId = list.id">
+            <span class="shm-watchlists-text">
+              <span class="shm-watchlists-name">{{ list.name }}</span>
+              <WatchlistMeta :list="list" />
+              <span v-if="list.description" class="shm-watchlists-description">
+                {{ list.description }}
+              </span>
+            </span>
+            <SvgIcon class="shm-watchlists-chevron" name="chevron-right" />
+          </button>
+        </li>
+      </ul>
+      <p v-else-if="loaded" class="shm-watchlists-empty">{{ i18n.t('watchlists.empty') }}</p>
+    </section>
+  </div>
 
   <WatchlistDialog
     v-if="dialog"
@@ -182,6 +196,11 @@ function removeEntry(list: Watchlist, key: string) {
 <style src="@/hangar/components/row.css"></style>
 
 <style>
+/* Below RSI's fixed top bar when scrolled to from a link. */
+.shm-watchlists-top {
+  scroll-margin-top: 90px;
+}
+
 .shm-watchlists {
   display: flex;
   flex-direction: column;

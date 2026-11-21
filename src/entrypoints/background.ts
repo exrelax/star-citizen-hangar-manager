@@ -4,6 +4,7 @@ import { isCheckingMessage, relayToOtherTabs } from '@/hangar/smart-update/broad
 import { watchMeltReady } from '@/notifications/melt-ready-notification';
 import { watchPriceIncreases } from '@/price-increases/price-increase-browser-notification';
 import { watchShipRemovals } from '@/ship-removals/removal-browser-notification';
+import { watchWatchlistReminders } from '@/watchlists/reminder-browser-notification';
 import { watchNotesInStep } from '@/notifications/note-sync';
 import { watchStoreNoteKinds } from '@/store/store-change-notes';
 import {
@@ -72,6 +73,8 @@ export default defineBackground(() => {
   watchPriceIncreases();
   // Ships leaving the Pledge Store, a week before (#291).
   watchShipRemovals();
+  // The reminder of a watchlist at its date (#469).
+  watchWatchlistReminders();
 
   // The sidebar's notifications and their browser notifications in step (#155).
   watchNotesInStep();

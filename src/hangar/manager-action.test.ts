@@ -5,6 +5,7 @@ import { applyManagerAction, takeActionFromUrl } from './manager-action';
 import { selection } from './selection';
 import { meltReadyIds } from './use-melt-marks';
 import { hangarViewFilter } from './view-filter';
+import { watchlistRequest } from '@/watchlists/use-watchlists';
 
 beforeEach(() => {
   selection.clear();
@@ -18,6 +19,17 @@ describe('actions in the URL and in messages', () => {
     expect(actionFromSearch('?shm-action=melt')).toBeUndefined();
     expect(isManagerActionMessage({ type: 'shm:manager-action', action: 'open' })).toBe(true);
     expect(isManagerActionMessage({ type: 'shm:manager-action', action: 'melt' })).toBe(false);
+  });
+
+  it('knows a watchlist to show by its id (#469)', () => {
+    expect(actionFromSearch('?shm-action=showWatchlist:mwqx2gw1cduk')).toBe(
+      'showWatchlist:mwqx2gw1cduk',
+    );
+    expect(actionFromSearch('?shm-action=showWatchlist:')).toBeUndefined();
+    expect(actionFromSearch('?shm-action=showWatchlist:a%3Cb')).toBeUndefined();
+    expect(
+      isManagerActionMessage({ type: 'shm:manager-action', action: 'showWatchlist:abc1' }),
+    ).toBe(true);
   });
 
   it('takes the action out of the URL once', () => {
@@ -42,6 +54,15 @@ describe('applyManagerAction', () => {
     meltReadyIds.value = new Set([1]);
     await applyManagerAction('showMeltReady');
     expect(hangarViewFilter.value?.id).toBe('meltReady');
+  });
+});
+
+describe('showWatchlist (#469)', () => {
+  it('opens the watchlist in its tab', async () => {
+    await applyManagerAction('showWatchlist:abc1');
+    expect(watchlistRequest.value?.id).toBe('abc1');
+    expect(location.hash).toBe('#hangar-manager-watchlists');
+    watchlistRequest.value = undefined;
   });
 });
 

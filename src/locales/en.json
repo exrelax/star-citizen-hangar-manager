@@ -446,7 +446,10 @@
     "cartPaintDiscountHint": "A note in RSI’s cart while its paints don’t get the best volume discount: the tiers, the filler paints that reach a better one, what that saves, and a button that adds them – nothing is checked out.",
     "upgradeDialogBaseCounts": "Show CCUs and owned ships on the base ships of RSI's ship upgrade dialog",
     "upgradeDialogBaseCountsHint": "Shows on each base ship how often your hangar has it and how many CCUs to it your hangar and buy back have: each gives the ship to one CCU from it. From your stored hangar and buy back.",
-    "sidebarCcuConsultantHint": "Shown while your hangar has CCUs: how many have no base ship, will soon have none, or have too few ways to it, with a button to the CCU Consultant."
+    "sidebarCcuConsultantHint": "Shown while your hangar has CCUs: how many have no base ship, will soon have none, or have too few ways to it, with a button to the CCU Consultant.",
+    "watchlistNotifications": "Watchlists",
+    "notificationKindWatchlistReminders": "Watchlist reminders",
+    "notificationKindWatchlistRemindersHint": "At the date of a watchlist with a reminder, in the sidebar and, if allowed, in the browser."
   },
   "storage": {
     "title": "Stored data",
@@ -1380,7 +1383,12 @@
     },
     "browserPriceIncreaseTitle": "Expected price increase",
     "browserPriceIncreaseOne": "“$1” will probably cost more in less than 2 days ($2). Buy it back or use it as a discount token before then.",
-    "browserPriceIncrease": "$1 buy back items will probably cost more in less than 2 days ($2). Buy them back or use them as discount tokens before then."
+    "browserPriceIncrease": "$1 buy back items will probably cost more in less than 2 days ($2). Buy them back or use them as discount tokens before then.",
+    "watchlistReminder": "Reminder: “$1” · $2",
+    "showWatchlist": "Show watchlist",
+    "dismissWatchlistReminderHint": "Removes this reminder. A new date of the watchlist reminds again.",
+    "browserWatchlistReminderTitle": "Watchlist reminder",
+    "browserWatchlistReminder": "“$1” · $2"
   },
   "gift": {
     "button": "Gift",
@@ -1913,7 +1921,7 @@
     "dateHint": "Optional, e.g. the end of an event.",
     "clearDate": "Remove the date",
     "reminder": "Remind me",
-    "reminderHint": "At the date, in the sidebar and as a browser notification.",
+    "reminderHint": "At the date, in the sidebar of the Hangar Manager.",
     "reminderOn": "Reminder on",
     "reminderOff": "No reminder",
     "cancel": "Cancel",
@@ -1949,6 +1957,11 @@
     "addTo": "Add to watchlist",
     "removeFrom": "Remove from “$1”",
     "notOnAny": "On no watchlist yet.",
-    "newPlaceholder": "New watchlist"
+    "newPlaceholder": "New watchlist",
+    "reminderBrowserOn": "Also as a browser notification in this browser.",
+    "reminderBrowserOff": "Browser notifications are off in this browser: the reminder shows in the sidebar only.",
+    "reminderBrowserAsked": "Allow the notifications on the page that opened.",
+    "reminderBrowserAllow": "Allow browser notifications",
+    "reminderKindOff": "Watchlist reminders are turned off in the settings (Notifications)."
   }
 }

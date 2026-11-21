@@ -446,7 +446,10 @@
     "cartPaintDiscountHint": "Ein Hinweis im Warenkorb von RSI, solange seine Paints nicht den besten Mengenrabatt bekommen: die Stufen, die Füll-Paints für eine bessere Stufe, was das spart, und ein Knopf, der sie hinzufügt – bezahlt wird nichts.",
     "upgradeDialogBaseCounts": "CCUs und eigene Schiffe an den Basisschiffen in RSIs Ship-Upgrade-Dialog zeigen",
     "upgradeDialogBaseCountsHint": "Zeigt an jedem Basisschiff, wie oft dein Hangar es hat und wie viele CCUs dorthin in deinem Hangar und Buy Back sind: Jedes gibt einem CCU davon das Schiff. Aus deinem gespeicherten Hangar und Buy Back.",
-    "sidebarCcuConsultantHint": "Wird gezeigt, solange dein Hangar CCUs hat: wie viele kein Basisschiff haben, bald keins mehr haben oder zu wenige Wege dorthin, mit einem Button zum CCU Consultant."
+    "sidebarCcuConsultantHint": "Wird gezeigt, solange dein Hangar CCUs hat: wie viele kein Basisschiff haben, bald keins mehr haben oder zu wenige Wege dorthin, mit einem Button zum CCU Consultant.",
+    "watchlistNotifications": "Watchlists",
+    "notificationKindWatchlistReminders": "Erinnerungen von Watchlists",
+    "notificationKindWatchlistRemindersHint": "Zum Datum einer Watchlist mit Erinnerung, in der Sidebar und, wenn erlaubt, im Browser."
   },
   "storage": {
     "title": "Gespeicherte Daten",
@@ -1380,7 +1383,12 @@
     },
     "browserPriceIncreaseTitle": "Erwartete Preiserhöhung",
     "browserPriceIncreaseOne": "„$1“ wird voraussichtlich in weniger als 2 Tagen teurer ($2). Kauf es vorher zurück oder nutze es vorher als Rabatt-Token.",
-    "browserPriceIncrease": "$1 Buy-Back-Items werden voraussichtlich in weniger als 2 Tagen teurer ($2). Kauf sie vorher zurück oder nutze sie vorher als Rabatt-Token."
+    "browserPriceIncrease": "$1 Buy-Back-Items werden voraussichtlich in weniger als 2 Tagen teurer ($2). Kauf sie vorher zurück oder nutze sie vorher als Rabatt-Token.",
+    "watchlistReminder": "Erinnerung: „$1“ · $2",
+    "showWatchlist": "Watchlist anzeigen",
+    "dismissWatchlistReminderHint": "Entfernt diese Erinnerung. Ein neues Datum der Watchlist erinnert wieder.",
+    "browserWatchlistReminderTitle": "Erinnerung einer Watchlist",
+    "browserWatchlistReminder": "„$1“ · $2"
   },
   "gift": {
     "button": "Gift",
@@ -1913,7 +1921,7 @@
     "dateHint": "Optional, z. B. das Ende eines Events.",
     "clearDate": "Datum entfernen",
     "reminder": "Erinnern",
-    "reminderHint": "Zum Datum, in der Seitenleiste und als Browser-Benachrichtigung.",
+    "reminderHint": "Zum Datum, in der Sidebar des Hangar Managers.",
     "reminderOn": "Erinnerung an",
     "reminderOff": "Keine Erinnerung",
     "cancel": "Abbrechen",
@@ -1949,6 +1957,11 @@
     "addTo": "Auf Watchlist setzen",
     "removeFrom": "Von „$1“ entfernen",
     "notOnAny": "Noch auf keiner Watchlist.",
-    "newPlaceholder": "Neue Watchlist"
+    "newPlaceholder": "Neue Watchlist",
+    "reminderBrowserOn": "Auch als Browser-Benachrichtigung in diesem Browser.",
+    "reminderBrowserOff": "Browser-Benachrichtigungen sind in diesem Browser aus: Die Erinnerung erscheint nur in der Sidebar.",
+    "reminderBrowserAsked": "Erlaube die Benachrichtigungen auf der Seite, die sich geöffnet hat.",
+    "reminderBrowserAllow": "Browser-Benachrichtigungen erlauben",
+    "reminderKindOff": "Erinnerungen von Watchlists sind in den Einstellungen (Benachrichtigungen) ausgeschaltet."
   }
 }
