@@ -129,3 +129,13 @@ describe('reading and writing the watchlists (#465)', () => {
     expect(seen.at(-1)).toEqual(['IAE']);
   });
 });
+
+describe('a dismissed reminder (#469)', () => {
+  it('is stored with its watchlist', async () => {
+    const list = { ...full(), reminderDone: NOW + 86_400_000 };
+    await saveWatchlist(list);
+    const [read] = await loadWatchlists();
+    expect(read?.reminderDone).toBe(NOW + 86_400_000);
+    expect(encodeWatchlist(full())).not.toHaveProperty('x');
+  });
+});

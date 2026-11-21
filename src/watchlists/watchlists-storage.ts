@@ -37,9 +37,10 @@ export interface StoredWatchlist {
   /** Name, description. */
   n: string;
   d?: string;
-  /** Its date (s), with a reminder (`r: 1`). */
+  /** Its date (s), with a reminder (`r: 1`); the date whose reminder was dismissed (`x`, #469). */
   t?: number;
   r?: 1;
+  x?: number;
   /** Created and changed (s). */
   c: number;
   u: number;
@@ -110,6 +111,7 @@ export function encodeWatchlist(list: Watchlist): StoredWatchlist {
     ...(list.description && { d: list.description }),
     ...(list.dueAt !== undefined && { t: seconds(list.dueAt) }),
     ...(list.reminder && list.dueAt !== undefined && { r: 1 as const }),
+    ...(list.reminderDone !== undefined && { x: seconds(list.reminderDone) }),
     c: seconds(list.createdAt),
     u: seconds(list.changedAt),
     i: list.items.map(encodeItem),
@@ -136,6 +138,7 @@ export function decodeWatchlist(id: string, stored: unknown): Watchlist | undefi
     description: typeof value.d === 'string' ? value.d : '',
     ...(typeof value.t === 'number' && { dueAt: ms(value.t) }),
     reminder: value.r === 1 && typeof value.t === 'number',
+    ...(typeof value.x === 'number' && { reminderDone: ms(value.x) }),
     items,
     createdAt: ms(typeof value.c === 'number' ? value.c : 0),
     changedAt: ms(typeof value.u === 'number' ? value.u : 0),

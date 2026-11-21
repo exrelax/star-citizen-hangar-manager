@@ -446,7 +446,10 @@
     "cartPaintDiscountHint": "Une note dans le panier de RSI tant que ses peintures n’ont pas la meilleure remise de volume : les paliers, les peintures de remplissage pour un meilleur palier, l’économie, et un bouton qui les ajoute – rien n’est payé.",
     "upgradeDialogBaseCounts": "Afficher les CCU et vaisseaux possédés sur les vaisseaux de base de la fenêtre d’upgrade de RSI",
     "upgradeDialogBaseCountsHint": "Indique sur chaque vaisseau de base combien de fois ton hangar l’a et combien de CCU vers lui ton hangar et ton buy back contiennent : chacun donne le vaisseau à un CCU depuis lui. D’après ton hangar et ton buy back enregistrés.",
-    "sidebarCcuConsultantHint": "Affichée tant que votre hangar a des CCU : combien n’ont pas de vaisseau de base, n’en auront bientôt plus ou ont trop peu d’accès, avec un bouton vers le CCU Consultant."
+    "sidebarCcuConsultantHint": "Affichée tant que votre hangar a des CCU : combien n’ont pas de vaisseau de base, n’en auront bientôt plus ou ont trop peu d’accès, avec un bouton vers le CCU Consultant.",
+    "watchlistNotifications": "Watchlists",
+    "notificationKindWatchlistReminders": "Rappels des watchlists",
+    "notificationKindWatchlistRemindersHint": "À la date d’une watchlist avec rappel, dans la barre latérale et, si autorisé, dans le navigateur."
   },
   "storage": {
     "title": "Données enregistrées",
@@ -1380,7 +1383,12 @@
     },
     "browserPriceIncreaseTitle": "Hausse de prix attendue",
     "browserPriceIncreaseOne": "« $1 » coûtera probablement plus cher dans moins de 2 jours ($2). Rachetez-le ou utilisez-le comme jeton de réduction avant.",
-    "browserPriceIncrease": "$1 éléments du Buy Back coûteront probablement plus cher dans moins de 2 jours ($2). Rachetez-les ou utilisez-les comme jetons de réduction avant."
+    "browserPriceIncrease": "$1 éléments du Buy Back coûteront probablement plus cher dans moins de 2 jours ($2). Rachetez-les ou utilisez-les comme jetons de réduction avant.",
+    "watchlistReminder": "Rappel : « $1 » · $2",
+    "showWatchlist": "Afficher la watchlist",
+    "dismissWatchlistReminderHint": "Retire ce rappel. Une nouvelle date de la watchlist rappelle à nouveau.",
+    "browserWatchlistReminderTitle": "Rappel d’une watchlist",
+    "browserWatchlistReminder": "« $1 » · $2"
   },
   "gift": {
     "button": "Gift",
@@ -1913,7 +1921,7 @@
     "dateHint": "Facultatif, p. ex. la fin d’un événement.",
     "clearDate": "Retirer la date",
     "reminder": "Me rappeler",
-    "reminderHint": "À la date, dans la barre latérale et par une notification du navigateur.",
+    "reminderHint": "À la date, dans la barre latérale du Hangar Manager.",
     "reminderOn": "Rappel activé",
     "reminderOff": "Pas de rappel",
     "cancel": "Annuler",
@@ -1949,6 +1957,11 @@
     "addTo": "Ajouter à une watchlist",
     "removeFrom": "Retirer de « $1 »",
     "notOnAny": "Sur aucune watchlist pour l’instant.",
-    "newPlaceholder": "Nouvelle watchlist"
+    "newPlaceholder": "Nouvelle watchlist",
+    "reminderBrowserOn": "Aussi en notification du navigateur dans ce navigateur.",
+    "reminderBrowserOff": "Les notifications du navigateur sont désactivées dans ce navigateur : le rappel s’affiche seulement dans la barre latérale.",
+    "reminderBrowserAsked": "Autorise les notifications sur la page qui s’est ouverte.",
+    "reminderBrowserAllow": "Autoriser les notifications du navigateur",
+    "reminderKindOff": "Les rappels des watchlists sont désactivés dans les paramètres (Notifications)."
   }
 }

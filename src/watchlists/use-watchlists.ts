@@ -1,3 +1,4 @@
+import { openTabAt } from '@/hangar/open-tab-at';
 import { i18n } from '@/i18n';
 import { computed, ref, shallowRef, watch, type Ref } from 'vue';
 import {
@@ -112,4 +113,18 @@ export async function createWatchlistWith(name: string, item: NewWatchItem): Pro
   const list = addItem(createWatchlist({ name }, now), item, now);
   await storeWatchlist(list);
   return list;
+}
+
+// ---- Showing a watchlist from elsewhere (#469) ----
+
+/** The top of the tab "Watchlists", where a link to a watchlist scrolls to. */
+export const WATCHLISTS_TOP_ID = 'shm-watchlists-top';
+
+/** The last request to show a watchlist (a reminder); `at` tells repeated ones apart. */
+export const watchlistRequest = ref<{ id: string; at: number }>();
+
+/** Switches to the tab "Watchlists" with the watchlist `id` open, and scrolls to its top. */
+export function openWatchlist(id: string): void {
+  watchlistRequest.value = { id, at: Date.now() };
+  openTabAt('watchlists', WATCHLISTS_TOP_ID);
 }

@@ -7,6 +7,12 @@ import '../watchlists.css';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { fontScaleStyle, themeClasses } from '@/themes/theme';
 import { computed, onMounted, onUnmounted, ref, useId, useTemplateRef } from 'vue';
+import {
+  browserNotificationsItem,
+  OPEN_NOTIFICATION_PERMISSION,
+} from '@/notifications/browser-permission';
+import { isKindOn } from '@/notifications/kinds';
+import { useStored } from '@/storage/use-stored';
 import { fromLocalInput, toLocalInput } from '../watchlist-view';
 import { WATCHLIST_LIMITS, type Watchlist } from '../watchlists';
 
@@ -39,6 +45,19 @@ const due = ref(props.list?.dueAt !== undefined ? toLocalInput(props.list.dueAt)
 const reminder = ref(props.list?.reminder ?? true);
 const dueAt = computed(() => fromLocalInput(due.value));
 const canSave = computed(() => !!name.value.trim() && !props.busy);
+
+/*
+ * Where the reminder goes (#469): the sidebar always, the browser only with its permission, which
+ * the browser asks for on the extension's page (`browser-permission.ts`); nowhere with the kind
+ * turned off in the settings (#197).
+ */
+const allowed = useStored(browserNotificationsItem);
+const kindOn = computed(() => isKindOn(settings.value.notificationsOff, 'watchlistReminders'));
+const asked = ref(false);
+function allowBrowser() {
+  asked.value = true;
+  void browser.runtime.sendMessage(OPEN_NOTIFICATION_PERMISSION);
+}
 
 function save() {
   if (!canSave.value) return;
@@ -154,6 +173,27 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
               :disabled="dueAt === undefined"
             />
           </label>
+          <div
+            v-if="dueAt !== undefined && reminder"
+            class="shm-watchlist-reminder-status"
+            role="status"
+          >
+            <template v-if="!kindOn">{{ i18n.t('watchlists.reminderKindOff') }}</template>
+            <template v-else-if="allowed">{{ i18n.t('watchlists.reminderBrowserOn') }}</template>
+            <template v-else>
+              <span>
+                {{
+                  i18n.t(
+                    asked ? 'watchlists.reminderBrowserAsked' : 'watchlists.reminderBrowserOff',
+                  )
+                }}
+              </span>
+              <button type="button" class="shm-button" @click="allowBrowser">
+                <SvgIcon name="bell" />
+                {{ i18n.t('watchlists.reminderBrowserAllow') }}
+              </button>
+            </template>
+          </div>
           <p v-if="error" class="shm-overlay-note is-error" role="alert">{{ error }}</p>
           <div class="shm-watchlist-actions">
             <button type="button" class="shm-button" @click="emit('close')">
@@ -234,6 +274,20 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
 .shm-watchlist-reminder.is-disabled {
   opacity: 0.5;
   cursor: default;
+}
+
+.shm-watchlist-reminder-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: -6px;
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+.shm-watchlist-reminder-status .shm-button {
+  min-height: 28px;
 }
 
 .shm-watchlist-reminder-text {

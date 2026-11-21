@@ -13,6 +13,8 @@
  *   value by a price increase within that period, in the sidebar only.
  * - `shipRemovals`: ships CIG takes out of the Pledge Store (#290), one per date with a warning for
  *   CCUs from them, in the sidebar, and in the browser a week before the date (#291).
+ * - `watchlistReminders`: the reminder of a watchlist at its date (#469), in the sidebar and in the
+ *   browser.
  * Only the kinds turned off are stored, so a kind added later starts on.
  */
 
@@ -24,6 +26,7 @@ export const NOTIFICATION_KINDS = [
   'priceIncreases',
   'priceAdvisor',
   'shipRemovals',
+  'watchlistReminders',
 ] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 

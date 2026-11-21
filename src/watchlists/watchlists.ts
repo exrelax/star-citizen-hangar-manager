@@ -45,6 +45,11 @@ export interface Watchlist {
   dueAt?: number;
   /** A reminder at `dueAt` (#469). */
   reminder: boolean;
+  /**
+   * The date (ms) whose reminder was dismissed in the sidebar (#469): it doesn't show again for
+   * that date, but a new date reminds again.
+   */
+  reminderDone?: number;
   items: WatchItem[];
   createdAt: number;
   changedAt: number;
@@ -236,3 +241,39 @@ export function withLastSeen(list: Watchlist, lists: PledgeLists): Watchlist {
   });
   return changed ? { ...list, items } : list;
 }
+
+// ---- Reminders (#469) ----
+
+/** Whether the watchlist's reminder is due at `now`: on, its date reached and not dismissed. */
+export const isReminderDue = (list: Watchlist, now: number): boolean =>
+  list.reminder &&
+  list.dueAt !== undefined &&
+  list.dueAt <= now &&
+  list.reminderDone !== list.dueAt;
+
+/** The watchlists whose reminder is due at `now`, the earliest date first. */
+export const dueReminders = (lists: readonly Watchlist[], now: number): Watchlist[] =>
+  lists.filter((list) => isReminderDue(list, now)).sort((a, b) => a.dueAt! - b.dueAt!);
+
+/** When the next reminder is due after `now`, if any. */
+export function nextReminderAt(lists: readonly Watchlist[], now: number): number | undefined {
+  const ahead = lists.flatMap((list) =>
+    list.reminder && list.dueAt !== undefined && list.dueAt > now ? [list.dueAt] : [],
+  );
+  return ahead.length ? Math.min(...ahead) : undefined;
+}
+
+/** The watchlist with its due reminder dismissed (until a new date). */
+export const withReminderDone = (list: Watchlist): Watchlist =>
+  list.dueAt === undefined ? list : { ...list, reminderDone: list.dueAt };
+
+/** The watchlist with a dismissed reminder showing again. */
+export function withReminderRestored(list: Watchlist): Watchlist {
+  if (list.reminderDone === undefined) return list;
+  const rest = { ...list };
+  delete rest.reminderDone;
+  return rest;
+}
+
+/** A reminder told for a watchlist and its date, e.g. by the browser (`<id>@<date>`). */
+export const reminderKey = (list: Watchlist): string => `${list.id}@${list.dueAt ?? ''}`;

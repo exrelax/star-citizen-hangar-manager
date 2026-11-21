@@ -57,6 +57,8 @@ import {
   restoreAdvisorNotes,
 } from '@/price-increases/advisor-notes';
 import { upcomingPriceIncreases } from '@/price-increases/price-increases';
+import { storeWatchlist, watchlists } from '@/watchlists/use-watchlists';
+import { withReminderRestored } from '@/watchlists/watchlists';
 
 /*
  * Notifications: browser notifications, an optional extra for when no RSI page is open (#152,
@@ -169,6 +171,15 @@ const removalsToRestore = computed(() => {
     ahead,
   );
 });
+/** The watchlists' reminders (#469), dismissed for the date their watchlist still has. */
+const remindersToRestore = computed(() =>
+  kindOn('watchlistReminders')
+    ? watchlists.value.filter(
+        (list) =>
+          list.reminder && list.reminderDone !== undefined && list.reminderDone === list.dueAt,
+      )
+    : [],
+);
 /** The hint on browser notifications, dismissed while they are off. */
 const hintToRestore = computed(() => allowed.value === false && hintDismissed.value === true);
 
@@ -182,6 +193,7 @@ const restoreCount = computed(() =>
       Number(priceToRestore.value) +
       Number(advisorToRestore.value) +
       Number(removalsToRestore.value) +
+      remindersToRestore.value.length +
       Number(hintToRestore.value),
 );
 /** How many came back with the last click, shown below the button. */
@@ -196,6 +208,7 @@ async function restore() {
     priceToRestore.value ? restorePriceIncreaseNotes() : undefined,
     advisorToRestore.value ? restoreAdvisorNotes() : undefined,
     removalsToRestore.value ? restoreRemovalNotes() : undefined,
+    ...remindersToRestore.value.map((list) => storeWatchlist(withReminderRestored(list))),
     hintToRestore.value ? browserNotificationsHintDismissedItem.setValue(false) : undefined,
   ]);
   restored.value = count;
@@ -296,6 +309,17 @@ async function restore() {
       @change="(on) => emit('update', { priceAdvisorSecureHint: on })"
     >
       {{ i18n.t('settings.priceAdvisorSecureHint') }}
+    </SettingCheck>
+  </SettingsGroup>
+
+  <!-- The watchlists: the reminder at a watchlist's date (#469), in the sidebar and the browser. -->
+  <SettingsGroup :title="i18n.t('settings.watchlistNotifications')">
+    <SettingCheck
+      :checked="kindOn('watchlistReminders')"
+      :hint="i18n.t('settings.notificationKindWatchlistRemindersHint')"
+      @change="(on) => setKind('watchlistReminders', on)"
+    >
+      {{ i18n.t('settings.notificationKindWatchlistReminders') }}
     </SettingCheck>
   </SettingsGroup>
 

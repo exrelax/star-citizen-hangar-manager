@@ -1,5 +1,11 @@
 import { watch } from 'vue';
-import { actionFromSearch, ACTION_PARAM, type ManagerAction } from './manager-action-message';
+import {
+  actionFromSearch,
+  ACTION_PARAM,
+  watchlistOfAction,
+  type ManagerAction,
+} from './manager-action-message';
+import { openWatchlist } from '@/watchlists/use-watchlists';
 import { hashOfTab } from './route';
 import { selection } from './selection';
 import { meltReadyIds } from './use-melt-marks';
@@ -60,6 +66,12 @@ export async function applyManagerAction(action: ManagerAction): Promise<void> {
   // Expected price increases (#193): the buy back with its filter "Price increase expected".
   if (action === 'showPriceIncreases') {
     showBuybackFilter('priceIncrease');
+    return;
+  }
+  // A watchlist's reminder (#469): the watchlist in its tab.
+  const watchlist = watchlistOfAction(action);
+  if (watchlist !== undefined) {
+    openWatchlist(watchlist);
     return;
   }
   // Ships leaving the Pledge Store (#291): the section of the Pledge Store tab.
