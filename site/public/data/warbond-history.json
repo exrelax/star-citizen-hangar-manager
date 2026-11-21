@@ -96,6 +96,19 @@
           "name": "Mirai Guardian - IAE 2956 Day 7"
         }
       ]
+    },
+    {
+      "ship": { "id": 316, "name": "Aegis Tiburon" },
+      "price": 710,
+      "msrp": 775,
+      "firstSeen": "2026-11-20T16:00:00Z",
+      "lastSeen": "2026-11-21T16:00:00Z",
+      "events": [
+        {
+          "id": "aegis-tiburon-iae-2956-day-7",
+          "name": "Aegis Tiburon - IAE 2956 Day 7"
+        }
+      ]
     }
   ]
 }
