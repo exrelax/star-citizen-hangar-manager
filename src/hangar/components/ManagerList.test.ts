@@ -35,7 +35,7 @@ const refinements: FilterRefinements<Entry, F> = {
   ],
 };
 
-function render() {
+function render(extra: Record<string, unknown> = {}) {
   const root = document.createElement('div');
   document.body.append(root);
   app = createApp({
@@ -43,6 +43,7 @@ function render() {
       h(
         ManagerList<Entry, F, string>,
         {
+          ...extra,
           entries,
           filterGroups: [{ category: 'types', filters: ['paints', 'owned'] }],
           predicates: { paints: (e: Entry) => e.paint, owned: (e: Entry) => e.owned },
@@ -270,5 +271,43 @@ describe('ManagerList: a jump in the grouped view (#449)', () => {
     await nextTick();
     await nextTick();
     expect(shown(root)).toEqual(['12']);
+  });
+});
+
+describe('ManagerList: inside a watchlist (#467)', () => {
+  it('searches by the search from outside, without a field of its own', async () => {
+    const search = shallowRef('b');
+    const root = document.createElement('div');
+    document.body.append(root);
+    app = createApp({
+      render: () =>
+        h(
+          ManagerList<Entry, F, string>,
+          {
+            // Searchable as `normalizeSearchText` writes it: each word after a space.
+            entries: entries.map((entry) => ({ ...entry, searchText: ` ${entry.searchText}` })),
+            filterGroups: [{ category: 'types', filters: ['paints'] }],
+            predicates: { paints: (e: Entry) => e.paint, owned: (e: Entry) => e.owned },
+            filterLabel: () => 'Paints',
+            active: false,
+            search: search.value,
+          },
+          { row: ({ entry }: { entry: Entry }) => h('div', { class: 'row' }, String(entry.id)) },
+        ),
+    });
+    app.mount(root);
+    await nextTick();
+    expect(root.querySelector('.shm-search')).toBeNull();
+    expect(root.querySelector('.shm-filters')).not.toBeNull();
+    expect(rows(root)).toEqual(['2']);
+    search.value = '';
+    await nextTick();
+    expect(rows(root)).toEqual(['1', '2', '3', '4']);
+  });
+
+  it('hides search and filters with `hideControls`', () => {
+    const root = render({ hideControls: true });
+    expect(root.querySelector('.shm-controls')).toBeNull();
+    expect(rows(root)).toEqual(['1', '2', '3', '4']);
   });
 });

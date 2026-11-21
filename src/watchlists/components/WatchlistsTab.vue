@@ -1,56 +1,216 @@
 <script setup lang="ts">
-import { i18n, locale } from '@/i18n';
+import type { BuybackView } from '@/buyback/buyback-view';
+import type { PledgeView } from '@/hangar/pledge-view';
+import { i18n } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
-import { onMounted, onUnmounted, ref, watch } from 'vue';
-import type { Watchlist } from '../watchlists';
-import { loadWatchlists, watchWatchlists } from '../watchlists-storage';
+import type { Settings } from '@/settings/settings';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import {
+  createWatchlist,
+  removeItem,
+  updateWatchlist,
+  withLastSeen,
+  type PledgeLists,
+  type Watchlist,
+} from '../watchlists';
+import {
+  deleteWatchlist,
+  loadWatchlists,
+  quotaMessageKey,
+  saveWatchlist,
+  watchWatchlists,
+  WatchlistQuotaError,
+} from '../watchlists-storage';
+import WatchlistDialog from './WatchlistDialog.vue';
+import WatchlistMeta from './WatchlistMeta.vue';
+import WatchlistView from './WatchlistView.vue';
 
 /*
- * The tab "Watchlists" (#466), second to last before the settings: the user's watchlists (#464)
- * with their item counts, or what they are for while there is none. The view of a watchlist, with
- * creating and editing it, follows (#467). The demo shows its own lists (#474).
+ * The tab "Watchlists" (#466, #467), second to last before the settings: all watchlists (#464) with
+ * their item counts, dates and reminders, and a new one to create. A watchlist opens in its own view
+ * (`WatchlistView`), with a way back to all of them. The demo shows its own lists (#474).
  */
 
-const props = defineProps<{ demo: boolean }>();
+const props = defineProps<{
+  demo: boolean;
+  pledges: PledgeView[];
+  buyback: BuybackView[];
+  settings: Settings;
+  /** When My Hangar and the Buy Back were last read (ms); none while they weren't. */
+  hangarReadAt?: number;
+  buybackReadAt?: number;
+  active: boolean;
+}>();
 
 const lists = ref<Watchlist[]>([]);
+const loaded = ref(false);
 let stop: (() => void) | undefined;
 async function follow(demo: boolean) {
   stop?.();
+  loaded.value = false;
   lists.value = await loadWatchlists(demo);
+  loaded.value = true;
   stop = watchWatchlists((value) => (lists.value = value), demo);
 }
 onMounted(() => void follow(props.demo));
 watch(
   () => props.demo,
-  (demo) => void follow(demo),
+  (demo) => {
+    openId.value = undefined;
+    void follow(demo);
+  },
 );
 onUnmounted(() => stop?.());
 
-const count = (list: Watchlist) =>
-  i18n.n('watchlists.items', list.items.length, [
-    new Intl.NumberFormat(locale.value).format(list.items.length),
-  ]);
+/** The stored lists, to tell pledges gone from those not read yet (`presenceOf`). */
+const pledgeLists = computed((): PledgeLists => ({
+  ...(props.hangarReadAt !== undefined && {
+    hangar: { pledges: props.pledges, updatedAt: props.hangarReadAt },
+  }),
+  ...(props.buybackReadAt !== undefined && {
+    buyback: { pledges: props.buyback, updatedAt: props.buybackReadAt },
+  }),
+}));
+
+/** The watchlist shown; all of them without. */
+const openId = ref<string>();
+const open = computed(() => lists.value.find((list) => list.id === openId.value));
+// A watchlist deleted on another device goes back to all of them.
+watch(open, (list) => {
+  if (!list && loaded.value) openId.value = undefined;
+});
+
+/** Writes the watchlist; its new state shows at once, the storage's change confirms it. */
+async function store(list: Watchlist) {
+  await saveWatchlist(list, props.demo);
+  const index = lists.value.findIndex((other) => other.id === list.id);
+  lists.value =
+    index < 0
+      ? [...lists.value, list]
+      : lists.value.map((other, at) => (at === index ? list : other));
+}
+
+/*
+ * The names and values of its pledges as the lists show them now, so a pledge that leaves later
+ * keeps them (`withLastSeen`). Only for the watchlist shown, and only when something changed.
+ */
+watch(
+  [open, pledgeLists],
+  ([list, known]) => {
+    if (!list) return;
+    const fresh = withLastSeen(list, known);
+    if (fresh !== list) void store(fresh).catch(() => undefined);
+  },
+  { immediate: true },
+);
+
+// ---- Creating, editing, deleting ----
+
+const dialog = ref<{ list?: Watchlist } | null>(null);
+const error = ref<string>();
+const busy = ref(false);
+function openDialog(list?: Watchlist) {
+  error.value = undefined;
+  dialog.value = list ? { list } : {};
+}
+
+async function save(fields: {
+  name: string;
+  description: string;
+  dueAt: number | null;
+  reminder: boolean;
+}) {
+  const now = Date.now();
+  const editing = dialog.value?.list;
+  const list = editing
+    ? updateWatchlist(editing, fields, now)
+    : createWatchlist({ ...fields, dueAt: fields.dueAt ?? undefined }, now);
+  busy.value = true;
+  error.value = undefined;
+  try {
+    await store(list);
+    dialog.value = null;
+    // A new watchlist opens, to fill it.
+    if (!editing) openId.value = list.id;
+  } catch (cause) {
+    error.value =
+      cause instanceof WatchlistQuotaError
+        ? i18n.t(quotaMessageKey(cause.limit))
+        : i18n.t('watchlists.saveFailed', [cause instanceof Error ? cause.message : String(cause)]);
+  } finally {
+    busy.value = false;
+  }
+}
+
+async function remove(list: Watchlist) {
+  await deleteWatchlist(list.id, props.demo);
+  lists.value = lists.value.filter((other) => other.id !== list.id);
+  openId.value = undefined;
+}
+
+function removeEntry(list: Watchlist, key: string) {
+  const next = removeItem(list, key, Date.now());
+  if (next !== list) void store(next);
+}
 </script>
 
 <template>
-  <section class="shm-watchlists" aria-labelledby="shm-watchlists-title">
-    <h3 id="shm-watchlists-title" class="shm-store-title shm-watchlists-title">
-      <SvgIcon name="clipboard-list" />
-      {{ i18n.t('tabs.watchlists') }}
-    </h3>
+  <WatchlistView
+    v-if="open"
+    :key="open.id"
+    :list="open"
+    :pledges="pledges"
+    :buyback="buyback"
+    :settings="settings"
+    :lists="pledgeLists"
+    :active="active"
+    @back="openId = undefined"
+    @edit="openDialog(open)"
+    @delete="remove(open)"
+    @remove="removeEntry(open, $event)"
+  />
+  <section v-else class="shm-watchlists" aria-labelledby="shm-watchlists-title">
+    <header class="shm-watchlists-header">
+      <h3 id="shm-watchlists-title" class="shm-store-title shm-watchlists-title">
+        <SvgIcon name="clipboard-list" />
+        {{ i18n.t('tabs.watchlists') }}
+      </h3>
+      <button type="button" class="shm-button shm-watchlists-new" @click="openDialog()">
+        <SvgIcon name="plus" />
+        {{ i18n.t('watchlists.new') }}
+      </button>
+    </header>
     <p class="shm-watchlists-intro">{{ i18n.t('watchlists.intro') }}</p>
-    <ul v-if="lists.length" class="shm-watchlists-list">
-      <li v-for="list in lists" :key="list.id">
-        <span class="shm-watchlists-name">{{ list.name }}</span>
-        <span class="shm-watchlists-count">{{ count(list) }}</span>
+    <ul v-if="lists.length" class="shm-rows shm-watchlists-list">
+      <li v-for="list in lists" :key="list.id" class="shm-row shm-watchlists-row">
+        <button type="button" class="shm-watchlists-open" @click="openId = list.id">
+          <span class="shm-watchlists-text">
+            <span class="shm-watchlists-name">{{ list.name }}</span>
+            <WatchlistMeta :list="list" />
+            <span v-if="list.description" class="shm-watchlists-description">
+              {{ list.description }}
+            </span>
+          </span>
+          <SvgIcon class="shm-watchlists-chevron" name="chevron-right" />
+        </button>
       </li>
     </ul>
-    <p v-else class="shm-watchlists-empty">{{ i18n.t('watchlists.empty') }}</p>
+    <p v-else-if="loaded" class="shm-watchlists-empty">{{ i18n.t('watchlists.empty') }}</p>
   </section>
+
+  <WatchlistDialog
+    v-if="dialog"
+    :list="dialog.list"
+    :error="error"
+    :busy="busy"
+    @save="save"
+    @close="dialog = null"
+  />
 </template>
 
-<style scoped>
+<style src="@/hangar/components/row.css"></style>
+
+<style>
 .shm-watchlists {
   display: flex;
   flex-direction: column;
@@ -58,16 +218,39 @@ const count = (list: Watchlist) =>
   margin-top: 20px;
 }
 
-.shm-watchlists-title {
+.shm-watchlists-header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  gap: 8px 12px;
   padding-bottom: 10px;
   border-bottom: 1px solid rgb(var(--shm-accent-rgb) / 0.2);
 }
 
+.shm-watchlists-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/*
+ * Heavier than RSI's `#billing .content h3`, which adds a line under every h3 (an ID by
+ * `:not(#shm-none)`, two classes).
+ */
+.shm-watchlists-header .shm-watchlists-title:not(#shm-none) {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
 .shm-watchlists-title .shm-icon {
   color: var(--shm-accent);
+}
+
+.shm-watchlists-new.shm-button {
+  min-height: 32px;
+  padding: 6px 12px;
 }
 
 .shm-watchlists-intro,
@@ -77,22 +260,68 @@ const count = (list: Watchlist) =>
 }
 
 .shm-watchlists-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.shm-watchlists-list li {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
+.shm-row.shm-watchlists-row {
+  content-visibility: visible;
 }
 
-.shm-watchlists-count {
+/* The whole row opens the watchlist, as a disclosure row in a list. */
+.shm-watchlists-open {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.shm-watchlists-open:hover .shm-watchlists-name,
+.shm-watchlists-open:focus-visible .shm-watchlists-name {
+  color: var(--shm-text-strong);
+}
+
+.shm-watchlists-open:focus-visible {
+  outline: 2px solid var(--shm-accent);
+  outline-offset: -2px;
+}
+
+.shm-watchlists-text {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.shm-watchlists-name {
+  overflow: hidden;
+  color: var(--shm-text);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shm-watchlists-description {
+  overflow: hidden;
+  color: var(--shm-text-secondary);
+  font-size: calc(12px * var(--shm-font-scale));
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shm-watchlists-chevron {
+  flex: none;
   color: var(--shm-text-muted);
-  font-variant-numeric: tabular-nums;
 }
 </style>

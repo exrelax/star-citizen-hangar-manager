@@ -91,6 +91,13 @@ const props = defineProps<{
    * `factsOf` tells what an entry is; without it the list has no grouped view.
    */
   grouping?: { on: boolean; factsOf: (entry: T) => GroupFacts };
+  /**
+   * A search from outside, e.g. the one field above all lists of a watchlist (#467): the list's own
+   * field is then hidden.
+   */
+  search?: string;
+  /** Without the search field and the filters, e.g. a watchlist's while they are hidden (#467). */
+  hideControls?: boolean;
   /** Texts of a list of other entries than pledges (e.g. warbond offers); pledges' by default. */
   texts?: Partial<Record<CountText, PluralKey> & Record<ListText, MessageKey>>;
 }>();
@@ -127,6 +134,13 @@ defineSlots<{
 // Pre-filled from the page URL, e.g. `…/account/pledges?search=polaris#hangar-manager`, and kept
 // in it, so a reload or bookmark keeps the search. `replaceState` adds no history entries.
 const query = ref(props.active ? searchFromUrl(location.search) : '');
+watch(
+  () => props.search,
+  (search) => {
+    if (search !== undefined) query.value = search;
+  },
+  { immediate: true },
+);
 
 let urlTimer: ReturnType<typeof setTimeout> | undefined;
 const writeSearchToUrl = () => {
@@ -440,8 +454,8 @@ const countLabel = computed(() => {
 <template>
   <div class="shm-list">
     <!-- Search first, then the filters: one block, as the filters narrow down what is found. -->
-    <div class="shm-controls">
-      <span class="shm-search-field">
+    <div v-if="!hideControls && (search === undefined || filters.length)" class="shm-controls">
+      <span v-if="search === undefined" class="shm-search-field">
         <SvgIcon class="shm-search-icon" name="magnifying-glass" />
         <input
           ref="search"

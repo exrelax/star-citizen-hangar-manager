@@ -559,7 +559,7 @@ html .shm-theme-modern .shm-store-title {
 
 /* A single consultant's name in the tab "Consultants" (#453): as big as the sub tabs it replaces. */
 html .shm-theme-modern .shm-consultants-heading .shm-store-title,
-html .shm-theme-modern .shm-watchlists-title.shm-store-title {
+html .shm-theme-modern .shm-watchlists-title.shm-store-title:not(#shm-none) {
   font-size: calc(15px * var(--shm-font-scale));
   font-weight: 650;
 }
@@ -779,6 +779,17 @@ html .shm-theme-modern .shm-sidebar-button[aria-pressed='true']:not(:disabled):h
 html .shm-theme-modern .shm-sidebar-button[aria-pressed='true']:not(:disabled):focus-visible {
   color: var(--shm-text-on-accent);
   background: var(--shm-accent);
+}
+
+html .shm-theme-modern .shm-button.is-prominent,
+html .shm-theme-modern .shm-button.is-prominent:not(:disabled):hover,
+html .shm-theme-modern .shm-button.is-prominent:not(:disabled):focus-visible {
+  color: var(--shm-text-on-accent);
+  background: var(--shm-accent);
+}
+
+html .shm-theme-modern .shm-button.is-prominent:not(:disabled):hover {
+  filter: brightness(1.1);
 }
 
 html .shm-theme-modern .shm-button.is-danger {
@@ -1123,12 +1134,22 @@ html .shm-theme-modern .shm-segment.is-selected {
 }
 
 html .shm-theme-modern .shm-select,
-html .shm-theme-modern .shm-input {
+html .shm-theme-modern .shm-input,
+html .shm-theme-modern .shm-watchlist-input {
   height: 32px;
   color: var(--shm-text);
   background-color: var(--shm-fill);
   border: 0;
   border-radius: var(--shm-radius-control);
+}
+
+/* A watchlist's description (#467): as tall as its lines. */
+html .shm-theme-modern .shm-watchlist-textarea {
+  height: auto;
+}
+
+html .shm-theme-modern .shm-watchlist-input:focus-visible {
+  box-shadow: 0 0 0 3px rgb(var(--shm-accent-rgb) / 0.35);
 }
 
 /* The filter lists inside their group: rows with separators instead of outlined cells. */

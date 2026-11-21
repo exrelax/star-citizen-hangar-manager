@@ -5,7 +5,8 @@ import { highlightClasses } from '@/hangar/highlights';
 import { FILTER_HIGHLIGHTS } from '@/config';
 import { i18n } from '@/i18n';
 import type { Settings } from '@/settings/settings';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import type { EmbeddedList } from '@/watchlists/embedded-list';
 import { BUYBACK_FILTER_PREDICATES, type BuybackFilter, type BuybackView } from '../buyback-view';
 import { giftableHint } from '../giftable-hint';
 import BuybackRow from './BuybackRow.vue';
@@ -24,6 +25,8 @@ const props = defineProps<{
   pledges: BuybackView[];
   settings: Settings;
   active: boolean;
+  /** Shown inside another view, e.g. a watchlist (#467): as `PledgeList`'s `embedded`. */
+  embedded?: EmbeddedList;
 }>();
 
 const displayClasses = computed(() => ({
@@ -66,14 +69,24 @@ const filterGroups = computed(() =>
 
 // Only by date: RSI's buy back shows neither value nor discount.
 const { update } = useSettings();
-const sorted = computed(() => sortEntries(props.pledges, props.settings.sort.buyback));
+const ownSort = ref<BuybackSort>(props.settings.sort.buyback);
+const sort = computed(() => (props.embedded ? ownSort.value : props.settings.sort.buyback));
+const sorted = computed(() => sortEntries(props.pledges, sort.value));
 const sortOptions = computed(() =>
   BUYBACK_SORTS.map((value) => ({ value, label: i18n.t(`sort.${value}`) })),
 );
-const setSort = (buyback: BuybackSort) => update({ sort: { ...props.settings.sort, buyback } });
-/** The grouped view (#447), remembered for this list. */
-const setGrouped = (buyback: boolean) =>
-  update({ grouped: { ...props.settings.grouped, buyback } });
+const setSort = (buyback: BuybackSort) => {
+  if (props.embedded) ownSort.value = buyback;
+  else update({ sort: { ...props.settings.sort, buyback } });
+};
+/** The grouped view (#447), remembered for this list (all watchlists share one). */
+const groupedOn = computed(() =>
+  props.embedded ? props.settings.grouped.watchlists : props.settings.grouped.buyback,
+);
+const setGrouped = (on: boolean) =>
+  update({
+    grouped: { ...props.settings.grouped, [props.embedded ? 'watchlists' : 'buyback']: on },
+  });
 
 /** What the included filters are about, highlighted in the rows (#216). */
 const highlights = (states: FilterStates<BuybackFilter>) =>
@@ -105,11 +118,13 @@ const filterHint = (filter: BuybackFilter) => {
     :filter-hint="filterHint"
     :active="active"
     :sort-options="sortOptions"
-    :sort="settings.sort.buyback"
+    :sort="sort"
     :highlights="highlights"
-    :include-request="buybackFilterRequest"
-    :view-request="listViewRequest?.tab === 'buyback' ? listViewRequest : null"
-    :grouping="{ on: settings.grouped.buyback, factsOf: buybackFacts }"
+    :include-request="embedded ? null : buybackFilterRequest"
+    :view-request="!embedded && listViewRequest?.tab === 'buyback' ? listViewRequest : null"
+    :grouping="{ on: groupedOn, factsOf: buybackFacts }"
+    :search="embedded?.search"
+    :hide-controls="embedded?.hideControls"
     @update:sort="setSort"
     @update:grouped="setGrouped"
   >
