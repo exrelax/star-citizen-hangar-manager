@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import PaintWatch from '@/watchlists/components/PaintWatch.vue';
 import { useDemoContext } from '@/demo/use-demo';
 import { formatPercent, formatUsd } from '@/hangar/discount-format';
 import SvgIcon from '@/icons/SvgIcon.vue';
@@ -443,6 +444,14 @@ watch(
                 <tr v-for="paint in plan.own" :key="paint.pledgeId">
                   <th scope="row">
                     {{ paint.storePaint.name }}
+                    <!-- The paint of the Pledge Store on watchlists (#470). -->
+                    <PaintWatch
+                      :paint="{
+                        skuId: paint.storePaint.id,
+                        name: paint.storePaint.name,
+                        price: paint.storePaint.price,
+                      }"
+                    />
                     <span
                       v-if="paint.giftable"
                       v-tooltip="i18n.t('consultant.giftableTagHint')"

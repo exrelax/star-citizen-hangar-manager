@@ -1962,6 +1962,20 @@
     "reminderBrowserOff": "Las notificaciones del navegador están desactivadas en este navegador: el recordatorio solo aparece en la barra lateral.",
     "reminderBrowserAsked": "Permite las notificaciones en la página que se abrió.",
     "reminderBrowserAllow": "Permitir notificaciones del navegador",
-    "reminderKindOff": "Los recordatorios de watchlists están desactivados en los ajustes (Notificaciones)."
+    "reminderKindOff": "Los recordatorios de watchlists están desactivados en los ajustes (Notificaciones).",
+    "ccuBase": "Nave base del CCU",
+    "ccuFrom": "Desde $1 · $2",
+    "ccuName": "Upgrade - $1 to $2",
+    "count": "Cantidad",
+    "countLess": "Uno menos",
+    "countMore": "Uno más",
+    "kindCcu": "CCU hacia ella",
+    "kindLabel": "Qué va a la watchlist",
+    "kindShip": "Nave independiente",
+    "notOnSale": "No está a la venta ahora",
+    "notSellable": "RSI no puede vender este CCU",
+    "onSale": "A la venta ahora",
+    "putOn": "Poner «$1» en una watchlist",
+    "warbondPrice": "Warbond $1"
   }
 }

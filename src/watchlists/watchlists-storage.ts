@@ -19,7 +19,10 @@ export const SYNC_QUOTA = { perItem: 8192, total: 102_400, maxItems: 512 } as co
 
 const VERSION = 1;
 
-/** An item as stored: [kind, its id, name, added (s), value?, count?]. */
+/**
+ * An item as stored: [kind, its id, name, added (s), value?, count?]. A CCU's id is
+ * `<from>-<to>`, a standalone ship's `<ship>` or `<ship>:<insurance>` (`lti` or months, #470).
+ */
 type StoredItem =
   | [
       kind: 'h' | 'b' | 'p',
@@ -29,7 +32,14 @@ type StoredItem =
       value?: number | null,
       count?: number,
     ]
-  | [kind: 'c', ref: string, name: string, addedAt: number, value?: number | null, count?: number];
+  | [
+      kind: 'c' | 's',
+      ref: string,
+      name: string,
+      addedAt: number,
+      value?: number | null,
+      count?: number,
+    ];
 
 /** A watchlist as stored. */
 export interface StoredWatchlist {
@@ -75,6 +85,13 @@ function encodeItem(item: WatchItem): StoredItem {
       return tail(['p', item.skuId, item.name, added]);
     case 'storeCcu':
       return tail(['c', `${item.fromShipId}-${item.toShipId}`, item.name, added]);
+    case 'storeShip':
+      return tail([
+        's',
+        item.insurance === undefined ? `${item.shipId}` : `${item.shipId}:${item.insurance}`,
+        item.name,
+        added,
+      ]);
   }
 }
 
@@ -99,6 +116,19 @@ function decodeItem(stored: unknown): WatchItem | undefined {
     if (!match) return undefined;
     const [fromShipId, toShipId] = [Number(match[1]), Number(match[2])];
     return { kind: 'storeCcu', fromShipId, toShipId, ...common, ...storeCount };
+  }
+  if (kind === 's' && typeof ref === 'string') {
+    const match = /^(\d+)(?::(lti|\d+))?$/.exec(ref);
+    if (!match) return undefined;
+    const insurance =
+      match[2] === undefined ? undefined : match[2] === 'lti' ? 'lti' : Number(match[2]);
+    return {
+      kind: 'storeShip',
+      shipId: Number(match[1]),
+      ...(insurance !== undefined && { insurance }),
+      ...common,
+      ...storeCount,
+    } as WatchItem;
   }
   return undefined;
 }

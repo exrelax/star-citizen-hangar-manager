@@ -139,3 +139,38 @@ describe('a dismissed reminder (#469)', () => {
     expect(encodeWatchlist(full())).not.toHaveProperty('x');
   });
 });
+
+describe('standalone ships of the Pledge Store (#470)', () => {
+  it('are stored with their insurance and count, each insurance an item of its own', async () => {
+    let list = createWatchlist({ name: 'Rebuy' }, NOW, 's1');
+    list = addItem(list, { kind: 'storeShip', shipId: 9, name: 'Aurora', insurance: 'lti' }, NOW);
+    list = addItem(
+      list,
+      { kind: 'storeShip', shipId: 9, name: 'Aurora', insurance: 120, count: 2, value: 25 },
+      NOW,
+    );
+    list = addItem(list, { kind: 'storeShip', shipId: 10, name: 'Cutlass' }, NOW);
+    expect(list.items).toHaveLength(3);
+    await saveWatchlist(list);
+    const [read] = await loadWatchlists();
+    expect(read?.items).toEqual([
+      { kind: 'storeShip', shipId: 9, insurance: 'lti', name: 'Aurora', addedAt: NOW, count: 1 },
+      {
+        kind: 'storeShip',
+        shipId: 9,
+        insurance: 120,
+        name: 'Aurora',
+        addedAt: NOW,
+        value: 25,
+        count: 2,
+      },
+      { kind: 'storeShip', shipId: 10, name: 'Cutlass', addedAt: NOW, count: 1 },
+    ]);
+  });
+
+  it('leaves out a ship of an unknown format', () => {
+    const stored = { ...encodeWatchlist(createWatchlist({ name: 'x' }, NOW)) };
+    stored.i = [['s', '9:forever', 'Aurora', 1] as never];
+    expect(decodeWatchlist('x', stored)?.items).toEqual([]);
+  });
+});

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import PaintWatch from '@/watchlists/components/PaintWatch.vue';
 import { i18n } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import type { Settings } from '@/settings/settings';
@@ -45,6 +46,9 @@ const {
   startPlan,
   chart,
 } = usePaintWays(props);
+/** A paint's standard price, for its entry on a watchlist (#470). */
+const watchPrice = (card: { prices: Partial<Record<string, { price: number }>> }) =>
+  Object.values(card.prices)[0]?.price;
 </script>
 
 <template>
@@ -152,6 +156,8 @@ const {
               <SvgIcon v-if="card.filler" name="clock-rotate-left" />
               {{ card.filler ? i18n.t('consultant.fillerTag') : i18n.t('consultant.ways.ownTag') }}
             </span>
+            <!-- The paint of the Pledge Store on watchlists (#470), in the image's corner. -->
+            <PaintWatch :paint="{ skuId: card.skuId, name: card.name, price: watchPrice(card) }" />
           </span>
           <span class="shm-ways-paint-name" :title="card.name">{{ card.name }}</span>
           <span class="shm-ways-paint-prices shm-ways-mono">
@@ -762,6 +768,19 @@ const {
   overflow: hidden;
   background: var(--shm-ways-track);
   border-radius: var(--shm-radius-item);
+}
+
+/* A paint on watchlists (#470): in the image's top right corner, on a dark disc like the tags. */
+.shm-ways-paint-image .shm-paint-watch {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgb(5 12 19 / 0.72);
+  border-radius: var(--shm-radius-pill);
+}
+
+.shm-ways-paint-image .shm-paint-watch:not(.is-on) {
+  color: var(--shm-text-secondary);
 }
 
 .shm-ways-paint-image img {

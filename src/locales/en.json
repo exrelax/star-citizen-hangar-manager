@@ -1962,6 +1962,20 @@
     "reminderBrowserOff": "Browser notifications are off in this browser: the reminder shows in the sidebar only.",
     "reminderBrowserAsked": "Allow the notifications on the page that opened.",
     "reminderBrowserAllow": "Allow browser notifications",
-    "reminderKindOff": "Watchlist reminders are turned off in the settings (Notifications)."
+    "reminderKindOff": "Watchlist reminders are turned off in the settings (Notifications).",
+    "ccuBase": "Base ship of the CCU",
+    "ccuFrom": "From $1 · $2",
+    "ccuName": "Upgrade - $1 to $2",
+    "count": "Count",
+    "countLess": "One less",
+    "countMore": "One more",
+    "kindCcu": "CCU to it",
+    "kindLabel": "What to put on the watchlist",
+    "kindShip": "Standalone ship",
+    "notOnSale": "Not on sale now",
+    "notSellable": "RSI can’t sell this CCU",
+    "onSale": "On sale now",
+    "putOn": "Put “$1” on a watchlist",
+    "warbondPrice": "Warbond $1"
   }
 }
