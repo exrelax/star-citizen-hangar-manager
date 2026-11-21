@@ -3,7 +3,7 @@ import { FEATURES } from '@/config';
 import type { IconName, IconSet } from '@/icons/icon-names';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
-import { nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 
 /*
  * The manager's tabs, also used for other choices of a few options (the styleguide's theme). Each
@@ -65,6 +65,54 @@ function place(withSlide: boolean) {
   indicator.value = { left, top, width, height };
 }
 
+/*
+ * Too narrow for the labels (#466): once a label would be cut, every tab shows only its icon, with
+ * its label as tooltip and accessible name, as long as each tab has an icon. The bar's width at that
+ * moment is remembered: only wider than it the labels come back, so the tabs never flip back and
+ * forth.
+ */
+const compact = ref(false);
+let compactBelow = 0;
+const canCompact = computed(() => props.items.every((item) => item.icon));
+const iconOnly = (item: { iconOnly?: boolean }) => item.iconOnly || compact.value;
+function fit() {
+  const width = bar.value?.clientWidth ?? 0;
+  if (!canCompact.value) {
+    compact.value = false;
+    return;
+  }
+  if (compact.value) {
+    if (width > compactBelow) {
+      compact.value = false;
+      void nextTick(fit);
+    }
+    return;
+  }
+  const cut = [...(bar.value?.querySelectorAll<HTMLElement>('.shm-tab-label') ?? [])].some(
+    (label) => label.scrollWidth > label.clientWidth + 1,
+  );
+  if (cut) {
+    compactBelow = width;
+    compact.value = true;
+  }
+}
+let fitObserver: ResizeObserver | undefined;
+onMounted(() => {
+  fitObserver = new ResizeObserver(() => fit());
+  if (bar.value) fitObserver.observe(bar.value);
+  fit();
+});
+onUnmounted(() => fitObserver?.disconnect());
+// Other labels (another language): measured again with their labels shown.
+watch(
+  () => props.items.map((item) => `${item.label}|${item.count ?? ''}|${item.icon ?? ''}`).join(),
+  async () => {
+    compact.value = false;
+    await nextTick();
+    fit();
+  },
+);
+
 let observer: ResizeObserver | undefined;
 if (slide) {
   watch(
@@ -109,7 +157,8 @@ if (slide) {
       'has-indicator': slide && indicator,
       'is-fit-content': fitContent,
       'is-underline': underline,
-      'has-icon-only': items.some((item) => item.iconOnly),
+      'has-icon-only': items.some(iconOnly),
+      'is-compact': compact,
     }"
     :role="panels ? 'tablist' : 'group'"
     :aria-label="label"
@@ -129,19 +178,19 @@ if (slide) {
       v-for="item in items"
       :id="panels && `${panels}-tab-${item.id}`"
       :key="item.id"
-      v-tooltip="item.iconOnly ? item.label : undefined"
+      v-tooltip="iconOnly(item) ? item.label : undefined"
       type="button"
       :role="panels ? 'tab' : undefined"
       class="shm-tab"
-      :class="{ 'is-active': selected === item.id, 'is-icon-only': item.iconOnly }"
-      :aria-label="item.iconOnly ? item.label : undefined"
+      :class="{ 'is-active': selected === item.id, 'is-icon-only': iconOnly(item) }"
+      :aria-label="iconOnly(item) ? item.label : undefined"
       :aria-selected="panels ? selected === item.id : undefined"
       :aria-pressed="panels ? undefined : selected === item.id"
       :aria-controls="panels && `${panels}-panel-${item.id}`"
       @click="emit('select', item.id)"
     >
       <SvgIcon v-if="item.icon" :name="item.icon" :set="item.iconSet" />
-      <span v-if="!item.iconOnly" class="shm-tab-label">{{ item.label }}</span>
+      <span v-if="!iconOnly(item)" class="shm-tab-label">{{ item.label }}</span>
       <!-- A space, so the tab's name reads "Label 3", not "Label3". -->
       <template v-if="item.count !== undefined">
         {{ ' '
@@ -236,6 +285,11 @@ if (slide) {
   height: max(100%, 44px);
   content: '';
   transform: translateY(-50%);
+}
+
+/* Too narrow for the labels: every tab its icon, sharing the bar's width. */
+.shm-tabs.is-compact .shm-tab.is-icon-only {
+  flex: 1 1 0;
 }
 
 /* Underline tabs (`underline`): the parts of one section, further apart. */

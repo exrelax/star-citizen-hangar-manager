@@ -158,6 +158,7 @@
     "buyback": "Buy Back",
     "store": "Pledge Store",
     "consultants": "Berater",
+    "watchlists": "Watchlists",
     "settings": "Einstellungen",
     "settingsName": "Einstellungen des Hangar Managers"
   },
@@ -1890,6 +1891,12 @@
     "paintLater": "Der Paint-Rabatt-Berater erscheint hier, sobald sich Paints günstiger neu kaufen lassen."
   },
   "watchlists": {
+    "intro": "Sammle Einträge aus My Hangar, dem Buy Back und dem Pledge Store unter einem Namen deiner Wahl, z. B. „Nach der IAE einschmelzen“ oder „CCUs kaufen, sobald wieder verfügbar“.",
+    "empty": "Noch keine Watchlists.",
+    "items": {
+      "one": "$1 Eintrag",
+      "other": "$1 Einträge"
+    },
     "quota": {
       "list": "Diese Watchlist ist zu groß für den synchronisierten Speicher des Browsers. Entferne einige Einträge oder verteile sie auf eine andere Watchlist.",
       "total": "Der synchronisierte Speicher des Browsers ist voll. Entferne Einträge oder Watchlists, die du nicht mehr brauchst.",

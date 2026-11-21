@@ -158,6 +158,7 @@
     "buyback": "Buy Back",
     "store": "Pledge Store",
     "consultants": "Conseillers",
+    "watchlists": "Watchlists",
     "settings": "Paramètres",
     "settingsName": "Paramètres du Hangar Manager"
   },
@@ -1890,6 +1891,12 @@
     "paintLater": "Le Conseiller de remises sur les peintures apparaît ici dès que des peintures peuvent être rachetées moins cher."
   },
   "watchlists": {
+    "intro": "Rassemble des éléments de My Hangar, du rachat et du Pledge Store sous un nom de ton choix, p. ex. « Fondre après l’IAE » ou « CCU à acheter dès leur retour ».",
+    "empty": "Aucune watchlist pour l’instant.",
+    "items": {
+      "one": "$1 élément",
+      "other": "$1 éléments"
+    },
     "quota": {
       "list": "Cette watchlist est trop grande pour le stockage synchronisé du navigateur. Retire quelques éléments ou mets-les sur une autre watchlist.",
       "total": "Le stockage synchronisé du navigateur est plein. Retire les éléments ou les watchlists dont tu n'as plus besoin.",
