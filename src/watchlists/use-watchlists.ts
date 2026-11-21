@@ -28,6 +28,8 @@ import {
 const lists = shallowRef<Watchlist[]>([]);
 const loaded = ref(false);
 let demoMode = false;
+/** Whether the watchlists shown are the demo's (#474). */
+export const watchlistsDemo = ref(false);
 
 /** Every watchlist, in the user's order. */
 export const watchlists = computed(() => lists.value);
@@ -54,6 +56,7 @@ export function followWatchlists(demo: Ref<boolean>): () => void {
     stop?.();
     stop = undefined;
     demoMode = on;
+    watchlistsDemo.value = on;
     loaded.value = false;
     const read = await loadWatchlists(on);
     if (current !== run) return;

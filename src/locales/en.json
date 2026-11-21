@@ -449,7 +449,9 @@
     "sidebarCcuConsultantHint": "Shown while your hangar has CCUs: how many have no base ship, will soon have none, or have too few ways to it, with a button to the CCU Consultant.",
     "watchlistNotifications": "Watchlists",
     "notificationKindWatchlistReminders": "Watchlist reminders",
-    "notificationKindWatchlistRemindersHint": "At the date of a watchlist with a reminder, in the sidebar and, if allowed, in the browser."
+    "notificationKindWatchlistRemindersHint": "At the date of a watchlist with a reminder, in the sidebar and, if allowed, in the browser.",
+    "notificationKindWatchlistStore": "Pledge Store changes on watchlists",
+    "notificationKindWatchlistStoreHint": "A new price, no longer or again for sale, of the Pledge Store items on watchlists with these notifications on, in the sidebar and, if allowed, in the browser."
   },
   "storage": {
     "title": "Stored data",
@@ -1388,7 +1390,16 @@
     "showWatchlist": "Show watchlist",
     "dismissWatchlistReminderHint": "Removes this reminder. A new date of the watchlist reminds again.",
     "browserWatchlistReminderTitle": "Watchlist reminder",
-    "browserWatchlistReminder": "“$1” · $2"
+    "browserWatchlistReminder": "“$1” · $2",
+    "watchlistStore": {
+      "one": "A Pledge Store item on “$1” changed:",
+      "other": "$2 Pledge Store items on “$1” changed:"
+    },
+    "watchlistStorePrice": "$1: $2 → $3",
+    "watchlistStoreGone": "$1: no longer on sale",
+    "watchlistStoreBack": "$1: on sale again",
+    "dismissWatchlistStoreHint": "Removes this notification. The next change of these items shows again.",
+    "browserWatchlistStoreTitle": "Watchlist: Pledge Store changes"
   },
   "gift": {
     "button": "Gift",
@@ -1976,6 +1987,9 @@
     "notSellable": "RSI can’t sell this CCU",
     "onSale": "On sale now",
     "putOn": "Put “$1” on a watchlist",
-    "warbondPrice": "Warbond $1"
+    "warbondPrice": "Warbond $1",
+    "storeAlerts": "Notify on Pledge Store changes",
+    "storeAlertsHint": "When an item of the Pledge Store on it gets a new price, or goes off or on sale.",
+    "storeAlertsKindOff": "Pledge Store changes on watchlists are turned off in the settings (Notifications)."
   }
 }

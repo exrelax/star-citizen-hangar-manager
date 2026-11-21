@@ -321,6 +321,13 @@ async function restore() {
     >
       {{ i18n.t('settings.notificationKindWatchlistReminders') }}
     </SettingCheck>
+    <SettingCheck
+      :checked="kindOn('watchlistStore')"
+      :hint="i18n.t('settings.notificationKindWatchlistStoreHint')"
+      @change="(on) => setKind('watchlistStore', on)"
+    >
+      {{ i18n.t('settings.notificationKindWatchlistStore') }}
+    </SettingCheck>
   </SettingsGroup>
 
   <SettingsGroup :title="i18n.t('settings.sidebarNotifications')">

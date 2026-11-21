@@ -31,7 +31,15 @@ const props = defineProps<{
   busy?: boolean;
 }>();
 const emit = defineEmits<{
-  save: [fields: { name: string; description: string; dueAt: number | null; reminder: boolean }];
+  save: [
+    fields: {
+      name: string;
+      description: string;
+      dueAt: number | null;
+      reminder: boolean;
+      storeAlerts: boolean;
+    },
+  ];
   close: [];
 }>();
 
@@ -43,6 +51,8 @@ const description = ref(props.list?.description ?? '');
 const due = ref(props.list?.dueAt !== undefined ? toLocalInput(props.list.dueAt) : '');
 // A new list with a date reminds by default, as `createWatchlist` does.
 const reminder = ref(props.list?.reminder ?? true);
+/** Notifications on changes of its Pledge Store items (#472), on by default. */
+const storeAlerts = ref(props.list?.storeAlerts ?? true);
 const dueAt = computed(() => fromLocalInput(due.value));
 const canSave = computed(() => !!name.value.trim() && !props.busy);
 
@@ -53,6 +63,7 @@ const canSave = computed(() => !!name.value.trim() && !props.busy);
  */
 const allowed = useStored(browserNotificationsItem);
 const kindOn = computed(() => isKindOn(settings.value.notificationsOff, 'watchlistReminders'));
+const storeKindOn = computed(() => isKindOn(settings.value.notificationsOff, 'watchlistStore'));
 const asked = ref(false);
 function allowBrowser() {
   asked.value = true;
@@ -66,6 +77,7 @@ function save() {
     description: description.value,
     dueAt: dueAt.value ?? null,
     reminder: dueAt.value !== undefined && reminder.value,
+    storeAlerts: storeAlerts.value,
   });
 }
 
@@ -194,6 +206,17 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
               </button>
             </template>
           </div>
+          <!-- Changes of its Pledge Store items (#472): a new price, no longer or again for sale. -->
+          <label class="shm-watchlist-reminder">
+            <span class="shm-watchlist-reminder-text">
+              <span>{{ i18n.t('watchlists.storeAlerts') }}</span>
+              <span class="shm-hint">{{ i18n.t('watchlists.storeAlertsHint') }}</span>
+            </span>
+            <input v-model="storeAlerts" type="checkbox" role="switch" class="shm-switch" />
+          </label>
+          <p v-if="storeAlerts && !storeKindOn" class="shm-watchlist-reminder-status" role="status">
+            {{ i18n.t('watchlists.storeAlertsKindOff') }}
+          </p>
           <p v-if="error" class="shm-overlay-note is-error" role="alert">{{ error }}</p>
           <div class="shm-watchlist-actions">
             <button type="button" class="shm-button" @click="emit('close')">

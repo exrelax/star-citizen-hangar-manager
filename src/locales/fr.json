@@ -449,7 +449,9 @@
     "sidebarCcuConsultantHint": "Affichée tant que votre hangar a des CCU : combien n’ont pas de vaisseau de base, n’en auront bientôt plus ou ont trop peu d’accès, avec un bouton vers le CCU Consultant.",
     "watchlistNotifications": "Watchlists",
     "notificationKindWatchlistReminders": "Rappels des watchlists",
-    "notificationKindWatchlistRemindersHint": "À la date d’une watchlist avec rappel, dans la barre latérale et, si autorisé, dans le navigateur."
+    "notificationKindWatchlistRemindersHint": "À la date d’une watchlist avec rappel, dans la barre latérale et, si autorisé, dans le navigateur.",
+    "notificationKindWatchlistStore": "Changements du Pledge Store sur les watchlists",
+    "notificationKindWatchlistStoreHint": "Un nouveau prix, plus ou de nouveau en vente, des éléments du Pledge Store sur les watchlists avec ces notifications, dans la barre latérale et, si autorisé, dans le navigateur."
   },
   "storage": {
     "title": "Données enregistrées",
@@ -1388,7 +1390,16 @@
     "showWatchlist": "Afficher la watchlist",
     "dismissWatchlistReminderHint": "Retire ce rappel. Une nouvelle date de la watchlist rappelle à nouveau.",
     "browserWatchlistReminderTitle": "Rappel d’une watchlist",
-    "browserWatchlistReminder": "« $1 » · $2"
+    "browserWatchlistReminder": "« $1 » · $2",
+    "watchlistStore": {
+      "one": "Un élément du Pledge Store sur « $1 » a changé :",
+      "other": "$2 éléments du Pledge Store sur « $1 » ont changé :"
+    },
+    "watchlistStorePrice": "$1 : $2 → $3",
+    "watchlistStoreGone": "$1 : plus en vente",
+    "watchlistStoreBack": "$1 : de nouveau en vente",
+    "dismissWatchlistStoreHint": "Retire cette notification. Le prochain changement de ces éléments la montre à nouveau.",
+    "browserWatchlistStoreTitle": "Watchlist : changements du Pledge Store"
   },
   "gift": {
     "button": "Gift",
@@ -1976,6 +1987,9 @@
     "notSellable": "RSI ne peut pas vendre ce CCU",
     "onSale": "En vente actuellement",
     "putOn": "Mettre « $1 » sur une watchlist",
-    "warbondPrice": "Warbond $1"
+    "warbondPrice": "Warbond $1",
+    "storeAlerts": "Notifier les changements du Pledge Store",
+    "storeAlertsHint": "Quand un élément du Pledge Store dessus change de prix, ou sort de la vente ou y revient.",
+    "storeAlertsKindOff": "Les changements du Pledge Store sur les watchlists sont désactivés dans les paramètres (Notifications)."
   }
 }

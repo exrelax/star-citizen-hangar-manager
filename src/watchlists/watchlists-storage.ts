@@ -51,6 +51,8 @@ export interface StoredWatchlist {
   t?: number;
   r?: 1;
   x?: number;
+  /** Notifications on changes of its Pledge Store items (`a: 1`, #472). */
+  a?: 1;
   /** Created and changed (s). */
   c: number;
   u: number;
@@ -142,6 +144,7 @@ export function encodeWatchlist(list: Watchlist): StoredWatchlist {
     ...(list.dueAt !== undefined && { t: seconds(list.dueAt) }),
     ...(list.reminder && list.dueAt !== undefined && { r: 1 as const }),
     ...(list.reminderDone !== undefined && { x: seconds(list.reminderDone) }),
+    ...(list.storeAlerts && { a: 1 as const }),
     c: seconds(list.createdAt),
     u: seconds(list.changedAt),
     i: list.items.map(encodeItem),
@@ -169,6 +172,7 @@ export function decodeWatchlist(id: string, stored: unknown): Watchlist | undefi
     ...(typeof value.t === 'number' && { dueAt: ms(value.t) }),
     reminder: value.r === 1 && typeof value.t === 'number',
     ...(typeof value.x === 'number' && { reminderDone: ms(value.x) }),
+    storeAlerts: value.a === 1,
     items,
     createdAt: ms(typeof value.c === 'number' ? value.c : 0),
     changedAt: ms(typeof value.u === 'number' ? value.u : 0),
