@@ -29,6 +29,9 @@ import { useProvidedAlwaysAvailable } from '@/ccu-consultant/always-available';
 import { alwaysAvailableHintOf, baseMissingOf } from '@/ccu-consultant/ccu-labels';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { WATCHLIST_ROW } from '@/watchlists/watchlist-row';
+import WatchlistBadge from '@/watchlists/components/WatchlistBadge.vue';
+import WatchlistPicker from '@/watchlists/components/WatchlistPicker.vue';
+import { itemKey } from '@/watchlists/watchlists';
 import { selection } from '../selection';
 import { formatTimeLeft, toggleMeltMark } from '../melt-marks';
 import { useMarkedPledges } from '../use-melt-marks';
@@ -43,6 +46,14 @@ const props = defineProps<{
 }>();
 /** In a watchlist (#467): its details offer to remove the pledge from it. */
 const watchlistRow = inject(WATCHLIST_ROW, null);
+/** The pledge on watchlists (#468): its key, and what an entry of it remembers. */
+const watchItem = computed(() => ({
+  kind: 'hangar' as const,
+  pledgeId: props.pledge.id,
+  name: props.pledge.title,
+  value: props.pledge.valueUsd,
+}));
+const watchKeys = computed(() => [itemKey(watchItem.value)]);
 
 /** The current ship of an upgraded pledge first, then the other ships. */
 const linkedShips = computed(() =>
@@ -307,6 +318,7 @@ const toggle = () => {
       </span>
 
       <span class="shm-badges">
+        <WatchlistBadge :item-keys="watchKeys" />
         <span
           v-if="meltMark"
           v-tooltip="meltMark.hint"
@@ -552,6 +564,7 @@ const toggle = () => {
           {{ i18n.t('pledge.gamesLibrary') }}<SvgIcon name="square-up-right" />
         </a>
         <ExternalLinks :ships="linkedShips" />
+        <WatchlistPicker :item="watchItem" />
       </div>
     </div>
   </div>

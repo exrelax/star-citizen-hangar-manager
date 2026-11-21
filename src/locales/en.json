@@ -1941,6 +1941,14 @@
     "nowIn": {
       "hangar": "Now in My Hangar",
       "buyback": "Now in the Buy Back"
-    }
+    },
+    "onLists": {
+      "one": "On the watchlist $1",
+      "other": "On the watchlists $1"
+    },
+    "addTo": "Add to watchlist",
+    "removeFrom": "Remove from “$1”",
+    "notOnAny": "On no watchlist yet.",
+    "newPlaceholder": "New watchlist"
   }
 }

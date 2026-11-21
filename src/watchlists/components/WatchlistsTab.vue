@@ -4,7 +4,7 @@ import type { PledgeView } from '@/hangar/pledge-view';
 import { i18n } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import type { Settings } from '@/settings/settings';
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import {
   createWatchlist,
   removeItem,
@@ -14,13 +14,12 @@ import {
   type Watchlist,
 } from '../watchlists';
 import {
-  deleteWatchlist,
-  loadWatchlists,
-  quotaMessageKey,
-  saveWatchlist,
-  watchWatchlists,
-  WatchlistQuotaError,
-} from '../watchlists-storage';
+  removeWatchlist,
+  saveErrorOf,
+  storeWatchlist as store,
+  watchlists as lists,
+  watchlistsLoaded as loaded,
+} from '../use-watchlists';
 import WatchlistDialog from './WatchlistDialog.vue';
 import WatchlistMeta from './WatchlistMeta.vue';
 import WatchlistView from './WatchlistView.vue';
@@ -42,25 +41,11 @@ const props = defineProps<{
   active: boolean;
 }>();
 
-const lists = ref<Watchlist[]>([]);
-const loaded = ref(false);
-let stop: (() => void) | undefined;
-async function follow(demo: boolean) {
-  stop?.();
-  loaded.value = false;
-  lists.value = await loadWatchlists(demo);
-  loaded.value = true;
-  stop = watchWatchlists((value) => (lists.value = value), demo);
-}
-onMounted(() => void follow(props.demo));
+// Another set of watchlists in the demo mode, or out of it.
 watch(
   () => props.demo,
-  (demo) => {
-    openId.value = undefined;
-    void follow(demo);
-  },
+  () => (openId.value = undefined),
 );
-onUnmounted(() => stop?.());
 
 /** The stored lists, to tell pledges gone from those not read yet (`presenceOf`). */
 const pledgeLists = computed((): PledgeLists => ({
@@ -79,16 +64,6 @@ const open = computed(() => lists.value.find((list) => list.id === openId.value)
 watch(open, (list) => {
   if (!list && loaded.value) openId.value = undefined;
 });
-
-/** Writes the watchlist; its new state shows at once, the storage's change confirms it. */
-async function store(list: Watchlist) {
-  await saveWatchlist(list, props.demo);
-  const index = lists.value.findIndex((other) => other.id === list.id);
-  lists.value =
-    index < 0
-      ? [...lists.value, list]
-      : lists.value.map((other, at) => (at === index ? list : other));
-}
 
 /*
  * The names and values of its pledges as the lists show them now, so a pledge that leaves later
@@ -133,18 +108,14 @@ async function save(fields: {
     // A new watchlist opens, to fill it.
     if (!editing) openId.value = list.id;
   } catch (cause) {
-    error.value =
-      cause instanceof WatchlistQuotaError
-        ? i18n.t(quotaMessageKey(cause.limit))
-        : i18n.t('watchlists.saveFailed', [cause instanceof Error ? cause.message : String(cause)]);
+    error.value = saveErrorOf(cause);
   } finally {
     busy.value = false;
   }
 }
 
 async function remove(list: Watchlist) {
-  await deleteWatchlist(list.id, props.demo);
-  lists.value = lists.value.filter((other) => other.id !== list.id);
+  await removeWatchlist(list.id);
   openId.value = undefined;
 }
 

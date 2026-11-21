@@ -19,6 +19,9 @@ import { giftableHint } from '../giftable-hint';
 import { GIFTING_FAQ_URL } from '@/config';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { WATCHLIST_ROW } from '@/watchlists/watchlist-row';
+import WatchlistBadge from '@/watchlists/components/WatchlistBadge.vue';
+import WatchlistPicker from '@/watchlists/components/WatchlistPicker.vue';
+import { itemKey } from '@/watchlists/watchlists';
 import PriceIncreaseBadge from '@/price-increases/components/PriceIncreaseBadge.vue';
 
 const props = defineProps<{
@@ -30,6 +33,14 @@ const props = defineProps<{
 }>();
 /** In a watchlist (#467): its details offer to remove the pledge from it. */
 const watchlistRow = inject(WATCHLIST_ROW, null);
+/** The pledge on watchlists (#468): its key, and what an entry of it remembers. */
+const watchItem = computed(() => ({
+  kind: 'buyback' as const,
+  pledgeId: props.pledge.id,
+  name: props.pledge.title,
+  ...(props.pledge.price && { value: props.pledge.price.amount }),
+}));
+const watchKeys = computed(() => [itemKey(watchItem.value)]);
 
 /** RSI's way of writing a value, as "My Hangar" shows it: "$1,234.50 USD". */
 const RSI_USD = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
@@ -188,6 +199,7 @@ const kind = computed(() =>
       </span>
 
       <span class="shm-badges">
+        <WatchlistBadge :item-keys="watchKeys" />
         <PriceIncreaseBadge
           v-if="pledge.priceIncrease || pledge.ccuPriceChange"
           :match="pledge.priceIncrease"
@@ -285,6 +297,7 @@ const kind = computed(() =>
         </ul>
         <p v-else class="shm-hint">{{ i18n.t('buyback.contains', [pledge.contained]) }}</p>
         <ExternalLinks :ships="pledge.ships" />
+        <WatchlistPicker :item="watchItem" />
       </div>
     </div>
   </div>

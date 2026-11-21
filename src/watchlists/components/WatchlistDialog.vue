@@ -3,6 +3,7 @@ import { i18n } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { useSettings } from '@/settings/use-settings';
 import '@/shared/styles/switch.css';
+import '../watchlists.css';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { fontScaleStyle, themeClasses } from '@/themes/theme';
 import { computed, onMounted, onUnmounted, ref, useId, useTemplateRef } from 'vue';
@@ -190,23 +191,6 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
 
 .shm-watchlist-label {
   color: var(--shm-text);
-}
-
-.shm-watchlist-input {
-  box-sizing: border-box;
-  width: 100%;
-  min-height: 32px;
-  padding: 6px 10px;
-  color: var(--shm-text);
-  font: inherit;
-  background-color: rgb(var(--shm-surface-rgb) / 0.9);
-  border: 1px solid rgb(var(--shm-accent-rgb) / 0.35);
-  color-scheme: dark;
-}
-
-.shm-watchlist-input:focus-visible {
-  border-color: var(--shm-accent);
-  outline: none;
 }
 
 .shm-watchlist-textarea {
