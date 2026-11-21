@@ -28,6 +28,10 @@ import {
 import { formatUsd } from '@/hangar/discount-format';
 import type { RunningPlanState } from '../paint-consultant/use-running-plan';
 import PaintCartButton from './PaintCartButton.vue';
+import { useStored } from '@/storage/use-stored';
+import { rebuyPlanItem } from '../paint-consultant/rebuy-plan-storage';
+import { fillerWatchlistId } from '@/watchlists/filler-watchlist';
+import { openWatchlist, watchlists } from '@/watchlists/use-watchlists';
 
 /*
  * What a step of the running plan offers now (#245): RSI's cooldown with its countdown, the
@@ -49,6 +53,15 @@ const props = defineProps<{
 const emit = defineEmits<{ discard: [] }>();
 
 const demo = useDemoContext();
+
+/** The filler paints' watchlist of the plan's order (#473), once there is one. */
+const storedPlan = useStored(rebuyPlanItem);
+const fillerList = computed(() => {
+  const orderId = storedPlan.value?.purchase?.orderId;
+  if (props.step.kind !== 'fillers' || !orderId) return undefined;
+  const id = fillerWatchlistId(orderId);
+  return watchlists.value.find((list) => list.id === id);
+});
 const format = computed(() => ({ locale: locale.value, now: props.now }));
 const body = computed(() => props.step.body!);
 const usd = (value: number) => formatUsd(value, locale.value);
@@ -235,7 +248,7 @@ const filled = () => void props.running.refreshCart();
       <span>{{ note.text }}</span>
     </p>
 
-    <div v-if="ghosts.length || cta" class="shm-run-actions">
+    <div v-if="ghosts.length || cta || fillerList" class="shm-run-actions">
       <button
         v-for="action in ghosts"
         :key="action.kind"
@@ -305,6 +318,16 @@ const filled = () => void props.running.refreshCart();
           {{ i18n.t('bulkExchange.disabled') }}
         </button>
       </template>
+      <!-- The filler paints' watchlist with its reminder (#473). -->
+      <button
+        v-if="fillerList"
+        type="button"
+        class="shm-button shm-run-ghost"
+        @click="openWatchlist(fillerList.id)"
+      >
+        <SvgIcon name="clipboard-list" />
+        {{ i18n.t('notifications.showWatchlist') }}
+      </button>
     </div>
     <p v-if="cta?.kind === 'melt' && cta.bulk && step.state === 'current'" class="shm-run-bulk">
       {{ i18n.t('consultant.run.bulkNote') }}

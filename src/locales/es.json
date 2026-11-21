@@ -1990,6 +1990,8 @@
     "warbondPrice": "Warbond $1",
     "storeAlerts": "Notificar cambios de la Pledge Store",
     "storeAlertsHint": "Cuando un elemento de la Pledge Store en ella cambia de precio, o sale o vuelve a la venta.",
-    "storeAlertsKindOff": "Los cambios de la Pledge Store en watchlists están desactivados en los ajustes (Notificaciones)."
+    "storeAlertsKindOff": "Los cambios de la Pledge Store en watchlists están desactivados en los ajustes (Notificaciones).",
+    "fillerName": "Pinturas de relleno del plan del $1",
+    "fillerDescription": "Las pinturas de relleno del Paint Discount Consultant: fúndelas en cuanto RSI lo permita, 24 horas después de la compra."
   }
 }

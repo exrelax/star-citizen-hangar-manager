@@ -1990,6 +1990,8 @@
     "warbondPrice": "Warbond $1",
     "storeAlerts": "Notify on Pledge Store changes",
     "storeAlertsHint": "When an item of the Pledge Store on it gets a new price, or goes off or on sale.",
-    "storeAlertsKindOff": "Pledge Store changes on watchlists are turned off in the settings (Notifications)."
+    "storeAlertsKindOff": "Pledge Store changes on watchlists are turned off in the settings (Notifications).",
+    "fillerName": "Filler paints of the plan of $1",
+    "fillerDescription": "The Paint Discount Consultant’s filler paints: melt them once RSI allows it, 24 hours after the purchase."
   }
 }
