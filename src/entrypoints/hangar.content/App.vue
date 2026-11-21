@@ -250,6 +250,19 @@ watch(
   { immediate: true },
 );
 
+/**
+ * When My Hangar and the Buy Back were last read, so a watchlist tells a pledge gone from one not
+ * read yet (#467). The demo's lists are always complete.
+ */
+const watchlistReadAt = computed(() => {
+  const readAt = (syncedAt?: string) => {
+    if (demo.value) return Date.now();
+    const time = syncedAt ? Date.parse(syncedAt) : Number.NaN;
+    return Number.isNaN(time) ? undefined : time;
+  };
+  return { hangar: readAt(syncedAt.value), buyback: readAt(buyback.syncedAt.value) };
+});
+
 /** The status line of the list shown (in the settings the hangar's): its last refresh and check. */
 const status = computed(() => {
   if (!listsReady.value) return undefined;
@@ -512,7 +525,16 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
     role="tabpanel"
     aria-labelledby="shm-tab-watchlists"
   >
-    <WatchlistsTab v-if="listsReady" :demo="demo" />
+    <WatchlistsTab
+      v-if="listsReady"
+      :demo="demo"
+      :pledges="pledges"
+      :buyback="buybackPledges"
+      :settings="settings"
+      :hangar-read-at="watchlistReadAt.hangar"
+      :buyback-read-at="watchlistReadAt.buyback"
+      :active="activeTab === 'watchlists'"
+    />
   </div>
   <div
     v-if="activeTab === 'settings'"

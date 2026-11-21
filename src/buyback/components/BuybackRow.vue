@@ -11,13 +11,14 @@ import { useDemoContext } from '@/demo/use-demo';
 import { formatUsd } from '@/hangar/discount-format';
 import { i18n, locale } from '@/i18n';
 import type { BuybackLinkMode } from '@/settings/settings';
-import { computed, ref, watch } from 'vue';
+import { computed, inject, ref, watch } from 'vue';
 import type { BuybackView } from '../buyback-view';
 import { addBuybackToCart, CartError, RSI_CART_PATH } from '../cart';
 import { loadBuybackDetails } from '../sync-buyback';
 import { giftableHint } from '../giftable-hint';
 import { GIFTING_FAQ_URL } from '@/config';
 import { vTooltip } from '@/shared/tooltip/tooltip';
+import { WATCHLIST_ROW } from '@/watchlists/watchlist-row';
 import PriceIncreaseBadge from '@/price-increases/components/PriceIncreaseBadge.vue';
 
 const props = defineProps<{
@@ -27,6 +28,8 @@ const props = defineProps<{
   /** What "Show in Buy Back" opens (see the settings). */
   linkMode: BuybackLinkMode;
 }>();
+/** In a watchlist (#467): its details offer to remove the pledge from it. */
+const watchlistRow = inject(WATCHLIST_ROW, null);
 
 /** RSI's way of writing a value, as "My Hangar" shows it: "$1,234.50 USD". */
 const RSI_USD = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
@@ -249,6 +252,15 @@ const kind = computed(() =>
         >
           <SvgIcon name="basket-shopping" />
           {{ i18n.t('buyback.toCart') }}
+        </button>
+        <button
+          v-if="watchlistRow"
+          type="button"
+          class="shm-button shm-origin-button shm-watchlist-remove"
+          @click="watchlistRow.remove({ kind: 'buyback', pledgeId: pledge.id })"
+        >
+          <SvgIcon name="xmark" />
+          {{ i18n.t('watchlists.remove') }}
         </button>
       </div>
       <div class="shm-details-main">

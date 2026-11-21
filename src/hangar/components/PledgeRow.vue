@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useDemoContext } from '@/demo/use-demo';
 import { i18n, locale } from '@/i18n';
-import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
+import { computed, inject, nextTick, ref, useTemplateRef, watch } from 'vue';
 import { listViewRequest, takeExpand } from '../list-jump';
 import { REFUND_DAYS, REFUND_URGENT_DAYS, RSI_GAMES_LIBRARY_URL } from '@/config';
 import { refundWindow, today } from '@/orders/refund';
@@ -28,6 +28,7 @@ import { useProvidedCcuCoverage, useProvidedCoverageSources } from '@/ccu-consul
 import { useProvidedAlwaysAvailable } from '@/ccu-consultant/always-available';
 import { alwaysAvailableHintOf, baseMissingOf } from '@/ccu-consultant/ccu-labels';
 import { vTooltip } from '@/shared/tooltip/tooltip';
+import { WATCHLIST_ROW } from '@/watchlists/watchlist-row';
 import { selection } from '../selection';
 import { formatTimeLeft, toggleMeltMark } from '../melt-marks';
 import { useMarkedPledges } from '../use-melt-marks';
@@ -40,6 +41,8 @@ const props = defineProps<{
   /** Set while this is the only pledge in the list: it then opens on its own. */
   autoExpand?: boolean;
 }>();
+/** In a watchlist (#467): its details offer to remove the pledge from it. */
+const watchlistRow = inject(WATCHLIST_ROW, null);
 
 /** The current ship of an upgraded pledge first, then the other ships. */
 const linkedShips = computed(() =>
@@ -475,6 +478,15 @@ const toggle = () => {
         >
           <SvgIcon name="basket-shopping" />
           {{ i18n.t('notifications.showInStore') }}
+        </button>
+        <button
+          v-if="watchlistRow"
+          type="button"
+          class="shm-button shm-origin-button shm-watchlist-remove"
+          @click="watchlistRow.remove({ kind: 'hangar', pledgeId: pledge.id })"
+        >
+          <SvgIcon name="xmark" />
+          {{ i18n.t('watchlists.remove') }}
         </button>
       </div>
       <div class="shm-details-main">

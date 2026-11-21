@@ -1901,6 +1901,46 @@
       "list": "Cette watchlist est trop grande pour le stockage synchronisé du navigateur. Retire quelques éléments ou mets-les sur une autre watchlist.",
       "total": "Le stockage synchronisé du navigateur est plein. Retire les éléments ou les watchlists dont tu n'as plus besoin.",
       "items": "Le stockage synchronisé du navigateur ne peut plus contenir de listes. Supprime une watchlist dont tu n'as plus besoin."
+    },
+    "new": "Nouvelle watchlist",
+    "newTitle": "Nouvelle watchlist",
+    "editTitle": "Modifier la watchlist",
+    "name": "Nom",
+    "namePlaceholder": "p. ex. Fondre après l’IAE",
+    "description": "Description",
+    "descriptionPlaceholder": "À quoi sert cette watchlist (facultatif)",
+    "date": "Date",
+    "dateHint": "Facultatif, p. ex. la fin d’un événement.",
+    "clearDate": "Retirer la date",
+    "reminder": "Me rappeler",
+    "reminderHint": "À la date, dans la barre latérale et par une notification du navigateur.",
+    "reminderOn": "Rappel activé",
+    "reminderOff": "Pas de rappel",
+    "cancel": "Annuler",
+    "create": "Créer",
+    "save": "Enregistrer",
+    "saveFailed": "L’enregistrement a échoué : $1",
+    "edit": "Modifier la watchlist",
+    "delete": "Supprimer la watchlist",
+    "deleteConfirm": {
+      "one": "Supprimer la watchlist « $1 » et son $2 élément ? L’élément lui-même reste où il est.",
+      "other": "Supprimer la watchlist « $1 » et ses $2 éléments ? Les éléments eux-mêmes restent où ils sont."
+    },
+    "deleteConfirmEmpty": "Supprimer la watchlist « $1 » ?",
+    "filters": "Recherche et filtres",
+    "showFilters": "Afficher la recherche et les filtres",
+    "hideFilters": "Masquer la recherche et les filtres",
+    "searchPlaceholder": "Rechercher dans cette watchlist",
+    "noItems": "Cette watchlist est vide. Les éléments de My Hangar, du Buy Back et du Pledge Store peuvent y être ajoutés depuis ces onglets.",
+    "remove": "Retirer de la watchlist",
+    "removeItem": "Retirer « $1 » de la watchlist",
+    "gone": {
+      "hangar": "N’est plus dans My Hangar",
+      "buyback": "N’est plus dans le Buy Back"
+    },
+    "nowIn": {
+      "hangar": "Maintenant dans My Hangar",
+      "buyback": "Maintenant dans le Buy Back"
     }
   }
 }

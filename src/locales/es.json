@@ -1901,6 +1901,46 @@
       "list": "Esta watchlist es demasiado grande para el almacenamiento sincronizado del navegador. Quita algunos elementos o pásalos a otra watchlist.",
       "total": "El almacenamiento sincronizado del navegador está lleno. Quita elementos o watchlists que ya no necesites.",
       "items": "El almacenamiento sincronizado del navegador no admite más listas. Elimina una watchlist que ya no necesites."
+    },
+    "new": "Nueva watchlist",
+    "newTitle": "Nueva watchlist",
+    "editTitle": "Editar watchlist",
+    "name": "Nombre",
+    "namePlaceholder": "p. ej. Fundir después de la IAE",
+    "description": "Descripción",
+    "descriptionPlaceholder": "Para qué es esta watchlist (opcional)",
+    "date": "Fecha",
+    "dateHint": "Opcional, p. ej. el final de un evento.",
+    "clearDate": "Quitar la fecha",
+    "reminder": "Recordarme",
+    "reminderHint": "En la fecha, en la barra lateral y como notificación del navegador.",
+    "reminderOn": "Recordatorio activado",
+    "reminderOff": "Sin recordatorio",
+    "cancel": "Cancelar",
+    "create": "Crear",
+    "save": "Guardar",
+    "saveFailed": "No se pudo guardar: $1",
+    "edit": "Editar watchlist",
+    "delete": "Eliminar watchlist",
+    "deleteConfirm": {
+      "one": "¿Eliminar la watchlist «$1» con su $2 elemento? El elemento en sí se queda donde está.",
+      "other": "¿Eliminar la watchlist «$1» con sus $2 elementos? Los elementos en sí se quedan donde están."
+    },
+    "deleteConfirmEmpty": "¿Eliminar la watchlist «$1»?",
+    "filters": "Búsqueda y filtros",
+    "showFilters": "Mostrar búsqueda y filtros",
+    "hideFilters": "Ocultar búsqueda y filtros",
+    "searchPlaceholder": "Buscar en esta watchlist",
+    "noItems": "Esta watchlist está vacía. Los elementos de My Hangar, la recompra y la Pledge Store se pueden añadir desde allí.",
+    "remove": "Quitar de la watchlist",
+    "removeItem": "Quitar «$1» de la watchlist",
+    "gone": {
+      "hangar": "Ya no está en My Hangar",
+      "buyback": "Ya no está en la recompra"
+    },
+    "nowIn": {
+      "hangar": "Ahora en My Hangar",
+      "buyback": "Ahora en la recompra"
     }
   }
 }

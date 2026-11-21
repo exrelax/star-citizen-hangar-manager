@@ -1901,6 +1901,46 @@
       "list": "Diese Watchlist ist zu groß für den synchronisierten Speicher des Browsers. Entferne einige Einträge oder verteile sie auf eine andere Watchlist.",
       "total": "Der synchronisierte Speicher des Browsers ist voll. Entferne Einträge oder Watchlists, die du nicht mehr brauchst.",
       "items": "Der synchronisierte Speicher des Browsers fasst keine weiteren Listen. Lösche eine Watchlist, die du nicht mehr brauchst."
+    },
+    "new": "Neue Watchlist",
+    "newTitle": "Neue Watchlist",
+    "editTitle": "Watchlist bearbeiten",
+    "name": "Name",
+    "namePlaceholder": "z. B. Nach der IAE einschmelzen",
+    "description": "Beschreibung",
+    "descriptionPlaceholder": "Wofür diese Watchlist ist (optional)",
+    "date": "Datum",
+    "dateHint": "Optional, z. B. das Ende eines Events.",
+    "clearDate": "Datum entfernen",
+    "reminder": "Erinnern",
+    "reminderHint": "Zum Datum, in der Seitenleiste und als Browser-Benachrichtigung.",
+    "reminderOn": "Erinnerung an",
+    "reminderOff": "Keine Erinnerung",
+    "cancel": "Abbrechen",
+    "create": "Erstellen",
+    "save": "Speichern",
+    "saveFailed": "Speichern fehlgeschlagen: $1",
+    "edit": "Watchlist bearbeiten",
+    "delete": "Watchlist löschen",
+    "deleteConfirm": {
+      "one": "Die Watchlist „$1“ mit ihrem $2 Eintrag löschen? Der Eintrag selbst bleibt, wo er ist.",
+      "other": "Die Watchlist „$1“ mit ihren $2 Einträgen löschen? Die Einträge selbst bleiben, wo sie sind."
+    },
+    "deleteConfirmEmpty": "Die Watchlist „$1“ löschen?",
+    "filters": "Suche und Filter",
+    "showFilters": "Suche und Filter zeigen",
+    "hideFilters": "Suche und Filter ausblenden",
+    "searchPlaceholder": "In dieser Watchlist suchen",
+    "noItems": "Diese Watchlist ist leer. Einträge aus My Hangar, dem Buy Back und dem Pledge Store lassen sich dort auf sie setzen.",
+    "remove": "Von der Watchlist entfernen",
+    "removeItem": "„$1“ von der Watchlist entfernen",
+    "gone": {
+      "hangar": "Nicht mehr in My Hangar",
+      "buyback": "Nicht mehr im Buy Back"
+    },
+    "nowIn": {
+      "hangar": "Jetzt in My Hangar",
+      "buyback": "Jetzt im Buy Back"
     }
   }
 }

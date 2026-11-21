@@ -4,7 +4,8 @@ import { today } from '@/orders/refund';
 import { useProvidedCoverageSources } from '@/ccu-consultant/coverage';
 import type { GroupBadgeContext } from '../group-badges';
 import type { Settings } from '@/settings/settings';
-import { computed, onUnmounted } from 'vue';
+import { computed, onUnmounted, ref } from 'vue';
+import type { EmbeddedList } from '@/watchlists/embedded-list';
 import {
   PLEDGE_FILTER_PREDICATES,
   shownFilters,
@@ -38,7 +39,16 @@ import GroupRow from './GroupRow.vue';
 import { extrasNote, pledgeGroupBadges, pledgeGroupKind } from '../group-badges';
 import { pledgeFacts } from '../grouping';
 
-const props = defineProps<{ pledges: PledgeView[]; settings: Settings; active: boolean }>();
+const props = defineProps<{
+  pledges: PledgeView[];
+  settings: Settings;
+  active: boolean;
+  /**
+   * Shown inside another view, e.g. a watchlist (#467): its search from outside, its own order and
+   * grouped view, and none of My Hangar's state (the sidebar's counts and toggles, the requests).
+   */
+  embedded?: EmbeddedList;
+}>();
 
 // Value and link settings only toggle classes, so the rows don't need to re-render.
 const displayClasses = computed(() => ({
@@ -98,32 +108,42 @@ const filterGroups = computed(() =>
 );
 
 const { update } = useSettings();
-const sorted = computed(() => sortEntries(props.pledges, props.settings.sort.hangar));
+/** The order: My Hangar's, or an embedded list's own, starting from it. */
+const ownSort = ref<HangarSort>(props.settings.sort.hangar);
+const sort = computed(() => (props.embedded ? ownSort.value : props.settings.sort.hangar));
+const sorted = computed(() => sortEntries(props.pledges, sort.value));
 const sortOptions = computed(() =>
   HANGAR_SORTS.map((value) => ({ value, label: i18n.t(`sort.${value}`) })),
 );
-const setSort = (hangar: HangarSort) => update({ sort: { ...props.settings.sort, hangar } });
-/** The grouped view (#447), remembered for this list. */
-const setGrouped = (hangar: boolean) => update({ grouped: { ...props.settings.grouped, hangar } });
+const setSort = (hangar: HangarSort) => {
+  if (props.embedded) ownSort.value = hangar;
+  else update({ sort: { ...props.settings.sort, hangar } });
+};
+/** The grouped view (#447), remembered for this list (all watchlists share one). */
+const groupedOn = computed(() =>
+  props.embedded ? props.settings.grouped.watchlists : props.settings.grouped.hangar,
+);
+const setGrouped = (on: boolean) =>
+  update({
+    grouped: { ...props.settings.grouped, [props.embedded ? 'watchlists' : 'hangar']: on },
+  });
 /** Groups can be selected where single pledges can. */
 const canSelect = computed(() => canSelectPledges(props.settings));
 
 /** What the included filters and the sorting are about, highlighted in the rows (#216). */
 const highlights = (states: FilterStates<PledgeFilter>) =>
-  highlightClasses(
-    FILTER_HIGHLIGHTS.hangar,
-    states,
-    FILTER_HIGHLIGHTS.sorts[props.settings.sort.hangar],
-  );
+  highlightClasses(FILTER_HIGHLIGHTS.hangar, states, FILTER_HIGHLIGHTS.sorts[sort.value]);
 
 /** For the sidebar: it counts the pledges search and filters leave visible. */
-const showVisible = (entries: PledgeView[]) =>
-  (visiblePledgeIds.value = new Set(entries.map((entry) => entry.id)));
-onUnmounted(() => (visiblePledgeIds.value = null));
+const showVisible = (entries: PledgeView[]) => {
+  if (!props.embedded) visiblePledgeIds.value = new Set(entries.map((entry) => entry.id));
+};
+onUnmounted(() => !props.embedded && (visiblePledgeIds.value = null));
 /** For the sidebar's filter toggles (#254). */
-const showFilterStates = (states: FilterStates<PledgeFilter>) =>
-  (hangarFilterStates.value = states);
-onUnmounted(() => (hangarFilterStates.value = new Map()));
+const showFilterStates = (states: FilterStates<PledgeFilter>) => {
+  if (!props.embedded) hangarFilterStates.value = states;
+};
+onUnmounted(() => !props.embedded && (hangarFilterStates.value = new Map()));
 
 const filterLabel = (filter: PledgeFilter) => i18n.t(`filter.${filter}`);
 
@@ -133,7 +153,7 @@ const VIEW_FILTERS: Record<HangarViewFilter, (pledge: PledgeView) => boolean> = 
   paintRebuy: (pledge) => paintRebuys.value.has(pledge.id),
 };
 const viewFilterRequest = computed(() => {
-  const request = hangarViewFilter.value;
+  const request = props.embedded ? null : hangarViewFilter.value;
   return request && { at: request.at, matches: VIEW_FILTERS[request.id] };
 });
 
@@ -165,12 +185,14 @@ const filterHint = (filter: PledgeFilter) => {
     :filter-hint="filterHint"
     :active="active"
     :sort-options="sortOptions"
-    :sort="settings.sort.hangar"
+    :sort="sort"
     :highlights="highlights"
     :filter-request="viewFilterRequest"
-    :include-request="hangarFilterRequest"
-    :view-request="listViewRequest?.tab === 'hangar' ? listViewRequest : null"
-    :grouping="{ on: settings.grouped.hangar, factsOf: pledgeFacts }"
+    :include-request="embedded ? null : hangarFilterRequest"
+    :view-request="!embedded && listViewRequest?.tab === 'hangar' ? listViewRequest : null"
+    :grouping="{ on: groupedOn, factsOf: pledgeFacts }"
+    :search="embedded?.search"
+    :hide-controls="embedded?.hideControls"
     @clear-request="clearHangarFilter()"
     @update:sort="setSort"
     @visible="showVisible"

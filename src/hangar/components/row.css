@@ -308,6 +308,19 @@ html .shm-theme-rsi .shm-badge {
   border-color: var(--shm-danger);
 }
 
+/* The action a dialog is for (e.g. "Create" a watchlist, #467): filled with the accent. */
+.shm-button.is-prominent {
+  color: var(--shm-text-on-accent);
+  background: var(--shm-accent);
+  border-color: var(--shm-accent);
+}
+
+.shm-button.is-prominent:not(:disabled):hover,
+.shm-button.is-prominent:not(:disabled):focus-visible {
+  color: var(--shm-text-on-accent);
+  background: color-mix(in srgb, var(--shm-accent) 85%, white);
+}
+
 /*
  * Actions about an expected price increase ("Keep the discount", #252): in the warning color of
  * its badge (`is-price-increase.is-warning`), so they stand out.

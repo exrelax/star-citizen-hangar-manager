@@ -1901,6 +1901,46 @@
       "list": "This watchlist is too big for the browser's synced storage. Remove some items, or put them on another watchlist.",
       "total": "The browser's synced storage is full. Remove items or watchlists you no longer need.",
       "items": "The browser's synced storage holds no more lists. Delete a watchlist you no longer need."
+    },
+    "new": "New watchlist",
+    "newTitle": "New watchlist",
+    "editTitle": "Edit watchlist",
+    "name": "Name",
+    "namePlaceholder": "e.g. Melt after the IAE",
+    "description": "Description",
+    "descriptionPlaceholder": "What this watchlist is for (optional)",
+    "date": "Date",
+    "dateHint": "Optional, e.g. the end of an event.",
+    "clearDate": "Remove the date",
+    "reminder": "Remind me",
+    "reminderHint": "At the date, in the sidebar and as a browser notification.",
+    "reminderOn": "Reminder on",
+    "reminderOff": "No reminder",
+    "cancel": "Cancel",
+    "create": "Create",
+    "save": "Save",
+    "saveFailed": "Saving failed: $1",
+    "edit": "Edit watchlist",
+    "delete": "Delete watchlist",
+    "deleteConfirm": {
+      "one": "Delete the watchlist “$1” with its $2 item? The item itself stays where it is.",
+      "other": "Delete the watchlist “$1” with its $2 items? The items themselves stay where they are."
+    },
+    "deleteConfirmEmpty": "Delete the watchlist “$1”?",
+    "filters": "Search and filters",
+    "showFilters": "Show search and filters",
+    "hideFilters": "Hide search and filters",
+    "searchPlaceholder": "Search this watchlist",
+    "noItems": "This watchlist is empty. Items of My Hangar, the Buy Back and the Pledge Store can be put on it there.",
+    "remove": "Remove from watchlist",
+    "removeItem": "Remove “$1” from the watchlist",
+    "gone": {
+      "hangar": "No longer in My Hangar",
+      "buyback": "No longer in the Buy Back"
+    },
+    "nowIn": {
+      "hangar": "Now in My Hangar",
+      "buyback": "Now in the Buy Back"
     }
   }
 }
