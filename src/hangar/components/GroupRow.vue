@@ -249,11 +249,6 @@ html .shm-theme-modern .shm-group-row .shm-group-open {
   grid-area: open;
 }
 
-/* The dialog's button: no turn when the group expands, unlike the chevron. */
-.is-expanded .shm-group-open .shm-icon {
-  transform: none;
-}
-
 .shm-group-open .shm-icon {
   width: 12px;
   height: 12px;

@@ -226,12 +226,16 @@ html .shm-theme-rsi .shm-badge {
   outline: 1px solid var(--shm-accent);
 }
 
-/* Turns a quarter clockwise when the row opens, back when it closes. */
+/*
+ * Turns a quarter clockwise when its row opens, back when it closes: by the button's own state
+ * (`aria-expanded`), not by an expanded element around it – the items of an expanded group keep
+ * theirs until they open themselves (#526). Buttons without it (a group's dialog) never turn.
+ */
 .shm-chevron .shm-icon {
   transition: transform 0.2s ease;
 }
 
-.is-expanded .shm-chevron .shm-icon {
+.shm-chevron[aria-expanded='true'] .shm-icon {
   transform: rotate(90deg);
 }
 
