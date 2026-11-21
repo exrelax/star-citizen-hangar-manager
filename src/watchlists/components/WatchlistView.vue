@@ -14,6 +14,8 @@ import { searchPlain, watchSections, WATCH_SOURCES, type WatchSource } from '../
 import { WATCHLIST_ROW } from '../watchlist-row';
 import { itemKey, type PledgeLists, type Watchlist, type WatchItemRef } from '../watchlists';
 import WatchItemRow from './WatchItemRow.vue';
+import { storeStatus } from '../store-status';
+import { useStoreCatalog } from '../use-store-catalog';
 import WatchlistMeta from './WatchlistMeta.vue';
 
 /*
@@ -38,7 +40,11 @@ const emit = defineEmits<{
   edit: [];
   delete: [];
   remove: [key: string];
+  /** A store item's count changed (#470). */
+  count: [key: string, count: number];
 }>();
+
+const catalog = useStoreCatalog();
 
 // The rows of My Hangar and the Buy Back offer to remove their pledge from this watchlist.
 provide(WATCHLIST_ROW, { remove: (ref: WatchItemRef) => emit('remove', itemKey(ref)) });
@@ -210,7 +216,9 @@ async function askDelete() {
           v-for="entry in plainOf(source)"
           :key="entry.key"
           :entry="entry"
+          :status="source === 'store' ? storeStatus(entry.item, catalog) : undefined"
           @remove="emit('remove', entry.key)"
+          @count="emit('count', entry.key, $event)"
         />
       </div>
     </section>

@@ -10,20 +10,32 @@
  * Only pure functions here; the storage is in `watchlists-storage.ts`.
  */
 
-/** Where an item comes from: a pledge of My Hangar or the Buy Back, a CCU or a paint of the store. */
-export type WatchItemKind = 'hangar' | 'buyback' | 'storeCcu' | 'storePaint';
+/**
+ * Where an item comes from: a pledge of My Hangar or the Buy Back, or a CCU, a paint or a
+ * standalone ship of the Pledge Store (#470).
+ */
+export type WatchItemKind = 'hangar' | 'buyback' | 'storeCcu' | 'storePaint' | 'storeShip';
 export const WATCH_ITEM_KINDS: readonly WatchItemKind[] = [
   'hangar',
   'buyback',
   'storeCcu',
   'storePaint',
+  'storeShip',
 ];
+
+/** A standalone ship's insurance: lifetime, or its months. */
+export type WatchInsurance = 'lti' | number;
 
 /** What identifies an item, by its kind. */
 export type WatchItemRef =
   | { kind: 'hangar' | 'buyback'; pledgeId: number }
   | { kind: 'storeCcu'; fromShipId: number; toShipId: number }
-  | { kind: 'storePaint'; skuId: number };
+  | { kind: 'storePaint'; skuId: number }
+  /**
+   * A standalone ship by the upgrade tool's ship id, with the insurance it should come with (e.g.
+   * of a pledge rebought, #531): the same ship with another insurance is another item.
+   */
+  | { kind: 'storeShip'; shipId: number; insurance?: WatchInsurance };
 
 export type WatchItem = WatchItemRef & {
   /** The name when last seen, e.g. "Upgrade - Cutlass Black to Carrack Standard Edition". */
@@ -69,10 +81,14 @@ export function itemKey(ref: WatchItemRef): string {
       return `c:${ref.fromShipId}-${ref.toShipId}`;
     case 'storePaint':
       return `p:${ref.skuId}`;
+    case 'storeShip':
+      return ref.insurance === undefined ? `s:${ref.shipId}` : `s:${ref.shipId}:${ref.insurance}`;
   }
 }
 
-const isStoreItem = (ref: WatchItemRef) => ref.kind === 'storeCcu' || ref.kind === 'storePaint';
+/** Whether the item is one of the Pledge Store, with a count. */
+export const isStoreItem = (ref: WatchItemRef) =>
+  ref.kind === 'storeCcu' || ref.kind === 'storePaint' || ref.kind === 'storeShip';
 
 /** A store item's count, 1 to `WATCHLIST_LIMITS.count`. */
 const countOf = (count: number | undefined) =>

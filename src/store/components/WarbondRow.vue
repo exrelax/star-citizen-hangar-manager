@@ -9,6 +9,9 @@ import type { SightingEvent } from '../warbond-history';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import BaseShipsTable from './BaseShipsTable.vue';
 import ShipUpgradeButtons from './ShipUpgradeButtons.vue';
+import StoreCcuPicker from '@/watchlists/components/StoreCcuPicker.vue';
+import WatchlistBadge from '@/watchlists/components/WatchlistBadge.vue';
+import { itemKey } from '@/watchlists/watchlists';
 import SortableTh from '@/shared/components/SortableTh.vue';
 import { nextSort } from '@/shared/table-sort';
 import {
@@ -34,6 +37,16 @@ const sortBy = (column: OwnedCcuColumn) =>
   emit('update:ownedSort', nextSort(props.ownedSort, column, OWNED_CCU_SORT_COLUMNS[column].first));
 
 const expanded = ref(false);
+
+/** The warbond CCU on watchlists (#470), from each of its base ships, the cheapest CCU first. */
+const watchBases = computed(() =>
+  props.offer.bases.map((base) => ({ ship: base.ship, price: base.ccuPrice })),
+);
+const watchKeys = computed(() =>
+  props.offer.bases.map((base) =>
+    itemKey({ kind: 'storeCcu', fromShipId: base.ship.id, toShipId: props.offer.target.ship.id }),
+  ),
+);
 
 /** Clicks on the row toggle it, except on the upgrade button (RSI opens its overlay then). */
 function toggleFrom(event: MouseEvent) {
@@ -131,6 +144,7 @@ const earlier = computed(() =>
             {{ usd(offer.target.ship.msrp) }}
           </s>
           <span class="shm-discount">{{ discountText }}</span>
+          <WatchlistBadge :item-keys="watchKeys" />
         </span>
       </span>
 
@@ -297,6 +311,14 @@ const earlier = computed(() =>
             </tr>
           </tbody>
         </table>
+
+        <!-- The warbond CCU on watchlists (#470), from a base ship of the table above. -->
+        <StoreCcuPicker
+          v-if="watchBases.length"
+          class="shm-warbond-watch"
+          :target="offer.target.ship"
+          :bases="watchBases"
+        />
       </div>
     </div>
   </div>

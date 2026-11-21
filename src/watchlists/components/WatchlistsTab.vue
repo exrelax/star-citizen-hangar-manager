@@ -8,6 +8,7 @@ import { computed, ref, watch } from 'vue';
 import {
   createWatchlist,
   removeItem,
+  setItemCount,
   updateWatchlist,
   withLastSeen,
   type PledgeLists,
@@ -131,6 +132,11 @@ async function remove(list: Watchlist) {
   openId.value = undefined;
 }
 
+function setCount(list: Watchlist, key: string, count: number) {
+  const next = setItemCount(list, key, count, Date.now());
+  if (next !== list) void store(next);
+}
+
 function removeEntry(list: Watchlist, key: string) {
   const next = removeItem(list, key, Date.now());
   if (next !== list) void store(next);
@@ -152,6 +158,7 @@ function removeEntry(list: Watchlist, key: string) {
       @edit="openDialog(open)"
       @delete="remove(open)"
       @remove="removeEntry(open, $event)"
+      @count="(key, count) => setCount(open!, key, count)"
     />
     <section v-else class="shm-watchlists" aria-labelledby="shm-watchlists-title">
       <header class="shm-watchlists-header">

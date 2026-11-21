@@ -23,6 +23,8 @@ import '../watchlists.css';
  */
 
 const props = defineProps<{ item: NewWatchItem }>();
+/** `choice`: what chooses the item, before the actions, e.g. a CCU's base ship (#470). */
+defineSlots<{ choice?(): unknown }>();
 
 const key = computed(() => itemKey(props.item));
 const on = computed(() => watchlistsByItem.value.get(key.value) ?? []);
@@ -82,6 +84,7 @@ async function create() {
     </ul>
     <span v-else class="shm-hint">{{ i18n.t('watchlists.notOnAny') }}</span>
     <div class="shm-watchlist-picker-actions">
+      <slot name="choice" />
       <SelectMenu
         v-if="others.length"
         :options="options"

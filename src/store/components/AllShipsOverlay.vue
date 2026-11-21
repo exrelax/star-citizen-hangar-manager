@@ -42,6 +42,9 @@ import {
 } from '../all-ships-view';
 import type { WarbondTarget } from '../warbond';
 import ShipUpgradeButtons from './ShipUpgradeButtons.vue';
+import StoreWatchDialog from '@/watchlists/components/StoreWatchDialog.vue';
+import WatchButton from '@/watchlists/components/WatchButton.vue';
+import { watchlistsByItem } from '@/watchlists/use-watchlists';
 // The search field and the filter buttons of the manager's lists.
 import '@/hangar/components/list-controls.css';
 
@@ -103,6 +106,20 @@ const upcoming = computed(() => {
     increases: upcomingPriceIncreases(props.increases, at),
     removals: upcomingShipRemovals(props.removals, at),
   };
+});
+
+/*
+ * A ship on watchlists (#470): as standalone ship, or a CCU to it. Its button is tinted while the
+ * ship or a CCU to it is on one, and opens the choice of both.
+ */
+const watching = ref<Ship>();
+const watchedShips = computed(() => {
+  const ids = new Set<number>();
+  for (const key of watchlistsByItem.value.keys()) {
+    const match = /^(?:s:(\d+)|c:\d+-(\d+))/.exec(key);
+    if (match) ids.add(Number(match[1] ?? match[2]));
+  }
+  return ids;
 });
 
 const rows = computed(() =>
@@ -293,7 +310,8 @@ const read = (group: keyof typeof GROUPS) =>
 
 const dialog = useTemplateRef<HTMLElement>('dialog');
 function onKeydown(event: KeyboardEvent) {
-  if (event.key === 'Escape') emit('close');
+  // Escape closes the watchlists' dialog above it first (#470).
+  if (event.key === 'Escape' && !watching.value) emit('close');
 }
 onMounted(() => {
   addEventListener('keydown', onKeydown);
@@ -586,17 +604,24 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
                     </td>
                   </template>
                   <td class="shm-all-ships-store">
-                    <ShipUpgradeButtons
-                      v-if="isOnSale(row)"
-                      short
-                      :ship-id="row.ship.id"
-                      :ship-name="row.ship.name"
-                      :sku-id="row.skuId"
-                      :warbond-sku-id="row.warbondSkuId"
-                    />
-                    <span v-else-if="row.purchasable !== false" class="shm-all-ships-note">{{
-                      i18n.t('allShips.notOnSale')
-                    }}</span>
+                    <span class="shm-all-ships-store-cell">
+                      <WatchButton
+                        :hint="i18n.t('watchlists.putOn', [row.ship.name])"
+                        :on="watchedShips.has(row.ship.id)"
+                        @open="watching = row.ship"
+                      />
+                      <ShipUpgradeButtons
+                        v-if="isOnSale(row)"
+                        short
+                        :ship-id="row.ship.id"
+                        :ship-name="row.ship.name"
+                        :sku-id="row.skuId"
+                        :warbond-sku-id="row.warbondSkuId"
+                      />
+                      <span v-else-if="row.purchasable !== false" class="shm-all-ships-note">{{
+                        i18n.t('allShips.notOnSale')
+                      }}</span>
+                    </span>
                   </td>
                 </tr>
               </tbody>
@@ -606,6 +631,13 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
         </template>
       </section>
     </div>
+    <StoreWatchDialog
+      v-if="watching"
+      :title="i18n.t('watchlists.putOn', [watching.name])"
+      :ship="watching"
+      :ships="ships"
+      @close="watching = undefined"
+    />
   </Teleport>
 </template>
 
@@ -1087,6 +1119,13 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
 .shm-all-ships-table td.is-count.is-none {
   color: var(--shm-text-faint);
   font-weight: 400;
+}
+
+/* The Pledge Store: the watchlist button, then RSI's upgrade buttons or "Not on sale". */
+.shm-all-ships-store-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 /* The Pledge Store: "Warbond" in the warbond's yellow, "Standard" or "Ship upgrade". */

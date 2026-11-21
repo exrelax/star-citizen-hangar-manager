@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import PaintWatch from '@/watchlists/components/PaintWatch.vue';
 import { PAINT_DISCOUNT_TIERS } from '@/config';
 import { i18n } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
@@ -134,6 +135,9 @@ const paintCards = computed(() =>
     return { ...card, inWay: prices };
   }),
 );
+/** A paint's standard price, for its entry on a watchlist (#470). */
+const watchPrice = (card: { prices: Partial<Record<string, { price: number }>> }) =>
+  Object.values(card.prices)[0]?.price;
 </script>
 
 <template>
@@ -302,6 +306,8 @@ const paintCards = computed(() =>
               <SvgIcon v-if="card.filler" name="clock-rotate-left" />
               {{ card.filler ? i18n.t('consultant.fillerTag') : i18n.t('consultant.ways.ownTag') }}
             </span>
+            <!-- The paint of the Pledge Store on watchlists (#470), in the image's corner. -->
+            <PaintWatch :paint="{ skuId: card.skuId, name: card.name, price: watchPrice(card) }" />
           </span>
           <span class="shm-ways-paint-name" :title="card.name">{{ card.name }}</span>
           <span class="shm-ways-paint-prices shm-ways-mono">

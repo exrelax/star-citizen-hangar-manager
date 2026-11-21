@@ -1962,6 +1962,20 @@
     "reminderBrowserOff": "Browser-Benachrichtigungen sind in diesem Browser aus: Die Erinnerung erscheint nur in der Sidebar.",
     "reminderBrowserAsked": "Erlaube die Benachrichtigungen auf der Seite, die sich geöffnet hat.",
     "reminderBrowserAllow": "Browser-Benachrichtigungen erlauben",
-    "reminderKindOff": "Erinnerungen von Watchlists sind in den Einstellungen (Benachrichtigungen) ausgeschaltet."
+    "reminderKindOff": "Erinnerungen von Watchlists sind in den Einstellungen (Benachrichtigungen) ausgeschaltet.",
+    "ccuBase": "Basisschiff des CCUs",
+    "ccuFrom": "Von $1 · $2",
+    "ccuName": "Upgrade - $1 to $2",
+    "count": "Anzahl",
+    "countLess": "Eins weniger",
+    "countMore": "Eins mehr",
+    "kindCcu": "CCU dorthin",
+    "kindLabel": "Was auf die Watchlist kommt",
+    "kindShip": "Eigenständiges Schiff",
+    "notOnSale": "Gerade nicht im Verkauf",
+    "notSellable": "RSI kann dieses CCU nicht verkaufen",
+    "onSale": "Gerade im Verkauf",
+    "putOn": "„$1“ auf eine Watchlist setzen",
+    "warbondPrice": "Warbond $1"
   }
 }
