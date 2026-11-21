@@ -212,6 +212,7 @@ const filterHint = (filter: PledgeFilter) => {
         :selectable="canSelect"
         :list-classes="displayClasses"
         :open="open"
+        watch-kind="hangar"
       >
         <template #item="{ entry, autoExpand }">
           <PledgeRow :pledge="entry" :auto-expand="autoExpand" />

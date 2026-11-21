@@ -1,0 +1,21 @@
+/*
+ * The text fields of the watchlists: the dialog of a watchlist (#467) and the field that creates
+ * one from an item (#468). "Modern Hangar" adjusts them in modern.css.
+ */
+
+.shm-watchlist-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 32px;
+  padding: 6px 10px;
+  color: var(--shm-text);
+  font: inherit;
+  background-color: rgb(var(--shm-surface-rgb) / 0.9);
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.35);
+  color-scheme: dark;
+}
+
+.shm-watchlist-input:focus-visible {
+  border-color: var(--shm-accent);
+  outline: none;
+}

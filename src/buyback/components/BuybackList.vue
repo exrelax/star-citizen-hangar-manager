@@ -140,6 +140,7 @@ const filterHint = (filter: BuybackFilter) => {
         :note="extrasNote(group.extras)"
         :list-classes="displayClasses"
         :open="open"
+        watch-kind="buyback"
       >
         <template #item="{ entry, autoExpand }">
           <BuybackRow

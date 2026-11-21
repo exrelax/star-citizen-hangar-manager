@@ -3,6 +3,8 @@ import { i18n, locale } from '@/i18n';
 import type { IconName } from '@/icons/icon-names';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
+import WatchlistBadge from '@/watchlists/components/WatchlistBadge.vue';
+import { itemKey } from '@/watchlists/watchlists';
 import { computed, ref, watch } from 'vue';
 import GroupDialog from './GroupDialog.vue';
 import { formatUsd } from '../discount-format';
@@ -35,6 +37,8 @@ const props = defineProps<{
   listClasses?: Record<string, boolean>;
   /** A jump to a pledge (#436): the dialog opens if it is one of this group's. */
   open?: { id: number; at: number } | null;
+  /** Where its pledges are, for the watchlists any of them is on (#468). */
+  watchKind?: 'hangar' | 'buyback';
 }>();
 defineSlots<{ item(props: { entry: T; autoExpand: boolean }): unknown }>();
 
@@ -62,6 +66,9 @@ function close() {
 }
 
 const ids = computed(() => props.group.items.map((item) => item.id));
+const watchKeys = computed(() =>
+  props.watchKind ? ids.value.map((pledgeId) => itemKey({ kind: props.watchKind!, pledgeId })) : [],
+);
 const selectedCount = computed(() => ids.value.filter((id) => selection.has(id)).length);
 const checked = computed(() =>
   selectedCount.value === ids.value.length ? 'true' : selectedCount.value ? 'mixed' : 'false',
@@ -133,6 +140,7 @@ const countLabel = computed(() => i18n.n('group.items', props.group.count, [prop
           </span>
         </span>
         <span class="shm-badges">
+          <WatchlistBadge v-if="watchKind" :item-keys="watchKeys" />
           <span
             v-for="badge in badges"
             :key="badge.key"

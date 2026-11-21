@@ -713,6 +713,11 @@ html .shm-theme-modern .shm-badge.is-price-increase.is-info.is-soon {
   background: color-mix(in srgb, var(--shm-warning) 12%, transparent);
 }
 
+html .shm-theme-modern .shm-badge.is-watchlist {
+  color: var(--shm-accent);
+  background: rgb(var(--shm-accent-rgb) / 0.14);
+}
+
 html .shm-theme-modern .shm-badge.is-melt-mark {
   color: var(--shm-warning);
   background: color-mix(in srgb, var(--shm-warning) 16%, transparent);

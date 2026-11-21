@@ -39,6 +39,7 @@ import {
 } from '@/ccu-consultant/always-available';
 import ConsultantsTab from '@/consultants/components/ConsultantsTab.vue';
 import WatchlistsTab from '@/watchlists/components/WatchlistsTab.vue';
+import { followWatchlists } from '@/watchlists/use-watchlists';
 import { OWNED_SHIPS, ownedShips } from '@/hangar/paint-ships';
 import { useShipFacts } from '@/ships/use-ship-facts';
 import { followListHistory, listViewRequest } from '@/hangar/list-jump';
@@ -125,6 +126,8 @@ const demoView = useDemo(demo, hangar.pledges, buyback.pledges, () => settings.v
  * pledges would show for a moment.
  */
 const listsReady = computed(() => settingsLoaded.value && demoView.ready.value);
+// The watchlists for the tab and the rows (#467, #468); the demo's own in the demo.
+onUnmounted(followWatchlists(demo));
 provide(DEMO_CONTEXT, demoView.context);
 const pledges = demoView.pledges;
 const buybackPledges = demoView.buyback;

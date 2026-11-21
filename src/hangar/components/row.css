@@ -496,6 +496,13 @@ html .shm-theme-rsi .shm-badge {
   color: var(--shm-danger);
 }
 
+/* On a watchlist (#468): its notepad, the watchlists' names in its tooltip. */
+.shm-badge.is-watchlist {
+  display: inline-flex;
+  align-items: center;
+  cursor: help;
+}
+
 /* Marked to melt (#97): waiting for RSI's 24 hours, then ready to melt. */
 .shm-badge.is-melt-mark {
   display: inline-flex;
