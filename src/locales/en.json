@@ -158,6 +158,7 @@
     "buyback": "Buy Back",
     "store": "Pledge Store",
     "consultants": "Consultants",
+    "watchlists": "Watchlists",
     "settings": "Settings",
     "settingsName": "Hangar Manager Settings"
   },
@@ -1890,6 +1891,12 @@
     "paintLater": "The Paint Discount Consultant shows here once paints can be bought again for less."
   },
   "watchlists": {
+    "intro": "Collect items of My Hangar, the Buy Back and the Pledge Store under a name of your choice, e.g. “Melt after the IAE” or “CCUs to buy when back in stock”.",
+    "empty": "No watchlists yet.",
+    "items": {
+      "one": "$1 item",
+      "other": "$1 items"
+    },
     "quota": {
       "list": "This watchlist is too big for the browser's synced storage. Remove some items, or put them on another watchlist.",
       "total": "The browser's synced storage is full. Remove items or watchlists you no longer need.",

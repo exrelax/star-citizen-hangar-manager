@@ -244,6 +244,12 @@ html .shm-theme-modern .shm-tabs.has-icon-only .shm-tab.is-icon-only {
   padding: 0;
 }
 
+/* Too narrow for the labels (#466): every tab its icon, all equally wide. */
+html .shm-theme-modern .shm-tabs.is-compact .shm-tab.is-icon-only {
+  flex: 1 1 0;
+  width: auto;
+}
+
 html .shm-theme-modern .shm-tabs.is-fit-content .shm-tab {
   flex: 1 1 auto;
 }
@@ -552,7 +558,8 @@ html .shm-theme-modern .shm-store-title {
 }
 
 /* A single consultant's name in the tab "Consultants" (#453): as big as the sub tabs it replaces. */
-html .shm-theme-modern .shm-consultants-heading .shm-store-title {
+html .shm-theme-modern .shm-consultants-heading .shm-store-title,
+html .shm-theme-modern .shm-watchlists-title.shm-store-title {
   font-size: calc(15px * var(--shm-font-scale));
   font-weight: 650;
 }

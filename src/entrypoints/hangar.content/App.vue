@@ -38,6 +38,7 @@ import {
   withoutLeaving,
 } from '@/ccu-consultant/always-available';
 import ConsultantsTab from '@/consultants/components/ConsultantsTab.vue';
+import WatchlistsTab from '@/watchlists/components/WatchlistsTab.vue';
 import { OWNED_SHIPS, ownedShips } from '@/hangar/paint-ships';
 import { useShipFacts } from '@/ships/use-ship-facts';
 import { followListHistory, listViewRequest } from '@/hangar/list-jump';
@@ -76,6 +77,7 @@ const TAB_ICONS: Record<ManagerTab, { icon: IconName; iconSet?: IconSet }> = {
   buyback: { icon: 'recycle' },
   store: { icon: 'basket-shopping' },
   consultants: { icon: 'lightbulb' },
+  watchlists: { icon: 'clipboard-list' },
   settings: { icon: 'gear' },
 };
 
@@ -501,6 +503,16 @@ watch(pledges, (current) => selection.keepOnly(new Set(current.map((pledge) => p
       :active="activeTab === 'consultants'"
       @update="updateSettings"
     />
+  </div>
+  <!-- The watchlists (#464, #466): second to last, before the settings. -->
+  <div
+    v-if="opened.has('watchlists')"
+    v-show="activeTab === 'watchlists'"
+    id="shm-panel-watchlists"
+    role="tabpanel"
+    aria-labelledby="shm-tab-watchlists"
+  >
+    <WatchlistsTab v-if="listsReady" :demo="demo" />
   </div>
   <div
     v-if="activeTab === 'settings'"
