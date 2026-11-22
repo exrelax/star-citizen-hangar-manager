@@ -1,4 +1,6 @@
 import type { CcuPriceChange } from '@/price-increases/ccu-price-change';
+import type { PackShip } from './ship-pack';
+import { pledgeShipKind } from './ship-kind';
 import type { PriceIncreaseMatch } from '@/price-increases/price-increase-match';
 import { HANGAR_PAGE_SIZE } from '@/config';
 import type { Game, Pledge, PledgeItem, PledgeUpgrade } from './pledge';
@@ -57,6 +59,8 @@ export interface PledgeView {
   insurance?: Insurance;
   /** Pure paint pledge: contains nothing but paints (no ship, poster, gear, …). */
   isPaint: boolean;
+  /** A pack of two ships or more (#515, `ship-pack.ts`): its ships with their images. */
+  pack?: PackShip[];
   /** CCU that has not been applied yet (applied ones disappear from the hangar). */
   isCcu: boolean;
   isStandaloneShip: boolean;
@@ -147,6 +151,11 @@ export function toPledgeView(
         : pledge.items.filter((item) => item.kind === 'Insurance').map((item) => item.title),
     ),
     isPaint,
+    ...(pledgeShipKind(pledge.items) === 'pack' && {
+      pack: pledge.items
+        .filter((item) => item.kind === 'Ship')
+        .map((item) => ({ name: item.title, ...(item.image && { image: item.image }) })),
+    }),
     isCcu: pledge.upgrade !== undefined,
     isStandaloneShip: pledge.category === 'standalone_ship',
     isGamePackage: pledge.category === 'game_package',

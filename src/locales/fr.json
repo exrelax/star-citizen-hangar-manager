@@ -2178,5 +2178,12 @@
       "one": "$1 de ces peintures a été achetée avec une remise de volume allant jusqu’à $2 %. Elle ne revient qu’avec au moins $3 peintures dans un même panier : achète plus tard autant de peintures ensemble, ou garde assez de crédit boutique pour des peintures de remplissage (Paint Discount Consultant).",
       "other": "$1 de ces peintures ont été achetées avec une remise de volume allant jusqu’à $2 %. Elle ne revient qu’avec au moins $3 peintures dans un même panier : achète plus tard autant de peintures ensemble, ou garde assez de crédit boutique pour des peintures de remplissage (Paint Discount Consultant)."
     }
+  },
+  "pack": {
+    "count": {
+      "one": "$1 vaisseau dans ce pack",
+      "other": "$1 vaisseaux dans ce pack"
+    },
+    "tiles": "Vaisseaux de ce pack"
   }
 }

@@ -2178,5 +2178,12 @@
       "one": "$1 de estas pinturas se compró con un descuento por volumen de hasta el $2 %. Solo vuelve con al menos $3 pinturas en un mismo carrito: compra más adelante tantas pinturas juntas, o guarda suficiente crédito de tienda para pinturas de relleno (Paint Discount Consultant).",
       "other": "$1 de estas pinturas se compraron con un descuento por volumen de hasta el $2 %. Solo vuelve con al menos $3 pinturas en un mismo carrito: compra más adelante tantas pinturas juntas, o guarda suficiente crédito de tienda para pinturas de relleno (Paint Discount Consultant)."
     }
+  },
+  "pack": {
+    "count": {
+      "one": "$1 nave en este pack",
+      "other": "$1 naves en este pack"
+    },
+    "tiles": "Naves de este pack"
   }
 }

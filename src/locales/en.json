@@ -2178,5 +2178,12 @@
       "one": "$1 of these paints was bought at a volume discount of up to $2 %. It comes back only with at least $3 paints in one cart: buy that many paints together later, or keep enough store credit for filler paints (Paint Discount Consultant).",
       "other": "$1 of these paints were bought at a volume discount of up to $2 %. It comes back only with at least $3 paints in one cart: buy that many paints together later, or keep enough store credit for filler paints (Paint Discount Consultant)."
     }
+  },
+  "pack": {
+    "count": {
+      "one": "$1 ship in this pack",
+      "other": "$1 ships in this pack"
+    },
+    "tiles": "Ships of this pack"
   }
 }
