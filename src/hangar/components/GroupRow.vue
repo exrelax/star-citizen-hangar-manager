@@ -146,9 +146,13 @@ const countLabel = computed(() => i18n.n('group.items', props.group.count, [prop
             :key="badge.key"
             v-tooltip="badge.hint"
             class="shm-badge"
-            :class="[badge.className, { 'is-off': badge.off }]"
+            :class="[badge.className, { 'is-off': badge.off, 'has-count': badge.count }]"
           >
+            <SvgIcon v-if="badge.icon" :name="badge.icon" />
             {{ badge.text }}
+            <span v-if="badge.count" class="shm-badge-count" aria-hidden="true">{{
+              badge.count
+            }}</span>
           </span>
         </span>
         <button

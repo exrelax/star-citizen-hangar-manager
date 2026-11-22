@@ -507,6 +507,34 @@ html .shm-theme-rsi .shm-badge {
   cursor: help;
 }
 
+/*
+ * A count at the top right corner of a badge, as the sidebar's boxes have it (#552): how many items
+ * of a group the badge is about, e.g. marked to melt.
+ */
+.shm-badge.has-count {
+  position: relative;
+  margin-right: 6px;
+}
+
+.shm-badge-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  z-index: 1;
+  box-sizing: border-box;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  color: #fff;
+  font-size: calc(10px * var(--shm-font-scale));
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  background: var(--shm-danger);
+  border-radius: var(--shm-radius-pill);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
+}
+
 /* Marked to melt (#97): waiting for RSI's 24 hours, then ready to melt. */
 .shm-badge.is-melt-mark {
   display: inline-flex;

@@ -10,6 +10,8 @@ import type { IconName } from '@/icons/icon-names';
 import type { GroupExtra, GroupShare, ItemGroup } from './grouping';
 import { insuranceLabel, type Insurance } from './insurance';
 import { kindIcon } from './pledge-kind';
+import { formatTimeLeft } from './melt-marks';
+import type { MarkedPledge } from './use-melt-marks';
 import type { PledgeView } from './pledge-view';
 import { isRewardTitle } from './rewards';
 
@@ -34,6 +36,9 @@ export interface GroupBadgeContext {
   /** Today (local ISO date), for the refund countdown. */
   today: string;
   locale: Locale;
+  /** The pledges marked to melt (#97), and now (ms), for the melt label of a group (#552). */
+  marks?: ReadonlyMap<number, MarkedPledge>;
+  now?: number;
 }
 
 export interface GroupBadge {
@@ -44,6 +49,10 @@ export interface GroupBadge {
   /** None of the items has it: struck through, as a single row's off badge. */
   off?: boolean;
   hint?: string;
+  /** An icon before the text, as the single row's badge has it, e.g. the melt mark's. */
+  icon?: IconName;
+  /** A small count at its top right corner, as a notification badge (#552). */
+  count?: string;
 }
 
 const shareOf = <T>(items: readonly T[], has: (item: T) => boolean): GroupShare => {
@@ -140,6 +149,9 @@ export function pledgeGroupBadges(
   const upgraded = shareOf(items, (item) => item.isUpgraded);
   const ccus = context && items.every((item) => item.isCcu);
   return [
+    context?.marks && context.now !== undefined
+      ? meltMarkBadge(items, context.marks, context.now, context.locale)
+      : undefined,
     context && refundBadge(items, context.today),
     ccus
       ? ccuBadge(
@@ -185,6 +197,58 @@ export function pledgeGroupBadges(
       no: i18n.t('pledge.notMeltable'),
     }),
   ].filter((badge): badge is GroupBadge => !!badge);
+}
+
+/** A time left, short for a range: whole hours from an hour on, else minutes. */
+function hoursLeft(ms: number, locale: Locale): string {
+  const minutes = Math.ceil(ms / 60_000);
+  if (minutes < 60) return formatTimeLeft(ms, locale);
+  return new Intl.NumberFormat(locale, {
+    style: 'unit',
+    unit: 'hour',
+    unitDisplay: 'short',
+  }).format(Math.ceil(minutes / 60));
+}
+
+/**
+ * The melt label of a group with items marked to melt (#552): the times of its marked items – one,
+ * or the earliest and the latest ("Melt in 3 hr – 21 hr", "Melt now – 21 hr", "Melt now") – with
+ * the count of marked items as a badge, and both in words in its tooltip.
+ */
+export function meltMarkBadge(
+  items: readonly { id: number }[],
+  marks: ReadonlyMap<number, MarkedPledge>,
+  now: number,
+  locale: Locale,
+): GroupBadge | undefined {
+  const times = items
+    .flatMap((item) => {
+      const mark = marks.get(item.id);
+      return mark ? [mark.meltableAt - now] : [];
+    })
+    .sort((a, b) => a - b);
+  if (!times.length) return undefined;
+  const first = times[0]!;
+  const last = times[times.length - 1]!;
+  const ready = times.filter((left) => left <= 0).length;
+  const number = new Intl.NumberFormat(locale);
+  let text: string;
+  if (last <= 0) text = i18n.t('meltMark.ready');
+  else if (first > 0 && hoursLeft(first, locale) === hoursLeft(last, locale)) {
+    text = i18n.t('meltMark.waiting', [formatTimeLeft(first, locale)]);
+  } else if (first <= 0) text = i18n.t('group.meltNowRange', [hoursLeft(last, locale)]);
+  else text = i18n.t('group.meltRange', [hoursLeft(first, locale), hoursLeft(last, locale)]);
+  const counts = [number.format(times.length), number.format(items.length)];
+  return {
+    key: 'meltMark',
+    text,
+    icon: 'recycle',
+    count: number.format(times.length),
+    className: `is-melt-mark${last <= 0 ? ' is-ready' : ''}`,
+    hint: ready
+      ? i18n.t('group.meltMarkHintReady', [...counts, number.format(ready)])
+      : i18n.t('group.meltMarkHint', [...counts, formatTimeLeft(first, locale)]),
+  };
 }
 
 /** The badges of a group of "Buy Back": insurance, not available again, probably giftable. */
