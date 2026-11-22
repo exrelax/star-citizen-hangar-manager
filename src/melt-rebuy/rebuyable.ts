@@ -40,9 +40,11 @@ import type { WatchInsurance } from '@/watchlists/watchlists';
  *   - a CCU: RSI's upgrade tool, with both ships known there, the target pricier than the base and
  *     its standard edition on sale (`standardSku`); its price is the msrp difference.
  * - **Same price or less**: the pledge's value (the store credit melting frees) is at least that
- *   price. Below it, the difference is the discount given up: a paint's within the tolerance of a
- *   volume discount tier (`PAINT_DISCOUNT_TIERS`) is a volume discount, which is off for a start
- *   (#528: rebought alone, it costs the full price).
+ *   price. Below it, the difference is the discount given up – except a paint's within the
+ *   tolerance of a volume discount tier (`PAINT_DISCOUNT_TIERS`): a volume discount comes from the
+ *   number of paints in one cart, so a later purchase of enough paints gets it again (#593). Such a
+ *   paint is rebuyable at its tier's price, with `volumeDiscount` for the hint that it needs that
+ *   many paints in one cart (or filler paints, Paint Discount Consultant).
  * - **Same insurance or better**: the store item of a ship has to name an insurance at least as
  *   good as the pledge's (`isAtLeast`, an LTI ship only with an LTI item). The store's items carry
  *   no insurance of their own: only some name it ("Starlite - 10 Year"), so a ship counts only
@@ -85,8 +87,6 @@ export type RebuyReason =
   | { code: 'notOnSale' }
   /** A warbond or sale price: rebought, it costs `price`, `amount` more than its value. */
   | { code: 'discount'; amount: number; percent: number; price: number }
-  /** A paint's volume discount (`percent` is the tier): rebought alone, it costs `price`. */
-  | { code: 'paintVolumeDiscount'; amount: number; percent: number; price: number }
   /** The store doesn't offer the pledge's `insurance`; `offered` the best it has, if any. */
   | { code: 'insurance'; insurance: Insurance; offered?: Insurance }
   /** The price of `ship` rises at `at` (ms), `confirmed` by CIG or only expected (#275). */
@@ -134,6 +134,20 @@ export interface Rebuy {
   rebuyPrice?: number;
   /** The store item it is rebought as, if found (also when it isn't rebuyable). */
   item?: RebuyItem;
+  /**
+   * A paint bought at a volume discount (#593): its tier (`percent`), the paints one cart needs for
+   * it and the price without it. `rebuyPrice` is the price at the tier.
+   */
+  volumeDiscount?: RebuyVolumeDiscount;
+}
+
+/** The volume discount of a paint (#593), as `PAINT_DISCOUNT_TIERS` has it. */
+export interface RebuyVolumeDiscount {
+  percent: number;
+  /** The paints one cart needs for the discount. */
+  paints: number;
+  /** The paint's price without the discount. */
+  price: number;
 }
 
 /** The fields of a pledge of My Hangar the rules read. */
@@ -205,9 +219,9 @@ export function splitInsurance(name: string): { base: string; insurance?: Insura
 const toWatchInsurance = (insurance: Insurance | undefined): WatchInsurance | undefined =>
   insurance && (insurance.lifetime ? 'lti' : insurance.months);
 
-/** Whether a paint's discount of `percent` is one of RSI's volume discount tiers. */
-const isPaintTier = (percent: number) =>
-  PAINT_DISCOUNT_TIERS.tiers.some((tier) => tier.percent === roundToPaintTier(percent));
+/** RSI's volume discount tier of a paint's discount of `percent`, if it is one. */
+const paintTierOf = (percent: number) =>
+  PAINT_DISCOUNT_TIERS.tiers.find((tier) => tier.percent === roundToPaintTier(percent));
 
 /** Works out `Rebuy` for pledges; build it once per list. */
 export function createRebuyJudge(context: RebuyContext) {
@@ -251,6 +265,7 @@ export function createRebuyJudge(context: RebuyContext) {
     const value = pledge.valueUsd;
     let rebuyPrice: number | undefined;
     let item: RebuyItem | undefined;
+    let volumeDiscount: RebuyVolumeDiscount | undefined;
 
     // Meltable now.
     const isProtected = pledge.protectedGames.length > 0;
@@ -297,8 +312,11 @@ export function createRebuyJudge(context: RebuyContext) {
       const amount = round(price - value);
       if (amount <= CENT) return;
       const percent = (amount / price) * 100;
-      if (paint && isPaintTier(percent)) {
-        add({ code: 'paintVolumeDiscount', amount, percent: roundToPaintTier(percent), price });
+      const tier = paint ? paintTierOf(percent) : undefined;
+      if (tier) {
+        // Rebuyable at its tier's price with as many paints in one cart (#593).
+        volumeDiscount = { percent: tier.percent, paints: tier.paints, price };
+        rebuyPrice = round(price * (1 - tier.percent / 100));
       } else {
         add({ code: 'discount', amount, percent, price });
       }
@@ -446,6 +464,7 @@ export function createRebuyJudge(context: RebuyContext) {
       freedCredit: value,
       ...(rebuyPrice !== undefined && { rebuyPrice }),
       ...(item && { item }),
+      ...(volumeDiscount && { volumeDiscount }),
     };
   };
 }

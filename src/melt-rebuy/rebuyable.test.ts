@@ -400,10 +400,24 @@ describe('rebuyable pledges (#528)', () => {
       ]);
     });
 
-    it('not a paint with a volume discount, rounded to its tier', () => {
-      expect(judge(paint({ valueUsd: 7.51 })).reasons).toEqual([
-        { code: 'paintVolumeDiscount', amount: 2.49, percent: 25, price: 10 },
-      ]);
+    it('a paint with a volume discount, rounded to its tier, at its tier’s price (#593)', () => {
+      const rebuy = judge(paint({ valueUsd: 7.51 }));
+      expect(rebuy.reasons).toEqual([]);
+      expect(rebuy.rebuyable).toBe(true);
+      expect(rebuy.rebuyPrice).toBe(7.5);
+      expect(rebuy.volumeDiscount).toEqual({ percent: 25, paints: 5, price: 10 });
+    });
+
+    it('a paint at 35 % needs 10 paints in one cart (#593)', () => {
+      expect(judge(paint({ valueUsd: 6.5 })).volumeDiscount).toEqual({
+        percent: 35,
+        paints: 10,
+        price: 10,
+      });
+    });
+
+    it('no volume discount on a paint at its full price nor on a ship (#593)', () => {
+      expect(judge(paint({ valueUsd: 10 })).volumeDiscount).toBeUndefined();
     });
 
     it('not a paint on sale apart from the tiers', () => {

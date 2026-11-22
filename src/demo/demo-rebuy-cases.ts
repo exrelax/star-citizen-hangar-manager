@@ -35,10 +35,12 @@ import type { DemoRandom } from './random';
  * - `higherValue`: the same paint bought at an older, higher price – worth more than its price now,
  *   and with `paint` an item counted twice on a watchlist;
  * - `ship`: the `base` ship with 120 months of insurance, sold as "<ship> - 10 Year";
- * - `ccu`: a standard CCU from `base` to `target`.
+ * - `ccu`: a standard CCU from `base` to `target`;
+ * - `paintVolume`: a paint bought at 25 % (a volume discount tier), rebuyable at that tier with the
+ *   hint that it needs 5 paints in one cart (#593).
  *
  * Not rebuyable, one reason each:
- * - `giftable`: a giftable paint; `paintVolume`: a paint bought at 25 % (a volume discount tier);
+ * - `giftable`: a giftable paint;
  * - `discount`: a warbond CCU from `base` to `target`;
  * - `upgraded`: a `base` ship upgraded to `target` (with the demo state "upgraded" only);
  * - `package`: a game package with `base`; `extraItems`: `base` with gear;
@@ -53,10 +55,9 @@ import type { DemoRandom } from './random';
  * less than 24 hours ago".
  */
 
-export const REBUYABLE_CASES = ['paint', 'higherValue', 'ship', 'ccu'] as const;
+export const REBUYABLE_CASES = ['paint', 'higherValue', 'ship', 'ccu', 'paintVolume'] as const;
 export const NOT_REBUYABLE_CASES = [
   'giftable',
-  'paintVolume',
   'discount',
   'upgraded',
   'package',

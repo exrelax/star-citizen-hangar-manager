@@ -2118,7 +2118,8 @@
         "one": "$1 article mis sur « $2 » ; il y était déjà et a été compté en plus.",
         "other": "$1 articles mis sur « $2 », dont $3 déjà présents et comptés en plus."
       }
-    }
+    },
+    "paintTier": "$1 peintures dans un même panier : remise de volume de $2 %"
   },
   "meltRebuy": {
     "label": "Rachetable",
@@ -2138,7 +2139,6 @@
       "otherKind": "Ni peinture, ni vaisseau, ni CCU",
       "notOnSale": "Pas en vente actuellement",
       "discount": "Remise de $1",
-      "paintVolumeDiscount": "Remise de quantité sur les peintures de $1",
       "insurance": "$1 pas en vente",
       "priceIncrease": "Hausse de prix annoncée : $1",
       "priceIncreaseExpected": "Hausse de prix attendue : $1",
@@ -2153,7 +2153,6 @@
     },
     "labelHintPlain": "Peut être fondu maintenant et racheté plus tard dans le Pledge Store en store credit sans perte – le même article avec la même assurance.",
     "reasonDiscountPlain": "Remise",
-    "reasonPaintVolumeDiscountPlain": "Remise de quantité sur les peintures",
     "groupSome": "Rachetables en partie",
     "groupHint": {
       "one": "Fondre le pledge rachetable libère $2 en store credit. Le racheter dans le Pledge Store coûte maintenant $3 en store credit.",
@@ -2168,6 +2167,11 @@
     "shortcutShowHint": "N’affiche dans « My Hangar » que les pledges que vous pouvez fondre maintenant et racheter plus tard en store credit sans perte. « Réinitialiser les filtres » ou le × de la liste affiche tout à nouveau.",
     "shortcutHide": "Afficher tous les pledges",
     "setting": "Afficher les pledges rachetables",
-    "settingHint": "Le libellé « Rachetable » sur les pledges que vous pouvez fondre maintenant et racheter plus tard dans le Pledge Store en store credit sans perte, la liste « Fondre et racheter » et, dans l’élément ouvert, pourquoi un pledge n’est pas rachetable sans perte."
+    "settingHint": "Le libellé « Rachetable » sur les pledges que vous pouvez fondre maintenant et racheter plus tard dans le Pledge Store en store credit sans perte, la liste « Fondre et racheter » et, dans l’élément ouvert, pourquoi un pledge n’est pas rachetable sans perte.",
+    "volumeHint": "Achetée avec une remise de volume de $1 % : elle ne revient qu’avec au moins $2 peintures dans un même panier. Achète plus tard autant de peintures ensemble, ou garde assez de crédit boutique pour des peintures de remplissage (Paint Discount Consultant).",
+    "volumeNote": {
+      "one": "$1 de ces peintures a été achetée avec une remise de volume allant jusqu’à $2 %. Elle ne revient qu’avec au moins $3 peintures dans un même panier : achète plus tard autant de peintures ensemble, ou garde assez de crédit boutique pour des peintures de remplissage (Paint Discount Consultant).",
+      "other": "$1 de ces peintures ont été achetées avec une remise de volume allant jusqu’à $2 %. Elle ne revient qu’avec au moins $3 peintures dans un même panier : achète plus tard autant de peintures ensemble, ou garde assez de crédit boutique pour des peintures de remplissage (Paint Discount Consultant)."
+    }
   }
 }

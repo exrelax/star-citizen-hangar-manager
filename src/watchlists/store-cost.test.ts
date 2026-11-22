@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { priceChangeOf, storeCostOf } from './store-cost';
+import { paintTierPercent, priceChangeOf, storeCostOf } from './store-cost';
 import type { StoreCatalog } from './store-status';
 import type { WatchItem } from './watchlists';
 
@@ -28,7 +28,13 @@ describe('what a watchlist’s store items cost (#531)', () => {
       { kind: 'storeCcu', fromShipId: 1, toShipId: 3, name: 'CCU', value: 575, count: 1, ...at },
       { kind: 'hangar', pledgeId: 5, name: 'A pledge', value: 99, ...at },
     ];
-    expect(storeCostOf(items, catalog)).toEqual({ items: 2, total: 605, changed: 0, unknown: 0 });
+    expect(storeCostOf(items, catalog)).toEqual({
+      items: 2,
+      total: 605,
+      changed: 0,
+      unknown: 0,
+      paints: 3,
+    });
   });
 
   it('counts those off sale, impossible or pricier as changed, and leaves them out', () => {
@@ -40,14 +46,25 @@ describe('what a watchlist’s store items cost (#531)', () => {
       // Cheaper now: not changed for the worse.
       { kind: 'storePaint', skuId: 7, name: 'Dusk', value: 12, count: 1, ...at },
     ];
-    expect(storeCostOf(items, catalog)).toEqual({ items: 4, total: 120, changed: 3, unknown: 0 });
+    expect(storeCostOf(items, catalog)).toMatchObject({
+      items: 4,
+      total: 120,
+      changed: 3,
+      unknown: 0,
+    });
   });
 
   it('counts those of unknown price apart', () => {
     const items: WatchItem[] = [
       { kind: 'storePaint', skuId: 7, name: 'Dusk', value: 10, count: 1, ...at },
     ];
-    expect(storeCostOf(items, {})).toEqual({ items: 1, total: 0, changed: 0, unknown: 1 });
+    expect(storeCostOf(items, {})).toEqual({
+      items: 1,
+      total: 0,
+      changed: 0,
+      unknown: 1,
+      paints: 0,
+    });
   });
 });
 
@@ -65,5 +82,13 @@ describe('priceChangeOf (#531)', () => {
     expect(
       priceChangeOf({ kind: 'hangar', pledgeId: 1, name: 'A', value: 5, ...at }, { price: 9 }),
     ).toBeUndefined();
+  });
+});
+
+describe('the volume discount of a watchlist’s paints in one cart (#593)', () => {
+  it('follows RSI’s tiers', () => {
+    expect([1, 2, 3, 4, 5, 7, 9, 10, 14].map(paintTierPercent)).toEqual([
+      0, 15, 20, 20, 25, 30, 30, 35, 35,
+    ]);
   });
 });

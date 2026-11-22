@@ -714,6 +714,19 @@ const countLabel = computed(() => {
   gap: 4px 12px;
 }
 
+/* An info icon of the shortcut with its note as tooltip (#593). */
+:slotted(.shm-shortcut-note) {
+  display: inline-flex;
+  align-items: center;
+  color: var(--shm-text-muted);
+  cursor: help;
+}
+
+:slotted(.shm-shortcut-note .shm-icon) {
+  width: 13px;
+  height: 13px;
+}
+
 /* At least 28 px to hit, as the sidebar's icon buttons. */
 .shm-shortcut-close {
   display: inline-flex;

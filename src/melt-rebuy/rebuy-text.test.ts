@@ -6,6 +6,7 @@ import {
   rebuyLabelHint,
   rebuyReasonPlainText,
   rebuyReasonText,
+  rebuyVolumeNote,
 } from './rebuy-text';
 
 afterEach(() => setLocale('en'));
@@ -24,7 +25,6 @@ const reasons: RebuyReason[] = [
   { code: 'otherKind' },
   { code: 'notOnSale' },
   { code: 'discount', amount: 40, percent: 10, price: 400 },
-  { code: 'paintVolumeDiscount', amount: 2.5, percent: 25, price: 10 },
   { code: 'insurance', insurance: { lifetime: true } },
   { code: 'priceIncrease', ship: 'Perseus', at: 0, confirmed: true },
   { code: 'priceIncrease', ship: 'Perseus', at: 0, confirmed: false },
@@ -63,7 +63,6 @@ describe('rebuyReasonText (#528)', () => {
       'No paint, ship or CCU',
       'Not on sale now',
       'Discount of $40',
-      'Paint volume discount of $2.50',
       'LTI not on sale',
       'Price increase ahead: Perseus',
       'Price increase expected: Perseus',
@@ -89,6 +88,37 @@ describe('rebuyLabelHint', () => {
     expect(rebuyLabelHint({ freedCredit: 55, rebuyPrice: 50 })).toBe(
       'Melting it frees $55 in store credit. Rebuying it in the Pledge Store costs $50 in store credit now – the same item with the same insurance.',
     );
+  });
+
+  it('adds the hint on a paint bought at a volume discount (#593)', () => {
+    const volumeDiscount = { percent: 35, paints: 10, price: 10 };
+    expect(rebuyLabelHint({ freedCredit: 6.5, rebuyPrice: 6.5, volumeDiscount })).toMatch(
+      /store credit now – the same item with the same insurance\. Bought at a 35 % volume discount: it comes back only with at least 10 paints in one cart\./,
+    );
+    expect(rebuyLabelHint({ freedCredit: 6.5, volumeDiscount }, { hideValues: true })).toContain(
+      'at least 10 paints in one cart',
+    );
+  });
+});
+
+describe('rebuyVolumeNote (#593)', () => {
+  const paint = (percent: number, paints: number, rebuyable = true) => ({
+    pledgeId: percent,
+    rebuyable,
+    reasons: [],
+    freedCredit: 5,
+    volumeDiscount: { percent, paints, price: 10 },
+  });
+
+  it('counts the rebuyable paints bought at a volume discount, with the highest tier', () => {
+    expect(rebuyVolumeNote([paint(25, 5), paint(35, 10), paint(15, 2, false), undefined])).toMatch(
+      /^2 of these paints were bought at a volume discount of up to 35 %\. .* at least 10 paints/,
+    );
+    expect(rebuyVolumeNote([paint(20, 3)])).toMatch(/^1 of these paints was bought/);
+  });
+
+  it('has none without such paints', () => {
+    expect(rebuyVolumeNote([])).toBeUndefined();
   });
 });
 
