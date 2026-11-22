@@ -55,9 +55,7 @@ import {
   justBoughtOf,
 } from './demo';
 import type { UpgradeLogEntry } from '@/hangar/upgrade-log';
-
-/** Random key of the demo, created on first use and kept only in this browser. */
-const demoKeyItem = storage.defineItem<string | null>('local:demo.key', { fallback: null });
+import { demoKeyItem } from './demo-key';
 
 const randomKey = () =>
   [...crypto.getRandomValues(new Uint8Array(16))]
