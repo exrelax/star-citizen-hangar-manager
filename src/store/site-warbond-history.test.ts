@@ -33,6 +33,41 @@ describe('parseSiteWarbondHistory', () => {
     });
   });
 
+  it('reads when an offer is expected to end (#568), ignoring an invalid or early one', () => {
+    const read = parseSiteWarbondHistory({
+      schemaVersion: 1,
+      offers: [
+        { ...offer, expectedEnd: '2026-10-10T16:00:00Z' },
+        { ...offer, expectedEnd: 'soon' },
+        { ...offer, expectedEnd: '2026-09-01T00:00:00Z' },
+      ],
+    })!;
+    expect(read.map((sighting) => sighting.expectedEnd)).toEqual([
+      Date.parse('2026-10-10T16:00:00Z'),
+      undefined,
+      undefined,
+    ]);
+    // The offer itself is read either way.
+    expect(read).toHaveLength(3);
+  });
+
+  it('has the warbond offers of the ships flight ready at the IAE 2956 (#568)', () => {
+    const offers = parseSiteWarbondHistory(siteFile)!.filter((sighting) => sighting.expectedEnd);
+    expect(
+      offers.map(({ shipId, price, msrp, firstSeen, expectedEnd }) => [
+        shipId,
+        msrp - price,
+        new Date(firstSeen).toISOString().slice(0, 10),
+        new Date(expectedEnd!).toISOString().slice(0, 10),
+      ]),
+    ).toEqual([
+      [244, 40, '2026-11-13', '2026-12-13'],
+      [224, 75, '2026-11-15', '2026-12-15'],
+      [329, 15, '2026-11-17', '2026-12-17'],
+      [330, 20, '2026-11-21', '2026-12-21'],
+    ]);
+  });
+
   it("leaves out offers that don't fit, and ignores files of another format", () => {
     const offers = parseSiteWarbondHistory({
       schemaVersion: 1,

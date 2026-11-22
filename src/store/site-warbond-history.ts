@@ -23,12 +23,15 @@ import {
  *       "msrp": 250,                                 // standard price when offered, in USD
  *       "firstSeen": "2026-09-10T16:00:00Z",
  *       "lastSeen": "2026-09-17T16:00:00Z",
+ *       "expectedEnd": "2026-10-10T16:00:00Z",   // optional, when it is expected to end (#568)
  *       "events": [{ "id": "iae-2955", "name": "Intergalactic Aerospace Expo 2955" }]
  *     }
  *   ]
  * }
  *
- * An event's name is one text or one per language (`{ "en": …, "de": … }`).
+ * An event's name is one text or one per language (`{ "en": …, "de": … }`). `expectedEnd` is an
+ * expectation, not confirmed by CIG, e.g. for the warbond offers of ships flight ready at an event,
+ * sold for about a month; it is left out when invalid or before `firstSeen`.
  */
 
 const MAX_USD = 100_000;
@@ -61,6 +64,7 @@ function offerOf(value: unknown): WarbondSighting | undefined {
   const lastSeen = time(offer?.lastSeen);
   if (!shipId || !shipName || !price || !msrp || price >= msrp) return undefined;
   if (firstSeen === undefined || lastSeen === undefined || lastSeen < firstSeen) return undefined;
+  const expectedEnd = time(offer?.expectedEnd);
   const events = Array.isArray(offer?.events)
     ? offer.events.map(eventOf).filter((event) => !!event)
     : [];
@@ -73,6 +77,7 @@ function offerOf(value: unknown): WarbondSighting | undefined {
     firstSeen,
     lastSeen,
     ...(events.length && { events }),
+    ...(expectedEnd !== undefined && expectedEnd > firstSeen && { expectedEnd }),
   };
 }
 
