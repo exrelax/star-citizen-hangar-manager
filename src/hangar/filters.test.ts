@@ -667,3 +667,43 @@ describe('the "CCUs" filter by contents (#566)', () => {
     ).toBeUndefined();
   });
 });
+
+describe('rewards with a paint under the filter "Paints" (#581)', () => {
+  const coin = { title: '2955 Best in Show Coin', kind: 'Hangar decoration' };
+  const paint = { title: 'Zeus Mk II ES - Best in Show 2955 Livery', kind: 'Skin' };
+  const rewardWithPaint = pledge(10, {
+    title: 'Zeus Mk II ES - 2955 Best in Show Rewards',
+    valueUsd: 0,
+    reward: 'event',
+    items: [paint, coin],
+  });
+  const rewardWithout = pledge(11, { valueUsd: 0, reward: 'event', items: [coin] });
+  const packageWithPaint = pledge(12, { items: [ship, paint] });
+
+  it('finds a reward with a paint by "Paints" and "Rewards", in My Hangar', () => {
+    const { paints, rewards } = PLEDGE_FILTER_PREDICATES;
+    expect(paints(rewardWithPaint)).toBe(true);
+    expect(rewards(rewardWithPaint)).toBe(true);
+    expect(paints(rewardWithout)).toBe(false);
+    // Other pledges with a paint among their items stay as they are.
+    expect(paints(packageWithPaint)).toBe(false);
+  });
+
+  it('finds a reward with a paint by "Paints" and "Rewards", in the Buy Back', () => {
+    const view = (title: string, contained: string, items: string[] = []) =>
+      ({ title, contained, items, isPaint: false }) as unknown as BuybackView;
+    const { paints, rewards } = BUYBACK_FILTER_PREDICATES;
+    const withPaint = view(
+      'Zeus Mk II ES - 2955 Best in Show Rewards',
+      'Zeus Mk II ES and 2 items',
+      ['Zeus Mk II ES - Best in Show 2955 Livery', '2955 Best in Show Coin'],
+    );
+    expect(paints(withPaint)).toBe(true);
+    expect(rewards(withPaint)).toBe(true);
+    expect(paints(view('IAE 2954 - Hangar Poster', 'Hangar Poster'))).toBe(false);
+    // A paint that isn't a reward: only by its own `isPaint`.
+    expect(paints(view('Package - Aurora Starter', 'Aurora and 2 items', ['Aurora Paint']))).toBe(
+      false,
+    );
+  });
+});

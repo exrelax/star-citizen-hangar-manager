@@ -178,10 +178,21 @@ export const BUYBACK_FILTER_CATEGORIES: Record<FilterCategory, readonly BuybackF
   features: ['lti', 'warbond', 'probablyGiftable', 'available', 'priceIncrease'],
 };
 
+/**
+ * A reward with a paint among its items (#581), by its name and the names of its items (the buy
+ * back shows no values): found by the filter "Paints" too.
+ */
+export const isBuybackRewardWithPaint = (
+  pledge: Pick<BuybackView, 'title' | 'contained' | 'items'>,
+): boolean =>
+  isRewardTitle(pledge.title) &&
+  [pledge.contained, ...pledge.items].some((name) => /\b(paint|livery)\b/i.test(name));
+
 export const BUYBACK_FILTER_PREDICATES: FilterPredicates<BuybackView, BuybackFilter> = {
   ships: (pledge) => pledge.ships.length > 0,
   ccus: (pledge) => pledge.isCcu,
-  paints: (pledge) => pledge.isPaint,
+  // Also a reward with a paint (#581).
+  paints: (pledge) => pledge.isPaint || isBuybackRewardWithPaint(pledge),
   gameAccess: (pledge) => pledge.hasGameAccess,
   lti: (pledge) => pledge.hasLti,
   warbond: (pledge) => pledge.order !== undefined,

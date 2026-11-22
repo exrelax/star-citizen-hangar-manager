@@ -313,6 +313,22 @@ const REWARDS = [
   'Subscribers Exclusive - Flair Item',
 ];
 
+/**
+ * A Best in Show reward of `ship` with its paint, coin and case (#581): a reward with a paint,
+ * found by the filters "Paints" and "Rewards".
+ */
+export function bestInShowReward(ship: string): DemoPledge {
+  const items: PledgeItem[] = [
+    { title: `${ship} - Best in Show 2955 Livery`, kind: 'Skin' },
+    { title: '2955 Best in Show Coin', kind: 'Hangar decoration' },
+    { title: '2955 Best in Show Coin Case', kind: 'Hangar decoration' },
+  ];
+  return basePledge(`${ship} - 2955 Best in Show Rewards`, 0, items, 'rewards', 0, {
+    isGiftable: false,
+    isExchangeable: false,
+  });
+}
+
 function reward(random: DemoRandom, index: number): DemoPledge {
   const title = random.pick(`reward:${index}`, REWARDS)!;
   return basePledge(title, 0, [{ title: title.replace(/^.+? - /, '') }], 'rewards', 0, {
@@ -370,7 +386,11 @@ export function generateHangar(
     storePledge(random, catalog, 'Add-Ons', 'Component', 'addOns', index),
   );
   times(composition.packs, (index) => pack(random, pool, index));
-  times(composition.rewards, (index) => reward(random, index));
+  // The first reward is a Best in Show reward with a paint of a hangar ship (#581).
+  const firstShip = pledges.find((pledge) => pledge.demoKind === 'ships')?.items[0]?.title;
+  times(composition.rewards, (index) =>
+    index === 0 && firstShip ? bestInShowReward(firstShip) : reward(random, index),
+  );
   const shuffled = random.shuffle('order', pledges, (pledge) => pledges.indexOf(pledge).toString());
   // A paint comes first: the newest pledge, bought a few hours ago with store credit (#176). One
   // the store sells now, so it can't be rebought only as it was bought too recently (#532).

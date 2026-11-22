@@ -170,6 +170,14 @@ function pledgeImage(pledge: Pledge, currentShip: PledgeItem | undefined): strin
   return pledge.items.find((item) => isRealImage(item.image))?.image;
 }
 
+/**
+ * A reward pledge with a paint among its items (#581), e.g. "Zeus Mk II ES - 2955 Best in Show
+ * Rewards" with its paint, coin and case: found by the filter "Paints" too. It stays no paint
+ * pledge (`isPaint`) for its kind, icon and discount.
+ */
+export const isRewardWithPaint = (pledge: Pick<PledgeView, 'reward' | 'items'>): boolean =>
+  pledge.reward !== undefined && pledge.items.some(isPaintItem);
+
 /** Whether an item of a pledge is a paint. */
 export function isPaintItem(item: PledgeItem): boolean {
   // RSI occasionally lists a paint without a kind, e.g. "400i - Meridian Paint".
