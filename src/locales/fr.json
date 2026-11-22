@@ -1291,7 +1291,19 @@
     "buttonHint": "Marque ce pledge pour le fondre plus tard : le Hangar Manager vous indique quand RSI le permet, 24 heures après l’achat.",
     "waiting": "Fondre dans $1",
     "ready": "Fondre maintenant",
-    "hint": "Marqué pour fondre. RSI permet de fondre un pledge 24 heures après son achat : à partir du $1."
+    "hint": "Marqué pour fondre. RSI permet de fondre un pledge 24 heures après son achat : à partir du $1.",
+    "selectionMarked": {
+      "one": "$1 pledge marqué pour la fonte.",
+      "other": "$1 pledges marqués pour la fonte."
+    },
+    "selectionSkipped": {
+      "one": "$1 laissé tel quel : pas fondable ou déjà marqué.",
+      "other": "$1 laissés tels quels : pas fondables ou déjà marqués."
+    },
+    "selectionUnmarked": {
+      "one": "Marque retirée de $1 pledge.",
+      "other": "Marques retirées de $1 pledges."
+    }
   },
   "browserNotifications": {
     "title": "Notifications du navigateur",

@@ -1291,7 +1291,19 @@
     "buttonHint": "Merkt dieses Pledge zum späteren Einschmelzen vor: Der Hangar Manager sagt dir, wann RSI das Einschmelzen erlaubt – 24 Stunden nach dem Kauf.",
     "waiting": "Einschmelzen in $1",
     "ready": "Jetzt einschmelzen",
-    "hint": "Zum Einschmelzen gemerkt. RSI erlaubt das Einschmelzen 24 Stunden nach dem Kauf: ab $1."
+    "hint": "Zum Einschmelzen gemerkt. RSI erlaubt das Einschmelzen 24 Stunden nach dem Kauf: ab $1.",
+    "selectionMarked": {
+      "one": "$1 Pledge zum Einschmelzen gemerkt.",
+      "other": "$1 Pledges zum Einschmelzen gemerkt."
+    },
+    "selectionSkipped": {
+      "one": "$1 blieb, wie es war: nicht einschmelzbar oder schon gemerkt.",
+      "other": "$1 blieben, wie sie waren: nicht einschmelzbar oder schon gemerkt."
+    },
+    "selectionUnmarked": {
+      "one": "$1 Pledge nicht mehr gemerkt.",
+      "other": "$1 Pledges nicht mehr gemerkt."
+    }
   },
   "browserNotifications": {
     "title": "Browser-Benachrichtigungen",
