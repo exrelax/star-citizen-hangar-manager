@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "revision": 7,
-  "changedAt": "2026-11-21T20:44:53.764Z",
-  "generatedAt": "2026-11-21T20:44:53.764Z",
+  "revision": 8,
+  "changedAt": "2026-11-22T10:46:08.983Z",
+  "generatedAt": "2026-11-22T10:46:08.983Z",
   "sources": [
     {
       "id": "ship-matrix",
@@ -285,7 +285,7 @@
     {"id":326,"name":"Skylark","manufacturer":"Roberts Space Industries","wikiName":"Skylark","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[],"msrp":[{"value":45,"from":"2026-11-14"}],"retired":[]},
     {"id":327,"name":"ATLS IKTI Akuma","manufacturer":"Argo Astronautics","wikiName":"ATLS IKTI Akuma","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[],"msrp":[{"value":50,"from":"2026-11-12"}],"retired":[]},
     {"id":328,"name":"Sabre Raven EX","manufacturer":"Aegis Dynamics","wikiName":"Sabre Raven EX","status":[{"value":"flight-ready","from":"2026-11-12"}],"alwaysAvailable":[],"msrp":[{"value":185,"from":"2026-11-12"}],"retired":[]},
-    {"id":329,"name":"Marauder","manufacturer":"Drake Interplanetary","wikiName":"Marauder","status":[{"value":"flight-ready","from":"2026-11-17"}],"alwaysAvailable":[],"msrp":[],"retired":[]},
+    {"id":329,"name":"Marauder","manufacturer":"Drake Interplanetary","wikiName":"Marauder","status":[{"value":"flight-ready","from":"2026-11-17"}],"alwaysAvailable":[],"msrp":[{"value":150,"from":"2026-11-22"}],"retired":[]},
     {"id":330,"name":"Hyūn","manufacturer":"Gatac Manufacture","wikiName":"Hyūn","status":[{"value":"flight-ready","from":"2026-11-21"}],"alwaysAvailable":[],"msrp":[{"value":220,"from":"2026-11-21"}],"retired":[]}
   ]
 }
