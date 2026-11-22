@@ -66,6 +66,7 @@ import {
 } from '@/watchlists/use-watchlists';
 import { dueReminders, withReminderDone, type Watchlist } from '@/watchlists/watchlists';
 import { useStoreChanges } from '@/watchlists/use-store-changes';
+import SelectionWatchlists from '@/watchlists/components/SelectionWatchlists.vue';
 import { changeText } from '@/watchlists/store-change-text';
 import {
   demoDismissedPriceIncreasesItem,
@@ -1194,6 +1195,8 @@ async function move(box: Box, step: -1 | 1) {
               {{ i18n.t('bulkExchange.disabled') }}
             </button>
           </div>
+          <!-- All selected pledges onto a watchlist, or a new one (#549). -->
+          <SelectionWatchlists :pledges="selected" />
           <BulkExchangeOverlay
             v-if="bulkExchanging"
             :pledges="meltable"

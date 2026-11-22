@@ -2023,6 +2023,15 @@
       "dueName": "Due today",
       "wishName": "Wishlist",
       "laterName": "Later"
-    }
+    },
+    "selectionAdd": {
+      "one": "Add $1 pledge to a watchlist",
+      "other": "Add $1 pledges to a watchlist"
+    },
+    "selectionAdded": {
+      "one": "$1 pledge put on “$2”.",
+      "other": "$1 pledges put on “$2”."
+    },
+    "selectionAlready": "They are all on “$1” already."
   }
 }

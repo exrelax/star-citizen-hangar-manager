@@ -2023,6 +2023,15 @@
       "dueName": "Heute fällig",
       "wishName": "Wunschliste",
       "laterName": "Später"
-    }
+    },
+    "selectionAdd": {
+      "one": "$1 Pledge auf eine Watchlist setzen",
+      "other": "$1 Pledges auf eine Watchlist setzen"
+    },
+    "selectionAdded": {
+      "one": "$1 Pledge auf „$2“ gesetzt.",
+      "other": "$1 Pledges auf „$2“ gesetzt."
+    },
+    "selectionAlready": "Sie stehen alle schon auf „$1“."
   }
 }
