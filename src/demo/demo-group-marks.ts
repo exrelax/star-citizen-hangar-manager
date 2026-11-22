@@ -15,7 +15,26 @@ import type { PledgeView } from '@/hangar/pledge-view';
  * the demo's pledge bought a few hours ago does (`demoPurchaseTime`).
  */
 
+/** The pledges the demo marks: the one just bought, and an older meltable paint of its own. */
+export function demoMarkIds(pledges: readonly PledgeView[], justBought?: number): number[] {
+  const count = (title: string) => pledges.filter((pledge) => pledge.title === title).length;
+  // Not one of the pair bought again (#131): its paint shows twice.
+  const older = pledges.find(
+    (pledge) =>
+      pledge.isMeltable && pledge.id !== justBought && pledge.isPaint && count(pledge.title) === 1,
+  );
+  return [...(justBought === undefined ? [] : [justBought]), ...(older ? [older.id] : [])];
+}
+
 const HOUR = 60 * 60 * 1000;
+
+/**
+ * When the demo marked its pledges (`demoMarkIds`, then the groups' ones), as it stores them: an
+ * hour apart before `now`, so the first – bought a few hours ago – still waits for RSI's 24 hours
+ * and the ones bought long ago are ready.
+ */
+export const demoMarkTimes = (ids: readonly number[], now: number): Record<number, number> =>
+  Object.fromEntries(ids.map((id, index) => [id, now - (index + 1) * HOUR]));
 
 /** A time as the pledge log writes it ("2026-11-22T09:00"), in local time, on the full hour. */
 export function purchaseTimeOf(ms: number): string {

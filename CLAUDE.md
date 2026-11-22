@@ -215,9 +215,15 @@ It must always be able to show, in both themes:
   enough store credit), the "Keep the discount" dialog, and empty (demo setting "CCUs with their
   discount at risk"); a base ship without a Pledge Store link; the grouped view (#456) on and
   off in each section, with a group's dialog.
-- List Shortcuts (#431): every shortcut opened in My Hangar and Buy Back with its bar, count and
-  ×, with search and filters on and with nothing left; the existing view filters on the new
-  mechanism (#428).
+- List Shortcuts (#431): each shortcut opened in My Hangar with its bar, title, icon, count and
+  ×: "Ready to melt" (the demo's marks ready to melt, never the one still waiting), "Paints to
+  optimize" from the sidebar box and the new plan's "Show these paints" (#430), "Melt and rebuy"
+  (#530) and "Show in My Hangar" of a warbond CCU's "Your CCUs between" (#429, the demo's own
+  CCUs); a search and a filter within it, also one leaving no match; its empty state: "Ready to
+  melt" with the demo setting "Marks to melt in a new demo hangar" off and "Reset demo" (or its
+  pledges unmarked), "Paints to optimize" with "A new plan" off, "Melt and rebuy" with
+  "Rebuyable pledges" off; the former view filters "Melt now" and "Paint rebuy" on the new
+  mechanism (#428). No shortcut opens the Buy Back yet.
 - Grouped View (#450): the toggle on and off in My Hangar and Buy Back; groups of CCUs, ships,
   packages and gear next to single items; differing extras (some with gear, some with BIS paint,
   different insurance, some upgraded); all, some and none giftable and meltable; sums with a

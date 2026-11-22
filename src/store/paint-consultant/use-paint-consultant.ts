@@ -69,6 +69,37 @@ export interface PaintRebuy {
  */
 export const paintRebuys = shallowRef<ReadonlyMap<number, PaintRebuy>>(new Map());
 
+/**
+ * The paints of My Hangar a result buys again (`rebuy`), and the old ones bought again already,
+ * left to melt (`melt`), by pledge id – as `paintRebuys` holds them.
+ */
+export function paintRebuysOf(
+  result: Pick<PaintConsultantResult, 'plan' | 'rebought'> | undefined,
+): ReadonlyMap<number, PaintRebuy> {
+  const plan = result?.plan;
+  const marks = new Map<number, PaintRebuy>();
+  for (const paint of plan?.own ?? []) {
+    marks.set(paint.pledgeId, {
+      kind: 'rebuy',
+      from: paint.discount,
+      to: plan!.tier.percent,
+      freed:
+        Math.round(
+          (paint.meltValue - paint.storePaint.price * (1 - plan!.tier.percent / 100)) * 100,
+        ) / 100,
+    });
+  }
+  for (const { old, copy } of result?.rebought ?? []) {
+    marks.set(old.pledgeId, {
+      kind: 'melt',
+      from: old.discount,
+      to: copy.discount,
+      freed: old.meltValue,
+    });
+  }
+  return marks;
+}
+
 const KEY: InjectionKey<PaintConsultantState> = Symbol('shm-paint-consultant');
 
 /** Works the result out and provides it to the components below (call it in App.vue). */
@@ -155,30 +186,7 @@ export function providePaintConsultant({
   });
 
   watchEffect(() => {
-    const plan = result.value?.plan;
-    const marks = new Map<number, PaintRebuy>();
-    if (!settings().hideMeltValue) {
-      for (const paint of plan?.own ?? []) {
-        marks.set(paint.pledgeId, {
-          kind: 'rebuy',
-          from: paint.discount,
-          to: plan!.tier.percent,
-          freed:
-            Math.round(
-              (paint.meltValue - paint.storePaint.price * (1 - plan!.tier.percent / 100)) * 100,
-            ) / 100,
-        });
-      }
-      for (const { old, copy } of result.value?.rebought ?? []) {
-        marks.set(old.pledgeId, {
-          kind: 'melt',
-          from: old.discount,
-          to: copy.discount,
-          freed: old.meltValue,
-        });
-      }
-    }
-    paintRebuys.value = marks;
+    paintRebuys.value = settings().hideMeltValue ? new Map() : paintRebuysOf(result.value);
   });
 
   const state = {
