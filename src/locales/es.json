@@ -1992,6 +1992,24 @@
     "storeAlertsHint": "Cuando un elemento de la Pledge Store en ella cambia de precio, o sale o vuelve a la venta.",
     "storeAlertsKindOff": "Los cambios de la Pledge Store en watchlists están desactivados en los ajustes (Notificaciones).",
     "fillerName": "Pinturas de relleno del plan del $1",
-    "fillerDescription": "Las pinturas de relleno del Paint Discount Consultant: fúndelas en cuanto RSI lo permita, 24 horas después de la compra."
+    "fillerDescription": "Las pinturas de relleno del Paint Discount Consultant: fúndelas en cuanto RSI lo permita, 24 horas después de la compra.",
+    "cartAll": "Añadir al carrito",
+    "cartTitleAll": "Añadir «$1» al carrito",
+    "cartOne": "Añadir «$1» al carrito",
+    "cartSkipCcu": "CCU: añádelo con el diálogo de mejora de naves de RSI",
+    "cartSkipOff": "No está a la venta ahora",
+    "cartSkipUnknown": "Su precio o SKU aún no se conoce; vuelve a leer la Pledge Store",
+    "cartNothing": "Nada de esto puede ir al carrito ahora.",
+    "cartTotal": "Total",
+    "cartNote": "Tu carrito no se vacía: lo que ya hay se queda. No se compra nada: revisas el carrito y pagas allí.",
+    "cartAdd": {
+      "one": "Añadir $1 elemento",
+      "other": "Añadir $1 elementos"
+    },
+    "cartAdded": {
+      "one": "$1 elemento está ahora en tu carrito.",
+      "other": "$1 elementos están ahora en tu carrito."
+    },
+    "cartOpen": "Abrir el carrito"
   }
 }

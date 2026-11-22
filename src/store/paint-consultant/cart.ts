@@ -1,4 +1,5 @@
 import { logError, reasonOf as logReasonOf } from '@/errors/error-log';
+import type { ErrorCode } from '@/errors/codes';
 import { postRsiJson } from '@/shared/rsi-api';
 import type { FillerPaint, StorePaint } from './calculation';
 
@@ -155,10 +156,14 @@ export interface CartResult {
   failed: { line: PaintCartLine; reason: string }[];
 }
 
-/** Adds the lines one after the other; a refused line doesn't stop the others. */
+/**
+ * Adds the lines one after the other; a refused line doesn't stop the others. Each refusal goes to
+ * the error log under `code` (a watchlist's own, #529).
+ */
 export async function addLinesToCart(
   lines: readonly PaintCartLine[],
   add: (line: PaintCartLine) => Promise<void> = addToCart,
+  code: ErrorCode = 'PAINT-CART-FAIL',
 ): Promise<CartResult> {
   const result: CartResult = { added: [], failed: [] };
   for (const line of lines) {
@@ -167,11 +172,7 @@ export async function addLinesToCart(
       result.added.push(line);
     } catch (error) {
       result.failed.push({ line, reason: error instanceof Error ? error.message : String(error) });
-      void logError(
-        'PAINT-CART-FAIL',
-        `Paint "${line.name}" into the cart: ${logReasonOf(error)}`,
-        { error },
-      );
+      void logError(code, `"${line.name}" into the cart: ${logReasonOf(error)}`, { error });
     }
   }
   return result;

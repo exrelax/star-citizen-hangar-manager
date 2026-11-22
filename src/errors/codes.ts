@@ -144,6 +144,11 @@ export const ERROR_CODES = {
     failed: "RSI's cart couldn't be read for the running plan",
     instead: 'Showed the plan without the cart check; it can be read again',
   },
+  // Watchlists.
+  'WATCHLIST-CART-FAIL': {
+    failed: "A watchlist's Pledge Store items couldn't all be put into RSI's cart",
+    instead: 'Put in the others, left the cart as it was otherwise and said why',
+  },
 } as const satisfies Record<string, ErrorCodeInfo>;
 
 export type ErrorCode = keyof typeof ERROR_CODES;

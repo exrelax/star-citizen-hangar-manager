@@ -96,3 +96,9 @@ or order IDs (they read `<id>`), no name and no address.
 | ---------------------- | ------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------ |
 | `PAINT-CART-FAIL`      | The consultant's paints couldn't be put into RSI's cart | Left the cart as it was and said why                         | Check the reason shown and try again.      |
 | `PAINT-CART-READ-FAIL` | RSI's cart couldn't be read for the running plan        | Showed the plan without the cart check; it can be read again | Read the cart again from the running plan. |
+
+## Watchlists
+
+| Code                  | What didn't work                                                     | What the Hangar Manager did                                       | What you can do                       |
+| --------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------- |
+| `WATCHLIST-CART-FAIL` | A watchlist's Pledge Store items couldn't all be put into RSI's cart | Put in the others, left the cart as it was otherwise and said why | Check the reason shown and try again. |

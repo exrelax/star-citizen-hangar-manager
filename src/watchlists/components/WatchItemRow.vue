@@ -1,4 +1,7 @@
 <script setup lang="ts">
+// Shared, unscoped styles as plain imports: `<style src>` of the same file in several
+// components breaks the build and the tests by the order they are compiled in.
+import '@/hangar/components/row.css';
 import { formatUsd } from '@/hangar/discount-format';
 import { insuranceLabel } from '@/hangar/insurance';
 import { i18n, locale } from '@/i18n';
@@ -24,6 +27,8 @@ const props = defineProps<{
   status?: StoreStatus;
 }>();
 const emit = defineEmits<{ remove: []; count: [count: number] }>();
+/** `actions`: more buttons before the one that removes it, e.g. into the cart (#529). */
+defineSlots<{ actions?(): unknown }>();
 
 const ICONS: Record<PlainItem['item']['kind'], { name: IconName; set?: IconSet }> = {
   hangar: { name: 'hangar', set: 'custom' },
@@ -127,6 +132,7 @@ const setCount = (next: number) =>
       <span v-else-if="count > 1" class="shm-watch-item-count">×{{ count }}</span>
       <span v-if="value" class="shm-value">{{ value }}</span>
     </span>
+    <slot name="actions" />
     <button
       v-tooltip="i18n.t('watchlists.remove')"
       type="button"
@@ -138,8 +144,6 @@ const setCount = (next: number) =>
     </button>
   </div>
 </template>
-
-<style src="@/hangar/components/row.css"></style>
 
 <style>
 .shm-row.shm-watch-item {

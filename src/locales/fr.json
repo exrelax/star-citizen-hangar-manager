@@ -1992,6 +1992,24 @@
     "storeAlertsHint": "Quand un élément du Pledge Store dessus change de prix, ou sort de la vente ou y revient.",
     "storeAlertsKindOff": "Les changements du Pledge Store sur les watchlists sont désactivés dans les paramètres (Notifications).",
     "fillerName": "Peintures de remplissage du plan du $1",
-    "fillerDescription": "Les peintures de remplissage du Paint Discount Consultant : fonds-les dès que RSI le permet, 24 heures après l’achat."
+    "fillerDescription": "Les peintures de remplissage du Paint Discount Consultant : fonds-les dès que RSI le permet, 24 heures après l’achat.",
+    "cartAll": "Ajouter au panier",
+    "cartTitleAll": "Ajouter « $1 » au panier",
+    "cartOne": "Ajouter « $1 » au panier",
+    "cartSkipCcu": "CCU : ajoute-le avec la fenêtre d’amélioration de vaisseau de RSI",
+    "cartSkipOff": "Pas en vente actuellement",
+    "cartSkipUnknown": "Son prix ou son SKU n’est pas encore connu ; relis le Pledge Store",
+    "cartNothing": "Rien de tout cela ne peut aller dans le panier pour l’instant.",
+    "cartTotal": "Total",
+    "cartNote": "Ton panier n’est pas vidé : ce qui s’y trouve déjà reste. Rien n’est acheté – tu vérifies le panier et paies là-bas.",
+    "cartAdd": {
+      "one": "Ajouter $1 élément",
+      "other": "Ajouter $1 éléments"
+    },
+    "cartAdded": {
+      "one": "$1 élément est maintenant dans ton panier.",
+      "other": "$1 éléments sont maintenant dans ton panier."
+    },
+    "cartOpen": "Ouvrir le panier"
   }
 }
