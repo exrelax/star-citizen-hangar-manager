@@ -24,6 +24,7 @@ import { useSettings } from '@/settings/use-settings';
 import { hasPriceChangeWithin } from '@/price-increases/price-change-filter';
 import { buybackFilterRequest } from '../buyback-filter-request';
 import { listViewRequest } from '@/hangar/list-jump';
+import { closeListShortcut, filterRequestOf, listShortcuts } from '@/hangar/list-shortcut';
 import { useNow } from '@/shared/use-now';
 
 const props = defineProps<{
@@ -114,6 +115,10 @@ const setGrouped = (on: boolean) =>
 const highlights = (states: FilterStates<BuybackFilter>) =>
   highlightClasses(FILTER_HIGHLIGHTS.buyback, states);
 
+/** The List Shortcut open in the buy back (#428, see `list-shortcut.ts`); none when embedded. */
+const shortcut = computed(() => (props.embedded ? null : listShortcuts.value.buyback));
+const shortcutRequest = computed(() => filterRequestOf(shortcut.value));
+
 const filterLabel = (filter: BuybackFilter) => i18n.t(`filter.${filter}`);
 
 /** Filters whose meaning isn't obvious from the label explain it in their tooltip. */
@@ -142,16 +147,22 @@ const filterHint = (filter: BuybackFilter) => {
     :sort-options="sortOptions"
     :sort="sort"
     :highlights="highlights"
+    :filter-request="shortcutRequest"
     :include-request="embedded ? null : buybackFilterRequest"
     :view-request="!embedded && listViewRequest?.tab === 'buyback' ? listViewRequest : null"
     :grouping="{ on: groupedOn, factsOf: buybackFacts }"
     :search="embedded?.search"
     :hide-controls="embedded?.hideControls"
+    @clear-request="closeListShortcut('buyback')"
     @update:sort="setSort"
     @update:grouped="setGrouped"
   >
     <template #row="{ entry, autoExpand }">
       <BuybackRow :pledge="entry" :auto-expand="autoExpand" :link-mode="settings.buybackLinkMode" />
+    </template>
+    <!-- What a List Shortcut adds to its bar (#428). -->
+    <template v-if="shortcut?.extra" #shortcut="{ entries }">
+      <component :is="shortcut.extra" :entries="entries" />
     </template>
     <template #group="{ group, open }">
       <GroupRow

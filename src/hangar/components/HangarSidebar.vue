@@ -37,7 +37,9 @@ import {
 import { checkOffDemo, demoNotificationsItem } from '@/demo/demo-notes';
 import { useOpenNotifications } from '@/notifications/use-notifications';
 import { meltReadyIds, useMarkedPledges } from '../use-melt-marks';
-import { clearHangarFilter, hangarViewFilter, showHangarFilter } from '../view-filter';
+import { isListShortcutOpen, toggleListShortcut } from '../list-shortcut';
+import { MELT_READY_SHORTCUT, PAINT_REBUY_SHORTCUT } from '../hangar-shortcuts';
+import { MELT_REBUY_SHORTCUT_ID, meltRebuyShortcut } from '@/melt-rebuy/rebuy-shortcut';
 import { formatTimeLeft, selectionMarks, setMeltMarks } from '../melt-marks';
 import { myGearHref } from '../route';
 import { useNow } from '@/shared/use-now';
@@ -243,19 +245,13 @@ function openStoreAt(kind: NonNullable<AppNotification['kind']>) {
   openCurrentWarbonds();
 }
 
-/** Shows only the marked pledges that can be melted now in "My Hangar", and again all (#147). */
-const readyFiltered = computed(() => hangarViewFilter.value?.id === 'meltReady');
-function toggleReadyFilter() {
-  if (readyFiltered.value) clearHangarFilter('meltReady');
-  else showHangarFilter('meltReady');
-}
+/** The List Shortcut of the marked pledges that can be melted now in "My Hangar" (#147, #428). */
+const readyFiltered = computed(() => isListShortcutOpen('hangar', MELT_READY_SHORTCUT.id));
+const toggleReadyFilter = () => toggleListShortcut(MELT_READY_SHORTCUT);
 
-/** The paints the consultant would buy again are filtered in "My Hangar" (#146). */
-const rebuyFiltered = computed(() => hangarViewFilter.value?.id === 'paintRebuy');
-function toggleRebuyFilter() {
-  if (rebuyFiltered.value) clearHangarFilter('paintRebuy');
-  else showHangarFilter('paintRebuy');
-}
+/** The List Shortcut of the paints the consultant would buy again (#146, #428). */
+const rebuyFiltered = computed(() => isListShortcutOpen('hangar', PAINT_REBUY_SHORTCUT.id));
+const toggleRebuyFilter = () => toggleListShortcut(PAINT_REBUY_SHORTCUT);
 
 /*
  * Melt and Rebuy (#530): the List Shortcut "Melt and rebuy" from the summary box, by the count of
@@ -271,11 +267,8 @@ const rebuyCount = computed(() =>
       ).count
     : 0,
 );
-const rebuyShortcutOn = computed(() => hangarViewFilter.value?.id === 'meltRebuy');
-function toggleRebuyShortcut() {
-  if (rebuyShortcutOn.value) clearHangarFilter('meltRebuy');
-  else showHangarFilter('meltRebuy');
-}
+const rebuyShortcutOn = computed(() => isListShortcutOpen('hangar', MELT_REBUY_SHORTCUT_ID));
+const toggleRebuyShortcut = () => toggleListShortcut(meltRebuyShortcut(rebuys));
 const selectedRebuy = computed(() =>
   rebuyDisplay.value.shown
     ? rebuySummary(

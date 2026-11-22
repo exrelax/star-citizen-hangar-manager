@@ -39,6 +39,13 @@
     },
     "shortcutClose": "Cerrar «$1»"
   },
+  "listShortcut": {
+    "empty": "No queda nada en esta lista.",
+    "meltReady": "Listos para fundir",
+    "meltReadyEmpty": "Ahora mismo no se puede fundir ningún pledge marcado.",
+    "paintRebuyEmpty": "El plan ya no tiene pinturas para recomprar.",
+    "meltRebuyEmpty": "Ahora mismo ningún pledge se puede fundir y recomprar sin pérdida."
+  },
   "sort": {
     "label": "Orden",
     "newest": "Más recientes primero",
@@ -864,7 +871,7 @@
     "boxMeltNowCredit": "Crédito de tienda de ellas",
     "boxPaints": "Pinturas para recomprar",
     "boxFilter": "Mostrar estas pinturas",
-    "boxFilterHint": "Muestra solo estas pinturas en «My Hangar»; «Restablecer filtros» o este botón vuelve a mostrar todo.",
+    "boxFilterHint": "Muestra solo estas pinturas en «My Hangar»; este botón, la × de la lista o «Restablecer filtros» vuelve a mostrar todo.",
     "boxUnfilter": "Mostrar todos los pledges",
     "boxUnfilterHint": "Desactiva el filtro: «My Hangar» vuelve a mostrar todos los pledges.",
     "boxOpen": "Abrir el asesor",
@@ -1372,7 +1379,7 @@
       "other": "$1 pledges marcados ya se pueden fundir"
     },
     "showReady": "Mostrar",
-    "showReadyHint": "Muestra solo estos pledges en «My Hangar»; este botón o «Restablecer filtros» vuelve a mostrar todos.",
+    "showReadyHint": "Muestra solo estos pledges en «My Hangar»; este botón, la × de la lista o «Restablecer filtros» vuelve a mostrar todos.",
     "showAll": "Mostrar todos",
     "showAllHint": "Desactiva el filtro: «My Hangar» vuelve a mostrar todos los pledges.",
     "selectReady": "Seleccionar",

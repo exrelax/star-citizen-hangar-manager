@@ -39,6 +39,13 @@
     },
     "shortcutClose": "„$1“ schließen"
   },
+  "listShortcut": {
+    "empty": "In dieser Liste ist nichts mehr.",
+    "meltReady": "Bereit zum Einschmelzen",
+    "meltReadyEmpty": "Gerade lässt sich kein gemerktes Pledge einschmelzen.",
+    "paintRebuyEmpty": "Im Plan sind keine Paints mehr zum Rückkauf.",
+    "meltRebuyEmpty": "Gerade lässt sich kein Pledge ohne Verlust einschmelzen und wieder kaufen."
+  },
   "sort": {
     "label": "Sortierung",
     "newest": "Neueste zuerst",
@@ -864,7 +871,7 @@
     "boxMeltNowCredit": "Store Credits daraus",
     "boxPaints": "Paints zum Rückkauf",
     "boxFilter": "Diese Paints anzeigen",
-    "boxFilterHint": "Zeigt in „My Hangar“ nur diese Paints; „Filter zurücksetzen“ oder dieser Button zeigt wieder alle.",
+    "boxFilterHint": "Zeigt in „My Hangar“ nur diese Paints; dieser Button, das × der Liste oder „Filter zurücksetzen“ zeigt wieder alle.",
     "boxUnfilter": "Alle Pledges anzeigen",
     "boxUnfilterHint": "Schaltet den Filter ab: „My Hangar“ zeigt wieder alle Pledges.",
     "boxOpen": "Berater öffnen",
@@ -1372,7 +1379,7 @@
       "other": "$1 gemerkte Pledges lassen sich jetzt einschmelzen"
     },
     "showReady": "Anzeigen",
-    "showReadyHint": "Zeigt in „My Hangar“ nur diese Pledges; dieser Button oder „Filter zurücksetzen“ zeigt wieder alle.",
+    "showReadyHint": "Zeigt in „My Hangar“ nur diese Pledges; dieser Button, das × der Liste oder „Filter zurücksetzen“ zeigt wieder alle.",
     "showAll": "Alle anzeigen",
     "showAllHint": "Schaltet den Filter ab: „My Hangar“ zeigt wieder alle Pledges.",
     "selectReady": "Auswählen",

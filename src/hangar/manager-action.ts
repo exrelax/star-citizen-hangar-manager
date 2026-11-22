@@ -9,7 +9,8 @@ import { openWatchlist } from '@/watchlists/use-watchlists';
 import { hashOfTab } from './route';
 import { selection } from './selection';
 import { meltReadyIds } from './use-melt-marks';
-import { showHangarFilter } from './view-filter';
+import { openListShortcut } from './list-shortcut';
+import { MELT_READY_SHORTCUT } from './hangar-shortcuts';
 import { showBuybackFilter } from '@/buyback/buyback-filter-request';
 import { openCurrentWarbonds, openShipRemovals } from '@/store/open-current-warbonds';
 
@@ -84,6 +85,6 @@ export async function applyManagerAction(action: ManagerAction): Promise<void> {
   // A tab opened just now reads its lists first: the filter and the selection need them.
   const ready = await meltReadyWhenKnown();
   if (!ready.size) return;
-  if (action === 'showMeltReady') showHangarFilter('meltReady');
+  if (action === 'showMeltReady') openListShortcut(MELT_READY_SHORTCUT);
   else selection.replace(ready);
 }

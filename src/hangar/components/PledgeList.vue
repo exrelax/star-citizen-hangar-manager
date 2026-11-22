@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import RebuyWatchlistAction from '@/melt-rebuy/components/RebuyWatchlistAction.vue';
 import { i18n, locale, type MessageKey } from '@/i18n';
 import { today } from '@/orders/refund';
 import { useProvidedCoverageSources } from '@/ccu-consultant/coverage';
@@ -19,10 +18,8 @@ import { HANGAR_SORTS, sortEntries, type HangarSort } from '../sorting';
 import { useSettings } from '@/settings/use-settings';
 import { visiblePledgeIds } from '../selection';
 import { canSelectPledges } from '../sidebar';
-import { meltReadyIds } from '../use-melt-marks';
-import { clearHangarFilter, hangarViewFilter, type HangarViewFilter } from '../view-filter';
+import { closeListShortcut, filterRequestOf, listShortcuts } from '../list-shortcut';
 import { hangarFilterRequest, hangarFilterStates } from '../hangar-filter-request';
-import { paintRebuys } from '@/store/paint-consultant/use-paint-consultant';
 import { hasPriceChangeWithin } from '@/price-increases/price-change-filter';
 import { useNow } from '@/shared/use-now';
 import { FILTER_HIGHLIGHTS } from '@/config';
@@ -45,11 +42,7 @@ import { extrasNote, pledgeGroupBadges, pledgeGroupKind } from '../group-badges'
 import { pledgeFacts } from '../grouping';
 import { useMarkedPledges } from '../use-melt-marks';
 import { useProvidedRebuyables, useRebuyDisplay } from '@/melt-rebuy/use-rebuyables';
-import { isRebuyable, rebuySummary } from '@/melt-rebuy/rebuy-summary';
-import { rebuyVolumeNote } from '@/melt-rebuy/rebuy-text';
-import SvgIcon from '@/icons/SvgIcon.vue';
-import { vTooltip } from '@/shared/tooltip/tooltip';
-import { formatUsd } from '../discount-format';
+import { MELT_REBUY_SHORTCUT_ID } from '@/melt-rebuy/rebuy-shortcut';
 
 const props = defineProps<{
   pledges: PledgeView[];
@@ -184,44 +177,14 @@ onUnmounted(() => !props.embedded && (hangarFilterStates.value = new Map()));
 
 const filterLabel = (filter: PledgeFilter) => i18n.t(`filter.${filter}`);
 
-/** The filter without a button set from the sidebar (see `view-filter.ts`), while it is on. */
-const VIEW_FILTERS: Record<HangarViewFilter, (pledge: PledgeView) => boolean> = {
-  meltReady: (pledge) => meltReadyIds.value.has(pledge.id),
-  paintRebuy: (pledge) => paintRebuys.value.has(pledge.id),
-  meltRebuy: (pledge) => isRebuyable(rebuys.value, pledge.id),
-};
-const viewFilterRequest = computed(() => {
-  const request = props.embedded ? null : hangarViewFilter.value;
-  if (!request) return null;
-  const matches = VIEW_FILTERS[request.id];
-  // The List Shortcut "Melt and rebuy" (#530): with its bar.
-  return request.id === 'meltRebuy'
-    ? {
-        at: request.at,
-        matches,
-        title: i18n.t('meltRebuy.shortcutTitle'),
-        icon: 'recycle' as const,
-      }
-    : { at: request.at, matches };
-});
-// Its setting turned off: the shortcut goes too.
+/** The List Shortcut open in My Hangar (#428, see `list-shortcut.ts`); none in an embedded list. */
+const shortcut = computed(() => (props.embedded ? null : listShortcuts.value.hangar));
+const shortcutRequest = computed(() => filterRequestOf(shortcut.value));
+// The setting of Melt and Rebuy turned off: its shortcut goes too (#530).
 watch(
   () => rebuyDisplay.value.shown,
-  (shown) => !shown && !props.embedded && clearHangarFilter('meltRebuy'),
+  (shown) => !shown && !props.embedded && closeListShortcut('hangar', MELT_REBUY_SHORTCUT_ID),
 );
-/** The bar of "Melt and rebuy": the store credit its pledges left by search and filters free. */
-const shortcutFreed = (entries: readonly PledgeView[]) =>
-  formatUsd(
-    rebuySummary(
-      rebuys.value,
-      entries.map((entry) => entry.id),
-    ).freedCredit,
-    locale.value,
-  );
-
-/** The note on the shortcut's paints bought at a volume discount (#593), if any. */
-const shortcutVolumeNote = (entries: readonly PledgeView[]) =>
-  rebuyVolumeNote(entries.map((entry) => rebuys.value.get(entry.id)));
 
 /** Filters whose meaning isn't obvious from the label explain it in their tooltip. */
 const HINTS: Partial<Record<PledgeFilter, MessageKey>> = {
@@ -253,13 +216,13 @@ const filterHint = (filter: PledgeFilter) => {
     :sort-options="sortOptions"
     :sort="sort"
     :highlights="highlights"
-    :filter-request="viewFilterRequest"
+    :filter-request="shortcutRequest"
     :include-request="embedded ? null : hangarFilterRequest"
     :view-request="!embedded && listViewRequest?.tab === 'hangar' ? listViewRequest : null"
     :grouping="{ on: groupedOn, factsOf: pledgeFacts }"
     :search="embedded?.search"
     :hide-controls="embedded?.hideControls"
-    @clear-request="clearHangarFilter()"
+    @clear-request="closeListShortcut('hangar')"
     @update:sort="setSort"
     @visible="showVisible"
     @filter-states="showFilterStates"
@@ -268,27 +231,9 @@ const filterHint = (filter: PledgeFilter) => {
     <template #row="{ entry, autoExpand }">
       <PledgeRow :pledge="entry" :auto-expand="autoExpand" />
     </template>
-    <!-- The bar of "Melt and rebuy" (#530): the store credit they free, unless values are hidden. -->
-    <template v-if="viewFilterRequest?.title" #shortcut="{ entries }">
-      <span v-if="!settings.hideMeltValue">
-        {{ i18n.t('meltRebuy.shortcutFreed', [shortcutFreed(entries)]) }}
-      </span>
-      <!-- Paints bought at a volume discount get it again only with enough paints (#593). -->
-      <span
-        v-if="shortcutVolumeNote(entries)"
-        v-tooltip="shortcutVolumeNote(entries)"
-        class="shm-shortcut-note"
-        tabindex="0"
-        :aria-label="shortcutVolumeNote(entries)"
-      >
-        <SvgIcon name="circle-info" />
-      </span>
-      <!-- The shortcut's pledges onto a watchlist to rebuy them (#531). -->
-      <RebuyWatchlistAction
-        :pledge-ids="entries.map((pledge) => pledge.id)"
-        button-class="shm-origin-button"
-        inline
-      />
+    <!-- What the shortcut adds to its bar, e.g. "Melt and rebuy" (#530). -->
+    <template v-if="shortcut?.extra" #shortcut="{ entries }">
+      <component :is="shortcut.extra" :entries="entries" />
     </template>
     <template #group="{ group, open }">
       <GroupRow
