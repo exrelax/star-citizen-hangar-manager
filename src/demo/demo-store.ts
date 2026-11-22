@@ -99,7 +99,16 @@ function fromOnlyShip(
   return candidates.sort((a, b) => crossing(a) - crossing(b) || a.id - b.id)[0];
 }
 
-const DAY = 24 * 60 * 60 * 1000;
+const MINUTE = 60 * 1000;
+const HOUR = 60 * MINUTE;
+const DAY = 24 * HOUR;
+
+/** How long the current demo offers are expected to stay (#571); the fourth has no end. */
+export const DEMO_EXPECTED_ENDS = [
+  21 * DAY + 3 * HOUR,
+  5 * HOUR + 12 * MINUTE + 30_000,
+  46 * MINUTE + 12_000,
+] as const;
 
 /** The demo's current warbond offers. */
 const CURRENT_OFFERS = 3;
@@ -117,6 +126,10 @@ const DEMO_EVENTS = {
  * demo's running event began, with earlier offers at two events and one without; the second seen
  * for two days without an event, with one earlier offer at another price; the third seen for the
  * first time during the event, never before.
+ *
+ * The current offers' expected ends (#569, #571), as the website's history gives them: the first in
+ * three weeks, the second on its last day (hours and minutes), the third in its last hour (a running
+ * countdown with seconds); the fourth has none.
  *
  * Expired offers of other ships for the "Warbond CCU History" (#297): three during the running
  * event (or the days before, without one), about 20 days ago at an event, about 45 and 100 days ago
@@ -170,6 +183,11 @@ export function demoWarbondHistory(
   if (third) sightings.push(sighting(third, third.price, sinceExpo / 2, 0, running));
   // The ship the hangar's CCUs start from (#399): seen for a day, without an event.
   if (fourth) sightings.push(sighting(fourth, fourth.price, 1, 0));
+  // The current offers' expected ends (#571), as the website's history gives them.
+  [first, second, third].forEach((target, index) => {
+    const current = target && sightings.findLast((entry) => entry.skuId === target.skuId);
+    if (current) current.expectedEnd = now + DEMO_EXPECTED_ENDS[index]!;
+  });
 
   // With the earlier offers of the current ships above (64 and 120 days ago), the expired ones
   // are 3 in the event's period, 6 within 90 days and 10 within 180 days.
