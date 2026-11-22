@@ -2010,6 +2010,8 @@
       "one": "$1 elemento está ahora en tu carrito.",
       "other": "$1 elementos están ahora en tu carrito."
     },
-    "cartOpen": "Abrir el carrito"
+    "cartOpen": "Abrir el carrito",
+    "rsiPut": "Poner en una watchlist",
+    "rsiOn": "En una watchlist"
   }
 }

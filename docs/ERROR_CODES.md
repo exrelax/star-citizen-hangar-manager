@@ -99,6 +99,7 @@ or order IDs (they read `<id>`), no name and no address.
 
 ## Watchlists
 
-| Code                  | What didn't work                                                     | What the Hangar Manager did                                       | What you can do                       |
-| --------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------- |
-| `WATCHLIST-CART-FAIL` | A watchlist's Pledge Store items couldn't all be put into RSI's cart | Put in the others, left the cart as it was otherwise and said why | Check the reason shown and try again. |
+| Code                      | What didn't work                                                     | What the Hangar Manager did                                       | What you can do                                                                    |
+| ------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `WATCHLIST-CART-FAIL`     | A watchlist's Pledge Store items couldn't all be put into RSI's cart | Put in the others, left the cart as it was otherwise and said why | Check the reason shown and try again.                                              |
+| `WATCHLIST-RSI-PAGE-FAIL` | A page of RSI's website lacked what the watchlist button needs       | Showed no watchlist button there                                  | Nothing; it comes back once RSI's page fits again. Tell the developer if it stays. |

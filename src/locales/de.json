@@ -2010,6 +2010,8 @@
       "one": "$1 Eintrag ist jetzt in deinem Warenkorb.",
       "other": "$1 Einträge sind jetzt in deinem Warenkorb."
     },
-    "cartOpen": "Warenkorb öffnen"
+    "cartOpen": "Warenkorb öffnen",
+    "rsiPut": "Auf Watchlist setzen",
+    "rsiOn": "Auf einer Watchlist"
   }
 }

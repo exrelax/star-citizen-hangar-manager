@@ -149,6 +149,10 @@ export const ERROR_CODES = {
     failed: "A watchlist's Pledge Store items couldn't all be put into RSI's cart",
     instead: 'Put in the others, left the cart as it was otherwise and said why',
   },
+  'WATCHLIST-RSI-PAGE-FAIL': {
+    failed: "A page of RSI's website lacked what the watchlist button needs",
+    instead: 'Showed no watchlist button there',
+  },
 } as const satisfies Record<string, ErrorCodeInfo>;
 
 export type ErrorCode = keyof typeof ERROR_CODES;

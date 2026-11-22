@@ -123,9 +123,9 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
 </template>
 
 <style>
-/* Above the table of all ships, itself a dialog. */
+/* Above the table of all ships, itself a dialog, and above RSI's own dialogs (#471). */
 .shm-overlay.shm-store-watch-overlay {
-  z-index: 100001;
+  z-index: 2147483000;
 }
 
 .shm-store-watch-dialog.shm-overlay-dialog {
