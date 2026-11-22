@@ -47,7 +47,8 @@
     "meltRebuyEmpty": "Gerade lässt sich kein Pledge ohne Verlust einschmelzen und wieder kaufen.",
     "warbondCollisions": "Mit dem Warbond $1 inkompatible CCUs",
     "warbondCollisionsEmpty": "Keines deiner CCUs überschneidet sich mehr mit dem Preisbereich des Warbond $1.",
-    "warbondCollisionsShow": "In My Hangar zeigen"
+    "warbondCollisionsShow": "In My Hangar zeigen",
+    "paintsToOptimize": "Paints zum Optimieren"
   },
   "sort": {
     "label": "Sortierung",

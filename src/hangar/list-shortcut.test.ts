@@ -139,7 +139,7 @@ describe('the shortcuts of the sidebar on the mechanism (#428)', () => {
     toggleListShortcut(PAINT_REBUY_SHORTCUT);
     setLocale('de');
     const request = filterRequestOf(listShortcuts.value.hangar)!;
-    expect(request.title).toBe('Paints zum Rückkauf');
+    expect(request.title).toBe('Paints zum Optimieren');
     expect(request.emptyText).toBe('Im Plan sind keine Paints mehr zum Rückkauf.');
     expect([7, 8].map((id) => request.matches(pledge(id)))).toEqual([true, false]);
   });
