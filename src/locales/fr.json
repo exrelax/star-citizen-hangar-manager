@@ -1657,7 +1657,8 @@
     "countdown": "Fin prévue dans $1",
     "countdownEvent": "Devrait quitter le Pledge Store le $1, à la fin de $2 : il n’est pas toujours disponible.",
     "countdownWarbond": "Devrait quitter le Pledge Store le $1, à la fin prévue de son offre warbond.",
-    "countdownExpected": "C’est une estimation, non confirmée par CIG. Depuis le site du projet Hangar Manager."
+    "countdownExpected": "C’est une estimation, non confirmée par CIG. Depuis le site du projet Hangar Manager.",
+    "myShipsDemo": "Désactivé en mode démo : « My ships » liste les vaisseaux de ton vrai compte. Par le Hangar Manager."
   },
   "allShips": {
     "button": "Tous les vaisseaux",

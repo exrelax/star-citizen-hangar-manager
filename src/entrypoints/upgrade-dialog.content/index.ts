@@ -39,8 +39,8 @@ import './style.css';
  * label "Always available" (#401), the countdown on target ships that aren't (#570) and the counts
  * on the base ships (#506). Reads only the settings, the ship facts, the events, the website's
  * warbond offers (in the demo its own events, #572) and – once the dialog opens – the stored
- * hangar, buy back and ships (in the demo its own hangar and buy back instead, #578); see
- * `upgrade-dialog-labels.ts`.
+ * hangar, buy back and ships (in the demo its own hangar and buy back instead, #578). In the demo
+ * the dialog shows only "All ships", never the account's own (#586). See `upgrade-dialog-labels.ts`.
  */
 export default defineContentScript({
   matches: ['https://robertsspaceindustries.com/*'],
@@ -171,6 +171,8 @@ export default defineContentScript({
         const end = targetEnd(target, now);
         return end && targetEndText(end, now, locale.value);
       },
+      // In the demo only "All ships", never the real account's ships (#586).
+      demo: () => ({ active: settings.demoMode, hint: i18n.t('upgradeDialog.myShipsDemo') }),
       onOpen: () => void loadCounts(),
       onMismatch: (reason) =>
         void logError('PARSE-UPGRADE-DIALOG', `RSI's ship upgrade dialog: ${reason}`),

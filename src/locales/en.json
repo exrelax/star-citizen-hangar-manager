@@ -1657,7 +1657,8 @@
     "countdown": "Expected gone in $1",
     "countdownEvent": "Expected to leave the Pledge Store on $1, when $2 ends: it isn't always available.",
     "countdownWarbond": "Expected to leave the Pledge Store on $1, when its warbond offer is expected to end.",
-    "countdownExpected": "An expectation, not confirmed by CIG. From the Hangar Manager's project website."
+    "countdownExpected": "An expectation, not confirmed by CIG. From the Hangar Manager's project website.",
+    "myShipsDemo": "Off in the demo mode: “My ships” lists the ships of your real account. From the Hangar Manager."
   },
   "allShips": {
     "button": "All ships",

@@ -1657,7 +1657,8 @@
     "countdown": "Fin prevista en $1",
     "countdownEvent": "Se espera que salga de la Pledge Store el $1, cuando termine $2: no siempre está disponible.",
     "countdownWarbond": "Se espera que salga de la Pledge Store el $1, cuando se espera que termine su oferta warbond.",
-    "countdownExpected": "Es una estimación, no confirmada por CIG. Del sitio del proyecto Hangar Manager."
+    "countdownExpected": "Es una estimación, no confirmada por CIG. Del sitio del proyecto Hangar Manager.",
+    "myShipsDemo": "Desactivado en el modo demo: «My ships» muestra las naves de tu cuenta real. Del Hangar Manager."
   },
   "allShips": {
     "button": "Todas las naves",
