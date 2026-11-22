@@ -2075,5 +2075,37 @@
       "other": "$1 pledges put on “$2”."
     },
     "selectionAlready": "They are all on “$1” already."
+  },
+  "meltRebuy": {
+    "label": "Rebuyable",
+    "labelHint": "Melting it frees $1 in store credit. Rebuying it in the Pledge Store costs $2 in store credit now – the same item with the same insurance.",
+    "notRebuyable": "Can’t be rebought without loss",
+    "reason": {
+      "protected": "Protected game access",
+      "reward": "Reward",
+      "notMeltable": "Can’t be melted",
+      "tooRecent": "Bought less than 24 hours ago",
+      "giftable": "Giftable",
+      "refundPeriod": "Refund possible until $1",
+      "package": "Package with game access",
+      "pack": "Several ships",
+      "upgraded": "Upgraded",
+      "extraItems": "Extra items",
+      "otherKind": "No paint, ship or CCU",
+      "notOnSale": "Not on sale now",
+      "discount": "Discount of $1",
+      "paintVolumeDiscount": "Paint volume discount of $1",
+      "insurance": "$1 not on sale",
+      "priceIncrease": "Price increase ahead: $1",
+      "priceIncreaseExpected": "Price increase expected: $1",
+      "removal": "Leaves the Pledge Store: $1",
+      "notAlwaysAvailable": "Not always available: $1",
+      "unknown": {
+        "price": "Price not known yet",
+        "onSale": "Not known yet whether it’s on sale",
+        "insurance": "Insurance in the Pledge Store not known",
+        "availability": "Availability not known yet"
+      }
+    }
   }
 }

@@ -49,6 +49,10 @@ function isBetter(insurance: Insurance, than: Insurance): boolean {
   return insurance.lifetime || insurance.months > than.months;
 }
 
+/** Whether `insurance` is as good as `than` or better (LTI only by LTI). */
+export const isAtLeast = (insurance: Insurance, than: Insurance): boolean =>
+  !isBetter(than, insurance);
+
 /** "LTI", or the duration – in years where the months add up to whole years ("10 years"). */
 export function insuranceLabel(insurance: Insurance): string {
   if (insurance.lifetime) return 'LTI';
