@@ -230,11 +230,14 @@ onUnmounted(() => removeEventListener('pointerdown', onOutside, true));
   background: rgb(var(--shm-accent-rgb) / 0.16);
 }
 
-/* A section's heading: small and quiet, with a line above it after other options. */
+/* A section's heading: small and quiet like the filter groups' labels, with a line above it after
+   other options. */
 .shm-select-menu-section {
   padding: 8px 10px 4px;
   color: var(--shm-text-muted);
   font-size: calc(11px * var(--shm-font-scale));
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   white-space: nowrap;
   cursor: default;
 }
@@ -268,6 +271,15 @@ html .shm-theme-modern .shm-select-menu-list {
   box-shadow:
     0 0 0 1px var(--shm-separator),
     0 12px 30px rgb(0 0 0 / 0.45);
+}
+
+/* In sentence case, like the rest of the theme. */
+html .shm-theme-modern .shm-select-menu-section {
+  color: var(--shm-text-secondary);
+  font-size: calc(12px * var(--shm-font-scale));
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
 }
 
 html .shm-theme-modern .shm-select-menu-option + .shm-select-menu-section {

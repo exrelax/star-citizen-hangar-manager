@@ -18,6 +18,7 @@ import {
 } from '@/store/items/store-items-storage';
 import { createAvailabilityCheck } from './buyback-availability';
 import { createBuybackShipKind } from '@/hangar/ship-kind';
+import { createBuybackCcuContents } from '@/hangar/ccu-contents';
 import { createBuybackImager } from './buyback-image';
 import { createBuybackPricer } from './buyback-price';
 import { createPriceIncreaseMatcher } from '@/price-increases/price-increase-match';
@@ -64,6 +65,7 @@ export function useBuybackPledges() {
     const catalog = currentShips(ships)?.ships;
     const availabilityOf = createAvailabilityCheck(catalog);
     const imageOf = createBuybackImager({ ships: catalog, hangarPledges: validHangar?.pledges });
+    const ccuContentsOf = createBuybackCcuContents(validHangar?.pledges);
     const shipKindOf = createBuybackShipKind({
       ships: catalog,
       hangarPledges: validHangar?.pledges,
@@ -90,6 +92,7 @@ export function useBuybackPledges() {
               imageOf,
               availabilityOf,
               shipKindOf,
+              ccuContentsOf,
               priceIncreaseOf: priceIncreaseMatcher.buyback,
               ccuPriceChangeOf: (ccu, paid) =>
                 priceIncreaseMatcher.buybackCcu(ccu, shipPriceOf, paid),

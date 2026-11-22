@@ -11,7 +11,8 @@ import { GAME_DOWNLOAD, isPaintItem } from './pledge-view';
  * (#419):
  *
  * - `solo`: one ship and nothing else but what comes with it: insurance, a hangar (e.g. "Self-Land
- *   Hangar") and the hangar decoration RSI adds to a ship ("Argo Poster", "Takuetsu Argo Model");
+ *   Hangar"), the hangar decoration RSI adds to a ship ("Argo Poster", "Takuetsu Argo Model") and
+ *   its modules ("Apollo Tier 1 Module Left");
  * - `extras`: one ship and more, e.g. gear, paints, components or game access (a starter package);
  * - `pack`: two ships or more, with extras or without.
  *
@@ -26,9 +27,12 @@ import { GAME_DOWNLOAD, isPaintItem } from './pledge-view';
 export const SHIP_KINDS = ['solo', 'extras', 'pack'] as const;
 export type ShipKind = (typeof SHIP_KINDS)[number];
 
-/** Insurance, a hangar, a poster or a model come with a ship: they don't make it one with extras. */
+/**
+ * Insurance, a hangar, a poster, a model or a module ("Apollo Tier 1 Module Left", #566) come with
+ * a ship: they don't make it one with extras.
+ */
 export const isShipBaseItem = (title: string): boolean =>
-  /\binsurance\b/i.test(title) || /\b(hangar|poster|model)$/i.test(title.trim());
+  /\b(insurance|module)\b/i.test(title) || /\b(hangar|poster|model)$/i.test(title.trim());
 
 const BASE_KINDS = new Set(['Insurance', 'Hangar', 'Hangar decoration']);
 

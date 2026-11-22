@@ -29,7 +29,7 @@ import type { BuybackPledge } from '@/buyback/buyback';
 import { createBuybackShipKind, pledgeShipKind, shipKindRefinement } from './ship-kind';
 import {
   allCcus,
-  buybackCcuContents,
+  createBuybackCcuContents,
   ccuRefinementWithContents,
   hangarCcuContents,
 } from './ccu-contents';
@@ -575,7 +575,12 @@ describe('the "CCUs" filter by contents (#566)', () => {
   const ccus = [
     pledge(1, { isCcu: true, upgrade: target('Carrack') }),
     // An insurance is no extra.
-    pledge(2, { isCcu: true, upgrade: target('Polaris', 'Lifetime Insurance') }),
+    pledge(2, { isCcu: true, upgrade: target('Polaris', 'Lifetime Insurance', 'Polaris Poster') }),
+    // The modules every Apollo has are no extras.
+    pledge(7, {
+      isCcu: true,
+      upgrade: target('Apollo Medivac', 'Apollo Tier 1 Module Left', 'Apollo Tier 1 Module Right'),
+    }),
     pledge(3, { isCcu: true, upgrade: target('Hull C', '120 Month Insurance', 'Hull C - Paint') }),
     pledge(4, { isCcu: true, upgrade: target('Cutlass Black', 'Ballistic Rifle') }),
     pledge(5, { isCcu: true }),
@@ -610,8 +615,8 @@ describe('the "CCUs" filter by contents (#566)', () => {
   });
 
   it('lists exactly the CCUs of each kind in My Hangar, with their counts', () => {
-    expect(listed('all')).toEqual({ ids: [1, 2, 3, 4, 5], count: 5 });
-    expect(listed('solo')).toEqual({ ids: [1, 2], count: 2 });
+    expect(listed('all')).toEqual({ ids: [1, 2, 7, 3, 4, 5], count: 6 });
+    expect(listed('solo')).toEqual({ ids: [1, 2, 7], count: 3 });
     expect(listed('extras')).toEqual({ ids: [3, 4], count: 2 });
   });
 
@@ -624,21 +629,41 @@ describe('the "CCUs" filter by contents (#566)', () => {
     ]);
   });
 
-  it('tells what a CCU of the Buy Back brings by its items', () => {
-    const ccu = (contained: string, items?: string[]) =>
-      buybackCcuContents({ isUpgrade: true, contained, ...(items && { items }) });
+  it('tells what a CCU of the Buy Back brings by the hangar, or by its items', () => {
+    const contentsOf = createBuybackCcuContents([
+      {
+        title: 'Upgrade - MOLE to Asgard Warbond Edition',
+        upgrade: target('Asgard', 'Asgard - BIS Paint'),
+      },
+      {
+        title: 'Upgrade - Mercury to Apollo Medivac',
+        upgrade: target('Apollo Medivac', 'Apollo Tier 1 Module Left'),
+      },
+    ]);
+    const ccu = (title: string, contained = title, items?: string[]) =>
+      contentsOf({ isUpgrade: true, title, contained, ...(items && { items }) });
+    // RSI shows only the title: like the hangar's CCU of the same title, else solo.
+    expect(ccu('Upgrade - MOLE to Asgard Warbond Edition')).toBe('extras');
+    expect(ccu('Upgrade - Mercury to Apollo Medivac')).toBe('solo');
     expect(ccu('Upgrade - Carrack to Polaris')).toBe('solo');
     expect(
-      ccu('Upgrade - Avenger to Titan and 1 item', [
+      ccu('Upgrade - Avenger to Titan', 'Upgrade - Avenger to Titan and 1 item', [
         'Upgrade - Avenger to Titan',
         'Lifetime Insurance',
       ]),
     ).toBe('solo');
     expect(
-      ccu('Upgrade - Avenger to Titan and 1 item', ['Upgrade - Avenger to Titan', 'Titan - Paint']),
+      ccu('Upgrade - Avenger to Titan', 'Upgrade - Avenger to Titan and 1 item', [
+        'Upgrade - Avenger to Titan',
+        'Titan - Paint',
+      ]),
     ).toBe('extras');
     // Its items weren't read: no kind, only under "All CCUs".
-    expect(ccu('Upgrade - Avenger to Titan and 2 items')).toBeUndefined();
-    expect(buybackCcuContents({ isUpgrade: false, contained: 'Gladius' })).toBeUndefined();
+    expect(
+      ccu('Upgrade - Avenger to Titan', 'Upgrade - Avenger to Titan and 2 items'),
+    ).toBeUndefined();
+    expect(
+      contentsOf({ isUpgrade: false, title: 'Gladius', contained: 'Gladius' }),
+    ).toBeUndefined();
   });
 });
