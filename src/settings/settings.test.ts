@@ -33,6 +33,7 @@ describe('withDefaults', () => {
       upgradeDialogAlwaysAvailable: true,
       upgradeDialogBaseCounts: true,
       cartPaintDiscount: true,
+      meltRebuy: true,
       bulkMelting: true,
       hideSupersededInsurances: true,
       summaryTypes: false,

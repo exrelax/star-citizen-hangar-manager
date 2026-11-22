@@ -662,6 +662,7 @@ html .shm-theme-modern .shm-badge.is-upgraded {
 
 html .shm-theme-modern .shm-badge.is-giftable,
 html .shm-theme-modern .shm-badge.is-always-available,
+html .shm-theme-modern .shm-badge.is-rebuyable,
 html .shm-theme-modern .shm-badge.is-rebuy {
   color: var(--shm-success);
   background: rgb(var(--shm-success-rgb) / 0.14);

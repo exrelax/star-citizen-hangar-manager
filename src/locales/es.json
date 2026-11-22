@@ -36,7 +36,8 @@
     "groupCount": {
       "one": "$1 grupo",
       "other": "$1 grupos"
-    }
+    },
+    "shortcutClose": "Cerrar «$1»"
   },
   "sort": {
     "label": "Orden",
@@ -2106,6 +2107,24 @@
         "insurance": "Seguro en la Pledge Store desconocido",
         "availability": "Disponibilidad aún no conocida"
       }
-    }
+    },
+    "labelHintPlain": "Se puede fundir ahora y recomprar más tarde en la Pledge Store con store credit sin pérdida: el mismo artículo con el mismo seguro.",
+    "reasonDiscountPlain": "Descuento",
+    "reasonPaintVolumeDiscountPlain": "Descuento por cantidad en pinturas",
+    "groupSome": "Algunos recomprables",
+    "groupHint": {
+      "one": "Fundir el pledge recomprable libera $2 en store credit. Recomprarlo en la Pledge Store cuesta ahora $3 en store credit.",
+      "other": "Fundir los $1 pledges recomprables libera $2 en store credit. Recomprarlos en la Pledge Store cuesta ahora $3 en store credit."
+    },
+    "shortcutTitle": "Fundir y recomprar",
+    "shortcutFreed": "Libera $1 en store credit",
+    "shortcutShow": {
+      "one": "Mostrar $1 pledge recomprable",
+      "other": "Mostrar $1 pledges recomprables"
+    },
+    "shortcutShowHint": "Muestra en «My Hangar» solo los pledges que puedes fundir ahora y recomprar más tarde con store credit sin pérdida. «Restablecer filtros» o la × de la lista vuelve a mostrar todo.",
+    "shortcutHide": "Mostrar todos los pledges",
+    "setting": "Mostrar los pledges recomprables",
+    "settingHint": "La etiqueta «Recomprable» en los pledges que puedes fundir ahora y recomprar más tarde en la Pledge Store con store credit sin pérdida, la lista «Fundir y recomprar» y, en el elemento abierto, por qué un pledge no se puede recomprar sin pérdida."
   }
 }

@@ -36,7 +36,8 @@
     "groupCount": {
       "one": "$1 group",
       "other": "$1 groups"
-    }
+    },
+    "shortcutClose": "Close “$1”"
   },
   "sort": {
     "label": "Sort",
@@ -2106,6 +2107,24 @@
         "insurance": "Insurance in the Pledge Store not known",
         "availability": "Availability not known yet"
       }
-    }
+    },
+    "labelHintPlain": "Can be melted now and rebought later in the Pledge Store with store credit without loss – the same item with the same insurance.",
+    "reasonDiscountPlain": "Discount",
+    "reasonPaintVolumeDiscountPlain": "Paint volume discount",
+    "groupSome": "Some rebuyable",
+    "groupHint": {
+      "one": "Melting the rebuyable pledge frees $2 in store credit. Rebuying it in the Pledge Store costs $3 in store credit now.",
+      "other": "Melting the $1 rebuyable pledges frees $2 in store credit. Rebuying them in the Pledge Store costs $3 in store credit now."
+    },
+    "shortcutTitle": "Melt and rebuy",
+    "shortcutFreed": "Frees $1 in store credit",
+    "shortcutShow": {
+      "one": "Show $1 rebuyable pledge",
+      "other": "Show $1 rebuyable pledges"
+    },
+    "shortcutShowHint": "Shows only the pledges in “My Hangar” you can melt now and rebuy later with store credit without loss. “Reset filters” or the × of the list shows all again.",
+    "shortcutHide": "Show all pledges",
+    "setting": "Show rebuyable pledges",
+    "settingHint": "The label “Rebuyable” on pledges you can melt now and rebuy later in the Pledge Store with store credit without loss, the list “Melt and rebuy”, and in the opened item why a pledge can’t be rebought without loss."
   }
 }

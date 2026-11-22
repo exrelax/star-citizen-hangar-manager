@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import type { BuybackView } from '@/buyback/buyback-view';
-import { buybackGroupBadges, extrasNote, meltMarkBadge, pledgeGroupBadges } from './group-badges';
+import {
+  buybackGroupBadges,
+  extrasNote,
+  meltMarkBadge,
+  pledgeGroupBadges,
+  rebuyBadge,
+} from './group-badges';
+import type { Rebuy } from '@/melt-rebuy/rebuyable';
 import { groupItems } from './grouping';
 import type { PledgeView } from './pledge-view';
 
@@ -162,5 +169,53 @@ describe('the melt label of a group (#552)', () => {
       className: 'is-melt-mark is-ready',
       count: '2',
     });
+  });
+});
+
+describe('the label "Rebuyable" of a group (#530)', () => {
+  const rebuy = (pledgeId: number, rebuyable: boolean): [number, Rebuy] => [
+    pledgeId,
+    { pledgeId, rebuyable, reasons: [], freedCredit: 10, rebuyPrice: 8 },
+  ];
+  const entries = new Map([rebuy(1, true), rebuy(2, true), rebuy(3, false)]);
+  const items = (...ids: number[]) => ids.map((id) => ({ id }));
+
+  it('shows for all items, with what they free and cost together', () => {
+    const badge = rebuyBadge(items(1, 2), { entries, hideValues: false });
+    expect(badge).toMatchObject({ key: 'rebuyable', text: 'Rebuyable', className: 'is-rebuyable' });
+    expect(badge?.hint).toBe(
+      'Melting the 2 rebuyable pledges frees $20 in store credit. Rebuying them in the Pledge Store costs $16 in store credit now.',
+    );
+  });
+
+  it('shows for some items, with how many', () => {
+    const badge = rebuyBadge(items(1, 3), { entries, hideValues: false });
+    expect(badge?.text).toBe('Some rebuyable');
+    expect(badge?.hint?.split('\n')).toEqual([
+      'Melting the rebuyable pledge frees $10 in store credit. Rebuying it in the Pledge Store costs $8 in store credit now.',
+      '1 of 2',
+    ]);
+  });
+
+  it('shows none without rebuyable items, and no amounts while values are hidden', () => {
+    expect(rebuyBadge(items(3), { entries, hideValues: false })).toBeUndefined();
+    expect(rebuyBadge(items(1, 2), { entries, hideValues: true })?.hint).not.toMatch(/\$/);
+  });
+
+  it('is one of the group’s badges while it shows, before the insurance', () => {
+    const group = groupOf([
+      pledge({ id: 1, insurance: { lifetime: true } }),
+      pledge({ id: 2, insurance: { lifetime: true } }),
+    ]);
+    const context = {
+      coverageOf: () => undefined,
+      ships: [],
+      today: '2026-11-22',
+      locale: 'en' as const,
+    };
+    expect(texts(pledgeGroupBadges(group, context))).toEqual(['LTI', 'Gift', 'Melt']);
+    expect(
+      texts(pledgeGroupBadges(group, { ...context, rebuy: { entries, hideValues: false } })),
+    ).toEqual(['Rebuyable', 'LTI', 'Gift', 'Melt']);
   });
 });

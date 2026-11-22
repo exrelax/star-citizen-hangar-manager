@@ -1,7 +1,12 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { setLocale } from '@/i18n';
 import type { RebuyReason } from './rebuyable';
-import { rebuyLabelHint, rebuyReasonText } from './rebuy-text';
+import {
+  rebuyGroupHint,
+  rebuyLabelHint,
+  rebuyReasonPlainText,
+  rebuyReasonText,
+} from './rebuy-text';
 
 afterEach(() => setLocale('en'));
 
@@ -84,5 +89,44 @@ describe('rebuyLabelHint', () => {
     expect(rebuyLabelHint({ freedCredit: 55, rebuyPrice: 50 })).toBe(
       'Melting it frees $55 in store credit. Rebuying it in the Pledge Store costs $50 in store credit now – the same item with the same insurance.',
     );
+  });
+});
+
+describe('the texts without amounts, for "Hide melt value" (#530)', () => {
+  it('leave the amount out of a discount', () => {
+    expect(reasons.map(rebuyReasonPlainText).filter((text) => /\$/.test(text))).toEqual([]);
+    expect(rebuyReasonPlainText({ code: 'discount', amount: 40, percent: 10, price: 400 })).toBe(
+      'Discount',
+    );
+    expect(rebuyReasonPlainText({ code: 'giftable' })).toBe('Giftable');
+  });
+
+  it('tell what the label means', () => {
+    const plain = rebuyLabelHint({ freedCredit: 55, rebuyPrice: 50 }, { hideValues: true });
+    expect(plain).not.toMatch(/\$/);
+    expect(rebuyGroupHint({ count: 2, freedCredit: 1, rebuyPrice: 1 }, { hideValues: true })).toBe(
+      plain,
+    );
+  });
+});
+
+describe('rebuyGroupHint (#530)', () => {
+  it('names the count, the freed store credit and the rebuy price', () => {
+    expect(rebuyGroupHint({ count: 3, freedCredit: 55.3, rebuyPrice: 50 })).toBe(
+      'Melting the 3 rebuyable pledges frees $55.30 in store credit. Rebuying them in the Pledge Store costs $50 in store credit now.',
+    );
+    expect(rebuyGroupHint({ count: 1, freedCredit: 10, rebuyPrice: 10 })).toBe(
+      'Melting the rebuyable pledge frees $10 in store credit. Rebuying it in the Pledge Store costs $10 in store credit now.',
+    );
+  });
+
+  it('has the plural forms in every language', () => {
+    for (const locale of ['en', 'de', 'fr', 'es'] as const) {
+      setLocale(locale);
+      for (const count of [1, 2]) {
+        const text = rebuyGroupHint({ count, freedCredit: 10, rebuyPrice: 10 });
+        expect(text).not.toMatch(/meltRebuy|\$[1-9](?![\d.,])/);
+      }
+    }
   });
 });

@@ -10,6 +10,7 @@ import {
   SEARCH_URL_SYNC_DELAY_MS,
 } from '@/config';
 import { i18n, type MessageKey, type PluralKey } from '@/i18n';
+import type { IconName } from '@/icons/icon-names';
 // The search field and filter buttons, shared with the table of all ships (#406): unscoped.
 import './list-controls.css';
 import {
@@ -67,8 +68,16 @@ const props = defineProps<{
    * A filter without a button, turned on from outside (e.g. "Show" in the sidebar's
    * notifications): each new request (`at`) shows only the entries it `matches`, without search
    * and other filters. "Reset filter" turns it off, and it goes on its own once no entry matches.
+   * With a `title` it is a List Shortcut (#427, #530): a bar above the list shows the title, the
+   * count of its entries left by search and filters, what the `shortcut` slot adds, and a × to
+   * leave it.
    */
-  filterRequest?: { matches: (entry: T) => boolean; at: number } | null;
+  filterRequest?: {
+    matches: (entry: T) => boolean;
+    at: number;
+    title?: string;
+    icon?: IconName;
+  } | null;
   /**
    * A filter button turned on from outside (e.g. the sidebar's notification about expected price
    * increases, #193): each new request (`at`) includes only this filter, without search. With
@@ -129,6 +138,11 @@ defineSlots<{
   group?(props: { group: ItemGroup<T>; open: { id: number; at: number } | null }): unknown;
   /** More controls beside the sort, e.g. the period of the warbond history. */
   side?(): unknown;
+  /**
+   * More in the bar of a List Shortcut (see `filterRequest`), after its count: e.g. the store credit
+   * its `entries` free, or an action for them. `entries`: those search and filters leave visible.
+   */
+  shortcut?(props: { entries: T[] }): unknown;
 }>();
 
 // Pre-filled from the page URL, e.g. `…/account/pledges?search=polaris#hangar-manager`, and kept
@@ -222,6 +236,11 @@ const predicates = computed(() =>
 
 /** The filter requested from outside while it is on (see `filterRequest`). */
 const requested = shallowRef<((entry: T) => boolean) | null>(null);
+/** The title and icon of its bar, while it is a List Shortcut (#427). */
+const shortcut = computed(() => {
+  const request = props.filterRequest;
+  return requested.value && request?.title ? { title: request.title, icon: request.icon } : null;
+});
 
 function clearRequested() {
   if (!requested.value) return;
@@ -457,6 +476,27 @@ const countLabel = computed(() => {
 
 <template>
   <div class="shm-list">
+    <!-- A List Shortcut (#427): its title, count, more from the slot, and the × to leave it. -->
+    <div v-if="shortcut" class="shm-shortcut-bar" role="group" :aria-label="shortcut.title">
+      <SvgIcon v-if="shortcut.icon" class="shm-shortcut-icon" :name="shortcut.icon" />
+      <span class="shm-shortcut-text">
+        <strong class="shm-shortcut-title">{{ shortcut.title }}</strong>
+        <span class="shm-shortcut-count">{{ i18n.n(countTextOf('count'), matching.length) }}</span>
+        <span v-if="$slots.shortcut" class="shm-shortcut-more">
+          <slot name="shortcut" :entries="matching" />
+        </span>
+      </span>
+      <button
+        v-tooltip="i18n.t('manager.shortcutClose', [shortcut.title])"
+        type="button"
+        class="shm-shortcut-close"
+        :aria-label="i18n.t('manager.shortcutClose', [shortcut.title])"
+        @click="clearRequested"
+      >
+        <SvgIcon name="xmark" />
+      </button>
+    </div>
+
     <!-- Search first, then the filters: one block, as the filters narrow down what is found. -->
     <div v-if="!hideControls && (search === undefined || filters.length)" class="shm-controls">
       <span v-if="search === undefined" class="shm-search-field">
@@ -621,6 +661,80 @@ const countLabel = computed(() => {
 <style scoped>
 .shm-list {
   margin-top: 20px;
+}
+
+/* The bar of a List Shortcut (#427): above search and filters, tinted in the accent color. */
+.shm-shortcut-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 8px 8px 8px 12px;
+  color: var(--shm-text);
+  background: rgb(var(--shm-accent-rgb) / 0.08);
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.35);
+  border-radius: var(--shm-radius-group);
+}
+
+/* "Modern Hangar": a tinted area without a line, as its grouped areas. */
+:global(.shm-theme-modern) .shm-shortcut-bar {
+  border-color: transparent;
+}
+
+.shm-shortcut-icon {
+  flex: none;
+  color: var(--shm-accent);
+}
+
+.shm-shortcut-text {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 12px;
+  min-width: 0;
+}
+
+.shm-shortcut-title {
+  color: var(--shm-text-strong);
+  font-weight: 600;
+}
+
+.shm-shortcut-count,
+.shm-shortcut-more {
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+  font-variant-numeric: tabular-nums;
+}
+
+.shm-shortcut-more {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+}
+
+/* At least 28 px to hit, as the sidebar's icon buttons. */
+.shm-shortcut-close {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  color: var(--shm-text-muted);
+  background: none;
+  border: 0;
+  border-radius: var(--shm-radius-small);
+  cursor: pointer;
+}
+
+.shm-shortcut-close:hover,
+.shm-shortcut-close:focus-visible {
+  color: var(--shm-text-strong);
+  background: rgb(var(--shm-accent-rgb) / 0.14);
+  outline: none;
 }
 
 .shm-count {

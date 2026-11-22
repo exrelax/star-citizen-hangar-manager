@@ -14,8 +14,8 @@ import {
 } from '../settings';
 
 /*
- * What the lists of My Hangar and the buy back show: the insurance of upgraded ships, the links
- * for ships, where "Show in Buy Back" leads and the period of the expected price increases.
+ * What the lists of My Hangar and the buy back show: the insurance of upgraded ships, the
+ * rebuyable pledges (#530), the links for ships, where "Show in Buy Back" leads and the period of the expected price increases.
  */
 
 const props = defineProps<{ settings: Settings }>();
@@ -44,6 +44,14 @@ function changeDays(event: Event) {
       @change="(hideSupersededInsurances) => emit('update', { hideSupersededInsurances })"
     >
       {{ i18n.t('settings.hideSupersededInsurances') }}
+    </SettingCheck>
+    <!-- Melt and Rebuy (#530): its label, List Shortcut and reasons. -->
+    <SettingCheck
+      :checked="settings.meltRebuy"
+      :hint="i18n.t('meltRebuy.settingHint')"
+      @change="(meltRebuy) => emit('update', { meltRebuy })"
+    >
+      {{ i18n.t('meltRebuy.setting') }}
     </SettingCheck>
   </SettingsGroup>
 
