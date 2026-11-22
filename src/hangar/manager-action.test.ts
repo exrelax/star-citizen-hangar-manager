@@ -4,12 +4,12 @@ import { actionFromSearch, isManagerActionMessage } from './manager-action-messa
 import { applyManagerAction, takeActionFromUrl } from './manager-action';
 import { selection } from './selection';
 import { meltReadyIds } from './use-melt-marks';
-import { hangarViewFilter } from './view-filter';
+import { listShortcuts } from './list-shortcut';
 import { watchlistRequest } from '@/watchlists/use-watchlists';
 
 beforeEach(() => {
   selection.clear();
-  hangarViewFilter.value = null;
+  listShortcuts.value = { hangar: null, buyback: null };
   meltReadyIds.value = new Set();
 });
 
@@ -53,7 +53,7 @@ describe('applyManagerAction', () => {
   it('shows only them', async () => {
     meltReadyIds.value = new Set([1]);
     await applyManagerAction('showMeltReady');
-    expect(hangarViewFilter.value?.id).toBe('meltReady');
+    expect(listShortcuts.value.hangar?.id).toBe('meltReady');
   });
 });
 

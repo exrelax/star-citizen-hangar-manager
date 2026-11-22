@@ -39,6 +39,13 @@
     },
     "shortcutClose": "Close “$1”"
   },
+  "listShortcut": {
+    "empty": "Nothing left in this list.",
+    "meltReady": "Ready to melt",
+    "meltReadyEmpty": "No marked pledge can be melted right now.",
+    "paintRebuyEmpty": "The plan has no paints left to buy again.",
+    "meltRebuyEmpty": "No pledge can be melted and rebought without loss right now."
+  },
   "sort": {
     "label": "Sort",
     "newest": "Newest first",
@@ -864,7 +871,7 @@
     "boxMeltNowCredit": "Store credit from them",
     "boxPaints": "Paints to buy again",
     "boxFilter": "Show these paints",
-    "boxFilterHint": "Shows only these paints in “My Hangar”; “Reset filters” or this button shows all again.",
+    "boxFilterHint": "Shows only these paints in “My Hangar”; this button, the × of the list or “Reset filters” shows all again.",
     "boxUnfilter": "Show all pledges",
     "boxUnfilterHint": "Turns the filter off: “My Hangar” shows all pledges again.",
     "boxOpen": "Open the consultant",
@@ -1372,7 +1379,7 @@
       "other": "$1 marked pledges can be melted now"
     },
     "showReady": "Show",
-    "showReadyHint": "Shows only these pledges in “My Hangar”; this button or “Reset filters” shows all again.",
+    "showReadyHint": "Shows only these pledges in “My Hangar”; this button, the × of the list or “Reset filters” shows all again.",
     "showAll": "Show all",
     "showAllHint": "Turns the filter off: “My Hangar” shows all pledges again.",
     "selectReady": "Select",

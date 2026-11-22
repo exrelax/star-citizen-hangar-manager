@@ -2,6 +2,7 @@
 /* eslint-disable vue/one-component-per-file -- each test mounts a list of its own */
 import { afterEach, describe, expect, it } from 'vitest';
 import { createApp, h, nextTick, shallowRef, type App } from 'vue';
+import type { IconName } from '@/icons/icon-names';
 import type { FilterRefinements } from '../filters';
 import ManagerList from './ManagerList.vue';
 
@@ -312,8 +313,16 @@ describe('ManagerList: inside a watchlist (#467)', () => {
   });
 });
 
-describe('ManagerList: the bar of a List Shortcut (#427, #530)', () => {
-  function renderShortcut(request: Record<string, unknown>) {
+describe('ManagerList: the bar of a List Shortcut (#427, #428, #530)', () => {
+  type Request = { title: string; icon?: IconName; emptyText?: string; at?: number };
+  // Searchable as `normalizeSearchText` writes it: each word after a space.
+  const listed = shallowRef<Entry[]>([]);
+  const request = shallowRef<(Request & { matches: (e: Entry) => boolean; at: number }) | null>(
+    null,
+  );
+  function renderShortcut(opened: Request) {
+    listed.value = entries.map((entry) => ({ ...entry, searchText: ` ${entry.searchText}` }));
+    request.value = { matches: (e: Entry) => e.paint, at: 1, ...opened };
     const root = document.createElement('div');
     document.body.append(root);
     const cleared: number[] = [];
@@ -322,13 +331,16 @@ describe('ManagerList: the bar of a List Shortcut (#427, #530)', () => {
         h(
           ManagerList<Entry, F, string>,
           {
-            entries,
+            entries: listed.value,
             filterGroups: [{ category: 'types', filters: ['paints', 'owned'] }],
             predicates: { paints: (e: Entry) => e.paint, owned: (e: Entry) => e.owned },
             filterLabel: (filter: F) => (filter === 'paints' ? 'Paints' : 'Owned'),
             active: false,
-            filterRequest: { matches: (e: Entry) => e.paint, at: 1, ...request },
-            onClearRequest: () => cleared.push(1),
+            filterRequest: request.value,
+            onClearRequest: () => {
+              cleared.push(1);
+              request.value = null;
+            },
           },
           {
             row: ({ entry }: { entry: Entry }) => h('div', { class: 'row' }, String(entry.id)),
@@ -341,11 +353,23 @@ describe('ManagerList: the bar of a List Shortcut (#427, #530)', () => {
     return { root, cleared };
   }
   const bar = (root: HTMLElement) => root.querySelector<HTMLElement>('.shm-shortcut-bar');
+  const count = (root: HTMLElement) => bar(root)?.querySelector('.shm-shortcut-count')?.textContent;
+  const filterButton = (root: HTMLElement, label: string) =>
+    [...root.querySelectorAll<HTMLButtonElement>('.shm-filter')].find((button) =>
+      button.textContent?.includes(label),
+    )!;
+  async function search(root: HTMLElement, term: string) {
+    const input = root.querySelector<HTMLInputElement>('.shm-search')!;
+    input.value = term;
+    input.dispatchEvent(new Event('input'));
+    await nextTick();
+  }
 
-  it('shows its title, the count, what the slot adds and a × to leave it', async () => {
+  it('shows its title, icon, the count, what the slot adds and a × to leave it', async () => {
     const { root, cleared } = renderShortcut({ title: 'Melt and rebuy', icon: 'recycle' });
     expect(bar(root)?.querySelector('.shm-shortcut-title')?.textContent).toBe('Melt and rebuy');
-    expect(bar(root)?.querySelector('.shm-shortcut-count')?.textContent).toBe('3 pledges');
+    expect(bar(root)?.querySelector('.shm-shortcut-icon')).not.toBeNull();
+    expect(count(root)).toBe('3 pledges');
     expect(bar(root)?.querySelector('.extra')?.textContent).toBe('ids 1,2,3');
     expect(rows(root)).toEqual(['1', '2', '3']);
     const close = bar(root)!.querySelector<HTMLButtonElement>('.shm-shortcut-close')!;
@@ -358,18 +382,78 @@ describe('ManagerList: the bar of a List Shortcut (#427, #530)', () => {
   });
 
   it('counts only what the filters leave within it', async () => {
-    const { root } = renderShortcut({ title: 'Melt and rebuy' });
-    [...root.querySelectorAll<HTMLButtonElement>('.shm-filter')]
-      .find((button) => button.textContent?.includes('Owned'))!
-      .click();
+    const { root } = renderShortcut({ title: 'Paints to buy again' });
+    filterButton(root, 'Owned').click();
     await nextTick();
-    expect(bar(root)?.querySelector('.shm-shortcut-count')?.textContent).toBe('2 pledges');
+    expect(count(root)).toBe('2 pledges');
     expect(bar(root)?.querySelector('.extra')?.textContent).toBe('ids 1,3');
   });
 
-  it('shows no bar for a filter without a title', () => {
-    const { root } = renderShortcut({});
-    expect(bar(root)).toBeNull();
+  it('searches within it, with the usual text when the search matches none of it', async () => {
+    const { root } = renderShortcut({ title: 'Paints to buy again', emptyText: 'No paints left' });
+    await search(root, 'b');
+    expect(count(root)).toBe('1 pledge');
+    expect(rows(root)).toEqual(['2']);
+    await search(root, 'd');
+    expect(rows(root)).toEqual([]);
+    expect(count(root)).toBe('0 pledges');
+    expect(root.querySelector('.shm-no-results')?.textContent?.trim()).toBe(
+      'No pledges match your search.',
+    );
+  });
+
+  it('starts without search and filters, each time it opens', async () => {
+    const { root } = renderShortcut({ title: 'Paints to buy again' });
+    await search(root, 'b');
+    filterButton(root, 'Owned').click();
+    await nextTick();
+    request.value = { ...request.value!, at: 2 };
+    await nextTick();
+    expect(root.querySelector<HTMLInputElement>('.shm-search')!.value).toBe('');
     expect(rows(root)).toEqual(['1', '2', '3']);
+  });
+
+  it('keeps search and filters when only its title changes, e.g. the language', async () => {
+    const { root } = renderShortcut({ title: 'Paints to buy again' });
+    await search(root, 'b');
+    request.value = { ...request.value!, title: 'Paints zum Rückkauf' };
+    await nextTick();
+    expect(bar(root)?.querySelector('.shm-shortcut-title')?.textContent).toBe(
+      'Paints zum Rückkauf',
+    );
+    expect(rows(root)).toEqual(['2']);
+  });
+
+  it('is left with “Reset filters”', async () => {
+    const { root, cleared } = renderShortcut({ title: 'Paints to buy again' });
+    root.querySelector<HTMLButtonElement>('.shm-filter-reset')!.click();
+    await nextTick();
+    expect(cleared).toEqual([1]);
+    expect(bar(root)).toBeNull();
+    expect(rows(root)).toEqual(['1', '2', '3', '4']);
+  });
+
+  it('stays once nothing matches it any more, and says so', async () => {
+    const { root, cleared } = renderShortcut({
+      title: 'Paints to buy again',
+      emptyText: 'No paints left',
+    });
+    listed.value = listed.value.filter((entry) => !entry.paint);
+    await nextTick();
+    expect(cleared).toEqual([]);
+    expect(count(root)).toBe('0 pledges');
+    expect(rows(root)).toEqual([]);
+    const empty = root.querySelectorAll('.shm-no-results');
+    expect(empty).toHaveLength(1);
+    expect(empty[0]!.textContent?.trim()).toBe('No paints left');
+  });
+
+  it('says so with a general text without its own', async () => {
+    const { root } = renderShortcut({ title: 'Paints to buy again' });
+    listed.value = [];
+    await nextTick();
+    expect(root.querySelector('.shm-shortcut-empty')?.textContent?.trim()).toBe(
+      'Nothing left in this list.',
+    );
   });
 });

@@ -65,18 +65,18 @@ const props = defineProps<{
   sortOptions?: readonly { value: S; label: string }[];
   sort?: S;
   /**
-   * A filter without a button, turned on from outside (e.g. "Show" in the sidebar's
-   * notifications): each new request (`at`) shows only the entries it `matches`, without search
-   * and other filters. "Reset filter" turns it off, and it goes on its own once no entry matches.
-   * With a `title` it is a List Shortcut (#427, #530): a bar above the list shows the title, the
-   * count of its entries left by search and filters, what the `shortcut` slot adds, and a × to
-   * leave it.
+   * A List Shortcut (#427, #428, see `list-shortcut.ts`), opened from outside: each new request
+   * (`at`) shows only the entries it `matches`, starting without search and filters, which then
+   * work within it. A bar above the list shows the `title`, the count of its entries left by
+   * search and filters, what the `shortcut` slot adds, and a × to leave it; "Reset filters" leaves
+   * it too. While no entry matches it any more, the list shows `emptyText`.
    */
   filterRequest?: {
     matches: (entry: T) => boolean;
     at: number;
-    title?: string;
+    title: string;
     icon?: IconName;
+    emptyText?: string;
   } | null;
   /**
    * A filter button turned on from outside (e.g. the sidebar's notification about expected price
@@ -119,7 +119,10 @@ const countTextOf = (key: CountText): PluralKey => props.texts?.[key] ?? `manage
 
 const emit = defineEmits<{
   'update:sort': [sort: S];
-  /** The filter of `filterRequest` went off: by "Reset filters", or as nothing matches it. */
+  /**
+   * The List Shortcut of `filterRequest` was left: by its ×, "Reset filters", an `includeRequest`
+   * or a `viewRequest`.
+   */
   'clear-request': [];
   /** The entries search and filters leave visible, whenever they change. */
   visible: [entries: T[]];
@@ -234,13 +237,15 @@ const predicates = computed(() =>
   refinedPredicates(props.predicates, props.refinements, refinementStates.value),
 );
 
-/** The filter requested from outside while it is on (see `filterRequest`). */
+/** The List Shortcut's rule while it is open (see `filterRequest`). */
 const requested = shallowRef<((entry: T) => boolean) | null>(null);
-/** The title and icon of its bar, while it is a List Shortcut (#427). */
+/** The title and icon of its bar, while it is open (#427). */
 const shortcut = computed(() => {
   const request = props.filterRequest;
-  return requested.value && request?.title ? { title: request.title, icon: request.icon } : null;
+  return requested.value && request ? { title: request.title, icon: request.icon } : null;
 });
+/** No entry matches the open shortcut any more (e.g. all its paints melted), whatever the search. */
+const shortcutEmpty = computed(() => !!requested.value && !props.entries.some(requested.value));
 
 function clearRequested() {
   if (!requested.value) return;
@@ -254,9 +259,11 @@ const resetFilters = () => {
   clearRequested();
 };
 
+// By its time only: a new title (e.g. another language) keeps search and filters.
 watch(
-  () => props.filterRequest,
-  (request) => {
+  () => props.filterRequest?.at,
+  () => {
+    const request = props.filterRequest;
     if (!request) {
       requested.value = null;
       return;
@@ -324,12 +331,6 @@ watch(
     filterStates.value = new Map((request.filters ?? []) as [F, FilterState][]);
     refinementStates.value = new Map();
   },
-);
-
-// Off once nothing matches it any more (e.g. all marked pledges melted).
-watch(
-  () => !!requested.value && !props.entries.some(requested.value),
-  (empty) => empty && clearRequested(),
 );
 
 // A filter turned off in the settings no longer filters the list, either.
@@ -652,7 +653,11 @@ const countLabel = computed(() => {
     </div>
     <div ref="sentinel" class="shm-sentinel" aria-hidden="true"></div>
 
-    <p v-if="visibleIds && visibleIds.size === 0" class="shm-no-results">
+    <!-- An empty shortcut says so, rather than that the search matches nothing (#428). -->
+    <p v-if="shortcutEmpty" class="shm-no-results shm-shortcut-empty">
+      {{ filterRequest?.emptyText ?? i18n.t('listShortcut.empty') }}
+    </p>
+    <p v-else-if="visibleIds && visibleIds.size === 0" class="shm-no-results">
       {{ i18n.t(textOf('noResults')) }}
     </p>
   </div>
@@ -713,19 +718,6 @@ const countLabel = computed(() => {
   align-items: center;
   align-self: center;
   gap: 4px 12px;
-}
-
-/* An info icon of the shortcut with its note as tooltip (#593). */
-:slotted(.shm-shortcut-note) {
-  display: inline-flex;
-  align-items: center;
-  color: var(--shm-text-muted);
-  cursor: help;
-}
-
-:slotted(.shm-shortcut-note .shm-icon) {
-  width: 13px;
-  height: 13px;
 }
 
 /* At least 28 px to hit, as the sidebar's icon buttons. */
