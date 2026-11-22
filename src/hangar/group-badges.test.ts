@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { BuybackView } from '@/buyback/buyback-view';
-import { buybackGroupBadges, extrasNote, pledgeGroupBadges } from './group-badges';
+import { buybackGroupBadges, extrasNote, meltMarkBadge, pledgeGroupBadges } from './group-badges';
 import { groupItems } from './grouping';
 import type { PledgeView } from './pledge-view';
 
@@ -118,5 +118,49 @@ describe('the labels a group row takes from its items (#487)', () => {
     const last = pledgeGroupBadges(groupOf([ccu(8, '2026-10-21')]), context([]));
     expect(texts(last)[0]).toBe('Refund: last day');
     expect(last[0]!.className).toBe('is-refund is-urgent');
+  });
+});
+
+describe('the melt label of a group (#552)', () => {
+  const NOW = Date.parse('2026-11-22T12:00:00Z');
+  const HOUR = 60 * 60 * 1000;
+  const items = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }];
+  const marks = (...lefts: number[]) =>
+    new Map(
+      lefts.map((left, index) => [
+        index + 1,
+        { pledgeId: index + 1, markedAt: NOW - HOUR, meltableAt: NOW + left },
+      ]),
+    );
+
+  it('shows nothing without a marked item', () => {
+    expect(meltMarkBadge(items, new Map(), NOW, 'en')).toBeUndefined();
+  });
+
+  it('shows one time with the count of marked items', () => {
+    expect(meltMarkBadge(items, marks(3 * HOUR), NOW, 'en')).toMatchObject({
+      text: 'Melt in 3 hr',
+      count: '1',
+      className: 'is-melt-mark',
+      hint: '1 of 4 marked to melt, the first ready in 3 hr.',
+    });
+  });
+
+  it('shows the earliest and the latest time', () => {
+    expect(meltMarkBadge(items, marks(3 * HOUR, 21 * HOUR), NOW, 'en')?.text).toBe(
+      'Melt in 3 hr – 21 hr',
+    );
+  });
+
+  it('shows "Melt now" while some are ready, alone once all are', () => {
+    expect(meltMarkBadge(items, marks(-HOUR, 21 * HOUR), NOW, 'en')).toMatchObject({
+      text: 'Melt now – 21 hr',
+      hint: '2 of 4 marked to melt, 1 of them ready now.',
+    });
+    expect(meltMarkBadge(items, marks(-HOUR, -2 * HOUR), NOW, 'en')).toMatchObject({
+      text: 'Melt now',
+      className: 'is-melt-mark is-ready',
+      count: '2',
+    });
   });
 });

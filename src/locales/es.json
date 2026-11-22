@@ -1918,7 +1918,11 @@
     },
     "selected": "$1 de $2 seleccionados",
     "refundCount": "$1 de $2 elementos aún se pueden reembolsar.",
-    "openDialog": "Abrir el grupo en un diálogo"
+    "openDialog": "Abrir el grupo en un diálogo",
+    "meltRange": "Fundir en $1 – $2",
+    "meltNowRange": "Fundir ahora – $1",
+    "meltMarkHint": "$1 de $2 marcados para fundir, el primero listo en $3.",
+    "meltMarkHintReady": "$1 de $2 marcados para fundir, $3 de ellos listos ahora."
   },
   "consultants": {
     "paintLater": "El Asesor de descuentos de pinturas aparece aquí en cuanto se puedan volver a comprar pinturas por menos."

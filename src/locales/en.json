@@ -1918,7 +1918,11 @@
     },
     "selected": "$1 of $2 selected",
     "refundCount": "$1 of $2 items can still be refunded.",
-    "openDialog": "Open the group in a dialog"
+    "openDialog": "Open the group in a dialog",
+    "meltRange": "Melt in $1 – $2",
+    "meltNowRange": "Melt now – $1",
+    "meltMarkHint": "$1 of $2 marked to melt, the first ready in $3.",
+    "meltMarkHintReady": "$1 of $2 marked to melt, $3 of them ready now."
   },
   "consultants": {
     "paintLater": "The Paint Discount Consultant shows here once paints can be bought again for less."

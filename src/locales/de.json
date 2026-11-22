@@ -1918,7 +1918,11 @@
     },
     "selected": "$1 von $2 ausgewählt",
     "refundCount": "$1 von $2 Einträgen lassen sich noch erstatten.",
-    "openDialog": "Gruppe in einem Dialog öffnen"
+    "openDialog": "Gruppe in einem Dialog öffnen",
+    "meltRange": "Einschmelzen in $1 – $2",
+    "meltNowRange": "Jetzt einschmelzen – $1",
+    "meltMarkHint": "$1 von $2 zum Einschmelzen gemerkt, das erste bereit in $3.",
+    "meltMarkHintReady": "$1 von $2 zum Einschmelzen gemerkt, $3 davon jetzt bereit."
   },
   "consultants": {
     "paintLater": "Der Paint-Rabatt-Berater erscheint hier, sobald sich Paints günstiger neu kaufen lassen."

@@ -38,6 +38,7 @@ import PledgeRow from './PledgeRow.vue';
 import GroupRow from './GroupRow.vue';
 import { extrasNote, pledgeGroupBadges, pledgeGroupKind } from '../group-badges';
 import { pledgeFacts } from '../grouping';
+import { useMarkedPledges } from '../use-melt-marks';
 
 const props = defineProps<{
   pledges: PledgeView[];
@@ -89,6 +90,7 @@ const refinements = computed(() => ({
 /** What a group's labels taken from its items need (#487): the CCU Consultant's, today. */
 const coverageSources = useProvidedCoverageSources();
 const removals = useProvidedRemovalCcus();
+const markedPledges = useMarkedPledges();
 const badgeContext = computed((): GroupBadgeContext => ({
   coverageOf: (id) => coverages.value.get(id),
   ...(alwaysAvailable.value && { alwaysAvailable: alwaysAvailable.value }),
@@ -96,6 +98,9 @@ const badgeContext = computed((): GroupBadgeContext => ({
   ships: coverageSources.value.ships,
   today: today.value,
   locale: locale.value,
+  // The melt label of a group with marked items (#552).
+  marks: markedPledges.value,
+  now: now.value,
 }));
 
 const filterGroups = computed(() =>

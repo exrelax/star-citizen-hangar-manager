@@ -1918,7 +1918,11 @@
     },
     "selected": "$1 sur $2 sélectionnés",
     "refundCount": "$1 sur $2 éléments peuvent encore être remboursés.",
-    "openDialog": "Ouvrir le groupe dans une boîte de dialogue"
+    "openDialog": "Ouvrir le groupe dans une boîte de dialogue",
+    "meltRange": "Fondre dans $1 – $2",
+    "meltNowRange": "Fondre maintenant – $1",
+    "meltMarkHint": "$1 sur $2 marqués pour la fonte, le premier prêt dans $3.",
+    "meltMarkHintReady": "$1 sur $2 marqués pour la fonte, dont $3 prêts maintenant."
   },
   "consultants": {
     "paintLater": "Le Conseiller de remises sur les peintures apparaît ici dès que des peintures peuvent être rachetées moins cher."
