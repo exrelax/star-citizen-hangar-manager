@@ -11,6 +11,9 @@ import { BUYBACK_FILTER_PREDICATES, type BuybackFilter, type BuybackView } from 
 import { giftableHint } from '../giftable-hint';
 import BuybackRow from './BuybackRow.vue';
 import GroupRow from '@/hangar/components/GroupRow.vue';
+import CcuCoverage from '@/ccu-consultant/components/CcuCoverage.vue';
+import { useProvidedBuybackCcuCoverage } from '@/ccu-consultant/coverage';
+import { groupCoverage } from '@/ccu-consultant/group-coverage';
 import { buybackGroupBadges, buybackGroupKind, extrasNote } from '@/hangar/group-badges';
 import { buybackFacts } from '@/hangar/grouping';
 import { paintRefinement, useProvidedOwnedShips } from '@/hangar/paint-ships';
@@ -66,6 +69,16 @@ const refinements = computed(() => ({
   // "CCUs" by what they bring (#566).
   ccus: ccuRefinementWithContents(allCcus<BuybackView>(), (pledge) => pledge.ccuContents),
 }));
+
+/** The base ship coverage of a group of CCUs (#574); none for other groups. */
+const coverages = useProvidedBuybackCcuCoverage();
+const coverageOfGroup = (group: { items: readonly BuybackView[] }) =>
+  group.items.every((item) => item.isCcu)
+    ? groupCoverage(
+        group.items.map((item) => item.id),
+        coverages.value,
+      )
+    : undefined;
 
 const filterGroups = computed(() =>
   FILTER_CATEGORIES.map((category) => ({
@@ -156,6 +169,14 @@ const filterHint = (filter: BuybackFilter) => {
             :pledge="entry"
             :auto-expand="autoExpand"
             :link-mode="settings.buybackLinkMode"
+          />
+        </template>
+        <!-- A group of CCUs: the base ship of all of them (#574). -->
+        <template v-if="coverageOfGroup(group)" #head>
+          <CcuCoverage
+            :coverage="coverageOfGroup(group)!.coverage"
+            :of-group="coverageOfGroup(group)!"
+            list="buyback"
           />
         </template>
       </GroupRow>

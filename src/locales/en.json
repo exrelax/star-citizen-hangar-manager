@@ -1733,6 +1733,7 @@
     "title": "Base ship",
     "baseShip": "the base ship",
     "summary": "$1 in the hangar, $2 in the buy back",
+    "groupSummary": "$1 of $2 covered · $3",
     "none": "none in the hangar or buy back",
     "empty": "Neither $1 nor a CCU to it is in your hangar or buy back.",
     "alwaysAvailable": "Base always available",

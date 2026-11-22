@@ -20,10 +20,17 @@ import CoverageCardView from './CoverageCardView.vue';
  * What gives a CCU's base ship (#111), a section of the expanded CCU row like "Applied upgrades":
  * collapsed the counts in the hangar and the buy back, expanded the pledges – ships and CCUs to the
  * base ship – each opening it in "My Hangar" or "Buy Back", searched by its id (#436; in the demo
- * its made-up one). On every CCU, covered or not (#108).
+ * its made-up one). On every CCU, covered or not (#108). On a group of CCUs (#574) for all of
+ * them: how many of the group get the base ship (`ofGroup`, see `group-coverage.ts`).
  */
 
-const props = defineProps<{ coverage: CcuCoverage }>();
+const props = defineProps<{
+  coverage: CcuCoverage;
+  /** A group of CCUs (#574): how many of them are covered. */
+  ofGroup?: { covered: number; total: number };
+  /** The list it is shown in, where Back returns to; My Hangar if not set. */
+  list?: 'hangar' | 'buyback';
+}>();
 
 const { settings } = useSettings();
 const open = ref(false);
@@ -41,13 +48,23 @@ const groups = computed(() =>
 );
 const count = (source: CoverageSource) =>
   groups.value.find((group) => group.source === source)!.matches.length;
-const summary = computed(() =>
-  props.coverage.covered
-    ? i18n.t('ccuCoverage.summary', [
-        number.value.format(count('hangar')),
-        number.value.format(count('buyback')),
+const summary = computed(() => {
+  if (!props.coverage.covered) return i18n.t('ccuCoverage.none');
+  const counts = i18n.t('ccuCoverage.summary', [
+    number.value.format(count('hangar')),
+    number.value.format(count('buyback')),
+  ]);
+  return props.ofGroup
+    ? i18n.t('ccuCoverage.groupSummary', [
+        number.value.format(props.ofGroup.covered),
+        number.value.format(props.ofGroup.total),
+        counts,
       ])
-    : i18n.t('ccuCoverage.none'),
+    : counts;
+});
+/** Not every CCU gets the base ship: none, or not all of a group. */
+const short = computed(
+  () => !props.coverage.covered || (!!props.ofGroup && props.ofGroup.covered < props.ofGroup.total),
 );
 
 const sources = useProvidedCoverageSources();
@@ -85,10 +102,12 @@ function openMatch(event: MouseEvent, match: CoverageMatch) {
   if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
     return;
   event.preventDefault();
+  const back = props.list ?? 'hangar';
   openPledgeInList(match.source, termOf(match), {
-    tab: 'hangar',
+    tab: back,
     search: searchFromUrl(location.search),
-    filters: [...hangarFilterStates.value],
+    // The buy back's filters aren't kept for Back; My Hangar's are.
+    filters: back === 'hangar' ? [...hangarFilterStates.value] : [],
     expand: props.coverage.id,
   });
 }
@@ -104,9 +123,7 @@ function openMatch(event: MouseEvent, match: CoverageMatch) {
     >
       <span class="shm-upgrade-log-chevron" aria-hidden="true">▸</span>
       {{ i18n.t('ccuCoverage.title') }}
-      <span class="shm-upgrade-log-count" :class="{ 'is-missing': !coverage.covered }">{{
-        summary
-      }}</span>
+      <span class="shm-upgrade-log-count" :class="{ 'is-missing': short }">{{ summary }}</span>
     </button>
     <template v-if="open">
       <p v-if="!coverage.covered" class="shm-upgrade-log-note">

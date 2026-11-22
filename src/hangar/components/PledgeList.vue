@@ -38,6 +38,8 @@ import { isPaintItem } from '../pledge-view';
 import { listViewRequest } from '../list-jump';
 import PledgeRow from './PledgeRow.vue';
 import GroupRow from './GroupRow.vue';
+import CcuCoverage from '@/ccu-consultant/components/CcuCoverage.vue';
+import { groupCoverage } from '@/ccu-consultant/group-coverage';
 import { extrasNote, pledgeGroupBadges, pledgeGroupKind } from '../group-badges';
 import { pledgeFacts } from '../grouping';
 import { useMarkedPledges } from '../use-melt-marks';
@@ -96,6 +98,14 @@ const refinements = computed(() => ({
   // "Ships" by what they hold besides the ship (#514).
   ships: shipKindRefinement<PledgeView>((pledge) => pledgeShipKind(pledge.items)),
 }));
+/** The base ship coverage of a group of CCUs (#574); none for other groups. */
+const coverageOfGroup = (group: { items: readonly PledgeView[] }) =>
+  group.items.every((item) => item.isCcu)
+    ? groupCoverage(
+        group.items.map((item) => item.id),
+        coverages.value,
+      )
+    : undefined;
 /** What a group's labels taken from its items need (#487): the CCU Consultant's, today. */
 const coverageSources = useProvidedCoverageSources();
 const removals = useProvidedRemovalCcus();
@@ -230,6 +240,13 @@ const filterHint = (filter: PledgeFilter) => {
       >
         <template #item="{ entry, autoExpand }">
           <PledgeRow :pledge="entry" :auto-expand="autoExpand" />
+        </template>
+        <!-- A group of CCUs: the base ship of all of them (#574). -->
+        <template v-if="coverageOfGroup(group)" #head>
+          <CcuCoverage
+            :coverage="coverageOfGroup(group)!.coverage"
+            :of-group="coverageOfGroup(group)!"
+          />
         </template>
       </GroupRow>
     </template>

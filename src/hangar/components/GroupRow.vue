@@ -40,7 +40,14 @@ const props = defineProps<{
   /** Where its pledges are, for the watchlists any of them is on (#468). */
   watchKind?: 'hangar' | 'buyback';
 }>();
-defineSlots<{ item(props: { entry: T; autoExpand: boolean }): unknown }>();
+defineSlots<{
+  item(props: { entry: T; autoExpand: boolean }): unknown;
+  /**
+   * What the whole group has, above its items when expanded and in its dialog's header, e.g. the
+   * base ship of a CCU group (#574).
+   */
+  head?(): unknown;
+}>();
 
 const first = computed(() => props.group.items[0]!);
 /** Its items shown below it in the list. */
@@ -178,6 +185,7 @@ const countLabel = computed(() => i18n.n('group.items', props.group.count, [prop
       </div>
     </div>
     <div v-if="expanded" class="shm-group-items">
+      <div v-if="$slots.head" class="shm-group-head"><slot name="head" /></div>
       <template v-for="entry in group.items" :key="entry.id">
         <slot name="item" :entry="entry" :auto-expand="false" />
       </template>
@@ -197,6 +205,7 @@ const countLabel = computed(() => i18n.n('group.items', props.group.count, [prop
       <template #item="{ entry, autoExpand }">
         <slot name="item" :entry="entry" :auto-expand="autoExpand" />
       </template>
+      <template v-if="$slots.head" #head><slot name="head" /></template>
     </GroupDialog>
   </div>
 </template>
@@ -239,6 +248,18 @@ const countLabel = computed(() => i18n.n('group.items', props.group.count, [prop
   margin: 6px 0 8px 24px;
   padding-left: 12px;
   border-left: 2px solid rgb(var(--shm-accent-rgb) / 0.3);
+}
+
+/* What the whole group has (#574), above its items: a part of its own, laid out like a row's details. */
+.shm-group-head {
+  padding: 6px 12px 8px;
+  background: rgb(var(--shm-accent-rgb) / 0.04);
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.12);
+  border-radius: var(--shm-radius-control);
+}
+
+.shm-group-head .shm-upgrade-log {
+  margin-top: 0;
 }
 
 /* "Modern Hangar" lays the row out as a grid: the dialog's button gets a column of its own. */

@@ -1733,6 +1733,7 @@
     "title": "Vaisseau de base",
     "baseShip": "le vaisseau de base",
     "summary": "$1 dans le hangar, $2 dans le rachat",
+    "groupSummary": "$1 sur $2 couverts · $3",
     "none": "aucun dans le hangar ni le rachat",
     "empty": "Ni $1 ni un CCU vers lui ne sont dans votre hangar ou rachat.",
     "alwaysAvailable": "Base toujours disponible",
