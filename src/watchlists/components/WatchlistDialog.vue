@@ -34,6 +34,8 @@ const props = defineProps<{
   error?: string;
   /** While saving. */
   busy?: boolean;
+  /** What a new watchlist starts with, e.g. "Rebuy after the IAE" with its end (#531). */
+  initial?: { name?: string; description?: string; dueAt?: number };
 }>();
 const emit = defineEmits<{
   save: [
@@ -51,9 +53,10 @@ const emit = defineEmits<{
 const { settings } = useSettings();
 const id = useId();
 
-const name = ref(props.list?.name ?? '');
-const description = ref(props.list?.description ?? '');
-const due = ref(props.list?.dueAt !== undefined ? toLocalInput(props.list.dueAt) : '');
+const name = ref(props.list?.name ?? props.initial?.name ?? '');
+const description = ref(props.list?.description ?? props.initial?.description ?? '');
+const initialDue = props.list ? props.list.dueAt : props.initial?.dueAt;
+const due = ref(initialDue !== undefined ? toLocalInput(initialDue) : '');
 // A new list with a date reminds by default, as `createWatchlist` does.
 const reminder = ref(props.list?.reminder ?? true);
 /** Notifications on changes of its Pledge Store items (#472), on by default. */

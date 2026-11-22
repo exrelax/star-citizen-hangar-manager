@@ -53,4 +53,36 @@ describe('a watchlist’s store items for the cart (#529)', () => {
       cartChunksOf([{ skuId: 7, name: 'Dusk', qty: 12, price: 10 }]).map((l) => l.qty),
     ).toEqual([5, 5, 2]);
   });
+
+  it('puts a ship with an insurance in by the store item naming it (#531)', () => {
+    const store: StoreCatalog = {
+      ...catalog,
+      items: [
+        ...catalog.items!,
+        {
+          id: 21,
+          name: 'Cutlass Black - LTI',
+          category: 'Standalone Ships',
+          price: 120,
+          isWarbond: false,
+          available: true,
+        },
+      ],
+    };
+    const items: WatchItem[] = [
+      {
+        kind: 'storeShip',
+        shipId: 2,
+        insurance: 'lti',
+        name: 'Cutlass Black - LTI',
+        count: 2,
+        ...at,
+      },
+    ];
+    expect(watchCartOf(items, store)).toEqual({
+      lines: [{ skuId: 21, name: 'Cutlass Black - LTI', qty: 2, price: 120 }],
+      skipped: [],
+      total: 240,
+    });
+  });
 });

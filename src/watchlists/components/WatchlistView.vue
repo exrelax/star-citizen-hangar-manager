@@ -4,7 +4,7 @@ import type { BuybackView } from '@/buyback/buyback-view';
 import PledgeList from '@/hangar/components/PledgeList.vue';
 import '@/hangar/components/list-controls.css';
 import type { PledgeView } from '@/hangar/pledge-view';
-import { i18n, type MessageKey } from '@/i18n';
+import { i18n, locale, type MessageKey } from '@/i18n';
 import type { IconName, IconSet } from '@/icons/icon-names';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import type { Settings } from '@/settings/settings';
@@ -22,7 +22,10 @@ import {
 import WatchItemRow from './WatchItemRow.vue';
 import WatchlistCartDialog from './WatchlistCartDialog.vue';
 import ShipUpgradeButtons from '@/store/components/ShipUpgradeButtons.vue';
+import { storeCostOf } from '../store-cost';
 import { storeStatus } from '../store-status';
+import { useStoreCreditUsd } from '../use-store-credit';
+import { formatUsd } from '@/hangar/discount-format';
 import { useStoreCatalog } from '../use-store-catalog';
 import WatchlistMeta from './WatchlistMeta.vue';
 
@@ -76,6 +79,14 @@ function upgradeOf(shipId: number) {
     ...(warbondSkuId !== undefined && { warbondSkuId }),
   };
 }
+
+/*
+ * What its store items cost now in all, against the store credit there is (#531, e.g. pledges to
+ * rebuy), and how many can't be bought at the price they had when added any more.
+ */
+const cost = computed(() => storeCostOf(props.list.items, catalog.value));
+const credit = useStoreCreditUsd();
+const usd = (value: number) => formatUsd(value, locale.value);
 
 // The rows of My Hangar and the Buy Back offer to remove their pledge from this watchlist.
 provide(WATCHLIST_ROW, { remove: (ref: WatchItemRef) => emit('remove', itemKey(ref)) });
@@ -290,6 +301,26 @@ async function askDelete() {
           </template>
         </WatchItemRow>
       </div>
+      <div v-if="source === 'store' && cost.items" class="shm-watchlist-cost">
+        <dl :class="{ 'shm-hide-values': settings.hideMeltValue }">
+          <div>
+            <dt>{{ i18n.t('watchlists.costTotal') }}</dt>
+            <dd class="shm-value">{{ usd(cost.total) }}</dd>
+          </div>
+          <div v-if="credit !== undefined">
+            <dt>{{ i18n.t('summary.storeCredit') }}</dt>
+            <dd class="shm-value" :class="{ 'is-short': credit < cost.total }">
+              {{ usd(credit) }}
+            </dd>
+          </div>
+        </dl>
+        <p v-if="cost.changed" class="shm-watchlist-cost-note is-warning">
+          {{ i18n.n('watchlists.costChanged', cost.changed, [cost.changed]) }}
+        </p>
+        <p v-if="cost.unknown" class="shm-watchlist-cost-note">
+          {{ i18n.n('watchlists.costUnknown', cost.unknown, [cost.unknown]) }}
+        </p>
+      </div>
     </section>
     <WatchlistCartDialog
       v-if="cartFor"
@@ -454,6 +485,51 @@ async function askDelete() {
 
 .shm-watchlist-cart-all.shm-button {
   min-height: 28px;
+}
+
+/* What the store items cost in all, below them, against the store credit (#531). */
+.shm-watchlist-cost {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  margin-top: 8px;
+  padding-right: 12px;
+  text-align: right;
+}
+
+.shm-watchlist-cost dl {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px 20px;
+  margin: 0;
+}
+
+.shm-watchlist-cost dl > div {
+  display: flex;
+  gap: 8px;
+}
+
+.shm-watchlist-cost dt {
+  color: var(--shm-text-secondary);
+}
+
+.shm-watchlist-cost dd {
+  margin: 0;
+  color: var(--shm-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.shm-watchlist-cost dd.is-short,
+.shm-watchlist-cost-note.is-warning {
+  color: var(--shm-warning);
+}
+
+.shm-watchlist-cost-note {
+  margin: 0;
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
 }
 
 /* A store item into the cart: as its × to remove it, 44 × 44 px to hit. */

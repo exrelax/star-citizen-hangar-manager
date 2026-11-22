@@ -67,6 +67,7 @@ import {
 import { dueReminders, withReminderDone, type Watchlist } from '@/watchlists/watchlists';
 import { useStoreChanges } from '@/watchlists/use-store-changes';
 import SelectionWatchlists from '@/watchlists/components/SelectionWatchlists.vue';
+import RebuyWatchlistAction from '@/melt-rebuy/components/RebuyWatchlistAction.vue';
 import { changeText } from '@/watchlists/store-change-text';
 import {
   demoDismissedPriceIncreasesItem,
@@ -1300,6 +1301,8 @@ async function move(box: Box, step: -1 | 1) {
           </p>
           <!-- All selected pledges onto a watchlist, or a new one (#549). -->
           <SelectionWatchlists :pledges="selected" />
+          <!-- The rebuyable ones onto a watchlist as the store items to rebuy them as (#531). -->
+          <RebuyWatchlistAction :pledge-ids="selected.map((pledge) => pledge.id)" />
           <BulkExchangeOverlay
             v-if="bulkExchanging"
             :pledges="meltable"

@@ -4,6 +4,7 @@
 import '@/shared/overlay.css';
 import '@/hangar/components/row.css';
 import '../watchlists.css';
+import '../selection-dialog.css';
 import type { PledgeView } from '@/hangar/pledge-view';
 import { i18n } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
@@ -193,92 +194,5 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
 
 .shm-selection-watchlists .shm-sidebar-note {
   margin: 0;
-}
-
-.shm-selection-dialog.shm-overlay-dialog {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: min(calc(480px * var(--shm-font-scale)), 100%);
-}
-
-.shm-selection-dialog .shm-overlay-header {
-  margin-bottom: 0;
-}
-
-/* Teleported out of RSI's page, so its reset of lists doesn't reach; set anyway. */
-.shm-selection-dialog-lists {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  max-height: 50vh;
-  margin: 0;
-  padding: 0;
-  overflow-y: auto;
-  list-style: none;
-}
-
-/* Each watchlist a row that puts the selection on it, 44 px high at least. */
-.shm-selection-dialog-list {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  box-sizing: border-box;
-  width: 100%;
-  min-height: 44px;
-  padding: 8px 10px;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  background: rgb(var(--shm-accent-rgb) / 0.06);
-  border: 1px solid rgb(var(--shm-accent-rgb) / 0.15);
-  border-radius: var(--shm-radius-control);
-  cursor: pointer;
-}
-
-.shm-selection-dialog-list:not(:disabled):hover,
-.shm-selection-dialog-list:focus-visible {
-  border-color: var(--shm-accent);
-  outline: none;
-}
-
-.shm-selection-dialog-list:disabled {
-  opacity: 0.6;
-  cursor: default;
-}
-
-.shm-selection-dialog-text {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.shm-selection-dialog-name {
-  overflow: hidden;
-  color: var(--shm-text);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.shm-selection-dialog-plus {
-  flex: none;
-  color: var(--shm-accent);
-}
-
-.shm-selection-dialog-new {
-  display: flex;
-  gap: 8px;
-}
-
-.shm-selection-dialog-new .shm-watchlist-input {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.shm-selection-dialog-new .shm-button {
-  min-height: 32px;
-  padding: 6px 14px;
 }
 </style>

@@ -2075,7 +2075,48 @@
       "one": "$1 pledge put on “$2”.",
       "other": "$1 pledges put on “$2”."
     },
-    "selectionAlready": "They are all on “$1” already."
+    "selectionAlready": "They are all on “$1” already.",
+    "priceWhenAdded": "$1 when added",
+    "costTotal": "Total now",
+    "costChanged": {
+      "one": "$1 item can’t be bought at the price it had when added any more.",
+      "other": "$1 items can’t be bought at the price they had when added any more."
+    },
+    "costUnknown": {
+      "one": "The price of $1 item isn’t known yet.",
+      "other": "The prices of $1 items aren’t known yet."
+    },
+    "rebuy": {
+      "button": {
+        "one": "Put $1 pledge on a watchlist to rebuy",
+        "other": "Put $1 pledges on a watchlist to rebuy"
+      },
+      "buttonHint": "Puts the pledges that can be rebought without loss on a watchlist as the Pledge Store items they are rebought as, to rebuy them later with store credit.",
+      "name": "Rebuy after $1",
+      "items": {
+        "one": "They go on it as $1 Pledge Store item, with its count.",
+        "other": "They go on it as $1 Pledge Store items, each with its count."
+      },
+      "cost": "Rebuying costs",
+      "freed": "Melting frees",
+      "skipped": {
+        "one": "$1 left off: it can’t be rebought without loss.",
+        "other": "$1 left off: they can’t be rebought without loss."
+      },
+      "mark": {
+        "one": "Also mark $1 pledge to melt",
+        "other": "Also mark $1 pledges to melt"
+      },
+      "markHint": "You still melt them yourself, in RSI’s dialog or by bulk melting.",
+      "added": {
+        "one": "$1 item put on “$2”.",
+        "other": "$1 items put on “$2”."
+      },
+      "addedRaised": {
+        "one": "$1 item put on “$2”; it was on it already and counted up.",
+        "other": "$1 items put on “$2”, $3 of them were on it already and counted up."
+      }
+    }
   },
   "meltRebuy": {
     "label": "Rebuyable",

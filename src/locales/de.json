@@ -2075,7 +2075,48 @@
       "one": "$1 Pledge auf „$2“ gesetzt.",
       "other": "$1 Pledges auf „$2“ gesetzt."
     },
-    "selectionAlready": "Sie stehen alle schon auf „$1“."
+    "selectionAlready": "Sie stehen alle schon auf „$1“.",
+    "priceWhenAdded": "$1 beim Hinzufügen",
+    "costTotal": "Summe jetzt",
+    "costChanged": {
+      "one": "$1 Item gibt es nicht mehr zum Preis vom Hinzufügen.",
+      "other": "$1 Items gibt es nicht mehr zum Preis vom Hinzufügen."
+    },
+    "costUnknown": {
+      "one": "Der Preis von $1 Item ist noch nicht bekannt.",
+      "other": "Die Preise von $1 Items sind noch nicht bekannt."
+    },
+    "rebuy": {
+      "button": {
+        "one": "$1 Pledge zum Wiederkaufen auf eine Watchlist setzen",
+        "other": "$1 Pledges zum Wiederkaufen auf eine Watchlist setzen"
+      },
+      "buttonHint": "Setzt die Pledges, die sich ohne Verlust wieder kaufen lassen, als die Items des Pledge Stores auf eine Watchlist, um sie später mit Store Credits wieder zu kaufen.",
+      "name": "Wiederkaufen nach $1",
+      "items": {
+        "one": "Sie kommen als $1 Item des Pledge Stores darauf, mit seiner Anzahl.",
+        "other": "Sie kommen als $1 Items des Pledge Stores darauf, jedes mit seiner Anzahl."
+      },
+      "cost": "Wiederkaufen kostet",
+      "freed": "Einschmelzen gibt frei",
+      "skipped": {
+        "one": "$1 bleibt draußen: Es lässt sich nicht ohne Verlust wieder kaufen.",
+        "other": "$1 bleiben draußen: Sie lassen sich nicht ohne Verlust wieder kaufen."
+      },
+      "mark": {
+        "one": "Auch $1 Pledge zum Einschmelzen merken",
+        "other": "Auch $1 Pledges zum Einschmelzen merken"
+      },
+      "markHint": "Einschmelzen musst du sie weiterhin selbst, in RSIs Dialog oder mehrere auf einmal.",
+      "added": {
+        "one": "$1 Item auf „$2“ gesetzt.",
+        "other": "$1 Items auf „$2“ gesetzt."
+      },
+      "addedRaised": {
+        "one": "$1 Item auf „$2“ gesetzt; es stand schon darauf und wurde hochgezählt.",
+        "other": "$1 Items auf „$2“ gesetzt, $3 davon standen schon darauf und wurden hochgezählt."
+      }
+    }
   },
   "meltRebuy": {
     "label": "Wieder kaufbar",

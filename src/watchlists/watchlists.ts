@@ -184,6 +184,28 @@ export function addItem(
   return { ...list, items, changedAt: now };
 }
 
+/**
+ * The watchlist with the store items on it, their counts added to those already on it (pledges to
+ * rebuy, #531: three more of a paint already there twice make five); how many items were new and
+ * how many were on it already.
+ */
+export function addItemCounts(
+  list: Watchlist,
+  items: readonly (WatchItemRef & { name: string; value?: number; count: number })[],
+  now: number,
+): { list: Watchlist; added: number; raised: number } {
+  let added = 0;
+  let raised = 0;
+  const next = items.reduce((current, item) => {
+    const existing = current.items.find((entry) => itemKey(entry) === itemKey(item));
+    if (existing) raised += 1;
+    else added += 1;
+    const count = isStoreItem(item) ? (existing?.count ?? 0) + item.count : undefined;
+    return addItem(current, { ...item, ...(count !== undefined && { count }) }, now);
+  }, list);
+  return { list: next, added, raised };
+}
+
 /** The watchlist without the item; itself when the item isn't on it. */
 export function removeItem(list: Watchlist, key: string, now: number): Watchlist {
   const items = list.items.filter((entry) => itemKey(entry) !== key);

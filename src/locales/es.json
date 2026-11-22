@@ -2075,7 +2075,48 @@
       "one": "$1 pledge puesto en «$2».",
       "other": "$1 pledges puestos en «$2»."
     },
-    "selectionAlready": "Ya están todos en «$1»."
+    "selectionAlready": "Ya están todos en «$1».",
+    "priceWhenAdded": "$1 al añadirlo",
+    "costTotal": "Total ahora",
+    "costChanged": {
+      "one": "$1 artículo ya no se compra al precio que tenía al añadirlo.",
+      "other": "$1 artículos ya no se compran al precio que tenían al añadirlos."
+    },
+    "costUnknown": {
+      "one": "El precio de $1 artículo aún no se conoce.",
+      "other": "Los precios de $1 artículos aún no se conocen."
+    },
+    "rebuy": {
+      "button": {
+        "one": "Poner $1 pledge en una watchlist para recomprarlo",
+        "other": "Poner $1 pledges en una watchlist para recomprarlos"
+      },
+      "buttonHint": "Pone los pledges recomprables sin pérdida en una watchlist, como los artículos de la Pledge Store con los que se recompran, para recomprarlos más tarde con store credit.",
+      "name": "Recomprar después de $1",
+      "items": {
+        "one": "Entran como $1 artículo de la Pledge Store, con su cantidad.",
+        "other": "Entran como $1 artículos de la Pledge Store, cada uno con su cantidad."
+      },
+      "cost": "Recomprar cuesta",
+      "freed": "Fundir libera",
+      "skipped": {
+        "one": "$1 se queda fuera: no se recompra sin pérdida.",
+        "other": "$1 se quedan fuera: no se recompran sin pérdida."
+      },
+      "mark": {
+        "one": "Marcar también $1 pledge para fundir",
+        "other": "Marcar también $1 pledges para fundir"
+      },
+      "markHint": "Los sigues fundiendo tú, en el diálogo de RSI o fundiendo varios a la vez.",
+      "added": {
+        "one": "$1 artículo puesto en «$2».",
+        "other": "$1 artículos puestos en «$2»."
+      },
+      "addedRaised": {
+        "one": "$1 artículo puesto en «$2»; ya estaba y se sumó.",
+        "other": "$1 artículos puestos en «$2»; $3 ya estaban y se sumaron."
+      }
+    }
   },
   "meltRebuy": {
     "label": "Recomprable",

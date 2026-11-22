@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   addItem,
+  addItemCounts,
   createWatchlist,
   dueReminders,
   isReminderDue,
@@ -154,5 +155,43 @@ describe('reminders (#469)', () => {
     expect(dueReminders(lists, NOW).map((entry) => entry.id)).toEqual(['early', 'late']);
     expect(nextReminderAt(lists, NOW)).toBe(LATER);
     expect(nextReminderAt([dated('off', LATER, false)], NOW)).toBeUndefined();
+  });
+});
+
+describe('addItemCounts (#531)', () => {
+  it('adds the counts to those on it already, and tells new from counted up', () => {
+    const start = addItem(
+      list(),
+      { kind: 'storePaint', skuId: 7, name: 'Dusk', value: 10, count: 2 },
+      NOW,
+    );
+    const {
+      list: next,
+      added,
+      raised,
+    } = addItemCounts(
+      start,
+      [
+        { kind: 'storePaint', skuId: 7, name: 'Dusk', value: 11, count: 3 },
+        { kind: 'storeShip', shipId: 2, insurance: 'lti', name: 'Cutlass Black - LTI', count: 1 },
+      ],
+      NOW + 1,
+    );
+    expect({ added, raised }).toEqual({ added: 1, raised: 1 });
+    expect(next.items.map((entry) => [itemKey(entry), entry.count, entry.value])).toEqual([
+      ['p:7', 5, 11],
+      ['s:2:lti', 1, undefined],
+    ]);
+    expect(next.items[0]!.addedAt).toBe(NOW);
+  });
+
+  it('keeps a count at its limit', () => {
+    const start = addItem(list(), { kind: 'storePaint', skuId: 7, name: 'Dusk', count: 98 }, NOW);
+    const { list: next } = addItemCounts(
+      start,
+      [{ kind: 'storePaint', skuId: 7, name: 'Dusk', count: 5 }],
+      NOW,
+    );
+    expect(next.items[0]!.count).toBe(99);
   });
 });

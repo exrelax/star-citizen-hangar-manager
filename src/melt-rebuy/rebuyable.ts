@@ -179,7 +179,8 @@ export interface RebuyContext {
 const CENT = 0.005;
 const round = (value: number) => Math.round(value * 100) / 100;
 
-const STANDALONE = /^standalone ships?$/i;
+/** The store category of standalone ships. */
+export const STANDALONE = /^standalone ships?$/i;
 
 /** "LTI", "Lifetime Insurance", "10 Year", "6 Month Insurance" → the insurance; else none. */
 export function insuranceOfName(suffix: string): Insurance | undefined {
@@ -192,7 +193,7 @@ export function insuranceOfName(suffix: string): Insurance | undefined {
 }
 
 /** A store item's name split into what it sells and the insurance named after it. */
-function splitInsurance(name: string): { base: string; insurance?: Insurance } {
+export function splitInsurance(name: string): { base: string; insurance?: Insurance } {
   const at = name.search(/\s+[-–]\s+[^-–]+$/);
   if (at > 0) {
     const insurance = insuranceOfName(name.slice(at).replace(/^\s+[-–]\s+/, ''));
