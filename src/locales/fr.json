@@ -114,6 +114,15 @@
       "all": "Tous les CCU",
       "limited": "Base limitée"
     },
+    "shipKind": {
+      "all": "Tous les vaisseaux",
+      "solo": "Vaisseaux seuls",
+      "soloShort": "Seuls",
+      "extras": "Vaisseaux avec extras",
+      "extrasShort": "Avec extras",
+      "pack": "Packs de vaisseaux",
+      "packShort": "Packs"
+    },
     "ccus": "CCU",
     "gameAccess": "Accès au jeu",
     "giftable": "Offrables",

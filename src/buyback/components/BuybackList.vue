@@ -14,6 +14,7 @@ import GroupRow from '@/hangar/components/GroupRow.vue';
 import { buybackGroupBadges, buybackGroupKind, extrasNote } from '@/hangar/group-badges';
 import { buybackFacts } from '@/hangar/grouping';
 import { paintRefinement, useProvidedOwnedShips } from '@/hangar/paint-ships';
+import { shipKindRefinement } from '@/hangar/ship-kind';
 import { BUYBACK_SORTS, sortEntries, type BuybackSort } from '@/hangar/sorting';
 import { useSettings } from '@/settings/use-settings';
 import { hasPriceChangeWithin } from '@/price-increases/price-change-filter';
@@ -48,7 +49,7 @@ const predicates = computed(() => ({
 }));
 /** Offered only while a pledge has a price increase in the period. */
 const hasPriceIncrease = computed(() => props.pledges.some(predicates.value.priceIncrease));
-/** "Paints" for ships the hangar has or doesn't have (#336). */
+/** "Paints" for ships the hangar has or doesn't have (#336), "Ships" by kind (#514). */
 const ownedShips = useProvidedOwnedShips();
 const refinements = computed(() => ({
   paints: paintRefinement<BuybackView>(ownedShips.value, (pledge) => [
@@ -56,6 +57,8 @@ const refinements = computed(() => ({
     pledge.contained,
     ...pledge.items,
   ]),
+  // "Ships" by what they hold besides the ship (#514).
+  ships: shipKindRefinement<BuybackView>((pledge) => pledge.shipKind),
 }));
 
 const filterGroups = computed(() =>

@@ -20,6 +20,13 @@ import {
 import type { PledgeView } from './pledge-view';
 import type { AlwaysAvailableList } from '@/ccu-consultant/always-available';
 import { ccuRefinement } from '@/ccu-consultant/base-ship-list';
+import {
+  BUYBACK_FILTER_PREDICATES,
+  type BuybackFilter,
+  type BuybackView,
+} from '@/buyback/buyback-view';
+import type { BuybackPledge } from '@/buyback/buyback';
+import { createBuybackShipKind, pledgeShipKind, shipKindRefinement } from './ship-kind';
 import type { CcuCoverage } from '@/ccu-consultant/coverage';
 
 const pledge = (id: number, overrides: Partial<PledgeView> = {}) =>
@@ -388,5 +395,147 @@ describe('the "CCUs" filter by base ship coverage (#461)', () => {
     // A choice no longer offered falls back to all CCUs.
     expect(listed('always', undefined).ids).toEqual([1, 2, 3, 4]);
     expect(listed('limited', undefined).ids).toEqual([1, 2, 3, 4]);
+  });
+});
+
+describe('the "Ships" filter by kind (#514)', () => {
+  const insurance = { title: 'Lifetime Insurance', kind: 'Insurance' };
+  const hangar = { title: 'Self-Land Hangar', kind: 'Hangar decoration' };
+  const hangarPledges = [
+    pledge(1, { items: [{ title: 'Avenger Titan', kind: 'Ship' }, insurance, hangar] }),
+    pledge(2, {
+      items: [
+        { title: 'Mustang Alpha', kind: 'Ship' },
+        insurance,
+        { title: 'Star Citizen Digital Download', kind: 'Downloadable' },
+      ],
+    }),
+    pledge(3, {
+      items: [
+        { title: 'Cutlass Black', kind: 'Ship' },
+        { title: 'Helmet', kind: 'FPS Equipment' },
+      ],
+    }),
+    pledge(4, {
+      items: [
+        { title: 'Nox', kind: 'Ship' },
+        { title: 'Nox Kue', kind: 'Ship' },
+      ],
+    }),
+    // A pack with extras is a pack; an upgraded pack by its current ships.
+    pledge(5, {
+      isUpgraded: true,
+      items: [
+        { title: 'Carrack', kind: 'Ship' },
+        { title: 'Pisces', kind: 'Ship' },
+        { title: 'Carrack - Best In Show Paint', kind: 'Skin' },
+      ],
+    }),
+    pledge(6, { isCcu: true }),
+    pledge(7, { isPaint: true, items: [{ title: 'Sabre - Ashcloud Paint', kind: 'Skin' }] }),
+  ];
+  const refinements = {
+    ships: shipKindRefinement<PledgeView>((entry) => pledgeShipKind(entry.items)),
+  };
+  const states = new Map<PledgeFilter, FilterState>([['ships', 'include']]);
+  const listed = (option: string) => {
+    const predicates = refinedPredicates(
+      PLEDGE_FILTER_PREDICATES,
+      refinements,
+      new Map<PledgeFilter, string>([['ships', option]]),
+    );
+    return {
+      ids: hangarPledges.filter((e) => matchesFilterStates(e, states, predicates)).map((e) => e.id),
+      count: filterCounts(hangarPledges, ['ships'], states, predicates).get('ships'),
+    };
+  };
+
+  it('offers all ships, solo ships, ships with extras and ship packs', () => {
+    expect(refinements.ships.map((option) => option.label)).toEqual([
+      'All ships',
+      'Solo ships',
+      'Ships with extras',
+      'Ship packs',
+    ]);
+    expect(refinements.ships.map((option) => option.short)).toEqual([
+      undefined,
+      'Solo',
+      'With extras',
+      'Packs',
+    ]);
+  });
+
+  it('lists exactly the pledges of each kind in My Hangar, with their counts', () => {
+    expect(listed('all')).toEqual({ ids: [1, 2, 3, 4, 5], count: 5 });
+    // Insurance and a hangar don't count as extras; game access and gear do.
+    expect(listed('solo')).toEqual({ ids: [1], count: 1 });
+    expect(listed('extras')).toEqual({ ids: [2, 3], count: 2 });
+    expect(listed('pack')).toEqual({ ids: [4, 5], count: 2 });
+  });
+
+  it('has no kind for a pledge without a ship', () => {
+    expect(pledgeShipKind([])).toBeUndefined();
+    expect(pledgeShipKind([{ title: 'Sabre - Ashcloud Paint', kind: 'Skin' }])).toBeUndefined();
+  });
+
+  describe('in the Buy Back', () => {
+    const kindOf = createBuybackShipKind({
+      ships: [{ name: 'Nox' }, { name: 'Pisces C8X' }],
+      hangarPledges: [{ items: [{ title: 'Nox Kue', kind: 'Ship' }] }],
+    });
+    const buyback = (id: number, contained: string, items?: string[]): BuybackView => {
+      const ships = contained ? [contained.replace(/ and \d+ items?$/, '')] : [];
+      const source = { contained, ...(items && { items }) } as BuybackPledge;
+      const shipKind = kindOf(source, ships);
+      return {
+        id,
+        ships: ships.map((name) => ({ name })),
+        ...(shipKind && { shipKind }),
+      } as BuybackView;
+    };
+    const entries = [
+      buyback(11, 'Avenger Titan'),
+      buyback(12, 'Avenger Titan and 2 items', [
+        'Avenger Titan',
+        '120 Month Insurance',
+        'VFG Industrial Hangar',
+      ]),
+      buyback(13, 'Mustang Alpha and 2 items', [
+        'Mustang Alpha',
+        'Lifetime Insurance',
+        'Squadron 42 Digital Download',
+      ]),
+      // A ship of the catalog and one named as the hangar names it.
+      buyback(14, 'Nox and 2 items', ['Nox', 'Nox Kue', 'Lifetime Insurance']),
+      buyback(15, 'Carrack and 3 items', ['Carrack', 'Pisces C8X', 'Carrack - Paint', 'Helmet']),
+      // Its items weren't read: no kind, only under "All ships".
+      buyback(16, 'Fury and 4 items'),
+    ];
+    const buybackStates = new Map<BuybackFilter, FilterState>([['ships', 'include']]);
+    const refined = { ships: shipKindRefinement<BuybackView>((entry) => entry.shipKind) };
+    const ids = (option: string) => {
+      const predicates = refinedPredicates(
+        BUYBACK_FILTER_PREDICATES,
+        refined,
+        new Map<BuybackFilter, string>([['ships', option]]),
+      );
+      return {
+        ids: entries
+          .filter((e) => matchesFilterStates(e, buybackStates, predicates))
+          .map((e) => e.id),
+        count: filterCounts(entries, ['ships'], buybackStates, predicates).get('ships'),
+      };
+    };
+
+    it('lists exactly the pledges of each kind, with their counts', () => {
+      expect(ids('all')).toEqual({ ids: [11, 12, 13, 14, 15, 16], count: 6 });
+      expect(ids('solo')).toEqual({ ids: [11, 12], count: 2 });
+      expect(ids('extras')).toEqual({ ids: [13], count: 1 });
+      expect(ids('pack')).toEqual({ ids: [14, 15], count: 2 });
+    });
+
+    it('has no kind for a pledge without a ship', () => {
+      expect(kindOf({ contained: 'Sabre - Blue Steel Paint' }, [])).toBeUndefined();
+    });
   });
 });
