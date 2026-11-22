@@ -1733,6 +1733,7 @@
     "title": "Nave base",
     "baseShip": "la nave base",
     "summary": "$1 en el hangar, $2 en la recompra",
+    "groupSummary": "$1 de $2 cubiertos · $3",
     "none": "ninguna en el hangar ni en la recompra",
     "empty": "Ni $1 ni un CCU hacia ella están en tu hangar o recompra.",
     "alwaysAvailable": "Base siempre disponible",

@@ -33,7 +33,11 @@ const props = defineProps<{
   highlight?: number;
 }>();
 const emit = defineEmits<{ close: [] }>();
-defineSlots<{ item(props: { entry: T; autoExpand: boolean }): unknown }>();
+defineSlots<{
+  item(props: { entry: T; autoExpand: boolean }): unknown;
+  /** What the whole group has, in its header, e.g. the base ship of a CCU group (#574). */
+  head?(): unknown;
+}>();
 
 const { settings } = useSettings();
 const first = computed(() => props.group.items[0]!);
@@ -87,6 +91,7 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
               </span>
             </p>
             <p v-if="note" class="shm-group-dialog-note">{{ note }}</p>
+            <slot name="head" />
             <span v-if="badges.length" class="shm-badges">
               <span
                 v-for="badge in badges"
