@@ -1,3 +1,4 @@
+import { isRewardTitle } from '@/hangar/rewards';
 import { DEMO } from '@/config';
 import type { BuybackPledge } from '@/buyback/buyback';
 import type { GiftFlags } from '@/buyback/gift-flags';
@@ -185,6 +186,20 @@ export function generateBuyback(
     return { title, contained: title.replace(/^Gear - /, ''), isUpgrade: false, price: null };
   });
   times(composition.rewards, (index) => {
+    // The first one a Best in Show reward with a paint (#581).
+    const ship = index === 0 ? sorted[0] : undefined;
+    if (ship) {
+      return {
+        title: `${ship.name} - 2955 Best in Show Rewards`,
+        contained: `${ship.name} - Best in Show 2955 Livery and 2 items`,
+        items: [
+          `${ship.name} - Best in Show 2955 Livery`,
+          '2955 Best in Show Coin',
+          '2955 Best in Show Coin Case',
+        ],
+        isUpgrade: false,
+      };
+    }
     const title = REWARDS[index % REWARDS.length]!;
     return { title, contained: title.replace(/^.+? - /, ''), isUpgrade: false };
   });
@@ -223,7 +238,7 @@ function withGiftableCases(
 ): Record<string, boolean> {
   // Not on CCUs: one RSI can't sell again is never giftable (#208).
   const cases = pledges.filter(
-    (pledge) => !pledge.isUpgrade && pledge.price !== null && !REWARDS.includes(pledge.title),
+    (pledge) => !pledge.isUpgrade && pledge.price !== null && !isRewardTitle(pledge.title),
   );
   const [
     money,

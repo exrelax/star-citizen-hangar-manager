@@ -323,7 +323,11 @@ export function withStates(
     set(packages[0], (pledge) => protectedFor(pledge, ['SC', 'SQ42']));
   } else if (states.protectedAccess === 'separate') {
     set(packages[0], (pledge) => protectedFor(pledge, ['SQ42']));
-    set(ofKind(generated, 'rewards')[0], (pledge) => ({
+    // Not the Best in Show reward with a paint (#581): it stays itself.
+    const plain = ofKind(generated, 'rewards').filter(
+      (pledge) => !/Best in Show Rewards$/.test(pledge.title),
+    );
+    set(plain[0], (pledge) => ({
       ...pledge,
       title: 'VIP High Admiral',
       name: 'VIP High Admiral',

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { DEMO } from '@/config';
+import { PLEDGE_FILTER_PREDICATES } from '@/hangar/filters';
 import { BUYBACK_FILTER_PREDICATES } from '@/buyback/buyback-view';
 import { FALLBACK_CATALOG } from './catalog';
 import { generatedDemo } from './demo';
@@ -25,6 +26,27 @@ describe.each(['key-a', 'key-b', 'key-c'])('the generated buy back of %s', (key)
 
   it('has no rewards that can’t be melted', () => {
     expect(buyback.some((pledge) => /referral/i.test(pledge.title))).toBe(false);
+  });
+
+  it('has a reward with a paint, found by "Paints" and "Rewards", and one without (#581)', () => {
+    const { paints, rewards } = BUYBACK_FILTER_PREDICATES;
+    const withPaint = buyback.filter((pledge) => rewards(pledge) && paints(pledge));
+    expect(withPaint.map((pledge) => pledge.title)).toEqual([
+      expect.stringMatching(/ - 2955 Best in Show Rewards$/),
+    ]);
+    expect(buyback.some((pledge) => rewards(pledge) && !paints(pledge))).toBe(true);
+    const { pledges } = generatedDemo(FALLBACK_CATALOG, key, TODAY, NOW);
+    const hangarReward = pledges.filter(
+      (pledge) =>
+        PLEDGE_FILTER_PREDICATES.rewards(pledge) && PLEDGE_FILTER_PREDICATES.paints(pledge),
+    );
+    expect(hangarReward.map((pledge) => pledge.isPaint)).toContain(false);
+    expect(
+      pledges.some(
+        (pledge) =>
+          PLEDGE_FILTER_PREDICATES.rewards(pledge) && !PLEDGE_FILTER_PREDICATES.paints(pledge),
+      ),
+    ).toBe(true);
   });
 
   it('has pledges of each kind', () => {

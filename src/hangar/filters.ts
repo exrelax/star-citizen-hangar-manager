@@ -1,5 +1,5 @@
 import { hasPriceChange } from '@/price-increases/price-change-filter';
-import type { PledgeView } from './pledge-view';
+import { isRewardWithPaint, type PledgeView } from './pledge-view';
 
 /*
  * Filters of the manager lists. Each filter is a property of an entry and has three states: off,
@@ -205,7 +205,8 @@ export const PLEDGE_FILTER_PREDICATES: FilterPredicates<PledgeView, PledgeFilter
   // Any pledge with a ship: standalone ships, packages, upgraded ships.
   ships: (pledge) => pledge.items.some((item) => item.kind === 'Ship'),
   ccus: (pledge) => pledge.isCcu,
-  paints: (pledge) => pledge.isPaint,
+  // Also a reward with a paint (#581).
+  paints: (pledge) => pledge.isPaint || isRewardWithPaint(pledge),
   gameAccess: (pledge) => pledge.hasGameAccess,
   lti: (pledge) => pledge.hasLti,
   // Bought with money: the pledge has an order paid with money (see src/orders).
