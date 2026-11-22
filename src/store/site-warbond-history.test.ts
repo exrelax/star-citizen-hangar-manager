@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import siteFile from '../../site/public/data/warbond-history.json';
 import { parseSiteWarbondHistory, withSiteSightings } from './site-warbond-history';
-import { WARBOND_HISTORY_VERSION, type WarbondSighting } from './warbond-history';
+import { offerHistory, WARBOND_HISTORY_VERSION, type WarbondSighting } from './warbond-history';
 
 const offer = {
   ship: { id: 178, name: 'Corsair' },
@@ -116,5 +116,27 @@ describe('withSiteSightings', () => {
       sightings: [own({ price: 200 }), own({ firstSeen: 1, lastSeen: 2 })],
     };
     expect(withSiteSightings(other, site)!.sightings.map((s) => s.price)).toEqual([225, 200, 225]);
+  });
+
+  it("gives this browser's current sighting the website's expected end (#569)", () => {
+    const end = Date.parse('2026-10-10T16:00:00Z');
+    const ending = parseSiteWarbondHistory({
+      schemaVersion: 1,
+      offers: [{ ...offer, expectedEnd: '2026-10-10T16:00:00Z' }],
+    })!;
+    const lastReadAt = Date.parse('2026-09-20T16:00:00Z');
+    const history = {
+      version: WARBOND_HISTORY_VERSION,
+      lastReadAt,
+      sightings: [own({ firstSeen: Date.parse('2026-09-11T16:00:00Z'), lastSeen: lastReadAt })],
+    };
+    const merged = withSiteSightings(history, ending)!;
+    expect(merged.sightings).toHaveLength(1);
+    expect(merged.sightings[0]!.expectedEnd).toBe(end);
+    // Only shown: the stored history keeps what this browser saw.
+    expect(history.sightings[0]!.expectedEnd).toBeUndefined();
+    expect(offerHistory(merged, { shipId: 178, skuId: 7, price: 225 }).expectedEnd).toBe(end);
+    // Without an expected end the history stays as it is.
+    expect(withSiteSightings(history, site)).toBe(history);
   });
 });
