@@ -2075,5 +2075,37 @@
       "other": "$1 pledges puestos en «$2»."
     },
     "selectionAlready": "Ya están todos en «$1»."
+  },
+  "meltRebuy": {
+    "label": "Recomprable",
+    "labelHint": "Fundirlo libera $1 en store credit. Recomprarlo en la Pledge Store cuesta ahora $2 en store credit: el mismo artículo con el mismo seguro.",
+    "notRebuyable": "No se puede recomprar sin pérdida",
+    "reason": {
+      "protected": "Acceso al juego protegido",
+      "reward": "Recompensa",
+      "notMeltable": "No se puede fundir",
+      "tooRecent": "Comprado hace menos de 24 horas",
+      "giftable": "Regalable",
+      "refundPeriod": "Reembolso posible hasta el $1",
+      "package": "Paquete con acceso al juego",
+      "pack": "Varias naves",
+      "upgraded": "Mejorado",
+      "extraItems": "Artículos adicionales",
+      "otherKind": "Ni pintura, ni nave, ni CCU",
+      "notOnSale": "No está a la venta ahora",
+      "discount": "Descuento de $1",
+      "paintVolumeDiscount": "Descuento por cantidad en pinturas de $1",
+      "insurance": "$1 no está a la venta",
+      "priceIncrease": "Subida de precio anunciada: $1",
+      "priceIncreaseExpected": "Subida de precio esperada: $1",
+      "removal": "Sale de la Pledge Store: $1",
+      "notAlwaysAvailable": "No siempre disponible: $1",
+      "unknown": {
+        "price": "Precio aún no conocido",
+        "onSale": "Aún no se sabe si está a la venta",
+        "insurance": "Seguro en la Pledge Store desconocido",
+        "availability": "Disponibilidad aún no conocida"
+      }
+    }
   }
 }

@@ -2075,5 +2075,37 @@
       "other": "$1 Pledges auf „$2“ gesetzt."
     },
     "selectionAlready": "Sie stehen alle schon auf „$1“."
+  },
+  "meltRebuy": {
+    "label": "Wieder kaufbar",
+    "labelHint": "Einschmelzen gibt dir $1 Store Credits frei. Im Pledge Store wieder kaufen kostet jetzt $2 Store Credits – dasselbe Item mit derselben Versicherung.",
+    "notRebuyable": "Nicht ohne Verlust wieder kaufbar",
+    "reason": {
+      "protected": "Geschützter Spielzugang",
+      "reward": "Belohnung",
+      "notMeltable": "Nicht einschmelzbar",
+      "tooRecent": "Vor weniger als 24 Stunden gekauft",
+      "giftable": "Verschenkbar",
+      "refundPeriod": "Refund möglich bis $1",
+      "package": "Paket mit Spielzugang",
+      "pack": "Mehrere Schiffe",
+      "upgraded": "Geupgradet",
+      "extraItems": "Weitere Items",
+      "otherKind": "Kein Paint, Schiff oder CCU",
+      "notOnSale": "Zurzeit nicht im Verkauf",
+      "discount": "Rabatt von $1",
+      "paintVolumeDiscount": "Mengenrabatt auf Paints von $1",
+      "insurance": "$1 nicht im Verkauf",
+      "priceIncrease": "Preiserhöhung angekündigt: $1",
+      "priceIncreaseExpected": "Preiserhöhung erwartet: $1",
+      "removal": "Verlässt den Pledge Store: $1",
+      "notAlwaysAvailable": "Nicht immer kaufbar: $1",
+      "unknown": {
+        "price": "Preis noch nicht bekannt",
+        "onSale": "Noch nicht bekannt, ob es im Verkauf ist",
+        "insurance": "Versicherung im Pledge Store nicht bekannt",
+        "availability": "Verfügbarkeit noch nicht bekannt"
+      }
+    }
   }
 }

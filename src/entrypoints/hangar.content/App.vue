@@ -40,8 +40,12 @@ import {
 import {
   ALWAYS_AVAILABLE,
   alwaysAvailableList,
+  chosenAlwaysAvailableSource,
   withoutLeaving,
 } from '@/ccu-consultant/always-available';
+import { REBUYABLES, useRebuyables } from '@/melt-rebuy/use-rebuyables';
+import { today } from '@/orders/refund';
+import { useStoreCatalog } from '@/watchlists/use-store-catalog';
 import ConsultantsTab from '@/consultants/components/ConsultantsTab.vue';
 import WatchlistsTab from '@/watchlists/components/WatchlistsTab.vue';
 import { followWatchlists } from '@/watchlists/use-watchlists';
@@ -139,23 +143,24 @@ const buybackPledges = demoView.buyback;
 // Pledges marked to melt (#97): when each can be melted, for the rows and the sidebar. The demo
 // has marks of its own, with its made-up purchases (one of them a few hours ago).
 const orders = useStored(ordersSnapshot);
+const purchases = computed(() => {
+  if (!demo.value) return hangarPurchases(hangar.pledges.value, orders.value);
+  const justBought = demoView.context.value?.justBought;
+  // Items of groups bought a few hours ago too, for their melt marks (#554).
+  const recent = demoView.context.value?.recentPurchases;
+  return new Map(
+    pledges.value.map((pledge) => [
+      pledge.id,
+      {
+        on: pledge.createdAt,
+        at: justBought?.pledgeId === pledge.id ? justBought.at : recent?.get(pledge.id),
+      },
+    ]),
+  );
+});
 const meltMarks = useMeltMarks(
   () => demo.value,
-  () => {
-    if (!demo.value) return hangarPurchases(hangar.pledges.value, orders.value);
-    const justBought = demoView.context.value?.justBought;
-    // Items of groups bought a few hours ago too, for their melt marks (#554).
-    const recent = demoView.context.value?.recentPurchases;
-    return new Map(
-      pledges.value.map((pledge) => [
-        pledge.id,
-        {
-          on: pledge.createdAt,
-          at: justBought?.pledgeId === pledge.id ? justBought.at : recent?.get(pledge.id),
-        },
-      ]),
-    );
-  },
+  () => purchases.value,
 );
 provide(MELT_MARKS, meltMarks);
 // The ships leaving the Pledge Store with the CCUs from and to them (#289), for the rows.
@@ -223,6 +228,32 @@ provide(
 );
 // The ones that can be melted now, for the sidebar's notification and its "Show" and "Select".
 const now = useNow();
+// Which pledges can be melted and rebought later with store credit without loss (#528), for the
+// List Shortcut, the label and the reasons (#530) and the watchlists (#531). Always available by
+// the ships' facts, apart from the CCU Consultant's setting to consider them.
+const storeCatalog = useStoreCatalog();
+provide(
+  REBUYABLES,
+  useRebuyables(() => {
+    const facts = shipFacts.value;
+    const source = chosenAlwaysAvailableSource(settings.value, facts);
+    const catalog = storeCatalog.value;
+    return {
+      pledges: pledges.value,
+      context: {
+        catalog: { ...catalog, items: demoView.context.value?.storeItems ?? catalog.items },
+        alwaysAvailable: (shipId) =>
+          source ? facts?.isAlwaysAvailable(shipId, source.id) : undefined,
+        removals: new Map(
+          removalCcusState.value.list.map(({ removal }) => [removal.ship.id, removal]),
+        ),
+        purchases: purchases.value,
+        now: now.value,
+        today: today.value,
+      },
+    };
+  }),
+);
 watchEffect(() => {
   const ids = new Set(pledges.value.map((pledge) => pledge.id));
   const ready = readyToMelt(meltMarks.value, ids, now.value);

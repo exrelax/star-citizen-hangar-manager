@@ -2075,5 +2075,37 @@
       "other": "$1 pledges mis sur « $2 »."
     },
     "selectionAlready": "Ils sont déjà tous sur « $1 »."
+  },
+  "meltRebuy": {
+    "label": "Rachetable",
+    "labelHint": "Le fondre libère $1 en store credit. Le racheter dans le Pledge Store coûte maintenant $2 en store credit – le même article avec la même assurance.",
+    "notRebuyable": "Pas rachetable sans perte",
+    "reason": {
+      "protected": "Accès au jeu protégé",
+      "reward": "Récompense",
+      "notMeltable": "Ne peut pas être fondu",
+      "tooRecent": "Acheté il y a moins de 24 heures",
+      "giftable": "Offrable",
+      "refundPeriod": "Remboursement possible jusqu’au $1",
+      "package": "Package avec accès au jeu",
+      "pack": "Plusieurs vaisseaux",
+      "upgraded": "Amélioré",
+      "extraItems": "Articles en plus",
+      "otherKind": "Ni peinture, ni vaisseau, ni CCU",
+      "notOnSale": "Pas en vente actuellement",
+      "discount": "Remise de $1",
+      "paintVolumeDiscount": "Remise de quantité sur les peintures de $1",
+      "insurance": "$1 pas en vente",
+      "priceIncrease": "Hausse de prix annoncée : $1",
+      "priceIncreaseExpected": "Hausse de prix attendue : $1",
+      "removal": "Quitte le Pledge Store : $1",
+      "notAlwaysAvailable": "Pas toujours disponible : $1",
+      "unknown": {
+        "price": "Prix pas encore connu",
+        "onSale": "On ne sait pas encore s’il est en vente",
+        "insurance": "Assurance dans le Pledge Store inconnue",
+        "availability": "Disponibilité pas encore connue"
+      }
+    }
   }
 }
