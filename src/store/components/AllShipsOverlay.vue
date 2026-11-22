@@ -42,6 +42,7 @@ import {
 } from '../all-ships-view';
 import type { WarbondTarget } from '../warbond';
 import ShipUpgradeButtons from './ShipUpgradeButtons.vue';
+import { useCloseOnShipUpgrade } from '../ship-upgrade-opened';
 import StoreWatchDialog from '@/watchlists/components/StoreWatchDialog.vue';
 import WatchButton from '@/watchlists/components/WatchButton.vue';
 import { watchlistsByItem } from '@/watchlists/use-watchlists';
@@ -77,6 +78,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{ close: [] }>();
+// RSI's ship upgrade dialog, opened from a row, would show below the overlay (#564).
+useCloseOnShipUpgrade(() => emit('close'));
 
 const { settings } = useSettings();
 const facts = useShipFacts();
