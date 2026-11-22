@@ -9,7 +9,12 @@ import { locale } from '@/i18n';
 import { demoEventNotes, demoEvents } from './demo-events';
 import { resetDemoNotes, seedDemoNotes } from './demo-notes';
 import { demoWatchlists, resetDemoWatchlists, seedDemoWatchlists } from './demo-watchlists';
-import { demoGroupMarks, withRecentPurchases } from './demo-group-marks';
+import {
+  demoGroupMarks,
+  demoMarkIds,
+  demoMarkTimes,
+  withRecentPurchases,
+} from './demo-group-marks';
 import type { StoreCredit } from '@/account/store-credit';
 import { buyableShipsItem, current, shipsItem, warbondsItem } from '@/ships/ships-storage';
 import {
@@ -120,24 +125,9 @@ const marksSeededItem = storage.defineItem<string | null>('local:demo.marksSeede
  * RSI's 24 hours, and an older meltable one, ready to melt. Set once per key, in the demo's own
  * marks; marking and unmarking changes them as usual.
  */
-/** The pledges the demo marks: the one just bought, and an older meltable paint of its own. */
-function demoMarkIds(pledges: readonly PledgeView[], justBought?: number): number[] {
-  const count = (title: string) => pledges.filter((pledge) => pledge.title === title).length;
-  // Not one of the pair bought again (#131): its paint shows twice.
-  const older = pledges.find(
-    (pledge) =>
-      pledge.isMeltable && pledge.id !== justBought && pledge.isPaint && count(pledge.title) === 1,
-  );
-  return [...(justBought === undefined ? [] : [justBought]), ...(older ? [older.id] : [])];
-}
-
 async function seedDemoMarks(key: string, ids: readonly number[]) {
   if ((await marksSeededItem.getValue()) === key) return;
-  const now = Date.now();
-  // The first still waiting for RSI's 24 hours (bought a few hours ago), the second ready.
-  await demoMeltMarksItem.setValue(
-    Object.fromEntries(ids.map((id, index) => [id, now - (index + 1) * 60 * 60 * 1000])),
-  );
+  await demoMeltMarksItem.setValue(demoMarkTimes(ids, Date.now()));
   await marksSeededItem.setValue(key);
 }
 
