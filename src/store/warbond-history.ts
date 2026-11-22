@@ -123,6 +123,8 @@ export interface OfferHistory {
   events: SightingEvent[];
   /** Earlier sightings of the same ship (any SKU and price), newest first. */
   earlier: WarbondSighting[];
+  /** When the current sighting is expected to end (#569), from the website's history. */
+  expectedEnd?: number;
 }
 
 /** The history of an offer of the current read: its sighting and the earlier ones of its ship. */
@@ -147,5 +149,6 @@ export function offerHistory(
     ...(current && { since: current.firstSeen }),
     events: current?.events ?? [],
     earlier,
+    ...(current?.expectedEnd !== undefined && { expectedEnd: current.expectedEnd }),
   };
 }

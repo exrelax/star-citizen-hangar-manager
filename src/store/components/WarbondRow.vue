@@ -5,6 +5,8 @@ import { localized } from '@/events/events';
 import { i18n, locale } from '@/i18n';
 import { computed, ref } from 'vue';
 import { ownedCounts, type WarbondOffer } from '../warbond';
+import { warbondEndLabel } from '../warbond-end';
+import { useCountdownNow } from '@/shared/use-countdown-now';
 import type { SightingEvent } from '../warbond-history';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import BaseShipsTable from './BaseShipsTable.vue';
@@ -55,6 +57,15 @@ function toggleFrom(event: MouseEvent) {
 }
 
 const usd = (value: number) => formatUsd(value, locale.value);
+
+/** When the offer is expected to go (#569), counting down as the ship removals do. */
+const expectedEnd = computed(() => props.offer.history.expectedEnd);
+const now = useCountdownNow(() =>
+  expectedEnd.value === undefined ? undefined : { at: expectedEnd.value },
+);
+const endLabel = computed(() =>
+  warbondEndLabel(expectedEnd.value, props.offer.target.ship.name, now.value, locale.value),
+);
 
 const discountText = computed(
   () => `−${usd(props.offer.discount)} (${formatPercent(props.offer.percent, locale.value)})`,
@@ -144,6 +155,15 @@ const earlier = computed(() =>
             {{ usd(offer.target.ship.msrp) }}
           </s>
           <span class="shm-discount">{{ discountText }}</span>
+          <span
+            v-if="endLabel"
+            v-tooltip="endLabel.hint"
+            class="shm-badge is-price-increase is-info shm-warbond-end"
+            :class="{ 'is-soon': endLabel.soon }"
+            tabindex="0"
+          >
+            {{ endLabel.text }}
+          </span>
           <WatchlistBadge :item-keys="watchKeys" />
         </span>
       </span>

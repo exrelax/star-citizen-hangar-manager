@@ -97,25 +97,30 @@ export function parseSiteWarbondHistory(json: unknown): WarbondSighting[] | unde
 /**
  * The history of this browser with the website's offers added, oldest first. A website offer of
  * the same ship and price as a sighting of this browser, at overlapping times, is the same offer:
- * this browser's sighting is kept. The website's offers are all expired, even without a history
- * of this browser (`lastReadAt` 0).
+ * this browser's sighting is kept, with the website's expected end (#569). The website's offers are
+ * all expired, even without a history of this browser (`lastReadAt` 0).
  */
 export function withSiteSightings(
   history: WarbondHistorySnapshot | undefined,
   site: readonly WarbondSighting[],
 ): WarbondHistorySnapshot | undefined {
   if (!site.length) return history;
-  const own = history?.sightings ?? [];
-  const known = (offer: WarbondSighting) =>
-    own.some(
-      (sighting) =>
-        sighting.shipId === offer.shipId &&
-        sighting.price === offer.price &&
-        sighting.firstSeen <= offer.lastSeen &&
-        offer.firstSeen <= sighting.lastSeen,
-    );
-  const added = site.filter((offer) => !known(offer));
-  if (!added.length) return history;
+  const same = (sighting: WarbondSighting, offer: WarbondSighting) =>
+    sighting.shipId === offer.shipId &&
+    sighting.price === offer.price &&
+    sighting.firstSeen <= offer.lastSeen &&
+    offer.firstSeen <= sighting.lastSeen;
+  let ended = false;
+  const own = (history?.sightings ?? []).map((sighting) => {
+    const expectedEnd = site.find(
+      (offer) => offer.expectedEnd && same(sighting, offer),
+    )?.expectedEnd;
+    if (expectedEnd === undefined || sighting.expectedEnd === expectedEnd) return sighting;
+    ended = true;
+    return { ...sighting, expectedEnd };
+  });
+  const added = site.filter((offer) => !own.some((sighting) => same(sighting, offer)));
+  if (!added.length && !ended) return history;
   return {
     version: WARBOND_HISTORY_VERSION,
     lastReadAt: history?.lastReadAt ?? 0,

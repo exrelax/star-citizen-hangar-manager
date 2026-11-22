@@ -112,6 +112,11 @@ html .shm-theme-modern :is(td.is-amount, td.is-number) {
   font-variant-numeric: tabular-nums;
 }
 
+/* A badge in that line (e.g. the expected end of a warbond, #569) is text, like every badge. */
+html .shm-theme-modern .shm-meta .shm-badge {
+  font-family: var(--shm-font) !important;
+}
+
 html .shm-manager.shm-theme-modern {
   box-sizing: border-box;
   padding: 28px 28px 32px !important;
