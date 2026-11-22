@@ -1209,7 +1209,7 @@ async function move(box: Box, step: -1 | 1) {
             <button
               v-tooltip="rebuyShortcutOn ? undefined : i18n.t('meltRebuy.shortcutShowHint')"
               type="button"
-              class="shm-button shm-sidebar-button"
+              class="shm-button shm-sidebar-button is-full is-two-line"
               :aria-pressed="rebuyShortcutOn"
               @click="toggleRebuyShortcut"
             >
@@ -1927,6 +1927,24 @@ async function move(box: Box, step: -1 | 1) {
 .shm-sidebar-button.is-full {
   flex-basis: 100%;
   white-space: normal;
+}
+
+/*
+ * A button whose label may take two lines in the narrow sidebar (#595), e.g. "Show 27 rebuyable
+ * pledges" or the German and French texts: the icon runs with the text, so both are centered
+ * together and the lines balanced, with a little more room above and below than one line.
+ */
+.shm-sidebar-button.is-two-line {
+  display: block;
+  padding-block: 5px;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.shm-sidebar-button.is-two-line .shm-icon {
+  display: inline-block;
+  margin-right: 6px;
+  vertical-align: -0.15em;
 }
 
 /* A switch that is on (the consultant's filter): filled, so it reads as pressed. */
