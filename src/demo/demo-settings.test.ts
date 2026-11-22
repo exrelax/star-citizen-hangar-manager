@@ -59,7 +59,8 @@ describe('the demo settings in the generated demo', () => {
     // A reward may be a paint, too ("Referral Bonus - Mustang Alpha Paint").
     expect(pledges.filter((pledge) => pledge.isPaint && pledge.valueUsd > 0)).toHaveLength(0);
     expect(buyback.length).toBeGreaterThanOrEqual(20);
-    expect(buyback.length).toBeLessThan(30);
+    // Besides the CCU Consultant's cases with their CCU groups (#425, #575).
+    expect(buyback.length).toBeLessThan(40);
     const total = Object.values(buybackComposition(100)).reduce((sum, value) => sum + value, 0);
     expect(total).toBeGreaterThanOrEqual(95);
   });

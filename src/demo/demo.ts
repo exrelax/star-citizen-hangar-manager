@@ -146,7 +146,8 @@ export function generatedDemo(
   // Nothing in the buy back gives the base ship of the CCUs without one (#450), nor those of the
   // CCU Consultant's cases (#425) but their own pledges.
   const ccuBases = ccuCaseBasesOf(account.pledges, catalog);
-  const reserved = new Set([missingBaseOf(account.pledges), ...reservedShips(ccuBases)]);
+  const missingBase = catalog.ships.find((ship) => ship.id === missingBaseOf(account.pledges));
+  const reserved = new Set([missingBase?.id, ...reservedShips(ccuBases)]);
   const buybackCatalog = {
     ...catalog,
     ships: catalog.ships.filter((ship) => !reserved.has(ship.id)),
@@ -158,6 +159,7 @@ export function generatedDemo(
   const realNotOnSale = realNotOnSaleShips(catalog, realIncreases, now, buyable).filter(
     (ship) => ship.id !== notOnSale?.id,
   );
+  const notOnSaleShips = [...(notOnSale ? [notOnSale] : []), ...realNotOnSale];
   const buybackWith = (fillers: ReturnType<typeof coverageFillers>) =>
     withPaintCases(
       generateBuyback(
@@ -165,8 +167,14 @@ export function generatedDemo(
         key,
         today,
         buybackComposition(settings.buybackPledges),
-        [...(notOnSale ? [notOnSale] : []), ...realNotOnSale],
-        [...buybackCases(ccuBases, catalog), ...fillers],
+        notOnSaleShips,
+        [
+          ...buybackCases(ccuBases, catalog, {
+            missing: missingBase,
+            avoid: new Set(notOnSaleShips.map((ship) => ship.id)),
+          }),
+          ...fillers,
+        ],
       ),
       demoPaintCases(storePaints(catalog), paintCaseShips(account.pledges, catalog)),
     );

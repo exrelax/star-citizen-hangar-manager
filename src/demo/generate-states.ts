@@ -280,9 +280,10 @@ export function withStates(
     ...catalog,
     ships: catalog.ships.filter((ship) => !reserved.has(ship.id)),
   };
-  // Not the Price Increase Advisor's ship (#255): it stays itself.
+  // Not the Price Increase Advisor's ship (#255) nor the CCU cases' ships (#575): they stay
+  // themselves.
   ofKind(generated, 'ships')
-    .filter((pledge) => !pledge.demoPivot)
+    .filter((pledge) => !pledge.demoPivot && !pledge.demoCcuCase)
     .slice(states.upgraded ? -DEMO.upgradedPledges : generated.length)
     .forEach((pledge, index) => {
       const result = upgraded(byId.get(pledge.id)!, upgradeCatalog, random, index);
