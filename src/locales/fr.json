@@ -2010,6 +2010,8 @@
       "one": "$1 élément est maintenant dans ton panier.",
       "other": "$1 éléments sont maintenant dans ton panier."
     },
-    "cartOpen": "Ouvrir le panier"
+    "cartOpen": "Ouvrir le panier",
+    "rsiPut": "Mettre sur une watchlist",
+    "rsiOn": "Sur une watchlist"
   }
 }

@@ -1,0 +1,13 @@
+/* The buttons on RSI's pages (#471): below a paint's buying block, left of the dialog's cart. */
+.shm-rsi-watch-host {
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px 0 20px;
+}
+
+/* In RSI's ship upgrade dialog: in the line of its "Add To Cart", left of it. */
+.AddToCart-cta-wrapper > .shm-rsi-watch-host {
+  display: inline-flex;
+  margin: 0 12px 0 0;
+  vertical-align: middle;
+}

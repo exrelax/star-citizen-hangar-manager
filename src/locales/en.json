@@ -2010,6 +2010,8 @@
       "one": "$1 item is in your cart now.",
       "other": "$1 items are in your cart now."
     },
-    "cartOpen": "Open the cart"
+    "cartOpen": "Open the cart",
+    "rsiPut": "Put on a watchlist",
+    "rsiOn": "On a watchlist"
   }
 }
