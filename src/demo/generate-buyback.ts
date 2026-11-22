@@ -154,12 +154,14 @@ export function generateBuyback(
       price: ship.msrp + 20,
     };
   });
+  // The CCUs to a ship not on sale are only those of `ccusToNotOnSale` (#311), never chance's.
+  const notOnSaleIds = new Set(notOnSale.map((ship) => ship.id));
   times(composition.ccus, (index) => {
     const from = sorted[random.int(`ccu:${index}:from`, 0, sorted.length - 2)]!;
     const to =
       random.pick(
         `ccu:${index}:to`,
-        sorted.filter((ship) => ship.msrp > from.msrp),
+        sorted.filter((ship) => ship.msrp > from.msrp && !notOnSaleIds.has(ship.id)),
       ) ?? sorted.at(-1)!;
     return ccuPledge(from, to, random.chance(`ccu:${index}:warbond`, 0.3) ? 'Warbond' : 'Standard');
   });

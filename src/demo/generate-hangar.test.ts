@@ -11,15 +11,18 @@ const TODAY = '2026-11-10';
 const NOW = Date.parse('2026-11-10T12:00:00Z');
 /**
  * The composition with the pledges of the Grouped View's groups (#450) and the CCU Consultant's
- * cases (#425): six CCUs on the bundled catalog, which knows only one ship for `leaving`.
+ * cases (#425): 13 CCUs on the bundled catalog, which knows only one ship for `leaving`, and the
+ * three ships that cover the cases `covered` and `partial` (#575).
  */
-const CCU_CASES = 6;
+const CCU_CASES = 13;
+const CCU_CASE_SHIPS = 3;
 const composition = Object.fromEntries(
   Object.entries(DEMO.composition).map(([kind, count]) => [
     kind,
     count +
       (DEMO_GROUP_PLEDGES[kind as keyof typeof DEMO_GROUP_PLEDGES] ?? 0) +
-      (kind === 'ccus' ? CCU_CASES : 0),
+      (kind === 'ccus' ? CCU_CASES : 0) +
+      (kind === 'ships' ? CCU_CASE_SHIPS : 0),
   ]),
 );
 const total = Object.values(composition).reduce((sum, count) => sum + count, 0);

@@ -5,7 +5,14 @@ import { bundledShipFacts } from '@/ships/sync-ship-facts';
 import type { DemoCatalog } from './catalog';
 import { DEMO_ALWAYS_AVAILABLE_BASES } from './demo-groups';
 import { ccuPledge as buybackCcu } from './generate-buyback';
-import { ccuPledge, ccuTargetsOf, warbondDiscount, type DemoPledge } from './generate-hangar';
+import {
+  basePledge,
+  ccuPledge,
+  ccuTargetsOf,
+  shipItem,
+  warbondDiscount,
+  type DemoPledge,
+} from './generate-hangar';
 import type { DemoRandom } from './random';
 
 /*
@@ -26,12 +33,17 @@ import type { DemoRandom } from './random';
  * - `leaving`: two of the same CCU from another ship RSI always sells that nothing gives, leaving
  *   the Pledge Store (`demo-ship-removals.ts`): counted as always available today, "Soon without
  *   base ship" (#454). Only with a second always available ship.
+ * - `covered`: two of the same CCU from a ship the hangar and the buy back give once each, as a
+ *   standalone ship: a group covered fully by a hangar ship and a buy back ship (#575, for #574).
+ * - `partial`: five of the same CCU from a ship the hangar gives twice: "2 of 5 covered" (#575).
  *
  * The hangar, the buy back and the upgraded pledges leave these base ships out; the buy back gets
- * its pledges for them from `buybackCases`.
+ * its pledges for them from `buybackCases`, also CCU groups of its own (#575): from the `covered`,
+ * `partial` and `always` base ships and from the Grouped View's base ship without coverage, so a
+ * group of each coverage shows in the buy back, too.
  */
 
-export type DemoCcuCase = 'always' | 'buyback' | 'unavailable' | 'leaving';
+export type DemoCcuCase = 'always' | 'buyback' | 'unavailable' | 'leaving' | 'covered' | 'partial';
 
 /** The base ship of each case. */
 export type DemoCcuBases = Partial<Record<DemoCcuCase, Ship>>;
@@ -88,6 +100,8 @@ export function demoCcuBases(
     ) ?? pick('always', (ship) => DEMO_ALWAYS_AVAILABLE_BASES.includes(ship.name));
   const buyback = pick('buyback', limited);
   const unavailable = pick('unavailable', limited);
+  const covered = pick('covered', limited);
+  const partial = pick('partial', limited);
   // Only by the facts: the list's ships may be the `refund` group's.
   const leaving = pick(
     'leaving',
@@ -98,6 +112,8 @@ export function demoCcuBases(
     ...(buyback && { buyback }),
     ...(unavailable && { unavailable }),
     ...(leaving && { leaving }),
+    ...(covered && { covered }),
+    ...(partial && { partial }),
   };
 }
 
@@ -126,7 +142,7 @@ export function hangarCases(
   random: DemoRandom,
 ): DemoPledge[] {
   const sorted = sortedTargets(catalog);
-  const ccus = (role: DemoCcuCase, count: 1 | 2 | 3): DemoPledge[] => {
+  const ccus = (role: DemoCcuCase, count: 1 | 2 | 3 | 5): DemoPledge[] => {
     const base = bases[role];
     const to = base && sorted.find((ship) => ship.msrp >= base.msrp + 20);
     if (!base || !to) return [];
@@ -134,7 +150,7 @@ export function hangarCases(
     const extra = { demoCcuCase: role };
     const standard = ccuPledge(base, to, price, false, extra);
     if (count === 1) return [standard];
-    if (count === 2) return [standard, { ...standard }];
+    if (count !== 3) return Array.from({ length: count }, () => ({ ...standard }));
     const warbond = Math.max(5, price - warbondDiscount(random, `ccuCases:${role}`, to.msrp));
     return [standard, { ...standard }, ccuPledge(base, to, warbond, true, extra)];
   };
@@ -143,23 +159,65 @@ export function hangarCases(
     ...ccus('buyback', 2),
     ...ccus('unavailable', 1),
     ...ccus('leaving', 2),
+    ...ccus('covered', 2),
+    ...ships('covered', 1, bases),
+    ...ccus('partial', 5),
+    ...ships('partial', 2, bases),
   ];
+}
+
+/** `count` standalone ships of a case's base ship, as the hangar's ships that cover its CCUs. */
+function ships(role: DemoCcuCase, count: number, bases: DemoCcuBases): DemoPledge[] {
+  const ship = bases[role];
+  if (!ship) return [];
+  return Array.from({ length: count }, () =>
+    basePledge(
+      `Standalone Ships - ${ship.name}`,
+      ship.msrp,
+      [shipItem(ship), { title: '120 Month Insurance', kind: 'Insurance' }],
+      'ships',
+      ship.msrp,
+      // Marked as the case's, so no demo state upgrades it to another ship.
+      { category: 'standalone_ship', isUpgradeable: true, demoCcuCase: role },
+    ),
+  );
 }
 
 /**
  * The buy back's pledges of the cases: the `buyback` base ship as a ship and a CCU to it from the
- * next cheaper ship, and a CCU to the `unavailable` base ship from one as pricey or pricier, which
- * RSI can't sell again. None of them from or to another base ship of the cases.
+ * next cheaper ship, a CCU to the `unavailable` base ship from one as pricey or pricier, which
+ * RSI can't sell again, and the `covered` base ship as a ship. Its CCU groups (#575): two CCUs from
+ * the `covered` base ship (covered fully), three from the `partial` one ("2 of 3 covered"), two
+ * from the `always` one ("Base always available") and two from `missing` (none). None of them to
+ * another base ship of the cases.
  */
 export function buybackCases(
   bases: DemoCcuBases,
   catalog: DemoCatalog,
+  more: {
+    /** The base ship of the Grouped View's `missing` group, if known. */
+    missing?: Ship;
+    /** Ships the CCU groups mustn't go to, e.g. those RSI sells no CCUs to (#311). */
+    avoid?: ReadonlySet<number>;
+  } = {},
 ): Omit<BuybackPledge, 'id'>[] {
+  const { missing, avoid = new Set() } = more;
   const sorted = sortedTargets(catalog);
-  const reserved = new Set(reservedShips(bases));
+  const reserved = new Set([...reservedShips(bases), ...(missing ? [missing.id] : [])]);
   const free = (ship: Ship) => !reserved.has(ship.id);
   const pledges: Omit<BuybackPledge, 'id'>[] = [];
   const { buyback, unavailable } = bases;
+  const group = (base: Ship | undefined, count: number) => {
+    const to =
+      base &&
+      sorted.find((ship) => ship.msrp >= base.msrp + 20 && free(ship) && !avoid.has(ship.id));
+    if (base && to) pledges.push(...Array.from({ length: count }, () => buybackCcu(base, to)));
+  };
+  if (bases.covered) pledges.push(buybackShip(bases.covered));
+  group(bases.covered, 2);
+  group(bases.partial, 3);
+  group(bases.always, 2);
+  group(missing, 2);
   if (buyback) {
     pledges.push(buybackShip(buyback));
     const from = sorted.findLast((ship) => ship.msrp < buyback.msrp && free(ship));
