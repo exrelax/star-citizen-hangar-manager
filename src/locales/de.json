@@ -2118,7 +2118,8 @@
         "one": "$1 Item auf „$2“ gesetzt; es stand schon darauf und wurde hochgezählt.",
         "other": "$1 Items auf „$2“ gesetzt, $3 davon standen schon darauf und wurden hochgezählt."
       }
-    }
+    },
+    "paintTier": "$1 Paints in einem Warenkorb: $2 % Mengenrabatt"
   },
   "meltRebuy": {
     "label": "Wieder kaufbar",
@@ -2138,7 +2139,6 @@
       "otherKind": "Kein Paint, Schiff oder CCU",
       "notOnSale": "Zurzeit nicht im Verkauf",
       "discount": "Rabatt von $1",
-      "paintVolumeDiscount": "Mengenrabatt auf Paints von $1",
       "insurance": "$1 nicht im Verkauf",
       "priceIncrease": "Preiserhöhung angekündigt: $1",
       "priceIncreaseExpected": "Preiserhöhung erwartet: $1",
@@ -2153,7 +2153,6 @@
     },
     "labelHintPlain": "Jetzt einschmelzbar und später im Pledge Store ohne Verlust mit Store Credits wieder kaufbar – dasselbe Item mit derselben Versicherung.",
     "reasonDiscountPlain": "Rabatt",
-    "reasonPaintVolumeDiscountPlain": "Mengenrabatt auf Paints",
     "groupSome": "Teils wieder kaufbar",
     "groupHint": {
       "one": "Einschmelzen des wieder kaufbaren Pledges gibt dir $2 Store Credits frei. Im Pledge Store wieder kaufen kostet jetzt $3 Store Credits.",
@@ -2168,6 +2167,11 @@
     "shortcutShowHint": "Zeigt in „My Hangar“ nur die Pledges, die du jetzt einschmelzen und später ohne Verlust mit Store Credits wieder kaufen kannst. „Filter zurücksetzen“ oder das × der Liste zeigt wieder alle.",
     "shortcutHide": "Alle Pledges anzeigen",
     "setting": "Wieder kaufbare Pledges anzeigen",
-    "settingHint": "Das Label „Wieder kaufbar“ an Pledges, die du jetzt einschmelzen und später im Pledge Store ohne Verlust mit Store Credits wieder kaufen kannst, die Liste „Einschmelzen und wieder kaufen“ und im aufgeklappten Item, warum ein Pledge nicht ohne Verlust wieder kaufbar ist."
+    "settingHint": "Das Label „Wieder kaufbar“ an Pledges, die du jetzt einschmelzen und später im Pledge Store ohne Verlust mit Store Credits wieder kaufen kannst, die Liste „Einschmelzen und wieder kaufen“ und im aufgeklappten Item, warum ein Pledge nicht ohne Verlust wieder kaufbar ist.",
+    "volumeHint": "Mit $1 % Mengenrabatt gekauft: Den gibt es nur wieder mit mindestens $2 Paints in einem Warenkorb. Kauf später so viele Paints zusammen oder behalte genug Store Credits für Füll-Paints (Paint Discount Consultant).",
+    "volumeNote": {
+      "one": "$1 dieser Paints wurde mit bis zu $2 % Mengenrabatt gekauft. Den gibt es nur wieder mit mindestens $3 Paints in einem Warenkorb: Kauf später so viele Paints zusammen oder behalte genug Store Credits für Füll-Paints (Paint Discount Consultant).",
+      "other": "$1 dieser Paints wurden mit bis zu $2 % Mengenrabatt gekauft. Den gibt es nur wieder mit mindestens $3 Paints in einem Warenkorb: Kauf später so viele Paints zusammen oder behalte genug Store Credits für Füll-Paints (Paint Discount Consultant)."
+    }
   }
 }

@@ -1,3 +1,4 @@
+import { PAINT_DISCOUNT_TIERS } from '@/config';
 import { storeStatus, type StoreCatalog, type StoreStatus } from './store-status';
 import { isStoreItem, type WatchItem } from './watchlists';
 
@@ -31,10 +32,19 @@ export interface StoreCost {
   changed: number;
   /** Those whose price or availability isn't known now (the store wasn't read). */
   unknown: number;
+  /** The paints on sale by their counts: one cart of them gets a volume discount (#593). */
+  paints: number;
 }
 
+/** The volume discount of `paints` paints in one cart, in percent; 0 below the first tier. */
+export const paintTierPercent = (paints: number): number =>
+  PAINT_DISCOUNT_TIERS.tiers.reduce(
+    (best, tier) => (paints >= tier.paints ? tier.percent : best),
+    0,
+  );
+
 export function storeCostOf(items: readonly WatchItem[], catalog: StoreCatalog): StoreCost {
-  const cost: StoreCost = { items: 0, total: 0, changed: 0, unknown: 0 };
+  const cost: StoreCost = { items: 0, total: 0, changed: 0, unknown: 0, paints: 0 };
   for (const item of items) {
     if (!isStoreItem(item)) continue;
     cost.items += 1;
@@ -48,6 +58,7 @@ export function storeCostOf(items: readonly WatchItem[], catalog: StoreCatalog):
       continue;
     }
     cost.total += status.price * (item.count ?? 1);
+    if (item.kind === 'storePaint') cost.paints += item.count ?? 1;
     if (priceChangeOf(item, status)?.higher) cost.changed += 1;
   }
   cost.total = round(cost.total);

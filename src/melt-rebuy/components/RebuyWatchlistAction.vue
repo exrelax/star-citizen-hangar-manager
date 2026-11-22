@@ -30,6 +30,7 @@ import {
 } from '@/watchlists/use-watchlists';
 import type { Watchlist } from '@/watchlists/watchlists';
 import { computed, nextTick, onUnmounted, ref, useId, useTemplateRef, watch } from 'vue';
+import { rebuyVolumeNote } from '../rebuy-text';
 import { rebuyWatchPlan } from '../rebuy-watchlist';
 import { useProvidedRebuyables } from '../use-rebuyables';
 
@@ -63,6 +64,10 @@ const { settings } = useSettings();
 const demo = useDemoContext();
 const id = useId();
 const rebuys = useProvidedRebuyables();
+/** Paints bought at a volume discount among them: it comes back only with enough paints (#593). */
+const volumeNote = computed(() =>
+  plan.value ? rebuyVolumeNote(plan.value.pledgeIds.map((id) => rebuys.value.get(id))) : undefined,
+);
 const marked = useMarkedPledges();
 const now = useNow();
 
@@ -269,6 +274,7 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
             <p v-if="plan.skipped" class="shm-overlay-note">
               {{ i18n.n('watchlists.rebuy.skipped', plan.skipped, [plan.skipped]) }}
             </p>
+            <p v-if="volumeNote" class="shm-overlay-note">{{ volumeNote }}</p>
           </div>
           <div v-if="unmarked.length" class="shm-watchlist-form">
             <label class="shm-watchlist-reminder">

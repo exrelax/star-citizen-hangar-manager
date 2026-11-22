@@ -2118,7 +2118,8 @@
         "one": "$1 item put on “$2”; it was on it already and counted up.",
         "other": "$1 items put on “$2”, $3 of them were on it already and counted up."
       }
-    }
+    },
+    "paintTier": "$1 paints in one cart: $2 % volume discount"
   },
   "meltRebuy": {
     "label": "Rebuyable",
@@ -2138,7 +2139,6 @@
       "otherKind": "No paint, ship or CCU",
       "notOnSale": "Not on sale now",
       "discount": "Discount of $1",
-      "paintVolumeDiscount": "Paint volume discount of $1",
       "insurance": "$1 not on sale",
       "priceIncrease": "Price increase ahead: $1",
       "priceIncreaseExpected": "Price increase expected: $1",
@@ -2153,7 +2153,6 @@
     },
     "labelHintPlain": "Can be melted now and rebought later in the Pledge Store with store credit without loss – the same item with the same insurance.",
     "reasonDiscountPlain": "Discount",
-    "reasonPaintVolumeDiscountPlain": "Paint volume discount",
     "groupSome": "Some rebuyable",
     "groupHint": {
       "one": "Melting the rebuyable pledge frees $2 in store credit. Rebuying it in the Pledge Store costs $3 in store credit now.",
@@ -2168,6 +2167,11 @@
     "shortcutShowHint": "Shows only the pledges in “My Hangar” you can melt now and rebuy later with store credit without loss. “Reset filters” or the × of the list shows all again.",
     "shortcutHide": "Show all pledges",
     "setting": "Show rebuyable pledges",
-    "settingHint": "The label “Rebuyable” on pledges you can melt now and rebuy later in the Pledge Store with store credit without loss, the list “Melt and rebuy”, and in the opened item why a pledge can’t be rebought without loss."
+    "settingHint": "The label “Rebuyable” on pledges you can melt now and rebuy later in the Pledge Store with store credit without loss, the list “Melt and rebuy”, and in the opened item why a pledge can’t be rebought without loss.",
+    "volumeHint": "Bought at a $1 % volume discount: it comes back only with at least $2 paints in one cart. Buy that many paints together later, or keep enough store credit for filler paints (Paint Discount Consultant).",
+    "volumeNote": {
+      "one": "$1 of these paints was bought at a volume discount of up to $2 %. It comes back only with at least $3 paints in one cart: buy that many paints together later, or keep enough store credit for filler paints (Paint Discount Consultant).",
+      "other": "$1 of these paints were bought at a volume discount of up to $2 %. It comes back only with at least $3 paints in one cart: buy that many paints together later, or keep enough store credit for filler paints (Paint Discount Consultant)."
+    }
   }
 }

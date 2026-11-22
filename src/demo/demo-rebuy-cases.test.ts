@@ -117,7 +117,6 @@ function demo(
 
 const REASONS: Record<(typeof NOT_REBUYABLE_CASES)[number], RebuyReasonCode[]> = {
   giftable: ['giftable'],
-  paintVolume: ['paintVolumeDiscount'],
   discount: ['discount'],
   upgraded: ['upgraded'],
   package: ['package'],
@@ -180,12 +179,14 @@ describe.each(KEYS)('Melt and Rebuy in the demo %s (#532)', (key) => {
   it('puts the rebuyable paint twice on a watchlist, as one item counted twice', () => {
     const ids = [...REBUYABLE_CASES.flatMap(byCase), byCase('giftable')[0]!];
     const plan = rebuyWatchPlan(ids, rebuys, (from, to) => `${from} to ${to}`)!;
-    expect(plan.pledgeIds).toHaveLength(4);
+    expect(plan.pledgeIds).toHaveLength(5);
     expect(plan.skipped).toBe(1);
+    // With the paint bought at a volume discount, an item of its own (#593).
     expect(plan.items.map((item) => [item.kind, item.count])).toEqual([
       ['storePaint', 2],
       ['storeShip', 1],
       ['storeCcu', 1],
+      ['storePaint', 1],
     ]);
     expect(plan.items[1]).toMatchObject({ insurance: 120 });
   });

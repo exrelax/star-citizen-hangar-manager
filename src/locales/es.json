@@ -2118,7 +2118,8 @@
         "one": "$1 artículo puesto en «$2»; ya estaba y se sumó.",
         "other": "$1 artículos puestos en «$2»; $3 ya estaban y se sumaron."
       }
-    }
+    },
+    "paintTier": "$1 pinturas en un mismo carrito: $2 % de descuento por volumen"
   },
   "meltRebuy": {
     "label": "Recomprable",
@@ -2138,7 +2139,6 @@
       "otherKind": "Ni pintura, ni nave, ni CCU",
       "notOnSale": "No está a la venta ahora",
       "discount": "Descuento de $1",
-      "paintVolumeDiscount": "Descuento por cantidad en pinturas de $1",
       "insurance": "$1 no está a la venta",
       "priceIncrease": "Subida de precio anunciada: $1",
       "priceIncreaseExpected": "Subida de precio esperada: $1",
@@ -2153,7 +2153,6 @@
     },
     "labelHintPlain": "Se puede fundir ahora y recomprar más tarde en la Pledge Store con store credit sin pérdida: el mismo artículo con el mismo seguro.",
     "reasonDiscountPlain": "Descuento",
-    "reasonPaintVolumeDiscountPlain": "Descuento por cantidad en pinturas",
     "groupSome": "Algunos recomprables",
     "groupHint": {
       "one": "Fundir el pledge recomprable libera $2 en store credit. Recomprarlo en la Pledge Store cuesta ahora $3 en store credit.",
@@ -2168,6 +2167,11 @@
     "shortcutShowHint": "Muestra en «My Hangar» solo los pledges que puedes fundir ahora y recomprar más tarde con store credit sin pérdida. «Restablecer filtros» o la × de la lista vuelve a mostrar todo.",
     "shortcutHide": "Mostrar todos los pledges",
     "setting": "Mostrar los pledges recomprables",
-    "settingHint": "La etiqueta «Recomprable» en los pledges que puedes fundir ahora y recomprar más tarde en la Pledge Store con store credit sin pérdida, la lista «Fundir y recomprar» y, en el elemento abierto, por qué un pledge no se puede recomprar sin pérdida."
+    "settingHint": "La etiqueta «Recomprable» en los pledges que puedes fundir ahora y recomprar más tarde en la Pledge Store con store credit sin pérdida, la lista «Fundir y recomprar» y, en el elemento abierto, por qué un pledge no se puede recomprar sin pérdida.",
+    "volumeHint": "Comprada con un descuento por volumen del $1 %: solo vuelve con al menos $2 pinturas en un mismo carrito. Compra más adelante tantas pinturas juntas, o guarda suficiente crédito de tienda para pinturas de relleno (Paint Discount Consultant).",
+    "volumeNote": {
+      "one": "$1 de estas pinturas se compró con un descuento por volumen de hasta el $2 %. Solo vuelve con al menos $3 pinturas en un mismo carrito: compra más adelante tantas pinturas juntas, o guarda suficiente crédito de tienda para pinturas de relleno (Paint Discount Consultant).",
+      "other": "$1 de estas pinturas se compraron con un descuento por volumen de hasta el $2 %. Solo vuelve con al menos $3 pinturas en un mismo carrito: compra más adelante tantas pinturas juntas, o guarda suficiente crédito de tienda para pinturas de relleno (Paint Discount Consultant)."
+    }
   }
 }

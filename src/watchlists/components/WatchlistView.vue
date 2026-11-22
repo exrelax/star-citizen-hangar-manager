@@ -22,7 +22,7 @@ import {
 import WatchItemRow from './WatchItemRow.vue';
 import WatchlistCartDialog from './WatchlistCartDialog.vue';
 import ShipUpgradeButtons from '@/store/components/ShipUpgradeButtons.vue';
-import { storeCostOf } from '../store-cost';
+import { paintTierPercent, storeCostOf } from '../store-cost';
 import { storeStatus } from '../store-status';
 import { useStoreCreditUsd } from '../use-store-credit';
 import { formatUsd } from '@/hangar/discount-format';
@@ -85,6 +85,7 @@ function upgradeOf(shipId: number) {
  * rebuy), and how many can't be bought at the price they had when added any more.
  */
 const cost = computed(() => storeCostOf(props.list.items, catalog.value));
+const paintTier = computed(() => paintTierPercent(cost.value.paints));
 const credit = useStoreCreditUsd();
 const usd = (value: number) => formatUsd(value, locale.value);
 
@@ -316,6 +317,10 @@ async function askDelete() {
         </dl>
         <p v-if="cost.changed" class="shm-watchlist-cost-note is-warning">
           {{ i18n.n('watchlists.costChanged', cost.changed, [cost.changed]) }}
+        </p>
+        <!-- Its paints in one cart get a volume discount (#593), e.g. paints to rebuy. -->
+        <p v-if="paintTier" class="shm-watchlist-cost-note">
+          {{ i18n.t('watchlists.paintTier', [cost.paints, paintTier]) }}
         </p>
         <p v-if="cost.unknown" class="shm-watchlist-cost-note">
           {{ i18n.n('watchlists.costUnknown', cost.unknown, [cost.unknown]) }}

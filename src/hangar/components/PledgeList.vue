@@ -46,6 +46,9 @@ import { pledgeFacts } from '../grouping';
 import { useMarkedPledges } from '../use-melt-marks';
 import { useProvidedRebuyables, useRebuyDisplay } from '@/melt-rebuy/use-rebuyables';
 import { isRebuyable, rebuySummary } from '@/melt-rebuy/rebuy-summary';
+import { rebuyVolumeNote } from '@/melt-rebuy/rebuy-text';
+import SvgIcon from '@/icons/SvgIcon.vue';
+import { vTooltip } from '@/shared/tooltip/tooltip';
 import { formatUsd } from '../discount-format';
 
 const props = defineProps<{
@@ -216,6 +219,10 @@ const shortcutFreed = (entries: readonly PledgeView[]) =>
     locale.value,
   );
 
+/** The note on the shortcut's paints bought at a volume discount (#593), if any. */
+const shortcutVolumeNote = (entries: readonly PledgeView[]) =>
+  rebuyVolumeNote(entries.map((entry) => rebuys.value.get(entry.id)));
+
 /** Filters whose meaning isn't obvious from the label explain it in their tooltip. */
 const HINTS: Partial<Record<PledgeFilter, MessageKey>> = {
   ships: 'filter.hints.ships',
@@ -265,6 +272,16 @@ const filterHint = (filter: PledgeFilter) => {
     <template v-if="viewFilterRequest?.title" #shortcut="{ entries }">
       <span v-if="!settings.hideMeltValue">
         {{ i18n.t('meltRebuy.shortcutFreed', [shortcutFreed(entries)]) }}
+      </span>
+      <!-- Paints bought at a volume discount get it again only with enough paints (#593). -->
+      <span
+        v-if="shortcutVolumeNote(entries)"
+        v-tooltip="shortcutVolumeNote(entries)"
+        class="shm-shortcut-note"
+        tabindex="0"
+        :aria-label="shortcutVolumeNote(entries)"
+      >
+        <SvgIcon name="circle-info" />
       </span>
       <!-- The shortcut's pledges onto a watchlist to rebuy them (#531). -->
       <RebuyWatchlistAction
