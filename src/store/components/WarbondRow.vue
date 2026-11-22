@@ -12,6 +12,8 @@ import { vTooltip } from '@/shared/tooltip/tooltip';
 import BaseShipsTable from './BaseShipsTable.vue';
 import ShipUpgradeButtons from './ShipUpgradeButtons.vue';
 import StoreCcuPicker from '@/watchlists/components/StoreCcuPicker.vue';
+import { openListShortcut } from '@/hangar/list-shortcut';
+import { warbondCollisionsShortcut } from '../warbond-collisions-shortcut';
 import WatchlistBadge from '@/watchlists/components/WatchlistBadge.vue';
 import { itemKey } from '@/watchlists/watchlists';
 import SortableTh from '@/shared/components/SortableTh.vue';
@@ -92,6 +94,9 @@ const owned = computed(() =>
 
 /** The hangar's CCUs to this very ship, and its other CCUs that can't be chained with it. */
 const counts = computed(() => ownedCounts(props.offer));
+
+/** My Hangar with exactly these colliding CCUs (#429). */
+const showCollisions = () => openListShortcut(warbondCollisionsShortcut(props.offer));
 
 const dates = computed(() => new Intl.DateTimeFormat(locale.value, { dateStyle: 'medium' }));
 const eventNames = (events: readonly SightingEvent[]) =>
@@ -302,6 +307,16 @@ const earlier = computed(() =>
             </tr>
           </tbody>
         </table>
+        <!-- My Hangar with just these CCUs, a List Shortcut (#429). -->
+        <button
+          v-if="owned.length"
+          type="button"
+          class="shm-button shm-warbond-show"
+          @click="showCollisions"
+        >
+          <SvgIcon name="shuttle-space" />
+          {{ i18n.t('listShortcut.warbondCollisionsShow') }}
+        </button>
 
         <h4 class="shm-warbond-heading">{{ i18n.t('store.historyTitle') }}</h4>
         <p class="shm-hint">{{ historyIntro }}</p>
@@ -389,6 +404,10 @@ const earlier = computed(() =>
 /* No buttons under the image here: the content spans both columns. */
 .shm-warbond-details .shm-details-main {
   grid-column: 1 / -1;
+}
+
+.shm-warbond-show {
+  margin-top: 2px;
 }
 
 .shm-warbond-heading {

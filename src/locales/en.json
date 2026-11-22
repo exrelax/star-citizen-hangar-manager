@@ -44,7 +44,10 @@
     "meltReady": "Ready to melt",
     "meltReadyEmpty": "No marked pledge can be melted right now.",
     "paintRebuyEmpty": "The plan has no paints left to buy again.",
-    "meltRebuyEmpty": "No pledge can be melted and rebought without loss right now."
+    "meltRebuyEmpty": "No pledge can be melted and rebought without loss right now.",
+    "warbondCollisions": "CCUs incompatible with the warbond $1",
+    "warbondCollisionsEmpty": "None of your CCUs overlaps the price range of the warbond $1 any more.",
+    "warbondCollisionsShow": "Show in My Hangar"
   },
   "sort": {
     "label": "Sort",

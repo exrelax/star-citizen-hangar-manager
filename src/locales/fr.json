@@ -44,7 +44,10 @@
     "meltReady": "Prêts à fondre",
     "meltReadyEmpty": "Aucun pledge marqué ne peut être fondu pour l’instant.",
     "paintRebuyEmpty": "Le plan n’a plus de peintures à racheter.",
-    "meltRebuyEmpty": "Aucun pledge ne peut être fondu et racheté sans perte pour l’instant."
+    "meltRebuyEmpty": "Aucun pledge ne peut être fondu et racheté sans perte pour l’instant.",
+    "warbondCollisions": "CCU incompatibles avec le warbond $1",
+    "warbondCollisionsEmpty": "Plus aucun de tes CCU ne chevauche la fourchette de prix du warbond $1.",
+    "warbondCollisionsShow": "Afficher dans My Hangar"
   },
   "sort": {
     "label": "Tri",
