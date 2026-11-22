@@ -7,6 +7,7 @@ import { GAME_DOWNLOAD, isRealImage, type ShipRef } from '@/hangar/pledge-view';
 import { normalizeSearchText } from '@/hangar/search';
 import type { ShipLinks } from '@/hangar/ship-links';
 import type { BuybackShipKind, ShipKind } from '@/hangar/ship-kind';
+import { buybackCcuContents, type CcuContents } from '@/hangar/ccu-contents';
 import {
   buybackShipNames,
   hasSeveralItems,
@@ -47,6 +48,8 @@ export interface BuybackView {
   insurance?: Insurance;
   isPaint: boolean;
   isCcu: boolean;
+  /** What a CCU brings besides its target ship (#566, see `ccu-contents.ts`). */
+  ccuContents?: CcuContents;
   /** See `BuybackPledge.upgrade`. */
   upgrade?: BuybackUpgrade;
   isStandaloneShip: boolean;
@@ -115,6 +118,7 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
     : [];
   const shipNames = buybackShipNames(pledge);
   const shipKind = shipKindOf?.(pledge, shipNames);
+  const ccuContents = buybackCcuContents(pledge);
   return {
     id: pledge.id,
     position,
@@ -133,6 +137,7 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
       (/^paints?\b/i.test(pledge.title) ||
         (!hasSeveralItems(pledge) && /\b(paint|livery)\b/i.test(pledge.contained))),
     isCcu: pledge.isUpgrade,
+    ...(ccuContents && { ccuContents }),
     upgrade: pledge.upgrade,
     isStandaloneShip: pledge.category === 'standalone_ship',
     isGamePackage: pledge.category === 'game_package',

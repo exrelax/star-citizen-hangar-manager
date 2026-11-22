@@ -204,7 +204,11 @@ function refine(filter: F, option: string) {
 const refinementOf = (filter: F) =>
   filterStates.value.get(filter) === 'include' ? props.refinements?.[filter] : undefined;
 const refinementOptions = (filter: F) =>
-  (refinementOf(filter) ?? []).map((option) => ({ value: option.id, label: option.label }));
+  (refinementOf(filter) ?? []).map((option) => ({
+    value: option.id,
+    label: option.label,
+    ...(option.section && { section: option.section }),
+  }));
 /** The pill's label: the filter's, and the option chosen after it, e.g. "Paints · Owned ships". */
 function pillLabel(filter: F) {
   const label = props.filterLabel(filter);

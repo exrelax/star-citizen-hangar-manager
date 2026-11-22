@@ -12,14 +12,14 @@ const OPTIONS = [
   { value: 'valueDesc', label: 'Highest value first' },
 ];
 
-function render() {
-  const value = ref('newest');
+function render(options: readonly { value: string; label: string; section?: string }[] = OPTIONS) {
+  const value = ref(options[0]!.value);
   const root = document.createElement('div');
   document.body.append(root);
   app = createApp({
     render: () =>
       h(SelectMenu, {
-        options: OPTIONS,
+        options,
         modelValue: value.value,
         label: 'Sort',
         'onUpdate:modelValue': (next: string) => (value.value = next),
@@ -72,5 +72,27 @@ describe('SelectMenu', () => {
     key(list()!, ' ');
     await nextTick();
     expect(value.value).toBe('oldest');
+  });
+
+  it('shows a heading above the first option of each section, skipped by the keyboard', async () => {
+    const { value, button, list, key } = render([
+      { value: 'all', label: 'All CCUs' },
+      { value: 'missing', label: 'Without base ship', section: 'Base ship' },
+      { value: 'always', label: 'Base always available', section: 'Base ship' },
+      { value: 'solo', label: 'Solo CCUs', section: 'Contents' },
+    ]);
+    button.click();
+    await nextTick();
+    const headings = [...list()!.querySelectorAll('.shm-select-menu-section')];
+    expect(headings.map((heading) => heading.textContent?.trim())).toEqual([
+      'Base ship',
+      'Contents',
+    ]);
+    expect(headings.every((heading) => heading.getAttribute('role') === 'presentation')).toBe(true);
+    expect(list()!.querySelectorAll('[role=option]')).toHaveLength(4);
+    key(list()!, 'End');
+    key(list()!, 'Enter');
+    await nextTick();
+    expect(value.value).toBe('solo');
   });
 });

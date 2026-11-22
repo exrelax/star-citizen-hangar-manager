@@ -27,6 +27,12 @@ import {
 } from '@/buyback/buyback-view';
 import type { BuybackPledge } from '@/buyback/buyback';
 import { createBuybackShipKind, pledgeShipKind, shipKindRefinement } from './ship-kind';
+import {
+  allCcus,
+  buybackCcuContents,
+  ccuRefinementWithContents,
+  hangarCcuContents,
+} from './ccu-contents';
 import type { CcuCoverage } from '@/ccu-consultant/coverage';
 
 const pledge = (id: number, overrides: Partial<PledgeView> = {}) =>
@@ -557,5 +563,82 @@ describe('the "Ships" filter by kind (#514)', () => {
     it('has no kind for a pledge without a ship', () => {
       expect(kindOf({ contained: 'Sabre - Blue Steel Paint' }, [])).toBeUndefined();
     });
+  });
+});
+
+describe('the "CCUs" filter by contents (#566)', () => {
+  const target = (...names: string[]) => ({
+    matchItems: [],
+    type: 'R',
+    targetItems: names.map((name, index) => ({ id: index + 1, name })),
+  });
+  const ccus = [
+    pledge(1, { isCcu: true, upgrade: target('Carrack') }),
+    // An insurance is no extra.
+    pledge(2, { isCcu: true, upgrade: target('Polaris', 'Lifetime Insurance') }),
+    pledge(3, { isCcu: true, upgrade: target('Hull C', '120 Month Insurance', 'Hull C - Paint') }),
+    pledge(4, { isCcu: true, upgrade: target('Cutlass Black', 'Ballistic Rifle') }),
+    pledge(5, { isCcu: true }),
+    pledge(6, { items: [{ title: 'Gladius', kind: 'Ship' }] }),
+  ];
+  const states = new Map<PledgeFilter, FilterState>([['ccus', 'include']]);
+  const byBase = ccuRefinement<PledgeView>(new Map(), undefined);
+  const refinements = {
+    ccus: ccuRefinementWithContents(byBase, (entry: PledgeView) =>
+      hangarCcuContents(entry.upgrade),
+    ),
+  };
+  const listed = (option: string) => {
+    const predicates = refinedPredicates(
+      PLEDGE_FILTER_PREDICATES,
+      refinements,
+      new Map<PledgeFilter, string>([['ccus', option]]),
+    );
+    return {
+      ids: ccus.filter((e) => matchesFilterStates(e, states, predicates)).map((e) => e.id),
+      count: filterCounts(ccus, ['ccus'], states, predicates).get('ccus'),
+    };
+  };
+
+  it('adds solo CCUs and CCUs with extras in a section after those by base ship', () => {
+    expect(refinements.ccus.map((option) => [option.label, option.short, option.section])).toEqual([
+      ['All CCUs', undefined, undefined],
+      ['Without base ship', undefined, 'Base ship'],
+      ['Solo CCUs', 'Solo', 'Contents'],
+      ['CCUs with extras', 'With extras', 'Contents'],
+    ]);
+  });
+
+  it('lists exactly the CCUs of each kind in My Hangar, with their counts', () => {
+    expect(listed('all')).toEqual({ ids: [1, 2, 3, 4, 5], count: 5 });
+    expect(listed('solo')).toEqual({ ids: [1, 2], count: 2 });
+    expect(listed('extras')).toEqual({ ids: [3, 4], count: 2 });
+  });
+
+  it('has no sections in the Buy Back, which has no options by base ship', () => {
+    const options = ccuRefinementWithContents<BuybackView>(allCcus(), (e) => e.ccuContents);
+    expect(options.map((option) => [option.id, option.section])).toEqual([
+      ['all', undefined],
+      ['solo', undefined],
+      ['extras', undefined],
+    ]);
+  });
+
+  it('tells what a CCU of the Buy Back brings by its items', () => {
+    const ccu = (contained: string, items?: string[]) =>
+      buybackCcuContents({ isUpgrade: true, contained, ...(items && { items }) });
+    expect(ccu('Upgrade - Carrack to Polaris')).toBe('solo');
+    expect(
+      ccu('Upgrade - Avenger to Titan and 1 item', [
+        'Upgrade - Avenger to Titan',
+        'Lifetime Insurance',
+      ]),
+    ).toBe('solo');
+    expect(
+      ccu('Upgrade - Avenger to Titan and 1 item', ['Upgrade - Avenger to Titan', 'Titan - Paint']),
+    ).toBe('extras');
+    // Its items weren't read: no kind, only under "All CCUs".
+    expect(ccu('Upgrade - Avenger to Titan and 2 items')).toBeUndefined();
+    expect(buybackCcuContents({ isUpgrade: false, contained: 'Gladius' })).toBeUndefined();
   });
 });

@@ -114,6 +114,14 @@
       "all": "Todos los CCU",
       "limited": "Base limitada"
     },
+    "ccuContents": {
+      "baseSection": "Nave base",
+      "section": "Contenido",
+      "solo": "CCU solos",
+      "soloShort": "Solos",
+      "extras": "CCU con extras",
+      "extrasShort": "Con extras"
+    },
     "shipKind": {
       "all": "Todas las naves",
       "solo": "Naves solas",

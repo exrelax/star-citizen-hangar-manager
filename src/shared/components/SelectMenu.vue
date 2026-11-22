@@ -7,10 +7,11 @@ import { computed, nextTick, onUnmounted, ref, useId, useTemplateRef } from 'vue
  * A dropdown in the manager's own look instead of the browser's `<select>`: a text button with an
  * icon that opens a list of options below it. Works like a select from the keyboard (arrows,
  * Home/End, Enter/Space, Escape, typing the first letter) and for screen readers (a button with
- * `aria-haspopup="listbox"` and a `listbox` of `option`s).
+ * `aria-haspopup="listbox"` and a `listbox` of `option`s). Options may come in sections, each with
+ * its heading above its first option (e.g. the "CCUs" pill by base ship and by contents, #566).
  */
 const props = defineProps<{
-  options: readonly { value: V; label: string }[];
+  options: readonly { value: V; label: string; section?: string }[];
   modelValue: V;
   /** Accessible name of the button, e.g. "Sort". */
   label: string;
@@ -38,6 +39,11 @@ const selectedIndex = computed(() =>
   ),
 );
 const selectedLabel = computed(() => props.options[selectedIndex.value]?.label ?? '');
+/** The heading above an option: the first of its section. */
+const sectionAt = (index: number) => {
+  const section = props.options[index]?.section;
+  return section && section !== props.options[index - 1]?.section ? section : undefined;
+};
 
 function onOutside(event: PointerEvent) {
   const target = event.target as Node;
@@ -143,19 +149,22 @@ onUnmounted(() => removeEventListener('pointerdown', onOutside, true));
       :aria-activedescendant="`${id}-${active}`"
       @keydown="onListKey"
     >
-      <li
-        v-for="(option, index) in options"
-        :id="`${id}-${index}`"
-        :key="option.value"
-        role="option"
-        class="shm-select-menu-option"
-        :class="{ 'is-active': index === active }"
-        :aria-selected="option.value === modelValue"
-        @pointerenter="active = index"
-        @click="choose(index)"
-      >
-        {{ option.label }}
-      </li>
+      <template v-for="(option, index) in options" :key="option.value">
+        <li v-if="sectionAt(index)" role="presentation" class="shm-select-menu-section">
+          {{ sectionAt(index) }}
+        </li>
+        <li
+          :id="`${id}-${index}`"
+          role="option"
+          class="shm-select-menu-option"
+          :class="{ 'is-active': index === active }"
+          :aria-selected="option.value === modelValue"
+          @pointerenter="active = index"
+          @click="choose(index)"
+        >
+          {{ option.label }}
+        </li>
+      </template>
     </ul>
   </span>
 </template>
@@ -221,6 +230,20 @@ onUnmounted(() => removeEventListener('pointerdown', onOutside, true));
   background: rgb(var(--shm-accent-rgb) / 0.16);
 }
 
+/* A section's heading: small and quiet, with a line above it after other options. */
+.shm-select-menu-section {
+  padding: 8px 10px 4px;
+  color: var(--shm-text-muted);
+  font-size: calc(11px * var(--shm-font-scale));
+  white-space: nowrap;
+  cursor: default;
+}
+
+.shm-select-menu-option + .shm-select-menu-section {
+  margin-top: 4px;
+  border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.15);
+}
+
 /* The selected option, marked by a check. */
 .shm-select-menu-option[aria-selected='true'] {
   position: relative;
@@ -245,6 +268,10 @@ html .shm-theme-modern .shm-select-menu-list {
   box-shadow:
     0 0 0 1px var(--shm-separator),
     0 12px 30px rgb(0 0 0 / 0.45);
+}
+
+html .shm-theme-modern .shm-select-menu-option + .shm-select-menu-section {
+  border-top-color: var(--shm-separator);
 }
 
 html .shm-theme-modern .shm-select-menu-option {

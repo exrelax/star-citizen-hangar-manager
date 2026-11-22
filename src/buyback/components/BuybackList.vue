@@ -15,6 +15,7 @@ import { buybackGroupBadges, buybackGroupKind, extrasNote } from '@/hangar/group
 import { buybackFacts } from '@/hangar/grouping';
 import { paintRefinement, useProvidedOwnedShips } from '@/hangar/paint-ships';
 import { shipKindRefinement } from '@/hangar/ship-kind';
+import { allCcus, ccuRefinementWithContents } from '@/hangar/ccu-contents';
 import { BUYBACK_SORTS, sortEntries, type BuybackSort } from '@/hangar/sorting';
 import { useSettings } from '@/settings/use-settings';
 import { hasPriceChangeWithin } from '@/price-increases/price-change-filter';
@@ -49,7 +50,10 @@ const predicates = computed(() => ({
 }));
 /** Offered only while a pledge has a price increase in the period. */
 const hasPriceIncrease = computed(() => props.pledges.some(predicates.value.priceIncrease));
-/** "Paints" for ships the hangar has or doesn't have (#336), "Ships" by kind (#514). */
+/**
+ * "Paints" for ships the hangar has or doesn't have (#336), "Ships" by kind (#514), "CCUs" by what
+ * they bring (#566).
+ */
 const ownedShips = useProvidedOwnedShips();
 const refinements = computed(() => ({
   paints: paintRefinement<BuybackView>(ownedShips.value, (pledge) => [
@@ -59,6 +63,8 @@ const refinements = computed(() => ({
   ]),
   // "Ships" by what they hold besides the ship (#514).
   ships: shipKindRefinement<BuybackView>((pledge) => pledge.shipKind),
+  // "CCUs" by what they bring (#566).
+  ccus: ccuRefinementWithContents(allCcus<BuybackView>(), (pledge) => pledge.ccuContents),
 }));
 
 const filterGroups = computed(() =>
