@@ -259,6 +259,19 @@ const label = (removal: ShipRemoval) => removalLabel(removal, now.value, locale.
   color: var(--shm-accent);
 }
 
+/*
+ * "Classic RSI" puts the badge beside the text (row.css): the long note's width would squeeze the
+ * badges below the badge, which then overflows onto the note (#579). The badge keeps its width and
+ * the note wraps before it; with a single badge, the text needs no minimum width of its own.
+ */
+html .shm-theme-rsi .shm-removal .shm-badges {
+  min-width: min-content;
+}
+
+html .shm-theme-rsi .shm-removal .shm-main {
+  min-width: 0;
+}
+
 .shm-removal-source {
   color: var(--shm-accent);
   text-decoration: none;
