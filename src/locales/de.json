@@ -1326,6 +1326,11 @@
     "selectionUnmarked": {
       "one": "$1 Pledge nicht mehr gemerkt.",
       "other": "$1 Pledges nicht mehr gemerkt."
+    },
+    "selectionUnmark": "Nicht mehr einschmelzen",
+    "selectionUnmarkHint": {
+      "one": "Das ausgewählte Pledge ist dann nicht mehr zum Einschmelzen gemerkt: Der Hangar Manager erinnert dich nicht mehr daran.",
+      "other": "Die $1 ausgewählten Pledges sind dann nicht mehr zum Einschmelzen gemerkt: Der Hangar Manager erinnert dich nicht mehr daran."
     }
   },
   "browserNotifications": {

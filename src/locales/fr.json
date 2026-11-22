@@ -1326,6 +1326,11 @@
     "selectionUnmarked": {
       "one": "Marque retirée de $1 pledge.",
       "other": "Marques retirées de $1 pledges."
+    },
+    "selectionUnmark": "Retirer les marques pour fondre",
+    "selectionUnmarkHint": {
+      "one": "Retire la marque pour fondre du pledge sélectionné : le Hangar Manager ne vous le rappelle plus.",
+      "other": "Retire les marques pour fondre des $1 pledges sélectionnés : le Hangar Manager ne vous les rappelle plus."
     }
   },
   "browserNotifications": {
