@@ -434,7 +434,9 @@
         "gone": "A pledge is gone",
         "notMeltable": "A pledge can't be exchanged any more",
         "unreadable": "RSI can't be read"
-      }
+      },
+      "browserNotifications": "Browser notifications allowed",
+      "browserNotificationsHint": "What a watchlist’s dialog says of its reminder in the browser. The demo never shows a real browser notification."
     },
     "on": "On",
     "errorLog": "Error log",
@@ -2012,6 +2014,15 @@
     },
     "cartOpen": "Open the cart",
     "rsiPut": "Put on a watchlist",
-    "rsiOn": "On a watchlist"
+    "rsiOn": "On a watchlist",
+    "demo": {
+      "meltName": "Melt after the IAE",
+      "meltDescription": "Pledges to melt once the event is over, and paints to rebuy.",
+      "stockName": "CCUs to buy when back in stock",
+      "stockDescription": "Notifies when one of them gets a new price or goes on sale.",
+      "dueName": "Due today",
+      "wishName": "Wishlist",
+      "laterName": "Later"
+    }
   }
 }

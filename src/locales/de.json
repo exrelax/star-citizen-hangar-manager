@@ -434,7 +434,9 @@
         "gone": "Ein Pledge ist nicht mehr vorhanden",
         "notMeltable": "Ein Pledge ist nicht mehr einschmelzbar",
         "unreadable": "RSI ist nicht lesbar"
-      }
+      },
+      "browserNotifications": "Browser-Benachrichtigungen erlaubt",
+      "browserNotificationsHint": "Was der Dialog einer Watchlist über ihre Erinnerung im Browser sagt. Die Demo zeigt nie eine echte Browser-Benachrichtigung."
     },
     "on": "An",
     "errorLog": "Fehlerprotokoll",
@@ -2012,6 +2014,15 @@
     },
     "cartOpen": "Warenkorb öffnen",
     "rsiPut": "Auf Watchlist setzen",
-    "rsiOn": "Auf einer Watchlist"
+    "rsiOn": "Auf einer Watchlist",
+    "demo": {
+      "meltName": "Nach der IAE einschmelzen",
+      "meltDescription": "Pledges, die nach dem Event eingeschmolzen werden, und Paints zum Zurückkaufen.",
+      "stockName": "CCUs, sobald wieder im Verkauf",
+      "stockDescription": "Benachrichtigt, wenn einer davon einen neuen Preis bekommt oder in den Verkauf geht.",
+      "dueName": "Heute fällig",
+      "wishName": "Wunschliste",
+      "laterName": "Später"
+    }
   }
 }

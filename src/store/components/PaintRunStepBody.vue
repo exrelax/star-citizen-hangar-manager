@@ -31,6 +31,7 @@ import PaintCartButton from './PaintCartButton.vue';
 import { useStored } from '@/storage/use-stored';
 import { rebuyPlanItem } from '../paint-consultant/rebuy-plan-storage';
 import { fillerWatchlistId } from '@/watchlists/filler-watchlist';
+import { DEMO_FILLER_WATCHLIST } from '@/demo/demo-watchlists';
 import { openWatchlist, watchlists } from '@/watchlists/use-watchlists';
 
 /*
@@ -57,9 +58,11 @@ const demo = useDemoContext();
 /** The filler paints' watchlist of the plan's order (#473), once there is one. */
 const storedPlan = useStored(rebuyPlanItem);
 const fillerList = computed(() => {
-  const orderId = storedPlan.value?.purchase?.orderId;
-  if (props.step.kind !== 'fillers' || !orderId) return undefined;
-  const id = fillerWatchlistId(orderId);
+  if (props.step.kind !== 'fillers') return undefined;
+  // The demo's own (#474): its running plan has no real order.
+  const orderId = demo.value ? undefined : storedPlan.value?.purchase?.orderId;
+  if (!demo.value && !orderId) return undefined;
+  const id = orderId ? fillerWatchlistId(orderId) : DEMO_FILLER_WATCHLIST;
   return watchlists.value.find((list) => list.id === id);
 });
 const format = computed(() => ({ locale: locale.value, now: props.now }));

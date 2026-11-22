@@ -434,7 +434,9 @@
         "gone": "Un pledge ya no existe",
         "notMeltable": "Un pledge ya no se puede fundir",
         "unreadable": "No se puede leer RSI"
-      }
+      },
+      "browserNotifications": "Notificaciones del navegador permitidas",
+      "browserNotificationsHint": "Lo que el diálogo de una watchlist dice de su recordatorio en el navegador. La demo nunca muestra una notificación real del navegador."
     },
     "on": "Activado",
     "errorLog": "Registro de errores",
@@ -2012,6 +2014,15 @@
     },
     "cartOpen": "Abrir el carrito",
     "rsiPut": "Poner en una watchlist",
-    "rsiOn": "En una watchlist"
+    "rsiOn": "En una watchlist",
+    "demo": {
+      "meltName": "Fundir después de la IAE",
+      "meltDescription": "Pledges a fundir cuando termine el evento, y pinturas para recomprar.",
+      "stockName": "CCU para comprar cuando vuelvan",
+      "stockDescription": "Avisa cuando uno de ellos cambia de precio o vuelve a la venta.",
+      "dueName": "Para hoy",
+      "wishName": "Lista de deseos",
+      "laterName": "Más tarde"
+    }
   }
 }
