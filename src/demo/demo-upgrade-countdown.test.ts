@@ -14,6 +14,7 @@ describe('demoCountdownSources', () => {
   it("counts down to the demo event's end, and one ship to a later warbond end", () => {
     const sources = demoCountdownSources(NOW, true, [30, 10, 20, 40], availability);
     const endOf = createTargetEnd({ ...sources, availability });
+    // 20 is the first of the ships that aren't always available: every tenth gets a warbond end.
     const event = endOf({ id: 30 }, NOW)!;
     const warbond = endOf({ id: 20 }, NOW)!;
     expect(event.source).toBe('event');
@@ -31,5 +32,14 @@ describe('demoCountdownSources', () => {
     const endOf = createTargetEnd({ ...sources, availability });
     expect(endOf({ id: 20 }, NOW)).toBeUndefined();
     expect(endOf({ id: 30 }, NOW)).toBeUndefined();
+  });
+});
+
+describe('the made-up warbond ends', () => {
+  it('go to every tenth ship that is not always available, so every price range has some', () => {
+    const ids = Array.from({ length: 25 }, (_, index) => 100 + index);
+    const limited = () => false;
+    const { offers } = demoCountdownSources(NOW, true, ids, limited);
+    expect(offers.map((offer) => offer.shipId)).toEqual([100, 110, 120]);
   });
 });
