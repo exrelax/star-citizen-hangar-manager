@@ -49,6 +49,11 @@ Setup, commands and how to load the extension in Chrome or Firefox are described
 The dev build adds a [styleguide](docs/DEVELOPMENT.md#styleguide) page with all building blocks of the
 manager and made-up pledges – the quickest way to check a visual change.
 
+Working with Claude Code? The project's rules for it – language, design, demo mode, stored data,
+Git, GitHub, releases and how RSI works – are in [CLAUDE.md](CLAUDE.md), which Claude Code reads on
+its own. Put rules only for yourself or your machine into a `CLAUDE.local.md` next to it; it isn't
+committed.
+
 ## Coding guidelines
 
 - **English only** in code, comments, documentation and commit messages. The user-facing texts

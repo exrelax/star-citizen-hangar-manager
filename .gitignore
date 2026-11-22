@@ -22,3 +22,6 @@ coverage
 .env
 .env.*
 !.env.example
+
+# Personal rules for Claude Code (see CLAUDE.md)
+CLAUDE.local.md
