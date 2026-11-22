@@ -47,7 +47,8 @@
     "meltRebuyEmpty": "Aucun pledge ne peut être fondu et racheté sans perte pour l’instant.",
     "warbondCollisions": "CCU incompatibles avec le warbond $1",
     "warbondCollisionsEmpty": "Plus aucun de tes CCU ne chevauche la fourchette de prix du warbond $1.",
-    "warbondCollisionsShow": "Afficher dans My Hangar"
+    "warbondCollisionsShow": "Afficher dans My Hangar",
+    "paintsToOptimize": "Peintures à optimiser"
   },
   "sort": {
     "label": "Tri",
