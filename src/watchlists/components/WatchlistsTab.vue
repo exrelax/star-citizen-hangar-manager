@@ -24,6 +24,7 @@ import {
   watchlistsLoaded as loaded,
 } from '../use-watchlists';
 import WatchlistDialog from './WatchlistDialog.vue';
+import { useStoreChanges } from '../use-store-changes';
 import WatchlistMeta from './WatchlistMeta.vue';
 import WatchlistView from './WatchlistView.vue';
 
@@ -79,6 +80,19 @@ watch(open, (list) => {
 });
 
 /*
+ * Seeing a watchlist notes its Pledge Store items as they are now (#472): the notifications of
+ * their changes go.
+ */
+const storeChanges = useStoreChanges();
+watch(
+  [open, () => props.active, storeChanges.changed],
+  ([list, active]) => {
+    if (list && active) storeChanges.acknowledge(list);
+  },
+  { immediate: true },
+);
+
+/*
  * The names and values of its pledges as the lists show them now, so a pledge that leaves later
  * keeps them (`withLastSeen`). Only for the watchlist shown, and only when something changed.
  */
@@ -107,6 +121,7 @@ async function save(fields: {
   description: string;
   dueAt: number | null;
   reminder: boolean;
+  storeAlerts: boolean;
 }) {
   const now = Date.now();
   const editing = dialog.value?.list;

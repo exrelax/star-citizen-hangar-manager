@@ -5,6 +5,7 @@ import { watchMeltReady } from '@/notifications/melt-ready-notification';
 import { watchPriceIncreases } from '@/price-increases/price-increase-browser-notification';
 import { watchShipRemovals } from '@/ship-removals/removal-browser-notification';
 import { watchWatchlistReminders } from '@/watchlists/reminder-browser-notification';
+import { watchWatchlistStoreChanges } from '@/watchlists/store-change-browser-notification';
 import { watchNotesInStep } from '@/notifications/note-sync';
 import { watchStoreNoteKinds } from '@/store/store-change-notes';
 import {
@@ -75,6 +76,8 @@ export default defineBackground(() => {
   watchShipRemovals();
   // The reminder of a watchlist at its date (#469).
   watchWatchlistReminders();
+  // A watchlist's Pledge Store items changed: a new price, no longer or again for sale (#472).
+  watchWatchlistStoreChanges();
 
   // The sidebar's notifications and their browser notifications in step (#155).
   watchNotesInStep();

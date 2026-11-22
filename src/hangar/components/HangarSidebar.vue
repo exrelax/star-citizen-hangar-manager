@@ -65,6 +65,8 @@ import {
   watchlists,
 } from '@/watchlists/use-watchlists';
 import { dueReminders, withReminderDone, type Watchlist } from '@/watchlists/watchlists';
+import { useStoreChanges } from '@/watchlists/use-store-changes';
+import { changeText } from '@/watchlists/store-change-text';
 import {
   demoDismissedPriceIncreasesItem,
   dismissedPriceIncreasesItem,
@@ -189,6 +191,7 @@ const noteCount = computed(
     advisorShown.value.length +
     removalShown.value.length +
     remindersShown.value.length +
+    storeChanges.changed.value.length +
     (showBrowserHint.value ? 1 : 0) +
     (showRiskNote.value ? 1 : 0),
 );
@@ -451,6 +454,12 @@ function dismissReminder(list: Watchlist) {
     (cause: unknown) => (reminderError.value = saveErrorOf(cause)),
   );
 }
+/*
+ * Changed Pledge Store items of a watchlist (#472): one notification per watchlist with each change.
+ * Its × notes them as they are now; seeing the watchlist does the same.
+ */
+const storeChanges = useStoreChanges();
+
 const reminderText = (list: Watchlist) =>
   i18n.t('notifications.watchlistReminder', [list.name, noteTime.value.format(list.dueAt)]);
 
@@ -982,6 +991,50 @@ async function move(box: Box, step: -1 | 1) {
                 type="button"
                 class="shm-button shm-sidebar-button"
                 @click="openWatchlist(list.id)"
+              >
+                <SvgIcon name="clipboard-list" />
+                {{ i18n.t('notifications.showWatchlist') }}
+              </button>
+            </div>
+          </div>
+          <div
+            v-for="entry in storeChanges.changed.value"
+            :key="entry.list.id"
+            class="shm-sidebar-melt-ready is-dismissable shm-sidebar-store-changes"
+            role="status"
+          >
+            <SvgIcon name="basket-shopping" />
+            <p>
+              {{
+                i18n.n('notifications.watchlistStore', entry.changes.length, [
+                  entry.list.name,
+                  entry.changes.length,
+                ])
+              }}
+            </p>
+            <button
+              v-tooltip="i18n.t('notifications.dismissWatchlistStoreHint')"
+              type="button"
+              class="shm-sidebar-icon-button shm-sidebar-note-dismiss"
+              :aria-label="i18n.t('notifications.dismiss')"
+              @click="storeChanges.acknowledge(entry.list)"
+            >
+              <SvgIcon name="xmark" />
+            </button>
+            <ul class="shm-sidebar-removal-warnings">
+              <li
+                v-for="change in entry.changes"
+                :key="`${change.kind}:${change.item.name}`"
+                class="is-plain"
+              >
+                <span>{{ changeText(change, locale) }}</span>
+              </li>
+            </ul>
+            <div v-mark-wrapped class="shm-sidebar-actions">
+              <button
+                type="button"
+                class="shm-button shm-sidebar-button"
+                @click="openWatchlist(entry.list.id)"
               >
                 <SvgIcon name="clipboard-list" />
                 {{ i18n.t('notifications.showWatchlist') }}

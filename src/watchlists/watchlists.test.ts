@@ -24,12 +24,13 @@ const LATER = NOW + 60_000;
 const list = () => createWatchlist({ name: '  Melt after the IAE  ' }, NOW, 'list1');
 
 describe('a watchlist (#465)', () => {
-  it('is made with a trimmed name, no date and no reminder', () => {
+  it('is made with a trimmed name, no date and no reminder, notifying on store changes', () => {
     expect(list()).toEqual({
       id: 'list1',
       name: 'Melt after the IAE',
       description: '',
       reminder: false,
+      storeAlerts: true,
       items: [],
       createdAt: NOW,
       changedAt: NOW,

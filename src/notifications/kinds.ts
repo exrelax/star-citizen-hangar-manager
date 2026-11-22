@@ -15,6 +15,8 @@
  *   CCUs from them, in the sidebar, and in the browser a week before the date (#291).
  * - `watchlistReminders`: the reminder of a watchlist at its date (#469), in the sidebar and in the
  *   browser.
+ * - `watchlistStore`: changes of a watchlist's Pledge Store items (#472), in the sidebar and in the
+ *   browser.
  * Only the kinds turned off are stored, so a kind added later starts on.
  */
 
@@ -27,6 +29,7 @@ export const NOTIFICATION_KINDS = [
   'priceAdvisor',
   'shipRemovals',
   'watchlistReminders',
+  'watchlistStore',
 ] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 

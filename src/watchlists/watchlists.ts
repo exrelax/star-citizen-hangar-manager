@@ -62,6 +62,8 @@ export interface Watchlist {
    * that date, but a new date reminds again.
    */
   reminderDone?: number;
+  /** Notifications when one of its Pledge Store items changes (#472). */
+  storeAlerts: boolean;
   items: WatchItem[];
   createdAt: number;
   changedAt: number;
@@ -105,7 +107,13 @@ export const newWatchlistId = (now: number, random = Math.random): string =>
 
 /** A new, empty watchlist. */
 export function createWatchlist(
-  fields: { name: string; description?: string; dueAt?: number; reminder?: boolean },
+  fields: {
+    name: string;
+    description?: string;
+    dueAt?: number;
+    reminder?: boolean;
+    storeAlerts?: boolean;
+  },
   now: number,
   id = newWatchlistId(now),
 ): Watchlist {
@@ -116,6 +124,8 @@ export function createWatchlist(
     ...(fields.dueAt !== undefined && { dueAt: fields.dueAt }),
     // A reminder only with a date.
     reminder: fields.dueAt !== undefined && (fields.reminder ?? true),
+    // On by default: a store item is watched to know when it changes.
+    storeAlerts: fields.storeAlerts ?? true,
     items: [],
     createdAt: now,
     changedAt: now,
@@ -125,7 +135,13 @@ export function createWatchlist(
 /** The watchlist with its name, description, date or reminder changed; `dueAt: null` drops it. */
 export function updateWatchlist(
   list: Watchlist,
-  patch: { name?: string; description?: string; dueAt?: number | null; reminder?: boolean },
+  patch: {
+    name?: string;
+    description?: string;
+    dueAt?: number | null;
+    reminder?: boolean;
+    storeAlerts?: boolean;
+  },
   now: number,
 ): Watchlist {
   const dueAt = patch.dueAt === null ? undefined : (patch.dueAt ?? list.dueAt);
@@ -139,6 +155,7 @@ export function updateWatchlist(
     }),
     ...(dueAt !== undefined && { dueAt }),
     reminder: dueAt !== undefined && (patch.reminder ?? list.reminder),
+    ...(patch.storeAlerts !== undefined && { storeAlerts: patch.storeAlerts }),
     changedAt: now,
   };
 }
