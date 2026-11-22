@@ -337,7 +337,15 @@ export function useDemo(
     const list = baseDemoPledges.value;
     if (!list.length || !settings().states.meltMarks) return { marked: [], purchases: new Map() };
     const justBought = justBoughtOf(list);
-    return demoGroupMarks(list, Date.now(), new Set(demoMarkIds(list, justBought)));
+    // Nor Melt and Rebuy's cases (#532): a mark or a recent purchase would change their reasons.
+    const rebuyCases = (generatedAccount.value?.account.pledges ?? []).flatMap((pledge) =>
+      pledge.demoRebuyCase ? [pledge.id] : [],
+    );
+    return demoGroupMarks(
+      list,
+      Date.now(),
+      new Set([...demoMarkIds(list, justBought), ...rebuyCases]),
+    );
   });
   const demoPledges = computed(() =>
     withRecentPurchases(baseDemoPledges.value, groupMarks.value.purchases),
