@@ -7,6 +7,7 @@ import type { StoreItem } from '../items/store-items';
 import type { PaintPledge } from './calculation';
 import { completedPlansItem } from './completed-plans';
 import { checkRunningPlan } from './plan-check';
+import { loadWatchlists, saveWatchlist } from '@/watchlists/watchlists-storage';
 import {
   currentPlanOf,
   rebuyPlanItem,
@@ -84,6 +85,27 @@ describe('checkRunningPlan', () => {
     const kept = currentPlanOf(await rebuyPlanItem.getValue());
     expect(kept?.purchase).toMatchObject({ pledgeIds: [202, 203, 204], ownPledgeIds: [201] });
     expect(await meltMarksItem.getValue()).toEqual({ 202: NOW, 203: NOW, 204: NOW });
+  });
+
+  it('puts the fillers on a watchlist of their own, with a reminder (#473)', async () => {
+    await rebuyPlanItem.setValue(plan);
+    await checkRunningPlan({ pledges: [OLD, COPY, ...FILLERS], orders, storeItems, now: NOW });
+    const [list] = await loadWatchlists();
+    expect(list).toMatchObject({ id: 'fillorder1', reminder: true });
+    expect(list?.items.map((entry) => entry.kind === 'hangar' && entry.pledgeId)).toEqual([
+      202, 203, 204,
+    ]);
+    expect(list?.dueAt).toBeGreaterThan(NOW);
+  });
+
+  it('keeps a filler watchlist that is there already (#473)', async () => {
+    await rebuyPlanItem.setValue(plan);
+    await checkRunningPlan({ pledges: [OLD, COPY, ...FILLERS], orders, storeItems, now: NOW });
+    const [made] = await loadWatchlists();
+    await saveWatchlist({ ...made!, name: 'Mine', items: [] });
+    await rebuyPlanItem.setValue(plan);
+    await checkRunningPlan({ pledges: [OLD, COPY, ...FILLERS], orders, storeItems, now: NOW });
+    expect(await loadWatchlists()).toMatchObject([{ name: 'Mine', items: [] }]);
   });
 
   it('may give up after a few days without an order, but keeps the plan', async () => {

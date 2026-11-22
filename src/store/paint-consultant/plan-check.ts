@@ -24,6 +24,9 @@ import {
   type PlanPurchase,
 } from './rebuy-plan-storage';
 import { planProgress, withSeenGone } from './running-plan';
+import { locale } from '@/i18n';
+import { fillerWatchlist } from '@/watchlists/filler-watchlist';
+import { loadWatchlists, saveWatchlist } from '@/watchlists/watchlists-storage';
 
 /*
  * Keeps the running plan of the Paint Discount Consultant up to date with the real hangar and
@@ -36,6 +39,32 @@ import { planProgress, withSeenGone } from './running-plan';
  */
 
 type CheckedPledge = HangarPledge & Pick<PaintPledge, 'valueUsd'>;
+
+/**
+ * The filler paints on a watchlist of their own (#473), with a reminder when they can be melted;
+ * once per order, never over one that is there. A full synced storage leaves it out: the marks to
+ * melt tell the same.
+ */
+async function addFillerWatchlist(
+  found: PlanPurchase,
+  planAt: number,
+  pledges: readonly CheckedPledge[],
+  now: number,
+): Promise<void> {
+  const ids = new Set(found.pledgeIds);
+  const list = fillerWatchlist({
+    orderId: found.orderId,
+    ...(found.boughtAt && { boughtAt: found.boughtAt }),
+    fillers: pledges.filter((pledge) => ids.has(pledge.id)),
+    planAt,
+    now,
+    locale: locale.value,
+  });
+  if (!list) return;
+  const lists = await loadWatchlists(false);
+  if (lists.some((other) => other.id === list.id)) return;
+  await saveWatchlist(list, false).catch(() => undefined);
+}
 
 export async function checkRunningPlan(input: {
   pledges: readonly CheckedPledge[];
@@ -55,6 +84,7 @@ export async function checkRunningPlan(input: {
     if (found) {
       if (found.pledgeIds.length) {
         await meltMarksItem.setValue(withFillerMarks(await meltMarksItem.getValue(), found, now));
+        await addFillerWatchlist(found, plan.at, input.pledges, now);
       }
       plan = { ...plan, purchase: found };
     } else if (plan.checkEndedAt === undefined && isFillerCheckOver(plan, now)) {
