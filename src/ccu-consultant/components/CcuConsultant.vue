@@ -296,7 +296,10 @@ const skuOf = (row: BaseShipRow) =>
           />
           <template v-else>
             <div
-              v-if="!list.groups[group].length"
+              v-if="
+                !list.groups[group].length &&
+                (group !== 'missing' || (!list.soon.length && !list.tooFew.length))
+              "
               class="shm-ccu-consultant-empty"
               :class="`is-${group}`"
             >

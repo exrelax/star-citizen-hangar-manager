@@ -30,6 +30,12 @@
   margin-left: 16px;
 }
 
+/* RSI's "#billing .content ul { margin: 0 }" outweighs the rule above for a list, e.g. the cards. */
+.shm-ccu-consultant-view > ul:not(.shm-ccu-consultant-table) {
+  margin-right: 16px !important;
+  margin-left: 16px !important;
+}
+
 .shm-ccu-consultant-panel {
   padding-bottom: 16px;
 }
