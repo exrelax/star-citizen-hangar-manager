@@ -7,7 +7,8 @@ import { i18n, locale } from '@/i18n';
 import { followLanguageSetting } from '@/settings/language';
 import { settingsItem, withDefaults } from '@/settings/settings';
 import { createShipFactsLookup } from '@/ships/ship-facts';
-import { current, shipsItem } from '@/ships/ships-storage';
+import { buyableShipsItem, current, shipsItem } from '@/ships/ships-storage';
+import { demoCountdownSources } from '@/demo/demo-upgrade-countdown';
 import { bundledShipFacts, shipFactsItem, storedShipFacts } from '@/ships/sync-ship-facts';
 import { createBaseShipCounts, type BaseShipCounts } from '@/ships/upgrade-dialog-counts';
 import {
@@ -29,7 +30,7 @@ import './style.css';
  * Additions to RSI's ship upgrade dialog, on every page of RSI's website the dialog opens on: the
  * label "Always available" (#401), the countdown on target ships that aren't (#570) and the counts
  * on the base ships (#506). Reads only the settings, the ship facts, the events, the website's
- * warbond offers and – once the dialog opens – the stored hangar, buy back and ships;
+ * warbond offers (in the demo its own events, #572) and – once the dialog opens – the stored hangar, buy back and ships;
  * see `upgrade-dialog-labels.ts`.
  */
 export default defineContentScript({
@@ -48,12 +49,22 @@ export default defineContentScript({
     // The countdown of target ships (#570): the running event and the warbond offers' expected ends.
     let events: EventsSnapshot | null = await eventsItem.getValue();
     let offers: SiteWarbondHistorySnapshot | null = await siteWarbondHistoryItem.getValue();
-    const endOf = () =>
-      createTargetEnd({
-        events: events?.version === EVENTS_VERSION ? events.events : [],
-        offers: storedSiteWarbondHistory(offers),
-        availability: (target) => availability(target),
-      });
+    // In the demo (#572): its own events and a made-up warbond end, never the website's.
+    let buyable = current(await buyableShipsItem.getValue())?.skus ?? [];
+    const endOf = () => {
+      const sources = settings.demoMode
+        ? demoCountdownSources(
+            Date.now(),
+            settings.demo.states.runningEvent,
+            buyable.map((sku) => sku.shipId),
+            availability,
+          )
+        : {
+            events: events?.version === EVENTS_VERSION ? events.events : [],
+            offers: storedSiteWarbondHistory(offers),
+          };
+      return createTargetEnd({ ...sources, availability: (target) => availability(target) });
+    };
     let targetEnd = endOf();
 
     // The counts (#506): read when the dialog opens, read again once hangar, buy back or ships change.
@@ -125,6 +136,7 @@ export default defineContentScript({
     ctx.onInvalidated(
       settingsItem.watch((stored) => {
         settings = withDefaults(stored);
+        targetEnd = endOf();
         dialog.update();
         if (document.querySelector('.ShipUpgradeModal')) void loadCounts();
       }),
@@ -146,6 +158,13 @@ export default defineContentScript({
     ctx.onInvalidated(
       siteWarbondHistoryItem.watch((snapshot) => {
         offers = snapshot;
+        targetEnd = endOf();
+        dialog.update();
+      }),
+    );
+    ctx.onInvalidated(
+      buyableShipsItem.watch((snapshot) => {
+        buyable = current(snapshot)?.skus ?? [];
         targetEnd = endOf();
         dialog.update();
       }),
