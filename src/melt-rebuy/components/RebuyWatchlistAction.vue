@@ -43,7 +43,9 @@ import { useProvidedRebuyables } from '../use-rebuyables';
  * wanted. Nothing is melted or bought. The demo's own watchlists and marks in the demo (#474).
  *
  * Hidden while not one of the pledges can be rebought. `buttonClass` styles its button for the
- * host, e.g. `shm-sidebar-button is-full` in the sidebar.
+ * host, e.g. `shm-sidebar-button is-full` in the sidebar; `inline` places it in a line of text,
+ * e.g. the bar of the List Shortcut "Melt and rebuy" (#596): centered there, without the room above
+ * it the sidebar gives it.
  */
 
 const props = withDefaults(
@@ -52,6 +54,8 @@ const props = withDefaults(
     pledgeIds: readonly number[];
     /** Classes of its button besides `shm-button`. */
     buttonClass?: string;
+    /** In a line of text instead of below a box's figures (#596). */
+    inline?: boolean;
   }>(),
   { buttonClass: 'shm-sidebar-button is-full' },
 );
@@ -215,7 +219,7 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
 </script>
 
 <template>
-  <div v-if="plan" class="shm-rebuy-watchlist">
+  <div v-if="plan" class="shm-rebuy-watchlist" :class="{ 'is-inline': inline }">
     <button
       v-tooltip="i18n.t('watchlists.rebuy.buttonHint')"
       type="button"
@@ -333,6 +337,13 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
   flex-direction: column;
   gap: 6px;
   margin-top: 8px;
+}
+
+/* In a line of text (#596): on its center line, its note after the button. */
+.shm-rebuy-watchlist.is-inline {
+  flex-flow: row wrap;
+  align-items: center;
+  margin-top: 0;
 }
 
 .shm-rebuy-watchlist .shm-sidebar-note {
