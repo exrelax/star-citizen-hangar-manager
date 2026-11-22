@@ -1302,7 +1302,10 @@ async function move(box: Box, step: -1 | 1) {
           <!-- All selected pledges onto a watchlist, or a new one (#549). -->
           <SelectionWatchlists :pledges="selected" />
           <!-- The rebuyable ones onto a watchlist as the store items to rebuy them as (#531). -->
-          <RebuyWatchlistAction :pledge-ids="selected.map((pledge) => pledge.id)" />
+          <RebuyWatchlistAction
+            v-if="rebuyDisplay.shown"
+            :pledge-ids="selected.map((pledge) => pledge.id)"
+          />
           <BulkExchangeOverlay
             v-if="bulkExchanging"
             :pledges="meltable"
