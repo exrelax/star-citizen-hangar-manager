@@ -22,6 +22,8 @@ import { ccuTargetsOf, type DemoPledge } from './generate-hangar';
  *   (#392).
  * The first one is confirmed by CIG, with a source, the second only expected (#275).
  * And a ship RSI doesn't sell CCUs to right now, with CCUs to it in the buy back (#311).
+ * Melt and Rebuy's cases (#532): the hangar ship's price increase goes to the ship of its case
+ * "price increase ahead"; its other ships get none while other ships fit.
  */
 
 const HOUR = 60 * 60 * 1000;
@@ -65,11 +67,33 @@ export function demoPriceIncreases(
   notOnSale?: Ship,
   /** The ships of the demo's warbond offers: one to secure gets "Warbond upgrade" (#392). */
   warbondShips: ReadonlySet<number> = new Set(),
+  /**
+   * Melt and Rebuy's ships (#532): the one whose price rises instead of another hangar ship's, the
+   * others without a price increase.
+   */
+  rebuy: { increase?: Ship; avoid?: readonly Ship[] } = {},
 ): ExpectedPriceIncrease[] {
-  const used = new Set<string>(notOnSale ? [notOnSale.name] : []);
+  const used = new Set<string>([
+    ...(notOnSale ? [notOnSale.name] : []),
+    ...(rebuy.increase ? [rebuy.increase.name] : []),
+  ]);
+  // Melt and Rebuy's other ships only while no other ship fits: the cases above come first.
+  const avoided = new Set((rebuy.avoid ?? []).map((ship) => ship.name));
+  const preferred = <T extends Ship | { base: Ship; target: Ship }>(entries: readonly T[]): T[] => {
+    const touches = (entry: T) =>
+      'base' in entry
+        ? avoided.has(entry.base.name) || avoided.has(entry.target.name)
+        : avoided.has(entry.name);
+    const others = entries.filter((entry) => !touches(entry));
+    return others.length ? others : [...entries];
+  };
   /** The first of the candidates not used yet, else any ship of the catalog not used yet. */
-  const free = (...candidates: (Ship | undefined)[]): Ship | undefined =>
-    [...candidates, ...catalog.ships].find((ship) => ship && !used.has(ship.name));
+  const free = (...candidates: (Ship | undefined)[]): Ship | undefined => {
+    const unused = (ships: readonly (Ship | undefined)[]) =>
+      ships.filter((ship): ship is Ship => !!ship && !used.has(ship.name));
+    const all = unused([...candidates, ...catalog.ships]);
+    return all.find((ship) => !avoided.has(ship.name)) ?? all[0];
+  };
   const increase = (
     ship: Ship | undefined,
     priceIncreaseAt: ExpectedTime,
@@ -126,30 +150,33 @@ export function demoPriceIncreases(
   const ordinaryCcus = hangar.flatMap((pledge) => {
     const base = shipById(pledge.upgrade?.matchItems[0]?.id);
     const target = shipById(pledge.upgrade?.targetItems[0]?.id);
-    return !pledge.demoGroup && !pledge.demoCcuCase && base && target ? [{ base, target }] : [];
+    return !pledge.demoGroup && !pledge.demoCcuCase && !pledge.demoRebuyCase && base && target
+      ? [{ base, target }]
+      : [];
   });
-  const secureCandidates = ccuTargetsOf(catalog.ships)
-    .filter(
+  const secureCandidates = preferred(
+    ccuTargetsOf(catalog.ships).filter(
       (ship) =>
         !bases.has(ship.name) &&
         ship.name !== moduleShip?.name &&
         !used.has(ship.name) &&
         (!buyable || buyable.has(ship.id)),
-    )
-    .sort((a, b) => a.msrp - b.msrp);
+    ),
+  ).sort((a, b) => a.msrp - b.msrp);
   // A ship in the middle: there are cheaper ones to start the CCUs from.
   const secureShip = secureCandidates[Math.floor(secureCandidates.length / 2)];
   if (secureShip) used.add(secureShip.name);
   // One of the demo's warbond offers, so a ship to secure shows "Warbond upgrade" too (#392).
-  const warbondShip = ccuTargetsOf(catalog.ships).find(
-    (ship) =>
-      warbondShips.has(ship.id) &&
-      !used.has(ship.name) &&
-      ship.name !== moduleShip?.name &&
-      (!buyable || buyable.has(ship.id)),
-  );
+  const warbondShip = preferred(
+    ccuTargetsOf(catalog.ships).filter(
+      (ship) =>
+        warbondShips.has(ship.id) &&
+        !used.has(ship.name) &&
+        ship.name !== moduleShip?.name &&
+        (!buyable || buyable.has(ship.id)),
+    ),
+  )[0];
   if (warbondShip) used.add(warbondShip.name);
-
   return [
     // Flight ready ahead, with a probable time, with its module.
     ...increase(free(moduleShip, hangarCcuTarget), at(now, 3, 4), {
@@ -164,13 +191,15 @@ export function demoPriceIncreases(
     ...increase(free(...buybackCcuTargets), {
       at: Math.ceil((now + 40 * 60 * 1000) / 60_000) * 60_000,
     }),
-    ...increase(free(hangarShip), day(now, 9)),
+    ...increase(rebuy.increase ?? free(hangarShip), day(now, 9)),
     // Outside the period of the settings (14 days by default).
     ...increase(free(...[...buybackCcuTargets].reverse()), at(now, 30)),
     // The base ship of a CCU in My Hangar, only expected, without a new price: the CCU Consultant's
     // "Discount at risk" (#455, #425) next to the confirmed one below. Its target doesn't rise.
     ...increase(
-      ordinaryCcus.find(({ base, target }) => !used.has(base.name) && !used.has(target.name))?.base,
+      preferred(
+        ordinaryCcus.filter(({ base, target }) => !used.has(base.name) && !used.has(target.name)),
+      )[0]?.base,
       day(now, 11),
     ),
     // The Price Increase Advisor's (#255).

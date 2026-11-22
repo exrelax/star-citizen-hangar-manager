@@ -415,6 +415,8 @@
       "ccuCoverageGapsHint": "Some CCUs have no base ship in the demo hangar or buy back, or too few ways to it. Off, the demo buy back gives each one, so the CCU Consultant and its sidebar box show none.",
       "ccuDiscountAtRisk": "CCUs with their discount at risk",
       "ccuDiscountAtRiskHint": "Some base ships of the demo’s CCUs rise in price. Off, none do, so the CCU Consultant’s “Discount at risk” is empty.",
+      "rebuyable": "Rebuyable pledges",
+      "rebuyableHint": "Some pledges of the demo hangar can be melted now and rebought later without loss. Off, none can, so the list “Melt and rebuy” is empty.",
       "runningPlanStage": "Stage of the running plan",
       "runningPlanStages": {
         "cart": "Melt first: paints missing in the cart",

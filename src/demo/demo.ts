@@ -13,6 +13,12 @@ import { generateBuyback, type DemoBuyback } from './generate-buyback';
 import { missingBaseOf } from './demo-groups';
 import { buybackCases, ccuCaseBasesOf, coverageFillers, reservedShips } from './demo-ccu-cases';
 import { demoPaintCases, paintCaseShips, storePaints } from './demo-paint-cases';
+import {
+  REBUY_REFUND_DAYS_LEFT,
+  rebuyShipIds,
+  rebuyShipsOf,
+  type DemoRebuyShips,
+} from './demo-rebuy-cases';
 import { toBuybackView } from '@/buyback/buyback-view';
 import { createAvailabilityCheck } from '@/buyback/buyback-availability';
 import { createBuybackImager } from '@/buyback/buyback-image';
@@ -141,13 +147,21 @@ export function generatedDemo(
   account: DemoAccount;
   generatedBuyback: DemoBuyback;
   priceIncreases: ExpectedPriceIncrease[];
+  /** The ships of Melt and Rebuy's cases (#532). */
+  rebuyShips: DemoRebuyShips;
 } {
   const account = generateDemoAccount(catalog, key, settings, buyable);
   // Nothing in the buy back gives the base ship of the CCUs without one (#450), nor those of the
   // CCU Consultant's cases (#425) but their own pledges.
   const ccuBases = ccuCaseBasesOf(account.pledges, catalog);
   const missingBase = catalog.ships.find((ship) => ship.id === missingBaseOf(account.pledges));
-  const reserved = new Set([missingBase?.id, ...reservedShips(ccuBases)]);
+  // Nor those of Melt and Rebuy's cases (#532): the buy back's ships may rise in price.
+  const rebuyShips = rebuyShipsOf(account.pledges, catalog);
+  const reserved = new Set([
+    missingBase?.id,
+    ...reservedShips(ccuBases),
+    ...rebuyShipIds(rebuyShips),
+  ]);
   const buybackCatalog = {
     ...catalog,
     ships: catalog.ships.filter((ship) => !reserved.has(ship.id)),
@@ -193,6 +207,8 @@ export function generatedDemo(
   const priceOf = createPriceLookup(catalog.ships.map(({ name, msrp }) => ({ name, price: msrp })));
   const itemPriceOf = createItemPriceLookup(catalog.items);
   // The demo's expected price increases (#194), matched like the website's.
+  // Melt and Rebuy's ships (#532): one rises in price, the others don't.
+  const { increase: rebuyIncrease, ...rebuyOthers } = rebuyShips;
   const increases = demoPriceIncreases(
     catalog,
     account.pledges,
@@ -202,6 +218,7 @@ export function generatedDemo(
     notOnSale,
     // The ships of the demo's warbond offers, as its Pledge Store tab shows them (#392).
     new Set(demoStoreData(catalog, account.pledges, now).warbonds.map((offer) => offer.ship.id)),
+    { ...(rebuyIncrease && { increase: rebuyIncrease }), avoid: Object.values(rebuyOthers) },
   );
   // Without CCUs whose discount is at risk (#425, #455): no base ship of a CCU rises in price.
   const bases = new Set(
@@ -221,9 +238,13 @@ export function generatedDemo(
       ...(ccuPriceChange && { ccuPriceChange }),
     };
   });
-  const pledges = demoViews(views, key, today, now, settings.states);
+  // Melt and Rebuy's pledge to refund is the fourth one (#532).
+  const refundDays = account.pledges.some((pledge) => pledge.demoRebuyCase === 'refund')
+    ? [...DEMO.refundDaysLeft, REBUY_REFUND_DAYS_LEFT]
+    : DEMO.refundDaysLeft;
+  const pledges = demoViews(views, key, today, now, settings.states, refundDays);
   const buyback = generatedBuybackViews(generatedBuyback, catalog, orders, account, key, matcher);
-  return { pledges, buyback, account, generatedBuyback, priceIncreases };
+  return { pledges, buyback, account, generatedBuyback, priceIncreases, rebuyShips };
 }
 
 /** The kinds of the generated buy back for `count` pledges, in the shares of the default. */
@@ -335,6 +356,7 @@ function demoViews(
   today: string,
   now: number,
   states: Pick<DemoStates, 'refund' | 'justBought'> = DEFAULT_DEMO_SETTINGS.states,
+  refundDaysLeft: readonly number[] = DEMO.refundDaysLeft,
 ): PledgeView[] {
   const fakeId = createFakeIds(key);
   const justBought = states.justBought ? justBoughtOf(selection) : undefined;
@@ -345,7 +367,7 @@ function demoViews(
     justBought === undefined
       ? undefined
       : { id: justBought, on: demoPurchaseTime(now).slice(0, 10) },
-    states.refund ? DEMO.refundDaysLeft : [],
+    states.refund ? refundDaysLeft : [],
   );
   return selection.map((pledge, position) => {
     const demo = anonymized(pledge, fakeId);

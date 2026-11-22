@@ -21,6 +21,7 @@ import type { Ship } from '@/ships/ships';
  * - the base ships of two of the CCU Consultant's cases (#425, `demo-ccu-cases.ts`): one always
  *   available today with CCUs from it and nothing giving it ("Soon without base ship" too), and one
  *   the buy back gives as often as the hangar has CCUs from it, which the section leaves out.
+ * - one of Melt and Rebuy's ships (#532), a standalone ship of the hangar on a day of its own.
  * Ships with a price increase of the demo are avoided while others fit. A case the demo hangar
  * can't give (e.g. without CCUs) is left out.
  */
@@ -53,6 +54,11 @@ export interface DemoShipRemovalsInput {
    * stay so their groups keep showing.
    */
   ccuCases?: { leaving?: number; covered?: number; stay?: readonly number[] };
+  /**
+   * The ships of Melt and Rebuy's cases (#532): one that leaves on a day of its own, the others
+   * stay.
+   */
+  rebuy?: { leaving?: number; stay?: readonly number[] };
   now: number;
 }
 
@@ -79,9 +85,13 @@ export function demoShipRemovals(input: DemoShipRemovalsInput): DemoShipRemovals
     now,
   });
   const used = new Set<number>(
-    [input.ccuCases?.leaving, input.ccuCases?.covered, ...(input.ccuCases?.stay ?? [])].filter(
-      (id) => id !== undefined,
-    ),
+    [
+      input.ccuCases?.leaving,
+      input.ccuCases?.covered,
+      ...(input.ccuCases?.stay ?? []),
+      input.rebuy?.leaving,
+      ...(input.rebuy?.stay ?? []),
+    ].filter((id) => id !== undefined),
   );
   const onSale = (entry: RemovalCcus) => !input.buyable || input.buyable.has(entry.removal.ship.id);
   /** The first entry that fits, preferring ships without a price increase. */
@@ -134,10 +144,13 @@ export function demoShipRemovals(input: DemoShipRemovalsInput): DemoShipRemovals
     candidates.find((entry) => entry.removal.ship.id === id);
   const leaving = byShip(input.ccuCases?.leaving);
   const covered = byShip(input.ccuCases?.covered);
+  const rebuy = byShip(input.rebuy?.leaving);
   // On the hour of a fixed time of day, so a notification closed with × stays closed that day.
   const soon = { at: day(now, 4).at + 18 * HOUR };
   const next = day(now, 18);
   const later = day(now, 40);
+  // A day of its own, so the other cases' days keep their ships.
+  const rebuyDay = day(now, 25);
   return {
     removals: [
       ...removal(alone, soon),
@@ -148,10 +161,11 @@ export function demoShipRemovals(input: DemoShipRemovalsInput): DemoShipRemovals
       ...removal(critical, later),
       ...removal(warbond, later),
       ...removal(covered, later),
+      ...removal(rebuy, rebuyDay),
     ],
     limited: new Set(warning ? [warning.removal.ship.id] : []),
     onSale: new Set(
-      [warning, standard, uncovered, critical, warbond, leaving, covered].flatMap((entry) =>
+      [warning, standard, uncovered, critical, warbond, leaving, covered, rebuy].flatMap((entry) =>
         entry && onSale(entry) ? [entry.removal.ship.id] : [],
       ),
     ),

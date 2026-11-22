@@ -415,6 +415,8 @@
       "ccuCoverageGapsHint": "Algunos CCU no tienen nave base en el hangar o la recompra de la demo, o tienen muy pocas formas de conseguirla. Desactivado, la recompra de la demo le da una a cada uno, así que el CCU Consultant y su recuadro en la barra lateral no muestran ninguno.",
       "ccuDiscountAtRisk": "CCU con el descuento en riesgo",
       "ccuDiscountAtRiskHint": "El precio de algunas naves base de los CCU de la demo sube. Desactivado, no sube ninguno, así que «Descuento en riesgo» del CCU Consultant está vacío.",
+      "rebuyable": "Pledges recomprables",
+      "rebuyableHint": "Algunos pledges del hangar de la demo se pueden fundir ahora y recomprar más tarde sin pérdida. Desactivado, ninguno, así que la lista «Fundir y recomprar» está vacía.",
       "runningPlanStage": "Fase del plan en curso",
       "runningPlanStages": {
         "cart": "Fundir primero: faltan pinturas en el carrito",

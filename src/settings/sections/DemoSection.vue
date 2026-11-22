@@ -270,6 +270,18 @@ async function reset() {
     </SettingCheck>
   </SettingsGroup>
 
+  <!-- Melt and Rebuy (#532): its List Shortcut with pledges and empty. -->
+  <SettingsGroup :disabled="off">
+    <SettingCheck
+      :checked="settings.demo.rebuyable"
+      :disabled="off"
+      :hint="i18n.t('settings.demo.rebuyableHint')"
+      @change="(on) => set({ rebuyable: on })"
+    >
+      {{ i18n.t('settings.demo.rebuyable') }}
+    </SettingCheck>
+  </SettingsGroup>
+
   <!-- The watchlists (#474): what a watchlist's dialog says of browser notifications (#469). -->
   <SettingsGroup :disabled="off">
     <SettingCheck

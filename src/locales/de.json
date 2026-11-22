@@ -415,6 +415,8 @@
       "ccuCoverageGapsHint": "Einige CCUs haben kein Basisschiff im Demo-Hangar oder Buy Back oder zu wenige Wege dorthin. Aus gibt das Demo Buy Back jedem eines, sodass der CCU Consultant und seine Box in der Sidebar keine zeigen.",
       "ccuDiscountAtRisk": "CCUs mit Rabatt in Gefahr",
       "ccuDiscountAtRiskHint": "Einige Basisschiffe der Demo-CCUs werden teurer. Aus wird keines teurer, sodass „Rabatt in Gefahr“ im CCU Consultant leer ist.",
+      "rebuyable": "Wieder kaufbare Pledges",
+      "rebuyableHint": "Einige Pledges des Demo-Hangars kannst du jetzt einschmelzen und später ohne Verlust wieder kaufen. Aus geht das bei keinem, sodass die Liste „Einschmelzen und wieder kaufen“ leer ist.",
       "runningPlanStage": "Stand des laufenden Plans",
       "runningPlanStages": {
         "cart": "Erst einschmelzen: Paints fehlen im Warenkorb",
