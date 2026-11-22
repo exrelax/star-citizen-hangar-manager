@@ -24,6 +24,8 @@ const props = defineProps<{
   status?: StoreStatus;
 }>();
 const emit = defineEmits<{ remove: []; count: [count: number] }>();
+/** `actions`: more buttons before the one that removes it, e.g. into the cart (#529). */
+defineSlots<{ actions?(): unknown }>();
 
 const ICONS: Record<PlainItem['item']['kind'], { name: IconName; set?: IconSet }> = {
   hangar: { name: 'hangar', set: 'custom' },
@@ -127,6 +129,7 @@ const setCount = (next: number) =>
       <span v-else-if="count > 1" class="shm-watch-item-count">×{{ count }}</span>
       <span v-if="value" class="shm-value">{{ value }}</span>
     </span>
+    <slot name="actions" />
     <button
       v-tooltip="i18n.t('watchlists.remove')"
       type="button"

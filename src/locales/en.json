@@ -1992,6 +1992,24 @@
     "storeAlertsHint": "When an item of the Pledge Store on it gets a new price, or goes off or on sale.",
     "storeAlertsKindOff": "Pledge Store changes on watchlists are turned off in the settings (Notifications).",
     "fillerName": "Filler paints of the plan of $1",
-    "fillerDescription": "The Paint Discount Consultant’s filler paints: melt them once RSI allows it, 24 hours after the purchase."
+    "fillerDescription": "The Paint Discount Consultant’s filler paints: melt them once RSI allows it, 24 hours after the purchase.",
+    "cartAll": "Add to cart",
+    "cartTitleAll": "Add “$1” to the cart",
+    "cartOne": "Add “$1” to the cart",
+    "cartSkipCcu": "CCU: add it with RSI’s ship upgrade dialog",
+    "cartSkipOff": "Not on sale now",
+    "cartSkipUnknown": "Its price or SKU isn’t known yet; read the Pledge Store again",
+    "cartNothing": "Nothing of it can go into the cart now.",
+    "cartTotal": "Total",
+    "cartNote": "Your cart isn’t emptied: items already in it stay. Nothing is bought – you check the cart and pay there.",
+    "cartAdd": {
+      "one": "Add $1 item",
+      "other": "Add $1 items"
+    },
+    "cartAdded": {
+      "one": "$1 item is in your cart now.",
+      "other": "$1 items are in your cart now."
+    },
+    "cartOpen": "Open the cart"
   }
 }

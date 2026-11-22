@@ -12,8 +12,16 @@ import { vTooltip } from '@/shared/tooltip/tooltip';
 import { computed, nextTick, provide, ref, useTemplateRef } from 'vue';
 import { searchPlain, watchSections, WATCH_SOURCES, type WatchSource } from '../watchlist-view';
 import { WATCHLIST_ROW } from '../watchlist-row';
-import { itemKey, type PledgeLists, type Watchlist, type WatchItemRef } from '../watchlists';
+import {
+  itemKey,
+  type PledgeLists,
+  type WatchItem,
+  type Watchlist,
+  type WatchItemRef,
+} from '../watchlists';
 import WatchItemRow from './WatchItemRow.vue';
+import WatchlistCartDialog from './WatchlistCartDialog.vue';
+import ShipUpgradeButtons from '@/store/components/ShipUpgradeButtons.vue';
 import { storeStatus } from '../store-status';
 import { useStoreCatalog } from '../use-store-catalog';
 import WatchlistMeta from './WatchlistMeta.vue';
@@ -45,6 +53,29 @@ const emit = defineEmits<{
 }>();
 
 const catalog = useStoreCatalog();
+
+/*
+ * "Add to cart" (#529): all store items but CCUs, or one. A CCU opens RSI's ship upgrade dialog
+ * with its target instead, until RSI's cart request for CCUs is known (#540).
+ */
+const cartFor = ref<{ title: string; items: readonly WatchItem[] }>();
+/** Its store items for the cart, CCUs too: the dialog tells why they stay out. */
+const cartItems = computed(() =>
+  props.list.items.some((item) => item.kind === 'storePaint' || item.kind === 'storeShip')
+    ? props.list.items.filter((item) => item.kind !== 'hangar' && item.kind !== 'buyback')
+    : [],
+);
+function upgradeOf(shipId: number) {
+  const ship = catalog.value.ships?.find((candidate) => candidate.id === shipId);
+  const skuId = catalog.value.buyable?.find((sku) => sku.shipId === shipId)?.skuId;
+  const warbondSkuId = catalog.value.warbonds?.find((sku) => sku.shipId === shipId)?.skuId;
+  return {
+    shipId,
+    shipName: ship?.name ?? '',
+    ...(skuId !== undefined && { skuId }),
+    ...(warbondSkuId !== undefined && { warbondSkuId }),
+  };
+}
 
 // The rows of My Hangar and the Buy Back offer to remove their pledge from this watchlist.
 provide(WATCHLIST_ROW, { remove: (ref: WatchItemRef) => emit('remove', itemKey(ref)) });
@@ -188,11 +219,25 @@ async function askDelete() {
       class="shm-watchlist-section"
       :aria-labelledby="`shm-watchlist-${list.id}-${source}`"
     >
-      <h4 :id="`shm-watchlist-${list.id}-${source}`" class="shm-watchlist-section-title">
-        <SvgIcon :name="HEADINGS[source].icon" :set="HEADINGS[source].set" />
-        {{ i18n.t(HEADINGS[source].title) }}
-        <span class="shm-watchlist-section-count">{{ sections[source]!.count }}</span>
-      </h4>
+      <div class="shm-watchlist-section-head">
+        <h4 :id="`shm-watchlist-${list.id}-${source}`" class="shm-watchlist-section-title">
+          <SvgIcon :name="HEADINGS[source].icon" :set="HEADINGS[source].set" />
+          {{ i18n.t(HEADINGS[source].title) }}
+          <span class="shm-watchlist-section-count">{{ sections[source]!.count }}</span>
+        </h4>
+        <!-- All its paints and standalone ships into RSI's cart (#529). -->
+        <button
+          v-if="source === 'store' && cartItems.length"
+          type="button"
+          class="shm-button shm-watchlist-cart-all"
+          @click="
+            cartFor = { title: i18n.t('watchlists.cartTitleAll', [list.name]), items: cartItems }
+          "
+        >
+          <SvgIcon name="basket-shopping" />
+          {{ i18n.t('watchlists.cartAll') }}
+        </button>
+      </div>
       <PledgeList
         v-if="source === 'hangar' && sections.hangar!.pledges.length"
         :pledges="sections.hangar!.pledges"
@@ -219,9 +264,40 @@ async function askDelete() {
           :status="source === 'store' ? storeStatus(entry.item, catalog) : undefined"
           @remove="emit('remove', entry.key)"
           @count="emit('count', entry.key, $event)"
-        />
+        >
+          <template v-if="source === 'store'" #actions>
+            <!-- A CCU: RSI's ship upgrade dialog with its target (#529, the cart follows #540). -->
+            <ShipUpgradeButtons
+              v-if="entry.item.kind === 'storeCcu'"
+              short
+              v-bind="upgradeOf(entry.item.toShipId)"
+            />
+            <button
+              v-else
+              v-tooltip="i18n.t('watchlists.cartOne', [entry.item.name])"
+              type="button"
+              class="shm-watch-item-cart"
+              :aria-label="i18n.t('watchlists.cartOne', [entry.item.name])"
+              @click="
+                cartFor = {
+                  title: i18n.t('watchlists.cartOne', [entry.item.name]),
+                  items: [entry.item],
+                }
+              "
+            >
+              <SvgIcon name="basket-shopping" />
+            </button>
+          </template>
+        </WatchItemRow>
       </div>
     </section>
+    <WatchlistCartDialog
+      v-if="cartFor"
+      :title="cartFor.title"
+      :items="cartFor.items"
+      :catalog="catalog"
+      @close="cartFor = undefined"
+    />
   </section>
 </template>
 
@@ -361,6 +437,45 @@ async function askDelete() {
 .shm-watchlist-section {
   display: flex;
   flex-direction: column;
+}
+
+.shm-watchlist-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  margin-top: 12px;
+}
+
+.shm-watchlist-section-head .shm-watchlist-section-title {
+  margin: 0;
+}
+
+.shm-watchlist-cart-all.shm-button {
+  min-height: 28px;
+}
+
+/* A store item into the cart: as its × to remove it, 44 × 44 px to hit. */
+.shm-watch-item-cart {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-right: -10px;
+  padding: 0;
+  color: var(--shm-text-muted);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.shm-watch-item-cart:hover,
+.shm-watch-item-cart:focus-visible {
+  color: var(--shm-accent);
+  outline: none;
 }
 
 .shm-watchlist-section-title {

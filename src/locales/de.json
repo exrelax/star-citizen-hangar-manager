@@ -1992,6 +1992,24 @@
     "storeAlertsHint": "Wenn ein Pledge Store Eintrag darauf einen neuen Preis bekommt oder aus dem Verkauf geht oder wieder hinein.",
     "storeAlertsKindOff": "Pledge Store Änderungen auf Watchlists sind in den Einstellungen (Benachrichtigungen) ausgeschaltet.",
     "fillerName": "Füll-Paints des Plans vom $1",
-    "fillerDescription": "Die Füll-Paints des Paint Discount Consultants: Schmilz sie ein, sobald RSI es erlaubt, 24 Stunden nach dem Kauf."
+    "fillerDescription": "Die Füll-Paints des Paint Discount Consultants: Schmilz sie ein, sobald RSI es erlaubt, 24 Stunden nach dem Kauf.",
+    "cartAll": "In den Warenkorb",
+    "cartTitleAll": "„$1“ in den Warenkorb legen",
+    "cartOne": "„$1“ in den Warenkorb legen",
+    "cartSkipCcu": "CCU: über RSIs Ship-Upgrade-Dialog hinzufügen",
+    "cartSkipOff": "Gerade nicht im Verkauf",
+    "cartSkipUnknown": "Preis oder SKU noch unbekannt; lies den Pledge Store neu ein",
+    "cartNothing": "Davon kann gerade nichts in den Warenkorb.",
+    "cartTotal": "Summe",
+    "cartNote": "Dein Warenkorb wird nicht geleert: Was schon drin ist, bleibt. Gekauft wird nichts – du prüfst den Warenkorb und bezahlst dort.",
+    "cartAdd": {
+      "one": "$1 Eintrag hinzufügen",
+      "other": "$1 Einträge hinzufügen"
+    },
+    "cartAdded": {
+      "one": "$1 Eintrag ist jetzt in deinem Warenkorb.",
+      "other": "$1 Einträge sind jetzt in deinem Warenkorb."
+    },
+    "cartOpen": "Warenkorb öffnen"
   }
 }
