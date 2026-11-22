@@ -1,14 +1,22 @@
 import { BUYBACK_SNAPSHOT_VERSION } from '@/buyback/buyback';
 import { buybackSnapshot } from '@/buyback/buyback-storage';
+import { demoKeyItem } from '@/demo/demo-key';
+import { demoBaseShipCounts } from '@/demo/demo-upgrade-counts';
 import { logError } from '@/errors/error-log';
 import { hangarSnapshot } from '@/hangar/hangar-storage';
 import { HANGAR_SNAPSHOT_VERSION } from '@/hangar/pledge';
 import { i18n, locale } from '@/i18n';
+import { localToday } from '@/orders/refund';
+import {
+  priceIncreasesItem,
+  storedPriceIncreases,
+} from '@/price-increases/price-increases-storage';
 import { followLanguageSetting } from '@/settings/language';
 import { settingsItem, withDefaults } from '@/settings/settings';
 import { createShipFactsLookup } from '@/ships/ship-facts';
 import { buyableShipsItem, current, shipsItem } from '@/ships/ships-storage';
 import { demoCountdownSources } from '@/demo/demo-upgrade-countdown';
+import { STORE_ITEMS_VERSION, storeItemsItem } from '@/store/items/store-items-storage';
 import { bundledShipFacts, shipFactsItem, storedShipFacts } from '@/ships/sync-ship-facts';
 import { createBaseShipCounts, type BaseShipCounts } from '@/ships/upgrade-dialog-counts';
 import {
@@ -30,8 +38,9 @@ import './style.css';
  * Additions to RSI's ship upgrade dialog, on every page of RSI's website the dialog opens on: the
  * label "Always available" (#401), the countdown on target ships that aren't (#570) and the counts
  * on the base ships (#506). Reads only the settings, the ship facts, the events, the website's
- * warbond offers (in the demo its own events, #572) and – once the dialog opens – the stored hangar, buy back and ships;
- * see `upgrade-dialog-labels.ts`.
+ * warbond offers (in the demo its own events, #572) and – once the dialog opens – the stored
+ * hangar, buy back and ships (in the demo its own hangar and buy back instead, #578); see
+ * `upgrade-dialog-labels.ts`.
  */
 export default defineContentScript({
   matches: ['https://robertsspaceindustries.com/*'],
@@ -68,27 +77,63 @@ export default defineContentScript({
     let targetEnd = endOf();
 
     // The counts (#506): read when the dialog opens, read again once hangar, buy back or ships change.
+    // In the demo (#578) from its own hangar and buy back, never from the stored real ones.
     let countsOf: ((target: UpgradeTarget) => BaseShipCounts | undefined) | undefined;
+    // Counts up with every reset, so a load begun before it never sets outdated counts.
+    let generation = 0;
     let loading = false;
+    const realCounts = async () => {
+      const [hangar, buyback, ships] = await Promise.all([
+        hangarSnapshot.getValue(),
+        buybackSnapshot.getValue(),
+        shipsItem.getValue(),
+      ]);
+      return createBaseShipCounts({
+        ships: current(ships)?.ships ?? [],
+        ...(hangar?.version === HANGAR_SNAPSHOT_VERSION && { hangar: hangar.pledges }),
+        ...(buyback?.version === BUYBACK_SNAPSHOT_VERSION && { buyback: buyback.pledges }),
+      });
+    };
+    const demoCounts = async () => {
+      const [key, ships, storeItems, buyable, increases] = await Promise.all([
+        demoKeyItem.getValue(),
+        shipsItem.getValue(),
+        storeItemsItem.getValue(),
+        buyableShipsItem.getValue(),
+        priceIncreasesItem.getValue(),
+      ]);
+      const skus = current(buyable)?.skus;
+      return demoBaseShipCounts({
+        key,
+        settings: settings.demo,
+        ships: current(ships)?.ships,
+        storeItems: storeItems?.version === STORE_ITEMS_VERSION ? storeItems.items : undefined,
+        buyable: skus && new Set(skus.map((sku) => sku.shipId)),
+        realIncreases: storedPriceIncreases(increases),
+        today: localToday(),
+        now: Date.now(),
+      });
+    };
     const loadCounts = async () => {
       if (countsOf || loading || !settings.upgradeDialogBaseCounts) return;
       loading = true;
+      const started = generation;
       try {
-        const [hangar, buyback, ships] = await Promise.all([
-          hangarSnapshot.getValue(),
-          buybackSnapshot.getValue(),
-          shipsItem.getValue(),
-        ]);
-        countsOf = createBaseShipCounts({
-          ships: current(ships)?.ships ?? [],
-          ...(hangar?.version === HANGAR_SNAPSHOT_VERSION && { hangar: hangar.pledges }),
-          ...(buyback?.version === BUYBACK_SNAPSHOT_VERSION && { buyback: buyback.pledges }),
-        });
+        const counts = await (settings.demoMode ? demoCounts() : realCounts());
+        if (started === generation) countsOf = counts;
       } finally {
         loading = false;
       }
-      dialog.update();
+      if (started === generation) dialog.update();
+      else void loadCounts();
     };
+    const resetCounts = () => {
+      generation += 1;
+      countsOf = undefined;
+    };
+    // The counts come from the real hangar or the demo's, made by its settings.
+    const demoSource = (value: typeof settings) =>
+      value.demoMode ? JSON.stringify(value.demo) : 'real';
     const number = () => new Intl.NumberFormat(locale.value);
     const countsText = (counts: BaseShipCounts) => {
       const format = (value: number) => number().format(value);
@@ -135,8 +180,10 @@ export default defineContentScript({
     // A changed setting or new data apply to an open dialog at once.
     ctx.onInvalidated(
       settingsItem.watch((stored) => {
+        const before = demoSource(settings);
         settings = withDefaults(stored);
         targetEnd = endOf();
+        if (demoSource(settings) !== before) resetCounts();
         dialog.update();
         if (document.querySelector('.ShipUpgradeModal')) void loadCounts();
       }),
@@ -170,13 +217,17 @@ export default defineContentScript({
       }),
     );
     const reloadCounts = () => {
-      if (!countsOf) return;
-      countsOf = undefined;
+      resetCounts();
       if (document.querySelector('.ShipUpgradeModal')) void loadCounts();
     };
     ctx.onInvalidated(hangarSnapshot.watch(reloadCounts));
     ctx.onInvalidated(buybackSnapshot.watch(reloadCounts));
     ctx.onInvalidated(shipsItem.watch(reloadCounts));
+    // What the demo's hangar and buy back are made of (#578).
+    ctx.onInvalidated(demoKeyItem.watch(reloadCounts));
+    ctx.onInvalidated(storeItemsItem.watch(reloadCounts));
+    ctx.onInvalidated(buyableShipsItem.watch(reloadCounts));
+    ctx.onInvalidated(priceIncreasesItem.watch(reloadCounts));
     ctx.onInvalidated(watch(locale, dialog.update));
   },
 });
