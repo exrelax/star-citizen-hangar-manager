@@ -192,7 +192,7 @@ const kind = computed(() =>
             ><template v-if="index < pledge.ships.length - 1">, </template>
           </template>
         </span>
-        <span v-else-if="pledge.contained" class="shm-original">
+        <span v-else-if="pledge.contained && !pledge.pack" class="shm-original">
           {{ i18n.t('buyback.contains', [pledge.contained]) }}
         </span>
         <span class="shm-meta">

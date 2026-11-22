@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { DEMO } from '@/config';
+import { isRewardTitle } from '@/hangar/rewards';
 import { PLEDGE_FILTER_PREDICATES } from '@/hangar/filters';
 import { BUYBACK_FILTER_PREDICATES } from '@/buyback/buyback-view';
 import { FALLBACK_CATALOG } from './catalog';
@@ -77,8 +78,7 @@ describe.each(['key-a', 'key-b'])(
     const { orders, pledgeOrders } = generatedBuyback.orders;
     const giftable = (id: number) => buyback.find((pledge) => pledge.id === id)!.isProbablyGiftable;
     const cases = generatedBuyback.pledges.filter(
-      (pledge) =>
-        !pledge.isUpgrade && !/^(IAE|Luminalia) /.test(pledge.title) && pledge.price !== null,
+      (pledge) => !pledge.isUpgrade && !isRewardTitle(pledge.title) && pledge.price !== null,
     );
     const [money, back, credit, mixed, late, unknown, yes, no, sameA, sameB] = cases.map(
       (pledge) => pledge.id,

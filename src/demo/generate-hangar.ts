@@ -289,14 +289,30 @@ function storeItemPledge(
   );
 }
 
-/** A pack of two ships the store doesn't sell (any more): compared with the sum of both. */
+/** How many ships the demo's packs hold, by their index (#516): two, many, two with extras. */
+const PACK_SHIPS = [2, 6, 2];
+
+/**
+ * A pack of ships the store doesn't sell (any more), compared with the sum of its ships (#515,
+ * demo cases in #516): the first of two ships, the second of many – a long title, shortened in
+ * the list – and the third of two ships with gear and a paint as extras.
+ */
 function pack(random: DemoRandom, catalog: DemoCatalog, index: number): DemoPledge {
-  const ships = random.shuffle(`pack:${index}`, catalog.ships, (ship) => ship.id).slice(0, 2);
+  const count = PACK_SHIPS[index % PACK_SHIPS.length]!;
+  const ships = random.shuffle(`pack:${index}`, catalog.ships, (ship) => ship.id).slice(0, count);
   const price = ships.reduce((sum, ship) => sum + ship.msrp, 0);
+  const gear = catalog.items.find((entry) => entry.category === 'Gear' && entry.price > 0);
+  const extras: PledgeItem[] =
+    index % PACK_SHIPS.length === 2
+      ? [
+          { title: `${ships[0]!.name} - Pack Livery`, kind: 'Skin' },
+          gear ? { title: gear.name, kind: 'FPS Equipment' } : { title: 'Pack Poster' },
+        ]
+      : [];
   return basePledge(
     `Package - ${ships.map((ship) => ship.name).join(' & ')} Pack`,
     roundPrice(price * 0.9),
-    [...ships.map(shipItem), insuranceItem('Lifetime Insurance')],
+    [...ships.map(shipItem), ...extras, insuranceItem('Lifetime Insurance')],
     'packs',
     price,
     { isUpgradeable: true },

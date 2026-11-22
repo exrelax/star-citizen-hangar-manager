@@ -166,6 +166,7 @@ export function generateBuyback(
       ) ?? sorted.at(-1)!;
     return ccuPledge(from, to, random.chance(`ccu:${index}:warbond`, 0.3) ? 'Warbond' : 'Standard');
   });
+  made.push(...buybackPacks(random, sorted));
   made.push(...unavailableCcus(sorted));
   for (const ship of notOnSale) made.push(...ccusToNotOnSale(sorted, ship));
   made.push(...extra);
@@ -282,6 +283,27 @@ function withGiftableCases(
     orders.pledgeOrders[id] = { ...orders.pledgeOrders[sameOrderA!.id]! };
   });
   return giftFlags;
+}
+
+/**
+ * Packs of the buy back (#515, demo cases in #516): one of two ships and one of many, listed as
+ * RSI's detail page lists them – the first ship in "Contained", every item by its name.
+ */
+function buybackPacks(random: DemoRandom, sorted: readonly Ship[]): Omit<BuybackPledge, 'id'>[] {
+  return [2, 5].flatMap((count) => {
+    const ships = random.shuffle(`buybackPack:${count}`, sorted, (ship) => ship.id).slice(0, count);
+    if (ships.length < count) return [];
+    const names = ships.map((ship) => ship.name);
+    return [
+      {
+        title: `Package - ${names.join(' & ')} Pack`,
+        contained: `${names[0]} and ${count} items`,
+        items: [...names, 'Lifetime Insurance'],
+        isUpgrade: false,
+        category: 'standalone_ship',
+      },
+    ];
+  });
 }
 
 /**
