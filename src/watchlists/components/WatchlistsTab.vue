@@ -189,7 +189,8 @@ function removeEntry(list: Watchlist, key: string) {
           {{ i18n.t('watchlists.new') }}
         </button>
       </header>
-      <p class="shm-watchlists-intro">{{ i18n.t('watchlists.intro') }}</p>
+      <!-- A secondary text as the other tabs' intros (#561): `.shm-store-intro` of StoreTab.vue. -->
+      <p class="shm-store-intro">{{ i18n.t('watchlists.intro') }}</p>
       <ul v-if="lists.length" class="shm-rows shm-watchlists-list">
         <li v-for="list in lists" :key="list.id" class="shm-row shm-watchlists-row">
           <button type="button" class="shm-watchlists-open" @click="openId = list.id">
@@ -266,7 +267,6 @@ function removeEntry(list: Watchlist, key: string) {
   padding: 6px 12px;
 }
 
-.shm-watchlists-intro,
 .shm-watchlists-empty {
   margin: 0;
   color: var(--shm-text-muted);
