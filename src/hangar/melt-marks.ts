@@ -135,3 +135,23 @@ export function formatTimeLeft(ms: number, locale: string): string {
   if (!hours) return unit(rest, 'minute');
   return rest ? `${unit(hours, 'hour')} ${unit(rest, 'minute')}` : unit(hours, 'hour');
 }
+
+/**
+ * What "Mark to melt" of the sidebar's "Selected" box does (#551): it marks every selected pledge
+ * that can be melted and isn't marked yet (`toMark`) and leaves the others (`skipped`: not
+ * meltable, or marked already); once all meltable ones are marked it unmarks them (`unmark`).
+ * Nothing to do without a meltable pledge.
+ */
+export function selectionMarks(
+  selected: readonly { id: number; isMeltable: boolean }[],
+  marked: ReadonlySet<number>,
+): { toMark: number[]; skipped: number; unmark: number[] } | undefined {
+  const meltable = selected.filter((pledge) => pledge.isMeltable).map((pledge) => pledge.id);
+  if (!meltable.length) return undefined;
+  const toMark = meltable.filter((id) => !marked.has(id));
+  return {
+    toMark,
+    skipped: selected.length - toMark.length,
+    unmark: toMark.length ? [] : meltable,
+  };
+}

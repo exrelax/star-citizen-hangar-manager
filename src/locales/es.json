@@ -1291,7 +1291,19 @@
     "buttonHint": "Marca este pledge para fundirlo más tarde: el Hangar Manager te avisa cuando RSI lo permite, 24 horas después de comprarlo.",
     "waiting": "Fundir en $1",
     "ready": "Fundir ahora",
-    "hint": "Marcado para fundir. RSI permite fundir un pledge 24 horas después de comprarlo: desde el $1."
+    "hint": "Marcado para fundir. RSI permite fundir un pledge 24 horas después de comprarlo: desde el $1.",
+    "selectionMarked": {
+      "one": "$1 pledge marcado para fundir.",
+      "other": "$1 pledges marcados para fundir."
+    },
+    "selectionSkipped": {
+      "one": "$1 se quedó igual: no se puede fundir o ya estaba marcado.",
+      "other": "$1 se quedaron igual: no se pueden fundir o ya estaban marcados."
+    },
+    "selectionUnmarked": {
+      "one": "Marca quitada de $1 pledge.",
+      "other": "Marcas quitadas de $1 pledges."
+    }
   },
   "browserNotifications": {
     "title": "Notificaciones del navegador",

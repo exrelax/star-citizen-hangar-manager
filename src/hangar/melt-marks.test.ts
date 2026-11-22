@@ -7,6 +7,7 @@ import {
   marksInHangar,
   meltableAt,
   meltMarksItem,
+  selectionMarks,
   setMeltMarks,
   toggledMarks,
 } from './melt-marks';
@@ -92,5 +93,23 @@ describe('setMeltMarks (#274)', () => {
     await setMeltMarks([5], true, true);
     expect(Object.keys(await demoMeltMarksItem.getValue())).toEqual(['5']);
     expect(await meltMarksItem.getValue()).toEqual({});
+  });
+});
+
+describe('selectionMarks (#551)', () => {
+  const pledge = (id: number, isMeltable = true) => ({ id, isMeltable });
+
+  it('marks the meltable ones not marked yet and skips the others', () => {
+    const plan = selectionMarks([pledge(1), pledge(2), pledge(3, false)], new Set([2]));
+    expect(plan).toEqual({ toMark: [1], skipped: 2, unmark: [] });
+  });
+
+  it('unmarks them once all meltable ones are marked', () => {
+    const plan = selectionMarks([pledge(1), pledge(2), pledge(3, false)], new Set([1, 2]));
+    expect(plan).toEqual({ toMark: [], skipped: 3, unmark: [1, 2] });
+  });
+
+  it('offers nothing without a meltable pledge', () => {
+    expect(selectionMarks([pledge(3, false)], new Set())).toBeUndefined();
   });
 });

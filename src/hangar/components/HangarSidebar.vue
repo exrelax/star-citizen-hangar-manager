@@ -38,7 +38,7 @@ import { checkOffDemo, demoNotificationsItem } from '@/demo/demo-notes';
 import { useOpenNotifications } from '@/notifications/use-notifications';
 import { meltReadyIds, useMarkedPledges } from '../use-melt-marks';
 import { clearHangarFilter, hangarViewFilter, showHangarFilter } from '../view-filter';
-import { formatTimeLeft } from '../melt-marks';
+import { formatTimeLeft, selectionMarks, setMeltMarks } from '../melt-marks';
 import { myGearHref } from '../route';
 import { useNow } from '@/shared/use-now';
 import { vMarkWrapped } from '@/shared/mark-wrapped';
@@ -170,6 +170,33 @@ const notes = computed(() =>
 const checkOff = (ids?: readonly string[]) => (demo.value ? checkOffDemo(ids) : checkOffReal(ids));
 const marked = useMarkedPledges();
 const now = useNow();
+
+/*
+ * "Mark to melt" of the "Selected" box (#551): marks every selected pledge that can be melted and
+ * isn't marked yet, or – once all of them are – unmarks them. In the demo's own marks in the demo.
+ */
+const selectionMark = computed(() => selectionMarks(selected.value, new Set(marked.value.keys())));
+const selectionMarkDone = ref<string>();
+watch(
+  () => selected.value.map((pledge) => pledge.id).join(),
+  () => (selectionMarkDone.value = undefined),
+);
+async function markSelection() {
+  const plan = selectionMark.value;
+  if (!plan) return;
+  if (plan.toMark.length) {
+    await setMeltMarks(plan.toMark, true, !!demo.value);
+    const done = i18n.n('meltMark.selectionMarked', plan.toMark.length, [plan.toMark.length]);
+    selectionMarkDone.value = plan.skipped
+      ? `${done} ${i18n.n('meltMark.selectionSkipped', plan.skipped, [plan.skipped])}`
+      : done;
+  } else {
+    await setMeltMarks(plan.unmark, false, !!demo.value);
+    selectionMarkDone.value = i18n.n('meltMark.selectionUnmarked', plan.unmark.length, [
+      plan.unmark.length,
+    ]);
+  }
+}
 const titleOf = computed(() => new Map(props.pledges.map((pledge) => [pledge.id, pledge.title])));
 /** Marked pledges of the hangar that can't be melted yet, the soonest first. */
 const pending = computed(() =>
@@ -1194,7 +1221,22 @@ async function move(box: Box, step: -1 | 1) {
               <SvgIcon name="gear" />
               {{ i18n.t('bulkExchange.disabled') }}
             </button>
+            <!-- Marks them all to melt later, or unmarks them (#551), as a row's own button. -->
+            <button
+              v-if="selectionMark"
+              v-tooltip="i18n.t('meltMark.buttonHint')"
+              type="button"
+              class="shm-button shm-sidebar-button is-full shm-melt-mark-button"
+              :aria-pressed="!selectionMark.toMark.length"
+              @click="markSelection"
+            >
+              <SvgIcon name="recycle" />
+              {{ i18n.t(selectionMark.toMark.length ? 'meltMark.mark' : 'meltMark.unmark') }}
+            </button>
           </div>
+          <p v-if="selectionMarkDone" class="shm-sidebar-note" role="status">
+            {{ selectionMarkDone }}
+          </p>
           <!-- All selected pledges onto a watchlist, or a new one (#549). -->
           <SelectionWatchlists :pledges="selected" />
           <BulkExchangeOverlay
