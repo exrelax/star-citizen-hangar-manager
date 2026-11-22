@@ -3,6 +3,7 @@ import { i18n } from '@/i18n';
 import { computed, ref, shallowRef, watch, type Ref } from 'vue';
 import {
   addItem,
+  addItemCounts,
   createWatchlist,
   itemKey,
   removeItem,
@@ -127,15 +128,34 @@ export async function addItemsToWatchlist(
   return added;
 }
 
-/** A new watchlist with this name and the items on it. */
+/**
+ * Puts the store items with their counts on the watchlist with this id, in one write: the counts
+ * add to those already on it (pledges to rebuy, #531). How many were new and on it already.
+ */
+export async function addItemCountsToWatchlist(
+  id: string,
+  items: readonly (NewWatchItem & { count: number })[],
+): Promise<{ added: number; raised: number }> {
+  const list = lists.value.find((other) => other.id === id);
+  if (!list) return { added: 0, raised: 0 };
+  const { list: next, added, raised } = addItemCounts(list, items, Date.now());
+  await storeWatchlist(next);
+  return { added, raised };
+}
+
+/**
+ * A new watchlist with this name and the items on it; optionally with a description, a date and a
+ * reminder (pledges to rebuy, #531).
+ */
 export async function createWatchlistWithItems(
   name: string,
-  items: readonly NewWatchItem[],
+  items: readonly (NewWatchItem & { count?: number })[],
+  fields: Omit<Parameters<typeof createWatchlist>[0], 'name'> = {},
 ): Promise<Watchlist> {
   const now = Date.now();
   const list = items.reduce(
     (next, item) => addItem(next, item, now),
-    createWatchlist({ name }, now),
+    createWatchlist({ ...fields, name }, now),
   );
   await storeWatchlist(list);
   return list;

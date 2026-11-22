@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import RebuyWatchlistAction from '@/melt-rebuy/components/RebuyWatchlistAction.vue';
 import { i18n, locale, type MessageKey } from '@/i18n';
 import { today } from '@/orders/refund';
 import { useProvidedCoverageSources } from '@/ccu-consultant/coverage';
@@ -265,6 +266,11 @@ const filterHint = (filter: PledgeFilter) => {
       <span v-if="!settings.hideMeltValue">
         {{ i18n.t('meltRebuy.shortcutFreed', [shortcutFreed(entries)]) }}
       </span>
+      <!-- The shortcut's pledges onto a watchlist to rebuy them (#531). -->
+      <RebuyWatchlistAction
+        :pledge-ids="entries.map((pledge) => pledge.id)"
+        button-class="shm-origin-button"
+      />
     </template>
     <template #group="{ group, open }">
       <GroupRow

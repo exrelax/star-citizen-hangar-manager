@@ -2075,7 +2075,48 @@
       "one": "$1 pledge mis sur « $2 ».",
       "other": "$1 pledges mis sur « $2 »."
     },
-    "selectionAlready": "Ils sont déjà tous sur « $1 »."
+    "selectionAlready": "Ils sont déjà tous sur « $1 ».",
+    "priceWhenAdded": "$1 à l’ajout",
+    "costTotal": "Total actuel",
+    "costChanged": {
+      "one": "$1 article ne s’achète plus au prix qu’il avait à l’ajout.",
+      "other": "$1 articles ne s’achètent plus au prix qu’ils avaient à l’ajout."
+    },
+    "costUnknown": {
+      "one": "Le prix de $1 article n’est pas encore connu.",
+      "other": "Les prix de $1 articles ne sont pas encore connus."
+    },
+    "rebuy": {
+      "button": {
+        "one": "Mettre $1 pledge sur une watchlist pour le racheter",
+        "other": "Mettre $1 pledges sur une watchlist pour les racheter"
+      },
+      "buttonHint": "Met les pledges rachetables sans perte sur une watchlist, sous forme des articles du Pledge Store à racheter, pour les racheter plus tard avec du store credit.",
+      "name": "Racheter après $1",
+      "items": {
+        "one": "Ils y vont comme $1 article du Pledge Store, avec sa quantité.",
+        "other": "Ils y vont comme $1 articles du Pledge Store, chacun avec sa quantité."
+      },
+      "cost": "Le rachat coûte",
+      "freed": "La fonte libère",
+      "skipped": {
+        "one": "$1 laissé de côté : il ne se rachète pas sans perte.",
+        "other": "$1 laissés de côté : ils ne se rachètent pas sans perte."
+      },
+      "mark": {
+        "one": "Marquer aussi $1 pledge pour fondre",
+        "other": "Marquer aussi $1 pledges pour fondre"
+      },
+      "markHint": "Vous les fondez toujours vous-même, dans la boîte de dialogue de RSI ou en fonte groupée.",
+      "added": {
+        "one": "$1 article mis sur « $2 ».",
+        "other": "$1 articles mis sur « $2 »."
+      },
+      "addedRaised": {
+        "one": "$1 article mis sur « $2 » ; il y était déjà et a été compté en plus.",
+        "other": "$1 articles mis sur « $2 », dont $3 déjà présents et comptés en plus."
+      }
+    }
   },
   "meltRebuy": {
     "label": "Rachetable",

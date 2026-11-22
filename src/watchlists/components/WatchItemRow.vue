@@ -9,6 +9,7 @@ import type { IconName, IconSet } from '@/icons/icon-names';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { computed } from 'vue';
+import { priceChangeOf } from '../store-cost';
 import type { StoreStatus } from '../store-status';
 import type { PlainItem } from '../watchlist-view';
 import { isStoreItem, WATCHLIST_LIMITS } from '../watchlists';
@@ -72,6 +73,20 @@ const sale = computed(() => {
     : { text: i18n.t('watchlists.notOnSale'), tone: 'is-muted' };
 });
 
+/**
+ * A store item's price since it was put on the watchlist, when it changed (#531): a pledge to
+ * rebuy can't be rebought for what it cost then any more.
+ */
+const priceChange = computed(() => {
+  const change = priceChangeOf(props.entry.item, props.status);
+  return (
+    change && {
+      text: i18n.t('watchlists.priceWhenAdded', [usd(change.was * count.value)]),
+      tone: change.higher ? 'is-warning' : 'is-muted',
+    }
+  );
+});
+
 /** A standalone ship's insurance, e.g. of a pledge to rebuy (#531). */
 const insurance = computed(() => {
   const { item } = props.entry;
@@ -96,8 +111,11 @@ const setCount = (next: number) =>
         <span v-if="insurance" class="shm-badge is-insurance">{{ insurance }}</span>
       </span>
       <span v-if="note" class="shm-watch-item-note">{{ note }}</span>
-      <span v-if="sale || warbond" class="shm-watch-item-status">
+      <span v-if="sale || priceChange || warbond" class="shm-watch-item-status">
         <span v-if="sale" :class="sale.tone">{{ sale.text }}</span>
+        <span v-if="priceChange" class="shm-value" :class="priceChange.tone">
+          {{ priceChange.text }}
+        </span>
         <span v-if="warbond" class="shm-value">{{ warbond }}</span>
       </span>
     </span>
@@ -211,6 +229,10 @@ const setCount = (next: number) =>
 
 .shm-watch-item-status .is-muted {
   color: var(--shm-text-muted);
+}
+
+.shm-watch-item-status .is-warning {
+  color: var(--shm-warning);
 }
 
 .shm-watch-item-status .is-danger {

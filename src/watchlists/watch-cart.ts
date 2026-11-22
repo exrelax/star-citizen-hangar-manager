@@ -3,9 +3,9 @@ import { isStoreItem, type WatchItem } from './watchlists';
 
 /*
  * A watchlist's Pledge Store items for RSI's cart (#529): paints by their SKU, standalone ships by
- * the SKU of their standard edition on sale, each with its count and price now. CCUs don't go in
- * this way yet – RSI's ship upgrade dialog sells them (#540) –, nor items not on sale or of unknown
- * price.
+ * the SKU of their standard edition on sale (one with an insurance by the store item naming it,
+ * #531), each with its count and price now. CCUs don't go in this way yet – RSI's ship upgrade
+ * dialog sells them (#540) –, nor items not on sale or of unknown price.
  */
 
 /** RSI takes at most this many of one SKU per "Add to cart". */
@@ -47,7 +47,7 @@ export function watchCartOf(items: readonly WatchItem[], catalog: StoreCatalog):
     const skuId =
       item.kind === 'storePaint'
         ? item.skuId
-        : catalog.buyable?.find((sku) => sku.shipId === item.shipId)?.skuId;
+        : (status.skuId ?? catalog.buyable?.find((sku) => sku.shipId === item.shipId)?.skuId);
     if (skuId === undefined || status.price === undefined || status.onSale !== true) {
       cart.skipped.push({ item, reason: 'unknown' });
       continue;

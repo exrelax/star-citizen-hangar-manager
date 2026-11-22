@@ -3,20 +3,19 @@
 // components breaks the build and the tests by the order they are compiled in.
 import '@/shared/overlay.css';
 import '@/hangar/components/row.css';
-import { STORE_CREDIT_VERSION, storeCreditItem } from '@/account/store-credit-storage';
 import { RSI_CART_PATH } from '@/buyback/cart';
 import { useDemoContext } from '@/demo/use-demo';
 import { formatUsd } from '@/hangar/discount-format';
 import { i18n, locale } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { useSettings } from '@/settings/use-settings';
-import { useStored } from '@/storage/use-stored';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { addLinesToCart, type CartResult } from '@/store/paint-consultant/cart';
 import { fontScaleStyle, themeClasses } from '@/themes/theme';
 import { computed, onMounted, onUnmounted, ref, useId, useTemplateRef } from 'vue';
 import { cartChunksOf, watchCartOf, type WatchCartSkip } from '../watch-cart';
 import type { StoreCatalog } from '../store-status';
+import { useStoreCreditUsd } from '../use-store-credit';
 import type { WatchItem } from '../watchlists';
 
 /*
@@ -43,13 +42,7 @@ const usd = (value: number) => formatUsd(value, locale.value);
 const count = computed(() => cart.value.lines.reduce((sum, line) => sum + line.qty, 0));
 
 /** The store credit there is: the account's, the demo's in the demo. */
-const storedCredit = useStored(storeCreditItem);
-const credit = computed(() => {
-  const value =
-    demo.value?.storeCredit ??
-    (storedCredit.value?.version === STORE_CREDIT_VERSION ? storedCredit.value.credit : undefined);
-  return value?.currency === 'USD' ? value.amount : undefined;
-});
+const credit = useStoreCreditUsd();
 
 const SKIPS: Record<
   WatchCartSkip,

@@ -1,6 +1,9 @@
+import { isAtLeast, type Insurance } from '@/hangar/insurance';
+import { splitInsurance, STANDALONE } from '@/melt-rebuy/rebuyable';
 import type { Ship, ShipSku, WarbondSku } from '@/ships/ships';
 import type { StoreItem } from '@/store/items/store-items';
-import type { WatchItemRef } from './watchlists';
+import { createShipLookup } from '@/store/warbond';
+import type { WatchInsurance, WatchItemRef } from './watchlists';
 
 /*
  * Where a Pledge Store item of a watchlist stands now (#470): its price and whether it can be bought,
@@ -10,7 +13,10 @@ import type { WatchItemRef } from './watchlists';
  * - A CCU costs the standard price difference of its ships and can be bought while its target ship
  *   is on sale; with a warbond edition of the target it costs less for new money. RSI can't sell it
  *   at all once its base ship costs as much as the target (#207).
- * - A standalone ship costs its standard price while it is on sale, less as warbond edition.
+ * - A standalone ship costs its standard price while it is on sale, less as warbond edition. One
+ *   with an insurance (a pledge to rebuy, #531) is the store's "Standalone Ships" item of the ship
+ *   that names that insurance or a better one ("Avenger Titan - LTI"): its price, its stock, its
+ *   SKU for the cart; not on sale while the store's items of the ship lack it.
  * - A paint costs its price in the store, its sale price if it has one.
  */
 
@@ -31,9 +37,63 @@ export interface StoreStatus {
   onSale?: boolean;
   /** RSI can't sell it at all: a CCU whose base costs as much as its target or more. */
   impossible?: boolean;
+  /** The SKU to put into the cart, where it isn't the ship's standard edition (#531). */
+  skuId?: number;
 }
 
 const round = (value: number) => Math.round(value * 100) / 100;
+
+const insuranceOf = (insurance: WatchInsurance): Insurance =>
+  insurance === 'lti' ? { lifetime: true } : { lifetime: false, months: insurance };
+
+/** The store's standalone ship items, with the insurance they name, by the ship; per catalog. */
+const shipOffersCache = new WeakMap<
+  readonly StoreItem[],
+  { ships: readonly Ship[]; byShip: Map<number, { item: StoreItem; insurance?: Insurance }[]> }
+>();
+function shipOffersOf(items: readonly StoreItem[], ships: readonly Ship[]) {
+  const cached = shipOffersCache.get(items);
+  if (cached?.ships === ships) return cached.byShip;
+  const lookup = createShipLookup(ships);
+  const byShip = new Map<number, { item: StoreItem; insurance?: Insurance }[]>();
+  for (const item of items) {
+    if (item.isWarbond || !STANDALONE.test(item.category)) continue;
+    const { base, insurance } = splitInsurance(item.name);
+    const id = lookup.shipOf(base)?.id;
+    if (id === undefined) continue;
+    byShip.set(id, [...(byShip.get(id) ?? []), { item, ...(insurance && { insurance }) }]);
+  }
+  shipOffersCache.set(items, { ships, byShip });
+  return byShip;
+}
+
+/**
+ * A standalone ship with at least this insurance: the cheapest store item in stock that names
+ * one. Not on sale while the store sells the ship only without it; none (the standard edition
+ * counts) while the store has no standalone item of the ship at all or wasn't read.
+ */
+function insuredShipStatus(
+  shipId: number,
+  insurance: WatchInsurance,
+  catalog: StoreCatalog,
+): StoreStatus | undefined {
+  if (!catalog.items || !catalog.ships?.length) return undefined;
+  const offers = shipOffersOf(catalog.items, catalog.ships).get(shipId);
+  if (!offers?.length) return undefined;
+  const needed = insuranceOf(insurance);
+  const priceOf = (item: StoreItem) => item.discountedPrice ?? item.price;
+  const best = offers.reduce<StoreItem | undefined>(
+    (cheapest, offer) =>
+      offer.item.available &&
+      offer.insurance &&
+      isAtLeast(offer.insurance, needed) &&
+      (!cheapest || priceOf(offer.item) < priceOf(cheapest))
+        ? offer.item
+        : cheapest,
+    undefined,
+  );
+  return best ? { price: priceOf(best), onSale: true, skuId: best.id } : { onSale: false };
+}
 
 export function storeStatus(item: WatchItemRef, catalog: StoreCatalog): StoreStatus {
   const ship = (id: number) => catalog.ships?.find((candidate) => candidate.id === id);
@@ -51,6 +111,11 @@ export function storeStatus(item: WatchItemRef, catalog: StoreCatalog): StoreSta
       return { price: paint.discountedPrice ?? paint.price, onSale: paint.available };
     }
     case 'storeShip': {
+      const insured =
+        item.insurance !== undefined
+          ? insuredShipStatus(item.shipId, item.insurance, catalog)
+          : undefined;
+      if (insured) return insured;
       const target = ship(item.shipId);
       const offer = warbond(item.shipId);
       return known({

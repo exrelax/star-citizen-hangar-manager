@@ -70,4 +70,54 @@ describe('storeStatus (#470)', () => {
     expect(storeStatus({ kind: 'storePaint', skuId: 7 }, {})).toEqual({});
     expect(storeStatus({ kind: 'storeShip', shipId: 2 }, {})).toEqual({});
   });
+
+  describe('a standalone ship with an insurance (#531)', () => {
+    const standalone = (id: number, name: string, price: number, available = true) => ({
+      id,
+      name,
+      category: 'Standalone Ships',
+      price,
+      isWarbond: false,
+      available,
+    });
+    const withItems = (...items: ReturnType<typeof standalone>[]): StoreCatalog => ({
+      ...catalog,
+      items: [...catalog.items!, ...items],
+    });
+
+    it('is the store item naming that insurance or a better one, with its SKU', () => {
+      const store = withItems(
+        standalone(40, 'Cutlass Black - 10 Year', 115),
+        standalone(41, 'Cutlass Black - LTI', 120),
+        standalone(42, 'Cutlass Black', 110),
+      );
+      expect(storeStatus({ kind: 'storeShip', shipId: 2, insurance: 120 }, store)).toEqual({
+        price: 115,
+        onSale: true,
+        skuId: 40,
+      });
+      expect(storeStatus({ kind: 'storeShip', shipId: 2, insurance: 'lti' }, store)).toEqual({
+        price: 120,
+        onSale: true,
+        skuId: 41,
+      });
+    });
+
+    it('is not on sale while the store sells the ship only without it', () => {
+      const store = withItems(
+        standalone(41, 'Cutlass Black - LTI', 120, false),
+        standalone(42, 'Cutlass Black', 110),
+      );
+      expect(storeStatus({ kind: 'storeShip', shipId: 2, insurance: 'lti' }, store)).toEqual({
+        onSale: false,
+      });
+    });
+
+    it('is the standard edition while the store has no item of the ship', () => {
+      expect(storeStatus({ kind: 'storeShip', shipId: 2, insurance: 'lti' }, catalog)).toEqual({
+        price: 110,
+        onSale: true,
+      });
+    });
+  });
 });
