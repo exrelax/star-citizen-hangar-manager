@@ -109,6 +109,19 @@
           "name": "Aegis Tiburon - IAE 2956 Day 7"
         }
       ]
+    },
+    {
+      "ship": { "id": 211, "name": "Talon" },
+      "price": 105,
+      "msrp": 115,
+      "firstSeen": "2026-11-21T16:00:00Z",
+      "lastSeen": "2026-11-22T16:00:00Z",
+      "events": [
+        {
+          "id": "talon-iae-2956-day-8",
+          "name": "Talon - IAE 2956 Day 8"
+        }
+      ]
     }
   ]
 }
