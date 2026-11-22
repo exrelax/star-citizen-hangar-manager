@@ -47,7 +47,8 @@
     "meltRebuyEmpty": "No pledge can be melted and rebought without loss right now.",
     "warbondCollisions": "CCUs incompatible with the warbond $1",
     "warbondCollisionsEmpty": "None of your CCUs overlaps the price range of the warbond $1 any more.",
-    "warbondCollisionsShow": "Show in My Hangar"
+    "warbondCollisionsShow": "Show in My Hangar",
+    "paintsToOptimize": "Paints to optimize"
   },
   "sort": {
     "label": "Sort",

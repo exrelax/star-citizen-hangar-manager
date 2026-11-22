@@ -15,10 +15,16 @@ import {
   rebuyPlanItem,
   REBUY_PLAN_VERSION,
 } from '../paint-consultant/rebuy-plan-storage';
+import { PAINT_REBUY_SHORTCUT } from '@/hangar/hangar-shortcuts';
+import { listShortcuts, toggleListShortcut } from '@/hangar/list-shortcut';
 import PaintConsultant from './PaintConsultant.vue';
 
 let app: App | undefined;
-afterEach(() => app?.unmount());
+afterEach(() => {
+  app?.unmount();
+  listShortcuts.value = { hangar: null, buyback: null };
+  location.hash = '';
+});
 beforeEach(() => fakeBrowser.reset());
 
 const item = (id: number, name: string, price: number): StoreItem => ({
@@ -480,6 +486,51 @@ describe('PaintConsultant', () => {
         text(b).trim(),
       );
       expect(labels).toEqual(['Start plan']);
+    });
+  });
+
+  describe('“Show these paints” of a new plan (#430)', () => {
+    const layouts = ['table', 'ways', 'choose'] as const;
+
+    it.each(layouts)('opens the shortcut of the sidebar box in “%s”', async (layout) => {
+      const pledges = await storeExample(40);
+      const root = await render(pledges, {
+        paintConsultant: { ...DEFAULT_SETTINGS.paintConsultant, layout },
+      });
+      const buttons = root.querySelectorAll<HTMLButtonElement>('.shm-paint-shortcut button');
+      expect(buttons).toHaveLength(1);
+      const button = buttons[0]!;
+      expect(text(button).trim()).toBe('Show these paints');
+      expect(button.getAttribute('aria-pressed')).toBe('false');
+
+      button.click();
+      await nextTick();
+      expect(location.hash).toBe('#hangar-manager');
+      const open = listShortcuts.value.hangar!;
+      expect(open.id).toBe(PAINT_REBUY_SHORTCUT.id);
+      expect(open.title()).toBe('Paints to optimize');
+      // The paints of the plan, and nothing else, as with the box's definition.
+      const others = [paint(1, 'Other Paint', 5)];
+      const shown = (matches: (pledge: (typeof pledges)[number]) => boolean) =>
+        [...pledges, ...others].filter(matches).map((pledge) => pledge.id);
+      expect(shown(open.matches)).toEqual(pledges.map((pledge) => pledge.id));
+      expect(shown(PAINT_REBUY_SHORTCUT.matches!)).toEqual(shown(open.matches));
+      expect(button.getAttribute('aria-pressed')).toBe('true');
+      expect(text(button).trim()).toBe('Show all pledges');
+
+      // The box's button closes it, and the consultant's follows.
+      toggleListShortcut(PAINT_REBUY_SHORTCUT);
+      await nextTick();
+      expect(listShortcuts.value.hangar).toBeNull();
+      expect(button.getAttribute('aria-pressed')).toBe('false');
+
+      // Opened by the box, the consultant's button shows it open and closes it.
+      toggleListShortcut(PAINT_REBUY_SHORTCUT);
+      await nextTick();
+      expect(button.getAttribute('aria-pressed')).toBe('true');
+      button.click();
+      await nextTick();
+      expect(listShortcuts.value.hangar).toBeNull();
     });
   });
 });

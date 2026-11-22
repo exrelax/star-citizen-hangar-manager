@@ -8,6 +8,7 @@ import type { MissingCredit, PaintRebuyPlan } from '../paint-consultant/calculat
 import { CHART, COOLDOWN_SOURCE, usePaintWays } from '../paint-consultant/use-paint-ways';
 import type { WayKind } from '../paint-consultant/ways';
 import PaintStartButton from './PaintStartButton.vue';
+import PaintShortcutButton from './PaintShortcutButton.vue';
 
 /*
  * The plan of the Paint Discount Consultant as two ways side by side (setting "Layout": "ways"),
@@ -193,6 +194,8 @@ const watchPrice = (card: { prices: Partial<Record<string, { price: number }>> }
           {{ i18n.t('consultant.ways.legendNotInCart') }}
         </span>
       </div>
+      <!-- The own paints in My Hangar, like the sidebar box (#430). -->
+      <PaintShortcutButton />
     </section>
 
     <!-- Both ways, why they differ, and their steps. -->

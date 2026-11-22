@@ -14,6 +14,7 @@ import '@/shared/styles/switch.css';
 import { refreshStoreItems } from '../items/sync-store-items';
 import { usePaintConsultant } from '../paint-consultant/use-paint-consultant';
 import PaintStartButton from './PaintStartButton.vue';
+import PaintShortcutButton from './PaintShortcutButton.vue';
 import PaintConsultantChoose from './PaintConsultantChoose.vue';
 import PaintConsultantWays from './PaintConsultantWays.vue';
 import PaintProbablyRebought from './PaintProbablyRebought.vue';
@@ -475,6 +476,8 @@ watch(
               </tbody>
             </table>
           </div>
+          <!-- These paints in My Hangar, like the sidebar box (#430). -->
+          <PaintShortcutButton />
 
           <template v-if="plan.fillers.length">
             <h4 class="shm-consultant-subtitle">
@@ -718,6 +721,10 @@ watch(
 /* Wide tables scroll in their box instead of widening the page. */
 .shm-consultant-table-wrap {
   overflow-x: auto;
+}
+
+.shm-consultant-plan > .shm-paint-shortcut {
+  margin-top: 8px;
 }
 
 .shm-consultant-table {
