@@ -2023,6 +2023,15 @@
       "dueName": "Pour aujourd’hui",
       "wishName": "Liste d’envies",
       "laterName": "Plus tard"
-    }
+    },
+    "selectionAdd": {
+      "one": "Mettre $1 pledge sur une watchlist",
+      "other": "Mettre $1 pledges sur une watchlist"
+    },
+    "selectionAdded": {
+      "one": "$1 pledge mis sur « $2 ».",
+      "other": "$1 pledges mis sur « $2 »."
+    },
+    "selectionAlready": "Ils sont déjà tous sur « $1 »."
   }
 }

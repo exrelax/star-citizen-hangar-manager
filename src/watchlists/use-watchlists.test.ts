@@ -2,8 +2,10 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { nextTick, ref } from 'vue';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import {
+  addItemsToWatchlist,
   addToWatchlist,
   createWatchlistWith,
+  createWatchlistWithItems,
   followWatchlists,
   removeFromWatchlist,
   watchlists,
@@ -60,5 +62,22 @@ describe('the watchlists of an item (#468)', () => {
     await createWatchlistWith('Demo', paint);
     expect((await loadWatchlists(true)).map((list) => list.name)).toEqual(['Demo']);
     expect((await loadWatchlists()).map((list) => list.name)).toEqual(['Mine']);
+  });
+});
+
+describe('the selection of My Hangar on a watchlist (#549)', () => {
+  const ccu = { kind: 'hangar' as const, pledgeId: 8, name: 'CCU', value: 15 };
+
+  it('puts all selected pledges on a watchlist, each once, and tells how many were new', async () => {
+    const list = await createWatchlistWith('IAE', nomad);
+    expect(await addItemsToWatchlist(list.id, [nomad, ccu])).toBe(1);
+    expect(watchlistsByItem.value.get('h:8')?.map((other) => other.name)).toEqual(['IAE']);
+    expect((await loadWatchlists())[0]?.items).toHaveLength(2);
+  });
+
+  it('makes a new watchlist with all of them', async () => {
+    const list = await createWatchlistWithItems('Melt', [nomad, ccu]);
+    expect(list.items.map((item) => item.kind === 'hangar' && item.pledgeId)).toEqual([7, 8]);
+    expect(await loadWatchlists()).toMatchObject([{ name: 'Melt' }]);
   });
 });

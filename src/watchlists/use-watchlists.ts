@@ -110,6 +110,37 @@ export async function removeFromWatchlist(id: string, key: string): Promise<void
   if (next && next !== list) await storeWatchlist(next);
 }
 
+/**
+ * Puts the items on the watchlist with this id (the selection of My Hangar, #549), in one write;
+ * how many weren't on it yet.
+ */
+export async function addItemsToWatchlist(
+  id: string,
+  items: readonly NewWatchItem[],
+): Promise<number> {
+  const list = lists.value.find((other) => other.id === id);
+  if (!list) return 0;
+  const now = Date.now();
+  const known = new Set(list.items.map(itemKey));
+  const added = items.filter((item) => !known.has(itemKey(item))).length;
+  await storeWatchlist(items.reduce((next, item) => addItem(next, item, now), list));
+  return added;
+}
+
+/** A new watchlist with this name and the items on it. */
+export async function createWatchlistWithItems(
+  name: string,
+  items: readonly NewWatchItem[],
+): Promise<Watchlist> {
+  const now = Date.now();
+  const list = items.reduce(
+    (next, item) => addItem(next, item, now),
+    createWatchlist({ name }, now),
+  );
+  await storeWatchlist(list);
+  return list;
+}
+
 /** A new watchlist with this name and the item on it. */
 export async function createWatchlistWith(name: string, item: NewWatchItem): Promise<Watchlist> {
   const now = Date.now();
