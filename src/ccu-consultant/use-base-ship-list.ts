@@ -2,6 +2,7 @@ import { useProvidedRemovalCcus } from '@/ship-removals/use-removal-ccus';
 import { computed, type ComputedRef } from 'vue';
 import { useProvidedAlwaysAvailable } from './always-available';
 import { baseShipList, type BaseShipList } from './base-ship-list';
+import { chainCoverage, type ChainCoverage } from './chain-coverage';
 import { useProvidedCcuCoverage, useProvidedCoverageSources } from './coverage';
 
 /*
@@ -22,6 +23,13 @@ export function useBaseShipList(): ComputedRef<BaseShipList> {
       removals.value.obtainable,
     ),
   );
+}
+
+/** The deep view's ways to each base ship, with the chains followed (#563). */
+export function useChainCoverage(): ComputedRef<ChainCoverage> {
+  const coverages = useProvidedCcuCoverage();
+  const alwaysAvailable = useProvidedAlwaysAvailable();
+  return computed(() => chainCoverage(coverages.value.values(), alwaysAvailable.value));
 }
 
 /**

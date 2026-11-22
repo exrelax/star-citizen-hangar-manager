@@ -1,4 +1,6 @@
 import type { BuybackPledge } from '@/buyback/buyback';
+import { chainCoverage } from '@/ccu-consultant/chain-coverage';
+import type { CcuCoverage } from '@/ccu-consultant/coverage';
 import { createShipFactsLookup } from '@/ships/ship-facts';
 import type { Ship } from '@/ships/ships';
 import { bundledShipFacts } from '@/ships/sync-ship-facts';
@@ -36,6 +38,10 @@ import type { DemoRandom } from './random';
  * - `covered`: two of the same CCU from a ship the hangar and the buy back give once each, as a
  *   standalone ship: a group covered fully by a hangar ship and a buy back ship (#575, for #574).
  * - `partial`: five of the same CCU from a ship the hangar gives twice: "2 of 5 covered" (#575).
+ * - `chainStart` and `chainLink`: a CCU from a ship nothing gives and RSI doesn't sell now (if
+ *   known, else the `unavailable` case's ship) to another ship, and a CCU from that one on: the
+ *   simple view counts the second covered by the first, the deep view (#563) follows the chain and
+ *   finds both short of a way – "Found by the deep view" and a base ship not on sale.
  *
  * The hangar, the buy back and the upgraded pledges leave these base ships out; the buy back gets
  * its pledges for them from `buybackCases`, also CCU groups of its own (#575): from the `covered`,
@@ -43,7 +49,15 @@ import type { DemoRandom } from './random';
  * group of each coverage shows in the buy back, too.
  */
 
-export type DemoCcuCase = 'always' | 'buyback' | 'unavailable' | 'leaving' | 'covered' | 'partial';
+export type DemoCcuCase =
+  | 'always'
+  | 'buyback'
+  | 'unavailable'
+  | 'leaving'
+  | 'covered'
+  | 'partial'
+  | 'chainStart'
+  | 'chainLink';
 
 /** The base ship of each case. */
 export type DemoCcuBases = Partial<Record<DemoCcuCase, Ship>>;
@@ -72,14 +86,14 @@ export function demoCcuBases(
   const sorted = sortedTargets(catalog);
   const top = sorted.at(-1)?.msrp ?? 0;
   const used = new Set(taken);
-  const pick = (role: DemoCcuCase, fits: (ship: Ship) => boolean) => {
+  const pick = (role: DemoCcuCase, fits: (ship: Ship) => boolean, onSale = true) => {
     const ship = random.pick(
       `ccuCases:${role}`,
       sorted.filter(
         (entry) =>
           !used.has(entry.id) &&
           entry.msrp + 20 <= top &&
-          (!buyable || buyable.has(entry.id)) &&
+          (!buyable || buyable.has(entry.id) === onSale) &&
           fits(entry),
       ),
     );
@@ -107,6 +121,13 @@ export function demoCcuBases(
     'leaving',
     (ship) => isAlways(ship) === true && !DEMO_ALWAYS_AVAILABLE_BASES.includes(ship.name),
   );
+  // The chain of the deep view (#563): its start a ship RSI doesn't sell now, if that is known,
+  // else the `unavailable` case's ship, which nothing gives either.
+  const chainStart =
+    (buyable && pick('chainStart', (ship) => limited(ship) && ship.msrp + 40 <= top, false)) ||
+    unavailable;
+  const chainLink =
+    chainStart && pick('chainLink', (ship) => limited(ship) && ship.msrp >= chainStart.msrp + 20);
   return {
     ...(always && { always }),
     ...(buyback && { buyback }),
@@ -114,6 +135,7 @@ export function demoCcuBases(
     ...(leaving && { leaving }),
     ...(covered && { covered }),
     ...(partial && { partial }),
+    ...(chainStart && chainLink && { chainStart, chainLink }),
   };
 }
 
@@ -163,6 +185,23 @@ export function hangarCases(
     ...ships('covered', 1, bases),
     ...ccus('partial', 5),
     ...ships('partial', 2, bases),
+    ...chain(bases, sorted),
+  ];
+}
+
+/**
+ * The deep view's chain (#563): a CCU from `chainStart` to `chainLink`, and one from `chainLink` to
+ * the next ship at least $20 pricier.
+ */
+function chain(bases: DemoCcuBases, sorted: readonly Ship[]): DemoPledge[] {
+  const { chainStart, chainLink } = bases;
+  const to = chainLink && sorted.find((ship) => ship.msrp >= chainLink.msrp + 20);
+  if (!chainStart || !chainLink || !to) return [];
+  return [
+    ccuPledge(chainStart, chainLink, chainLink.msrp - chainStart.msrp, false, {
+      demoCcuCase: 'chainStart',
+    }),
+    ccuPledge(chainLink, to, to.msrp - chainLink.msrp, false, { demoCcuCase: 'chainLink' }),
   ];
 }
 
@@ -244,36 +283,64 @@ function buybackShip(ship: Pick<Ship, 'name'>): Omit<BuybackPledge, 'id'> {
 /**
  * Ships for the buy back so every CCU of the hangar has a base ship (#425, demo setting "CCUs
  * without base ship coverage" off): for each base ship as many as its CCUs lack, counting the
- * hangar's ships and CCUs to it and the buy back's ships – nothing without base ship then, nothing
- * soon without one and no base ship with too few ways (#113, #115, #454).
+ * hangar's ships, its CCUs to it whose own base ship has a way (the deep view's chain rule, #563)
+ * and the buy back's ships – nothing without base ship then, nothing soon without one and no base
+ * ship with too few ways in either view (#113, #115, #454). A ship short only because a CCU to it
+ * lacks its own base ship gets that one's fillers first.
  */
 export function coverageFillers(
   hangar: readonly DemoPledge[],
   buyback: readonly Omit<BuybackPledge, 'id'>[],
 ): Omit<BuybackPledge, 'id'>[] {
-  const ccus = new Map<string, number>();
-  const ways = new Map<string, number>();
-  const add = (map: Map<string, number>, name: string | undefined) => {
-    if (name) map.set(name, (map.get(name) ?? 0) + 1);
-  };
-  for (const pledge of hangar) {
-    if (pledge.upgrade) {
-      add(ccus, pledge.upgrade.matchItems[0]?.name);
-      add(ways, pledge.upgrade.targetItems[0]?.name);
-      continue;
-    }
+  const match = (source: 'hangar' | 'buyback', kind: 'ship' | 'ccu', id: number) =>
+    ({ source, kind, id, title: '' }) as const;
+  const ccus = hangar.flatMap((pledge, id) => {
+    const from = pledge.upgrade?.matchItems[0]?.name;
+    const to = pledge.upgrade?.targetItems[0]?.name;
+    return pledge.upgrade && from ? [{ id, from, to }] : [];
+  });
+  const owned = (pledges: readonly { items: readonly string[] }[], name: string) =>
+    pledges.flatMap((pledge, id) => (pledge.items.includes(name) ? [id] : []));
+  const hangarShips = hangar.map((pledge) => ({
     // Each ship once per pledge.
-    const names = new Set(
-      pledge.items.filter((item) => item.kind === 'Ship').map((item) => item.title),
-    );
-    for (const name of names) add(ways, name);
+    items: pledge.upgrade
+      ? []
+      : [...new Set(pledge.items.filter((item) => item.kind === 'Ship').map((item) => item.title))],
+  }));
+  const buybackShips = buyback.map((pledge) => ({
+    items:
+      pledge.category === 'standalone_ship' || pledge.category === 'game_package'
+        ? (pledge.items ?? []).slice(0, 1)
+        : [],
+  }));
+  const fillers: Omit<BuybackPledge, 'id'>[] = [];
+  const coverages = () =>
+    ccus.map((ccu): CcuCoverage => {
+      const given = [
+        ...owned(buybackShips, ccu.from),
+        ...fillers.flatMap((filler, index) =>
+          filler.items?.[0] === ccu.from ? [buyback.length + index] : [],
+        ),
+      ];
+      return {
+        id: ccu.id,
+        baseShip: { name: ccu.from },
+        hangar: {
+          ships: owned(hangarShips, ccu.from).map((id) => match('hangar', 'ship', id)),
+          ccus: ccus
+            .filter((other) => other.to === ccu.from && other.id !== ccu.id)
+            .map((other) => match('hangar', 'ccu', other.id)),
+        },
+        buyback: { ships: given.map((id) => match('buyback', 'ship', id)), ccus: [] },
+        covered: true,
+      };
+    });
+  // One base ship at a time, those short of their own ways first, until none is short.
+  for (let round = 0; round <= ccus.length; round++) {
+    const { tooFew } = chainCoverage(coverages(), undefined);
+    const next = tooFew.find((ship) => !ship.blocked.length) ?? tooFew[0];
+    if (!next?.name) break;
+    fillers.push(...Array.from({ length: next.short }, () => buybackShip({ name: next.name! })));
   }
-  for (const pledge of buyback) {
-    if (pledge.category === 'standalone_ship' || pledge.category === 'game_package') {
-      add(ways, pledge.items?.[0]);
-    }
-  }
-  return [...ccus].flatMap(([name, count]) =>
-    Array.from({ length: Math.max(0, count - (ways.get(name) ?? 0)) }, () => buybackShip({ name })),
-  );
+  return fillers;
 }

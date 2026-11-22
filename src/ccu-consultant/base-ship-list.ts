@@ -79,6 +79,12 @@ export interface BaseShipList {
   tooFewCount: number;
 }
 
+/** The key of a CCU's base ship: the upgrade tool's id where known, else its name. */
+export const baseKeyOf = (coverage: Pick<CcuCoverage, 'baseShip'>): string => {
+  const base = coverage.baseShip;
+  return base?.id !== undefined ? `id:${base.id}` : `name:${base?.name.toLowerCase() ?? ''}`;
+};
+
 /** Where a CCU stands by its coverage and the list of always available ships (if considered). */
 export function standingOf(
   coverage: CcuCoverage,
@@ -134,7 +140,7 @@ export function baseShipList(
     const standing = standingOf(coverage, always);
     counts[standing]++;
     const base = coverage.baseShip;
-    const key = base?.id !== undefined ? `id:${base.id}` : `name:${base?.name.toLowerCase() ?? ''}`;
+    const key = baseKeyOf(coverage);
     const removal = base?.id !== undefined ? leaving.get(base.id) : undefined;
     if (removal || (base?.id !== undefined && !always?.has(base.id))) {
       // Each pledge gives the ship to one CCU: the ways to it are counted, not just found.

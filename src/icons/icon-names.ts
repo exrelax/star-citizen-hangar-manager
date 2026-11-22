@@ -63,6 +63,7 @@ export const ICON_NAMES = {
     'shield-halved',
     'shuttle-space',
     'square-up-right',
+    'star',
     'table-columns',
     'tag',
     'trash',

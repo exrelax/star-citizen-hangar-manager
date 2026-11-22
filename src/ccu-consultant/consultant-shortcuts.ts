@@ -15,14 +15,21 @@ const groupLabel = (group: ConsultantGroup) =>
     ? i18n.t('ccuConsultant.atRisk.title')
     : i18n.t(`ccuConsultant.standing.${group}`);
 
-/** My Hangar with the CCUs of a group: "Show N CCUs in My Hangar". */
+/**
+ * My Hangar with the CCUs of a group: "Show N CCUs in My Hangar". `deep`: the deep view's "Too few
+ * ways" instead of "Without base ship" (#563).
+ */
 export const ccuGroupShortcut = (
   group: ConsultantGroup,
   ids: Iterable<number>,
+  deep = false,
 ): ListShortcutDefinition<'hangar'> => ({
   list: 'hangar',
-  id: `ccuConsultant:${group}`,
-  title: () => i18n.t('listShortcut.ccuGroup', [groupLabel(group)]),
+  id: deep && group === 'missing' ? 'ccuConsultant:tooFew' : `ccuConsultant:${group}`,
+  title: () =>
+    i18n.t('listShortcut.ccuGroup', [
+      deep && group === 'missing' ? i18n.t('ccuConsultant.deep.tab') : groupLabel(group),
+    ]),
   icon: 'link',
   ids,
   emptyText: () => i18n.t('listShortcut.ccuEmpty'),

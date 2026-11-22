@@ -216,29 +216,6 @@
   color: var(--shm-danger);
 }
 
-.shm-ccu-consultant-matches {
-  margin: 2px 0 0;
-  padding: 0;
-  font-size: calc(12px * var(--shm-font-scale));
-  list-style: none;
-}
-
-.shm-ccu-consultant-matches a {
-  color: var(--shm-text);
-  text-decoration: none;
-}
-
-.shm-ccu-consultant-matches a:hover,
-.shm-ccu-consultant-matches a:focus-visible {
-  color: var(--shm-accent);
-  text-decoration: underline;
-}
-
-.shm-ccu-consultant-matches .shm-pledge-id {
-  margin-left: 6px;
-  color: var(--shm-text-muted);
-}
-
 .shm-ccu-consultant-more {
   margin: 2px 0 0;
   padding: 0;
@@ -340,47 +317,6 @@
   font-size: calc(12px * var(--shm-font-scale));
 }
 
-/* The toggle of the grouped view (#456) above the tables, on the right. */
-.shm-ccu-consultant-view-bar {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.shm-ccu-consultant-group-toggle {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  gap: 6px;
-  padding: 2px 0;
-  color: var(--shm-text-muted);
-  font: inherit;
-  font-size: calc(12px * var(--shm-font-scale));
-  background: none;
-  border: 0;
-  cursor: pointer;
-}
-
-.shm-ccu-consultant-group-toggle:hover,
-.shm-ccu-consultant-group-toggle:focus-visible {
-  color: var(--shm-text-strong);
-  outline: none;
-}
-
-.shm-ccu-consultant-group-toggle[aria-pressed='true'] {
-  color: var(--shm-accent);
-}
-
-.shm-ccu-consultant-ccus-toggle {
-  display: block;
-}
-
-/* The CCUs of an opened base ship (#456): below its row, indented like the coverage section. */
-.shm-ccu-consultant-ccus-row td {
-  padding-top: 0;
-  padding-bottom: 12px;
-  padding-left: 28px !important;
-}
-
 /* "Discount at risk" (#455): the CCU's two ships next to its name, the advice's buttons in a row. */
 .shm-ccu-consultant-atrisk-ccu {
   display: flex;
@@ -410,12 +346,6 @@
   white-space: nowrap;
 }
 
-.shm-ccu-consultant-ways {
-  display: block;
-  color: var(--shm-text-strong);
-  font-variant-numeric: tabular-nums;
-}
-
 .shm-ccu-consultant-soon-title {
   display: flex;
   align-items: baseline;
@@ -431,17 +361,6 @@
   color: var(--shm-text-muted);
   font-weight: 400;
   font-variant-numeric: tabular-nums;
-}
-
-.shm-ccu-consultant-leaves {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 10px;
-}
-
-.shm-ccu-consultant-removal-link {
-  margin-top: 4px;
 }
 
 /* The group tabs follow the legend closely, as one block of the box. */

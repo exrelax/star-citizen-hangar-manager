@@ -425,9 +425,14 @@ export function useDemo(
         covered: ccuBases.buyback?.id,
         // The Grouped View's group without base ship stays too (#450).
         stay: [
-          ...[ccuBases.always, ccuBases.unavailable, ccuBases.covered, ccuBases.partial].flatMap(
-            (ship) => (ship ? [ship.id] : []),
-          ),
+          ...[
+            ccuBases.always,
+            ccuBases.unavailable,
+            ccuBases.covered,
+            ccuBases.partial,
+            ccuBases.chainStart,
+            ccuBases.chainLink,
+          ].flatMap((ship) => (ship ? [ship.id] : [])),
           ...(account ? [missingBaseOf(account.account.pledges)] : []).filter(
             (id) => id !== undefined,
           ),

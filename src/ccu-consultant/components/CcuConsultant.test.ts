@@ -70,20 +70,20 @@ function render(
   return { root, updates };
 }
 
-/** A cell's text without the button that opens the base ship's CCUs (#456). */
-const cellText = (cell: Element) => {
-  const copy = cell.cloneNode(true) as Element;
-  copy.querySelector('.shm-ccu-consultant-ccus-toggle')?.remove();
-  return copy.textContent!.replace(/\s+/g, ' ').trim();
-};
 const tabs = (root: HTMLElement) =>
   [...root.querySelectorAll<HTMLElement>('.shm-tab')].map((tab) =>
     tab.textContent!.replace(/\s+/g, ' ').trim(),
   );
-const cells = (root: HTMLElement) =>
-  [...root.querySelectorAll('tbody tr')].map((row) =>
-    [...row.querySelectorAll('td')].map(cellText),
-  );
+const text = (element: Element | null | undefined) =>
+  element?.textContent?.replace(/\s+/g, ' ').trim();
+/** The rows of the deep view (#563): the ship, its sale, its ways and its secure panel. */
+const rows = (root: HTMLElement) =>
+  [...root.querySelectorAll('.shm-ccu-deep-row')].map((row) => ({
+    name: text(row.querySelector('.shm-ccu-deep-name')),
+    sale: text(row.querySelector('.shm-ccu-card-sale')),
+    count: text(row.querySelector('.shm-ccu-deep-count')),
+    secure: text(row.querySelector('.shm-ccu-deep-secure-title')),
+  }));
 
 describe('CcuConsultant (#113)', () => {
   const ccus = [
@@ -93,7 +93,7 @@ describe('CcuConsultant (#113)', () => {
     coverage(13, 1, 'Arrow'),
   ];
 
-  it('shows the groups with their counts, those without base ship first', async () => {
+  it('shows the groups with their counts, those short of ways first', async () => {
     const { root } = render(ccus);
     // Its name is the sub tab or the heading of the tab "Consultants" (#453).
     expect(root.querySelector('section')?.getAttribute('aria-label')).toBe('CCU Consultant');
@@ -102,28 +102,32 @@ describe('CcuConsultant (#113)', () => {
     expect(box.querySelector('h4')?.textContent).toBe('Can you apply every CCU?');
     expect(box.querySelector('.shm-ccu-consultant-head input[role="switch"]')).not.toBeNull();
     expect(root.querySelector('.shm-ccu-consultant-intro')?.textContent).toContain('all 4 CCUs');
+    // The deep view's first group: the CCUs short of a way by the chain rule (#563).
     expect(tabs(root)).toEqual([
-      'No base ship 2',
+      'Too few ways 2',
       'Buy back only 1',
       'Always available 1',
       'Discount at risk 0',
     ]);
-    expect(cells(root)).toEqual([
-      [
-        'Cutlass RedNot always available · Standard price $135',
-        '2',
-        'Nothing foundNeither it nor a CCU to it in your hangar or buy backPledge Store',
-      ],
+    expect(text(root.querySelector('.shm-ccu-consultant-group-title'))).toBe(
+      'Too few ways to the base ship 2',
+    );
+    expect(rows(root)).toEqual([
+      {
+        name: 'Cutlass Red',
+        sale: 'Not on sale now',
+        count: '0 of 2 ways · 2 too few',
+        secure: 'Not on sale now – watch for the next sale',
+      },
     ]);
-    expect(root.querySelector<HTMLAnchorElement>('.shm-ccu-consultant-store')?.href).toBe(
+    expect(root.querySelector<HTMLAnchorElement>('.shm-ccu-deep-actions a')?.href).toBe(
       'https://robertsspaceindustries.com/pledge/ships/cutlass-red',
     );
 
     root.querySelectorAll<HTMLElement>('.shm-tab')[1]!.click();
     await Promise.resolve();
-    expect(cells(root)[0]?.[2]).toBe('In your buy backTo Razor#512');
-    const link = root.querySelector<HTMLAnchorElement>('.shm-ccu-consultant-matches a');
-    expect(link?.href).toContain('search=512#hangar-manager-bb');
+    expect(rows(root)[0]?.count).toBe('1 of 1 way');
+    expect(text(root.querySelector('.shm-ccu-deep-own.is-buyback'))).toBe('1 in your buy back');
 
     root.querySelectorAll<HTMLElement>('.shm-tab')[2]!.click();
     await Promise.resolve();
@@ -131,15 +135,13 @@ describe('CcuConsultant (#113)', () => {
       'Nothing of these base ships is in your hangar or buy back, but RSI always sells them. ' +
         'Source: Star Citizen Wiki, list of Nov 18, 2026.',
     );
+    expect(rows(root)[0]?.secure).toBe('Always available – no need to secure it now');
   });
 
   it('lists every CCU without coverage while always available ships are not considered', () => {
     const { root } = render(ccus, false);
-    expect(tabs(root)).toEqual(['No base ship 3', 'Buy back only 1', 'Discount at risk 0']);
-    expect(cells(root).map((row) => row[0])).toEqual([
-      'Cutlass RedNot always available · Standard price $135',
-      'ArrowNot always available',
-    ]);
+    expect(tabs(root)).toEqual(['Too few ways 3', 'Buy back only 1', 'Discount at risk 0']);
+    expect(rows(root).map((row) => row.name)).toEqual(['Cutlass Red', 'Arrow']);
   });
 
   it('says so when every CCU can be applied', () => {
@@ -176,44 +178,82 @@ describe('CcuConsultant (#113)', () => {
     expect(root.querySelector('.shm-ccu-consultant-intro')?.textContent?.trim()).toBe(
       'There are no CCUs in your hangar.',
     );
-    expect(root.querySelector('table')).toBeNull();
-  });
-
-  it('shows the first three pledges of the buy back, the others on request', async () => {
-    const many: CcuCoverage = {
-      ...coverage(20, 3, 'Razor', true),
-      buyback: {
-        ships: [],
-        ccus: [1, 2, 3, 4, 5].map((n) => ({
-          source: 'buyback' as const,
-          kind: 'ccu' as const,
-          id: 600 + n,
-          title: `To Razor ${n}`,
-        })),
-      },
-    };
-    const { root } = render([many]);
-    const links = () => root.querySelectorAll('.shm-ccu-consultant-matches a').length;
-    expect(links()).toBe(3);
-    const more = root.querySelector<HTMLButtonElement>(
-      '.shm-ccu-consultant-more:not(.shm-ccu-consultant-ccus-toggle)',
-    )!;
-    expect(more.textContent?.trim()).toBe('+ 2 more');
-    more.click();
-    await Promise.resolve();
-    expect(links()).toBe(5);
-    expect(more.textContent?.trim()).toBe('Show fewer');
+    expect(root.querySelector('.shm-ccu-deep-row')).toBeNull();
   });
 });
 
-describe('CCUs soon without base ship (#454)', () => {
+describe('the deep view of the CCU Consultant (#563)', () => {
+  afterEach(() => {
+    listShortcuts.value = { hangar: null, buyback: null };
+    location.hash = '';
+  });
   const removal = (id: number, name: string): ShipRemoval => ({
     ship: { id, name },
     removedAt: { at: Date.parse('2027-01-27T00:00:00Z'), dayOnly: true },
     source: 'https://robertsspaceindustries.com/en/comm-link/transmission/21350',
   });
+  const viaBuyback = (id: number, base: number, name: string) => ({
+    ...coverage(id, base, name),
+    buyback: {
+      ships: [],
+      ccus: [{ source: 'buyback' as const, kind: 'ccu' as const, id: 700, title: `To ${name}` }],
+    },
+    covered: true,
+  });
 
-  it('lists them below the CCUs without base ship, with the date and the way to the ship', () => {
+  it('counts the ways to a base ship, each for one CCU, and opens the buy back’s', () => {
+    const { root } = render([
+      viaBuyback(20, 2, 'Cutlass Red'),
+      viaBuyback(21, 2, 'Cutlass Red'),
+      viaBuyback(22, 2, 'Cutlass Red'),
+    ]);
+    expect(tabs(root)[0]).toBe('Too few ways 2');
+    expect(rows(root)[0]?.count).toBe('1 of 3 ways · 2 too few');
+    // One segment per CCU: one via buy back, two too few.
+    const segments = [...root.querySelectorAll('.shm-ccu-deep-bar span')].map(
+      (segment) => segment.className,
+    );
+    expect(segments).toEqual(['is-buyback', 'is-short', 'is-short']);
+    expect(root.querySelector('.shm-ccu-deep-bar')?.getAttribute('aria-label')).toBe(
+      '1 of 3 CCUs from Cutlass Red have a way to it, 2 too few.',
+    );
+    root.querySelector<HTMLButtonElement>('.shm-ccu-deep-own.is-buyback')!.click();
+    expect(listShortcuts.value.buyback?.id).toBe('ccuConsultant:to:id:2');
+    expect(listShortcuts.value.buyback?.matches({ id: 700 } as never)).toBe(true);
+    // The legend names only what the bars show.
+    expect([...root.querySelectorAll('.shm-ccu-deep-legend li')].map((item) => text(item))).toEqual(
+      ['Buy back', 'Too few'],
+    );
+  });
+
+  it('finds a base ship the simple view counts as covered: a chain without a start', () => {
+    // CCU 30 from the Cutlass Red, whose only way is CCU 31 from the Razor – with no way to it.
+    const chained: CcuCoverage = {
+      ...coverage(30, 2, 'Cutlass Red'),
+      hangar: {
+        ships: [],
+        ccus: [{ source: 'hangar', kind: 'ccu', id: 31, title: 'Upgrade - Razor to Cutlass Red' }],
+      },
+      covered: true,
+    };
+    const { root } = render([chained, coverage(31, 3, 'Razor')]);
+    expect(tabs(root)[0]).toBe('Too few ways 2');
+    const cutlass = root.querySelectorAll('.shm-ccu-deep-row')[0]!;
+    expect(cutlass.classList.contains('is-found')).toBe(true);
+    expect(text(cutlass.querySelector('.shm-ccu-deep-found'))).toBe('Found by the deep view');
+    const blocked = cutlass.querySelector('.shm-ccu-deep-routes li.is-blocked')!;
+    expect([...blocked.children].map((part) => text(part)).join(' ')).toBe(
+      'Razor → ×1 don’t count: Razor itself has too few ways',
+    );
+    expect(rows(root).map((row) => row.name)).toEqual(['Cutlass Red', 'Razor']);
+
+    // The simple view counts it covered: only the Razor lacks a base ship.
+    app?.unmount();
+    const simple = render([chained, coverage(31, 3, 'Razor')], true, new Map(), 'simple');
+    expect(tabs(simple.root)[0]).toBe('No base ship 1');
+  });
+
+  it('shows a ship leaving the Pledge Store with its countdown and the way to it there', () => {
     const { root } = render(
       [coverage(10, 2, 'Cutlass Red'), coverage(13, 1, 'Arrow'), coverage(14, 1, 'Arrow')],
       true,
@@ -221,92 +261,33 @@ describe('CCUs soon without base ship (#454)', () => {
     );
     // Always available until now, but leaving: no longer "Base always available".
     expect(tabs(root)).toEqual([
-      'No base ship 3',
+      'Too few ways 3',
       'Buy back only 0',
       'Always available 0',
       'Discount at risk 0',
     ]);
-    const title = root.querySelector('.shm-ccu-consultant-soon-title');
-    expect(title?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Soon without base ship 2');
-    const soon = root.querySelectorAll('.shm-ccu-consultant-table')[1]!;
-    const row = [...soon.querySelectorAll('tbody td')].map((cell) => cellText(cell));
-    expect(row[0]).toBe('ArrowIn the Pledge Store until Jan 27, 2027');
-    expect(row[1]).toBe('2');
-    // No ship or CCU to it: both CCUs from it are short.
-    expect(row[2]).toBe('0 2 too few');
-    expect(row[3]).toMatch(/^Removal: .+Show in Pledge Store$/);
-    // The ships leaving the Pledge Store are left out of the table above.
-    expect(cells(root)[0]?.[0]).toContain('Cutlass Red');
-    expect(cells(root)).toHaveLength(2);
+    const arrow = [...root.querySelectorAll('.shm-ccu-deep-row')].find(
+      (row) => text(row.querySelector('.shm-ccu-deep-name')) === 'Arrow',
+    )!;
+    expect(text(arrow.querySelector('.shm-badge.is-price-increase'))).toMatch(/^Removal: /);
+    expect(text(arrow.querySelector('.shm-ccu-deep-actions'))).toBe('Show in Pledge Store');
+    expect(text(arrow.querySelector('.shm-ccu-deep-count'))).toBe('0 of 2 ways · 2 too few');
   });
 
-  it('counts the ways to a leaving ship covered too few times', () => {
-    const viaBuyback = (id: number) => ({
-      ...coverage(id, 1, 'Arrow'),
-      buyback: {
-        ships: [],
-        ccus: [{ source: 'buyback' as const, kind: 'ccu' as const, id: 600, title: 'To Arrow' }],
-      },
-      covered: true,
-    });
-    const { root } = render(
-      [viaBuyback(13), viaBuyback(14), viaBuyback(15)],
-      true,
-      new Map([[1, removal(1, 'Arrow')]]),
-    );
-    // Covered today by the buy back, but two of three will be short: the tab counts them.
-    expect(tabs(root)).toEqual([
-      'No base ship 2',
-      'Buy back only 3',
-      'Always available 0',
-      'Discount at risk 0',
+  it('opens the CCUs of a row and of the whole group in My Hangar', () => {
+    const { root } = render([
+      coverage(10, 2, 'Cutlass Red'),
+      coverage(11, 2, 'Cutlass Red'),
+      coverage(13, 1, 'Arrow'),
     ]);
-    const title = root.querySelector('.shm-ccu-consultant-soon-title');
-    expect(title?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Soon without base ship 2');
-    const soon = root.querySelectorAll('.shm-ccu-consultant-table');
-    const row = [...soon[soon.length - 1]!.querySelectorAll('tbody td')].map((cell) =>
-      cellText(cell),
-    );
-    expect(row[1]).toBe('3');
-    const ways = soon[soon.length - 1]!.querySelector('.shm-ccu-consultant-ways');
-    expect(ways?.textContent).toBe('1');
-    expect(ways?.nextElementSibling?.textContent?.trim()).toBe(
-      '0 in your hangar · 1 in your buy back',
-    );
-    expect(row[2]).toMatch(/2 too few$/);
-  });
-
-  it('has no such section without leaving ships', () => {
-    const { root } = render([coverage(10, 2, 'Cutlass Red')]);
-    expect(root.querySelector('.shm-ccu-consultant-soon-title')).toBeNull();
-  });
-});
-
-describe('base ships with too few ways (#454)', () => {
-  it('lists them in "Without base ship" with the ways and the shortage', () => {
-    const viaBuyback = (id: number) => ({
-      ...coverage(id, 2, 'Cutlass Red'),
-      buyback: {
-        ships: [],
-        ccus: [
-          { source: 'buyback' as const, kind: 'ccu' as const, id: 700, title: 'To Cutlass Red' },
-        ],
-      },
-      covered: true,
-    });
-    const { root } = render([viaBuyback(20), viaBuyback(21), viaBuyback(22)]);
-    expect(tabs(root)[0]).toBe('No base ship 2');
-    const title = root.querySelector('.shm-ccu-consultant-soon-title');
-    expect(title?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Too few ways to the base ship 2');
-    const tables = root.querySelectorAll('.shm-ccu-consultant-table');
-    const row = [...tables[tables.length - 1]!.querySelectorAll('tbody td')].map((cell) =>
-      cellText(cell),
-    );
-    expect(row[0]).toBe('Cutlass RedNot always available · Standard price $135');
-    expect(row[1]).toBe('3');
-    expect(row[2]).toMatch(/^1.*2 too few$/);
-    // Not on sale now (no SKU known), with its page in the Pledge Store.
-    expect(row[3]).toBe('Not on sale nowPledge Store');
+    root.querySelector<HTMLButtonElement>('.shm-ccu-deep-name')!.click();
+    expect(listShortcuts.value.hangar?.title()).toBe('CCUs from Cutlass Red');
+    const show = root.querySelector<HTMLButtonElement>('.shm-ccu-consultant-show')!;
+    // Every CCU from the base ships short of ways (Arrow is always available).
+    expect(show.textContent?.trim()).toBe('Show 2 CCUs in My Hangar');
+    show.click();
+    expect(listShortcuts.value.hangar?.id).toBe('ccuConsultant:tooFew');
+    expect(listShortcuts.value.hangar?.title()).toBe('CCU Consultant: Too few ways');
   });
 });
 
@@ -324,18 +305,6 @@ describe('the tab "Discount at risk" (#455)', () => {
     ).toBe(
       'No discount at risk No base ship of your CCUs gets more expensive within the next 14 days.',
     );
-  });
-});
-
-describe('the grouped view of the CCU Consultant (#456)', () => {
-  it('has its toggle above the tables, switched like the settings', () => {
-    const { root, updates } = render([coverage(10, 2, 'Cutlass Red')]);
-    const toggle = root.querySelector<HTMLButtonElement>(
-      '.shm-ccu-consultant-view-bar .shm-ccu-consultant-group-toggle',
-    )!;
-    expect(toggle.getAttribute('aria-pressed')).toBe('true');
-    toggle.click();
-    expect(updates.at(-1)?.grouped?.consultant).toBe(false);
   });
 });
 

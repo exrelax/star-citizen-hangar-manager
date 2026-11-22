@@ -4,7 +4,7 @@ import { isForOwnedShip, ownedShips } from '@/hangar/paint-ships';
 import type { StoreItem } from '@/store/items/store-items';
 import { FALLBACK_CATALOG } from './catalog';
 import { generatedDemo } from './demo';
-import { demoPaintCases, PAINT_CASES } from './demo-paint-cases';
+import { demoPaintCases, PAINT_CASES, paintCaseShips } from './demo-paint-cases';
 
 const paint = (id: number, name: string): StoreItem => ({
   id,
@@ -63,20 +63,8 @@ describe('the demo’s paints by owned ships (#336, #337)', () => {
 
     const cases = demoPaintCases(
       FALLBACK_CATALOG.items.filter((i) => i.category === 'Paints'),
-      {
-        standalone: account.pledges
-          .filter((p) => p.demoKind === 'ships' && !p.isUpgraded)
-          .flatMap((p) => p.items.filter((i) => i.kind === 'Ship').map((i) => i.title)),
-        package: account.pledges
-          .filter((p) => p.demoKind === 'packages')
-          .flatMap((p) => p.items.filter((i) => i.kind === 'Ship').map((i) => i.title)),
-        upgraded: account.pledges
-          .filter((p) => p.isUpgraded)
-          .flatMap((p) => p.items.filter((i) => i.kind === 'Ship').map((i) => i.title)),
-        other: [],
-        ccuBases: [],
-        catalog: FALLBACK_CATALOG.ships.map((s) => s.name),
-      },
+      // The ships the demo itself chooses the cases by.
+      paintCaseShips(account.pledges, FALLBACK_CATALOG),
     );
     const names = [...cases.values()].map((entry) => `Paints - ${entry.name}`);
     // Every chosen paint is in the hangar and the buy back.

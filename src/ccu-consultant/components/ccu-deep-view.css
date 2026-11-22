@@ -1,0 +1,541 @@
+/*
+ * The deep view of the CCU Consultant (#563). Not scoped: ShipUpgradeButtons' buttons fill the
+ * secure panel. "Classic RSI" first, "Modern Hangar" at the end. Narrow, the secure panel moves
+ * below the row and the totals stack.
+ */
+
+.shm-ccu-deep {
+  /* "Found by the deep view": a color of its own, Apple's purple. */
+  --shm-ccu-found: #c58af9;
+  --shm-ccu-chain: color-mix(in srgb, var(--shm-success) 62%, #000);
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  container-type: inline-size;
+}
+
+/* "Secure now" and what it costs in all. */
+.shm-ccu-deep-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+}
+
+.shm-ccu-deep-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  padding: 12px 14px;
+  background: rgb(var(--shm-surface-rgb) / 0.6);
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.2);
+  border-radius: var(--shm-radius-cell);
+}
+
+.shm-ccu-deep-stat.is-primary {
+  background: rgb(var(--shm-accent-rgb) / 0.12);
+  border-color: rgb(var(--shm-accent-rgb) / 0.35);
+}
+
+.shm-ccu-deep-stat-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--shm-text-muted);
+  font-size: calc(11px * var(--shm-font-scale));
+  font-weight: 600;
+}
+
+.shm-ccu-deep-stat.is-primary .shm-ccu-deep-stat-label {
+  color: var(--shm-accent);
+  font-size: calc(12px * var(--shm-font-scale));
+  font-weight: 700;
+}
+
+.shm-ccu-deep-stat-text {
+  color: var(--shm-text);
+  font-size: calc(14px * var(--shm-font-scale));
+  font-variant-numeric: tabular-nums;
+  line-height: 1.35;
+}
+
+.shm-ccu-deep-stat-text strong,
+.shm-ccu-deep-stat-value {
+  color: var(--shm-text-strong);
+  font-size: calc(20px * var(--shm-font-scale));
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.3;
+}
+
+.shm-ccu-deep-stat-note {
+  color: var(--shm-text-faint);
+  font-size: calc(11px * var(--shm-font-scale));
+  line-height: 1.4;
+}
+
+.shm-ccu-deep-stat.is-primary .shm-ccu-deep-stat-note {
+  color: var(--shm-text-muted);
+}
+
+/* One row per base ship: its image, what leads to it, what to buy. */
+.shm-ccu-deep-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shm-ccu-deep-row {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr) minmax(200px, 236px);
+  gap: 14px;
+  align-items: start;
+  padding: 10px;
+  background: rgb(var(--shm-surface-rgb) / 0.6);
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.2);
+  border-radius: var(--shm-radius-cell);
+}
+
+.shm-ccu-deep-row.is-found {
+  border-color: color-mix(in srgb, var(--shm-ccu-found) 55%, transparent);
+}
+
+.shm-ccu-deep-image {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1.9;
+  padding: 0;
+  overflow: hidden;
+  color: var(--shm-accent);
+  background: rgb(var(--shm-accent-rgb) / 0.08);
+  border: 0;
+  border-radius: var(--shm-radius-small);
+  cursor: pointer;
+}
+
+.shm-ccu-deep-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* A ship RSI doesn't sell now steps back. */
+.shm-ccu-deep-row.is-off .shm-ccu-deep-image img {
+  opacity: 0.6;
+}
+
+.shm-ccu-deep-price {
+  position: absolute;
+  bottom: 4px;
+  left: 5px;
+  padding: 0 5px;
+  color: var(--shm-text-strong);
+  font-size: calc(11px * var(--shm-font-scale));
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  background: rgb(var(--shm-surface-rgb) / 0.8);
+  border-radius: var(--shm-radius-small);
+}
+
+.shm-ccu-deep-main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  min-width: 0;
+}
+
+.shm-ccu-deep-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+.shm-ccu-deep-name {
+  padding: 0;
+  color: var(--shm-text-strong);
+  font: inherit;
+  font-size: calc(14px * var(--shm-font-scale));
+  font-weight: 600;
+  text-align: left;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.shm-ccu-deep-name:focus-visible {
+  outline: 2px solid var(--shm-accent);
+  outline-offset: 2px;
+}
+
+.shm-ccu-deep-found {
+  padding: 0 6px;
+  color: var(--shm-ccu-found);
+  font-size: calc(10px * var(--shm-font-scale));
+  font-weight: 700;
+  line-height: 16px;
+  background: color-mix(in srgb, var(--shm-ccu-found) 18%, transparent);
+  border-radius: var(--shm-radius-small);
+}
+
+/* The bar of ways: one segment per CCU from the ship. */
+.shm-ccu-deep-bar {
+  display: flex;
+  align-self: stretch;
+  gap: 2px;
+  height: 8px;
+}
+
+.shm-ccu-deep-bar > span {
+  flex-basis: 0;
+  min-width: 2px;
+}
+
+.shm-ccu-deep-bar .is-ship,
+.shm-ccu-deep-swatch.is-ship {
+  background: var(--shm-success);
+}
+
+.shm-ccu-deep-bar .is-chain,
+.shm-ccu-deep-swatch.is-chain {
+  background: var(--shm-ccu-chain);
+}
+
+.shm-ccu-deep-bar .is-buyback,
+.shm-ccu-deep-swatch.is-buyback {
+  background: var(--shm-warning);
+}
+
+.shm-ccu-deep-bar .is-always,
+.shm-ccu-deep-swatch.is-always {
+  background: var(--shm-accent);
+}
+
+.shm-ccu-deep-bar .is-short,
+.shm-ccu-deep-swatch.is-short {
+  background: color-mix(in srgb, var(--shm-danger) 12%, transparent);
+  box-shadow: inset 0 0 0 1.5px var(--shm-danger);
+}
+
+.shm-ccu-deep-count {
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+  font-variant-numeric: tabular-nums;
+}
+
+.shm-ccu-deep-count strong {
+  color: var(--shm-text-strong);
+  font-weight: 600;
+}
+
+.shm-ccu-deep-count .is-short {
+  color: var(--shm-danger);
+}
+
+/* The chains leading to the ship, as chips of their ships. */
+.shm-ccu-deep-routes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shm-ccu-deep-routes li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  color: var(--shm-text);
+  font-size: calc(11px * var(--shm-font-scale));
+  line-height: 16px;
+}
+
+.shm-ccu-deep-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 6px 1px 2px;
+  background: rgb(var(--shm-accent-rgb) / 0.12);
+  border-radius: var(--shm-radius-small);
+}
+
+.shm-ccu-deep-chip.is-more {
+  padding-left: 6px;
+  color: var(--shm-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.shm-ccu-deep-chip img {
+  flex: none;
+  width: 26px;
+  height: 15px;
+  object-fit: cover;
+  border-radius: 3px;
+}
+
+.shm-ccu-deep-arrow {
+  color: var(--shm-text-faint);
+}
+
+.shm-ccu-deep-times {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.shm-ccu-deep-note {
+  color: var(--shm-text-muted);
+  font-size: calc(11px * var(--shm-font-scale));
+}
+
+.shm-ccu-deep-routes li.is-buyback .shm-ccu-deep-note {
+  color: var(--shm-warning);
+}
+
+.shm-ccu-deep-routes li.is-blocked .shm-ccu-deep-chip,
+.shm-ccu-deep-routes li.is-blocked .shm-ccu-deep-times {
+  color: var(--shm-danger);
+}
+
+.shm-ccu-deep-star {
+  flex: none;
+  width: 0.9em;
+  height: 0.9em;
+  color: var(--shm-accent);
+}
+
+/* "2 in your hangar", "7 in your buy back" (opens them in Buy Back). */
+.shm-ccu-deep-own {
+  padding: 0;
+  font: inherit;
+  font-size: calc(12px * var(--shm-font-scale));
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  background: none;
+  border: 0;
+}
+
+.shm-ccu-deep-own.is-hangar {
+  color: var(--shm-success);
+}
+
+.shm-ccu-deep-own.is-buyback {
+  color: var(--shm-warning);
+  cursor: pointer;
+}
+
+.shm-ccu-deep-own.is-buyback:hover,
+.shm-ccu-deep-own.is-buyback:focus-visible {
+  text-decoration: underline;
+  outline: none;
+}
+
+/* What to buy now. */
+.shm-ccu-deep-secure {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 8px 10px;
+  background: rgb(var(--shm-accent-rgb) / 0.08);
+  border-radius: var(--shm-radius-control);
+}
+
+.shm-ccu-deep-secure.is-off {
+  background: rgb(var(--shm-accent-rgb) / 0.04);
+}
+
+.shm-ccu-deep-secure-title {
+  color: var(--shm-text-strong);
+  font-size: calc(12px * var(--shm-font-scale));
+  font-weight: 700;
+}
+
+.shm-ccu-deep-secure.is-off .shm-ccu-deep-secure-title {
+  color: var(--shm-text-muted);
+  font-weight: 600;
+}
+
+.shm-ccu-deep-options {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shm-ccu-deep-options li {
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr) auto;
+  gap: 7px;
+  align-items: center;
+  color: var(--shm-text);
+  font-size: calc(11px * var(--shm-font-scale));
+  font-variant-numeric: tabular-nums;
+  line-height: 15px;
+}
+
+.shm-ccu-deep-options li.is-none {
+  display: block;
+  color: var(--shm-text-muted);
+}
+
+.shm-ccu-deep-options strong {
+  color: var(--shm-text-strong);
+}
+
+.shm-ccu-deep-option {
+  min-width: 0;
+}
+
+.shm-ccu-deep-option .shm-ccu-deep-star {
+  vertical-align: -0.1em;
+}
+
+.shm-ccu-deep-each {
+  color: var(--shm-text-muted);
+}
+
+.shm-ccu-deep-dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  background: var(--shm-text-muted);
+  border-radius: 2px;
+}
+
+.shm-ccu-deep-dot.is-always {
+  background: var(--shm-accent);
+}
+
+.shm-ccu-deep-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.shm-ccu-deep-actions:empty {
+  display: none;
+}
+
+/* Stronger than ShipUpgradeButtons' own (scoped) rules, which keep its buttons on the right. */
+.shm-ccu-deep-actions > .shm-button,
+.shm-ccu-deep .shm-ccu-deep-actions .shm-upgrade-buttons,
+.shm-ccu-deep .shm-ccu-deep-actions .shm-upgrade-buttons .shm-button {
+  flex: 1;
+  min-height: 26px;
+}
+
+.shm-ccu-deep-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-top: 4px;
+  margin-bottom: 0;
+  padding: 0;
+  color: var(--shm-text-muted);
+  font-size: calc(11px * var(--shm-font-scale));
+  list-style: none;
+}
+
+.shm-ccu-deep-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.shm-ccu-deep-swatch {
+  width: 10px;
+  height: 6px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .shm-ccu-deep-name:hover {
+    color: var(--shm-accent);
+  }
+
+  .shm-ccu-deep-image:hover img {
+    transform: scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shm-ccu-deep-image img {
+    transition: none;
+  }
+
+  .shm-ccu-deep-image:hover img {
+    transform: none;
+  }
+}
+
+/* Narrow: the secure panel below the ship, the totals one below the other. */
+@container (max-width: 640px) {
+  .shm-ccu-deep-summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .shm-ccu-deep-row {
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 10px 12px;
+  }
+
+  .shm-ccu-deep-secure {
+    grid-column: 1 / -1;
+  }
+}
+
+@container (max-width: 380px) {
+  .shm-ccu-deep-row {
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+}
+
+/* "Modern Hangar": raised surfaces without outline, rounded segments, Apple's purple. */
+html .shm-theme-modern .shm-ccu-deep {
+  --shm-ccu-found: #bf5af2;
+}
+
+@media (prefers-color-scheme: light) {
+  html .shm-theme-modern .shm-ccu-deep {
+    --shm-ccu-found: #af52de;
+  }
+}
+
+html .shm-theme-modern .shm-ccu-deep-row,
+html .shm-theme-modern .shm-ccu-deep-stat {
+  background: rgb(var(--shm-surface-rgb) / 0.55);
+  border-color: transparent;
+  box-shadow: inset 0 0 0 1px var(--shm-fill);
+}
+
+html .shm-theme-modern .shm-ccu-deep-stat.is-primary {
+  background: rgb(var(--shm-accent-rgb) / 0.12);
+  box-shadow: inset 0 0 0 1px rgb(var(--shm-accent-rgb) / 0.35);
+}
+
+html .shm-theme-modern .shm-ccu-deep-row.is-found {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--shm-ccu-found) 45%, transparent);
+}
+
+html .shm-theme-modern .shm-ccu-deep-bar > span,
+html .shm-theme-modern .shm-ccu-deep-swatch {
+  border-radius: 2px;
+}
+
+html .shm-theme-modern .shm-ccu-deep-chip {
+  background: var(--shm-fill);
+  border-radius: var(--shm-radius-item);
+}

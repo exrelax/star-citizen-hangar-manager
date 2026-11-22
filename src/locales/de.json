@@ -1815,31 +1815,7 @@
       "always": "Von diesen Basisschiffen ist nichts in deinem Hangar oder Buy Back, aber RSI verkauft sie immer. Quelle: $1, Liste vom $2.",
       "alwaysUndated": "Von diesen Basisschiffen ist nichts in deinem Hangar oder Buy Back, aber RSI verkauft sie immer. Quelle: $1."
     },
-    "col": {
-      "ship": "Basisschiff",
-      "ccus": "CCUs davon",
-      "cover": "Abdeckung des Basisschiffs",
-      "found": "Gefunden",
-      "leaves": "Entfernung",
-      "ways": "Wege dorthin",
-      "store": "Pledge Store"
-    },
     "unknownShip": "Unbekanntes Basisschiff",
-    "notAlways": "Nicht immer kaufbar",
-    "price": "Standardpreis $1",
-    "cover": {
-      "buyback": "In deinem Buy Back",
-      "always": "Immer kaufbar",
-      "alwaysSub": "Im Pledge Store, wann immer du es brauchst",
-      "missing": "Nichts gefunden",
-      "missingSub": "Weder das Schiff noch ein CCU dorthin in deinem Hangar oder Buy Back"
-    },
-    "openBuyback": "Öffnet es im Buy Back",
-    "moreMatches": {
-      "one": "+ $1 weiteres",
-      "other": "+ $1 weitere"
-    },
-    "fewerMatches": "Weniger zeigen",
     "pledgeStore": "Pledge Store",
     "pledgeStoreHint": "Öffnet $1 im Pledge Store",
     "empty": {
@@ -1852,8 +1828,6 @@
     "soon": {
       "title": "Bald ohne Basisschiff",
       "hint": "Diese Basisschiffe verlassen den Pledge Store – auch die bisher immer kaufbaren. Jedes Schiff oder CCU dorthin in deinem Hangar oder Buy Back gibt einem CCU davon das Schiff, und davon gibt es weniger als CCUs. Hol dir die fehlenden vor dem Datum: Danach haben diese CCUs kein Basisschiff mehr.",
-      "until": "Im Pledge Store bis $1",
-      "ways": "$1 im Hangar · $2 im Buy Back",
       "short": {
         "one": "$1 zu wenig",
         "other": "$1 zu wenig"
@@ -1896,15 +1870,6 @@
       "always": "Immer kaufbar",
       "atRisk": "Rabatt in Gefahr"
     },
-    "showCcus": {
-      "one": "Das CCU zeigen",
-      "other": "Die $1 CCUs zeigen"
-    },
-    "hideCcus": "CCUs ausblenden",
-    "openHangar": "Öffnet das CCU in My Hangar",
-    "openGroup": "Öffnet diese CCUs in My Hangar",
-    "groupHint": "Zeigt gleiche CCUs eines Basisschiffs als einen Eintrag mit ihrer Anzahl. Für den CCU Consultant gemerkt.",
-    "ccuKinds": "$1 verschiedene",
     "boxOpen": "CCU Consultant öffnen",
     "boxMissingHint": "CCUs, deren Basisschiff weder dein Hangar noch dein Buy Back liefert und das vermutlich nicht immer kaufbar ist.",
     "boxTooFew": "Zu wenige Wege",
@@ -1934,6 +1899,67 @@
       "showCcus": "Zeigt die CCUs mit dem Basisschiff $1 in My Hangar",
       "buybackHint": "Öffnet die Schiffe und CCUs zum Basisschiff $1 im Buy Back",
       "list": "Basisschiffe"
+    },
+    "deep": {
+      "tab": "Zu wenige Wege",
+      "hint": "Ketten verfolgt: Ein CCU zum Basisschiff zählt nur, wenn sein eigenes Basisschiff auch einen Weg hat. Jedes CCU braucht seinen eigenen Weg.",
+      "found": "Von der Detailansicht gefunden",
+      "foundHint": "Die einfache Ansicht zählt dieses Basisschiff als abgedeckt, durch die CCUs dorthin in deinem Hangar. Deren eigene Basisschiffe haben aber keinen Weg mehr für sie übrig, darum zählen sie nicht.",
+      "ofWays": {
+        "one": "von $1 Weg",
+        "other": "von $1 Wegen"
+      },
+      "barLabel": {
+        "one": "$1 von $2 CCU mit dem Basisschiff $3 hat einen Weg dorthin, $4 zu wenig.",
+        "other": "$1 von $2 CCUs mit dem Basisschiff $3 haben einen Weg dorthin, $4 zu wenig."
+      },
+      "routes": "Wege zu $1",
+      "viaBuyback": "$1 nur über Buy Back",
+      "blocked": "zählen nicht: $1 hat selbst zu wenige Wege",
+      "inHangar": {
+        "one": "$1 in deinem Hangar",
+        "other": "$1 in deinem Hangar"
+      },
+      "inBuyback": {
+        "one": "$1 in deinem Buy Back",
+        "other": "$1 in deinem Buy Back"
+      },
+      "secureNow": "Jetzt sichern",
+      "secureCcus": {
+        "one": "$1 CCU",
+        "other": "$1 CCUs"
+      },
+      "secureShips": {
+        "one": "mit $1 Basisschiff, das gerade im Verkauf ist",
+        "other": "mit $1 Basisschiffen, die gerade im Verkauf sind"
+      },
+      "credit": "Bezahlt mit Store Credits",
+      "creditYours": "Bezahlt mit Store Credits · deine: $1",
+      "fromAlways": "Vom nächstgünstigeren immer kaufbaren Schiff",
+      "fromAlwaysNote": {
+        "one": "Sicher: Das Startschiff bekommst du jederzeit. $1 Basisschiff",
+        "other": "Sicher: Das Startschiff bekommst du jederzeit. $1 Basisschiffe"
+      },
+      "fromCheapest": "Vom nächstgünstigeren Schiff",
+      "fromCheapestNote": "Am günstigsten – aber das Startschiff braucht vielleicht selbst einen Weg",
+      "secureTitle": {
+        "one": "$1 CCU jetzt sichern",
+        "other": "$1 CCUs jetzt sichern"
+      },
+      "notOnSaleTitle": "Gerade nicht im Verkauf – achte auf den nächsten Verkauf",
+      "alwaysTitle": "Immer kaufbar – jetzt nichts zu sichern",
+      "nothingTitle": "Jedes CCU davon hat einen Weg",
+      "each": "je $1",
+      "eachCheapest": "je $1 · zugleich am günstigsten",
+      "noAlways": "Kein günstigeres immer kaufbares Schiff",
+      "noCheaper": "Kein günstigeres Schiff bekannt",
+      "legend": {
+        "ship": "Schiff in deinem Hangar",
+        "chain": "Kette in deinem Hangar",
+        "buyback": "Buy Back",
+        "short": "Zu wenig",
+        "always": "Immer kaufbar"
+      }
     }
   },
   "cartPaints": {
