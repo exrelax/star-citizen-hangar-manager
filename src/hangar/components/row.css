@@ -563,8 +563,12 @@ html .shm-theme-rsi .shm-badge {
   border-color: var(--shm-warning);
 }
 
-/* A CCU whose base ship is always available in the Pledge Store (#112). */
+/*
+ * A CCU whose base ship is always available in the Pledge Store (#112); a pledge that can be melted
+ * and rebought without loss (#530).
+ */
 .shm-badge.is-always-available,
+.shm-badge.is-rebuyable,
 .shm-badge.is-giftable {
   color: var(--shm-success);
   border-color: rgb(var(--shm-success-rgb) / 0.6);

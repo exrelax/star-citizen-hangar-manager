@@ -38,6 +38,9 @@ import { useMarkedPledges } from '../use-melt-marks';
 import { useNow } from '@/shared/use-now';
 import { useProvidedRemovalCcus } from '@/ship-removals/use-removal-ccus';
 import { limitedSaleNote } from '@/ship-removals/removal-availability';
+import { useProvidedRebuyables, useRebuyDisplay } from '@/melt-rebuy/use-rebuyables';
+import { rebuyLabelHint } from '@/melt-rebuy/rebuy-text';
+import RebuyReasons from '@/melt-rebuy/components/RebuyReasons.vue';
 
 const props = defineProps<{
   pledge: PledgeView;
@@ -180,6 +183,26 @@ const removal = computed(() => {
     details: [about, ccusTo, shortage, soon, limited].filter(Boolean).join(' '),
   };
 });
+
+/*
+ * Melt and Rebuy (#530): the label "Rebuyable" with what melting frees and rebuying costs, or –
+ * opened – why a meltable pledge can't be rebought without loss. Only with its setting on.
+ */
+const rebuys = useProvidedRebuyables();
+const rebuyDisplay = useRebuyDisplay();
+const meltRebuy = computed(() =>
+  rebuyDisplay.value.shown ? rebuys.value.get(props.pledge.id) : undefined,
+);
+const rebuyableHint = computed(() =>
+  meltRebuy.value?.rebuyable
+    ? rebuyLabelHint(meltRebuy.value, { hideValues: rebuyDisplay.value.hideValues })
+    : undefined,
+);
+const notRebuyable = computed(() =>
+  meltRebuy.value && !meltRebuy.value.rebuyable && props.pledge.isMeltable
+    ? meltRebuy.value.reasons
+    : undefined,
+);
 
 const discount = computed(() =>
   props.pledge.discount && props.pledge.discount.amount !== 0
@@ -382,6 +405,9 @@ const toggle = () => {
         >
           {{ i18n.t('ccuCoverage.alwaysAvailable') }}
         </span>
+        <span v-if="rebuyableHint" v-tooltip="rebuyableHint" class="shm-badge is-rebuyable">
+          {{ i18n.t('meltRebuy.label') }}
+        </span>
         <span
           v-if="pledge.insurance"
           v-tooltip="i18n.t('insurance.badgeTitle')"
@@ -546,6 +572,12 @@ const toggle = () => {
             </span>
           </li>
         </ul>
+        <!-- Meltable, but not without loss when rebought (#530): what would be lost. -->
+        <RebuyReasons
+          v-if="notRebuyable?.length"
+          :reasons="notRebuyable"
+          :hide-values="rebuyDisplay.hideValues"
+        />
         <CcuCoverage v-if="pledge.isCcu && coverage" :coverage="coverage" />
         <UpgradeLog
           v-if="pledge.isUpgraded"

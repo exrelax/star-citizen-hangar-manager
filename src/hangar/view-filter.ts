@@ -3,13 +3,14 @@ import { hashOfTab } from './route';
 
 /*
  * Filters of "My Hangar" without a button of their own, turned on from the sidebar: "Show" of the
- * notification about marked pledges that can be melted now (#144), and the filter button of the
- * Paint Discount Consultant's box (#146). One at a time; turning one on clears search and the
- * other filters. "Reset filters" turns it off, and the list turns it off once nothing matches
- * (see `ManagerList`'s `filterRequest`).
+ * notification about marked pledges that can be melted now (#144), the filter button of the Paint
+ * Discount Consultant's box (#146) and the List Shortcut "Melt and rebuy" of the summary box (#530),
+ * which shows a bar with its title, count and × above the list. One at a time; turning one on
+ * clears search and the other filters. "Reset filters" turns it off, and the list turns it off once
+ * nothing matches (see `ManagerList`'s `filterRequest`).
  */
 
-export type HangarViewFilter = 'meltReady' | 'paintRebuy';
+export type HangarViewFilter = 'meltReady' | 'paintRebuy' | 'meltRebuy';
 
 /** The filter that is on, and when it was turned on (each time is a new request). */
 export const hangarViewFilter = shallowRef<{ id: HangarViewFilter; at: number } | null>(null);

@@ -106,6 +106,9 @@ import {
   type RemovalNote,
   type RemovalWarning,
 } from '@/ship-removals/removal-notes';
+import { useProvidedRebuyables, useRebuyDisplay } from '@/melt-rebuy/use-rebuyables';
+import { rebuySummary } from '@/melt-rebuy/rebuy-summary';
+import { rebuyGroupHint } from '@/melt-rebuy/rebuy-text';
 
 /*
  * The sidebar below RSI's page navigation on the left on every tab (App.vue teleports it there),
@@ -252,6 +255,34 @@ function toggleRebuyFilter() {
   if (rebuyFiltered.value) clearHangarFilter('paintRebuy');
   else showHangarFilter('paintRebuy');
 }
+
+/*
+ * Melt and Rebuy (#530): the List Shortcut "Melt and rebuy" from the summary box, by the count of
+ * all rebuyable pledges of the hangar, and what the rebuyable ones of the selection free.
+ */
+const rebuys = useProvidedRebuyables();
+const rebuyDisplay = useRebuyDisplay();
+const rebuyCount = computed(() =>
+  rebuyDisplay.value.shown
+    ? rebuySummary(
+        rebuys.value,
+        props.pledges.map((pledge) => pledge.id),
+      ).count
+    : 0,
+);
+const rebuyShortcutOn = computed(() => hangarViewFilter.value?.id === 'meltRebuy');
+function toggleRebuyShortcut() {
+  if (rebuyShortcutOn.value) clearHangarFilter('meltRebuy');
+  else showHangarFilter('meltRebuy');
+}
+const selectedRebuy = computed(() =>
+  rebuyDisplay.value.shown
+    ? rebuySummary(
+        rebuys.value,
+        selected.value.map((pledge) => pledge.id),
+      )
+    : undefined,
+);
 
 /** Selects them, so the "Selected" box offers to melt them all at once. */
 function selectReady() {
@@ -1172,6 +1203,23 @@ async function move(box: Box, step: -1 | 1) {
           <p v-if="settings.summaryTypes && shown.types.length" class="shm-sidebar-note">
             {{ types(shown) }}
           </p>
+          <!-- The List Shortcut "Melt and rebuy" (#530), and again all pledges. -->
+          <div v-if="rebuyCount || rebuyShortcutOn" class="shm-sidebar-actions">
+            <button
+              v-tooltip="rebuyShortcutOn ? undefined : i18n.t('meltRebuy.shortcutShowHint')"
+              type="button"
+              class="shm-button shm-sidebar-button"
+              :aria-pressed="rebuyShortcutOn"
+              @click="toggleRebuyShortcut"
+            >
+              <SvgIcon :name="rebuyShortcutOn ? 'filter-circle-xmark' : 'recycle'" />
+              {{
+                rebuyShortcutOn
+                  ? i18n.t('meltRebuy.shortcutHide')
+                  : i18n.n('meltRebuy.shortcutShow', rebuyCount, [number.format(rebuyCount)])
+              }}
+            </button>
+          </div>
         </template>
 
         <template v-else-if="box === 'selection' && chosen">
@@ -1190,6 +1238,19 @@ async function move(box: Box, step: -1 | 1) {
                 <dd class="is-discount">{{ money.format(chosen.discount) }}</dd>
               </div>
             </template>
+            <!-- What its rebuyable pledges free (#530); their count while values are hidden. -->
+            <div v-if="selectedRebuy?.count">
+              <dt v-tooltip="rebuyGroupHint(selectedRebuy, { hideValues: settings.hideMeltValue })">
+                {{ i18n.t('meltRebuy.shortcutTitle') }}
+              </dt>
+              <dd :class="{ 'is-discount': !settings.hideMeltValue }">
+                {{
+                  settings.hideMeltValue
+                    ? number.format(selectedRebuy.count)
+                    : money.format(selectedRebuy.freedCredit)
+                }}
+              </dd>
+            </div>
           </dl>
           <!-- Always per type here; only the "Summary" box makes it a setting. -->
           <p v-if="chosen.types.length" class="shm-sidebar-note">

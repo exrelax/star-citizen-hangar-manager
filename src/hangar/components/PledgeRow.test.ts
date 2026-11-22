@@ -11,6 +11,8 @@ import { shipRemovalRequest } from '@/store/open-current-warbonds';
 import { ALWAYS_AVAILABLE, type AlwaysAvailableList } from '@/ccu-consultant/always-available';
 import { CCU_COVERAGE, COVERAGE_SOURCES, type CcuCoverage } from '@/ccu-consultant/coverage';
 import type { Ship } from '@/ships/ships';
+import { REBUY_DISPLAY, REBUYABLES, type RebuyDisplay } from '@/melt-rebuy/use-rebuyables';
+import type { Rebuy } from '@/melt-rebuy/rebuyable';
 import PledgeRow from './PledgeRow.vue';
 
 let app: App | undefined;
@@ -24,6 +26,7 @@ function render(
   discountAmount?: number,
   removals: RemovalCcus[] = [],
   consultant?: { coverage: CcuCoverage; list?: AlwaysAvailableList; ships?: Ship[] },
+  rebuy?: { entry: Omit<Rebuy, 'pledgeId'>; display: RebuyDisplay },
 ) {
   const pledge = {
     id: 1,
@@ -64,6 +67,13 @@ function render(
       COVERAGE_SOURCES,
       shallowRef({ hangar: new Map(), buyback: new Map(), ships: consultant.ships ?? [] }),
     );
+  }
+  if (rebuy) {
+    app.provide(
+      REBUYABLES,
+      shallowRef(new Map([[pledge.id, { pledgeId: pledge.id, ...rebuy.entry }]])),
+    );
+    app.provide(REBUY_DISPLAY, shallowRef(rebuy.display));
   }
   app.mount(root);
   return root;
@@ -340,6 +350,72 @@ describe('PledgeRow', () => {
       expect(badge(root)).toBeNull();
       expect(note(root)).toBeNull();
       expect(root.querySelector('.shm-badge.is-always-available')).not.toBeNull();
+    });
+  });
+
+  describe('Melt and Rebuy (#530)', () => {
+    const paint = {
+      id: 5,
+      title: 'Paint - Cutlass Black Skull Paint',
+      value: '$10.00 USD',
+      valueUsd: 10,
+      isGiftable: false,
+    };
+    const on = { shown: true, hideValues: false };
+    const rebuyable = { rebuyable: true, reasons: [], freedCredit: 10, rebuyPrice: 10 };
+    const discounted = {
+      rebuyable: false,
+      reasons: [
+        { code: 'giftable' as const },
+        { code: 'discount' as const, amount: 2, percent: 16.7, price: 12 },
+      ],
+      freedCredit: 10,
+      rebuyPrice: 12,
+    };
+    const label = (root: HTMLElement) => root.querySelector('.shm-badge.is-rebuyable');
+    const reasons = (root: HTMLElement) =>
+      [...root.querySelectorAll('.shm-rebuy-reasons li')].map((item) => item.textContent?.trim());
+
+    it('labels a rebuyable pledge, with the freed store credit and the rebuy price', () => {
+      const root = render(paint, undefined, [], undefined, { entry: rebuyable, display: on });
+      expect(label(root)?.textContent?.trim()).toBe('Rebuyable');
+      expect(label(root)?.getAttribute('aria-description')).toBe(
+        'Melting it frees $10 in store credit. Rebuying it in the Pledge Store costs $10 in store credit now – the same item with the same insurance.',
+      );
+      expect(root.querySelector('.shm-rebuy-reasons')).toBeNull();
+    });
+
+    it('tells why a meltable pledge can’t be rebought without loss, without amounts if hidden', () => {
+      const root = render(paint, undefined, [], undefined, { entry: discounted, display: on });
+      expect(label(root)).toBeNull();
+      expect(root.querySelector('.shm-rebuy-reasons h4')?.textContent).toBe(
+        'Can’t be rebought without loss',
+      );
+      expect(reasons(root)).toEqual(['Giftable', 'Discount of $2']);
+      app!.unmount();
+      const hidden = render(paint, undefined, [], undefined, {
+        entry: discounted,
+        display: { shown: true, hideValues: true },
+      });
+      expect(reasons(hidden)).toEqual(['Giftable', 'Discount']);
+    });
+
+    it('shows no reasons for a pledge that can’t be melted', () => {
+      const root = render({ ...paint, isExchangeable: false }, undefined, [], undefined, {
+        entry: { ...discounted, reasons: [{ code: 'notMeltable' }] },
+        display: on,
+      });
+      expect(root.querySelector('.shm-rebuy-reasons')).toBeNull();
+    });
+
+    it('shows neither label nor reasons with its setting off', () => {
+      const off = { shown: false, hideValues: false };
+      expect(
+        label(render(paint, undefined, [], undefined, { entry: rebuyable, display: off })),
+      ).toBeNull();
+      app!.unmount();
+      const root = render(paint, undefined, [], undefined, { entry: discounted, display: off });
+      expect(root.querySelector('.shm-rebuy-reasons')).toBeNull();
     });
   });
 });

@@ -36,7 +36,8 @@
     "groupCount": {
       "one": "$1 Gruppe",
       "other": "$1 Gruppen"
-    }
+    },
+    "shortcutClose": "„$1“ schließen"
   },
   "sort": {
     "label": "Sortierung",
@@ -2106,6 +2107,24 @@
         "insurance": "Versicherung im Pledge Store nicht bekannt",
         "availability": "Verfügbarkeit noch nicht bekannt"
       }
-    }
+    },
+    "labelHintPlain": "Jetzt einschmelzbar und später im Pledge Store ohne Verlust mit Store Credits wieder kaufbar – dasselbe Item mit derselben Versicherung.",
+    "reasonDiscountPlain": "Rabatt",
+    "reasonPaintVolumeDiscountPlain": "Mengenrabatt auf Paints",
+    "groupSome": "Teils wieder kaufbar",
+    "groupHint": {
+      "one": "Einschmelzen des wieder kaufbaren Pledges gibt dir $2 Store Credits frei. Im Pledge Store wieder kaufen kostet jetzt $3 Store Credits.",
+      "other": "Einschmelzen der $1 wieder kaufbaren Pledges gibt dir $2 Store Credits frei. Im Pledge Store wieder kaufen kostet jetzt $3 Store Credits."
+    },
+    "shortcutTitle": "Einschmelzen und wieder kaufen",
+    "shortcutFreed": "Gibt $1 Store Credits frei",
+    "shortcutShow": {
+      "one": "$1 wieder kaufbaren Pledge anzeigen",
+      "other": "$1 wieder kaufbare Pledges anzeigen"
+    },
+    "shortcutShowHint": "Zeigt in „My Hangar“ nur die Pledges, die du jetzt einschmelzen und später ohne Verlust mit Store Credits wieder kaufen kannst. „Filter zurücksetzen“ oder das × der Liste zeigt wieder alle.",
+    "shortcutHide": "Alle Pledges anzeigen",
+    "setting": "Wieder kaufbare Pledges anzeigen",
+    "settingHint": "Das Label „Wieder kaufbar“ an Pledges, die du jetzt einschmelzen und später im Pledge Store ohne Verlust mit Store Credits wieder kaufen kannst, die Liste „Einschmelzen und wieder kaufen“ und im aufgeklappten Item, warum ein Pledge nicht ohne Verlust wieder kaufbar ist."
   }
 }

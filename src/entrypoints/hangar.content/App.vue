@@ -43,7 +43,7 @@ import {
   chosenAlwaysAvailableSource,
   withoutLeaving,
 } from '@/ccu-consultant/always-available';
-import { REBUYABLES, useRebuyables } from '@/melt-rebuy/use-rebuyables';
+import { REBUY_DISPLAY, REBUYABLES, useRebuyables } from '@/melt-rebuy/use-rebuyables';
 import { today } from '@/orders/refund';
 import { useStoreCatalog } from '@/watchlists/use-store-catalog';
 import ConsultantsTab from '@/consultants/components/ConsultantsTab.vue';
@@ -253,6 +253,14 @@ provide(
       },
     };
   }),
+);
+// Whether the rows, the list and the sidebar show them (#530), and with amounts or without.
+provide(
+  REBUY_DISPLAY,
+  computed(() => ({
+    shown: settings.value.meltRebuy,
+    hideValues: settings.value.hideMeltValue,
+  })),
 );
 watchEffect(() => {
   const ids = new Set(pledges.value.map((pledge) => pledge.id));

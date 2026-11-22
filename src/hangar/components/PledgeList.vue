@@ -4,7 +4,7 @@ import { today } from '@/orders/refund';
 import { useProvidedCoverageSources } from '@/ccu-consultant/coverage';
 import type { GroupBadgeContext } from '../group-badges';
 import type { Settings } from '@/settings/settings';
-import { computed, onUnmounted, ref } from 'vue';
+import { computed, onUnmounted, ref, watch } from 'vue';
 import type { EmbeddedList } from '@/watchlists/embedded-list';
 import {
   PLEDGE_FILTER_PREDICATES,
@@ -43,6 +43,9 @@ import { groupCoverage } from '@/ccu-consultant/group-coverage';
 import { extrasNote, pledgeGroupBadges, pledgeGroupKind } from '../group-badges';
 import { pledgeFacts } from '../grouping';
 import { useMarkedPledges } from '../use-melt-marks';
+import { useProvidedRebuyables, useRebuyDisplay } from '@/melt-rebuy/use-rebuyables';
+import { isRebuyable, rebuySummary } from '@/melt-rebuy/rebuy-summary';
+import { formatUsd } from '../discount-format';
 
 const props = defineProps<{
   pledges: PledgeView[];
@@ -110,6 +113,9 @@ const coverageOfGroup = (group: { items: readonly PledgeView[] }) =>
 const coverageSources = useProvidedCoverageSources();
 const removals = useProvidedRemovalCcus();
 const markedPledges = useMarkedPledges();
+// Melt and Rebuy (#530): its List Shortcut, and the label of a group.
+const rebuys = useProvidedRebuyables();
+const rebuyDisplay = useRebuyDisplay();
 const badgeContext = computed((): GroupBadgeContext => ({
   coverageOf: (id) => coverages.value.get(id),
   ...(alwaysAvailable.value && { alwaysAvailable: alwaysAvailable.value }),
@@ -120,6 +126,9 @@ const badgeContext = computed((): GroupBadgeContext => ({
   // The melt label of a group with marked items (#552).
   marks: markedPledges.value,
   now: now.value,
+  ...(rebuyDisplay.value.shown && {
+    rebuy: { entries: rebuys.value, hideValues: rebuyDisplay.value.hideValues },
+  }),
 }));
 
 const filterGroups = computed(() =>
@@ -175,11 +184,36 @@ const filterLabel = (filter: PledgeFilter) => i18n.t(`filter.${filter}`);
 const VIEW_FILTERS: Record<HangarViewFilter, (pledge: PledgeView) => boolean> = {
   meltReady: (pledge) => meltReadyIds.value.has(pledge.id),
   paintRebuy: (pledge) => paintRebuys.value.has(pledge.id),
+  meltRebuy: (pledge) => isRebuyable(rebuys.value, pledge.id),
 };
 const viewFilterRequest = computed(() => {
   const request = props.embedded ? null : hangarViewFilter.value;
-  return request && { at: request.at, matches: VIEW_FILTERS[request.id] };
+  if (!request) return null;
+  const matches = VIEW_FILTERS[request.id];
+  // The List Shortcut "Melt and rebuy" (#530): with its bar.
+  return request.id === 'meltRebuy'
+    ? {
+        at: request.at,
+        matches,
+        title: i18n.t('meltRebuy.shortcutTitle'),
+        icon: 'recycle' as const,
+      }
+    : { at: request.at, matches };
 });
+// Its setting turned off: the shortcut goes too.
+watch(
+  () => rebuyDisplay.value.shown,
+  (shown) => !shown && !props.embedded && clearHangarFilter('meltRebuy'),
+);
+/** The bar of "Melt and rebuy": the store credit its pledges left by search and filters free. */
+const shortcutFreed = (entries: readonly PledgeView[]) =>
+  formatUsd(
+    rebuySummary(
+      rebuys.value,
+      entries.map((entry) => entry.id),
+    ).freedCredit,
+    locale.value,
+  );
 
 /** Filters whose meaning isn't obvious from the label explain it in their tooltip. */
 const HINTS: Partial<Record<PledgeFilter, MessageKey>> = {
@@ -225,6 +259,12 @@ const filterHint = (filter: PledgeFilter) => {
   >
     <template #row="{ entry, autoExpand }">
       <PledgeRow :pledge="entry" :auto-expand="autoExpand" />
+    </template>
+    <!-- The bar of "Melt and rebuy" (#530): the store credit they free, unless values are hidden. -->
+    <template v-if="viewFilterRequest?.title" #shortcut="{ entries }">
+      <span v-if="!settings.hideMeltValue">
+        {{ i18n.t('meltRebuy.shortcutFreed', [shortcutFreed(entries)]) }}
+      </span>
     </template>
     <template #group="{ group, open }">
       <GroupRow

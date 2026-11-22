@@ -85,6 +85,11 @@ export interface Settings {
   /** A note in RSI's cart on paints below the best volume discount, with fillers to add (#458). */
   cartPaintDiscount: boolean;
   /**
+   * Melt and Rebuy (#530): the label "Rebuyable" on pledges of My Hangar that can be melted now and
+   * rebought later without loss, their List Shortcut and why others can't.
+   */
+  meltRebuy: boolean;
+  /**
    * Experimental: exchanges (melts) all selected pledges of "My Hangar" at once, from the
    * sidebar's selection box (see `hangar/components/BulkExchangeOverlay.vue`).
    */
@@ -202,6 +207,7 @@ export const DEFAULT_SETTINGS: Settings = {
   upgradeDialogAlwaysAvailable: true,
   upgradeDialogBaseCounts: true,
   cartPaintDiscount: true,
+  meltRebuy: true,
   bulkMelting: false,
   hideSupersededInsurances: true,
   summaryTypes: false,
@@ -297,6 +303,7 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
     upgradeDialogAlwaysAvailable: pick('upgradeDialogAlwaysAvailable', isBoolean),
     upgradeDialogBaseCounts: pick('upgradeDialogBaseCounts', isBoolean),
     cartPaintDiscount: pick('cartPaintDiscount', isBoolean),
+    meltRebuy: pick('meltRebuy', isBoolean),
     bulkMelting: pick('bulkMelting', isBoolean),
     hideSupersededInsurances: pick('hideSupersededInsurances', isBoolean),
     summaryTypes: pick('summaryTypes', isBoolean),

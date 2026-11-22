@@ -36,7 +36,8 @@
     "groupCount": {
       "one": "$1 groupe",
       "other": "$1 groupes"
-    }
+    },
+    "shortcutClose": "Fermer « $1 »"
   },
   "sort": {
     "label": "Tri",
@@ -2106,6 +2107,24 @@
         "insurance": "Assurance dans le Pledge Store inconnue",
         "availability": "Disponibilité pas encore connue"
       }
-    }
+    },
+    "labelHintPlain": "Peut être fondu maintenant et racheté plus tard dans le Pledge Store en store credit sans perte – le même article avec la même assurance.",
+    "reasonDiscountPlain": "Remise",
+    "reasonPaintVolumeDiscountPlain": "Remise de quantité sur les peintures",
+    "groupSome": "Rachetables en partie",
+    "groupHint": {
+      "one": "Fondre le pledge rachetable libère $2 en store credit. Le racheter dans le Pledge Store coûte maintenant $3 en store credit.",
+      "other": "Fondre les $1 pledges rachetables libère $2 en store credit. Les racheter dans le Pledge Store coûte maintenant $3 en store credit."
+    },
+    "shortcutTitle": "Fondre et racheter",
+    "shortcutFreed": "Libère $1 en store credit",
+    "shortcutShow": {
+      "one": "Afficher $1 pledge rachetable",
+      "other": "Afficher $1 pledges rachetables"
+    },
+    "shortcutShowHint": "N’affiche dans « My Hangar » que les pledges que vous pouvez fondre maintenant et racheter plus tard en store credit sans perte. « Réinitialiser les filtres » ou le × de la liste affiche tout à nouveau.",
+    "shortcutHide": "Afficher tous les pledges",
+    "setting": "Afficher les pledges rachetables",
+    "settingHint": "Le libellé « Rachetable » sur les pledges que vous pouvez fondre maintenant et racheter plus tard dans le Pledge Store en store credit sans perte, la liste « Fondre et racheter » et, dans l’élément ouvert, pourquoi un pledge n’est pas rachetable sans perte."
   }
 }

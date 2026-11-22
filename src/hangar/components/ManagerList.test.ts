@@ -311,3 +311,65 @@ describe('ManagerList: inside a watchlist (#467)', () => {
     expect(rows(root)).toEqual(['1', '2', '3', '4']);
   });
 });
+
+describe('ManagerList: the bar of a List Shortcut (#427, #530)', () => {
+  function renderShortcut(request: Record<string, unknown>) {
+    const root = document.createElement('div');
+    document.body.append(root);
+    const cleared: number[] = [];
+    app = createApp({
+      render: () =>
+        h(
+          ManagerList<Entry, F, string>,
+          {
+            entries,
+            filterGroups: [{ category: 'types', filters: ['paints', 'owned'] }],
+            predicates: { paints: (e: Entry) => e.paint, owned: (e: Entry) => e.owned },
+            filterLabel: (filter: F) => (filter === 'paints' ? 'Paints' : 'Owned'),
+            active: false,
+            filterRequest: { matches: (e: Entry) => e.paint, at: 1, ...request },
+            onClearRequest: () => cleared.push(1),
+          },
+          {
+            row: ({ entry }: { entry: Entry }) => h('div', { class: 'row' }, String(entry.id)),
+            shortcut: ({ entries: shown }: { entries: Entry[] }) =>
+              h('span', { class: 'extra' }, `ids ${shown.map((e) => e.id).join(',')}`),
+          },
+        ),
+    });
+    app.mount(root);
+    return { root, cleared };
+  }
+  const bar = (root: HTMLElement) => root.querySelector<HTMLElement>('.shm-shortcut-bar');
+
+  it('shows its title, the count, what the slot adds and a × to leave it', async () => {
+    const { root, cleared } = renderShortcut({ title: 'Melt and rebuy', icon: 'recycle' });
+    expect(bar(root)?.querySelector('.shm-shortcut-title')?.textContent).toBe('Melt and rebuy');
+    expect(bar(root)?.querySelector('.shm-shortcut-count')?.textContent).toBe('3 pledges');
+    expect(bar(root)?.querySelector('.extra')?.textContent).toBe('ids 1,2,3');
+    expect(rows(root)).toEqual(['1', '2', '3']);
+    const close = bar(root)!.querySelector<HTMLButtonElement>('.shm-shortcut-close')!;
+    expect(close.getAttribute('aria-label')).toBe('Close “Melt and rebuy”');
+    close.click();
+    await nextTick();
+    expect(cleared).toEqual([1]);
+    expect(bar(root)).toBeNull();
+    expect(rows(root)).toEqual(['1', '2', '3', '4']);
+  });
+
+  it('counts only what the filters leave within it', async () => {
+    const { root } = renderShortcut({ title: 'Melt and rebuy' });
+    [...root.querySelectorAll<HTMLButtonElement>('.shm-filter')]
+      .find((button) => button.textContent?.includes('Owned'))!
+      .click();
+    await nextTick();
+    expect(bar(root)?.querySelector('.shm-shortcut-count')?.textContent).toBe('2 pledges');
+    expect(bar(root)?.querySelector('.extra')?.textContent).toBe('ids 1,3');
+  });
+
+  it('shows no bar for a filter without a title', () => {
+    const { root } = renderShortcut({});
+    expect(bar(root)).toBeNull();
+    expect(rows(root)).toEqual(['1', '2', '3']);
+  });
+});

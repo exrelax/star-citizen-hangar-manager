@@ -14,6 +14,9 @@ import { formatTimeLeft } from './melt-marks';
 import type { MarkedPledge } from './use-melt-marks';
 import type { PledgeView } from './pledge-view';
 import { isRewardTitle } from './rewards';
+import type { Rebuy } from '@/melt-rebuy/rebuyable';
+import { rebuySummary } from '@/melt-rebuy/rebuy-summary';
+import { rebuyGroupHint } from '@/melt-rebuy/rebuy-text';
 
 /*
  * What the row of a group shows besides its sums (#448): the badges of its items by the same rule
@@ -23,7 +26,8 @@ import { isRewardTitle } from './rewards';
  *
  * From the items' own labels too (#487): "Base ship missing" and "Base always available" of the CCU
  * Consultant, with the single row's tooltip; the refund countdown of the item with the least time
- * left, with how many items can still be refunded.
+ * left, with how many items can still be refunded. "Rebuyable" of Melt and Rebuy (#530) for all or
+ * some items, with what the rebuyable ones free and cost together.
  */
 
 /** What the labels taken from the items need besides the items (My Hangar). */
@@ -39,6 +43,8 @@ export interface GroupBadgeContext {
   /** The pledges marked to melt (#97), and now (ms), for the melt label of a group (#552). */
   marks?: ReadonlyMap<number, MarkedPledge>;
   now?: number;
+  /** Melt and Rebuy (#530) while its label shows; `hideValues`: without amounts. */
+  rebuy?: { entries: ReadonlyMap<number, Rebuy>; hideValues: boolean };
 }
 
 export interface GroupBadge {
@@ -137,9 +143,29 @@ function ccuBadge(
   };
 }
 
+/** "Rebuyable" of Melt and Rebuy (#530) for all or some items, as a single row's label. */
+export function rebuyBadge(
+  items: readonly { id: number }[],
+  rebuy: NonNullable<GroupBadgeContext['rebuy']>,
+): GroupBadge | undefined {
+  const summary = rebuySummary(
+    rebuy.entries,
+    items.map((item) => item.id),
+  );
+  if (!summary.count) return undefined;
+  const all = summary.count === items.length;
+  const hint = rebuyGroupHint(summary, { hideValues: rebuy.hideValues });
+  return {
+    key: 'rebuyable',
+    text: i18n.t(all ? 'meltRebuy.label' : 'meltRebuy.groupSome'),
+    className: 'is-rebuyable',
+    hint: all ? hint : `${hint}\n${i18n.t('group.someHint', [summary.count, items.length])}`,
+  };
+}
+
 /**
  * The badges of a group of "My Hangar": the refund countdown, the CCU Consultant's labels,
- * insurance, upgraded, Gift and Melt. Without `context`, only those of the items themselves.
+ * "Rebuyable", insurance, upgraded, Gift and Melt. Without `context`, only those of the items themselves.
  */
 export function pledgeGroupBadges(
   group: ItemGroup<PledgeView>,
@@ -179,6 +205,7 @@ export function pledgeGroupBadges(
           ),
         )
       : undefined,
+    context?.rebuy && rebuyBadge(items, context.rebuy),
     insuranceBadge(items.map((item) => item.insurance)),
     upgraded === 'none'
       ? undefined
