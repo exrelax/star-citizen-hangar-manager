@@ -55,7 +55,7 @@ export function createBuybackImager({ ships = [], hangarPledges = [] }: BuybackI
     return undefined;
   };
 
-  return (pledge: BuybackPledge): string | undefined => {
+  const imageOf = (pledge: BuybackPledge): string | undefined => {
     if (pledge.isUpgrade) {
       const byId = pledge.upgrade && byShipId.get(pledge.upgrade.toShipId);
       if (byId) return byId;
@@ -74,6 +74,8 @@ export function createBuybackImager({ ships = [], hangarPledges = [] }: BuybackI
       (main ? byTitle.get(main) : undefined)
     );
   };
+  // Also the image of a ship by its name, e.g. for the ships of a pack (#515).
+  return Object.assign(imageOf, { shipImage });
 }
 
 export type BuybackImager = ReturnType<typeof createBuybackImager>;

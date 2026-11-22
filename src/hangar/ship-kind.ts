@@ -85,7 +85,7 @@ export function createBuybackShipKind({ ships = [], hangarPledges = [] }: ShipNa
       else if (isHangarBaseItem(item)) base.add(nameKey(item.title));
     }
   }
-  return (
+  const kindOf = (
     pledge: Pick<BuybackPledge, 'contained' | 'items'>,
     shipNames: readonly string[],
   ): ShipKind | undefined => {
@@ -103,6 +103,20 @@ export function createBuybackShipKind({ ships = [], hangarPledges = [] }: ShipNa
     }
     return shipKindOf(ships, extras);
   };
+  /**
+   * The ships of a buy back pledge with a ship, in the order RSI lists them: the one named in
+   * "Contained" and every other item named like a known ship (#515, the ships of a pack).
+   */
+  const shipsOf = (
+    pledge: Pick<BuybackPledge, 'contained' | 'items'>,
+    shipNames: readonly string[],
+  ): string[] => {
+    if (!shipNames.length) return [];
+    const main = mainItem(pledge);
+    const others = (pledge.items ?? []).filter((item) => item !== main && known.has(nameKey(item)));
+    return [...shipNames, ...others];
+  };
+  return Object.assign(kindOf, { shipsOf });
 }
 
 /** The refinement of the filter "Ships" (#514): all ships, solo ships, with extras, ship packs. */

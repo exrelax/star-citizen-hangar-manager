@@ -2178,5 +2178,12 @@
       "one": "$1 dieser Paints wurde mit bis zu $2 % Mengenrabatt gekauft. Den gibt es nur wieder mit mindestens $3 Paints in einem Warenkorb: Kauf später so viele Paints zusammen oder behalte genug Store Credits für Füll-Paints (Paint Discount Consultant).",
       "other": "$1 dieser Paints wurden mit bis zu $2 % Mengenrabatt gekauft. Den gibt es nur wieder mit mindestens $3 Paints in einem Warenkorb: Kauf später so viele Paints zusammen oder behalte genug Store Credits für Füll-Paints (Paint Discount Consultant)."
     }
+  },
+  "pack": {
+    "count": {
+      "one": "$1 Schiff in diesem Pack",
+      "other": "$1 Schiffe in diesem Pack"
+    },
+    "tiles": "Schiffe dieses Packs"
   }
 }

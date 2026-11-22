@@ -1,3 +1,4 @@
+import type { PackShip } from '@/hangar/ship-pack';
 import { BUYBACK_PAGE_SIZE } from '@/config';
 import type { PaidOrder } from '@/orders/orders';
 import type { FilterCategory, FilterPredicates } from '@/hangar/filters';
@@ -43,6 +44,8 @@ export interface BuybackView {
   ships: ShipRef[];
   /** What the pledge holds besides its ship (#514, see `ship-kind.ts`); none without a ship. */
   shipKind?: ShipKind;
+  /** A pack of two ships or more (#515, `ship-pack.ts`): its ships with their images. */
+  pack?: PackShip[];
   hasLti: boolean;
   /** The best insurance, if known (see `insurance.ts`): only pledges with several items list them. */
   insurance?: Insurance;
@@ -133,6 +136,13 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
     items,
     ships: shipNames.map((name) => ({ name, link: shipLinks[name] })),
     ...(shipKind && { shipKind }),
+    ...(shipKind === 'pack' &&
+      shipKindOf && {
+        pack: shipKindOf.shipsOf(pledge, shipNames).map((name) => {
+          const image = imageOf?.shipImage(name);
+          return { name, ...(image && { image }) };
+        }),
+      }),
     hasLti: items.some((item) => /lifetime insurance/i.test(item)),
     insurance: bestInsurance(items),
     isPaint:

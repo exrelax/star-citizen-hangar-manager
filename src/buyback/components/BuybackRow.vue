@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import PackCards from '@/hangar/components/PackCards.vue';
+import PackTiles from '@/hangar/components/PackTiles.vue';
+import PackTitle from '@/hangar/components/PackTitle.vue';
 import { logError, reasonOf } from '@/errors/error-log';
 import ExternalLinks from '@/hangar/components/ExternalLinks.vue';
 import OrderInfo from '@/orders/OrderInfo.vue';
@@ -160,8 +163,10 @@ const kind = computed(() =>
     <!-- Clicking anywhere toggles the details; the chevron button makes it keyboard accessible. -->
     <div class="shm-row-summary" @click="toggle">
       <span class="shm-thumb">
+        <!-- A pack's ships fanned out like cards (#515). -->
+        <PackCards v-if="pledge.pack" :ships="pledge.pack" />
         <img
-          v-if="pledge.image"
+          v-else-if="pledge.image"
           :src="pledge.image"
           alt=""
           loading="lazy"
@@ -174,8 +179,13 @@ const kind = computed(() =>
       </span>
 
       <span class="shm-main">
-        <span class="shm-title">{{ pledge.title }}</span>
-        <span v-if="pledge.ships.length" class="shm-ships">
+        <!-- A pack (#515): its ships as the title, with their count; the pledge's name below. -->
+        <template v-if="pledge.pack">
+          <PackTitle :ships="pledge.pack" />
+          <span class="shm-original">{{ pledge.title }}</span>
+        </template>
+        <span v-else class="shm-title">{{ pledge.title }}</span>
+        <span v-if="pledge.ships.length && !pledge.pack" class="shm-ships">
           {{ i18n.t('pledge.shipsLabel') }}
           <template v-for="(ship, index) in pledge.ships" :key="ship.name">
             <span class="shm-ship">{{ ship.name }}</span
@@ -290,6 +300,7 @@ const kind = computed(() =>
           </a>
         </p>
         <p v-if="pledge.detailsFailed" class="shm-hint">{{ i18n.t('buyback.detailsFailed') }}</p>
+        <PackTiles v-if="pledge.pack" :ships="pledge.pack" />
         <ul v-if="pledge.items.length" class="shm-items">
           <li v-for="(item, index) in pledge.items" :key="index">
             <span class="shm-item-title">{{ item }}</span>
