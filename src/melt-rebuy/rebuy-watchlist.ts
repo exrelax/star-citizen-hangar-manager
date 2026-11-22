@@ -75,7 +75,8 @@ export function rebuyWatchPlan(
       plan.items.push(entry);
     }
     plan.pledgeIds.push(id);
-    plan.total += rebuy.item.price;
+    // A paint bought at a volume discount at its tier's price (#593), as the note tells.
+    plan.total += rebuy.rebuyPrice ?? rebuy.item.price;
     plan.freedCredit += rebuy.freedCredit;
   }
   if (!plan.pledgeIds.length) return undefined;

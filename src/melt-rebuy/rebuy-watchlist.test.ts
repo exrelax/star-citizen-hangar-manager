@@ -76,6 +76,20 @@ describe('pledges on a watchlist to rebuy (#531)', () => {
     expect(plan.total).toBe(10);
   });
 
+  it('costs a paint bought at a volume discount at its tier’s price (#593)', () => {
+    const volume: Rebuy = {
+      ...rebuy(7, paint),
+      rebuyPrice: 6.5,
+      volumeDiscount: { percent: 35, paints: 10, price: 10 },
+    };
+    const plan = rebuyWatchPlan([1, 7], new Map([...rebuys, [7, volume]]), ccuName)!;
+    // One item of the paint, at its price now as its value; the cost at the tier.
+    expect(plan.items).toEqual([
+      { kind: 'storePaint', skuId: 7, name: 'Dusk Paint', value: 10, count: 2 },
+    ]);
+    expect(plan.total).toBe(16.5);
+  });
+
   it('is none while not one of them can be rebought', () => {
     expect(rebuyWatchPlan([5, 6], rebuys, ccuName)).toBeUndefined();
     expect(rebuyWatchPlan([], rebuys, ccuName)).toBeUndefined();
