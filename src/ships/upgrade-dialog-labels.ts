@@ -1,4 +1,5 @@
 import type { ShipFactsLookup } from './ship-facts';
+import { applyDemoShips, clearDemoShips, setDemoClass } from './upgrade-dialog-demo';
 
 /*
  * The label "Always available" in RSI's own ship upgrade dialog (#401): on each ship, base ship
@@ -105,6 +106,11 @@ export interface UpgradeDialogOptions {
    * line and tooltip; none while the setting is off, no event runs or it is always available.
    */
   countdownOf?: (target: UpgradeTarget) => { text: string; hint: string } | undefined;
+  /**
+   * The demo mode (#586): while `active`, "My ships" is disabled with `hint` as its tooltip and
+   * only "All ships" show (see `upgrade-dialog-demo.ts`).
+   */
+  demo?: () => { active: boolean; hint: string };
   /** The dialog opened (again): the counts' data can be read now. */
   onOpen?: () => void;
   /** The dialog's markup doesn't fit: called once. */
@@ -203,6 +209,8 @@ export function watchUpgradeDialog(
   };
   const run = () => {
     frame = 0;
+    const demo = options.demo?.();
+    if (demo) setDemoClass(root, demo.active);
     const modal = root.querySelector(MODAL);
     if (!modal) {
       openedAt = undefined;
@@ -217,6 +225,8 @@ export function watchUpgradeDialog(
       if (Date.now() - openedAt > MISMATCH_AFTER_MS) mismatch('no lists of ships');
       return;
     }
+    const demoMismatch = demo && applyDemoShips(root, demo.active, demo.hint);
+    if (demoMismatch) mismatch(demoMismatch);
     const items = sides.flatMap((side) => [...side.querySelectorAll(ITEM)]);
     if (items.length && items.every((item) => !targetOf(item).id && !targetOf(item).name)) {
       mismatch('no ship id or name');
@@ -255,6 +265,7 @@ export function watchUpgradeDialog(
       clearInterval(timer);
       clearInterval(ticker);
       if (frame) cancelAnimationFrame(frame);
+      clearDemoShips(root);
       for (const label of root.querySelectorAll(
         `.${LABEL_CLASS}, .${COUNTS_CLASS}, .${COUNTDOWN_CLASS}`,
       )) {

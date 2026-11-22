@@ -1657,7 +1657,8 @@
     "countdown": "Voraussichtliches Ende: $1",
     "countdownEvent": "Verschwindet voraussichtlich am $1 aus dem Pledge Store, wenn $2 endet: Es ist nicht immer kaufbar.",
     "countdownWarbond": "Verschwindet voraussichtlich am $1 aus dem Pledge Store, wenn sein Warbond-Angebot voraussichtlich endet.",
-    "countdownExpected": "Das ist eine Erwartung, von CIG nicht bestätigt. Von der Projekt-Website des Hangar Managers."
+    "countdownExpected": "Das ist eine Erwartung, von CIG nicht bestätigt. Von der Projekt-Website des Hangar Managers.",
+    "myShipsDemo": "Im Demo-Modus aus: „My ships“ zeigt die Schiffe deines echten Kontos. Vom Hangar Manager."
   },
   "allShips": {
     "button": "Alle Schiffe",

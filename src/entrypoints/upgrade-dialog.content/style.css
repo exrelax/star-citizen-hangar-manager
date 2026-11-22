@@ -58,3 +58,20 @@
   border-radius: 2px;
   cursor: help;
 }
+
+/*
+ * The demo mode (#586): the ships of a side show only once it is on "All ships", so the real
+ * account's ships never show; "My ships" looks disabled, its tooltip says why.
+ */
+html.shm-upgrade-demo .ShipUpgradeModal .ShipSelector:not([data-shm-all-ships]) .ShipItem {
+  visibility: hidden;
+}
+
+html.shm-upgrade-demo .ShipUpgradeModal .RadioButton[data-shm-demo-disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+html.shm-upgrade-demo .ShipUpgradeModal .RadioButton[data-shm-demo-disabled] :is(input, label) {
+  cursor: not-allowed;
+}

@@ -154,6 +154,24 @@ describe('watchUpgradeDialog', () => {
   });
 });
 
+describe('the demo mode (#586)', () => {
+  it('follows the setting and reports a dialog without the choice of ships once', async () => {
+    let active = true;
+    const settings = { ...options(), demo: () => ({ active, hint: 'Off in the demo mode' }) };
+    const watcher = watchUpgradeDialog(document, settings);
+    dialog(item('Mustang Alpha', 65));
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(document.documentElement.classList.contains('shm-upgrade-demo')).toBe(true);
+    expect(settings.onMismatch).toHaveBeenCalledWith('no choice between my ships and all ships');
+    active = false;
+    watcher.update();
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(document.documentElement.classList.contains('shm-upgrade-demo')).toBe(false);
+    expect(settings.onMismatch).toHaveBeenCalledTimes(1);
+    watcher.stop();
+  });
+});
+
 describe('the countdown on target ships (#570)', () => {
   it('goes where the label would, only on the target ships, and away with it', () => {
     dialog(item('Cutlass Steel', 228) + item('Mustang Alpha', 65), item('Cutlass Steel', 228));
