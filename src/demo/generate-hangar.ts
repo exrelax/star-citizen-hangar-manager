@@ -5,6 +5,8 @@ import type { StoreItem } from '@/store/items/store-items';
 import type { DemoCatalog } from './catalog';
 import { demoCcuBases, hangarCases, reservedShips, type DemoCcuCase } from './demo-ccu-cases';
 import { demoMissingBase, withDemoGroups, type DemoGroupRole } from './demo-groups';
+import { demoRebuyCases, type DemoRebuyCase } from './demo-rebuy-cases';
+import { demoWatchlistShips } from './demo-watchlists';
 import { createRandom, type DemoRandom } from './random';
 
 /*
@@ -46,6 +48,8 @@ export interface DemoPledge extends Pledge {
   demoGroup?: DemoGroupRole;
   /** Its part in the CCU Consultant's cases (#425, `demo-ccu-cases.ts`). */
   demoCcuCase?: DemoCcuCase;
+  /** Its case of Melt and Rebuy (#532, `demo-rebuy-cases.ts`). */
+  demoRebuyCase?: DemoRebuyCase;
 }
 
 const USD = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
@@ -53,7 +57,7 @@ const USD = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' 
 export const usdText = (value: number) => `${USD.format(value)} USD`;
 
 /** Rounded to RSI's typical prices: whole dollars, or halves for small ones. */
-const roundPrice = (value: number) =>
+export const roundPrice = (value: number) =>
   value < 20 ? Math.round(value * 2) / 2 : Math.max(5, Math.round(value / 5) * 5);
 
 /** A pledge with RSI's defaults, as the parser leaves them for a plain store-credit pledge. */
@@ -97,7 +101,7 @@ export const shipItem = (ship: Ship): PledgeItem => ({
   ...(ship.image && { image: ship.image }),
 });
 const insuranceItem = (title: string): PledgeItem => ({ title, kind: 'Insurance' });
-const GAME_ITEMS: PledgeItem[] = [
+export const GAME_ITEMS: PledgeItem[] = [
   { title: 'Star Citizen Digital Download', kind: 'Digital Download' },
 ];
 
@@ -126,7 +130,7 @@ const itemsOf = (catalog: DemoCatalog, category: string) =>
   catalog.items.filter((entry) => entry.category === category && entry.price > 0);
 
 /** A store item's pledge title: RSI's category in front of the name. */
-const storeTitle = (category: string, name: string) =>
+export const storeTitle = (category: string, name: string) =>
   name.toLowerCase().startsWith(category.toLowerCase()) ? name : `${category} - ${name}`;
 
 /** The value paid: the standard price, sometimes less (sale, warbond) or more (an older price). */
@@ -149,12 +153,15 @@ export function demoPivotShip(
   random: DemoRandom,
   catalog: DemoCatalog,
   buyable?: ReadonlySet<number>,
+  /** All ships, for the gaps: the advice knows the ships other cases keep for themselves, too. */
+  all: readonly Ship[] = catalog.ships,
 ): Ship | undefined {
   const sorted = ccuTargetsOf(catalog.ships).sort((a, b) => a.msrp - b.msrp);
+  const everyShip = ccuTargetsOf(all).sort((a, b) => a.msrp - b.msrp);
   const sold = (ship: Ship) => !buyable || buyable.has(ship.id);
-  const scored = sorted.flatMap((ship, index) => {
-    const below = sorted.slice(0, index).filter((other) => other.msrp < ship.msrp && sold(other));
-    const above = sorted.find((other) => other.msrp > ship.msrp);
+  const scored = sorted.flatMap((ship) => {
+    const below = everyShip.filter((other) => other.msrp < ship.msrp && sold(other));
+    const above = everyShip.find((other) => other.msrp > ship.msrp);
     if (!sold(ship) || !below.length || !above) return [];
     const gapBelow = ship.msrp - below[below.length - 1]!.msrp;
     return [{ ship, score: gapBelow - (above.msrp - ship.msrp) }];
@@ -324,6 +331,8 @@ export function generateHangar(
   composition: DemoComposition = DEMO.composition,
   /** The ships RSI sells CCUs to, if known (#255, `demoPivotShip`). */
   buyable?: ReadonlySet<number>,
+  /** Melt and Rebuy's cases (#532), with or without the rebuyable ones and the upgraded one. */
+  rebuy: { rebuyable: boolean; upgraded: boolean } = { rebuyable: true, upgraded: true },
 ): DemoPledge[] {
   const random = createRandom(`${key}:hangar`);
   const pledges: DemoPledge[] = [];
@@ -346,7 +355,7 @@ export function generateHangar(
   const pool = { ...catalog, ships: catalog.ships.filter((ship) => !reserved.has(ship.id)) };
   const pivot =
     composition.ships > 0 && composition.ccus > 1
-      ? demoPivotShip(random, pool, buyable)
+      ? demoPivotShip(random, pool, buyable, catalog.ships)
       : undefined;
   times(composition.ships, (index) => standaloneShip(random, pool, index, pivot));
   times(composition.packages, (index) => gamePackage(random, pool, index));
@@ -363,18 +372,67 @@ export function generateHangar(
   times(composition.packs, (index) => pack(random, pool, index));
   times(composition.rewards, (index) => reward(random, index));
   const shuffled = random.shuffle('order', pledges, (pledge) => pledges.indexOf(pledge).toString());
-  // A paint comes first: the newest pledge, bought a few hours ago with store credit (#176).
-  const paint = shuffled.find((pledge) => pledge.demoKind === 'paints');
+  // A paint comes first: the newest pledge, bought a few hours ago with store credit (#176). One
+  // the store sells now, so it can't be rebought only as it was bought too recently (#532).
+  const onSale = (pledge: DemoPledge) =>
+    catalog.items.some(
+      (item) =>
+        item.name === pledge.items[0]?.title &&
+        item.available &&
+        !item.isWarbond &&
+        item.discountedPrice === undefined,
+    );
+  const paint =
+    shuffled.find((pledge) => pledge.demoKind === 'paints' && onSale(pledge)) ??
+    shuffled.find((pledge) => pledge.demoKind === 'paints');
   const ordered = paint ? [paint, ...shuffled.filter((pledge) => pledge !== paint)] : shuffled;
   // The CCU Consultant's cases (#425) among the oldest pledges, after the groups.
   const grouped = withDemoGroups(ordered, pool, random, missingBase);
-  return withSurcharge([...grouped, ...hangarCases(ccuBases, pool, random)], catalog).map(
-    (pledge, position) => ({
-      ...pledge,
-      id: DEMO.idBase - position,
-    }),
+  const withCcuCases = [...grouped, ...hangarCases(ccuBases, pool, random)];
+  // Melt and Rebuy's cases (#532): the one to refund after the groups' three, the rest the oldest.
+  // Not with the ships of the Price Increase Advisor's chain nor those of the demo's watchlists.
+  const pivotShips = new Set(
+    pledges
+      .filter((pledge) => pledge.demoPivot)
+      .flatMap((pledge) => [
+        ...pledge.items.filter((item) => item.kind === 'Ship').map((item) => item.title),
+        ...(pledge.upgrade?.matchItems ?? []).map((item) => item.name),
+        ...(pledge.upgrade?.targetItems ?? []).map((item) => item.name),
+      ]),
   );
+  const watched = demoWatchlistShips(catalog.ships, (id) => !buyable || buyable.has(id));
+  const rebuyCases = demoRebuyCases(random, {
+    catalog: { ...pool, ships: pool.ships.filter((ship) => !pivotShips.has(ship.name)) },
+    items: catalog.items,
+    hangar: withCcuCases,
+    ...(buyable && { buyable }),
+    avoid: new Set(Object.values(watched).map((ship) => ship.id)),
+    ...rebuy,
+    kinds: {
+      ships: composition.ships > 0,
+      paints: composition.paints > 0,
+      ccus: composition.ccus > 0,
+      packages: composition.packages > 0,
+    },
+  });
+  const refundAt = Math.min(REBUY_REFUND_POSITION, withCcuCases.length);
+  const all = [
+    ...withCcuCases.slice(0, refundAt),
+    ...(rebuyCases.refund ? [rebuyCases.refund] : []),
+    ...withCcuCases.slice(refundAt),
+    ...rebuyCases.rest,
+  ];
+  return withSurcharge(all, catalog).map((pledge, position) => ({
+    ...pledge,
+    id: DEMO.idBase - position,
+  }));
 }
+
+/**
+ * Where Melt and Rebuy's case to refund goes (#532): after the newest pledge and the three pledges
+ * to refund of the Grouped View's groups (#450), so it is the fourth one to refund.
+ */
+const REBUY_REFUND_POSITION = 4;
 
 /** How much more than the price difference the CCU with a surcharge cost. */
 const SURCHARGE = 10;
@@ -399,6 +457,7 @@ function withSurcharge(pledges: DemoPledge[], catalog: DemoCatalog): DemoPledge[
       !pledge.demoPivot &&
       !pledge.demoGroup &&
       !pledge.demoCcuCase &&
+      !pledge.demoRebuyCase &&
       /standard edition$/i.test(pledge.title) &&
       targets.includes(pledge.upgrade.targetItems[0]!.name),
   );

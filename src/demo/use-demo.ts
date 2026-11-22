@@ -11,7 +11,7 @@ import { resetDemoNotes, seedDemoNotes } from './demo-notes';
 import { demoWatchlists, resetDemoWatchlists, seedDemoWatchlists } from './demo-watchlists';
 import { demoGroupMarks, withRecentPurchases } from './demo-group-marks';
 import type { StoreCredit } from '@/account/store-credit';
-import { buyableShipsItem, current, shipsItem } from '@/ships/ships-storage';
+import { buyableShipsItem, current, shipsItem, warbondsItem } from '@/ships/ships-storage';
 import {
   priceIncreasesItem,
   storedPriceIncreases,
@@ -56,6 +56,8 @@ import {
 } from './demo';
 import type { UpgradeLogEntry } from '@/hangar/upgrade-log';
 import { demoKeyItem } from './demo-key';
+import { demoRebuyStore, type DemoRebuyStore } from './demo-rebuy-store';
+import { rebuyWatchlistCases } from './demo-rebuy-cases';
 
 const randomKey = () =>
   [...crypto.getRandomValues(new Uint8Array(16))]
@@ -175,8 +177,16 @@ export interface DemoContext {
    * buy back, with the ones on sale now but not always available (#293).
    */
   shipRemovals: DemoShipRemovals;
-  /** The catalog's items, for the Paint Discount Consultant of the generated demo (#131). */
+  /**
+   * The catalog's items, for the Paint Discount Consultant of the generated demo (#131): those of
+   * the demo's Pledge Store for Melt and Rebuy (#532, `demoRebuyStore`).
+   */
   storeItems?: readonly StoreItem[];
+  /**
+   * The Pledge Store for Melt and Rebuy and the watchlists in the generated demo (#532): its own
+   * standalone ships and facts, so its cases show on every account.
+   */
+  rebuy?: DemoRebuyStore;
   /** Buy back tokens shown instead of the account's, by the demo settings: 0 or more (#433). */
   tokens: number;
   /**
@@ -272,6 +282,20 @@ export function useDemo(
         )
       : undefined,
   );
+  // The Pledge Store of Melt and Rebuy's cases (#532), with the ships RSI sells CCUs to.
+  const buyableSkus = computed(() => current(buyableShips.value ?? null)?.skus);
+  const storedWarbonds = useStored(warbondsItem);
+  const rebuyStore = computed(() => {
+    const account = generatedAccount.value;
+    if (!account) return undefined;
+    const warbonds = current(storedWarbonds.value ?? null)?.warbonds;
+    return demoRebuyStore({
+      catalog: catalog.value,
+      ships: account.rebuyShips,
+      ...(buyableSkus.value && { buyable: buyableSkus.value }),
+      ...(warbonds && { warbonds }),
+    });
+  });
   watch([generatedAccount, demoResets], ([account]) => {
     if (!account || !key.value) return;
     const marked = demoMarkIds(account.pledges, justBoughtOf(account.pledges));
@@ -313,7 +337,15 @@ export function useDemo(
     const list = baseDemoPledges.value;
     if (!list.length || !settings().states.meltMarks) return { marked: [], purchases: new Map() };
     const justBought = justBoughtOf(list);
-    return demoGroupMarks(list, Date.now(), new Set(demoMarkIds(list, justBought)));
+    // Nor Melt and Rebuy's cases (#532): a mark or a recent purchase would change their reasons.
+    const rebuyCases = (generatedAccount.value?.account.pledges ?? []).flatMap((pledge) =>
+      pledge.demoRebuyCase ? [pledge.id] : [],
+    );
+    return demoGroupMarks(
+      list,
+      Date.now(),
+      new Set([...demoMarkIds(list, justBought), ...rebuyCases]),
+    );
   });
   const demoPledges = computed(() =>
     withRecentPurchases(baseDemoPledges.value, groupMarks.value.purchases),
@@ -411,6 +443,15 @@ export function useDemo(
           ),
         ],
       },
+      // Melt and Rebuy's ship leaving the Pledge Store, the others staying (#532).
+      ...(account && {
+        rebuy: {
+          leaving: account.rebuyShips.removal?.id,
+          stay: Object.entries(account.rebuyShips).flatMap(([role, ship]) =>
+            role === 'removal' ? [] : [ship.id],
+          ),
+        },
+      }),
       now,
     });
     return {
@@ -429,8 +470,9 @@ export function useDemo(
           const entry = generatedOrders.get(order.id);
           return entry ? demoOrderDetails(order, [entry.title], entry.total) : undefined;
         },
-        storeItems: catalog.value.items,
+        storeItems: rebuyStore.value?.catalog.items ?? catalog.value.items,
         priceIncreases: account.priceIncreases,
+        ...(rebuyStore.value && { rebuy: rebuyStore.value }),
       }),
       // With either source (#298): never the Pledge Store's real offers or this browser's history.
       storeData,
@@ -470,19 +512,25 @@ export function useDemo(
       demoBuyback(buyback.value, key.value, settings().buybackPledges)
     );
   });
-  const buyableSkus = computed(() => current(buyableShips.value ?? null)?.skus);
   // The demo's watchlists (#474), made once per demo hangar of it and the catalog.
   watch(
     () =>
       [active.value && demoPledges.value.length ? key.value : undefined, demoResets.value] as const,
     ([demoKey]) => {
       if (!demoKey) return;
+      // The demo's Pledge Store of Melt and Rebuy (#532), as the watchlists show it.
+      const store = rebuyStore.value?.catalog;
+      const buyable = store?.buyable ?? buyableSkus.value;
+      const account = generatedAccount.value;
       const made = demoWatchlists({
         hangar: demoPledges.value,
         buyback: demoBuybackPledges.value,
         ships: catalog.value.ships,
-        items: catalog.value.items,
-        ...(buyableSkus.value && { buyable: buyableSkus.value }),
+        items: store?.items ?? catalog.value.items,
+        ...(buyable && { buyable }),
+        ...(account && {
+          rebuy: rebuyWatchlistCases(account.account.pledges, account.rebuyShips, catalog.value),
+        }),
         now: Date.now(),
         locale: locale.value,
       });

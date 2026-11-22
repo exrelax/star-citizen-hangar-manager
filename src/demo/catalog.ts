@@ -35,6 +35,15 @@ const FALLBACK_SHIPS: readonly Ship[] = [
   { id: 141, name: '600i Explorer', msrp: 475 },
   { id: 224, name: 'Liberator', msrp: 575 },
   { id: 116, name: 'Polaris', msrp: 975 },
+  // Enough for every case of Melt and Rebuy besides the other cases (#532).
+  { id: 8, name: '315p', msrp: 65 },
+  { id: 90, name: 'Reliant Kore', msrp: 65 },
+  { id: 61, name: 'Herald', msrp: 85 },
+  { id: 32, name: 'Freelancer MAX', msrp: 150 },
+  { id: 98, name: 'Sabre', msrp: 175 },
+  { id: 129, name: 'Defender', msrp: 220 },
+  { id: 223, name: '400i', msrp: 250 },
+  { id: 51, name: 'Reclaimer', msrp: 400 },
 ];
 
 const item = (

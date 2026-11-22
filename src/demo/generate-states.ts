@@ -21,6 +21,7 @@ import { createRandom, type DemoRandom } from './random';
 import { extrasGroup, missingBaseOf } from './demo-groups';
 import { ccuCaseBasesOf, reservedShips } from './demo-ccu-cases';
 import { demoPaintCases, paintCaseShips, storePaints } from './demo-paint-cases';
+import { isGiftableCase, isMoneyCase, rebuyShipIds, rebuyShipsOf } from './demo-rebuy-cases';
 import { DEFAULT_DEMO_SETTINGS, type DemoSettings, type DemoStates } from './demo-settings';
 
 /*
@@ -50,9 +51,12 @@ const INSURANCES = [
 ];
 const SQ42: PledgeItem = { title: 'Squadron 42 Digital Download', kind: 'Digital Download' };
 
-/** The first pledges of a kind, in the list's order. */
+/**
+ * The first pledges of a kind, in the list's order – without Melt and Rebuy's cases (#532), whose
+ * states are their own (`withRebuyStates`).
+ */
 const ofKind = (pledges: readonly DemoPledge[], kind: DemoPledge['demoKind']) =>
-  pledges.filter((pledge) => pledge.demoKind === kind);
+  pledges.filter((pledge) => pledge.demoKind === kind && !pledge.demoRebuyCase);
 
 /** Replaces the insurances of a pledge. */
 function withInsurances(pledge: DemoPledge, titles: readonly string[]): DemoPledge {
@@ -182,7 +186,10 @@ export const generateDemoAccount = (
   buyable?: ReadonlySet<number>,
 ): DemoAccount =>
   withStates(
-    generateHangar(catalog, key, settings.composition, buyable),
+    generateHangar(catalog, key, settings.composition, buyable, {
+      rebuyable: settings.rebuyable,
+      upgraded: settings.states.upgraded,
+    }),
     catalog,
     key,
     settings.states,
@@ -240,7 +247,17 @@ export function withStates(
       set(pledge, (current) => ({ ...current, isGiftable: false, isExchangeable: false })),
     );
   // The newest pledge (a paint, see `generateHangar`) can be melted: it was bought a few hours ago.
-  set(generated[0], (pledge) => ({ ...pledge, isExchangeable: true }));
+  // Bought with store credit at its price, it can't be gifted: only the 24 hours keep it from being
+  // rebought (#532).
+  set(generated[0], (pledge) => ({
+    ...pledge,
+    isExchangeable: true,
+    ...(pledge.demoKind === 'paints' && {
+      isGiftable: false,
+      value: usdText(pledge.standardPrice),
+      valueUsd: pledge.standardPrice,
+    }),
+  }));
   const anyPaint = ofKind(generated, 'paints');
   set(anyPaint[1], (pledge) => ({ ...pledge, isGiftable: false }));
   set(anyPaint[2], (pledge) => ({ ...pledge, isGiftable: true, isExchangeable: true }));
@@ -275,6 +292,8 @@ export function withStates(
   const reserved = new Set([
     missingBaseOf(generated),
     ...reservedShips(ccuCaseBasesOf(generated, catalog)),
+    // Nor to Melt and Rebuy's ships (#532).
+    ...rebuyShipIds(rebuyShipsOf(generated, catalog)),
   ]);
   const upgradeCatalog = {
     ...catalog,
@@ -366,8 +385,60 @@ export function withStates(
     })),
   );
 
+  withRebuyStates(generated, set, upgradeLogs);
+
   const pledges = [...generated.map((pledge) => byId.get(pledge.id)!), ...extras];
-  return { pledges, orders: ordersOf(pledges, random), upgradeLogs };
+  return { pledges, orders: withRebuyOrders(ordersOf(pledges, random), pledges), upgradeLogs };
+}
+
+/**
+ * The states of Melt and Rebuy's cases (#532, `demo-rebuy-cases.ts`): meltable, giftable only where
+ * it is their case, the upgraded one with its applied CCU.
+ */
+function withRebuyStates(
+  generated: readonly DemoPledge[],
+  set: (pledge: DemoPledge | undefined, change: (pledge: DemoPledge) => DemoPledge) => void,
+  upgradeLogs: Map<number, UpgradeLogEntry[]>,
+) {
+  for (const pledge of generated) {
+    const role = pledge.demoRebuyCase;
+    if (!role) continue;
+    set(pledge, (current) => ({
+      ...current,
+      isExchangeable: true,
+      isGiftable: isGiftableCase(role),
+    }));
+    if (role === 'upgraded') {
+      const target = pledge.items.find((item) => item.kind === 'Ship')?.title;
+      const base = pledge.title.replace(/^Standalone Ships - /, '');
+      upgradeLogs.set(pledge.id, [
+        {
+          appliedAt: '',
+          ccuId: DEMO.idBase - 70_000,
+          name: `Upgrade - ${base} to ${target} Standard Edition`,
+          valueAfter: pledge.valueUsd,
+        },
+      ]);
+    }
+  }
+}
+
+/** The orders of Melt and Rebuy's cases (#532): paid with money only where it is their case. */
+function withRebuyOrders(snapshot: OrdersSnapshot, pledges: readonly DemoPledge[]): OrdersSnapshot {
+  const orders = { ...snapshot.orders };
+  const pledgeOrders = { ...snapshot.pledgeOrders };
+  for (const pledge of pledges) {
+    if (!pledge.demoRebuyCase || pledge.valueUsd <= 0) continue;
+    const orderId = orderIdOf(pledge.id);
+    const money = isMoneyCase(pledge.demoRebuyCase);
+    orders[orderId] = {
+      id: orderId,
+      amount: usdText(money ? pledge.valueUsd : 0),
+      creditsUsed: usdText(money ? 0 : pledge.valueUsd),
+    };
+    pledgeOrders[pledge.id] = { orderId, buyback: false };
+  }
+  return { ...snapshot, orders, pledgeOrders };
 }
 
 /**

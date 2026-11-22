@@ -45,7 +45,8 @@ import {
 } from '@/ccu-consultant/always-available';
 import { REBUY_DISPLAY, REBUYABLES, useRebuyables } from '@/melt-rebuy/use-rebuyables';
 import { today } from '@/orders/refund';
-import { useStoreCatalog } from '@/watchlists/use-store-catalog';
+import { STORE_CATALOG, useStoredStoreCatalog } from '@/watchlists/use-store-catalog';
+import { demoRebuyInput } from '@/demo/demo-rebuy-store';
 import ConsultantsTab from '@/consultants/components/ConsultantsTab.vue';
 import WatchlistsTab from '@/watchlists/components/WatchlistsTab.vue';
 import { followWatchlists } from '@/watchlists/use-watchlists';
@@ -230,29 +231,37 @@ provide(
 const now = useNow();
 // Which pledges can be melted and rebought later with store credit without loss (#528), for the
 // List Shortcut, the label and the reasons (#530) and the watchlists (#531). Always available by
-// the ships' facts, apart from the CCU Consultant's setting to consider them.
-const storeCatalog = useStoreCatalog();
+// the ships' facts, apart from the CCU Consultant's setting to consider them. In the demo by its
+// own Pledge Store and facts, so its cases show on every account (#532).
+const storeCatalog = useStoredStoreCatalog();
+const rebuyInput = computed(() => {
+  const facts = shipFacts.value;
+  const source = chosenAlwaysAvailableSource(settings.value, facts);
+  const input = {
+    pledges: pledges.value,
+    context: {
+      catalog: storeCatalog.value,
+      alwaysAvailable: (shipId: number) =>
+        source ? facts?.isAlwaysAvailable(shipId, source.id) : undefined,
+      removals: new Map(
+        removalCcusState.value.list.map(({ removal }) => [removal.ship.id, removal]),
+      ),
+      purchases: purchases.value,
+      now: now.value,
+      today: today.value,
+    },
+  };
+  const context = demoView.context.value;
+  return context ? demoRebuyInput(input, context.rebuy, settings.value.demo.rebuyable) : input;
+});
 provide(
   REBUYABLES,
-  useRebuyables(() => {
-    const facts = shipFacts.value;
-    const source = chosenAlwaysAvailableSource(settings.value, facts);
-    const catalog = storeCatalog.value;
-    return {
-      pledges: pledges.value,
-      context: {
-        catalog: { ...catalog, items: demoView.context.value?.storeItems ?? catalog.items },
-        alwaysAvailable: (shipId) =>
-          source ? facts?.isAlwaysAvailable(shipId, source.id) : undefined,
-        removals: new Map(
-          removalCcusState.value.list.map(({ removal }) => [removal.ship.id, removal]),
-        ),
-        purchases: purchases.value,
-        now: now.value,
-        today: today.value,
-      },
-    };
-  }),
+  useRebuyables(() => rebuyInput.value),
+);
+// The watchlists see the Pledge Store as the rules do: the demo's own in the demo.
+provide(
+  STORE_CATALOG,
+  computed(() => (demo.value ? rebuyInput.value.context.catalog : storeCatalog.value)),
 );
 // Whether the rows, the list and the sidebar show them (#530), and with amounts or without.
 provide(

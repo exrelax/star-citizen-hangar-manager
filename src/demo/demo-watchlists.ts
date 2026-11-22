@@ -4,6 +4,7 @@ import { translate, type Locale } from '@/i18n';
 import type { Ship, ShipSku } from '@/ships/ships';
 import type { StoreItem } from '@/store/items/store-items';
 import { fillerWatchlist, fillerWatchlistId } from '@/watchlists/filler-watchlist';
+import type { DemoRebuyWatchlistCases } from './demo-rebuy-cases';
 import type { StoreCatalog } from '@/watchlists/store-status';
 import {
   demoStoreSeenItem,
@@ -31,6 +32,8 @@ import {
  * - "Due today": its date has come, with a reminder: the sidebar's reminder.
  * - "Wishlist": a date without a reminder.
  * - "Later": empty.
+ * - "Rebuy after <date>" (#532): what the demo's pledges to rebuy are rebought as, one pricier
+ *   now, one no longer on sale (`rebuyList`).
  * - The Paint Discount Consultant's filler paints (#473), with their reminder.
  *
  * Their names are in the language shown when the demo starts; they are the demo's own and can be
@@ -46,8 +49,26 @@ export interface DemoWatchlistsInput {
   ships: readonly Ship[];
   items: readonly StoreItem[];
   buyable?: readonly ShipSku[];
+  /** What the generated demo's pledges to rebuy are rebought as (#532). */
+  rebuy?: DemoRebuyWatchlistCases;
   now: number;
   locale: Locale;
+}
+
+/**
+ * The ships of the store items on "CCUs to buy when back in stock": the CCU's ships and the
+ * standalone ship with LTI – the cheapest ones on sale. Melt and Rebuy's cases leave them out
+ * (#532), so their store items stay as they are.
+ */
+export function demoWatchlistShips(
+  ships: readonly Ship[],
+  onSale: (shipId: number) => boolean,
+): { from?: Ship; to?: Ship; ship?: Ship } {
+  const sorted = [...ships].filter((ship) => ship.msrp > 0).sort((a, b) => a.msrp - b.msrp);
+  const from = sorted.find((ship) => ship.msrp >= 25);
+  const to = sorted.find((ship) => from && ship.msrp > from.msrp + 50 && onSale(ship.id));
+  const ship = sorted.find((candidate) => onSale(candidate.id) && candidate !== to);
+  return { from, to, ship };
 }
 
 /** The demo's watchlists, and how it noted their store items before (for the changes). */
@@ -68,8 +89,8 @@ export function demoWatchlists(input: DemoWatchlistsInput): {
   ) => addItem(list, item, list.createdAt);
 
   const paints = input.items.filter((item) => item.category === 'Paints');
-  const ships = [...input.ships].filter((ship) => ship.msrp > 0).sort((a, b) => a.msrp - b.msrp);
   const onSale = new Set(input.buyable?.map((sku) => sku.shipId));
+  const { from, to, ship } = demoWatchlistShips(input.ships, (id) => onSale.has(id));
   const meltable = hangar.filter((pledge) => pledge.isMeltable);
   const ccu = meltable.find((pledge) => pledge.isCcu);
   const paint = meltable.find((pledge) => pledge.isPaint);
@@ -119,8 +140,6 @@ export function demoWatchlists(input: DemoWatchlistsInput): {
     { name: t('watchlists.demo.stockName'), description: t('watchlists.demo.stockDescription') },
     'stock',
   );
-  const from = ships.find((ship) => ship.msrp >= 25);
-  const to = ships.find((ship) => from && ship.msrp > from.msrp + 50 && onSale.has(ship.id));
   if (from && to) {
     stock = add(stock, {
       kind: 'storeCcu',
@@ -130,7 +149,6 @@ export function demoWatchlists(input: DemoWatchlistsInput): {
       value: to.msrp - from.msrp,
     });
   }
-  const ship = ships.find((candidate) => onSale.has(candidate.id) && candidate !== to);
   if (ship) {
     stock = add(stock, {
       kind: 'storeShip',
@@ -162,6 +180,7 @@ export function demoWatchlists(input: DemoWatchlistsInput): {
   );
   if (ship)
     wish = add(wish, { kind: 'storeShip', shipId: ship.id, name: ship.name, value: ship.msrp });
+  const rebuy = input.rebuy && rebuyList(input.rebuy, make, add, t, now, locale);
   const later = make({ name: t('watchlists.demo.laterName') }, 'later');
 
   // 6. The Paint Discount Consultant's filler paints (#473), waiting to be melted.
@@ -174,7 +193,15 @@ export function demoWatchlists(input: DemoWatchlistsInput): {
     locale,
   });
 
-  const lists = [melt, stock, due, wish, later, ...(filler ? [filler] : [])];
+  const lists = [
+    melt,
+    stock,
+    due,
+    wish,
+    ...(rebuy ? [rebuy] : []),
+    later,
+    ...(filler ? [filler] : []),
+  ];
 
   // The store items as the demo noted them before: a higher price of the CCU, the paint not on sale.
   const catalog: StoreCatalog = {
@@ -195,6 +222,64 @@ export function demoWatchlists(input: DemoWatchlistsInput): {
   }
   seen = { ...seen, ...withSeen({}, melt, catalog) };
   return { lists, seen };
+}
+
+/** A made-up SKU for the Best in Show paint the store doesn't sell (#532). */
+const RETIRED_PAINT_SKU = 979_999_999;
+
+/**
+ * "Rebuy after <date>" (#531, #532): what the demo's rebuyable pledges are rebought as – the paint
+ * twice, the standalone ship with 10 years of insurance at a lower price than now, the CCU – and a
+ * Best in Show paint the store doesn't sell any more. Its date a week ahead, with a reminder.
+ */
+function rebuyList(
+  cases: DemoRebuyWatchlistCases,
+  make: (fields: Parameters<typeof createWatchlist>[0], id: string) => Watchlist,
+  add: (
+    list: Watchlist,
+    item: WatchItemRef & { name: string; value?: number; count?: number },
+  ) => Watchlist,
+  t: (key: Parameters<typeof translate>[1], args?: (string | number)[]) => string,
+  now: number,
+  locale: Locale,
+): Watchlist | undefined {
+  const { base, target, paint, retired } = cases;
+  if (!base && !paint) return undefined;
+  const dueAt = now + 7 * DAY;
+  const date = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(dueAt);
+  let list = make({ name: t('watchlists.rebuy.name', [date]), dueAt, reminder: true }, 'rebuy');
+  if (paint) {
+    list = add(list, {
+      kind: 'storePaint',
+      skuId: paint.id,
+      name: paint.name,
+      value: paint.price,
+      count: 2,
+    });
+  }
+  if (base) {
+    // Added when it cost less: pricier now.
+    list = add(list, {
+      kind: 'storeShip',
+      shipId: base.id,
+      insurance: 120,
+      name: `${base.name} - 10 Year`,
+      value: Math.max(5, base.msrp - 10),
+    });
+  }
+  if (base && target) {
+    list = add(list, {
+      kind: 'storeCcu',
+      fromShipId: base.id,
+      toShipId: target.id,
+      name: t('watchlists.ccuName', [base.name, target.name]),
+      value: target.msrp - base.msrp,
+    });
+  }
+  if (retired) {
+    list = add(list, { kind: 'storePaint', skuId: RETIRED_PAINT_SKU, name: retired, value: 15 });
+  }
+  return list;
 }
 
 /** The id of the demo's filler paints' watchlist, for the running plan's link (#473). */

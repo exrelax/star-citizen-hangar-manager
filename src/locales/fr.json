@@ -415,6 +415,8 @@
       "ccuCoverageGapsHint": "Certains CCU n’ont pas de vaisseau de base dans le hangar ou le rachat de la démo, ou trop peu de moyens de l’obtenir. Désactivé, le rachat de la démo en donne un à chacun : le CCU Consultant et son encadré dans la barre latérale n’en montrent aucun.",
       "ccuDiscountAtRisk": "CCU dont la remise est menacée",
       "ccuDiscountAtRiskHint": "Le prix de certains vaisseaux de base des CCU de la démo augmente. Désactivé, aucun n’augmente : « Remise menacée » du CCU Consultant est vide.",
+      "rebuyable": "Pledges rachetables",
+      "rebuyableHint": "Certains pledges du hangar de la démo peuvent être fondus maintenant et rachetés plus tard sans perte. Désactivé, aucun ne le peut : la liste « Fondre et racheter » est vide.",
       "runningPlanStage": "Étape du plan en cours",
       "runningPlanStages": {
         "cart": "Fondre d'abord : peintures manquantes dans le panier",
