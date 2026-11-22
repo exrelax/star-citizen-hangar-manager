@@ -52,7 +52,9 @@ describe('parseSiteWarbondHistory', () => {
   });
 
   it('has the warbond offers of the ships flight ready at the IAE 2956 (#568)', () => {
-    const offers = parseSiteWarbondHistory(siteFile)!.filter((sighting) => sighting.expectedEnd);
+    const offers = parseSiteWarbondHistory(siteFile)!.filter((sighting) =>
+      sighting.events?.some((event) => event.id.endsWith('-flight-ready-iae-2956')),
+    );
     expect(
       offers.map(({ shipId, price, msrp, firstSeen, expectedEnd }) => [
         shipId,
