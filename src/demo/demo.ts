@@ -17,6 +17,7 @@ import { toBuybackView } from '@/buyback/buyback-view';
 import { createAvailabilityCheck } from '@/buyback/buyback-availability';
 import { createBuybackImager } from '@/buyback/buyback-image';
 import { createBuybackShipKind } from '@/hangar/ship-kind';
+import { createBuybackCcuContents } from '@/hangar/ccu-contents';
 import { createBuybackPricer } from '@/buyback/buyback-price';
 import { createGiftableCheck } from '@/buyback/probably-giftable';
 import type { OrdersSnapshot } from '@/orders/orders';
@@ -285,6 +286,7 @@ function generatedBuybackViews(
   });
   const imageOf = createBuybackImager({ ships: catalog.ships });
   const availabilityOf = createAvailabilityCheck(catalog.ships);
+  const ccuContentsOf = createBuybackCcuContents(account.pledges);
   const shipKindOf = createBuybackShipKind({
     ships: catalog.ships,
     hangarPledges: account.pledges,
@@ -299,6 +301,7 @@ function generatedBuybackViews(
           imageOf,
           availabilityOf,
           shipKindOf,
+          ccuContentsOf,
           priceIncreaseOf: matcher.buyback,
           ccuPriceChangeOf: (ccu, paid) => matcher.buybackCcu(ccu, shipPriceOf, paid),
         }),

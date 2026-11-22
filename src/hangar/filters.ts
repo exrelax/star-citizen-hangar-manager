@@ -77,6 +77,8 @@ export interface RefinementOption<T> {
   label: string;
   /** Its name in the pill after the filter's, e.g. "Owned ships"; the label if none. */
   short?: string;
+  /** The heading of the options it is among, if the options come in sections (#566). */
+  section?: string;
   /** Narrows the filter down; none for the first option, "all". */
   matches?: (entry: T) => boolean;
 }

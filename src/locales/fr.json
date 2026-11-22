@@ -114,6 +114,14 @@
       "all": "Tous les CCU",
       "limited": "Base limitée"
     },
+    "ccuContents": {
+      "baseSection": "Vaisseau de base",
+      "section": "Contenu",
+      "solo": "CCU seuls",
+      "soloShort": "Seuls",
+      "extras": "CCU avec extras",
+      "extrasShort": "Avec extras"
+    },
     "shipKind": {
       "all": "Tous les vaisseaux",
       "solo": "Vaisseaux seuls",

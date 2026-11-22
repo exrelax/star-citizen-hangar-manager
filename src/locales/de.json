@@ -114,6 +114,14 @@
       "all": "Alle CCUs",
       "limited": "Basis begrenzt kaufbar"
     },
+    "ccuContents": {
+      "baseSection": "Basisschiff",
+      "section": "Inhalt",
+      "solo": "Einzelne CCUs",
+      "soloShort": "Einzeln",
+      "extras": "CCUs mit Extras",
+      "extrasShort": "Mit Extras"
+    },
     "shipKind": {
       "all": "Alle Schiffe",
       "solo": "Einzelne Schiffe",

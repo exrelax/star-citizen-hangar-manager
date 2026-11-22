@@ -7,6 +7,7 @@ import { GAME_DOWNLOAD, isRealImage, type ShipRef } from '@/hangar/pledge-view';
 import { normalizeSearchText } from '@/hangar/search';
 import type { ShipLinks } from '@/hangar/ship-links';
 import type { BuybackShipKind, ShipKind } from '@/hangar/ship-kind';
+import type { BuybackCcuContents, CcuContents } from '@/hangar/ccu-contents';
 import {
   buybackShipNames,
   hasSeveralItems,
@@ -47,6 +48,8 @@ export interface BuybackView {
   insurance?: Insurance;
   isPaint: boolean;
   isCcu: boolean;
+  /** What a CCU brings besides its target ship (#566, see `ccu-contents.ts`). */
+  ccuContents?: CcuContents;
   /** See `BuybackPledge.upgrade`. */
   upgrade?: BuybackUpgrade;
   isStandaloneShip: boolean;
@@ -85,6 +88,8 @@ export interface BuybackViewContext {
   availabilityOf?: AvailabilityCheck;
   /** The expected price increase of a pledge (see `price-increase-match.ts`). */
   priceIncreaseOf?: (pledge: BuybackPledge) => PriceIncreaseMatch | undefined;
+  /** What a CCU brings (#566); without it no CCU has a kind. */
+  ccuContentsOf?: BuybackCcuContents;
   /** The kind of a pledge with a ship (#514); without it none has one. */
   shipKindOf?: BuybackShipKind;
   /** What expected price increases mean for a CCU; `paid` is its buy back price (#250). */
@@ -102,6 +107,7 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
     priceIncreaseOf,
     ccuPriceChangeOf,
     shipKindOf,
+    ccuContentsOf,
   } = context;
   const unavailable = availabilityOf?.(pledge);
   const priceIncrease = priceIncreaseOf?.(pledge);
@@ -115,6 +121,7 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
     : [];
   const shipNames = buybackShipNames(pledge);
   const shipKind = shipKindOf?.(pledge, shipNames);
+  const ccuContents = ccuContentsOf?.(pledge);
   return {
     id: pledge.id,
     position,
@@ -133,6 +140,7 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
       (/^paints?\b/i.test(pledge.title) ||
         (!hasSeveralItems(pledge) && /\b(paint|livery)\b/i.test(pledge.contained))),
     isCcu: pledge.isUpgrade,
+    ...(ccuContents && { ccuContents }),
     upgrade: pledge.upgrade,
     isStandaloneShip: pledge.category === 'standalone_ship',
     isGamePackage: pledge.category === 'game_package',

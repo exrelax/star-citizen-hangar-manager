@@ -114,6 +114,14 @@
       "all": "All CCUs",
       "limited": "Base limited"
     },
+    "ccuContents": {
+      "baseSection": "Base ship",
+      "section": "Contents",
+      "solo": "Solo CCUs",
+      "soloShort": "Solo",
+      "extras": "CCUs with extras",
+      "extrasShort": "With extras"
+    },
     "shipKind": {
       "all": "All ships",
       "solo": "Solo ships",

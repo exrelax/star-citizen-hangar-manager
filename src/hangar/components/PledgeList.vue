@@ -29,6 +29,7 @@ import { highlightClasses } from '../highlights';
 import ManagerList from './ManagerList.vue';
 import { paintRefinement, useProvidedOwnedShips } from '../paint-ships';
 import { pledgeShipKind, shipKindRefinement } from '../ship-kind';
+import { ccuRefinementWithContents, hangarCcuContents } from '../ccu-contents';
 import { ccuRefinement } from '@/ccu-consultant/base-ship-list';
 import { useProvidedCcuCoverage } from '@/ccu-consultant/coverage';
 import { useProvidedAlwaysAvailable } from '@/ccu-consultant/always-available';
@@ -87,7 +88,11 @@ const refinements = computed(() => ({
     pledge.title,
     ...pledge.items.filter(isPaintItem).map((item) => item.title),
   ]),
-  ccus: ccuRefinement<PledgeView>(coverages.value, alwaysAvailable.value),
+  // "CCUs" by base ship (#461) and by what they bring (#566).
+  ccus: ccuRefinementWithContents(
+    ccuRefinement<PledgeView>(coverages.value, alwaysAvailable.value),
+    (pledge) => hangarCcuContents(pledge.upgrade),
+  ),
   // "Ships" by what they hold besides the ship (#514).
   ships: shipKindRefinement<PledgeView>((pledge) => pledgeShipKind(pledge.items)),
 }));
