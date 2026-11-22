@@ -69,7 +69,7 @@ describe('withDefaults', () => {
         reboughtDetection: 'plan',
         layout: 'choose',
       },
-      ccuConsultant: { considerAlwaysAvailable: true, alwaysAvailableSource: null },
+      ccuConsultant: { considerAlwaysAvailable: true, alwaysAvailableSource: null, view: 'simple' },
       shipLinks: { erkul: false, fleetyards: true },
     });
   });
@@ -97,7 +97,7 @@ describe('withDefaults', () => {
         sidebarCollapsed: ['events'],
         sidebar: 'no',
         sidebarHidden: 'summary',
-        ccuConsultant: { considerAlwaysAvailable: 'no', alwaysAvailableSource: 5 },
+        ccuConsultant: { considerAlwaysAvailable: 'no', alwaysAvailableSource: 5, view: 'cards' },
       } as never),
     ).toEqual(DEFAULT_SETTINGS);
   });
@@ -107,7 +107,14 @@ describe('withDefaults', () => {
       withDefaults({
         ccuConsultant: { considerAlwaysAvailable: false, alwaysAvailableSource: 'wiki' },
       } as never).ccuConsultant,
-    ).toEqual({ considerAlwaysAvailable: false, alwaysAvailableSource: 'wiki' });
+    ).toEqual({ considerAlwaysAvailable: false, alwaysAvailableSource: 'wiki', view: 'simple' });
+  });
+
+  it('remembers the view of the CCU Consultant (#563)', () => {
+    expect(withDefaults({ ccuConsultant: { view: 'deep' } } as never).ccuConsultant.view).toBe(
+      'deep',
+    );
+    expect(withDefaults({}).ccuConsultant.view).toBe('simple');
   });
 
   it('keeps the table layout of the Paint Discount Consultant', () => {

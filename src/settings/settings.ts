@@ -54,6 +54,13 @@ export type ReboughtDetection = (typeof REBOUGHT_DETECTIONS)[number];
 export const CONSULTANT_LAYOUTS = ['choose', 'ways', 'table'] as const;
 export type ConsultantLayout = (typeof CONSULTANT_LAYOUTS)[number];
 
+/**
+ * How the CCU Consultant shows its base ships (#563): `simple` – a card per base ship with what
+ * leads to it (the default); `deep` – the chains to each base ship in detail.
+ */
+export const CCU_CONSULTANT_VIEWS = ['simple', 'deep'] as const;
+export type CcuConsultantView = (typeof CCU_CONSULTANT_VIEWS)[number];
+
 export const THEMES = ['modern', 'rsi'] as const;
 export type Theme = (typeof THEMES)[number];
 
@@ -189,6 +196,8 @@ export interface Settings {
      * `null` for the first one that does.
      */
     alwaysAvailableSource: string | null;
+    /** Its view, remembered from its toggle "Simple | Deep view" (#563). */
+    view: CcuConsultantView;
   };
   /** Links shown next to ships. */
   shipLinks: {
@@ -244,7 +253,7 @@ export const DEFAULT_SETTINGS: Settings = {
     reboughtDetection: 'plan',
     layout: 'choose',
   },
-  ccuConsultant: { considerAlwaysAvailable: true, alwaysAvailableSource: null },
+  ccuConsultant: { considerAlwaysAvailable: true, alwaysAvailableSource: null, view: 'simple' },
   shipLinks: { erkul: true, fleetyards: true },
   demo: DEFAULT_DEMO_SETTINGS,
 };
@@ -396,6 +405,11 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
         typeof stored?.ccuConsultant?.alwaysAvailableSource === 'string'
           ? stored.ccuConsultant.alwaysAvailableSource
           : null,
+      view: valid(
+        stored?.ccuConsultant?.view,
+        oneOf(CCU_CONSULTANT_VIEWS),
+        DEFAULT_SETTINGS.ccuConsultant.view,
+      ),
     },
     shipLinks: {
       erkul: stored?.shipLinks?.erkul ?? DEFAULT_SETTINGS.shipLinks.erkul,

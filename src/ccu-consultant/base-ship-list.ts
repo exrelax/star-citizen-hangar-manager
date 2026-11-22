@@ -40,7 +40,10 @@ export interface BaseShipRow {
   price?: number;
   /** Its page in the Pledge Store, from the upgrade tool. */
   link?: string;
-  /** In the group `buyback`: what the buy back has of it, ships first. */
+  /**
+   * In the group `buyback`: what the buy back has of it, ships first. In `soon` and `tooFew`: the
+   * ways to it (#563, the cards of the simple view) – the hangar's, then the buy back's.
+   */
   matches: CoverageMatch[];
   /** In the section "Soon without base ship" (#454): when it leaves the Pledge Store. */
   removal?: ShipRemoval;
@@ -142,6 +145,12 @@ export function baseShipList(
         hangar: coverage.hangar.ships.length + coverage.hangar.ccus.length,
         buyback: coverage.buyback.ships.length + coverage.buyback.ccus.length,
       };
+      row.matches = [
+        ...coverage.hangar.ships,
+        ...coverage.hangar.ccus,
+        ...coverage.buyback.ships,
+        ...coverage.buyback.ccus,
+      ];
       // A leaving ship without any way is only in `soon`; with too few, also where its cover
       // puts it.
       if (removal && standing === 'missing') continue;

@@ -48,7 +48,12 @@
     "warbondCollisions": "CCUs incompatible with the warbond $1",
     "warbondCollisionsEmpty": "None of your CCUs overlaps the price range of the warbond $1 any more.",
     "warbondCollisionsShow": "Show in My Hangar",
-    "paintsToOptimize": "Paints to optimize"
+    "paintsToOptimize": "Paints to optimize",
+    "ccuGroup": "CCU Consultant: $1",
+    "ccuBaseShip": "CCUs from $1",
+    "ccuEmpty": "None of these CCUs is in your hangar any more.",
+    "ccuBuyback": "Ships and CCUs to $1",
+    "ccuBuybackEmpty": "None of them is in your buy back any more."
   },
   "sort": {
     "label": "Sort",
@@ -1903,7 +1908,33 @@
     "boxOpen": "Open the CCU Consultant",
     "boxMissingHint": "CCUs neither the hangar nor the buy back gives the base ship to, and whose base ship is probably not always available.",
     "boxTooFew": "Too few ways",
-    "boxTooFewHint": "CCUs whose base ship isn’t always available, with fewer ships and CCUs to it than CCUs from it."
+    "boxTooFewHint": "CCUs whose base ship isn’t always available, with fewer ships and CCUs to it than CCUs from it.",
+    "view": {
+      "label": "View",
+      "simple": "Simple",
+      "deep": "Deep view"
+    },
+    "showInHangar": {
+      "one": "Show the CCU in My Hangar",
+      "other": "Show $1 CCUs in My Hangar"
+    },
+    "showInHangarHint": "Opens My Hangar with just these CCUs.",
+    "card": {
+      "fromIt": {
+        "one": "CCU from it",
+        "other": "CCUs from it"
+      },
+      "onSale": "On sale now",
+      "always": "Always in the Pledge Store",
+      "ways": {
+        "one": "$1 way to it",
+        "other": "$1 ways to it"
+      },
+      "nothing": "Nothing in hangar or buy back",
+      "showCcus": "Shows the CCUs from $1 in My Hangar",
+      "buybackHint": "Opens the ships and CCUs to $1 in Buy Back",
+      "list": "Base ships"
+    }
   },
   "cartPaints": {
     "title": "Paint volume discount",

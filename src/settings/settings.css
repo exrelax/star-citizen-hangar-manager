@@ -311,49 +311,7 @@ a.shm-setting-row:focus-visible {
 
 /* ---- Switch: in src/shared/styles/switch.css, shared with the Paint Discount Consultant ---- */
 
-/* ---- Segmented control ---- */
-
-.shm-segmented {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 2px;
-  padding: 2px;
-  border: 1px solid rgb(var(--shm-accent-rgb) / 0.35);
-  border-radius: var(--shm-radius-control);
-}
-
-.shm-segment {
-  display: flex;
-  align-items: center;
-  padding: 4px 12px;
-  color: var(--shm-text-secondary);
-  border-radius: var(--shm-radius-control);
-  cursor: pointer;
-  white-space: nowrap;
-  transition:
-    background-color 0.16s,
-    color 0.16s;
-}
-
-.shm-segment.is-selected {
-  color: var(--shm-text-strong);
-  background: rgb(var(--shm-accent-rgb) / 0.25);
-}
-
-.shm-segment:has(input:focus-visible) {
-  outline: 2px solid var(--shm-accent);
-  outline-offset: 1px;
-}
-
-/* The radio button stays for keyboard and screen readers, not for the eye. */
-.shm-segment input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  opacity: 0;
-}
+/* ---- Segmented control: in SegmentedControl.vue, shared with the CCU Consultant ---- */
 
 /* ---- Selects, number fields, small links ---- */
 
