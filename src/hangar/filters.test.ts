@@ -402,7 +402,16 @@ describe('the "Ships" filter by kind (#514)', () => {
   const insurance = { title: 'Lifetime Insurance', kind: 'Insurance' };
   const hangar = { title: 'Self-Land Hangar', kind: 'Hangar decoration' };
   const hangarPledges = [
-    pledge(1, { items: [{ title: 'Avenger Titan', kind: 'Ship' }, insurance, hangar] }),
+    // Hangar decoration comes with the ship, without a kind or as such.
+    pledge(1, {
+      items: [
+        { title: 'Avenger Titan', kind: 'Ship' },
+        insurance,
+        hangar,
+        { title: 'Aegis Poster' },
+        { title: 'Takuetsu Aegis Model', kind: 'Hangar decoration' },
+      ],
+    }),
     pledge(2, {
       items: [
         { title: 'Mustang Alpha', kind: 'Ship' },
@@ -432,6 +441,8 @@ describe('the "Ships" filter by kind (#514)', () => {
       ],
     }),
     pledge(6, { isCcu: true }),
+    // Gear without a kind is an extra.
+    pledge(8, { items: [{ title: 'Gladius', kind: 'Ship' }, { title: 'ORC-mkX Helmet Iceborn' }] }),
     pledge(7, { isPaint: true, items: [{ title: 'Sabre - Ashcloud Paint', kind: 'Skin' }] }),
   ];
   const refinements = {
@@ -466,10 +477,10 @@ describe('the "Ships" filter by kind (#514)', () => {
   });
 
   it('lists exactly the pledges of each kind in My Hangar, with their counts', () => {
-    expect(listed('all')).toEqual({ ids: [1, 2, 3, 4, 5], count: 5 });
+    expect(listed('all')).toEqual({ ids: [1, 2, 3, 4, 5, 8], count: 6 });
     // Insurance and a hangar don't count as extras; game access and gear do.
     expect(listed('solo')).toEqual({ ids: [1], count: 1 });
-    expect(listed('extras')).toEqual({ ids: [2, 3], count: 2 });
+    expect(listed('extras')).toEqual({ ids: [2, 3, 8], count: 3 });
     expect(listed('pack')).toEqual({ ids: [4, 5], count: 2 });
   });
 
@@ -481,7 +492,14 @@ describe('the "Ships" filter by kind (#514)', () => {
   describe('in the Buy Back', () => {
     const kindOf = createBuybackShipKind({
       ships: [{ name: 'Nox' }, { name: 'Pisces C8X' }],
-      hangarPledges: [{ items: [{ title: 'Nox Kue', kind: 'Ship' }] }],
+      hangarPledges: [
+        {
+          items: [
+            { title: 'Nox Kue', kind: 'Ship' },
+            { title: 'Aegis Plaque', kind: 'Hangar decoration' },
+          ],
+        },
+      ],
     });
     const buyback = (id: number, contained: string, items?: string[]): BuybackView => {
       const ships = contained ? [contained.replace(/ and \d+ items?$/, '')] : [];
@@ -499,6 +517,8 @@ describe('the "Ships" filter by kind (#514)', () => {
         'Avenger Titan',
         '120 Month Insurance',
         'VFG Industrial Hangar',
+        'Aegis Plaque',
+        'Argo Poster',
       ]),
       buyback(13, 'Mustang Alpha and 2 items', [
         'Mustang Alpha',
