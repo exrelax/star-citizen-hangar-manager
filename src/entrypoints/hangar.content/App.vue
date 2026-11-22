@@ -139,12 +139,14 @@ const meltMarks = useMeltMarks(
   () => {
     if (!demo.value) return hangarPurchases(hangar.pledges.value, orders.value);
     const justBought = demoView.context.value?.justBought;
+    // Items of groups bought a few hours ago too, for their melt marks (#554).
+    const recent = demoView.context.value?.recentPurchases;
     return new Map(
       pledges.value.map((pledge) => [
         pledge.id,
         {
           on: pledge.createdAt,
-          at: justBought?.pledgeId === pledge.id ? justBought.at : undefined,
+          at: justBought?.pledgeId === pledge.id ? justBought.at : recent?.get(pledge.id),
         },
       ]),
     );

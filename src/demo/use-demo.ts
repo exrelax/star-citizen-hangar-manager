@@ -9,6 +9,7 @@ import { locale } from '@/i18n';
 import { demoEventNotes, demoEvents } from './demo-events';
 import { resetDemoNotes, seedDemoNotes } from './demo-notes';
 import { demoWatchlists, resetDemoWatchlists, seedDemoWatchlists } from './demo-watchlists';
+import { demoGroupMarks, withRecentPurchases } from './demo-group-marks';
 import type { StoreCredit } from '@/account/store-credit';
 import { buyableShipsItem, current, shipsItem } from '@/ships/ships-storage';
 import {
@@ -197,6 +198,8 @@ export interface DemoContext {
    * ("2026-11-08T15:00"), for the countdown of a mark to melt.
    */
   justBought?: { pledgeId: number; at: string };
+  /** The purchase times of items of groups bought a few hours ago (#554), by pledge id. */
+  recentPurchases?: ReadonlyMap<number, string>;
   /** How the check right before bulk melting turns out (#416), from the demo settings. */
   meltCheck: MeltCheckOutcome;
   /** Browser notifications shown as allowed, for the watchlists' reminders (#474). */
@@ -274,7 +277,10 @@ export function useDemo(
   watch([generatedAccount, demoResets], ([account]) => {
     if (!account || !key.value) return;
     const marked = demoMarkIds(account.pledges, justBoughtOf(account.pledges));
-    if (settings().states.meltMarks) void seedDemoMarks(key.value, marked);
+    // With the items of groups marked at different times (#554).
+    if (settings().states.meltMarks) {
+      void seedDemoMarks(key.value, [...marked, ...groupMarks.value.marked]);
+    }
   });
   // The demo's own sidebar notifications (#210, #131), once per key.
   watch(
@@ -291,7 +297,7 @@ export function useDemo(
       (event) => settings().states.runningEvent || now < event.eventStart,
     );
   });
-  const demoPledges = computed(() => {
+  const baseDemoPledges = computed(() => {
     if (!active.value || !key.value) return [];
     const list =
       generatedAccount.value?.pledges ??
@@ -301,6 +307,19 @@ export function useDemo(
       ? withCopyBoughtToday(list, catalog.value.items, localToday())
       : list;
   });
+  /*
+   * The melt marks of groups (#554): items of groups marked at different times, some of them bought
+   * a few hours ago – never the demo's pledge bought a few hours ago or its own marks.
+   */
+  const groupMarks = computed(() => {
+    const list = baseDemoPledges.value;
+    if (!list.length || !settings().states.meltMarks) return { marked: [], purchases: new Map() };
+    const justBought = justBoughtOf(list);
+    return demoGroupMarks(list, Date.now(), new Set(demoMarkIds(list, justBought)));
+  });
+  const demoPledges = computed(() =>
+    withRecentPurchases(baseDemoPledges.value, groupMarks.value.purchases),
+  );
   /*
    * The consultant's running plan at the stage chosen in the settings (#303), with its completed
    * plans: made of the demo hangar and the catalog only. Its fillers are the marked paint ready to
@@ -438,6 +457,7 @@ export function useDemo(
         currency: 'USD',
       },
       justBought,
+      recentPurchases: groupMarks.value.purchases,
       meltCheck: settings().meltCheck,
       browserNotifications: settings().browserNotifications,
       ...(ccuBases.unavailable && { withoutStoreLink: ccuBases.unavailable.id }),
