@@ -37,6 +37,11 @@ export interface WarbondSighting {
   lastSeen: number;
   /** The events running at the reads that found it, in the order they began. */
   events?: SightingEvent[];
+  /**
+   * Epoch milliseconds the offer is expected to leave the store (#568), e.g. about a month after a
+   * ship became flight ready; an expectation of the website, not confirmed by CIG.
+   */
+  expectedEnd?: number;
 }
 
 export interface WarbondHistorySnapshot {

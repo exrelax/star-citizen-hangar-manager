@@ -291,7 +291,8 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   See [below](#editing-the-buy-back-token-renewals) for how to edit it.
 - **Warbond history**: `data/warbond-history.json` lists earlier warbond offers (`offers`: the
   ship's upgrade tool `id` and `name`, an optional `skuId`, `price`, `msrp`, `firstSeen`,
-  `lastSeen` as ISO dates, optional `events` with `id` and `name`), offers seen before a browser
+  `lastSeen` as ISO dates, optional `events` with `id` and `name`, an optional `expectedEnd`: when
+  the offer is expected to leave the store, an expectation not confirmed by CIG, #568), offers seen before a browser
   read the Pledge Store. The extension adds them to the history of the browser where it shows it –
   the "Warbond CCU History" and the earlier offers of a current warbond CCU – and never stores them
   into it; an offer the browser saw itself (same ship and price, overlapping dates) is shown once.

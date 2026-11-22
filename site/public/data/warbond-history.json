@@ -116,11 +116,62 @@
       "msrp": 115,
       "firstSeen": "2026-11-21T16:00:00Z",
       "lastSeen": "2026-11-22T16:00:00Z",
+      "expectedEnd": "2026-11-22T16:00:00Z",
       "events": [
         {
           "id": "talon-iae-2956-day-8",
           "name": "Talon - IAE 2956 Day 8"
         }
+      ]
+    },
+    {
+      "ship": { "id": 244, "name": "RSI Galaxy" },
+      "price": 360,
+      "msrp": 400,
+      "firstSeen": "2026-11-13T16:00:00Z",
+      "lastSeen": "2026-11-22T16:00:00Z",
+      "expectedEnd": "2026-12-13T16:00:00Z",
+      "events": [
+        { "id": "rsi-galaxy-flight-ready-iae-2956", "name": "RSI Galaxy Flight Ready - IAE 2956" }
+      ]
+    },
+    {
+      "ship": { "id": 224, "name": "Anvil Liberator" },
+      "price": 525,
+      "msrp": 600,
+      "firstSeen": "2026-11-15T16:00:00Z",
+      "lastSeen": "2026-11-22T16:00:00Z",
+      "expectedEnd": "2026-12-15T16:00:00Z",
+      "events": [
+        {
+          "id": "anvil-liberator-flight-ready-iae-2956",
+          "name": "Anvil Liberator Flight Ready - IAE 2956"
+        }
+      ]
+    },
+    {
+      "ship": { "id": 329, "name": "Drake Marauder" },
+      "price": 135,
+      "msrp": 150,
+      "firstSeen": "2026-11-17T16:00:00Z",
+      "lastSeen": "2026-11-22T16:00:00Z",
+      "expectedEnd": "2026-12-17T16:00:00Z",
+      "events": [
+        {
+          "id": "drake-marauder-flight-ready-iae-2956",
+          "name": "Drake Marauder Flight Ready - IAE 2956"
+        }
+      ]
+    },
+    {
+      "ship": { "id": 330, "name": "Gatac HYŪN" },
+      "price": 200,
+      "msrp": 220,
+      "firstSeen": "2026-11-21T16:00:00Z",
+      "lastSeen": "2026-11-22T16:00:00Z",
+      "expectedEnd": "2026-12-21T16:00:00Z",
+      "events": [
+        { "id": "gatac-hyun-flight-ready-iae-2956", "name": "Gatac HYŪN Flight Ready - IAE 2956" }
       ]
     }
   ]
