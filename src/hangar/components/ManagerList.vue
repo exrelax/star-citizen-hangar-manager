@@ -711,6 +711,7 @@ const countLabel = computed(() => {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
+  align-self: center;
   gap: 4px 12px;
 }
 

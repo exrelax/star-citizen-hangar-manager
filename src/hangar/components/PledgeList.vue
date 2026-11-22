@@ -287,6 +287,7 @@ const filterHint = (filter: PledgeFilter) => {
       <RebuyWatchlistAction
         :pledge-ids="entries.map((pledge) => pledge.id)"
         button-class="shm-origin-button"
+        inline
       />
     </template>
     <template #group="{ group, open }">
