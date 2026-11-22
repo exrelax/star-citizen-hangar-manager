@@ -8,7 +8,7 @@
       "firstSeen": "2026-10-08T15:00:00Z",
       "lastSeen": "2026-11-10T16:00:00Z",
       "events": [
-        { "id": "sabre-raven-release-patch-4.10.2", "name": "Sabre Raven Release - Patch 4.10.2" }
+        { "id": "sabre-raven-release-patch-4.10.1", "name": "Sabre Raven Release - Patch 4.10.1" }
       ]
     },
     {
@@ -172,6 +172,17 @@
       "expectedEnd": "2026-12-21T16:00:00Z",
       "events": [
         { "id": "gatac-hyun-flight-ready-iae-2956", "name": "Gatac HYŪN Flight Ready - IAE 2956" }
+      ]
+    },
+    {
+      "ship": { "id": 325, "name": "RSI Constellation Centaurus MK V" },
+      "price": 275,
+      "msrp": 300,
+      "firstSeen": "2026-10-08T15:00:00Z",
+      "lastSeen": "2026-11-27T20:00:00Z",
+      "expectedEnd": "2026-11-27T20:00:00Z",
+      "events": [
+        { "id": "rsi-constellation-centaurus-mkv-flight-ready-4.10.2", "name": "RSI Constellation Centaurus MK V Release - Patch 4.10.2" }
       ]
     }
   ]
