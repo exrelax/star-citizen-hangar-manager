@@ -15,6 +15,9 @@ import type { ShipFactsLookup } from './ship-facts';
  *       .ShipItem-general-information-name   "Mustang Alpha"
  *       .ShipItem-general-information-status-and-stock   "in stock", where the label goes
  *
+ * On the target ships that aren't always available, while an event runs, a countdown (#570) goes
+ * where the label would: how long the ship is expected to stay in the store.
+ *
  * On the base ships, the counts of #506 go on the ship's image (`.ShipItem-thumbnail-clip`, bottom
  * left): how often the hangar has the ship and how many CCUs to it the hangar and the buy back
  * have. The items have a fixed height, so nothing may go into their text.
@@ -33,6 +36,11 @@ const LABEL_CLASS = 'shm-always-available-label';
 const FROM = '.ShipSelector.from';
 const THUMB = '.ShipItem-thumbnail-clip';
 const COUNTS_CLASS = 'shm-base-counts';
+/** The target ships' side, where the countdowns (#570) go. */
+const TO = '.ShipSelector.to';
+const COUNTDOWN_CLASS = 'shm-upgrade-countdown';
+/** How often an open dialog's countdowns are brought up to date. */
+const TICK_MS = 1000;
 
 /** How long an opened dialog may lack its ship lists before it counts as changed markup. */
 const MISMATCH_AFTER_MS = 5000;
@@ -54,13 +62,13 @@ export function targetOf(item: Element): UpgradeTarget {
 const normalized = (name: string) => name.toLowerCase().replace(/\s+/g, ' ').trim();
 
 /**
- * Whether a ship of the dialog is always available now: by RSI's id, which is the ship facts' id, else by
- * its name (the facts' name or its wiki name). Unknown ships and no facts: not.
+ * Whether a ship of the dialog is always available now: by RSI's id, which is the ship facts' id,
+ * else by its name (the facts' name or its wiki name). `undefined` for an unknown ship or no facts.
  */
-export function createAlwaysAvailableCheck(
+export function createAvailabilityOf(
   facts: ShipFactsLookup | undefined,
-): (target: UpgradeTarget) => boolean {
-  if (!facts) return () => false;
+): (target: UpgradeTarget) => boolean | undefined {
+  if (!facts) return () => undefined;
   const byName = new Map<string, number>();
   for (const ship of facts.facts.ships) {
     for (const name of [ship.name, ship.wikiName]) {
@@ -69,8 +77,16 @@ export function createAlwaysAvailableCheck(
   }
   return ({ id, name }) => {
     const shipId = id ?? (name ? byName.get(normalized(name)) : undefined);
-    return shipId !== undefined && facts.isAlwaysAvailable(shipId) === true;
+    return shipId === undefined ? undefined : facts.isAlwaysAvailable(shipId);
   };
+}
+
+/** Whether a ship of the dialog is always available now; unknown ships and no facts: not. */
+export function createAlwaysAvailableCheck(
+  facts: ShipFactsLookup | undefined,
+): (target: UpgradeTarget) => boolean {
+  const availability = createAvailabilityOf(facts);
+  return (target) => availability(target) === true;
 }
 
 export interface UpgradeDialogOptions {
@@ -84,6 +100,11 @@ export interface UpgradeDialogOptions {
    * nothing is known of the ship.
    */
   countsOf?: (target: UpgradeTarget) => { text: string; hint: string } | undefined;
+  /**
+   * The countdown of a target ship (#570): how long it is expected to stay in the store, as its
+   * line and tooltip; none while the setting is off, no event runs or it is always available.
+   */
+  countdownOf?: (target: UpgradeTarget) => { text: string; hint: string } | undefined;
   /** The dialog opened (again): the counts' data can be read now. */
   onOpen?: () => void;
   /** The dialog's markup doesn't fit: called once. */
@@ -115,6 +136,31 @@ export function applyLabels(root: ParentNode, options: UpgradeDialogOptions): vo
     if (label.parentElement !== spot) spot.append(label);
   }
   applyCounts(root, options);
+  applyCountdowns(root, options);
+}
+
+/** Adds, updates or removes the countdowns (#570) on every target ship shown now. */
+function applyCountdowns(root: ParentNode, options: UpgradeDialogOptions): void {
+  const items = [...root.querySelectorAll(MODAL)].flatMap((modal) =>
+    [...modal.querySelectorAll(TO)].flatMap((side) => [...side.querySelectorAll(ITEM)]),
+  );
+  for (const item of items) {
+    const existing = item.querySelector<HTMLElement>(`.${COUNTDOWN_CLASS}`);
+    const countdown = options.countdownOf?.(targetOf(item));
+    const spot = countdown && item.querySelector(SPOT);
+    if (!countdown || !spot) {
+      existing?.remove();
+      continue;
+    }
+    const line = existing ?? document.createElement('p');
+    line.className = COUNTDOWN_CLASS;
+    if (line.textContent !== countdown.text) line.textContent = countdown.text;
+    if (line.title !== countdown.hint) {
+      line.title = countdown.hint;
+      line.setAttribute('aria-description', countdown.hint);
+    }
+    if (line.parentElement !== spot) spot.append(line);
+  }
 }
 
 /** Adds, updates or removes the counts (#506) on every base ship shown now. */
@@ -197,14 +243,21 @@ export function watchUpgradeDialog(
   });
   // An opened dialog without its target list: checked again after the time it may take.
   const timer = setInterval(() => root.querySelector(MODAL) && schedule(), MISMATCH_AFTER_MS);
+  // The countdowns (#570) of an open dialog keep running.
+  const ticker = options.countdownOf
+    ? setInterval(() => root.querySelector(`.${COUNTDOWN_CLASS}`) && schedule(), TICK_MS)
+    : undefined;
   schedule();
   return {
     update: schedule,
     stop: () => {
       observer.disconnect();
       clearInterval(timer);
+      clearInterval(ticker);
       if (frame) cancelAnimationFrame(frame);
-      for (const label of root.querySelectorAll(`.${LABEL_CLASS}, .${COUNTS_CLASS}`)) {
+      for (const label of root.querySelectorAll(
+        `.${LABEL_CLASS}, .${COUNTS_CLASS}, .${COUNTDOWN_CLASS}`,
+      )) {
         label.remove();
       }
     },
