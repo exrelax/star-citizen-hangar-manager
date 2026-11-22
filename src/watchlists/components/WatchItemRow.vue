@@ -1,4 +1,7 @@
 <script setup lang="ts">
+// Shared, unscoped styles as plain imports: `<style src>` of the same file in several
+// components breaks the build and the tests by the order they are compiled in.
+import '@/hangar/components/row.css';
 import { formatUsd } from '@/hangar/discount-format';
 import { insuranceLabel } from '@/hangar/insurance';
 import { i18n, locale } from '@/i18n';
@@ -141,8 +144,6 @@ const setCount = (next: number) =>
     </button>
   </div>
 </template>
-
-<style src="@/hangar/components/row.css"></style>
 
 <style>
 .shm-row.shm-watch-item {

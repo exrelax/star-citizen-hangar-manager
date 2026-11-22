@@ -1,4 +1,8 @@
 <script setup lang="ts">
+// Shared, unscoped styles as plain imports: `<style src>` of the same file in several
+// components breaks the build and the tests by the order they are compiled in.
+import '@/shared/overlay.css';
+import '@/hangar/components/row.css';
 import { STORE_CREDIT_VERSION, storeCreditItem } from '@/account/store-credit-storage';
 import { RSI_CART_PATH } from '@/buyback/cart';
 import { useDemoContext } from '@/demo/use-demo';
@@ -194,9 +198,6 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
     </div>
   </Teleport>
 </template>
-
-<style src="@/shared/overlay.css"></style>
-<style src="@/hangar/components/row.css"></style>
 
 <style>
 .shm-watchlist-cart.shm-overlay-dialog {

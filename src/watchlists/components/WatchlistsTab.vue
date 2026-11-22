@@ -1,4 +1,7 @@
 <script setup lang="ts">
+// Shared, unscoped styles as plain imports: `<style src>` of the same file in several
+// components breaks the build and the tests by the order they are compiled in.
+import '@/hangar/components/row.css';
 import type { BuybackView } from '@/buyback/buyback-view';
 import type { PledgeView } from '@/hangar/pledge-view';
 import { i18n } from '@/i18n';
@@ -214,8 +217,6 @@ function removeEntry(list: Watchlist, key: string) {
     @close="dialog = null"
   />
 </template>
-
-<style src="@/hangar/components/row.css"></style>
 
 <style>
 /* Below RSI's fixed top bar when scrolled to from a link. */
