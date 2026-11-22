@@ -28,6 +28,7 @@ import { FILTER_HIGHLIGHTS } from '@/config';
 import { highlightClasses } from '../highlights';
 import ManagerList from './ManagerList.vue';
 import { paintRefinement, useProvidedOwnedShips } from '../paint-ships';
+import { pledgeShipKind, shipKindRefinement } from '../ship-kind';
 import { ccuRefinement } from '@/ccu-consultant/base-ship-list';
 import { useProvidedCcuCoverage } from '@/ccu-consultant/coverage';
 import { useProvidedAlwaysAvailable } from '@/ccu-consultant/always-available';
@@ -75,7 +76,8 @@ const predicates = computed(() => ({
 const hasPriceChange = computed(() => props.pledges.some(predicates.value.priceChange));
 /**
  * "Paints" for owned ships or for ships not owned (#336), by the hangar's ships; "CCUs" without
- * base ship or with an always available one (#461), by the CCU Consultant's coverage.
+ * base ship or with an always available one (#461), by the CCU Consultant's coverage; "Ships" by
+ * what they hold besides the ship (#514).
  */
 const ownedShips = useProvidedOwnedShips();
 const coverages = useProvidedCcuCoverage();
@@ -86,6 +88,8 @@ const refinements = computed(() => ({
     ...pledge.items.filter(isPaintItem).map((item) => item.title),
   ]),
   ccus: ccuRefinement<PledgeView>(coverages.value, alwaysAvailable.value),
+  // "Ships" by what they hold besides the ship (#514).
+  ships: shipKindRefinement<PledgeView>((pledge) => pledgeShipKind(pledge.items)),
 }));
 /** What a group's labels taken from its items need (#487): the CCU Consultant's, today. */
 const coverageSources = useProvidedCoverageSources();

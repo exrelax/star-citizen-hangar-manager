@@ -6,6 +6,7 @@ import { bestInsurance, type Insurance } from '@/hangar/insurance';
 import { GAME_DOWNLOAD, isRealImage, type ShipRef } from '@/hangar/pledge-view';
 import { normalizeSearchText } from '@/hangar/search';
 import type { ShipLinks } from '@/hangar/ship-links';
+import type { BuybackShipKind, ShipKind } from '@/hangar/ship-kind';
 import {
   buybackShipNames,
   hasSeveralItems,
@@ -39,6 +40,8 @@ export interface BuybackView {
   /** All items incl. the main one, if known (pledges with several items). */
   items: string[];
   ships: ShipRef[];
+  /** What the pledge holds besides its ship (#514, see `ship-kind.ts`); none without a ship. */
+  shipKind?: ShipKind;
   hasLti: boolean;
   /** The best insurance, if known (see `insurance.ts`): only pledges with several items list them. */
   insurance?: Insurance;
@@ -82,6 +85,8 @@ export interface BuybackViewContext {
   availabilityOf?: AvailabilityCheck;
   /** The expected price increase of a pledge (see `price-increase-match.ts`). */
   priceIncreaseOf?: (pledge: BuybackPledge) => PriceIncreaseMatch | undefined;
+  /** The kind of a pledge with a ship (#514); without it none has one. */
+  shipKindOf?: BuybackShipKind;
   /** What expected price increases mean for a CCU; `paid` is its buy back price (#250). */
   ccuPriceChangeOf?: (pledge: BuybackPledge, paid?: number) => CcuPriceChange | undefined;
 }
@@ -96,6 +101,7 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
     availabilityOf,
     priceIncreaseOf,
     ccuPriceChangeOf,
+    shipKindOf,
   } = context;
   const unavailable = availabilityOf?.(pledge);
   const priceIncrease = priceIncreaseOf?.(pledge);
@@ -108,6 +114,7 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
     ? [...(main ? [main] : []), ...extraItems.filter((item) => item !== main)]
     : [];
   const shipNames = buybackShipNames(pledge);
+  const shipKind = shipKindOf?.(pledge, shipNames);
   return {
     id: pledge.id,
     position,
@@ -118,6 +125,7 @@ export function toBuybackView(pledge: BuybackPledge, context: BuybackViewContext
     contained: pledge.contained,
     items,
     ships: shipNames.map((name) => ({ name, link: shipLinks[name] })),
+    ...(shipKind && { shipKind }),
     hasLti: items.some((item) => /lifetime insurance/i.test(item)),
     insurance: bestInsurance(items),
     isPaint:

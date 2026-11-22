@@ -114,6 +114,15 @@
       "all": "Alle CCUs",
       "limited": "Basis begrenzt kaufbar"
     },
+    "shipKind": {
+      "all": "Alle Schiffe",
+      "solo": "Einzelne Schiffe",
+      "soloShort": "Einzeln",
+      "extras": "Schiffe mit Extras",
+      "extrasShort": "Mit Extras",
+      "pack": "Schiffspacks",
+      "packShort": "Packs"
+    },
     "ccus": "CCUs",
     "gameAccess": "Spielzugang",
     "giftable": "Verschenkbar",

@@ -114,6 +114,15 @@
       "all": "Todos los CCU",
       "limited": "Base limitada"
     },
+    "shipKind": {
+      "all": "Todas las naves",
+      "solo": "Naves solas",
+      "soloShort": "Solas",
+      "extras": "Naves con extras",
+      "extrasShort": "Con extras",
+      "pack": "Packs de naves",
+      "packShort": "Packs"
+    },
     "ccus": "CCU",
     "gameAccess": "Acceso al juego",
     "giftable": "Regalables",

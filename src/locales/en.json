@@ -114,6 +114,15 @@
       "all": "All CCUs",
       "limited": "Base limited"
     },
+    "shipKind": {
+      "all": "All ships",
+      "solo": "Solo ships",
+      "soloShort": "Solo",
+      "extras": "Ships with extras",
+      "extrasShort": "With extras",
+      "pack": "Ship packs",
+      "packShort": "Packs"
+    },
     "ccus": "CCUs",
     "gameAccess": "Game access",
     "giftable": "Giftable",
