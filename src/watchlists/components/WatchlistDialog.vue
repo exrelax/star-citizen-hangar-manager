@@ -17,6 +17,7 @@ import {
 } from '@/notifications/browser-permission';
 import { isKindOn } from '@/notifications/kinds';
 import { useStored } from '@/storage/use-stored';
+import { useDemoContext } from '@/demo/use-demo';
 import { fromLocalInput, toLocalInput } from '../watchlist-view';
 import { WATCHLIST_LIMITS, type Watchlist } from '../watchlists';
 
@@ -65,11 +66,17 @@ const canSave = computed(() => !!name.value.trim() && !props.busy);
  * the browser asks for on the extension's page (`browser-permission.ts`); nowhere with the kind
  * turned off in the settings (#197).
  */
-const allowed = useStored(browserNotificationsItem);
+const storedAllowed = useStored(browserNotificationsItem);
+// The demo tells what its settings say (#474): never this browser's permission.
+const demo = useDemoContext();
+const allowed = computed(() =>
+  demo.value ? demo.value.browserNotifications : storedAllowed.value,
+);
 const kindOn = computed(() => isKindOn(settings.value.notificationsOff, 'watchlistReminders'));
 const storeKindOn = computed(() => isKindOn(settings.value.notificationsOff, 'watchlistStore'));
 const asked = ref(false);
 function allowBrowser() {
+  if (demo.value) return;
   asked.value = true;
   void browser.runtime.sendMessage(OPEN_NOTIFICATION_PERMISSION);
 }
@@ -204,7 +211,13 @@ onUnmounted(() => removeEventListener('keydown', onKeydown));
                   )
                 }}
               </span>
-              <button type="button" class="shm-button" @click="allowBrowser">
+              <button
+                v-tooltip="demo ? i18n.t('exchange.demo') : undefined"
+                type="button"
+                class="shm-button"
+                :disabled="!!demo"
+                @click="allowBrowser"
+              >
                 <SvgIcon name="bell" />
                 {{ i18n.t('watchlists.reminderBrowserAllow') }}
               </button>

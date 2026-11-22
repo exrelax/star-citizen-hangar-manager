@@ -90,6 +90,11 @@ export interface DemoSettings {
    * Consultant's "Discount at risk" (#455) has none.
    */
   ccuDiscountAtRisk: boolean;
+  /**
+   * Browser notifications shown as allowed in this browser (#474): what a watchlist's dialog says
+   * of its reminder (#469). The demo never shows a real browser notification.
+   */
+  browserNotifications: boolean;
 }
 
 /** The range of each kind's number and of the list sizes. */
@@ -126,6 +131,7 @@ export const DEFAULT_DEMO_SETTINGS: DemoSettings = {
   cartPaints: 2,
   ccuCoverageGaps: true,
   ccuDiscountAtRisk: true,
+  browserNotifications: true,
 };
 
 const wholeIn =
@@ -205,5 +211,10 @@ export function demoSettingsOf(stored: Partial<DemoSettings> | null | undefined)
     cartPaints: valid(stored?.cartPaints, wholeIn({ min: 1, max: 10 }), defaults.cartPaints),
     ccuCoverageGaps: valid(stored?.ccuCoverageGaps, isBoolean, defaults.ccuCoverageGaps),
     ccuDiscountAtRisk: valid(stored?.ccuDiscountAtRisk, isBoolean, defaults.ccuDiscountAtRisk),
+    browserNotifications: valid(
+      stored?.browserNotifications,
+      isBoolean,
+      defaults.browserNotifications,
+    ),
   };
 }

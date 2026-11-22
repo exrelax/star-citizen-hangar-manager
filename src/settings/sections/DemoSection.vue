@@ -270,6 +270,18 @@ async function reset() {
     </SettingCheck>
   </SettingsGroup>
 
+  <!-- The watchlists (#474): what a watchlist's dialog says of browser notifications (#469). -->
+  <SettingsGroup :disabled="off">
+    <SettingCheck
+      :checked="settings.demo.browserNotifications"
+      :disabled="off"
+      :hint="i18n.t('settings.demo.browserNotificationsHint')"
+      @change="(on) => set({ browserNotifications: on })"
+    >
+      {{ i18n.t('settings.demo.browserNotifications') }}
+    </SettingCheck>
+  </SettingsGroup>
+
   <!-- The buy back tokens at the top right, also none (#433). -->
   <SettingsGroup :disabled="off">
     <SettingRow

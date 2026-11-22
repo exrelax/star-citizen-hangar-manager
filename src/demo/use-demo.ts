@@ -8,6 +8,7 @@ import type { StarCitizenEvent } from '@/events/events';
 import { locale } from '@/i18n';
 import { demoEventNotes, demoEvents } from './demo-events';
 import { resetDemoNotes, seedDemoNotes } from './demo-notes';
+import { demoWatchlists, resetDemoWatchlists, seedDemoWatchlists } from './demo-watchlists';
 import type { StoreCredit } from '@/account/store-credit';
 import { buyableShipsItem, current, shipsItem } from '@/ships/ships-storage';
 import {
@@ -96,6 +97,8 @@ export async function resetDemoData(): Promise<void> {
     demoDismissedRemovalNotesItem.removeValue(),
     // The note on RSI's Terms of Service closed with "Got it" (#416).
     demoRiskNoteSeenItem.removeValue(),
+    // The demo's watchlists as they start (#474).
+    resetDemoWatchlists(),
   ]);
   demoResets.value++;
 }
@@ -196,6 +199,8 @@ export interface DemoContext {
   justBought?: { pledgeId: number; at: string };
   /** How the check right before bulk melting turns out (#416), from the demo settings. */
   meltCheck: MeltCheckOutcome;
+  /** Browser notifications shown as allowed, for the watchlists' reminders (#474). */
+  browserNotifications: boolean;
   /**
    * A base ship of the CCU Consultant's cases shown without its Pledge Store page (#425), as the
    * upgrade tool leaves out the page of some ships.
@@ -434,6 +439,7 @@ export function useDemo(
       },
       justBought,
       meltCheck: settings().meltCheck,
+      browserNotifications: settings().browserNotifications,
       ...(ccuBases.unavailable && { withoutStoreLink: ccuBases.unavailable.id }),
     };
   });
@@ -444,6 +450,26 @@ export function useDemo(
       demoBuyback(buyback.value, key.value, settings().buybackPledges)
     );
   });
+  const buyableSkus = computed(() => current(buyableShips.value ?? null)?.skus);
+  // The demo's watchlists (#474), made once per demo hangar of it and the catalog.
+  watch(
+    () =>
+      [active.value && demoPledges.value.length ? key.value : undefined, demoResets.value] as const,
+    ([demoKey]) => {
+      if (!demoKey) return;
+      const made = demoWatchlists({
+        hangar: demoPledges.value,
+        buyback: demoBuybackPledges.value,
+        ships: catalog.value.ships,
+        items: catalog.value.items,
+        ...(buyableSkus.value && { buyable: buyableSkus.value }),
+        now: Date.now(),
+        locale: locale.value,
+      });
+      void seedDemoWatchlists(demoKey, made);
+    },
+    { immediate: true },
+  );
   return {
     ready,
     context,
