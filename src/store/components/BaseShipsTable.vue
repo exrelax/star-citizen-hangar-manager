@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { notifyShipUpgradeOpened } from '../ship-upgrade-opened';
 import { formatUsd } from '@/hangar/discount-format';
 import { i18n, locale } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
@@ -107,7 +108,7 @@ const count = (value: number) => (value ? String(value) : '–');
             :data-fromshipid="base.ship.id"
             :data-toshipid="target.shipId"
             :data-toskuid="target.skuId"
-            @click.prevent
+            @click.prevent="notifyShipUpgradeOpened"
           >
             {{ base.ship.name }}
           </a>

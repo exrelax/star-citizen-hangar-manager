@@ -5,6 +5,7 @@ import type { IconName } from '@/icons/icon-names';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { computed } from 'vue';
+import { notifyShipUpgradeOpened } from '../ship-upgrade-opened';
 
 /*
  * The buttons that open RSI's ship upgrade dialog with a ship as target, on the right of a row of
@@ -16,7 +17,8 @@ import { computed } from 'vue';
  * Without a ship (My Hangar, #374) a single "Ship upgrade" opens the dialog without a preset base
  * or target ship, as the button of RSI's "My Gear" does.
  *
- * Rows ignore clicks inside `.shm-upgrade-buttons` for their toggle.
+ * Rows ignore clicks inside `.shm-upgrade-buttons` for their toggle. An overlay that holds them
+ * closes once RSI's dialog opens (#564, `ship-upgrade-opened.ts`), as it would hide the dialog.
  */
 
 const props = defineProps<{
@@ -102,7 +104,7 @@ const buttons = computed(() => {
         data-apiurl="/pledge-store/api/upgrade/v2"
         :data-toshipid="shipId"
         :data-toskuid="button.skuId"
-        @click.prevent
+        @click.prevent="notifyShipUpgradeOpened"
       >
         <SvgIcon :name="button.icon" />
         {{ button.label }}
