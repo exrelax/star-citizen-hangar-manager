@@ -44,7 +44,10 @@
     "meltReady": "Bereit zum Einschmelzen",
     "meltReadyEmpty": "Gerade lässt sich kein gemerktes Pledge einschmelzen.",
     "paintRebuyEmpty": "Im Plan sind keine Paints mehr zum Rückkauf.",
-    "meltRebuyEmpty": "Gerade lässt sich kein Pledge ohne Verlust einschmelzen und wieder kaufen."
+    "meltRebuyEmpty": "Gerade lässt sich kein Pledge ohne Verlust einschmelzen und wieder kaufen.",
+    "warbondCollisions": "Mit dem Warbond $1 inkompatible CCUs",
+    "warbondCollisionsEmpty": "Keines deiner CCUs überschneidet sich mehr mit dem Preisbereich des Warbond $1.",
+    "warbondCollisionsShow": "In My Hangar zeigen"
   },
   "sort": {
     "label": "Sortierung",

@@ -44,7 +44,10 @@
     "meltReady": "Listos para fundir",
     "meltReadyEmpty": "Ahora mismo no se puede fundir ningún pledge marcado.",
     "paintRebuyEmpty": "El plan ya no tiene pinturas para recomprar.",
-    "meltRebuyEmpty": "Ahora mismo ningún pledge se puede fundir y recomprar sin pérdida."
+    "meltRebuyEmpty": "Ahora mismo ningún pledge se puede fundir y recomprar sin pérdida.",
+    "warbondCollisions": "CCU incompatibles con el warbond $1",
+    "warbondCollisionsEmpty": "Ya ninguno de tus CCU se solapa con el rango de precios del warbond $1.",
+    "warbondCollisionsShow": "Mostrar en My Hangar"
   },
   "sort": {
     "label": "Orden",
