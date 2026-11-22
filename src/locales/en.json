@@ -1326,6 +1326,11 @@
     "selectionUnmarked": {
       "one": "Mark removed from $1 pledge.",
       "other": "Marks removed from $1 pledges."
+    },
+    "selectionUnmark": "Remove marks to melt",
+    "selectionUnmarkHint": {
+      "one": "Removes the mark to melt of the selected pledge: the Hangar Manager no longer reminds you to melt it.",
+      "other": "Removes the marks to melt of the $1 selected pledges: the Hangar Manager no longer reminds you to melt them."
     }
   },
   "browserNotifications": {

@@ -1326,6 +1326,11 @@
     "selectionUnmarked": {
       "one": "Marca quitada de $1 pledge.",
       "other": "Marcas quitadas de $1 pledges."
+    },
+    "selectionUnmark": "Quitar las marcas para fundir",
+    "selectionUnmarkHint": {
+      "one": "Quita la marca para fundir del pledge seleccionado: el Hangar Manager ya no te lo recuerda.",
+      "other": "Quita las marcas para fundir de los $1 pledges seleccionados: el Hangar Manager ya no te los recuerda."
     }
   },
   "browserNotifications": {

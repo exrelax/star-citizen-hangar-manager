@@ -1286,14 +1286,23 @@ async function move(box: Box, step: -1 | 1) {
             <!-- Marks them all to melt later, or unmarks them (#551), as a row's own button. -->
             <button
               v-if="selectionMark"
-              v-tooltip="i18n.t('meltMark.buttonHint')"
+              v-tooltip="
+                selectionMark.toMark.length
+                  ? i18n.t('meltMark.buttonHint')
+                  : i18n.n('meltMark.selectionUnmarkHint', selectionMark.unmark.length, [
+                      number.format(selectionMark.unmark.length),
+                    ])
+              "
               type="button"
-              class="shm-button shm-sidebar-button is-full shm-melt-mark-button"
+              class="shm-button shm-sidebar-button is-full is-two-line shm-melt-mark-button"
               :aria-pressed="!selectionMark.toMark.length"
               @click="markSelection"
             >
               <SvgIcon name="recycle" />
-              {{ i18n.t(selectionMark.toMark.length ? 'meltMark.mark' : 'meltMark.unmark') }}
+              <!-- Its own text once all are marked (#562): it says what it removes. -->
+              {{
+                i18n.t(selectionMark.toMark.length ? 'meltMark.mark' : 'meltMark.selectionUnmark')
+              }}
             </button>
           </div>
           <p v-if="selectionMarkDone" class="shm-sidebar-note" role="status">
