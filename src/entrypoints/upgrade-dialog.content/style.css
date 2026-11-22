@@ -15,6 +15,23 @@
 }
 
 /*
+ * The countdown on target ships that aren't always available (#570): where the label goes, in RSI's
+ * orange of limited offers, so it reads as a note on time, not as a fact like the label.
+ */
+.ShipUpgradeModal .shm-upgrade-countdown {
+  margin: 0 7px 7px;
+  color: #ffa53b;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 12px;
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  cursor: help;
+}
+
+/*
  * The counts on the base ships (#506): on the ship's image, bottom left, as a small dark plate – the
  * items have a fixed height, so their text has no room for another line.
  */

@@ -460,7 +460,7 @@
     "rsiPages": "Site de RSI",
     "rsiPagesIntro": "Ajouts aux pages de RSI.",
     "upgradeDialogAlwaysAvailable": "Afficher les vaisseaux toujours disponibles dans la fenêtre d’upgrade de RSI",
-    "upgradeDialogAlwaysAvailableHint": "Marque les vaisseaux de base et cibles toujours disponibles dans le Pledge Store, pour que tu puisses y accéder plus tard et appliquer un CCU. D’après les données du site du projet (Star Citizen Wiki).",
+    "upgradeDialogAlwaysAvailableHint": "Marque les vaisseaux de base et cibles toujours disponibles dans le Pledge Store, pour que tu puisses y accéder plus tard et appliquer un CCU. D’après les données du site du projet (Star Citizen Wiki). Sur les vaisseaux cibles qui ne le sont pas, pendant un événement, un compte à rebours indique quand ils devraient quitter la boutique.",
     "cartPaintDiscount": "Afficher la remise sur les peintures dans le panier de RSI",
     "cartPaintDiscountHint": "Une note dans le panier de RSI tant que ses peintures n’ont pas la meilleure remise de volume : les paliers, les peintures de remplissage pour un meilleur palier, l’économie, et un bouton qui les ajoute – rien n’est payé.",
     "upgradeDialogBaseCounts": "Afficher les CCU et vaisseaux possédés sur les vaisseaux de base de la fenêtre d’upgrade de RSI",
@@ -1653,7 +1653,11 @@
     "counts": "Possédés $1 · CCU $2 + $3",
     "countsNoBuyback": "Possédés $1 · CCU $2",
     "countsHint": "Pledges avec ce vaisseau dans votre hangar : $1. CCU vers lui : $2 dans votre hangar, $3 dans votre buy back (seulement ceux que RSI peut revendre). Chaque vaisseau ou CCU vers lui donne le vaisseau à un CCU depuis lui. Par le Hangar Manager.",
-    "countsNoBuybackHint": "Pledges avec ce vaisseau dans votre hangar : $1. CCU vers lui dans votre hangar : $2. Chaque vaisseau ou CCU vers lui donne le vaisseau à un CCU depuis lui. Le buy back n’est pas encore lu. Par le Hangar Manager."
+    "countsNoBuybackHint": "Pledges avec ce vaisseau dans votre hangar : $1. CCU vers lui dans votre hangar : $2. Chaque vaisseau ou CCU vers lui donne le vaisseau à un CCU depuis lui. Le buy back n’est pas encore lu. Par le Hangar Manager.",
+    "countdown": "Fin prévue dans $1",
+    "countdownEvent": "Devrait quitter le Pledge Store le $1, à la fin de $2 : il n’est pas toujours disponible.",
+    "countdownWarbond": "Devrait quitter le Pledge Store le $1, à la fin prévue de son offre warbond.",
+    "countdownExpected": "C’est une estimation, non confirmée par CIG. Depuis le site du projet Hangar Manager."
   },
   "allShips": {
     "button": "Tous les vaisseaux",

@@ -460,7 +460,7 @@
     "rsiPages": "RSI Website",
     "rsiPagesIntro": "Ergänzungen auf RSIs eigenen Seiten.",
     "upgradeDialogAlwaysAvailable": "Immer kaufbare Schiffe in RSIs Ship-Upgrade-Dialog zeigen",
-    "upgradeDialogAlwaysAvailableHint": "Kennzeichnet die Basis- und Zielschiffe, die im Pledge Store immer kaufbar sind, sodass du später jederzeit auf sie kommst, um ein CCU anzuwenden. Aus den Schiffsdaten der Projekt-Website (Star Citizen Wiki).",
+    "upgradeDialogAlwaysAvailableHint": "Kennzeichnet die Basis- und Zielschiffe, die im Pledge Store immer kaufbar sind, sodass du später jederzeit auf sie kommst, um ein CCU anzuwenden. Aus den Schiffsdaten der Projekt-Website (Star Citizen Wiki). Auf Zielschiffen, die es nicht sind, zählt es während eines Events herunter, bis sie voraussichtlich aus dem Store verschwinden.",
     "cartPaintDiscount": "Paint-Rabatt im Warenkorb von RSI zeigen",
     "cartPaintDiscountHint": "Ein Hinweis im Warenkorb von RSI, solange seine Paints nicht den besten Mengenrabatt bekommen: die Stufen, die Füll-Paints für eine bessere Stufe, was das spart, und ein Knopf, der sie hinzufügt – bezahlt wird nichts.",
     "upgradeDialogBaseCounts": "CCUs und eigene Schiffe an den Basisschiffen in RSIs Ship-Upgrade-Dialog zeigen",
@@ -1653,7 +1653,11 @@
     "counts": "$1 im Hangar · CCUs $2 + $3",
     "countsNoBuyback": "$1 im Hangar · CCUs $2",
     "countsHint": "Pledges mit diesem Schiff in deinem Hangar: $1. CCUs dorthin: $2 in deinem Hangar, $3 in deinem Buy Back (nur die, die RSI wieder verkaufen kann). Jedes Schiff oder CCU dorthin gibt einem CCU davon das Schiff. Vom Hangar Manager.",
-    "countsNoBuybackHint": "Pledges mit diesem Schiff in deinem Hangar: $1. CCUs dorthin in deinem Hangar: $2. Jedes Schiff oder CCU dorthin gibt einem CCU davon das Schiff. Das Buy Back ist noch nicht gelesen. Vom Hangar Manager."
+    "countsNoBuybackHint": "Pledges mit diesem Schiff in deinem Hangar: $1. CCUs dorthin in deinem Hangar: $2. Jedes Schiff oder CCU dorthin gibt einem CCU davon das Schiff. Das Buy Back ist noch nicht gelesen. Vom Hangar Manager.",
+    "countdown": "Voraussichtliches Ende: $1",
+    "countdownEvent": "Verschwindet voraussichtlich am $1 aus dem Pledge Store, wenn $2 endet: Es ist nicht immer kaufbar.",
+    "countdownWarbond": "Verschwindet voraussichtlich am $1 aus dem Pledge Store, wenn sein Warbond-Angebot voraussichtlich endet.",
+    "countdownExpected": "Das ist eine Erwartung, von CIG nicht bestätigt. Von der Projekt-Website des Hangar Managers."
   },
   "allShips": {
     "button": "Alle Schiffe",

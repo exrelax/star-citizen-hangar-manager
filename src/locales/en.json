@@ -460,7 +460,7 @@
     "rsiPages": "RSI website",
     "rsiPagesIntro": "Additions to RSI's own pages.",
     "upgradeDialogAlwaysAvailable": "Show always available ships in RSI's ship upgrade dialog",
-    "upgradeDialogAlwaysAvailableHint": "Labels the ships, base and target ships, that are always available in the Pledge Store, so you can get onto them later to apply a CCU. From the ship facts of the project website (Star Citizen Wiki).",
+    "upgradeDialogAlwaysAvailableHint": "Labels the ships, base and target ships, that are always available in the Pledge Store, so you can get onto them later to apply a CCU. From the ship facts of the project website (Star Citizen Wiki). On target ships that aren't, while an event runs, it counts down to when they are expected to leave the store.",
     "cartPaintDiscount": "Show the paint discount in RSI’s cart",
     "cartPaintDiscountHint": "A note in RSI’s cart while its paints don’t get the best volume discount: the tiers, the filler paints that reach a better one, what that saves, and a button that adds them – nothing is checked out.",
     "upgradeDialogBaseCounts": "Show CCUs and owned ships on the base ships of RSI's ship upgrade dialog",
@@ -1653,7 +1653,11 @@
     "counts": "$1 owned · CCUs $2 + $3",
     "countsNoBuyback": "$1 owned · CCUs $2",
     "countsHint": "Pledges with this ship in your hangar: $1. CCUs to it: $2 in your hangar, $3 in your buy back (only those RSI can sell again). Each ship or CCU to it gives the ship to one CCU from it. From the Hangar Manager.",
-    "countsNoBuybackHint": "Pledges with this ship in your hangar: $1. CCUs to it in your hangar: $2. Each ship or CCU to it gives the ship to one CCU from it. The buy back isn’t read yet. From the Hangar Manager."
+    "countsNoBuybackHint": "Pledges with this ship in your hangar: $1. CCUs to it in your hangar: $2. Each ship or CCU to it gives the ship to one CCU from it. The buy back isn’t read yet. From the Hangar Manager.",
+    "countdown": "Expected gone in $1",
+    "countdownEvent": "Expected to leave the Pledge Store on $1, when $2 ends: it isn't always available.",
+    "countdownWarbond": "Expected to leave the Pledge Store on $1, when its warbond offer is expected to end.",
+    "countdownExpected": "An expectation, not confirmed by CIG. From the Hangar Manager's project website."
   },
   "allShips": {
     "button": "All ships",

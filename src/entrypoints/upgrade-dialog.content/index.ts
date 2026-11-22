@@ -11,17 +11,25 @@ import { current, shipsItem } from '@/ships/ships-storage';
 import { bundledShipFacts, shipFactsItem, storedShipFacts } from '@/ships/sync-ship-facts';
 import { createBaseShipCounts, type BaseShipCounts } from '@/ships/upgrade-dialog-counts';
 import {
-  createAlwaysAvailableCheck,
+  createAvailabilityOf,
   watchUpgradeDialog,
   type UpgradeTarget,
 } from '@/ships/upgrade-dialog-labels';
+import { createTargetEnd, targetEndText } from '@/ships/upgrade-dialog-countdown';
+import { EVENTS_VERSION, eventsItem, type EventsSnapshot } from '@/events/events-storage';
+import {
+  siteWarbondHistoryItem,
+  storedSiteWarbondHistory,
+  type SiteWarbondHistorySnapshot,
+} from '@/store/warbond-history-storage';
 import { watch } from 'vue';
 import './style.css';
 
 /*
  * Additions to RSI's ship upgrade dialog, on every page of RSI's website the dialog opens on: the
- * label "Always available" (#401) and the counts on the base ships (#506). Reads only the
- * settings, the ship facts and – once the dialog opens – the stored hangar, buy back and ships;
+ * label "Always available" (#401), the countdown on target ships that aren't (#570) and the counts
+ * on the base ships (#506). Reads only the settings, the ship facts, the events, the website's
+ * warbond offers and – once the dialog opens – the stored hangar, buy back and ships;
  * see `upgrade-dialog-labels.ts`.
  */
 export default defineContentScript({
@@ -33,9 +41,20 @@ export default defineContentScript({
     let settings = withDefaults(await settingsItem.getValue());
     const factsOf = (snapshot: Parameters<typeof storedShipFacts>[0]) => {
       const facts = storedShipFacts(snapshot) ?? bundledShipFacts();
-      return createAlwaysAvailableCheck(facts && createShipFactsLookup(facts));
+      return createAvailabilityOf(facts && createShipFactsLookup(facts));
     };
-    let isAlwaysAvailable = factsOf(await shipFactsItem.getValue());
+    let availability = factsOf(await shipFactsItem.getValue());
+
+    // The countdown of target ships (#570): the running event and the warbond offers' expected ends.
+    let events: EventsSnapshot | null = await eventsItem.getValue();
+    let offers: SiteWarbondHistorySnapshot | null = await siteWarbondHistoryItem.getValue();
+    const endOf = () =>
+      createTargetEnd({
+        events: events?.version === EVENTS_VERSION ? events.events : [],
+        offers: storedSiteWarbondHistory(offers),
+        availability: (target) => availability(target),
+      });
+    let targetEnd = endOf();
 
     // The counts (#506): read when the dialog opens, read again once hangar, buy back or ships change.
     let countsOf: ((target: UpgradeTarget) => BaseShipCounts | undefined) | undefined;
@@ -80,7 +99,7 @@ export default defineContentScript({
 
     const dialog = watchUpgradeDialog(document, {
       enabled: () => settings.upgradeDialogAlwaysAvailable,
-      isAlwaysAvailable: (target) => isAlwaysAvailable(target),
+      isAlwaysAvailable: (target) => availability(target) === true,
       texts: () => ({
         label: i18n.t('upgradeDialog.alwaysAvailable'),
         hint: i18n.t('upgradeDialog.alwaysAvailableHint'),
@@ -89,6 +108,12 @@ export default defineContentScript({
         if (!settings.upgradeDialogBaseCounts) return undefined;
         const counts = countsOf?.(target);
         return counts && countsText(counts);
+      },
+      countdownOf: (target) => {
+        if (!settings.upgradeDialogAlwaysAvailable) return undefined;
+        const now = Date.now();
+        const end = targetEnd(target, now);
+        return end && targetEndText(end, now, locale.value);
       },
       onOpen: () => void loadCounts(),
       onMismatch: (reason) =>
@@ -106,7 +131,22 @@ export default defineContentScript({
     );
     ctx.onInvalidated(
       shipFactsItem.watch((snapshot) => {
-        isAlwaysAvailable = factsOf(snapshot);
+        availability = factsOf(snapshot);
+        targetEnd = endOf();
+        dialog.update();
+      }),
+    );
+    ctx.onInvalidated(
+      eventsItem.watch((snapshot) => {
+        events = snapshot;
+        targetEnd = endOf();
+        dialog.update();
+      }),
+    );
+    ctx.onInvalidated(
+      siteWarbondHistoryItem.watch((snapshot) => {
+        offers = snapshot;
+        targetEnd = endOf();
         dialog.update();
       }),
     );

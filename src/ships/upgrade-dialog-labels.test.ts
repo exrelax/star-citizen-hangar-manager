@@ -7,6 +7,7 @@ import {
   targetOf,
   watchUpgradeDialog,
   type UpgradeDialogOptions,
+  type UpgradeTarget,
 } from './upgrade-dialog-labels';
 
 /* The label "Always available" in RSI's ship upgrade dialog (#401). */
@@ -150,5 +151,30 @@ describe('watchUpgradeDialog', () => {
     expect(labelled()).toEqual(['Mustang Alpha']);
     watcher.stop();
     expect(labelled()).toEqual([]);
+  });
+});
+
+describe('the countdown on target ships (#570)', () => {
+  it('goes where the label would, only on the target ships, and away with it', () => {
+    dialog(item('Cutlass Steel', 228) + item('Mustang Alpha', 65), item('Cutlass Steel', 228));
+    let countdownOf: UpgradeDialogOptions['countdownOf'] = (target) =>
+      target.id === 228
+        ? { text: 'Expected gone in 5 days', hint: 'Until the IAE ends' }
+        : undefined;
+    const opts = () => ({
+      ...options(),
+      countdownOf: (target: UpgradeTarget) => countdownOf?.(target),
+    });
+    applyLabels(document, opts());
+    const lines = () =>
+      [...document.querySelectorAll('.shm-upgrade-countdown')].map((line) => [
+        line.closest('.ShipSelector')!.classList.contains('to'),
+        line.textContent,
+        line.getAttribute('title'),
+      ]);
+    expect(lines()).toEqual([[true, 'Expected gone in 5 days', 'Until the IAE ends']]);
+    countdownOf = () => undefined;
+    applyLabels(document, opts());
+    expect(lines()).toEqual([]);
   });
 });
