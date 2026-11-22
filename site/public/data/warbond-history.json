@@ -182,7 +182,10 @@
       "lastSeen": "2026-11-27T20:00:00Z",
       "expectedEnd": "2026-11-27T20:00:00Z",
       "events": [
-        { "id": "rsi-constellation-centaurus-mkv-flight-ready-4.10.2", "name": "RSI Constellation Centaurus MK V Release - Patch 4.10.2" }
+        {
+          "id": "rsi-constellation-centaurus-mkv-flight-ready-4.10.2",
+          "name": "RSI Constellation Centaurus MK V Release - Patch 4.10.2"
+        }
       ]
     }
   ]
