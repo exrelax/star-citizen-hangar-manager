@@ -182,3 +182,42 @@ describe('ccuCoverage (#108)', () => {
     expect([...result.keys()]).toEqual([10, 11]);
   });
 });
+
+describe('ccuCoverage of the buy back (#574)', () => {
+  const input = {
+    hangar: [
+      pledge(1, 'Standalone Ships - Avenger Titan', ['Avenger Titan']),
+      ccu(2, 'Aurora MR', 'Avenger Titan'),
+      ccu(3, 'Mustang Alpha', 'Cutlass Black'),
+    ],
+    buyback: [
+      buybackCcu(20, 'Upgrade - Avenger Titan to Cutlass Black Standard Edition', {
+        fromShipId: 3,
+        toShipId: 4,
+      }),
+      buybackCcu(21, 'Upgrade - Cutlass Black to Avenger Titan Standard Edition'),
+      buybackCcu(22, 'Upgrade - Avenger Titan to Cutlass Black Standard Edition', {
+        fromShipId: 3,
+        toShipId: 4,
+      }),
+    ],
+  };
+
+  it("covers the buy back's CCUs by the same pledges, never by themselves", () => {
+    const result = ccuCoverage({ ships, ...input }, 'buyback');
+    expect([...result.keys()]).toEqual([20, 21, 22]);
+    const titan = result.get(20)!;
+    expect(titan.baseShip).toEqual({ id: 3, name: 'Avenger Titan' });
+    expect(titan.hangar.ships.map((match) => match.id)).toEqual([1]);
+    expect(titan.hangar.ccus.map((match) => match.id)).toEqual([2]);
+    // The buy back's CCU to the Titan gives it, too.
+    expect(titan.buyback.ccus.map((match) => match.id)).toEqual([21]);
+    // The Cutlass Black: the hangar's CCU to it and the buy back's two, but none of them itself.
+    expect(result.get(21)!.hangar.ccus.map((match) => match.id)).toEqual([3]);
+    expect(result.get(21)!.buyback.ccus.map((match) => match.id)).toEqual([20, 22]);
+  });
+
+  it("leaves the hangar's coverage as it is: only its own CCUs", () => {
+    expect([...ccuCoverage({ ships, ...input }).keys()]).toEqual([2, 3]);
+  });
+});

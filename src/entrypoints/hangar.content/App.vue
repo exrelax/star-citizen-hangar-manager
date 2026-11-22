@@ -31,7 +31,12 @@ import TabBar from '@/shared/components/TabBar.vue';
 import { i18n } from '@/i18n';
 import SettingsPanel from '@/settings/SettingsPanel.vue';
 import { REMOVAL_CCUS, useRemovalCcus } from '@/ship-removals/use-removal-ccus';
-import { CCU_COVERAGE, COVERAGE_SOURCES, useCcuCoverage } from '@/ccu-consultant/coverage';
+import {
+  BUYBACK_CCU_COVERAGE,
+  CCU_COVERAGE,
+  COVERAGE_SOURCES,
+  useCcuCoverage,
+} from '@/ccu-consultant/coverage';
 import {
   ALWAYS_AVAILABLE,
   alwaysAvailableList,
@@ -176,14 +181,14 @@ const coverageShips = computed(() => {
     ? ships
     : ships.map((ship) => (ship.id === without ? { ...ship, link: undefined } : ship));
 });
-provide(
-  CCU_COVERAGE,
-  useCcuCoverage(() => ({
-    ships: coverageShips.value,
-    hangar: pledges.value,
-    buyback: buybackPledges.value,
-  })),
-);
+const coverageInput = () => ({
+  ships: coverageShips.value,
+  hangar: pledges.value,
+  buyback: buybackPledges.value,
+});
+provide(CCU_COVERAGE, useCcuCoverage(coverageInput));
+// The buy back's CCUs, for the base ship of its CCU groups (#574).
+provide(BUYBACK_CCU_COVERAGE, useCcuCoverage(coverageInput, 'buyback'));
 // The details of each entry under "Base ship" (#426): its pledge and its ships.
 provide(
   COVERAGE_SOURCES,

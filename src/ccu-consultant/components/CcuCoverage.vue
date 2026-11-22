@@ -28,6 +28,8 @@ const props = defineProps<{
   coverage: CcuCoverage;
   /** A group of CCUs (#574): how many of them are covered. */
   ofGroup?: { covered: number; total: number };
+  /** The list it is shown in, where Back returns to; My Hangar if not set. */
+  list?: 'hangar' | 'buyback';
 }>();
 
 const { settings } = useSettings();
@@ -100,10 +102,12 @@ function openMatch(event: MouseEvent, match: CoverageMatch) {
   if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
     return;
   event.preventDefault();
+  const back = props.list ?? 'hangar';
   openPledgeInList(match.source, termOf(match), {
-    tab: 'hangar',
+    tab: back,
     search: searchFromUrl(location.search),
-    filters: [...hangarFilterStates.value],
+    // The buy back's filters aren't kept for Back; My Hangar's are.
+    filters: back === 'hangar' ? [...hangarFilterStates.value] : [],
     expand: props.coverage.id,
   });
 }

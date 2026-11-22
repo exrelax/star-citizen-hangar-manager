@@ -65,8 +65,14 @@ export interface CoverageInput {
 /** Every match of a ship, by the ship's key. */
 type Matches = Map<string, CoverageMatch[]>;
 
-/** The coverage of each CCU of the hangar, by its pledge id. */
-export function ccuCoverage(input: CoverageInput): Map<number, CcuCoverage> {
+/**
+ * The coverage of each CCU of the hangar, by its pledge id; with `of: 'buyback'` of each CCU of the
+ * buy back instead (#574, for its groups), by the same matches.
+ */
+export function ccuCoverage(
+  input: CoverageInput,
+  of: CoverageSource = 'hangar',
+): Map<number, CcuCoverage> {
   const lookup = createShipLookup(input.ships);
   /** A ship's key: the upgrade tool's id where known, else the words of its name. */
   const keyOf = (name: string | undefined, id?: number): string | undefined => {
@@ -99,17 +105,27 @@ export function ccuCoverage(input: CoverageInput): Map<number, CcuCoverage> {
   });
 
   const bases: { id: number; key?: string; name?: string; shipId?: number }[] = [];
+  const base = (id: number, from: string | undefined, fromShipId?: number) => {
+    const shipId = fromShipId ?? (from ? lookup.shipOf(from)?.id : undefined);
+    bases.push({
+      id,
+      key: keyOf(from, fromShipId),
+      ...(from && { name: from }),
+      ...(shipId !== undefined && { shipId }),
+    });
+  };
   for (const pledge of input.hangar) {
-    if (pledge.isCcu) {
+    if (pledge.isCcu && of === 'hangar') {
       const names = ccuShips(pledge.title);
       const from = pledge.upgrade?.matchItems[0]?.name ?? names?.from;
       const to = pledge.upgrade?.targetItems[0]?.name ?? names?.to;
-      bases.push({
-        id: pledge.id,
-        key: keyOf(from),
-        ...(from && { name: from }),
-        ...(from && lookup.shipOf(from) && { shipId: lookup.shipOf(from)!.id }),
-      });
+      base(pledge.id, from);
+      add(keyOf(to), matchOf('hangar', 'ccu', pledge));
+      continue;
+    }
+    if (pledge.isCcu) {
+      const names = ccuShips(pledge.title);
+      const to = pledge.upgrade?.targetItems[0]?.name ?? names?.to;
       add(keyOf(to), matchOf('hangar', 'ccu', pledge));
       continue;
     }
@@ -123,6 +139,8 @@ export function ccuCoverage(input: CoverageInput): Map<number, CcuCoverage> {
   }
   for (const pledge of input.buyback) {
     if (pledge.isCcu) {
+      if (of === 'buyback')
+        base(pledge.id, ccuShips(pledge.title)?.from, pledge.upgrade?.fromShipId);
       if (pledge.unavailable) continue;
       const to = ccuShips(pledge.title)?.to;
       add(keyOf(to, pledge.upgrade?.toShipId), matchOf('buyback', 'ccu', pledge));
@@ -138,7 +156,7 @@ export function ccuCoverage(input: CoverageInput): Map<number, CcuCoverage> {
   for (const base of bases) {
     const found = (base.key ? (matches.get(base.key) ?? []) : []).filter(
       // A CCU never covers itself.
-      (match) => !(match.source === 'hangar' && match.id === base.id),
+      (match) => !(match.source === of && match.id === base.id),
     );
     const pick = (source: CoverageSource, kind: CoverageKind) =>
       found.filter((match) => match.source === source && match.kind === kind);
@@ -156,8 +174,10 @@ export function ccuCoverage(input: CoverageInput): Map<number, CcuCoverage> {
 }
 
 /** The coverage of every CCU, worked out again whenever the hangar, buy back or ships change. */
-export const useCcuCoverage = (input: () => CoverageInput): ComputedRef<Map<number, CcuCoverage>> =>
-  computed(() => ccuCoverage(input()));
+export const useCcuCoverage = (
+  input: () => CoverageInput,
+  of: CoverageSource = 'hangar',
+): ComputedRef<Map<number, CcuCoverage>> => computed(() => ccuCoverage(input(), of));
 
 export const CCU_COVERAGE: InjectionKey<Readonly<Ref<Map<number, CcuCoverage>>>> =
   Symbol('shm-ccu-coverage');
@@ -165,6 +185,15 @@ export const CCU_COVERAGE: InjectionKey<Readonly<Ref<Map<number, CcuCoverage>>>>
 /** The coverage provided by the manager view (see `App.vue`); none outside of it. */
 export function useProvidedCcuCoverage(): Readonly<Ref<Map<number, CcuCoverage>>> {
   return inject(CCU_COVERAGE, shallowRef(new Map()));
+}
+
+/** The coverage of the buy back's CCUs (#574), for its groups; apart from the hangar's. */
+export const BUYBACK_CCU_COVERAGE: InjectionKey<Readonly<Ref<Map<number, CcuCoverage>>>> = Symbol(
+  'shm-buyback-ccu-coverage',
+);
+
+export function useProvidedBuybackCcuCoverage(): Readonly<Ref<Map<number, CcuCoverage>>> {
+  return inject(BUYBACK_CCU_COVERAGE, shallowRef(new Map()));
 }
 
 /** The shown pledges and the upgrade tool's ships, for the details of an entry (#426). */
