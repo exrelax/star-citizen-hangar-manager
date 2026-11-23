@@ -39,6 +39,8 @@ const selectedIndex = computed(() =>
   ),
 );
 const selectedLabel = computed(() => props.options[selectedIndex.value]?.label ?? '');
+/** Whether an option is chosen: a menu of actions (e.g. an export, #232) has none. */
+const chosen = computed(() => props.options.some((option) => option.value === props.modelValue));
 /** The heading above an option: the first of its section. */
 const sectionAt = (index: number) => {
   const section = props.options[index]?.section;
@@ -130,7 +132,7 @@ onUnmounted(() => removeEventListener('pointerdown', onOutside, true));
       aria-haspopup="listbox"
       :aria-expanded="open"
       :aria-controls="id"
-      :aria-label="`${label}: ${selectedLabel}`"
+      :aria-label="chosen ? `${label}: ${selectedLabel}` : label"
       @click="open ? close() : show()"
       @keydown="onButtonKey"
     >
