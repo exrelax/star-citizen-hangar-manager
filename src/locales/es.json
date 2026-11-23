@@ -2361,5 +2361,93 @@
       "other": "$1 naves en este pack"
     },
     "tiles": "Naves de este pack"
+  },
+  "transfer": {
+    "title": "Exportar e importar",
+    "intro": "Guarda una copia de tu hangar, tus ajustes y lo que has creado, restáuralos o lleva tu hangar a otras herramientas. Los archivos se crean solo en este navegador y no se envía nada. Contienen los datos de tu cuenta, así que guárdalos bien.",
+    "hangar": "Hangar",
+    "exportHangar": "Exportar el hangar",
+    "holds": "Contiene: $1.",
+    "format": "Formato",
+    "formats": {
+      "json": "JSON (Hangar Manager)",
+      "csv": "CSV para hojas de cálculo",
+      "hangarXplorJson": "JSON de HangarXPLOR (FleetYards)",
+      "hangarXplorCsv": "CSV de HangarXPLOR"
+    },
+    "export": "Exportar",
+    "exportShown": "Exportar los pledges mostrados",
+    "exported": "El archivo está en tus descargas.",
+    "unmatched": "El archivo está en tus descargas. Puede que FleetYards no encuentre estas naves: $1.",
+    "hideIds": "Omitir los números de pledge y de pedido",
+    "hideIdsHint": "Los pledges se numeran en su lugar; se omiten los pedidos y las marcas de regalo. Con un archivo así no se puede restaurar el hangar.",
+    "hideAmounts": "Omitir los importes",
+    "hideAmountsHint": "Sin valores, precios, pedidos ni Store Credits. Con un archivo así no se puede restaurar el hangar.",
+    "restoreHangar": "Restaurar el hangar",
+    "restoreHangarHint": "Desde una exportación JSON de esta cuenta, p. ej. en un navegador nuevo, para ahorrarte la primera carga completa. Los datos más nuevos de aquí se quedan.",
+    "chooseFile": "Elegir archivo…",
+    "restored": "Restaurado: $1. Las actualizaciones inteligentes lo ponen al día.",
+    "errors": {
+      "json": "Este archivo no es JSON.",
+      "format": "Este no es un archivo del Hangar Manager.",
+      "schema": "Este archivo es de una versión más nueva del Hangar Manager. Actualízalo primero.",
+      "kind": "Este es un archivo de la otra exportación."
+    },
+    "refusals": {
+      "partial": "Este archivo contiene solo los pledges mostrados en My Hangar, no todo el hangar.",
+      "redacted": "A este archivo le faltan números o importes, así que no puede restaurar el hangar.",
+      "otherAccount": "Este archivo es de otra cuenta. No se ha cambiado nada.",
+      "empty": "Nada de este archivo es más nuevo que lo que hay aquí."
+    },
+    "settings": "Ajustes y tus datos",
+    "exportSettings": "Exportar ajustes y tus datos",
+    "syncedHint": "La mayor parte ya se sincroniza con tu perfil del navegador: el archivo es para una copia, otro navegador o un perfil sin sincronización.",
+    "parts": {
+      "settings": "Ajustes",
+      "yourData": "Tus datos"
+    },
+    "importSettings": "Importar ajustes y tus datos",
+    "importSettingsHint": "Los ajustes se sustituyen. Tus datos se combinan con los de aquí o se sustituyen.",
+    "preview": "Lo que cambia la importación",
+    "syncedNote": "Esto va al almacenamiento sincronizado con tu perfil del navegador y llega a todos tus dispositivos.",
+    "merge": "Combinar",
+    "replace": "Sustituir",
+    "replaced": "Se sustituye",
+    "keepHere": "Conservar este",
+    "keepFile": "Usar el del archivo",
+    "planToKeep": "Plan de pinturas que se queda",
+    "planToKeepHint": "Solo puede haber un plan en marcha. Ambos tienen uno, así que elige cuál se queda.",
+    "invalid": "No se puede leer y se queda como está: $1.",
+    "ignored": "Desconocido para esta versión y omitido: $1.",
+    "cancel": "Cancelar",
+    "import": "Importar",
+    "imported": "Importado. Llega a tus otros dispositivos con tu perfil del navegador.",
+    "failed": "La importación ha fallado. Todo está como antes.",
+    "quota": {
+      "perItem": "«$1» no cabe: el almacenamiento sincronizado permite $2 por elemento. No se ha cambiado nada.",
+      "total": "Esto no cabe en el almacenamiento sincronizado. Borra las listas o marcas que ya no necesites e inténtalo de nuevo. No se ha cambiado nada.",
+      "items": "Serían más elementos de los que admite el almacenamiento sincronizado. Borra las listas que ya no necesites e inténtalo de nuevo. No se ha cambiado nada."
+    },
+    "counts": {
+      "added": {
+        "one": "$1 añadido",
+        "other": "$1 añadidos"
+      },
+      "changed": {
+        "one": "$1 cambiado",
+        "other": "$1 cambiados"
+      },
+      "kept": {
+        "one": "$1 se queda",
+        "other": "$1 se quedan"
+      },
+      "leftOut": {
+        "one": "$1 omitido",
+        "other": "$1 omitidos"
+      },
+      "nothing": "No cambia nada"
+    },
+    "notExported": "No se exporta: lo que se vuelve a leer de RSI o de la web del proyecto ($1).",
+    "demoDisabled": "No en el modo demo: los archivos contendrían los datos de tu cuenta."
   }
 }

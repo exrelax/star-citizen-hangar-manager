@@ -2361,5 +2361,93 @@
       "other": "$1 Schiffe in diesem Pack"
     },
     "tiles": "Schiffe dieses Packs"
+  },
+  "transfer": {
+    "title": "Export & Import",
+    "intro": "Sichere deinen Hangar, deine Einstellungen und was du angelegt hast, stelle sie wieder her oder nimm deinen Hangar in andere Tools mit. Die Dateien entstehen nur in diesem Browser, nichts wird verschickt. Sie enthalten die Daten deines Kontos, bewahre sie also sicher auf.",
+    "hangar": "Hangar",
+    "exportHangar": "Hangar exportieren",
+    "holds": "Enthält: $1.",
+    "format": "Format",
+    "formats": {
+      "json": "JSON (Hangar Manager)",
+      "csv": "CSV für Tabellen",
+      "hangarXplorJson": "HangarXPLOR-JSON (FleetYards)",
+      "hangarXplorCsv": "HangarXPLOR-CSV"
+    },
+    "export": "Exportieren",
+    "exportShown": "Angezeigte Pledges exportieren",
+    "exported": "Die Datei liegt in deinen Downloads.",
+    "unmatched": "Die Datei liegt in deinen Downloads. Diese Schiffe findet FleetYards vielleicht nicht: $1.",
+    "hideIds": "Pledge- und Bestellnummern weglassen",
+    "hideIdsHint": "Die Pledges werden stattdessen durchnummeriert, Bestellungen und Gift-Flags fehlen. Mit so einer Datei lässt sich der Hangar nicht wiederherstellen.",
+    "hideAmounts": "Beträge weglassen",
+    "hideAmountsHint": "Keine Werte, Preise, Bestellungen und Store Credits. Mit so einer Datei lässt sich der Hangar nicht wiederherstellen.",
+    "restoreHangar": "Hangar wiederherstellen",
+    "restoreHangarHint": "Aus einem JSON-Export dieses Kontos, z. B. in einem neuen Browser, damit das erste vollständige Laden entfällt. Neuere Daten hier bleiben.",
+    "chooseFile": "Datei wählen …",
+    "restored": "Wiederhergestellt: $1. Die intelligenten Updates bringen alles auf den neuesten Stand.",
+    "errors": {
+      "json": "Diese Datei ist kein JSON.",
+      "format": "Das ist keine Datei des Hangar Managers.",
+      "schema": "Diese Datei stammt aus einer neueren Version des Hangar Managers. Aktualisiere ihn zuerst.",
+      "kind": "Das ist eine Datei des anderen Exports."
+    },
+    "refusals": {
+      "partial": "Diese Datei enthält nur die in My Hangar angezeigten Pledges, nicht den ganzen Hangar.",
+      "redacted": "In dieser Datei fehlen Nummern oder Beträge, deshalb lässt sich der Hangar damit nicht wiederherstellen.",
+      "otherAccount": "Diese Datei gehört zu einem anderen Konto. Es wurde nichts geändert.",
+      "empty": "Nichts in dieser Datei ist neuer als das, was hier gespeichert ist."
+    },
+    "settings": "Einstellungen und deine Daten",
+    "exportSettings": "Einstellungen und deine Daten exportieren",
+    "syncedHint": "Das meiste wird ohnehin mit deinem Browserprofil synchronisiert: Die Datei ist für ein Backup, einen anderen Browser oder ein Profil ohne Sync.",
+    "parts": {
+      "settings": "Einstellungen",
+      "yourData": "Deine Daten"
+    },
+    "importSettings": "Einstellungen und deine Daten importieren",
+    "importSettingsHint": "Die Einstellungen werden ersetzt. Deine Daten werden mit denen hier zusammengeführt oder ersetzt.",
+    "preview": "Was der Import ändert",
+    "syncedNote": "Das landet im mit deinem Browserprofil synchronisierten Speicher und erreicht alle deine Geräte.",
+    "merge": "Zusammenführen",
+    "replace": "Ersetzen",
+    "replaced": "Wird ersetzt",
+    "keepHere": "Diesen behalten",
+    "keepFile": "Den aus der Datei nehmen",
+    "planToKeep": "Paint-Plan, der bleibt",
+    "planToKeepHint": "Es kann nur ein Plan laufen. Beide Seiten haben einen, wähle also, welcher bleibt.",
+    "invalid": "Nicht lesbar, bleibt wie es ist: $1.",
+    "ignored": "Dieser Version unbekannt und weggelassen: $1.",
+    "cancel": "Abbrechen",
+    "import": "Importieren",
+    "imported": "Importiert. Über dein Browserprofil kommt es auch auf deinen anderen Geräten an.",
+    "failed": "Der Import ist fehlgeschlagen. Alles ist wie vorher.",
+    "quota": {
+      "perItem": "„$1“ passt nicht: Der synchronisierte Speicher erlaubt $2 pro Eintrag. Es wurde nichts geändert.",
+      "total": "Das passt nicht in den synchronisierten Speicher. Lösche Watchlists oder Markierungen, die du nicht mehr brauchst, und versuche es erneut. Es wurde nichts geändert.",
+      "items": "Das wären mehr Einträge, als der synchronisierte Speicher fasst. Lösche Watchlists, die du nicht mehr brauchst, und versuche es erneut. Es wurde nichts geändert."
+    },
+    "counts": {
+      "added": {
+        "one": "$1 hinzugefügt",
+        "other": "$1 hinzugefügt"
+      },
+      "changed": {
+        "one": "$1 geändert",
+        "other": "$1 geändert"
+      },
+      "kept": {
+        "one": "$1 bleibt",
+        "other": "$1 bleiben"
+      },
+      "leftOut": {
+        "one": "$1 weggelassen",
+        "other": "$1 weggelassen"
+      },
+      "nothing": "Nichts ändert sich"
+    },
+    "notExported": "Nicht exportiert: was von RSI oder der Projekt-Website neu gelesen wird ($1).",
+    "demoDisabled": "Nicht im Demo-Modus: Die Dateien würden die Daten deines Kontos enthalten."
   }
 }

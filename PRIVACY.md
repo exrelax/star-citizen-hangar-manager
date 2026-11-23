@@ -2,7 +2,7 @@
 
 **Star Citizen Hangar Manager** (browser extension for Chrome and Firefox)
 
-Last updated: 9 November 2026
+Last updated: 23 November 2026
 
 The extension is built so that your data stays in your browser. It has no server of its own, no
 user accounts, no analytics and no tracking. This policy explains which data the extension
@@ -88,6 +88,13 @@ sees or stores your RSI login.
   storage of this browser.
 - The **search term** is put into the page's address (`?search=…`) so searches can be bookmarked;
   it is part of your browser history like any other address.
+
+- **Export & Import**: the files of Settings → Export & Import are made in your browser and saved
+  by its own download; nothing is sent anywhere. A hangar export holds your account's data –
+  pledges, buy back, orders, store credit –, unless you leave out the ids or the amounts; the
+  export of settings and your data holds your settings, watchlists, marks to melt and paint
+  plans. Keep the files safe. An import reads a file you choose and writes it into the
+  extension's storage; settings and your data go into the sync storage like the originals.
 
 ## Which websites the extension talks to
 
