@@ -14,6 +14,13 @@ import {
 } from '@/ships/sync-upgrade-tool';
 import { useStoreData } from '../use-store-data';
 import { buildWarbondOffers } from '../warbond';
+import {
+  sortWarbondOffers,
+  WARBOND_SORT_MIN,
+  WARBOND_SORTS,
+  type WarbondSort,
+} from '../warbond-sort';
+import SelectMenu from '@/shared/components/SelectMenu.vue';
 import { useCcusToSecure } from '@/price-increases/use-ccus-to-secure';
 import { confirmationNote } from '@/price-increases/price-increase-label';
 import SecureRow from '@/price-increases/components/SecureRow.vue';
@@ -89,9 +96,22 @@ onUnmounted(stopTimer);
 const storeData = computed(() =>
   realInDemo.value ? data.value : (demoContext.value?.storeData ?? data.value),
 );
-const offers = computed(() =>
+const builtOffers = computed(() =>
   storeData.value ? buildWarbondOffers(storeData.value, props.pledges, props.buyback) : [],
 );
+
+/**
+ * The order of the offers (#628): chosen once there are more than two, the expected end first by
+ * default; with fewer the default order.
+ */
+const sortable = computed(() => builtOffers.value.length > WARBOND_SORT_MIN);
+const sortOptions = computed(() =>
+  WARBOND_SORTS.map((value) => ({ value, label: i18n.t(`store.warbondSorts.${value}`) })),
+);
+const offers = computed(() =>
+  sortWarbondOffers(builtOffers.value, sortable.value ? props.settings.warbondSort : 'endAsc'),
+);
+const setSort = (warbondSort: WarbondSort) => update({ warbondSort });
 
 /**
  * The ships CIG takes out of the Pledge Store (#288): public data; the demo has its own (#292),
@@ -204,6 +224,16 @@ const displayClasses = computed(() => ({
             </button>
           </span>
         </p>
+        <!-- Above the list on the right, below the count and when they were read (#628). -->
+        <div v-if="sortable" class="shm-store-sort">
+          <SelectMenu
+            :options="sortOptions"
+            :model-value="settings.warbondSort"
+            :label="i18n.t('sort.label')"
+            icon="arrow-down-short-wide"
+            @update:model-value="setSort"
+          />
+        </div>
         <!-- The container of the manager's lists: their gaps and compact view (row.css, modern.css). -->
         <div v-if="offers.length" class="shm-rows">
           <WarbondRow
@@ -288,6 +318,13 @@ const displayClasses = computed(() => ({
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+
+/* The sort of the warbond CCUs on the right, as in the manager's lists. */
+.shm-store-sort {
+  display: flex;
+  justify-content: flex-end;
+  margin: -4px 0 10px;
 }
 
 /* Icon only, in the accent color; it spins while the offers are read. */

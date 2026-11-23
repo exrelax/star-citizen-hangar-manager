@@ -1,5 +1,6 @@
 import { isTableSort } from '@/shared/table-sort';
 import { OWNED_CCU_COLUMNS, type OwnedCcuSort } from '@/store/owned-ccu-sort';
+import { DEFAULT_WARBOND_SORT, isWarbondSort, type WarbondSort } from '@/store/warbond-sort';
 import { DEFAULT_DEMO_SETTINGS, demoSettingsOf, type DemoSettings } from '@/demo/demo-settings';
 import { notificationKindsOf, type NotificationKind } from '@/notifications/kinds';
 import { BUYBACK_FILTER_CATEGORIES, type BuybackFilter } from '@/buyback/buyback-view';
@@ -181,6 +182,8 @@ export interface Settings {
   grouped: { hangar: boolean; buyback: boolean; consultant: boolean; watchlists: boolean };
   /** Order and period of the Pledge Store tab's Warbond CCU History (#297). */
   warbondHistory: HistoryChoice;
+  /** Order of the current warbond CCUs in the Pledge Store tab (#628). */
+  warbondSort: WarbondSort;
   /** Order of the warbond CCUs' tables "Your CCUs between" (#395); `null` for the default one. */
   ownedCcuSort: OwnedCcuSort | null;
   /** The Paint Discount Consultant (see `store/paint-consultant`); it only uses store credit. */
@@ -259,6 +262,7 @@ export const DEFAULT_SETTINGS: Settings = {
   sort: { hangar: 'newest', buyback: 'newest' },
   grouped: { hangar: false, buyback: false, consultant: true, watchlists: false },
   warbondHistory: { sort: 'newest', period: DEFAULT_HISTORY_PERIOD },
+  warbondSort: DEFAULT_WARBOND_SORT,
   ownedCcuSort: null,
   paintConsultant: {
     useStoreCredit: true,
@@ -390,6 +394,7 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
       ),
     },
     warbondHistory: warbondHistoryOf(stored?.warbondHistory),
+    warbondSort: pick('warbondSort', isWarbondSort),
     ownedCcuSort: isTableSort(stored?.ownedCcuSort, OWNED_CCU_COLUMNS)
       ? { column: stored.ownedCcuSort.column, direction: stored.ownedCcuSort.direction }
       : null,

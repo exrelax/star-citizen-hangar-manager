@@ -824,6 +824,13 @@
       "discountDesc": "Mayor descuento primero",
       "discountAsc": "Menor descuento primero"
     },
+    "warbondSorts": {
+      "endAsc": "Fin más próximo primero",
+      "endDesc": "Fin más lejano primero",
+      "valueAsc": "Menor valor de la nave primero",
+      "valueDesc": "Mayor valor de la nave primero",
+      "discountDesc": "Mayor descuento primero"
+    },
     "openWarbondShort": "Warbond",
     "openStandardShort": "Estándar"
   },

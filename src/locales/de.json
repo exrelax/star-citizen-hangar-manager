@@ -824,6 +824,13 @@
       "discountDesc": "Höchster Rabatt zuerst",
       "discountAsc": "Niedrigster Rabatt zuerst"
     },
+    "warbondSorts": {
+      "endAsc": "Früheste Ablaufzeit zuerst",
+      "endDesc": "Späteste Ablaufzeit zuerst",
+      "valueAsc": "Niedrigster Schiffswert zuerst",
+      "valueDesc": "Höchster Schiffswert zuerst",
+      "discountDesc": "Höchster Rabatt zuerst"
+    },
     "openWarbondShort": "Warbond",
     "openStandardShort": "Standard"
   },

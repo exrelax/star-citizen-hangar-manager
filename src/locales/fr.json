@@ -824,6 +824,13 @@
       "discountDesc": "Plus forte remise d'abord",
       "discountAsc": "Plus faible remise d'abord"
     },
+    "warbondSorts": {
+      "endAsc": "Fin la plus proche d'abord",
+      "endDesc": "Fin la plus lointaine d'abord",
+      "valueAsc": "Valeur du vaisseau la plus basse d'abord",
+      "valueDesc": "Valeur du vaisseau la plus élevée d'abord",
+      "discountDesc": "Plus forte remise d'abord"
+    },
     "openWarbondShort": "Warbond",
     "openStandardShort": "Standard"
   },
