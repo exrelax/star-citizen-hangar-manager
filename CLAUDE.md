@@ -278,8 +278,11 @@ It must always be able to show, in both themes:
   of My Hangar put on a demo watchlist and on a new one from the "Selected" box (#549), also when
   all are on it already;
   the "Put on a watchlist" buttons on RSI's pages (#632) in RSI's look: on a paint's page, on the
-  paint cards of the store's lists (icon only, opening the dialog without leaving the list) and in
-  the ship upgrade dialog, each off and on a demo watchlist.
+  cards of paints and standalone ships (with an insurance, warbond, an edition) in the store's
+  lists (icon only) and docked left of "Add To Cart" in the ship upgrade dialog, each off and on a
+  demo watchlist; the window growing out of the button and back (downwards, upwards in the
+  dialog without covering "Add To Cart", flipped at the window's edge), closed by ×, Escape and a
+  click elsewhere, without leaving the list.
 - Select all (#620): in My Hangar with and without filters and with a List Shortcut, some and all
   selected; on a demo watchlist with hangar, buy back and store items all selected, the hangar
   ones in "Selected", "Remove from this list" with its question, done and cancelled.

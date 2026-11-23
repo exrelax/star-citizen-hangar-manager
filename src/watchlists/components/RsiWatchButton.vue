@@ -5,18 +5,19 @@ import '@/hangar/components/row.css';
 import { i18n } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
-import { computed, ref } from 'vue';
+import { computed, ref, useTemplateRef } from 'vue';
 import { watchlistsByItem, type NewWatchItem } from '../use-watchlists';
 import { itemKey } from '../watchlists';
 import type { RsiWatchPlace } from '../rsi-pages';
-import StoreWatchDialog from './StoreWatchDialog.vue';
+import RsiWatchPopover from './RsiWatchPopover.vue';
 
 /*
  * The button on RSI's own pages that puts a Pledge Store item on watchlists (#471): a paint on its
  * page and on its card in the store's lists (#632), a CCU in RSI's ship upgrade dialog. The button
  * follows RSI's design where it sits (#632), outlined next to RSI's filled "Add to cart", so it is
  * clearly a button but less prominent; tinted while the item is on a watchlist. It opens the same
- * choice as in the Hangar Manager – the watchlists and a new one –, in the theme of the settings.
+ * choice as in the Hangar Manager – the watchlists and a new one –, in the theme of the settings,
+ * as a small window growing out of the button (#632).
  */
 
 const props = defineProps<{ item: NewWatchItem; title: string; place: RsiWatchPlace }>();
@@ -26,6 +27,11 @@ const on = computed(() => watchlistsByItem.value.has(itemKey(props.item)));
 const label = computed(() => i18n.t(on.value ? 'watchlists.rsiOn' : 'watchlists.rsiPut'));
 // A card has room for its icon only: the tooltip and the label name the item.
 const iconOnly = computed(() => props.place === 'card');
+const button = useTemplateRef<HTMLButtonElement>('button');
+const popover = useTemplateRef<InstanceType<typeof RsiWatchPopover>>('popover');
+// The upgrade dialog's bar sits at the bottom of the window: there it opens upwards.
+const side = computed(() => (props.place === 'dialog' ? 'above' : 'below'));
+const toggle = () => (open.value ? popover.value?.close() : (open.value = true));
 </script>
 
 <template>
@@ -33,18 +39,28 @@ const iconOnly = computed(() => props.place === 'card');
        its own. -->
   <span class="shm-rsi-watch">
     <button
-      v-tooltip="title"
+      ref="button"
+      v-tooltip="open ? '' : title"
       type="button"
       class="shm-rsi-watch-button"
-      :class="[`is-${place}`, { 'is-on': on }]"
+      :class="[`is-${place}`, { 'is-on': on, 'is-open': open }]"
       :aria-label="iconOnly ? `${title} – ${label}` : undefined"
       aria-haspopup="dialog"
-      @click.stop.prevent="open = true"
+      :aria-expanded="open"
+      @click.stop.prevent="toggle"
     >
       <SvgIcon :name="on ? 'clipboard-check' : 'clipboard-list'" />
       <span v-if="!iconOnly" class="shm-rsi-watch-label">{{ label }}</span>
     </button>
-    <StoreWatchDialog v-if="open" :title="title" :item="item" @close="open = false" />
+    <RsiWatchPopover
+      v-if="open && button"
+      ref="popover"
+      :title="title"
+      :item="item"
+      :anchor="button"
+      :side="side"
+      @close="open = false"
+    />
   </span>
 </template>
 
@@ -141,20 +157,45 @@ const iconOnly = computed(() => props.place === 'card');
 }
 
 /*
- * RSI's ship upgrade dialog: its slate bar with the orange "Add To Cart" in Quantico. White lines
- * there, as its other controls on the slate.
+ * RSI's ship upgrade dialog: docked to the top of its slate bar next to the orange "Add To Cart",
+ * as high as it and in its Quantico, on a darker slate with a rounded outer corner, so both read as
+ * one bar of actions with "Add To Cart" the prominent one.
  */
 :root .shm-rsi-watch .shm-rsi-watch-button.is-dialog {
-  --shm-rsi-line: rgb(255 255 255 / 75%);
   --shm-rsi-ink: #fff;
-  --shm-rsi-hover: rgb(255 255 255 / 12%);
-  --shm-rsi-on: rgb(255 255 255 / 20%);
+  --shm-rsi-hover: #48515a;
+  --shm-rsi-on: #4f5963;
 
+  height: 100%;
+  min-height: 48px;
+  padding: 0 28px;
   font-family: Quantico, sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   letter-spacing: 0;
-  border-radius: 0;
+  background: #3d454c;
+  border: 0;
+  border-radius: 0 0 0 12px;
+}
+
+:root .shm-rsi-watch .shm-rsi-watch-button.is-dialog svg {
+  width: 18px;
+  height: 18px;
+}
+
+@media (hover: hover) {
+  :root .shm-rsi-watch .shm-rsi-watch-button.is-dialog:hover {
+    background: var(--shm-rsi-hover);
+  }
+}
+
+:root .shm-rsi-watch .shm-rsi-watch-button.is-dialog.is-on {
+  background: var(--shm-rsi-on);
+}
+
+:root .shm-rsi-watch .shm-rsi-watch-button.is-dialog:focus-visible {
+  outline-color: #fff;
+  outline-offset: -4px;
 }
 
 @media (prefers-reduced-motion: reduce) {
