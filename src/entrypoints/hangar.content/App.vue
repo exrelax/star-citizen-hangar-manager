@@ -87,7 +87,7 @@ const TAB_ICONS: Record<ManagerTab, { icon: IconName; iconSet?: IconSet }> = {
   hangar: { icon: 'hangar', iconSet: 'custom' },
   buyback: { icon: 'recycle' },
   store: { icon: 'basket-shopping' },
-  consultants: { icon: 'lightbulb' },
+  consultants: { icon: 'wrench' },
   watchlists: { icon: 'clipboard-list' },
   settings: { icon: 'gear' },
 };
