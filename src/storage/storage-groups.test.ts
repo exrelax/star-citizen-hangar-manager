@@ -36,7 +36,7 @@ describe('the groups of the stored data', () => {
         'warbondHistorySite',
       ].sort(),
     );
-    expect(ids('browser')).toEqual(['warbondHistory']);
+    expect(ids('browser')).toEqual(['warbondHistory', 'giftFlags']);
     // The paint plans in the synced storage since #635.
     expect(ids('synced')).toEqual(['paintPlan', 'paintHistory', 'watchlists', 'meltMarks']);
   });

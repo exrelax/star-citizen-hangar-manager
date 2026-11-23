@@ -552,6 +552,11 @@
       "content": "Bisher gesehene Warbond-Angebote mit Preis, Daten und Events",
       "missing": "Sie lässt sich nicht neu einlesen: Der Tab Pledge Store zeigt keine früheren Angebote, bis neue gesehen werden."
     },
+    "giftFlags": {
+      "name": "Gift-Flags",
+      "content": "Ob jedes Pledge, das den Hangar verlassen hat, verschenkbar war, wie RSI es anzeigte",
+      "missing": "Sie lassen sich nicht neu einlesen: Der Buy Back erkennt verschenkbare Pledges dann nur an ihrer Bestellung."
+    },
     "warbondHistorySite": {
       "name": "Warbond-Historie der Website",
       "content": "Frühere Warbond-Angebote von der Projekt-Website mit Preis, Daten und Events",
@@ -621,6 +626,41 @@
       "name": "Einstellungen",
       "content": "Sprache, Theme, Anzeige- und Datenschutzoptionen, Filter, Sortierung",
       "missing": "Alle Einstellungen gehen auf ihre Standardwerte zurück."
+    },
+    "notifications": {
+      "name": "Benachrichtigungen",
+      "content": "Die Benachrichtigungen der Sidebar, auch die abgehakten",
+      "missing": "Abgehakte Benachrichtigungen kommen wieder."
+    },
+    "dismissedPaints": {
+      "name": "Geschlossene Paint-Hinweise",
+      "content": "Paints, deren Hinweis des Paint Discount Planners du geschlossen hast",
+      "missing": "Ihre Hinweise kommen wieder."
+    },
+    "riskNoteSeen": {
+      "name": "Hinweis zu den Nutzungsbedingungen",
+      "content": "Ob du den Hinweis zu den Nutzungsbedingungen mit „Verstanden“ geschlossen hast",
+      "missing": "Der Hinweis erscheint wieder."
+    },
+    "dismissedPriceIncreases": {
+      "name": "Geschlossene Hinweise zu Preiserhöhungen",
+      "content": "Preiserhöhungen, deren Benachrichtigung du geschlossen hast",
+      "missing": "Ihre Benachrichtigungen kommen wieder."
+    },
+    "dismissedPriceAdvisor": {
+      "name": "Geschlossene Hinweise des Price Increase Advisors",
+      "content": "Benachrichtigungen des Price Increase Advisors, die du geschlossen hast",
+      "missing": "Ihre Benachrichtigungen kommen wieder."
+    },
+    "dismissedShipRemovals": {
+      "name": "Geschlossene Hinweise zu Ship Removals",
+      "content": "Benachrichtigungen zu Ship Removals, die du geschlossen hast",
+      "missing": "Ihre Benachrichtigungen kommen wieder."
+    },
+    "browserHintDismissed": {
+      "name": "Hinweis zu Browser-Benachrichtigungen",
+      "content": "Ob du den Hinweis, Browser-Benachrichtigungen zu erlauben, geschlossen hast",
+      "missing": "Der Hinweis erscheint wieder."
     },
     "demoDisabled": "Nicht im Demo-Modus: Diese Zahlen sind die des Demos, deine Daten bleiben unverändert.",
     "synced": {

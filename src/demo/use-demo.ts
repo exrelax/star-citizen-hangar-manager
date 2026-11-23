@@ -484,6 +484,8 @@ export function useDemo(
           buyback: demoBuybackPledges.value.length,
           orders: [...demoPledges.value, ...demoBuybackPledges.value].filter((p) => p.order).length,
           storeCredit: 1,
+          // The gift flags of the demo buy back, never the real ones (#633).
+          giftFlags: demoBuybackPledges.value.length,
           paintPlan: running.value?.plan?.plan ? 1 : 0,
           paintHistory: running.value?.completed.length ?? 0,
           events: events.value.length,

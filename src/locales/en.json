@@ -552,6 +552,11 @@
       "content": "Warbond offers seen so far, with price, dates and events",
       "missing": "It can't be read again: the Pledge Store tab shows no earlier offers until new ones are seen."
     },
+    "giftFlags": {
+      "name": "Gift flags",
+      "content": "Whether each pledge that left the hangar was giftable, as RSI showed it",
+      "missing": "They can't be read again: the Buy Back tells giftable pledges by their order only."
+    },
     "warbondHistorySite": {
       "name": "Warbond history of the website",
       "content": "Earlier warbond offers from the project website, with price, dates and events",
@@ -621,6 +626,41 @@
       "name": "Settings",
       "content": "Language, theme, display and privacy options, filters, sorting",
       "missing": "All settings go back to their defaults."
+    },
+    "notifications": {
+      "name": "Notifications",
+      "content": "The sidebar notifications, with those you checked off",
+      "missing": "Notifications you checked off come back."
+    },
+    "dismissedPaints": {
+      "name": "Closed paint notes",
+      "content": "Paints whose Paint Discount Planner note you closed",
+      "missing": "Their notes come back."
+    },
+    "riskNoteSeen": {
+      "name": "Terms of Service note",
+      "content": "Whether you closed the Terms of Service note with “Got it”",
+      "missing": "The note shows again."
+    },
+    "dismissedPriceIncreases": {
+      "name": "Closed price increase notes",
+      "content": "Price increases whose notification you closed",
+      "missing": "Their notifications come back."
+    },
+    "dismissedPriceAdvisor": {
+      "name": "Closed Price Increase Advisor notes",
+      "content": "Price Increase Advisor notifications you closed",
+      "missing": "Their notifications come back."
+    },
+    "dismissedShipRemovals": {
+      "name": "Closed ship removal notes",
+      "content": "Ship removal notifications you closed",
+      "missing": "Their notifications come back."
+    },
+    "browserHintDismissed": {
+      "name": "Browser notification hint",
+      "content": "Whether you closed the hint to allow browser notifications",
+      "missing": "The hint shows again."
     },
     "demoDisabled": "Not in the demo mode: these numbers are the demo’s, your data stays as it is.",
     "synced": {
