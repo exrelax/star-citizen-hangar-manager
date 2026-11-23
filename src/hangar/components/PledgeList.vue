@@ -16,7 +16,8 @@ import {
 import type { PledgeView } from '../pledge-view';
 import { HANGAR_SORTS, sortEntries, type HangarSort } from '../sorting';
 import { useSettings } from '@/settings/use-settings';
-import { visiblePledgeIds } from '../selection';
+import { selectAllState, selection, toggleAll, visiblePledgeIds } from '../selection';
+import SelectAll from './SelectAll.vue';
 import { canSelectPledges } from '../sidebar';
 import { closeListShortcut, filterRequestOf, listShortcuts } from '../list-shortcut';
 import { hangarFilterRequest, hangarFilterStates } from '../hangar-filter-request';
@@ -54,6 +55,10 @@ const props = defineProps<{
    */
   embedded?: EmbeddedList;
 }>();
+const emit = defineEmits<{
+  /** The pledges search and filters leave visible, e.g. for a watchlist's "Select all" (#620). */
+  visible: [ids: number[]];
+}>();
 
 // Value and link settings only toggle classes, so the rows don't need to re-render.
 const displayClasses = computed(() => ({
@@ -63,7 +68,8 @@ const displayClasses = computed(() => ({
   'shm-hide-superseded-insurances': props.settings.hideSupersededInsurances,
   'shm-hide-erkul': !props.settings.shipLinks.erkul,
   'shm-hide-fleetyards': !props.settings.shipLinks.fleetyards,
-  'shm-hide-select': !canSelectPledges(props.settings),
+  // A watchlist selects its items itself (#620), also without the sidebar's "Selected" box.
+  'shm-hide-select': !props.embedded && !canSelectPledges(props.settings),
 }));
 
 /**
@@ -157,17 +163,30 @@ const setGrouped = (on: boolean) =>
   update({
     grouped: { ...props.settings.grouped, [props.embedded ? 'watchlists' : 'hangar']: on },
   });
-/** Groups can be selected where single pledges can. */
-const canSelect = computed(() => canSelectPledges(props.settings));
+/** Groups can be selected where single pledges can, and in a watchlist (#620). */
+const canSelect = computed(() => !!props.embedded || canSelectPledges(props.settings));
 
 /** What the included filters and the sorting are about, highlighted in the rows (#216). */
 const highlights = (states: FilterStates<PledgeFilter>) =>
   highlightClasses(FILTER_HIGHLIGHTS.hangar, states, FILTER_HIGHLIGHTS.sorts[sort.value]);
 
 /** For the sidebar: it counts the pledges search and filters leave visible. */
+const shownIds = ref<number[]>([]);
 const showVisible = (entries: PledgeView[]) => {
-  if (!props.embedded) visiblePledgeIds.value = new Set(entries.map((entry) => entry.id));
+  shownIds.value = entries.map((entry) => entry.id);
+  if (!props.embedded) visiblePledgeIds.value = new Set(shownIds.value);
+  emit('visible', shownIds.value);
 };
+
+/*
+ * "Select all" (#620) of My Hangar: every pledge search, filters and a List Shortcut leave visible,
+ * a group with all its pledges; a watchlist has its own above all of its items.
+ */
+const selectState = computed(() => selectAllState(selection.ids.value, shownIds.value));
+const selectedShown = computed(
+  () => shownIds.value.filter((id) => selection.ids.value.has(id)).length,
+);
+const selectAll = () => selection.replace(toggleAll(selection.ids.value, shownIds.value));
 onUnmounted(() => !props.embedded && (visiblePledgeIds.value = null));
 /** For the sidebar's filter toggles (#254). */
 const showFilterStates = (states: FilterStates<PledgeFilter>) => {
@@ -228,6 +247,14 @@ const filterHint = (filter: PledgeFilter) => {
     @filter-states="showFilterStates"
     @update:grouped="setGrouped"
   >
+    <template v-if="!embedded && canSelect" #select>
+      <SelectAll
+        :state="selectState"
+        :selected="selectedShown"
+        :total="shownIds.length"
+        @toggle="selectAll"
+      />
+    </template>
     <template #row="{ entry, autoExpand }">
       <PledgeRow :pledge="entry" :auto-expand="autoExpand" />
     </template>

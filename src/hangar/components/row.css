@@ -683,6 +683,18 @@ html .shm-theme-rsi .shm-badge {
   color: rgb(var(--shm-accent-rgb) / 0.5);
 }
 
+/* Some of a group or a list selected (#620): a dash, outlined. */
+.shm-select-toggle[aria-checked='mixed'] {
+  color: var(--shm-accent);
+  border-color: var(--shm-accent);
+}
+
+/* In the line of a "Select all" or a plain row, not in a row's corner. */
+.shm-select-toggle.is-inline {
+  position: static;
+  flex: none;
+}
+
 .shm-select-toggle[aria-checked='true'] {
   color: var(--shm-text-on-accent);
   background: var(--shm-accent);

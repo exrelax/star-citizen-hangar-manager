@@ -11,6 +11,7 @@ import { computed, ref, watch } from 'vue';
 import {
   createWatchlist,
   removeItem,
+  removeItems,
   setItemCount,
   updateWatchlist,
   withLastSeen,
@@ -155,6 +156,12 @@ function setCount(list: Watchlist, key: string, count: number) {
   if (next !== list) void store(next);
 }
 
+/** The selected items off this watchlist in one write (#620); a failed write keeps them all. */
+function removeEntries(list: Watchlist, keys: string[]) {
+  const next = removeItems(list, keys, Date.now());
+  if (next !== list) void store(next);
+}
+
 function removeEntry(list: Watchlist, key: string) {
   const next = removeItem(list, key, Date.now());
   if (next !== list) void store(next);
@@ -176,6 +183,7 @@ function removeEntry(list: Watchlist, key: string) {
       @edit="openDialog(open)"
       @delete="remove(open)"
       @remove="removeEntry(open, $event)"
+      @remove-many="removeEntries(open!, $event)"
       @count="(key, count) => setCount(open!, key, count)"
     />
     <section v-else class="shm-watchlists" aria-labelledby="shm-watchlists-title">

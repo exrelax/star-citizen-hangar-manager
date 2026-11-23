@@ -13,6 +13,7 @@ import {
   listsWith,
   presenceOf,
   removeItem,
+  removeItems,
   setItemCount,
   updateWatchlist,
   withLastSeen,
@@ -193,5 +194,27 @@ describe('addItemCounts (#531)', () => {
       NOW,
     );
     expect(next.items[0]!.count).toBe(99);
+  });
+});
+
+describe('removing a selection from a watchlist (#620)', () => {
+  const items: WatchItem[] = [
+    { kind: 'hangar', pledgeId: 1, name: 'Aurora', addedAt: NOW },
+    { kind: 'buyback', pledgeId: 2, name: 'Nova', addedAt: NOW },
+    { kind: 'storePaint', skuId: 3, name: 'Paint', addedAt: NOW, count: 1 },
+    { kind: 'hangar', pledgeId: 4, name: 'Cutlass', addedAt: NOW },
+  ];
+  const full = () => ({ ...list(), items });
+
+  it('takes a mixed selection off in one change, the rest stays', () => {
+    const keys = [items[0]!, items[1]!, items[2]!].map(itemKey);
+    const next = removeItems(full(), keys, LATER);
+    expect(next.items).toEqual([items[3]]);
+    expect(next.changedAt).toBe(LATER);
+  });
+
+  it('is the same watchlist when none of them is on it', () => {
+    const before = full();
+    expect(removeItems(before, ['h:999'], LATER)).toBe(before);
   });
 });

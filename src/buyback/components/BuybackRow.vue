@@ -36,6 +36,9 @@ const props = defineProps<{
 }>();
 /** In a watchlist (#467): its details offer to remove the pledge from it. */
 const watchlistRow = inject(WATCHLIST_ROW, null);
+const watchSelect = watchlistRow?.select;
+const watchRef = computed(() => ({ kind: 'buyback' as const, pledgeId: props.pledge.id }));
+const selected = computed(() => !!watchSelect?.has(watchRef.value));
 /** The pledge on watchlists (#468): its key, and what an entry of it remembers. */
 const watchItem = computed(() => ({
   kind: 'buyback' as const,
@@ -159,7 +162,21 @@ const kind = computed(() =>
 </script>
 
 <template>
-  <div class="shm-row" :class="{ 'is-expanded': expanded }">
+  <div class="shm-row" :class="{ 'is-expanded': expanded, 'is-selected': selected }">
+    <!-- On a watchlist: selected there, e.g. to remove it from the list (#620). -->
+    <button
+      v-if="watchSelect"
+      type="button"
+      role="checkbox"
+      class="shm-select-toggle"
+      :aria-checked="selected"
+      :aria-label="i18n.t('pledge.select', [pledge.title])"
+      @click="watchSelect.set([watchRef], !selected)"
+    >
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M4.5 8.2l2.3 2.3 4.7-4.9" />
+      </svg>
+    </button>
     <!-- Clicking anywhere toggles the details; the chevron button makes it keyboard accessible. -->
     <div class="shm-row-summary" @click="toggle">
       <span class="shm-thumb">

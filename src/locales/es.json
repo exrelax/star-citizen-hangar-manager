@@ -37,7 +37,9 @@
       "one": "$1 grupo",
       "other": "$1 grupos"
     },
-    "shortcutClose": "Cerrar «$1»"
+    "shortcutClose": "Cerrar «$1»",
+    "selectAll": "Seleccionar todo",
+    "selectedOf": "$1 de $2 seleccionados"
   },
   "listShortcut": {
     "empty": "No queda nada en esta lista.",
@@ -2213,7 +2215,15 @@
         "other": "$1 artículos puestos en «$2»; $3 ya estaban y se sumaron."
       }
     },
-    "paintTier": "$1 pinturas en un mismo carrito: $2 % de descuento por volumen"
+    "paintTier": "$1 pinturas en un mismo carrito: $2 % de descuento por volumen",
+    "removeSelected": {
+      "one": "Quitar $1 elemento de esta lista",
+      "other": "Quitar $1 elementos de esta lista"
+    },
+    "removeSelectedConfirm": {
+      "one": "¿Quitar $1 elemento de «$2»? Sigue en My Hangar, el Buy Back y el Pledge Store, y en tus otras watchlists.",
+      "other": "¿Quitar $1 elementos de «$2»? Siguen en My Hangar, el Buy Back y el Pledge Store, y en tus otras watchlists."
+    }
   },
   "meltRebuy": {
     "label": "Recomprable",

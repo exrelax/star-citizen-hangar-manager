@@ -26,8 +26,10 @@ const props = defineProps<{
   entry: PlainItem;
   /** A store item's price and availability now (`store-status.ts`). */
   status?: StoreStatus;
+  /** Selected on its watchlist (#620), e.g. to remove it with others; none without a checkbox. */
+  selected?: boolean;
 }>();
-const emit = defineEmits<{ remove: []; count: [count: number] }>();
+const emit = defineEmits<{ remove: []; count: [count: number]; select: [] }>();
 /** `actions`: more buttons before the one that removes it, e.g. into the cart (#529). */
 defineSlots<{ actions?(): unknown }>();
 
@@ -101,7 +103,23 @@ const setCount = (next: number) =>
 </script>
 
 <template>
-  <div class="shm-row shm-watch-item" :class="{ 'is-gone': entry.presence.state === 'gone' }">
+  <div
+    class="shm-row shm-watch-item"
+    :class="{ 'is-gone': entry.presence.state === 'gone', 'is-selected': selected }"
+  >
+    <button
+      v-if="selected !== undefined"
+      type="button"
+      role="checkbox"
+      class="shm-select-toggle is-inline"
+      :aria-checked="selected"
+      :aria-label="i18n.t('pledge.select', [entry.item.name])"
+      @click="emit('select')"
+    >
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M4.5 8.2l2.3 2.3 4.7-4.9" />
+      </svg>
+    </button>
     <span class="shm-watch-item-icon" aria-hidden="true">
       <SvgIcon :name="icon.name" :set="icon.set" />
     </span>

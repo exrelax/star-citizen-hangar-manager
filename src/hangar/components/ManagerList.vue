@@ -141,6 +141,8 @@ defineSlots<{
   group?(props: { group: ItemGroup<T>; open: { id: number; at: number } | null }): unknown;
   /** More controls beside the sort, e.g. the period of the warbond history. */
   side?(): unknown;
+  /** Before the count, e.g. "Select all" (#620). */
+  select?(): unknown;
   /**
    * More in the bar of a List Shortcut (see `filterRequest`), after its count: e.g. the store credit
    * its `entries` free, or an action for them. `entries`: those search and filters leave visible.
@@ -600,9 +602,12 @@ const countLabel = computed(() => {
       </div>
     </div>
 
-    <!-- The count, and on the right the order. -->
+    <!-- The count, before it a "Select all" (#620) from the slot, and on the right the order. -->
     <div class="shm-count">
-      <span aria-live="polite">{{ countLabel }}</span>
+      <span class="shm-count-main">
+        <slot name="select" />
+        <span aria-live="polite">{{ countLabel }}</span>
+      </span>
       <span class="shm-count-side">
         <slot name="side" />
         <button
@@ -753,6 +758,13 @@ const countLabel = computed(() => {
   color: var(--shm-text-muted);
   font-size: calc(12px * var(--shm-font-scale));
   font-variant-numeric: tabular-nums;
+}
+
+.shm-count-main {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
 }
 
 .shm-count-side {
