@@ -129,7 +129,16 @@ splits the data. Nothing of the account is in this file.
 - Each storage goes through the same checks as a stored value of an earlier version (the
   settings' defaults, the plan's versions, the codecs of the synced storage); one that can't be
   read is named and left out.
-- The settings and their decisions are replaced; your data is replaced or merged (#634).
+- The settings and their decisions are replaced; your data is merged (default) or replaced, per
+  storage (#634):
+  - **Watchlists** by id: a list only in the file is added; one in both keeps the newer name,
+    description, date and reminder (`changedAt`) and the union of the items (the higher count).
+  - **Marks to melt**: the union by pledge id, the earlier mark.
+  - **Paint plan**: only one can run. Without one here the file's is taken; with both, the user
+    keeps one of them.
+  - **Completed paint plans**: the union by plan (start time and way), newest first, at most 20.
+  - **Warbond history**: the union by SKU and price; overlapping sightings of the same offer
+    become one (earliest first seen, latest last seen, their events and expected end).
 - Everything for the synced storage is measured together against its limits (100 KB in all,
   8 KB per key, 512 keys) before anything is written; completed paint plans give way and stay in
   this browser. A write that fails puts everything back.
