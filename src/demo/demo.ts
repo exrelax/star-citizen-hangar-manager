@@ -1,4 +1,7 @@
 import type { BuybackView } from '@/buyback/buyback-view';
+import type { BuybackPledge } from '@/buyback/buyback';
+import type { Ship } from '@/ships/ships';
+import type { DemoPledge } from './generate-hangar';
 import { BUYBACK_PAGE_SIZE, DEMO, HANGAR_PAGE_SIZE, REFUND_DAYS } from '@/config';
 import { localToday } from '@/orders/refund';
 import type { PledgeView } from '@/hangar/pledge-view';
@@ -9,7 +12,7 @@ import { createPriceLookup } from '@/hangar/ship-prices';
 import { createItemPriceLookup } from '@/store/items/item-prices';
 import type { DemoCatalog } from './catalog';
 import { generateDemoAccount, type DemoAccount } from './generate-states';
-import { generateBuyback, type DemoBuyback } from './generate-buyback';
+import { ccuPledge as buybackCcu, generateBuyback, type DemoBuyback } from './generate-buyback';
 import { missingBaseOf } from './demo-groups';
 import { buybackCases, ccuCaseBasesOf, coverageFillers, reservedShips } from './demo-ccu-cases';
 import { demoPaintCases, paintCaseShips, storePaints } from './demo-paint-cases';
@@ -23,7 +26,7 @@ import { toBuybackView } from '@/buyback/buyback-view';
 import { createAvailabilityCheck } from '@/buyback/buyback-availability';
 import { createBuybackImager } from '@/buyback/buyback-image';
 import { createBuybackShipKind } from '@/hangar/ship-kind';
-import { createBuybackCcuContents } from '@/hangar/ccu-contents';
+import { createBuybackCcuContents, hangarCcuContents } from '@/hangar/ccu-contents';
 import { createBuybackPricer } from '@/buyback/buyback-price';
 import { createGiftableCheck } from '@/buyback/probably-giftable';
 import type { OrdersSnapshot } from '@/orders/orders';
@@ -187,6 +190,7 @@ export function generatedDemo(
             missing: missingBase,
             avoid: new Set(notOnSaleShips.map((ship) => ship.id)),
           }),
+          ...ccusWithExtras(account.pledges, buybackCatalog, notOnSaleShips),
           ...fillers,
         ],
       ),
@@ -288,6 +292,28 @@ function withPaintCases(
       };
     }),
   };
+}
+
+/**
+ * The hangar's CCUs with extras (#566) melted once before, for the buy back: RSI shows only their
+ * titles there, so they count by the hangar's CCUs of the same title (`createBuybackCcuContents`).
+ */
+function ccusWithExtras(
+  pledges: readonly DemoPledge[],
+  catalog: DemoCatalog,
+  /** Ships RSI doesn't sell CCUs to: the buy back's CCUs to them are only their own (#311). */
+  notOnSale: readonly Ship[],
+): Omit<BuybackPledge, 'id'>[] {
+  const avoid = new Set(notOnSale.map((ship) => ship.id));
+  const shipOf = (id: number | undefined) =>
+    id === undefined || avoid.has(id) ? undefined : catalog.ships.find((ship) => ship.id === id);
+  return pledges.flatMap((pledge) => {
+    if (hangarCcuContents(pledge.upgrade) !== 'extras') return [];
+    const from = shipOf(pledge.upgrade!.matchItems[0]?.id);
+    const to = shipOf(pledge.upgrade!.targetItems[0]?.id);
+    if (!from || !to) return [];
+    return [{ ...buybackCcu(from, to), title: pledge.title, contained: pledge.title }];
+  });
 }
 
 function generatedBuybackViews(
