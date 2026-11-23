@@ -39,6 +39,8 @@ export interface ExportFile {
   redacted?: ('ids' | 'amounts')[];
   /** Only the pledges shown in My Hangar (search and filters), not the whole hangar. */
   partial?: boolean;
+  /** The parts of the export of settings and your data (#229): `settings`, `yourData`. */
+  parts?: ('settings' | 'yourData')[];
   storages: Partial<Record<StorageId, ExportedStorage>>;
 }
 

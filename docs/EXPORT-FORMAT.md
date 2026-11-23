@@ -52,10 +52,29 @@ Values are in USD where they are numbers (`valueUsd`, `price`); texts as RSI sho
 
 ## Settings and your data (`kind: "settings"`)
 
-The storages with `transfer: 'settings'` and `transfer: 'yourData'` in the registry; see #229.
-The user's data is written decoded (the watchlists as a list, the completed paint plans of the
-synced storage and of this browser together), not in the compact format of the browser's synced
-storage.
+The storages with `transfer: 'settings'` and `transfer: 'yourData'` in the registry. `parts` says
+which of the two the file holds (`["settings", "yourData"]` by default).
+
+| Part       | Storage                   | Value                                                                      |
+| ---------- | ------------------------- | -------------------------------------------------------------------------- |
+| `settings` | `settings`                | The settings (`src/settings/settings.ts`); missing ones take their default |
+|            | `notifications`           | The sidebar notifications, with those checked off                          |
+|            | `dismissedPaints`         | SKUs of the paints whose note was closed                                   |
+|            | `riskNoteSeen`            | Whether the Terms of Service note was closed                               |
+|            | `dismissedPriceIncreases` | Price increases whose notification was closed                              |
+|            | `dismissedPriceAdvisor`   | Price Increase Advisor notifications closed                                |
+|            | `dismissedShipRemovals`   | Ship removal notifications closed                                          |
+|            | `browserHintDismissed`    | Whether the hint to allow browser notifications was closed                 |
+| `yourData` | `warbondHistory`          | The warbond offers this browser saw (`WarbondHistorySnapshot`)             |
+|            | `paintPlan`               | The running plan of the Paint Discount Planner, or `null`                  |
+|            | `paintHistory`            | Its completed plans (`CompletedPlansSnapshot`), newest first               |
+|            | `watchlists`              | The watchlists with their items (`Watchlist[]`)                            |
+|            | `meltMarks`               | When each pledge was marked to melt (ms), by pledge id                     |
+
+Most of them live in the browser's synced storage. They are written decoded – the watchlists as
+a list, the completed paint plans of the synced storage and of this browser together –, not in the
+compact per-key format of the synced storage, so a file doesn't depend on how the synced storage
+splits the data. Nothing of the account is in this file.
 
 ## Versions
 
