@@ -552,6 +552,11 @@
       "content": "Offres warbond vues jusqu'ici, avec prix, dates et événements",
       "missing": "Il ne peut pas être relu : l'onglet Pledge Store n'affiche aucune offre antérieure tant que de nouvelles ne sont pas vues."
     },
+    "giftFlags": {
+      "name": "Indicateurs de cadeau",
+      "content": "Si chaque pledge sorti du hangar pouvait être offert, tel que RSI l'affichait",
+      "missing": "Ils ne peuvent pas être relus : le Buy Back ne reconnaît les pledges offrables que par leur commande."
+    },
     "warbondHistorySite": {
       "name": "Historique warbond du site",
       "content": "Offres warbond antérieures du site du projet, avec prix, dates et événements",
@@ -621,6 +626,41 @@
       "name": "Paramètres",
       "content": "Langue, thème, options d’affichage et de confidentialité, filtres, tri",
       "missing": "Tous les paramètres reviennent à leurs valeurs par défaut."
+    },
+    "notifications": {
+      "name": "Notifications",
+      "content": "Les notifications de la barre latérale, y compris celles cochées",
+      "missing": "Les notifications cochées reviennent."
+    },
+    "dismissedPaints": {
+      "name": "Notes de peintures fermées",
+      "content": "Peintures dont tu as fermé la note du Paint Discount Planner",
+      "missing": "Leurs notes reviennent."
+    },
+    "riskNoteSeen": {
+      "name": "Note sur les conditions d'utilisation",
+      "content": "Si tu as fermé la note sur les conditions d'utilisation avec « Compris »",
+      "missing": "La note s'affiche de nouveau."
+    },
+    "dismissedPriceIncreases": {
+      "name": "Notes de hausses de prix fermées",
+      "content": "Hausses de prix dont tu as fermé la notification",
+      "missing": "Leurs notifications reviennent."
+    },
+    "dismissedPriceAdvisor": {
+      "name": "Notes du Price Increase Advisor fermées",
+      "content": "Notifications du Price Increase Advisor que tu as fermées",
+      "missing": "Leurs notifications reviennent."
+    },
+    "dismissedShipRemovals": {
+      "name": "Notes de retraits de vaisseaux fermées",
+      "content": "Notifications de retraits de vaisseaux que tu as fermées",
+      "missing": "Leurs notifications reviennent."
+    },
+    "browserHintDismissed": {
+      "name": "Note sur les notifications du navigateur",
+      "content": "Si tu as fermé la note pour autoriser les notifications du navigateur",
+      "missing": "La note s'affiche de nouveau."
     },
     "demoDisabled": "Pas en mode démo : ces chiffres sont ceux de la démo, vos données restent inchangées.",
     "synced": {

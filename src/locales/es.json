@@ -552,6 +552,11 @@
       "content": "Ofertas warbond vistas hasta ahora, con precio, fechas y eventos",
       "missing": "No se puede volver a leer: la pestaña Pledge Store no muestra ofertas anteriores hasta que se vean nuevas."
     },
+    "giftFlags": {
+      "name": "Marcas de regalo",
+      "content": "Si cada pledge que salió del hangar se podía regalar, tal como lo mostraba RSI",
+      "missing": "No se pueden volver a leer: el Buy Back reconoce los pledges regalables solo por su pedido."
+    },
     "warbondHistorySite": {
       "name": "Historial warbond del sitio",
       "content": "Ofertas warbond anteriores del sitio del proyecto, con precio, fechas y eventos",
@@ -621,6 +626,41 @@
       "name": "Ajustes",
       "content": "Idioma, tema, opciones de visualización y privacidad, filtros, orden",
       "missing": "Todos los ajustes vuelven a sus valores predeterminados."
+    },
+    "notifications": {
+      "name": "Notificaciones",
+      "content": "Las notificaciones de la barra lateral, también las que marcaste como hechas",
+      "missing": "Las notificaciones marcadas como hechas vuelven."
+    },
+    "dismissedPaints": {
+      "name": "Avisos de pinturas cerrados",
+      "content": "Pinturas cuyo aviso del Paint Discount Planner cerraste",
+      "missing": "Sus avisos vuelven."
+    },
+    "riskNoteSeen": {
+      "name": "Aviso de los Términos de servicio",
+      "content": "Si cerraste el aviso de los Términos de servicio con «Entendido»",
+      "missing": "El aviso vuelve a aparecer."
+    },
+    "dismissedPriceIncreases": {
+      "name": "Avisos de subidas de precio cerrados",
+      "content": "Subidas de precio cuya notificación cerraste",
+      "missing": "Sus notificaciones vuelven."
+    },
+    "dismissedPriceAdvisor": {
+      "name": "Avisos del Price Increase Advisor cerrados",
+      "content": "Notificaciones del Price Increase Advisor que cerraste",
+      "missing": "Sus notificaciones vuelven."
+    },
+    "dismissedShipRemovals": {
+      "name": "Avisos de retiradas de naves cerrados",
+      "content": "Notificaciones de retiradas de naves que cerraste",
+      "missing": "Sus notificaciones vuelven."
+    },
+    "browserHintDismissed": {
+      "name": "Aviso de notificaciones del navegador",
+      "content": "Si cerraste el aviso para permitir las notificaciones del navegador",
+      "missing": "El aviso vuelve a aparecer."
     },
     "demoDisabled": "No en el modo demo: estas cifras son las de la demo, tus datos no cambian.",
     "synced": {

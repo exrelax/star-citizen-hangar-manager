@@ -507,6 +507,13 @@ never sees a mix of old and new data.
   key, what it holds, where it comes from, what uses it, how to count its entries and whether it
   is read again on its own after a reset. The settings ("Stored data"), the reset and the
   migration work from this list – a new storage is one entry there.
+- **Export** (`transfer` in the registry, #633): every storage says where it goes in an export –
+  `hangar` (the account's data and the gift flags, #226), `yourData` (what the user made: the
+  synced storages and the warbond history this browser saw, #229, merged on import, #634),
+  `settings` (the settings and their decisions: notifications checked off, notes closed) or `none`
+  (read again from RSI or the website, or only for this browser). A new storage needs it; a test
+  fails for one that can never be read again with `none`, and for a synced one that isn't
+  `yourData`. The decisions are registry entries of `kind: 'settings'` (no group, never reset).
 - **Metadata** ([`src/storage/meta.ts`](../src/storage/meta.ts)): next to each data key a small
   `<key>.meta` key with the last full read, the last change, the last check with its outcome and a
   fingerprint to compare with on the next check (the newest pledge log entry for the orders, a

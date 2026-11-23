@@ -57,6 +57,14 @@ import {
 } from '@/buyback-tokens/token-renewals-storage';
 import { watchlistsItem } from '@/watchlists/watchlists-storage';
 import { meltMarksItem, type MeltMarks } from '@/hangar/melt-marks';
+import { giftFlagsItem, type GiftFlags } from '@/buyback/gift-flags';
+import { notificationsItem } from '@/notifications/notifications';
+import { dismissedPaintsItem } from '@/store/paint-consultant/paint-notification';
+import { riskNoteSeenItem } from '@/account-safety/risk-note';
+import { dismissedPriceIncreasesItem } from '@/price-increases/price-increase-notes';
+import { dismissedAdvisorNotesItem } from '@/price-increases/advisor-notes';
+import { dismissedRemovalNotesItem } from '@/ship-removals/removal-notes';
+import { browserNotificationsHintDismissedItem } from '@/notifications/browser-permission';
 import type { Watchlist } from '@/watchlists/watchlists';
 import type { BuybackSnapshot } from '@/buyback/buyback';
 import type { HangarSnapshot } from '@/hangar/pledge';
@@ -102,7 +110,23 @@ export type StorageId =
   | 'paintHistory'
   | 'watchlists'
   | 'meltMarks'
-  | 'settings';
+  | 'giftFlags'
+  | 'settings'
+  | 'notifications'
+  | 'dismissedPaints'
+  | 'riskNoteSeen'
+  | 'dismissedPriceIncreases'
+  | 'dismissedPriceAdvisor'
+  | 'dismissedShipRemovals'
+  | 'browserHintDismissed';
+
+/**
+ * Where a storage goes in an export (#633): the hangar export (#226) holds the account's data,
+ * the export of settings and your data (#229) the settings with their decisions and what the user
+ * made, which an import merges (#634); `none` is read again from RSI or the website, or only
+ * works in this browser.
+ */
+export type Transfer = 'hangar' | 'yourData' | 'settings' | 'none';
 
 export interface StorageDefinition {
   /** Short name; also the key of its texts in the settings (`storage.<id>…`). */
@@ -118,9 +142,12 @@ export interface StorageDefinition {
   usedBy: string[];
   /**
    * Data read from RSI (removed by "Reset" in the settings), what the user keeps in the synced
-   * storage across devices (never removed by a reset of this browser's copy), or the settings.
+   * storage across devices (never removed by a reset of this browser's copy), or the settings and
+   * the decisions that belong to them (dismissed notifications, notes seen; never reset).
    */
   kind: 'data' | 'synced' | 'settings';
+  /** Where it goes in an export (#633); every storage says it, so none is forgotten. */
+  transfer: Transfer;
   /**
    * Its group in the settings' "Stored data" (#624, `storage-groups.ts`): by where its data comes
    * from. Every storage but the settings has one.
@@ -150,6 +177,7 @@ export const STORAGES: readonly StorageDefinition[] = [
     content: 'Pledges of "My Gear" with their items, ship links and images',
     source: 'Hangar pages of RSI ("My Gear")',
     usedBy: ['My Hangar', 'buy back (giftable hint)', 'Pledge Store (holdings)'],
+    transfer: 'hangar',
     kind: 'data',
     count: (value: HangarSnapshot | null) => value?.pledges.length ?? 0,
     readAgain: 'refresh',
@@ -164,6 +192,7 @@ export const STORAGES: readonly StorageDefinition[] = [
     content: 'Melted pledges with their items and the buy back tokens',
     source: 'Buy back pages of RSI',
     usedBy: ['Buy Back', 'Pledge Store (holdings)'],
+    transfer: 'hangar',
     kind: 'data',
     count: (value: BuybackSnapshot | null) => value?.pledges.length ?? 0,
     readAgain: 'refresh',
@@ -178,6 +207,7 @@ export const STORAGES: readonly StorageDefinition[] = [
     content: 'Order history: the order of every pledge and the newest pledge log entries',
     source: 'Pledge log (/api/account/pledgeLog) and billing list of RSI',
     usedBy: ['Refund tags', 'order details', 'warbond filter', 'search by order id'],
+    transfer: 'hangar',
     kind: 'data',
     count: (value: OrdersSnapshot | null) => Object.keys(value?.orders ?? {}).length,
     readAgain: 'refresh',
@@ -191,6 +221,7 @@ export const STORAGES: readonly StorageDefinition[] = [
     content: 'All ships: id, name, standard price, image, Pledge Store link',
     source: 'Ship upgrade tool of RSI',
     usedBy: ['Discounts', 'upgrade log prices', 'Pledge Store'],
+    transfer: 'none',
     kind: 'data',
     count: (value: ShipsSnapshot | null) => value?.ships.length ?? 0,
     readAgain: 'auto',
@@ -205,6 +236,7 @@ export const STORAGES: readonly StorageDefinition[] = [
     content: 'Ships currently on sale: their SKUs and prices',
     source: 'Ship upgrade tool of RSI',
     usedBy: [],
+    transfer: 'none',
     kind: 'data',
     count: (value: BuyableShipsSnapshot | null) => value?.skus.length ?? 0,
     readAgain: 'auto',
@@ -217,6 +249,7 @@ export const STORAGES: readonly StorageDefinition[] = [
     content: 'Ships currently offered as warbond edition, with their price',
     source: 'Ship upgrade tool of RSI',
     usedBy: ['Pledge Store'],
+    transfer: 'none',
     kind: 'data',
     count: (value: WarbondsSnapshot | null) => value?.warbonds.length ?? 0,
     readAgain: 'auto',
@@ -230,6 +263,7 @@ export const STORAGES: readonly StorageDefinition[] = [
     content: 'Warbond offers seen so far: ship, price, standard price, first and last seen, events',
     source: 'Every read of the ship upgrade tool of RSI, since the Hangar Manager was installed',
     usedBy: ['Pledge Store (earlier offers)'],
+    transfer: 'yourData',
     kind: 'data',
     count: (value: WarbondHistorySnapshot | null) => value?.sightings.length ?? 0,
     readAgain: 'never',
@@ -242,6 +276,7 @@ export const STORAGES: readonly StorageDefinition[] = [
     content: 'Earlier warbond offers: ship, price, standard price, first and last seen, events',
     source: 'The project website (GitHub Pages, data/warbond-history.json)',
     usedBy: ['Pledge Store (Warbond CCU History, earlier offers)'],
+    transfer: 'none',
     kind: 'data',
     count: (value: SiteWarbondHistorySnapshot | null) => value?.offers.length ?? 0,
     readAgain: 'auto',
@@ -254,6 +289,7 @@ export const STORAGES: readonly StorageDefinition[] = [
     content: 'The ships still in concept (not flight ready yet), by id',
     source: "RSI's public Ship Matrix (/ship-matrix/index), at the Pledge Store items' minutes",
     usedBy: ['Price Increase Advisor (CCUs to ships that may rise later)'],
+    transfer: 'none',
     kind: 'data',
     count: (value: ShipStatusSnapshot | null) => value?.count ?? 0,
     readAgain: 'auto',
@@ -266,6 +302,7 @@ export const STORAGES: readonly StorageDefinition[] = [
     content: 'Every ship: production status, always available, standard price, with their history',
     source: 'Project website (data/ships.json, from the Ship Matrix and the Star Citizen Wiki)',
     usedBy: ['Price Increase Advisor', 'CCU Check (always available base ships)'],
+    transfer: 'none',
     kind: 'data',
     count: (value: ShipFactsSnapshot | null) => value?.facts.ships.length ?? 0,
     readAgain: 'auto',
@@ -278,6 +315,7 @@ export const STORAGES: readonly StorageDefinition[] = [
     content: 'Items of the Pledge Store: name, category, price, image, link, warbond, in stock',
     source: 'Search of the Pledge Store of RSI (/graphql)',
     usedBy: [],
+    transfer: 'none',
     kind: 'data',
     count: (value: StoreItemsSnapshot | null) => value?.items.length ?? 0,
     readAgain: 'auto',
@@ -290,6 +328,7 @@ export const STORAGES: readonly StorageDefinition[] = [
     content: 'Events of Star Citizen: name, dates, description, icon',
     source: 'The project website (GitHub Pages, data/events.json)',
     usedBy: ['Pledge Store (events)', 'sidebar notifications'],
+    transfer: 'none',
     kind: 'data',
     count: (value: EventsSnapshot | null) => value?.events.length ?? 0,
     readAgain: 'auto',
@@ -302,6 +341,7 @@ export const STORAGES: readonly StorageDefinition[] = [
     content: 'Expected price increases: ship id and names, dates, related items, note',
     source: 'The project website (GitHub Pages, data/price-increases.json)',
     usedBy: [],
+    transfer: 'none',
     kind: 'data',
     count: (value: PriceIncreasesSnapshot | null) => value?.priceIncreases.length ?? 0,
     readAgain: 'auto',
@@ -314,6 +354,7 @@ export const STORAGES: readonly StorageDefinition[] = [
     content: 'Ship removals: ship id and name, date, source, event',
     source: 'The project website (GitHub Pages, data/ship-removals.json)',
     usedBy: [],
+    transfer: 'none',
     kind: 'data',
     count: (value: ShipRemovalsSnapshot | null) => value?.shipRemovals.length ?? 0,
     readAgain: 'auto',
@@ -326,6 +367,7 @@ export const STORAGES: readonly StorageDefinition[] = [
     content: 'Buy back token renewals: dates, whether confirmed, note, source',
     source: 'The project website (GitHub Pages, data/buyback-tokens.json)',
     usedBy: [],
+    transfer: 'none',
     kind: 'data',
     count: (value: TokenRenewalsSnapshot | null) => value?.renewals.length ?? 0,
     readAgain: 'auto',
@@ -338,6 +380,7 @@ export const STORAGES: readonly StorageDefinition[] = [
     content: "The account's store credit",
     source: 'Credit ledger of the RSI account (/graphql), as in its account menu',
     usedBy: ['Sidebar'],
+    transfer: 'hangar',
     kind: 'data',
     count: (value: StoreCreditSnapshot | null) => (value ? 1 : 0),
     readAgain: 'auto',
@@ -349,6 +392,7 @@ export const STORAGES: readonly StorageDefinition[] = [
     content: "The Paint Discount Planner's plan whose paints were put into the cart",
     source: 'The Paint Discount Planner ("Start plan"), in the synced storage (one key)',
     usedBy: ['Paint Discount Planner (filler paints to melt again)'],
+    transfer: 'yourData',
     // In the synced storage (#635): it follows the browser profile, a reset keeps it.
     kind: 'synced',
     count: (value: AnyStoredRebuyPlan | null) =>
@@ -363,6 +407,7 @@ export const STORAGES: readonly StorageDefinition[] = [
     source:
       'The Paint Discount Planner (a running plan that ended), in the synced storage (one key per plan, the last 10; older ones in this browser)',
     usedBy: ['Paint Discount Planner (completed plans)'],
+    transfer: 'yourData',
     kind: 'synced',
     count: (value: CompletedPlansSnapshot | null) => value?.plans.length ?? 0,
     readAgain: 'never',
@@ -374,6 +419,7 @@ export const STORAGES: readonly StorageDefinition[] = [
     content: 'Watchlists: name, description, date, reminder and the items on each (#465)',
     source: 'The watchlists the user made, in the synced storage (one key per list)',
     usedBy: ['Watchlists'],
+    transfer: 'yourData',
     kind: 'synced',
     count: (value: Watchlist[] | null) => value?.length ?? 0,
     readAgain: 'never',
@@ -385,8 +431,21 @@ export const STORAGES: readonly StorageDefinition[] = [
     content: 'Marks to melt: the pledge id and when it was marked (#144)',
     source: 'The marks the user set in My Hangar, in the synced storage',
     usedBy: ['My Hangar (melt marks)', 'sidebar notifications', 'Paint Discount Planner'],
+    transfer: 'yourData',
     kind: 'synced',
     count: (value: MeltMarks | null) => Object.keys(value ?? {}).length,
+    readAgain: 'never',
+  },
+  {
+    id: 'giftFlags',
+    group: 'browser',
+    item: giftFlagsItem,
+    content: "RSI's gift flag of each pledge that left the hangar, by pledge id (#204)",
+    source: 'The stored hangar, whenever a pledge leaves it (melted or gifted away)',
+    usedBy: ['Buy Back (giftable hint)'],
+    transfer: 'hangar',
+    kind: 'data',
+    count: (value: GiftFlags | null) => Object.keys(value ?? {}).length,
     readAgain: 'never',
   },
   {
@@ -395,7 +454,78 @@ export const STORAGES: readonly StorageDefinition[] = [
     content: 'Settings: language, theme, display and privacy options, filters, sorting',
     source: 'The settings',
     usedBy: ['Everything'],
+    transfer: 'settings',
     kind: 'settings',
+  },
+  {
+    id: 'notifications',
+    item: notificationsItem,
+    content: 'The sidebar notifications with those checked off (#142)',
+    source: 'The Hangar Manager, in this browser',
+    usedBy: ['Sidebar (notifications)'],
+    transfer: 'settings',
+    kind: 'settings',
+    count: (value: readonly unknown[] | null) => value?.length ?? 0,
+  },
+  {
+    id: 'dismissedPaints',
+    item: dismissedPaintsItem,
+    content: 'Paints whose Paint Discount Planner notification was closed',
+    source: 'The sidebar notifications, in the synced storage',
+    usedBy: ['Sidebar (paints to optimize)'],
+    transfer: 'settings',
+    kind: 'settings',
+    count: (value: readonly number[] | null) => value?.length ?? 0,
+  },
+  {
+    id: 'riskNoteSeen',
+    item: riskNoteSeenItem,
+    content: 'Whether the Terms of Service note was closed with "Got it" (#330)',
+    source: 'The sidebar, in the synced storage',
+    usedBy: ['Sidebar (Terms of Service note)'],
+    transfer: 'settings',
+    kind: 'settings',
+    count: (value: boolean | null) => (value ? 1 : 0),
+  },
+  {
+    id: 'dismissedPriceIncreases',
+    item: dismissedPriceIncreasesItem,
+    content: 'Price increases whose notification was closed',
+    source: 'The sidebar notifications, in the synced storage',
+    usedBy: ['Sidebar (Buy Back Reminder)'],
+    transfer: 'settings',
+    kind: 'settings',
+    count: (value: readonly number[] | null) => value?.length ?? 0,
+  },
+  {
+    id: 'dismissedPriceAdvisor',
+    item: dismissedAdvisorNotesItem,
+    content: 'Price Increase Advisor notifications closed',
+    source: 'The sidebar notifications, in the synced storage',
+    usedBy: ['Sidebar (Price Increase Advisor)'],
+    transfer: 'settings',
+    kind: 'settings',
+    count: (value: readonly string[] | null) => value?.length ?? 0,
+  },
+  {
+    id: 'dismissedShipRemovals',
+    item: dismissedRemovalNotesItem,
+    content: 'Ship removal notifications closed',
+    source: 'The sidebar notifications, in the synced storage',
+    usedBy: ['Sidebar (Ship Removals)'],
+    transfer: 'settings',
+    kind: 'settings',
+    count: (value: readonly string[] | null) => value?.length ?? 0,
+  },
+  {
+    id: 'browserHintDismissed',
+    item: browserNotificationsHintDismissedItem,
+    content: 'Whether the hint to allow browser notifications was closed',
+    source: 'The settings, in the synced storage',
+    usedBy: ['Settings (notifications)'],
+    transfer: 'settings',
+    kind: 'settings',
+    count: (value: boolean | null) => (value ? 1 : 0),
   },
 ];
 
@@ -408,3 +538,7 @@ export const LOCAL_COPY = STORAGES.filter((storage) => storage.kind === 'data');
 
 /** What the user keeps in the synced storage (#560): shown apart, never reset with the local copy. */
 export const SYNCED = STORAGES.filter((storage) => storage.kind === 'synced');
+
+/** The storages of each export (#633), in the registry's order. */
+export const storagesToTransfer = (transfer: Exclude<Transfer, 'none'>) =>
+  STORAGES.filter((storage) => storage.transfer === transfer);
