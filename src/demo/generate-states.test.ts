@@ -38,7 +38,8 @@ describe.each(['key-a', 'key-b', 'key-c', 'a much longer demo key'])(
       expect(upgraded.length).toBeGreaterThan(0);
       for (const pledge of upgraded) {
         expect(account.upgradeLogs.get(pledge.id)?.length).toBeGreaterThan(0);
-        expect(pledge.originalName).toMatch(/^Standalone Ships - /);
+        // Standalone ships, and the pack of many ships with one upgraded (#514).
+        expect(pledge.originalName).toMatch(/^(Standalone Ships|Package) - /);
       }
     });
 

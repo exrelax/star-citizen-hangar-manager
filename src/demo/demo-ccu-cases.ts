@@ -274,7 +274,7 @@ function buybackShip(ship: Pick<Ship, 'name'>): Omit<BuybackPledge, 'id'> {
   return {
     title: `Standalone Ships - ${ship.name} - LTI`,
     contained: `${ship.name} and 2 items`,
-    items: [ship.name, 'Lifetime Insurance', 'Hangar Decoration'],
+    items: [ship.name, 'Lifetime Insurance', 'Self-Land Hangar'],
     isUpgrade: false,
     category: 'standalone_ship',
   };

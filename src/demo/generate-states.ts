@@ -129,6 +129,46 @@ function upgraded(
   };
 }
 
+/**
+ * A pack with one applied CCU (#514): its cheapest ship becomes the next pricier ship not in the
+ * pack, its value grows by the price difference, the rest of the pack stays as it is.
+ */
+function upgradedPack(
+  pledge: DemoPledge,
+  catalog: DemoCatalog,
+): { pledge: DemoPledge; log: UpgradeLogEntry[] } {
+  const byName = new Map(catalog.ships.map((ship) => [ship.name, ship]));
+  const inPack = new Set(
+    pledge.items.filter((item) => item.kind === 'Ship').map((item) => item.title),
+  );
+  const base = [...inPack]
+    .flatMap((name) => byName.get(name) ?? [])
+    .sort((a, b) => a.msrp - b.msrp)[0];
+  const target =
+    base &&
+    ccuTargetsOf(catalog.ships)
+      .filter((ship) => ship.msrp > base.msrp && !inPack.has(ship.name))
+      .sort((a, b) => a.msrp - b.msrp)[0];
+  if (!base || !target) return { pledge, log: [] };
+  const value = pledge.valueUsd + Math.max(5, target.msrp - base.msrp);
+  const items = pledge.items.map((item) =>
+    item.kind === 'Ship' && item.title === base.name
+      ? { title: target.name, kind: 'Ship', ...(target.image && { image: target.image }) }
+      : item,
+  );
+  return {
+    pledge: { ...pledge, isUpgraded: true, items, value: usdText(value), valueUsd: value },
+    log: [
+      {
+        appliedAt: '',
+        ccuId: DEMO.idBase - 59_000,
+        name: `Upgrade - ${base.name} to ${target.name} Standard Edition`,
+        valueAfter: value,
+      },
+    ],
+  };
+}
+
 /** The game access a pledge is protected for, with the games' items. */
 function protectedFor(pledge: DemoPledge, games: Game[]): DemoPledge {
   const items = pledge.items.filter((item) => item.kind !== 'Digital Download');
@@ -287,14 +327,39 @@ export function withStates(
         };
       }),
     );
-
-  // Upgraded ships with their applied CCUs – never to a base ship nothing else may give (#450, #425).
+  // The ships nothing else may give: the base ships of the CCUs without one (#450) and of the
+  // CCU Consultant's cases (#425), Melt and Rebuy's ships (#532).
   const reserved = new Set([
     missingBaseOf(generated),
     ...reservedShips(ccuCaseBasesOf(generated, catalog)),
-    // Nor to Melt and Rebuy's ships (#532).
     ...rebuyShipIds(rebuyShipsOf(generated, catalog)),
   ]);
+  // CCUs with extras (#566): one bringing a paint of its target ship, one gear – none of a case,
+  // none of a reserved ship, as the buy back has them too (`demo.ts`).
+  const gear = catalog.items.find((entry) => entry.category === 'Gear' && entry.price > 0);
+  const isFree = (pledge: DemoPledge) =>
+    !pledge.demoPivot &&
+    !pledge.demoGroup &&
+    !pledge.demoCcuCase &&
+    !reserved.has(pledge.upgrade?.matchItems[0]?.id) &&
+    !reserved.has(pledge.upgrade?.targetItems[0]?.id);
+  ofKind(generated, 'ccus')
+    .slice(3)
+    .filter(isFree)
+    .slice(0, 2)
+    .forEach((pledge, index) =>
+      set(pledge, (current) => {
+        const target = current.upgrade!.targetItems[0]!;
+        const name = index === 0 || !gear ? `${target.name} - Best in Show 2955 Livery` : gear.name;
+        const extra: UpgradeTarget = { id: DEMO.idBase - 91_000 - index, name };
+        return {
+          ...current,
+          upgrade: { ...current.upgrade!, targetItems: [...current.upgrade!.targetItems, extra] },
+        };
+      }),
+    );
+
+  // Upgraded ships with their applied CCUs – never to a reserved ship (#450, #425, #532).
   const upgradeCatalog = {
     ...catalog,
     ships: catalog.ships.filter((ship) => !reserved.has(ship.id)),
@@ -309,6 +374,16 @@ export function withStates(
       byId.set(pledge.id, result.pledge);
       if (result.log.length) upgradeLogs.set(pledge.id, result.log);
     });
+  // An upgraded pack (#514): the pack of many ships, one of its ships upgraded.
+  const packs = ofKind(generated, 'packs');
+  const manyShips = packs.find(
+    (pledge) => pledge.items.filter((item) => item.kind === 'Ship').length > 2,
+  );
+  if (states.upgraded && manyShips) {
+    const result = upgradedPack(byId.get(manyShips.id)!, upgradeCatalog);
+    byId.set(manyShips.id, result.pledge);
+    if (result.log.length) upgradeLogs.set(manyShips.id, result.log);
+  }
 
   // Ships equal to an upgraded pledge's current ship, with other extras (#450), the oldest pledges.
   const firstUpgraded = [...upgradeLogs.keys()].map((id) => byId.get(id)!)[0];

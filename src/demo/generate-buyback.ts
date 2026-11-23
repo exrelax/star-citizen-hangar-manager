@@ -72,7 +72,8 @@ function shipPledge(ship: Ship, lifetime: boolean): Omit<BuybackPledge, 'id'> {
     items: [
       ship.name,
       lifetime ? 'Lifetime Insurance' : '120 Month Insurance',
-      'Hangar Decoration',
+      // RSI's hangar comes with the ship: a solo ship (#514).
+      'Self-Land Hangar',
     ],
     isUpgrade: false,
     category: 'standalone_ship',
