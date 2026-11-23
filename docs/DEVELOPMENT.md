@@ -303,7 +303,7 @@ custom properties and classes in [`site/styles.css`](../site/styles.css).
   changing facts and their history: the production status (Ship Matrix), whether it is always
   available in the Pledge Store, whether RSI still sells it at all (`retired`, #385: "Retired",
   "Out of production", "… (No longer available)") and its standard price (Star Citizen Wiki), for
-  the CCU Consultant (#106), the Price Increase Advisor (#263), the table of all ships (#385) and
+  the CCU Check (#106), the Price Increase Advisor (#263), the table of all ships (#385) and
   the extension's ship status (#109). Each fact is a
   list of periods (`{ value, from, to }`; `alwaysAvailable` and `retired` only the periods in which
   they were), the
@@ -476,7 +476,7 @@ asked for with `permissions.request` only when the user turns its feature on.
   scripts (`permissions.onAdded`/`onRemoved`, and at start for changes while it slept). The
   permission is per browser, so it isn't a synced setting: the permission itself is the switch.
 - **alarms** (required since #105): the background script sets an alarm for the time the Paint
-  Discount Consultant's filler paints can be melted and shows the browser notification then
+  Discount Planner's filler paints can be melted and shows the browser notification then
   (`store/paint-consultant/filler-notification.ts`). It shows no warning in Chrome; Firefox can't
   ask for it as an optional permission and lists no warning for it either – whether its update
   dialog asks is still to be checked with a test build before the release. Chrome fires alarms
@@ -550,7 +550,7 @@ an account without stored data):
   probable time, within the hour, inside and outside the period; a ship, a CCU and a module; the
   filter and the sidebar notification.
 - The Pledge Store tab: warbond CCUs with own CCUs in the same price range, the events (#210), and
-  the Paint Discount Consultant (#131): the store credit's quick choices for `same`, `lowerTier`
+  the Paint Discount Planner (#131): the store credit's quick choices for `same`, `lowerTier`
   (if the hangar allows it) and `impossible`, a paint bought again with its melt step, paints left
   to buy, filler paints waiting and ready. With the demo setting "Show real Pledge Store data"
   (#310), the real warbond CCUs, history, events and price increases instead, with the counts of
@@ -567,7 +567,7 @@ an account without stored data):
   With the upgrade tool's ships on sale also a leaving ship with "Ship upgrade" only, with "Warbond
   upgrade" next to it and without either (#391, #392), and ships to secure with and without
   "Warbond upgrade"; the upgrade buttons are disabled in the demo.
-- The CCU Consultant (#425, `demo-ccu-cases.ts`, checked in `demo-ccu-cases.test.ts`): CCUs
+- The CCU Check (#425, `demo-ccu-cases.ts`, checked in `demo-ccu-cases.test.ts`): CCUs
   covered by a hangar ship, a package, an upgraded pledge, a hangar CCU, a buy back ship and a buy
   back CCU, by several at once and not at all, also with a buy back CCU RSI can't sell again;
   each group ("Without base ship", "Only via buy back", "Base always available") with groups of

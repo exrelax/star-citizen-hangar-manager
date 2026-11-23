@@ -49,7 +49,7 @@
     "warbondCollisionsEmpty": "Plus aucun de tes CCU ne chevauche la fourchette de prix du warbond $1.",
     "warbondCollisionsShow": "Afficher dans My Hangar",
     "paintsToOptimize": "Peintures à optimiser",
-    "ccuGroup": "CCU Consultant : $1",
+    "ccuGroup": "CCU Check : $1",
     "ccuBaseShip": "CCU depuis $1",
     "ccuEmpty": "Aucun de ces CCU n’est plus dans ton hangar.",
     "ccuBuyback": "Vaisseaux et CCU vers $1",
@@ -191,7 +191,7 @@
     "hangar": "My Hangar",
     "buyback": "Buy Back",
     "store": "Pledge Store",
-    "consultants": "Conseillers",
+    "consultants": "Outils",
     "watchlists": "Watchlists",
     "settings": "Paramètres",
     "settingsName": "Paramètres du Hangar Manager"
@@ -288,11 +288,11 @@
     "sidebarShowHint": "Des cadres sous la navigation de RSI à gauche, sur chaque onglet du gestionnaire.",
     "sidebarBoxes": "Cadres",
     "browserNotifications": "Notifications du navigateur",
-    "browserNotificationsHint": "Même quand aucune page RSI n’est ouverte, p. ex. quand des pledges marqués à fondre ou les peintures de remplissage du Paint Discount Consultant peuvent être fondus. Activées, l’extension lit aussi le Pledge Store selon son horaire quand aucune page RSI n’est ouverte (voir « Mises à jour intelligentes »). Désactivé par défaut : l’activer ouvre une page où ton navigateur demande l’autorisation d’afficher des notifications ; le désactiver rend l’autorisation. Seulement pour ce navigateur. Le cadre « Notifications » de la barre latérale fonctionne sans.",
+    "browserNotificationsHint": "Même quand aucune page RSI n’est ouverte, p. ex. quand des pledges marqués à fondre ou les peintures de remplissage du Paint Discount Planner peuvent être fondus. Activées, l’extension lit aussi le Pledge Store selon son horaire quand aucune page RSI n’est ouverte (voir « Mises à jour intelligentes »). Désactivé par défaut : l’activer ouvre une page où ton navigateur demande l’autorisation d’afficher des notifications ; le désactiver rend l’autorisation. Seulement pour ce navigateur. Le cadre « Notifications » de la barre latérale fonctionne sans.",
     "browserNotificationsAsked": "Ton navigateur demande l’autorisation dans l’onglet qui vient de s’ouvrir.",
     "browserNotificationsRefused": "Ton navigateur n’a pas autorisé les notifications la dernière fois, elles sont donc désactivées. Active le paramètre pour qu’il te le redemande.",
     "notificationKindMeltReady": "Des pledges marqués peuvent être fondus",
-    "notificationKindMeltReadyHint": "Quand des pledges marqués à fondre, ou les peintures de remplissage du Paint Discount Consultant, peuvent être fondus après les 24 heures de RSI. La barre latérale l’indique dans tous les cas.",
+    "notificationKindMeltReadyHint": "Quand des pledges marqués à fondre, ou les peintures de remplissage du Paint Discount Planner, peuvent être fondus après les 24 heures de RSI. La barre latérale l’indique dans tous les cas.",
     "storeChangeNotifications": "Pledge Store",
     "notificationKindWarbonds": "CCU warbond modifiés",
     "notificationKindWarbondsHint": "Nouveaux CCU warbond et ceux qui ne sont plus proposés dans la barre latérale ; les nouveaux aussi en notification du navigateur, si elles sont activées.",
@@ -321,27 +321,27 @@
     "sidebarNotificationsHint": "Affiché tant qu’il y a une notification : quand des pledges marqués pour fondre peuvent être fondus maintenant – avec des boutons pour les afficher ou les sélectionner – et les pledges marqués qui attendent encore ; combien de peintures peuvent être rachetées avec plus de remise (masquable avec sa ×). Les notifications à cocher : une par une ou toutes à la fois. Sans autorisation du navigateur.",
     "sidebarSelectionHint": "Affiché tant que des pledges sont sélectionnés. Sans lui, les lignes n'ont pas de case de sélection.",
     "sidebarPaintConsultantHint": "Affiché tant que des peintures peuvent être rachetées avec une remise sur volume plus élevée : combien, et le crédit boutique libéré. Masqué tant que « Masquer la valeur de fusion » est activé.",
-    "ccuConsultant": "CCU Consultant",
+    "ccuConsultant": "CCU Check",
     "ccuAlwaysAvailable": "Tenir compte des vaisseaux toujours disponibles",
     "ccuAlwaysAvailableHint": "Activé : un CCU dont le vaisseau de base est toujours disponible dans le Pledge Store ne compte pas comme sans vaisseau de base et reçoit l’étiquette « Base toujours disponible ». Désactivé : tout CCU sans son vaisseau de base dans votre hangar ou rachat compte.",
     "ccuSource": "Source de la liste",
     "ccuSourceDate": "Les vaisseaux toujours disponibles, au $1.",
     "ccuSourceNone": "Aucune liste disponible pour l’instant",
     "ccuAttribution": "Liste de $1, partagée sous",
-    "paintConsultant": "Conseiller de remises sur les peintures",
+    "paintConsultant": "Paint Discount Planner",
     "consultantLayout": "Affichage",
     "consultantLayoutOptions": {
       "choose": "Choisir une voie (cartes)",
       "ways": "Les deux voies côte à côte (cartes)",
       "table": "Tableaux"
     },
-    "consultantLayoutHint": "Comment le conseiller montre son plan : choisir « Acheter d’abord » ou « Fondre d’abord » et voir les étapes, le crédit boutique au fil des étapes et le panier de la voie choisie ; les deux voies côte à côte en cartes ; ou le plan et ses peintures en tableaux.",
+    "consultantLayoutHint": "Comment le Paint Discount Planner montre son plan : choisir « Acheter d’abord » ou « Fondre d’abord » et voir les étapes, le crédit boutique au fil des étapes et le panier de la voie choisie ; les deux voies côte à côte en cartes ; ou le plan et ses peintures en tableaux.",
     "paintConsultantStoreCredit": "Inclure mon crédit boutique",
-    "paintConsultantStoreCreditHint": "Le panier peut aussi être payé avec votre crédit boutique actuel. Désactivé : uniquement avec ce que rapporte la fonte de vos propres peintures. Le conseiller achète toujours avec du crédit boutique, jamais avec de l’argent neuf.",
+    "paintConsultantStoreCreditHint": "Le panier peut aussi être payé avec votre crédit boutique actuel. Désactivé : uniquement avec ce que rapporte la fonte de vos propres peintures. Le Paint Discount Planner achète toujours avec du crédit boutique, jamais avec de l’argent neuf.",
     "paintConsultantFillers": "Utiliser des peintures de remplissage",
     "paintConsultantFillersHint": "Achète des peintures bon marché supplémentaires pour atteindre une remise sur volume plus élevée et les refond après le délai de 24 heures de RSI. Désactivé : seules vos propres peintures comptent pour la remise.",
     "paintConsultantGiftable": "Ignorer les peintures offrables",
-    "paintConsultantGiftableHint": "Les peintures qui peuvent être offertes maintenant ne sont pas fondues ni rachetées : achetées en crédit boutique, elles ne pourraient plus être offertes. Aussi dans le conseiller lui-même.",
+    "paintConsultantGiftableHint": "Les peintures qui peuvent être offertes maintenant ne sont pas fondues ni rachetées : achetées en crédit boutique, elles ne pourraient plus être offertes. Aussi directement dans le Paint Discount Planner.",
     "reboughtDetection": "Peintures rachetées",
     "reboughtDetectionOptions": {
       "plan": "Seulement celles d’un plan mis dans le panier (sûr)",
@@ -415,22 +415,22 @@
         "reset": "Les paramètres de la démo sont réinitialisés, ses marques effacées."
       },
       "storeCredit": "Crédit boutique de la démo",
-      "storeCreditHint": "Affiché dans les chiffres du compte et utilisé par le conseiller de réduction des peintures au lieu du vôtre. Les choix rapides le règlent pour chaque cas du conseiller sur ce hangar de démo. Une étape du plan en cours que ce crédit ne peut pas montrer fixe le sien.",
-      "creditCases": "Crédit boutique pour un cas du conseiller",
+      "storeCreditHint": "Affiché dans les chiffres du compte et utilisé par le Paint Discount Planner au lieu du vôtre. Les choix rapides le règlent pour chaque cas du Paint Discount Planner sur ce hangar de démo. Une étape du plan en cours que ce crédit ne peut pas montrer fixe le sien.",
+      "creditCases": "Crédit boutique pour un cas du Paint Discount Planner",
       "creditCase": {
         "same": "Même palier",
         "lowerTier": "Palier inférieur",
         "impossible": "Pas possible",
         "none": "Aucun crédit"
       },
-      "newPlan": "Un nouveau plan du conseiller de remises sur les peintures",
-      "completedPlans": "Plans terminés du conseiller de remises sur les peintures",
+      "newPlan": "Un nouveau plan du Paint Discount Planner",
+      "completedPlans": "Plans terminés du Paint Discount Planner",
       "realStoreData": "Afficher les vraies données du Pledge Store",
       "realStoreDataHint": "Affiche dans l’onglet Pledge Store les vrais CCU warbond, leur historique, les événements et les vaisseaux dont le prix devrait augmenter, au lieu de ceux de la démo. Ce que RSI vend est public ; ce que vous possédez vient toujours du hangar et du buy back de la démo.",
       "ccuCoverageGaps": "CCU sans vaisseau de base",
-      "ccuCoverageGapsHint": "Certains CCU n’ont pas de vaisseau de base dans le hangar ou le rachat de la démo, ou trop peu de moyens de l’obtenir. Désactivé, le rachat de la démo en donne un à chacun : le CCU Consultant et son encadré dans la barre latérale n’en montrent aucun.",
+      "ccuCoverageGapsHint": "Certains CCU n’ont pas de vaisseau de base dans le hangar ou le rachat de la démo, ou trop peu de moyens de l’obtenir. Désactivé, le rachat de la démo en donne un à chacun : le CCU Check et son encadré dans la barre latérale n’en montrent aucun.",
       "ccuDiscountAtRisk": "CCU dont la remise est menacée",
-      "ccuDiscountAtRiskHint": "Le prix de certains vaisseaux de base des CCU de la démo augmente. Désactivé, aucun n’augmente : « Remise menacée » du CCU Consultant est vide.",
+      "ccuDiscountAtRiskHint": "Le prix de certains vaisseaux de base des CCU de la démo augmente. Désactivé, aucun n’augmente : « Remise menacée » du CCU Check est vide.",
       "rebuyable": "Pledges rachetables",
       "rebuyableHint": "Certains pledges du hangar de la démo peuvent être fondus maintenant et rachetés plus tard sans perte. Désactivé, aucun ne le peut : la liste « Fondre et racheter » est vide.",
       "runningPlanStage": "Étape du plan en cours",
@@ -484,7 +484,7 @@
     "cartPaintDiscountHint": "Une note dans le panier de RSI tant que ses peintures n’ont pas la meilleure remise de volume : les paliers, les peintures de remplissage pour un meilleur palier, l’économie, et un bouton qui les ajoute – rien n’est payé.",
     "upgradeDialogBaseCounts": "Afficher les CCU et vaisseaux possédés sur les vaisseaux de base de la fenêtre d’upgrade de RSI",
     "upgradeDialogBaseCountsHint": "Indique sur chaque vaisseau de base combien de fois ton hangar l’a et combien de CCU vers lui ton hangar et ton buy back contiennent : chacun donne le vaisseau à un CCU depuis lui. D’après ton hangar et ton buy back enregistrés.",
-    "sidebarCcuConsultantHint": "Affichée tant que votre hangar a des CCU : combien n’ont pas de vaisseau de base, n’en auront bientôt plus ou ont trop peu d’accès, avec un bouton vers le CCU Consultant.",
+    "sidebarCcuConsultantHint": "Affichée tant que votre hangar a des CCU : combien n’ont pas de vaisseau de base, n’en auront bientôt plus ou ont trop peu d’accès, avec un bouton vers le CCU Check.",
     "watchlistNotifications": "Watchlists",
     "notificationKindWatchlistReminders": "Rappels des watchlists",
     "notificationKindWatchlistRemindersHint": "À la date d’une watchlist avec rappel, dans la barre latérale et, si autorisé, dans le navigateur.",
@@ -592,13 +592,13 @@
     },
     "paintPlan": {
       "name": "Plan de peintures",
-      "content": "Le plan du conseiller de remise sur les peintures dont les peintures ont été mises dans le panier : propres et de remplissage",
-      "missing": "D’ici là, le conseiller ne sait pas quelles peintures de remplissage ont été achetées."
+      "content": "Le plan du Paint Discount Planner dont les peintures ont été mises dans le panier : propres et de remplissage",
+      "missing": "D’ici là, le Paint Discount Planner ne sait pas quelles peintures de remplissage ont été achetées."
     },
     "paintHistory": {
       "name": "Plans de peintures terminés",
-      "content": "Les plans terminés du conseiller de remise sur les peintures : peintures fondues et achetées, crédit boutique avant et après",
-      "missing": "Ils ne peuvent pas être relus : le conseiller n’affiche aucun plan terminé jusqu’à la fin du prochain."
+      "content": "Les plans terminés du Paint Discount Planner : peintures fondues et achetées, crédit boutique avant et après",
+      "missing": "Ils ne peuvent pas être relus : le Paint Discount Planner n’affiche aucun plan terminé jusqu’à la fin du prochain."
     },
     "watchlists": {
       "name": "Watchlists",
@@ -794,7 +794,7 @@
     "days": "$1 j"
   },
   "consultant": {
-    "title": "Conseiller de remises sur les peintures",
+    "title": "Paint Discount Planner",
     "boxTitle": "Remise sur les peintures",
     "intro": "RSI accorde dans le panier une remise sur volume pour les peintures : 15 % dès 2 peintures jusqu’à 35 % dès 10. Fondez vos peintures achetées avec moins de remise, rachetez-les avec des peintures de remplissage bon marché à la remise plus élevée, et refondez les peintures de remplissage après 24 heures. Vous finissez avec plus de crédit boutique – payé uniquement en crédit boutique, sans argent neuf.",
     "hidden": "Masqué tant que « Masquer la valeur de fusion » est activé.",
@@ -863,10 +863,10 @@
     "giftableTag": "Offrable",
     "giftableTagHint": "Offrable maintenant ; rachetée en crédit boutique, elle ne l’est plus.",
     "mark": "Rachat $1 → $2",
-    "markHint": "La fondre et la racheter avec la remise sur volume ($1 → $2) : $3 de crédit boutique libérés. Ouvre le conseiller de remises sur les peintures.",
+    "markHint": "La fondre et la racheter avec la remise sur volume ($1 → $2) : $3 de crédit boutique libérés. Ouvre le Paint Discount Planner.",
     "probablyRebought": {
-      "one": "$1 peinture semble rachetée, mais aucun plan du conseiller ne le confirme. Vérifie-la toi-même avant de fondre quoi que ce soit – elle reste dans le plan :",
-      "other": "$1 peintures semblent rachetées, mais aucun plan du conseiller ne le confirme. Vérifie-les toi-même avant de fondre quoi que ce soit – elles restent dans le plan :"
+      "one": "$1 peinture semble rachetée, mais aucun plan du Paint Discount Planner ne le confirme. Vérifie-la toi-même avant de fondre quoi que ce soit – elle reste dans le plan :",
+      "other": "$1 peintures semblent rachetées, mais aucun plan du Paint Discount Planner ne le confirme. Vérifie-les toi-même avant de fondre quoi que ce soit – elles restent dans le plan :"
     },
     "probablyReboughtItem": "$1 : ancien pledge avec $2, une copie plus récente avec $3 ($4)",
     "meltOld": {
@@ -874,7 +874,7 @@
       "other": "Fondre les $1 anciennes peintures"
     },
     "markMelt": "Fondre – rachetée à $1",
-    "markMeltHint": "Cette peinture a été rachetée avec $1 de remise : fonds cet ancien pledge pour $2 de crédit boutique. Ouvre le conseiller de remise sur les peintures.",
+    "markMeltHint": "Cette peinture a été rachetée avec $1 de remise : fonds cet ancien pledge pour $2 de crédit boutique. Ouvre le Paint Discount Planner.",
     "boxMeltNow": "Peintures à fondre",
     "boxMeltNowHint": "Peintures rachetées avec la remise sur la quantité : leurs anciens pledges restent à fondre.",
     "boxMeltNowCredit": "Crédit boutique qu’elles donnent",
@@ -883,7 +883,7 @@
     "boxFilterHint": "N’affiche que ces peintures dans « My Hangar » ; ce bouton, le × de la liste ou « Réinitialiser les filtres » affiche tout à nouveau.",
     "boxUnfilter": "Afficher tous les pledges",
     "boxUnfilterHint": "Désactive le filtre : « My Hangar » affiche à nouveau tous les pledges.",
-    "boxOpen": "Ouvrir le conseiller",
+    "boxOpen": "Ouvrir le planner",
     "ways": {
       "intro": "Rachetez vos peintures avec une remise sur volume plus élevée – payé uniquement en crédit boutique.",
       "resultLabel": "Résultat",
@@ -972,18 +972,18 @@
     "fillers": {
       "notificationTitle": "Les peintures de remplissage peuvent être fondues",
       "ready": {
-        "one": "La peinture de remplissage du conseiller de remises sur les peintures peut être fondue maintenant. Ouvrez My Hangar pour la fondre.",
-        "other": "Les $1 peintures de remplissage du conseiller de remises sur les peintures peuvent être fondues maintenant. Ouvrez My Hangar pour les fondre."
+        "one": "La peinture de remplissage du Paint Discount Planner peut être fondue maintenant. Ouvrez My Hangar pour la fondre.",
+        "other": "Les $1 peintures de remplissage du Paint Discount Planner peuvent être fondues maintenant. Ouvrez My Hangar pour les fondre."
       },
       "amongReady": {
-        "one": "$1 d’entre eux est une peinture de remplissage du conseiller de remises sur les peintures.",
-        "other": "$1 d’entre eux sont des peintures de remplissage du conseiller de remises sur les peintures."
+        "one": "$1 d’entre eux est une peinture de remplissage du Paint Discount Planner.",
+        "other": "$1 d’entre eux sont des peintures de remplissage du Paint Discount Planner."
       },
       "melt": {
         "one": "Fondre la peinture de remplissage",
         "other": "Fondre les $1 peintures de remplissage"
       },
-      "meltHint": "Fond les peintures de remplissage achetées par la commande du conseiller de remises sur les peintures – d’après leurs ids de pledge, jamais d’autres copies de la même peinture. Ouvre d’abord une boîte de dialogue."
+      "meltHint": "Fond les peintures de remplissage achetées par la commande du Paint Discount Planner – d’après leurs ids de pledge, jamais d’autres copies de la même peinture. Ouvre d’abord une boîte de dialogue."
     },
     "choose": {
       "label": "Choisir une voie",
@@ -1061,8 +1061,8 @@
       "untilMelt": "avant que RSI permette la fonte",
       "cooldownLabel": "Délai de 24 heures",
       "countdownNote": "Marquées à fondre – vous recevez une notification, aussi dans la barre latérale",
-      "noteAfterPay": "Après le paiement, le conseiller trouve les nouvelles peintures à la prochaine actualisation et marque les peintures de remplissage à fondre.",
-      "notePurchaseNextRefresh": "Le panier est vide maintenant : si vous avez payé, le conseiller trouve les nouvelles peintures à la prochaine actualisation.",
+      "noteAfterPay": "Après le paiement, le Paint Discount Planner trouve les nouvelles peintures à la prochaine actualisation et marque les peintures de remplissage à fondre.",
+      "notePurchaseNextRefresh": "Le panier est vide maintenant : si vous avez payé, le Paint Discount Planner trouve les nouvelles peintures à la prochaine actualisation.",
       "noteCreditSpent": "Du crédit boutique a été dépensé ailleurs depuis le début du plan. Recalculez-le pour le crédit que vous avez – les peintures fondues restent dans le plan.",
       "noteOnlyOld": "Seules les copies achetées avant le $1 sont fondues – les nouvelles restent.",
       "noteNotFound": "Aucun achat du plan n’est apparu en $1 jours. Si vous ne l’avez pas acheté, abandonnez le plan.",
@@ -1086,7 +1086,7 @@
       "meltHint": "Fond ces pledges à la fois (fusion multiple). Ouvre d’abord une boîte de dialogue.",
       "withAmount": "$1 · $2",
       "bulkNote": "Fondre plusieurs pledges à la fois (expérimental) · RSI demande votre mot de passe une seule fois",
-      "footer": "Le conseiller vérifie votre hangar, votre panier et votre crédit boutique à chaque actualisation.",
+      "footer": "Le Paint Discount Planner vérifie votre hangar, votre panier et votre crédit boutique à chaque actualisation.",
       "discard": "Abandonner le plan",
       "discardConfirm": "Abandonner le plan en cours ? Rien ne change dans votre hangar ni votre panier, et les pledges marqués à fondre le restent. Les peintures fondues d’abord et pas encore rachetées ne sont plus suivies.",
       "replaceConfirm": "Un plan est en cours. Démarrer ce nouveau plan l’abandonne – ses peintures fondues d’abord et pas encore rachetées ne sont plus suivies.",
@@ -1793,7 +1793,7 @@
     }
   },
   "ccuConsultant": {
-    "title": "CCU Consultant",
+    "title": "CCU Check",
     "question": "Peux-tu appliquer tous tes CCU ?",
     "intro": {
       "one": "Un CCU ne s’applique qu’à son vaisseau de base : dans ton hangar, ou atteint par un CCU vers lui. Vérifié pour ton $1 CCU.",
@@ -1870,7 +1870,7 @@
       "always": "Toujours en vente",
       "atRisk": "Remise menacée"
     },
-    "boxOpen": "Ouvrir le CCU Consultant",
+    "boxOpen": "Ouvrir le CCU Check",
     "boxMissingHint": "Les CCU dont ni le hangar ni le buy back ne donne le vaisseau de base, et dont le vaisseau de base n’est probablement pas toujours disponible.",
     "boxTooFew": "Trop peu d’accès",
     "boxTooFewHint": "Les CCU dont le vaisseau de base n’est pas toujours disponible, avec moins de vaisseaux et de CCU vers lui que de CCU depuis lui.",
@@ -1982,7 +1982,7 @@
     "add": "Ajouter des peintures de remplissage pour la meilleure remise",
     "adding": "Ajout des peintures de remplissage …",
     "outcome": {
-      "added": "Les peintures de remplissage sont dans ton panier. Le conseiller les garde et les marque à fondre une fois achetées.",
+      "added": "Les peintures de remplissage sont dans ton panier. Le Paint Discount Planner les garde et les marque à fondre une fois achetées.",
       "partly": "Certaines peintures de remplissage n’ont pas pu être ajoutées ; les autres sont dans ton panier.",
       "none": "RSI n’a pas accepté les peintures de remplissage. Ton panier n’a pas changé."
     },
@@ -2027,7 +2027,7 @@
     "meltMarkHintReady": "$1 sur $2 marqués pour la fonte, dont $3 prêts maintenant."
   },
   "consultants": {
-    "paintLater": "Le Conseiller de remises sur les peintures apparaît ici dès que des peintures peuvent être rachetées moins cher."
+    "paintLater": "Le Paint Discount Planner apparaît ici dès que des peintures peuvent être rachetées moins cher."
   },
   "watchlists": {
     "intro": "Rassemble des éléments de My Hangar, du rachat et du Pledge Store sous un nom de ton choix, p. ex. « Fondre après l’IAE » ou « CCU à acheter dès leur retour ».",
@@ -2112,7 +2112,7 @@
     "storeAlertsHint": "Quand un élément du Pledge Store dessus change de prix, ou sort de la vente ou y revient.",
     "storeAlertsKindOff": "Les changements du Pledge Store sur les watchlists sont désactivés dans les paramètres (Notifications).",
     "fillerName": "Peintures de remplissage du plan du $1",
-    "fillerDescription": "Les peintures de remplissage du Paint Discount Consultant : fonds-les dès que RSI le permet, 24 heures après l’achat.",
+    "fillerDescription": "Les peintures de remplissage du Paint Discount Planner : fonds-les dès que RSI le permet, 24 heures après l’achat.",
     "cartAll": "Ajouter au panier",
     "cartTitleAll": "Ajouter « $1 » au panier",
     "cartOne": "Ajouter « $1 » au panier",
@@ -2241,10 +2241,10 @@
     "shortcutHide": "Afficher tous les pledges",
     "setting": "Afficher les pledges rachetables",
     "settingHint": "Le libellé « Rachetable » sur les pledges que vous pouvez fondre maintenant et racheter plus tard dans le Pledge Store en store credit sans perte, la liste « Fondre et racheter » et, dans l’élément ouvert, pourquoi un pledge n’est pas rachetable sans perte.",
-    "volumeHint": "Achetée avec une remise de volume de $1 % : elle ne revient qu’avec au moins $2 peintures dans un même panier. Achète plus tard autant de peintures ensemble, ou garde assez de crédit boutique pour des peintures de remplissage (Paint Discount Consultant).",
+    "volumeHint": "Achetée avec une remise de volume de $1 % : elle ne revient qu’avec au moins $2 peintures dans un même panier. Achète plus tard autant de peintures ensemble, ou garde assez de crédit boutique pour des peintures de remplissage (Paint Discount Planner).",
     "volumeNote": {
-      "one": "$1 de ces peintures a été achetée avec une remise de volume allant jusqu’à $2 %. Elle ne revient qu’avec au moins $3 peintures dans un même panier : achète plus tard autant de peintures ensemble, ou garde assez de crédit boutique pour des peintures de remplissage (Paint Discount Consultant).",
-      "other": "$1 de ces peintures ont été achetées avec une remise de volume allant jusqu’à $2 %. Elle ne revient qu’avec au moins $3 peintures dans un même panier : achète plus tard autant de peintures ensemble, ou garde assez de crédit boutique pour des peintures de remplissage (Paint Discount Consultant)."
+      "one": "$1 de ces peintures a été achetée avec une remise de volume allant jusqu’à $2 %. Elle ne revient qu’avec au moins $3 peintures dans un même panier : achète plus tard autant de peintures ensemble, ou garde assez de crédit boutique pour des peintures de remplissage (Paint Discount Planner).",
+      "other": "$1 de ces peintures ont été achetées avec une remise de volume allant jusqu’à $2 %. Elle ne revient qu’avec au moins $3 peintures dans un même panier : achète plus tard autant de peintures ensemble, ou garde assez de crédit boutique pour des peintures de remplissage (Paint Discount Planner)."
     }
   },
   "pack": {

@@ -66,7 +66,7 @@ describe('the tab "Consultants" (#453)', () => {
   it('has a sub tab for each consultant with its count, the CCU Consultant first', async () => {
     Object.assign(state, { ccus: 5, missing: 3, paint: { available: true, count: 4 } });
     const { root, visible } = await render();
-    expect(tabs(root)).toEqual(['CCU Consultant 3', 'Paint Discount 4']);
+    expect(tabs(root)).toEqual(['CCU Check 3', 'Paint Discount Planner 4']);
     expect(root.querySelector('.shm-tab-count.is-danger')).not.toBeNull();
     expect(visible('.ccu')).toBe(true);
     expect(visible('.paint')).toBe(false);
@@ -78,7 +78,7 @@ describe('the tab "Consultants" (#453)', () => {
   it('counts the CCUs only via buy back in orange while none is without base ship', async () => {
     Object.assign(state, { ccus: 5, missing: 0, buyback: 2, paint: { available: true, count: 4 } });
     const { root } = await render();
-    expect(tabs(root)[0]).toBe('CCU Consultant 2');
+    expect(tabs(root)[0]).toBe('CCU Check 2');
     expect(root.querySelector('.shm-tab-count.is-warning')).not.toBeNull();
   });
 
@@ -86,12 +86,12 @@ describe('the tab "Consultants" (#453)', () => {
     Object.assign(state, { ccus: 5, missing: 3, paint: { available: false, count: 0 } });
     let { root } = await render();
     expect(tabs(root)).toEqual([]);
-    expect(root.querySelector('h3')!.textContent!.trim()).toBe('CCU Consultant');
+    expect(root.querySelector('h3')!.textContent!.trim()).toBe('CCU Check');
     app!.unmount();
     Object.assign(state, { ccus: 0, paint: { available: true, count: 4 } });
     ({ root } = await render());
     expect(tabs(root)).toEqual([]);
-    expect(root.querySelector('h3')!.textContent!.trim()).toBe('Paint Discount');
+    expect(root.querySelector('h3')!.textContent!.trim()).toBe('Paint Discount Planner');
   });
 
   it('shows the consultant a link asks for', async () => {

@@ -69,14 +69,14 @@ sees or stores your RSI login.
   happened – also the changes in the Pledge Store (public offers and prices) – kept in the local
   storage, with which ones were shown as browser notifications; removed ones go after 30 days.
   They never leave your browser.
-- **Paints whose consultant notification you dismissed**: their pledge IDs, kept in the browser's
+- **Paints whose planner notification you dismissed**: their pledge IDs, kept in the browser's
   sync storage like the pledges marked to melt, until you dismiss it again or show it again in
   Settings → Notifications.
 - **Browser notifications**: whether this browser allows them (and whether it refused the last
   time), kept in the local storage. Whether you removed the sidebar's hint about them is kept in
   the sync storage. The notifications themselves are made in the extension and
   shown by your browser and system; their content is not sent anywhere.
-- **The Paint Discount Consultant's plan**, once its paints were put into the cart: when, the
+- **The Paint Discount Planner's plan**, once its paints were put into the cart: when, the
   discount tier, the own paints (pledge IDs, titles, melt values) and the filler paints, kept in
   the local storage (Settings → Stored data → "Paint plan"). Once the order that bought them is
   found, its ID and time and the pledge IDs of the filler paints are kept with it; the filler
@@ -87,7 +87,7 @@ sees or stores your RSI login.
 ## Which websites the extension talks to
 
 - **robertsspaceindustries.com**: to read the data listed above and, only after your click, to
-  put a buy back pledge or the paints of the Paint Discount Consultant into your cart (it reads
+  put a buy back pledge or the paints of the Paint Discount Planner into your cart (it reads
   the cart first; nothing is ever checked out), to exchange (melt) or gift a pledge, and to open invoices.
   "Refund Request" opens RSI's support form (support.robertsspaceindustries.com) in a new tab,
   prefilled with the order ID; you review and send it yourself. With browser notifications on,
@@ -138,7 +138,7 @@ visiting it doesn't contact GitHub's API.
 - **storage**: keeps the data and settings described above in your browser.
 - **unlimitedStorage**: large hangars and buy backs can exceed the default storage quota.
 - **alarms**: timers in your browser, only with browser notifications on: for when pledges you
-  marked to melt or the Paint Discount Consultant's filler paints can be melted, and to read the
+  marked to melt or the Paint Discount Planner's filler paints can be melted, and to read the
   Pledge Store around the full hour while no RSI page is open.
 - **notifications** (optional): asked for only when you turn on Settings → Notifications →
   "Browser notifications", on a page of the extension, never at install or update. Without it,

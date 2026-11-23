@@ -90,12 +90,12 @@ or order IDs (they read `<id>`), no name and no address.
 | `SHIP-MATRIX-FAIL`      | RSI's Ship Matrix (ship status) couldn't be read                                     | Kept the ship status of the last read                             | Nothing; the next read tries again.    |
 | `SITE-DATA-FAIL`        | A data file of the project website (ships, events, price increases) couldn't be read | Kept the data of the last read; tried again on the next schedule  | Nothing; the next read tries again.    |
 
-## Paint Discount Consultant
+## Paint Discount Planner
 
-| Code                   | What didn't work                                        | What the Hangar Manager did                                  | What you can do                            |
-| ---------------------- | ------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------ |
-| `PAINT-CART-FAIL`      | The consultant's paints couldn't be put into RSI's cart | Left the cart as it was and said why                         | Check the reason shown and try again.      |
-| `PAINT-CART-READ-FAIL` | RSI's cart couldn't be read for the running plan        | Showed the plan without the cart check; it can be read again | Read the cart again from the running plan. |
+| Code                   | What didn't work                                     | What the Hangar Manager did                                  | What you can do                            |
+| ---------------------- | ---------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------ |
+| `PAINT-CART-FAIL`      | The planner's paints couldn't be put into RSI's cart | Left the cart as it was and said why                         | Check the reason shown and try again.      |
+| `PAINT-CART-READ-FAIL` | RSI's cart couldn't be read for the running plan     | Showed the plan without the cart check; it can be read again | Read the cart again from the running plan. |
 
 ## Watchlists
 

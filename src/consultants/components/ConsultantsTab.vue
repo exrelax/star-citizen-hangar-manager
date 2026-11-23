@@ -58,7 +58,7 @@ watch(
 const number = computed(() => new Intl.NumberFormat(locale.value));
 const ICONS: Record<ConsultantId, IconName> = { ccu: 'link', paint: 'fill-drip' };
 const labelOf = (id: ConsultantId) =>
-  i18n.t(id === 'ccu' ? 'ccuConsultant.title' : 'consultant.boxTitle');
+  i18n.t(id === 'ccu' ? 'ccuConsultant.title' : 'consultant.title');
 /** The count of a sub tab, tinted by what it counts; none while there is nothing to count. */
 function countOf(id: ConsultantId) {
   if (id === 'paint') {

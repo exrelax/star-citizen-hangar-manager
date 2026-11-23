@@ -96,7 +96,7 @@ describe('CcuConsultant (#113)', () => {
   it('shows the groups with their counts, those short of ways first', async () => {
     const { root } = render(ccus);
     // Its name is the sub tab or the heading of the tab "Consultants" (#453).
-    expect(root.querySelector('section')?.getAttribute('aria-label')).toBe('CCU Consultant');
+    expect(root.querySelector('section')?.getAttribute('aria-label')).toBe('CCU Check');
     // The question in the box, the switch next to it.
     const box = root.querySelector('.shm-ccu-consultant-box')!;
     expect(box.querySelector('h4')?.textContent).toBe('Can you apply every CCU?');
@@ -287,7 +287,7 @@ describe('the deep view of the CCU Consultant (#563)', () => {
     expect(show.textContent?.trim()).toBe('Show 2 CCUs in My Hangar');
     show.click();
     expect(listShortcuts.value.hangar?.id).toBe('ccuConsultant:tooFew');
-    expect(listShortcuts.value.hangar?.title()).toBe('CCU Consultant: Too few ways');
+    expect(listShortcuts.value.hangar?.title()).toBe('CCU Check: Too few ways');
   });
 });
 
@@ -392,7 +392,7 @@ describe('the views of the CCU Consultant (#563)', () => {
     expect(show.textContent?.trim()).toBe('Show 2 CCUs in My Hangar');
     show.click();
     expect(listShortcuts.value.hangar?.id).toBe('ccuConsultant:missing');
-    expect(listShortcuts.value.hangar?.title()).toBe('CCU Consultant: Without base ship');
+    expect(listShortcuts.value.hangar?.title()).toBe('CCU Check: Without base ship');
   });
 
   it('has the toggle in both views and remembers the choice in the settings', () => {

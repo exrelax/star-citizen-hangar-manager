@@ -9,7 +9,7 @@ describe('the List Shortcuts of the CCU Consultant (#563)', () => {
     const open = listShortcuts.value.hangar!;
     expect(open.id).toBe('ccuConsultant:buyback');
     expect(filterRequestOf(open)).toMatchObject({
-      title: 'CCU Consultant: Only via buy back',
+      title: 'CCU Check: Only via buy back',
       icon: 'link',
       emptyText: 'None of these CCUs is in your hangar any more.',
     });
@@ -19,13 +19,13 @@ describe('the List Shortcuts of the CCU Consultant (#563)', () => {
   it('names the tab "Discount at risk" by its title', () => {
     expect(ccuGroupShortcut('atRisk', []).title).toBeTypeOf('function');
     openListShortcut(ccuGroupShortcut('atRisk', [1]));
-    expect(listShortcuts.value.hangar!.title()).toBe('CCU Consultant: Discount at risk');
+    expect(listShortcuts.value.hangar!.title()).toBe('CCU Check: Discount at risk');
   });
 
   it('names the deep view’s first group "Too few ways"', () => {
     openListShortcut(ccuGroupShortcut('missing', [1], true));
     expect(listShortcuts.value.hangar!.id).toBe('ccuConsultant:tooFew');
-    expect(listShortcuts.value.hangar!.title()).toBe('CCU Consultant: Too few ways');
+    expect(listShortcuts.value.hangar!.title()).toBe('CCU Check: Too few ways');
     openListShortcut(ccuGroupShortcut('buyback', [1], true));
     expect(listShortcuts.value.hangar!.id).toBe('ccuConsultant:buyback');
   });

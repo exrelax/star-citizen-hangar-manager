@@ -122,19 +122,19 @@ It must always be able to show, in both themes:
   days and 10 within 180 days, and older ones; expired offers in each period and outside them, with
   and without an event, a running event (event period selected) and none (demo setting "A running
   event"), search by manufacturer, each sorting.
-- Every case of the Paint Discount Consultant: ways `same`, `lowerTier`, `impossible`, in the layout
+- Every case of the Paint Discount Planner: ways `same`, `lowerTier`, `impossible`, in the layout
   "Choose a way" (#246, each way chosen, the one that doesn't work disabled) and "Both ways side by
   side", the table layout, nothing to rebuy, a kept plan with paints left to buy, paints bought
   again with the open melt step, filler paints waiting and ready to melt. The store credit of the
   demo is set in the demo settings (#179), since these cases depend on it. Every stage of the
   running plan (#245, #303: cart incomplete, not enough store credit, ready to pay, old paints left
   to melt, fillers waiting, fillers ready, no plan) is chosen in the demo settings, and the
-  completed plans of both ways show collapsed and opened. The consultant's tabs (#244, #306): all
+  completed plans of both ways show collapsed and opened. The planner's tabs (#244, #306): all
   three, two of them, a single one with its heading instead of tabs (only a running plan, only a new
   plan, only completed plans) and none – by the stage of the running plan and the demo settings "A
-  new plan" and "Completed plans". The tab "Consultants" (#453): sub tabs for the CCU Consultant and the
-  Paint Discount Consultant with their counts (red without base ship, orange only via buy back), and
-  a single consultant as its heading (no plan and no completed plans, no CCUs); only completed plans with a tab without count. "Start plan" of a new plan (#317) on each layout, also its
+  new plan" and "Completed plans". The tab "Tools" (#453): sub tabs for the CCU Check and the
+  Paint Discount Planner with their counts (red without base ship, orange only via buy back), and
+  a single tool as its heading (no plan and no completed plans, no CCUs); only completed plans with a tab without count. "Start plan" of a new plan (#317) on each layout, also its
   question while a plan runs; it starts only the demo's own plan.
 - The Buy Back Reminder (#194): expected price increases with and without a flight ready date ahead,
   with and without a probable time, inside and outside the period; the label in the buy back
@@ -198,14 +198,14 @@ It must always be able to show, in both themes:
 - Notifications with anonymized content, without real browser notifications or alarms; also the
   Pledge Store changes (#164): new and gone warbond CCUs, changed store items collapsed and opened,
   each with its ×.
-- The CCU Consultant (#425): the base ship coverage on CCU rows (#111), collapsed and expanded,
+- The CCU Check (#425): the base ship coverage on CCU rows (#111), collapsed and expanded,
   covered by a hangar ship, a package, an upgraded pledge, a hangar CCU, a buy back ship and a buy
   back CCU, several at once, and not at all (also with a buy back CCU RSI can't sell again); the
   card of an entry (#426) of a hangar CCU, a buy back CCU and a ship, with a discount and a
   surcharge, giftable and not; an entry opened in My Hangar and Buy Back and Back to the expanded
   CCU row (#436); its
   settings (#110) on and off; the "Base always available" label (#112); the label "Base ship missing" and the
-  note on CCUs without coverage (#114), with and without a Pledge Store link, the setting on and off; the tab "Consultants" with the CCU Consultant (#113): its bar, each group (without base ship,
+  note on CCUs without coverage (#114), with and without a Pledge Store link, the setting on and off; the tab "Tools" with the CCU Check (#113): its bar, each group (without base ship,
   only via buy back, base always available) with entries and empty, "Consider always available
   ships" on and off, a buy back entry opened in Buy Back and Back, a Pledge Store link, no CCUs; the sidebar box (#115) with a
   count and with none (demo setting "CCUs without base ship coverage"); the section "Soon without
@@ -242,7 +242,7 @@ It must always be able to show, in both themes:
   melt" with the demo setting "Marks to melt in a new demo hangar" off and "Reset demo" (or its
   pledges unmarked), "Paints to optimize" with "A new plan" off, "Melt and rebuy" with
   "Rebuyable pledges" off; the former view filters "Melt now" and "Paint rebuy" on the new
-  mechanism (#428). The CCU Consultant's "Buy Back" of a card (#563) opens the Buy Back.
+  mechanism (#428). The CCU Check's "Buy Back" of a card (#563) opens the Buy Back.
 - Grouped View (#450): the toggle on and off in My Hangar and Buy Back; groups of CCUs, ships,
   packages and gear next to single items; differing extras (some with gear, some with BIS paint,
   different insurance, some upgraded); all, some and none giftable and meltable; sums with a
@@ -267,7 +267,7 @@ It must always be able to show, in both themes:
   Hangar; the notepad icon and the watchlists of an expanded item, a new watchlist created there; a
   watchlist's search and filters hidden and shown, its grouped view; the reminder and store change
   notifications in the sidebar, shown and closed (never a real browser notification), browser
-  notifications allowed and not; the filler paints' watchlist of the Paint Discount Consultant;
+  notifications allowed and not; the filler paints' watchlist of the Paint Discount Planner;
   the tab "Watchlists" second to last, before the Settings tab (icon only, #513); the selection
   of My Hangar put on a demo watchlist and on a new one from the "Selected" box (#549), also when
   all are on it already.
@@ -327,7 +327,7 @@ How the demo mode works: "Demo mode" in [docs/DEVELOPMENT.md](docs/DEVELOPMENT.m
 
 Users keep their data across every update, patches included.
 
-- What the user made can't be read again from RSI: plans of the Paint Discount Consultant, melt
+- What the user made can't be read again from RSI: plans of the Paint Discount Planner, melt
   marks, completed plans, dismissed notifications, later named lists, and every storage with
   `readAgain: 'never'` in `src/storage/registry.ts`. It is always migrated, never dropped: never
   `obsoleteKeys` for it, and a migration may only add to it or reshape it, never lose entries.
@@ -362,7 +362,7 @@ How the storage works: "Storage" in [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md#st
 - Draft new issues first and create them only after the user approves.
 - The website's roadmap shows only main issues (a sub-issue is hidden where its parent is in the
   same milestone). So almost every new issue goes under a parent issue; a standalone issue only for
-  a feature of its own. Parents get a short, concise name for the roadmap (e.g. "CCU Consultant",
+  a feature of its own. Parents get a short, concise name for the roadmap (e.g. "CCU Check",
   "Buy Back"); the explanation goes into the first sentence of the body. Sub-issues may nest. Work
   for the project itself (release, demo mode) gets the label `internal` and never shows on the
   roadmap, like `website`.
@@ -555,4 +555,4 @@ is learned.
 - Ships not always on sale are sold only in some events or phases; the website's ship facts say
   which are always available.
 - Paints get a volume discount by count in one cart: 2 → 15%, 3 → 20%, 5 → 25%, 7 → 30%,
-  10+ → 35% (`PAINT_DISCOUNT_TIERS`, Paint Discount Consultant).
+  10+ → 35% (`PAINT_DISCOUNT_TIERS`, Paint Discount Planner).
