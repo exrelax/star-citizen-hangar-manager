@@ -82,6 +82,20 @@ For other tools the hangar export also comes in the format of
 - Ships whose name isn't one of the ships RSI's upgrade tool lists are named after the export, as
   FleetYards may not find them. Modules and paints aren't written: they can't be told reliably.
 
+## Hangar import (#231)
+
+A hangar export restores the stored hangar, e.g. in a new browser, so the first full load can be
+skipped; the smart updates bring it up to date afterwards. Decided over a read-only view: the
+file already holds everything the manager shows, and restoring it saves the user the first load.
+
+- Only a whole file: not one of the pledges shown in My Hangar (`partial`), and not one without
+  ids or amounts (`redacted`).
+- Only for the same account: with a hangar or buy back stored, the file must share pledges with
+  it.
+- Data stored here that is newer (its last full read, `syncedAt`) wins; a snapshot of another
+  format is left out and read again; the store credit only fills a gap.
+- The gift flags are merged by pledge id; a flag of this browser wins.
+
 ## Settings and your data (`kind: "settings"`)
 
 The storages with `transfer: 'settings'` and `transfer: 'yourData'` in the registry. `parts` says
