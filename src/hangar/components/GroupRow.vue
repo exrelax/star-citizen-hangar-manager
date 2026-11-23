@@ -5,7 +5,8 @@ import SvgIcon from '@/icons/SvgIcon.vue';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import WatchlistBadge from '@/watchlists/components/WatchlistBadge.vue';
 import { itemKey } from '@/watchlists/watchlists';
-import { computed, ref, watch } from 'vue';
+import { WATCHLIST_ROW } from '@/watchlists/watchlist-row';
+import { computed, inject, ref, watch } from 'vue';
 import GroupDialog from './GroupDialog.vue';
 import { formatUsd } from '../discount-format';
 import type { GroupBadge } from '../group-badges';
@@ -76,12 +77,28 @@ const ids = computed(() => props.group.items.map((item) => item.id));
 const watchKeys = computed(() =>
   props.watchKind ? ids.value.map((pledgeId) => itemKey({ kind: props.watchKind!, pledgeId })) : [],
 );
-const selectedCount = computed(() => ids.value.filter((id) => selection.has(id)).length);
+/*
+ * A group of the Buy Back on a watchlist selects its pledges for the watchlist (#620); everywhere
+ * else a group selects with the hangar's selection.
+ */
+const watchSelect = props.watchKind === 'buyback' ? inject(WATCHLIST_ROW, null)?.select : undefined;
+const buybackRefs = computed(() =>
+  ids.value.map((pledgeId) => ({ kind: 'buyback' as const, pledgeId })),
+);
+const isSelected = (id: number) =>
+  watchSelect ? watchSelect.has({ kind: 'buyback', pledgeId: id }) : selection.has(id);
+const canSelect = computed(() => props.selectable || !!watchSelect);
+const selectedCount = computed(() => {
+  // Read for reactivity: the hangar's selection, or the watchlist's through `has`.
+  void selection.ids.value;
+  return ids.value.filter(isSelected).length;
+});
 const checked = computed(() =>
   selectedCount.value === ids.value.length ? 'true' : selectedCount.value ? 'mixed' : 'false',
 );
 /** All its items selected, or none once all were. */
 function toggleSelection() {
+  if (watchSelect) return watchSelect.set(buybackRefs.value, checked.value !== 'true');
   const others = [...selection.ids.value].filter((id) => !ids.value.includes(id));
   selection.replace(checked.value === 'true' ? others : [...others, ...ids.value]);
 }
@@ -104,7 +121,7 @@ const countLabel = computed(() => i18n.n('group.items', props.group.count, [prop
       :class="{ 'is-selected': checked === 'true', 'is-expanded': expanded }"
     >
       <button
-        v-if="selectable"
+        v-if="canSelect"
         type="button"
         role="checkbox"
         class="shm-select-toggle"

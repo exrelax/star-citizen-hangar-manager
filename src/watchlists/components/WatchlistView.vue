@@ -28,6 +28,8 @@ import { useStoreCreditUsd } from '../use-store-credit';
 import { formatUsd } from '@/hangar/discount-format';
 import { useStoreCatalog } from '../use-store-catalog';
 import WatchlistMeta from './WatchlistMeta.vue';
+import SelectAll from '@/hangar/components/SelectAll.vue';
+import { selection } from '@/hangar/selection';
 
 /*
  * One watchlist (#467): its name, description, date and reminder, and its items by where they come
@@ -51,6 +53,8 @@ const emit = defineEmits<{
   edit: [];
   delete: [];
   remove: [key: string];
+  /** Several items off this watchlist at once (#620). */
+  removeMany: [keys: string[]];
   /** A store item's count changed (#470). */
   count: [key: string, count: number];
 }>();
@@ -89,13 +93,126 @@ const paintTier = computed(() => paintTierPercent(cost.value.paints));
 const credit = useStoreCreditUsd();
 const usd = (value: number) => formatUsd(value, locale.value);
 
-// The rows of My Hangar and the Buy Back offer to remove their pledge from this watchlist.
-provide(WATCHLIST_ROW, { remove: (ref: WatchItemRef) => emit('remove', itemKey(ref)) });
-
 const sections = computed(() =>
   watchSections(props.list.items, props.pledges, props.buyback, props.lists),
 );
 const shownSources = computed(() => WATCH_SOURCES.filter((source) => sections.value[source]));
+
+/*
+ * Selecting its items (#620): the pledges of My Hangar shown as its rows with the hangar's
+ * selection, so they join the sidebar's "Selected" box; the others – Buy Back pledges, store items,
+ * pledges gone – for this watchlist only. Either way they can be removed from it together.
+ */
+const hangarIds = computed(
+  () => new Set(sections.value.hangar?.pledges.map((pledge) => pledge.id) ?? []),
+);
+const buybackIds = computed(
+  () => new Set(sections.value.buyback?.pledges.map((pledge) => pledge.id) ?? []),
+);
+/** The selected items besides the hangar's pledges, by their key. */
+const picked = ref<ReadonlySet<string>>(new Set());
+const inHangarSelection = (ref: WatchItemRef) =>
+  ref.kind === 'hangar' && hangarIds.value.has(ref.pledgeId);
+function isSelected(ref: WatchItemRef): boolean {
+  return inHangarSelection(ref)
+    ? selection.ids.value.has((ref as { pledgeId: number }).pledgeId)
+    : picked.value.has(itemKey(ref));
+}
+function setSelected(refs: readonly WatchItemRef[], on: boolean) {
+  const pledgeIds = refs
+    .filter(inHangarSelection)
+    .map((ref) => (ref as { pledgeId: number }).pledgeId);
+  if (pledgeIds.length) {
+    const next = new Set(selection.ids.value);
+    for (const id of pledgeIds) {
+      if (on) next.add(id);
+      else next.delete(id);
+    }
+    selection.replace(next);
+  }
+  const keys = refs.filter((ref) => !inHangarSelection(ref)).map(itemKey);
+  if (keys.length) {
+    const next = new Set(picked.value);
+    for (const key of keys) {
+      if (on) next.add(key);
+      else next.delete(key);
+    }
+    picked.value = next;
+  }
+}
+
+// The rows of My Hangar and the Buy Back offer to remove their pledge from this watchlist; those of
+// the Buy Back are selected for it (#620).
+provide(WATCHLIST_ROW, {
+  remove: (ref: WatchItemRef) => emit('remove', itemKey(ref)),
+  select: { has: isSelected, set: setSelected },
+});
+
+/*
+ * "Select all" of each part (My Hangar, Buy Back, Pledge Store): what its list and its plain rows
+ * show with the search and filters. In the line of its list right before the order, or at the
+ * right above its plain rows (the Pledge Store has no order).
+ */
+const shownHangar = ref<number[]>([]);
+const shownBuyback = ref<number[]>([]);
+const shownRefs = computed<Record<WatchSource, WatchItemRef[]>>(() => {
+  const plain = (source: WatchSource) => plainOf(source).map((entry) => entry.item);
+  return {
+    hangar: [
+      ...shownHangar.value
+        .filter((id) => hangarIds.value.has(id))
+        .map((pledgeId) => ({ kind: 'hangar' as const, pledgeId })),
+      ...plain('hangar'),
+    ],
+    buyback: [
+      ...shownBuyback.value
+        .filter((id) => buybackIds.value.has(id))
+        .map((pledgeId) => ({ kind: 'buyback' as const, pledgeId })),
+      ...plain('buyback'),
+    ],
+    store: plain('store'),
+  };
+});
+const selectOf = computed(
+  () =>
+    Object.fromEntries(
+      WATCH_SOURCES.map((source) => {
+        const shown = shownRefs.value[source];
+        const selected = shown.filter(isSelected).length;
+        const state =
+          selected && selected === shown.length ? 'true' : selected ? 'mixed' : ('false' as const);
+        return [source, { shown, selected, state: state as 'false' | 'mixed' | 'true' }];
+      }),
+    ) as Record<
+      WatchSource,
+      { shown: WatchItemRef[]; selected: number; state: 'false' | 'mixed' | 'true' }
+    >,
+);
+const selectAll = (source: WatchSource) =>
+  setSelected(selectOf.value[source].shown, selectOf.value[source].state !== 'true');
+/** Its list shows the part's "Select all" in its own line; without one it goes above the rows. */
+const hasList = (source: WatchSource) =>
+  source !== 'store' && !!sections.value[source]?.pledges.length;
+
+/** Every selected item of this watchlist, also one its search hides now. */
+const selectedItems = computed(() => props.list.items.filter(isSelected));
+
+/** Removing several asks first, in place like deleting the watchlist. */
+const askingRemove = ref(false);
+const cancelRemoveButton = useTemplateRef<HTMLButtonElement>('cancelRemove');
+async function askRemove() {
+  if (selectedItems.value.length === 1) return removeSelected();
+  askingRemove.value = true;
+  await nextTick();
+  cancelRemoveButton.value?.focus();
+}
+/** Off this watchlist only, in one write; the hangar's selection loses just these pledges. */
+function removeSelected() {
+  const items = selectedItems.value;
+  askingRemove.value = false;
+  emit('removeMany', items.map(itemKey));
+  setSelected(items, false);
+}
 
 /** The search and filters, hidden by default. */
 const showControls = ref(false);
@@ -223,6 +340,37 @@ async function askDelete() {
       </span>
     </div>
 
+    <!-- Removing the selected items of all its parts from it (#620). -->
+    <div v-if="selectedItems.length" class="shm-watchlist-select">
+      <button
+        v-if="selectedItems.length"
+        type="button"
+        class="shm-button is-danger"
+        @click="askRemove"
+      >
+        <SvgIcon name="trash" />
+        {{ i18n.n('watchlists.removeSelected', selectedItems.length, [selectedItems.length]) }}
+      </button>
+    </div>
+    <div v-if="askingRemove && selectedItems.length > 1" class="shm-watchlist-confirm" role="alert">
+      <p>
+        {{
+          i18n.n('watchlists.removeSelectedConfirm', selectedItems.length, [
+            selectedItems.length,
+            list.name,
+          ])
+        }}
+      </p>
+      <div class="shm-watchlist-confirm-actions">
+        <button ref="cancelRemove" type="button" class="shm-button" @click="askingRemove = false">
+          {{ i18n.t('watchlists.cancel') }}
+        </button>
+        <button type="button" class="shm-button is-danger" @click="removeSelected">
+          {{ i18n.n('watchlists.removeSelected', selectedItems.length, [selectedItems.length]) }}
+        </button>
+      </div>
+    </div>
+
     <p v-if="!list.items.length" class="shm-watchlists-empty">{{ i18n.t('watchlists.noItems') }}</p>
 
     <section
@@ -256,14 +404,43 @@ async function askDelete() {
         :settings="settings"
         :active="false"
         :embedded="embedded"
-      />
+        @visible="shownHangar = $event"
+      >
+        <template #select>
+          <SelectAll
+            :state="selectOf.hangar.state"
+            :selected="selectOf.hangar.selected"
+            :total="selectOf.hangar.shown.length"
+            @toggle="selectAll('hangar')"
+          />
+        </template>
+      </PledgeList>
       <BuybackList
         v-if="source === 'buyback' && sections.buyback!.pledges.length"
         :pledges="sections.buyback!.pledges"
         :settings="settings"
         :active="false"
         :embedded="embedded"
-      />
+        @visible="shownBuyback = $event"
+      >
+        <template #select>
+          <SelectAll
+            :state="selectOf.buyback.state"
+            :selected="selectOf.buyback.selected"
+            :total="selectOf.buyback.shown.length"
+            @toggle="selectAll('buyback')"
+          />
+        </template>
+      </BuybackList>
+      <!-- Without a list (the Pledge Store, pledges all gone): at the right above the rows. -->
+      <div v-if="!hasList(source) && plainOf(source).length" class="shm-watchlist-plain-head">
+        <SelectAll
+          :state="selectOf[source].state"
+          :selected="selectOf[source].selected"
+          :total="selectOf[source].shown.length"
+          @toggle="selectAll(source)"
+        />
+      </div>
       <div
         v-if="plainOf(source).length"
         class="shm-rows shm-watchlist-plain"
@@ -274,6 +451,8 @@ async function askDelete() {
           :key="entry.key"
           :entry="entry"
           :status="source === 'store' ? storeStatus(entry.item, catalog) : undefined"
+          :selected="isSelected(entry.item)"
+          @select="setSelected([entry.item], !isSelected(entry.item))"
           @remove="emit('remove', entry.key)"
           @count="emit('count', entry.key, $event)"
         >
@@ -441,6 +620,28 @@ async function askDelete() {
 .shm-watchlist-icon-button.is-danger:hover,
 .shm-watchlist-icon-button.is-danger:focus-visible {
   background: color-mix(in srgb, var(--shm-danger) 15%, transparent);
+}
+
+/* "Select all" and the removal of the selected items, above the lists (#620). */
+.shm-watchlist-select {
+  display: flex;
+  justify-content: flex-end;
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+/* The "Select all" of a part without a list of its own, at the right like next to an order. */
+.shm-watchlist-plain-head {
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px 0;
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+.shm-watchlist-select .shm-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .shm-watchlist-confirm {

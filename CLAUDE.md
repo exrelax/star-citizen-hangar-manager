@@ -271,6 +271,9 @@ It must always be able to show, in both themes:
   the tab "Watchlists" second to last, before the Settings tab (icon only, #513); the selection
   of My Hangar put on a demo watchlist and on a new one from the "Selected" box (#549), also when
   all are on it already.
+- Select all (#620): in My Hangar with and without filters and with a List Shortcut, some and all
+  selected; on a demo watchlist with hangar, buy back and store items all selected, the hangar
+  ones in "Selected", "Remove from this list" with its question, done and cancelled.
 - Ship packs (#515, demo cases in #516): packs of two and of many ships with fanned images and
   the ship count, a pack with extras, a long title shortened with its tooltip, a pack expanded
   with its tiles next to an unchanged single ship, in My Hangar and the Buy Back, narrow.

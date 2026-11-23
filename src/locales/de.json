@@ -37,7 +37,9 @@
       "one": "$1 Gruppe",
       "other": "$1 Gruppen"
     },
-    "shortcutClose": "„$1“ schließen"
+    "shortcutClose": "„$1“ schließen",
+    "selectAll": "Alle auswählen",
+    "selectedOf": "$1 von $2 ausgewählt"
   },
   "listShortcut": {
     "empty": "In dieser Liste ist nichts mehr.",
@@ -2213,7 +2215,15 @@
         "other": "$1 Items auf „$2“ gesetzt, $3 davon standen schon darauf und wurden hochgezählt."
       }
     },
-    "paintTier": "$1 Paints in einem Warenkorb: $2 % Mengenrabatt"
+    "paintTier": "$1 Paints in einem Warenkorb: $2 % Mengenrabatt",
+    "removeSelected": {
+      "one": "$1 Eintrag von dieser Liste entfernen",
+      "other": "$1 Einträge von dieser Liste entfernen"
+    },
+    "removeSelectedConfirm": {
+      "one": "$1 Eintrag von „$2“ entfernen? Er bleibt in My Hangar, im Buy Back und im Pledge Store und auf deinen anderen Watchlists.",
+      "other": "$1 Einträge von „$2“ entfernen? Sie bleiben in My Hangar, im Buy Back und im Pledge Store und auf deinen anderen Watchlists."
+    }
   },
   "meltRebuy": {
     "label": "Wieder kaufbar",

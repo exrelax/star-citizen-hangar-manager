@@ -34,6 +34,10 @@ const props = defineProps<{
   /** Shown inside another view, e.g. a watchlist (#467): as `PledgeList`'s `embedded`. */
   embedded?: EmbeddedList;
 }>();
+const emit = defineEmits<{
+  /** The pledges search and filters leave visible, e.g. for a watchlist's "Select all" (#620). */
+  visible: [ids: number[]];
+}>();
 
 const displayClasses = computed(() => ({
   'shm-hide-ids': props.settings.hidePledgeIds,
@@ -156,7 +160,18 @@ const filterHint = (filter: BuybackFilter) => {
     @clear-request="closeListShortcut('buyback')"
     @update:sort="setSort"
     @update:grouped="setGrouped"
+    @visible="
+      (entries) =>
+        emit(
+          'visible',
+          entries.map((entry) => entry.id),
+        )
+    "
   >
+    <!-- In a watchlist the watchlist's own "Select all" of this part (#620). -->
+    <template v-if="embedded && $slots.select" #select>
+      <slot name="select" />
+    </template>
     <template #row="{ entry, autoExpand }">
       <BuybackRow :pledge="entry" :auto-expand="autoExpand" :link-mode="settings.buybackLinkMode" />
     </template>

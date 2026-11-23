@@ -212,6 +212,16 @@ export function removeItem(list: Watchlist, key: string, now: number): Watchlist
   return items.length === list.items.length ? list : { ...list, items, changedAt: now };
 }
 
+/**
+ * The watchlist without these items (#620), in one change; itself when none of them is on it.
+ * Other watchlists keep theirs.
+ */
+export function removeItems(list: Watchlist, keys: Iterable<string>, now: number): Watchlist {
+  const gone = new Set(keys);
+  const items = list.items.filter((entry) => !gone.has(itemKey(entry)));
+  return items.length === list.items.length ? list : { ...list, items, changedAt: now };
+}
+
 /** The watchlist with a store item's count changed (1 to 99); pledges have none. */
 export function setItemCount(list: Watchlist, key: string, count: number, now: number): Watchlist {
   let changed = false;

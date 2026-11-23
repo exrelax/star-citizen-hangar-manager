@@ -37,7 +37,9 @@
       "one": "$1 group",
       "other": "$1 groups"
     },
-    "shortcutClose": "Close “$1”"
+    "shortcutClose": "Close “$1”",
+    "selectAll": "Select all",
+    "selectedOf": "$1 of $2 selected"
   },
   "listShortcut": {
     "empty": "Nothing left in this list.",
@@ -2213,7 +2215,15 @@
         "other": "$1 items put on “$2”, $3 of them were on it already and counted up."
       }
     },
-    "paintTier": "$1 paints in one cart: $2 % volume discount"
+    "paintTier": "$1 paints in one cart: $2 % volume discount",
+    "removeSelected": {
+      "one": "Remove $1 item from this list",
+      "other": "Remove $1 items from this list"
+    },
+    "removeSelectedConfirm": {
+      "one": "Remove $1 item from “$2”? It stays in My Hangar, the Buy Back and the Pledge Store, and on your other watchlists.",
+      "other": "Remove $1 items from “$2”? They stay in My Hangar, the Buy Back and the Pledge Store, and on your other watchlists."
+    }
   },
   "meltRebuy": {
     "label": "Rebuyable",
