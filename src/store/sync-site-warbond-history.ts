@@ -3,6 +3,7 @@ import { createSiteDataSync, fetchSiteFile, type RefreshOptions } from '@/site-d
 import { parseSiteWarbondHistory } from './site-warbond-history';
 import type { WarbondSighting } from './warbond-history';
 import {
+  SITE_WARBOND_HISTORY_EARLIER_VERSIONS,
   SITE_WARBOND_HISTORY_VERSION,
   siteWarbondHistoryItem,
   siteWarbondHistoryMeta,
@@ -33,6 +34,7 @@ const refresh = createSiteDataSync({
   item: siteWarbondHistoryItem,
   meta: siteWarbondHistoryMeta,
   version: SITE_WARBOND_HISTORY_VERSION,
+  earlierVersions: SITE_WARBOND_HISTORY_EARLIER_VERSIONS,
   fetch: () => fetchSiteWarbondHistory(),
   toSnapshot: (offers: WarbondSighting[]) => ({ version: SITE_WARBOND_HISTORY_VERSION, offers }),
   fromSnapshot: (snapshot: SiteWarbondHistorySnapshot) => snapshot.offers,

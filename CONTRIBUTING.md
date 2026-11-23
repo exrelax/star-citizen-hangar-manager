@@ -64,6 +64,9 @@ committed.
 - **Tests** – add or update Vitest tests for logic (parsing, filters, calculations). Tests live next
   to the code they test (`*.test.ts`).
 - **Tunable values** (intervals, page sizes, limits) belong in `src/config.ts`.
+- **Stored data** – users keep it across every update. A change of a stored key or shape gets a
+  migration with a test in the same pull request, and what the user made is never dropped (see
+  [Migrations and user data](docs/DEVELOPMENT.md#migrations-and-user-data)).
 - **Both themes** – check visual changes in "Modern Hangar" (light and dark system appearance) and
   in "Classic RSI". Theme styles live in `src/themes/`.
 - **Translations** – add every new text to all locale files (`en`, `de`, `fr`, `es`). A test checks
@@ -109,7 +112,9 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.
   `feat: Add Spanish as fourth language` or `fix: Keep the refresh button's width while counting`.
 - **Body:** explains what changed and why, when the description alone doesn't say it.
 - **Breaking changes:** add `!` after the type (`feat!: …`) and a `BREAKING CHANGE:` footer, e.g.
-  when stored settings or data can no longer be read.
+  when stored settings or data can no longer be read. Users keep their stored data across every
+  update: a change of a stored key or shape needs a migration, see
+  [Migrations and user data](docs/DEVELOPMENT.md#migrations-and-user-data).
 
 One commit should contain one logical change. Don't mix a refactoring with a feature in the same
 commit.

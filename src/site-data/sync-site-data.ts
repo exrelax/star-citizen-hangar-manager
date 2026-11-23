@@ -8,7 +8,8 @@ import { lastSiteDataReadTime } from './site-data-schedule';
  * Keeps a stored data file of the project website current – the events (#69), the expected price
  * increases (#195): read at the times of `SITE_DATA.schedule` (see `site-data-schedule.ts`),
  * after a failure again after `SITE_DATA.retryMs` at the latest. A file that can't be read or isn't of the known format keeps the stored data.
- * Stored data of an earlier format (another `version`) is removed and read again at once.
+ * Stored data of an earlier format (another `version`) is removed and read again at once; one of
+ * `earlierVersions` is read again at once too, but kept meanwhile.
  *
  * GitHub Pages serves the files to any origin, so no host permission is needed. The development
  * build reads the files of the working copy instead (each source's `fetch`), so new data can be
@@ -32,6 +33,11 @@ export interface SiteDataSource<D, S extends { version: number }> {
   meta: MetaItem;
   /** The format of the stored data; other versions are removed and read again. */
   version: number;
+  /**
+   * Earlier formats that only lack fields added since: still read meanwhile, so nothing shows
+   * empty, and read again at once instead of removed (e.g. stored by the last version, #479).
+   */
+  earlierVersions?: readonly number[];
   /** The data of the file, checked; `undefined` for a file of another format. */
   fetch: () => Promise<D | undefined>;
   toSnapshot: (data: D) => S;
@@ -135,18 +141,23 @@ export function createSiteDataSync<D, S extends { version: number }>(
     running ??= (async () => {
       const [stored, meta] = await Promise.all([source.item.getValue(), source.meta.getValue()]);
       const current = stored?.version === source.version ? stored : null;
+      const earlier =
+        stored && !current && source.earlierVersions?.includes(stored.version) ? stored : null;
       const outdated = !!stored && !current;
-      if (outdated) await source.item.removeValue();
+      if (outdated && !earlier) await source.item.removeValue();
       let result: SiteDataResult<D> = {
-        data: current ? source.fromSnapshot(current) : undefined,
+        data: (current ?? earlier) ? source.fromSnapshot((current ?? earlier)!) : undefined,
         read: false,
       };
+      // Earlier data kept meanwhile is read again at once, after a failed read at the usual times.
+      const readEarlier = !!earlier && meta.lastOutcome?.status !== 'failed';
       // Without stored data too only when due: a missing file is tried again at the next time of
       // the schedule, not on every check. Deleting the data in the settings deletes its metadata, so it is read
       // again.
       if (
         force ||
-        outdated ||
+        (outdated && !earlier) ||
+        readEarlier ||
         READ_ALWAYS ||
         siteDataDue(meta, now(), SITE_DATA, source.maxAgeMs)
       ) {

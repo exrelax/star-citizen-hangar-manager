@@ -1,6 +1,22 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { hangarMeta } from '@/hangar/hangar-storage';
+import { createShipFactsLookup } from '@/ships/ship-facts';
+import {
+  bundledShipFacts,
+  maybeRefreshShipFacts,
+  shipFactsItem,
+  shipFactsMeta,
+  storedShipFacts,
+} from '@/ships/sync-ship-facts';
+import { maybeRefreshSiteWarbondHistory } from '@/store/sync-site-warbond-history';
+import {
+  siteWarbondHistoryItem,
+  siteWarbondHistoryMeta,
+  storedSiteWarbondHistory,
+} from '@/store/warbond-history-storage';
+import type { WarbondSighting } from '@/store/warbond-history';
+import { EMPTY_META } from './meta';
 import { runMigration } from './migrate';
 import { STORAGES } from './registry';
 
@@ -106,6 +122,70 @@ describe('runMigration of the paint plans (#635)', () => {
     );
     expect(await storage.getItem('local:consultant.plan')).toBeNull();
     expect(await storage.getItem('local:consultant.history')).toBeNull();
+  });
+});
+
+describe('the data of the website stored by 1.1.1 (#479)', () => {
+  const now = Date.now();
+  const checked = (at: number) => ({ ...EMPTY_META, checkedAt: at, syncedAt: at });
+
+  it('replaces the ships’ facts without their retired periods, read again at once', async () => {
+    const bundled = bundledShipFacts()!;
+    // 1.1.1 kept the sources' facts, `retired` included, but not the ships' periods.
+    const old = {
+      ...bundled,
+      ships: bundled.ships.map((ship) => ({ ...ship, retired: undefined })),
+    };
+    await shipFactsItem.setValue({ version: 1, facts: old as unknown as typeof bundled });
+    await shipFactsMeta.setValue(checked(now));
+
+    // Meanwhile the bundled copy counts, so asking whether RSI still sells a ship works.
+    const snapshot = await shipFactsItem.getValue();
+    expect(storedShipFacts(snapshot)).toBeUndefined();
+    const lookup = createShipFactsLookup(storedShipFacts(snapshot) ?? bundled);
+    const ship = bundled.ships.find((entry) => entry.wikiName)!;
+    expect(() => lookup.isPurchasable(ship.id)).not.toThrow();
+
+    // Read at the first start, although the last read is less than a day old.
+    await maybeRefreshShipFacts({ fetch: async () => bundled, now: () => now + 1 });
+    expect(storedShipFacts(await shipFactsItem.getValue())).toEqual(bundled);
+  });
+
+  const offer: WarbondSighting = {
+    shipId: 1,
+    shipName: 'Aurora Mk I ES',
+    skuId: 2,
+    price: 30,
+    msrp: 20,
+    firstSeen: now - 10 * 24 * 60 * 60 * 1000,
+    lastSeen: now - 9 * 24 * 60 * 60 * 1000,
+  };
+
+  it('keeps the warbond offers without an expected end until they are read again', async () => {
+    await siteWarbondHistoryItem.setValue({ version: 1, offers: [offer] });
+    await siteWarbondHistoryMeta.setValue(checked(now));
+    expect(storedSiteWarbondHistory(await siteWarbondHistoryItem.getValue())).toEqual([offer]);
+
+    // Read at once; offline they stay, and nothing shows empty.
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    await maybeRefreshSiteWarbondHistory({
+      fetch: async () => {
+        throw new Error('offline');
+      },
+      now: () => now + 1,
+    });
+    warn.mockRestore();
+    expect(storedSiteWarbondHistory(await siteWarbondHistoryItem.getValue())).toEqual([offer]);
+  });
+
+  it('reads the warbond offers again at once, with their expected end', async () => {
+    const read = { ...offer, expectedEnd: offer.lastSeen + 1000 };
+    await siteWarbondHistoryItem.setValue({ version: 1, offers: [offer] });
+    await siteWarbondHistoryMeta.setValue(checked(now));
+
+    await maybeRefreshSiteWarbondHistory({ fetch: async () => [read], now: () => now + 1 });
+
+    expect(await siteWarbondHistoryItem.getValue()).toEqual({ version: 2, offers: [read] });
   });
 });
 

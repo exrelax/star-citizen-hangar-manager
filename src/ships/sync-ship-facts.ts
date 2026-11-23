@@ -11,8 +11,12 @@ import { parseShipFacts, type ShipFacts } from './ship-facts';
  * extension counts (`bundledShipFacts`).
  */
 
-/** Format version of the stored facts; others are ignored and read again. */
-export const SHIP_FACTS_VERSION = 1;
+/**
+ * Format version of the stored facts; others are ignored and read again. Version 1 (1.1.1) lacks
+ * the ships' `retired` periods while its sources may already name the fact (#385): it is replaced
+ * by the bundled copy until the read at the first start after the update (#479).
+ */
+export const SHIP_FACTS_VERSION = 2;
 
 export interface ShipFactsSnapshot {
   version: number;

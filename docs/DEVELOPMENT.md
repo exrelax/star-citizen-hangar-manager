@@ -534,6 +534,30 @@ never sees a mix of old and new data.
 - **Reading in the UI**: `useStored(item)` ([`src/storage/use-stored.ts`](../src/storage/use-stored.ts))
   gives all components one shared, reactive copy of a stored value.
 
+### Migrations and user data
+
+Users keep their data across every update, patches included.
+
+- **What the user made** can't be read again from RSI: the plans of the Paint Discount Planner,
+  the marks to melt, completed plans, dismissed notifications, watchlists, the warbond history this
+  browser saw – every storage with `readAgain: 'never'` or of kind `synced` or `settings`. It is
+  always migrated, never dropped and never in `obsoleteKeys`: a migration may only add to it or
+  reshape it, never lose entries.
+- **A change of a stored key or shape** gets its migration in
+  [`src/storage/migrate.ts`](../src/storage/migrate.ts) and a test in `migrate.test.ts` in the same
+  pull request. Data a newer version already stored wins. A new storage gets its registry entry
+  with `readAgain` set; `registry.test.ts` fails for a storage of data without it and for user data
+  with `obsoleteKeys`.
+- **Data read from RSI or the website** may be read again instead (`obsoleteKeys`, or a new
+  `version` of its snapshot), as long as nothing shows empty or breaks meanwhile: it is read on its
+  own at the first start after the update, not only at the next regular check. A data file of the
+  website whose earlier format only lacks fields keeps it meanwhile (`earlierVersions` in
+  [`src/site-data/sync-site-data.ts`](../src/site-data/sync-site-data.ts)); one that can't be
+  read any more falls back to the copy bundled with the extension, where there is one.
+- **Before a release**, the stored data of the last released version is compared with the new code:
+  `git diff vLAST..HEAD` of [`src/storage/registry.ts`](../src/storage/registry.ts) and of every
+  stored type ("Migration check" under "Releases" in [CLAUDE.md](../CLAUDE.md)).
+
 ## Demo mode
 
 The demo mode (`src/demo/`) is the tool for screenshots of every feature (#129). It never reveals
