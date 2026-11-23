@@ -57,6 +57,12 @@ function anchorInset(): string {
 }
 const fullInset = () => `inset(0 round ${getComputedStyle(box.value!).borderRadius || '0px'})`;
 
+/**
+ * The button's visible box: its wrapper's, as the button may reach under what is next to it (in
+ * the upgrade dialog under "Add To Cart"), which the window must not cover.
+ */
+const edgeOf = (anchor: HTMLElement) => (anchor.parentElement ?? anchor).getBoundingClientRect();
+
 function place() {
   if (!box.value) return;
   if (!props.anchor.isConnected) {
@@ -64,7 +70,7 @@ function place() {
     return;
   }
   const result = popoverPlacement(
-    props.anchor.getBoundingClientRect(),
+    edgeOf(props.anchor),
     { width: box.value.offsetWidth, height: box.value.offsetHeight },
     { width: innerWidth, height: innerHeight },
     props.side,

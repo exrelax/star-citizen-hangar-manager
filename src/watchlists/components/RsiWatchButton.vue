@@ -168,7 +168,9 @@ const toggle = () => (open.value ? popover.value?.close() : (open.value = true))
 
   height: 100%;
   min-height: 48px;
-  padding: 0 28px;
+  /* Its right end tucked under "Add To Cart", so both join without a seam. */
+  margin-right: -12px;
+  padding: 0 40px 0 28px;
   font-family: Quantico, sans-serif;
   font-size: 16px;
   font-weight: 700;
