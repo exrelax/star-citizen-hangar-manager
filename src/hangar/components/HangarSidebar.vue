@@ -1920,33 +1920,37 @@ async function move(box: Box, step: -1 | 1) {
   margin-top: 10px;
 }
 
-.shm-sidebar-button {
-  flex: 1 1 auto;
-  white-space: nowrap;
-}
-
-/* A single button of its own, e.g. bulk melting: the whole width, its label may wrap. */
-.shm-sidebar-button.is-full {
-  flex-basis: 100%;
-  white-space: normal;
-}
-
 /*
- * A button whose label may take two lines in the narrow sidebar (#595), e.g. "Show 27 rebuyable
- * pledges" or the German and French texts: the icon runs with the text, so both are centered
- * together and the lines balanced, with a little more room above and below than one line.
+ * A label that doesn't fit the box even on a line of its own wraps (#371), e.g. the French "Afficher
+ * dans le Pledge Store"; side by side, the buttons first take a line each (their basis is their
+ * label on one line). The icon runs with the text, so both stay centered together and the lines
+ * balanced (#595).
  */
-.shm-sidebar-button.is-two-line {
+.shm-sidebar-button {
   display: block;
-  padding-block: 5px;
+  flex: 1 1 auto;
+  min-width: 0;
   text-align: center;
   text-wrap: balance;
 }
 
-.shm-sidebar-button.is-two-line .shm-icon {
+.shm-sidebar-button .shm-icon {
   display: inline-block;
   margin-right: 6px;
   vertical-align: -0.15em;
+}
+
+/* A single button of its own, e.g. bulk melting: the whole width. */
+.shm-sidebar-button.is-full {
+  flex-basis: 100%;
+}
+
+/*
+ * A button whose label takes two lines in the narrow sidebar in most languages (#595), e.g. "Show
+ * 27 rebuyable pledges": a little more room above and below than one line.
+ */
+.shm-sidebar-button.is-two-line {
+  padding-block: 5px;
 }
 
 /* A switch that is on (the consultant's filter): filled, so it reads as pressed. */
