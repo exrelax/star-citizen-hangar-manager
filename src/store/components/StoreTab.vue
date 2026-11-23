@@ -13,6 +13,7 @@ import {
   upgradeToolState,
 } from '@/ships/sync-upgrade-tool';
 import { useStoreData } from '../use-store-data';
+import { maybeRefreshSiteWarbondHistory } from '../sync-site-warbond-history';
 import { buildWarbondOffers } from '../warbond';
 import {
   sortWarbondOffers,
@@ -134,6 +135,24 @@ const secure = useCcusToSecure(
 /** Whether their price increases are expected or confirmed by CIG (#275). */
 const secureNote = computed(() => confirmationNote(secure.value.map((offer) => offer.increase)));
 
+/**
+ * Reads the warbond CCUs again (#630): RSI's offers and the website's history of earlier offers
+ * (`warbond-history.json`), at once; a failed website read keeps the stored history.
+ */
+const siteHistoryLoading = ref(false);
+const refreshing = computed(() => upgradeToolState.loading || siteHistoryLoading.value);
+async function refreshWarbonds() {
+  siteHistoryLoading.value = true;
+  try {
+    await Promise.allSettled([
+      refreshUpgradeTool(),
+      maybeRefreshSiteWarbondHistory({ force: true }),
+    ]);
+  } finally {
+    siteHistoryLoading.value = false;
+  }
+}
+
 const updated = computed(
   () =>
     fetchedAt.value !== undefined &&
@@ -169,7 +188,25 @@ const displayClasses = computed(() => ({
 <template>
   <section class="shm-store" :class="displayClasses" aria-labelledby="shm-store-title">
     <EventList :events="events" />
-    <h3 id="shm-store-title" class="shm-store-title">{{ i18n.t('store.warbondTitle') }}</h3>
+    <!-- When the offers were read, on the right of their heading, for both views (#630). -->
+    <div class="shm-store-head">
+      <h3 id="shm-store-title" class="shm-store-title">{{ i18n.t('store.warbondTitle') }}</h3>
+      <span v-if="storeData" class="shm-store-updated">
+        <span v-if="refreshing">{{ i18n.t('store.updating') }}</span>
+        <span v-else-if="updated">{{ updated }}</span>
+        <!-- Reads only the warbond CCUs and their history again, not hangar and buy back. -->
+        <button
+          v-tooltip="i18n.t('store.refresh')"
+          type="button"
+          class="shm-store-refresh"
+          :disabled="refreshing"
+          :aria-label="i18n.t('store.refresh')"
+          @click="refreshWarbonds()"
+        >
+          <RefreshIcon :spinning="refreshing" />
+        </button>
+      </span>
+    </div>
     <TabBar
       class="shm-store-views"
       :items="viewItems"
@@ -206,31 +243,11 @@ const displayClasses = computed(() => ({
         </button>
       </div>
       <template v-if="storeData">
-        <!--
-          When they were read on the right; with the sort (#628) the count moves down to the left of
-          the sort, as in My Hangar's lists.
-        -->
-        <p class="shm-count" :class="{ 'is-updated-only': sortable }">
-          <span v-if="!sortable">{{ i18n.n('store.count', offers.length) }}</span>
-          <span class="shm-store-updated">
-            <span v-if="upgradeToolState.loading">{{ i18n.t('store.updating') }}</span>
-            <span v-else-if="updated">{{ updated }}</span>
-            <!-- Reads only the Pledge Store again, not hangar and buy back. -->
-            <button
-              v-tooltip="i18n.t('store.refresh')"
-              type="button"
-              class="shm-store-refresh"
-              :disabled="upgradeToolState.loading"
-              :aria-label="i18n.t('store.refresh')"
-              @click="refreshUpgradeTool()"
-            >
-              <RefreshIcon :spinning="upgradeToolState.loading" />
-            </button>
-          </span>
-        </p>
-        <div v-if="sortable" class="shm-count shm-store-sort">
+        <!-- The count on the left, the sort (#628) on the right, as in My Hangar's lists. -->
+        <div class="shm-count">
           <span>{{ i18n.n('store.count', offers.length) }}</span>
           <SelectMenu
+            v-if="sortable"
             :options="sortOptions"
             :model-value="settings.warbondSort"
             :label="i18n.t('sort.label')"
@@ -310,6 +327,7 @@ const displayClasses = computed(() => ({
 .shm-count {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
   gap: 4px 16px;
   margin: 10px 0;
@@ -318,24 +336,26 @@ const displayClasses = computed(() => ({
   font-variant-numeric: tabular-nums;
 }
 
+/*
+ * The heading of the warbond CCUs stays a block of the full width, so its line and its space below
+ * stay as they were; when they were read sits on its right, above the line.
+ */
+.shm-store-head {
+  position: relative;
+}
+
+/* In the look of the count rows of the lists (modern.css has the Modern Hangar one). */
 .shm-store-updated {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-}
-
-/* Only when they were read, on the right: the count is in the row of the sort below. */
-.shm-count.is-updated-only {
-  justify-content: flex-end;
-}
-
-/*
- * The count on the left and the sort of the warbond CCUs on the right (#628): a count row like the
- * one of My Hangar's list (its font and color in both themes), close below the row above it.
- */
-.shm-store-sort {
-  align-items: center;
-  margin-top: -4px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 6px;
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+  font-variant-numeric: tabular-nums;
 }
 
 /* Icon only, in the accent color; it spins while the offers are read. */
