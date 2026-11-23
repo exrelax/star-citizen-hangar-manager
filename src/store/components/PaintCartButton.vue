@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { logError, reasonOf } from '@/errors/error-log';
-import { RSI_CART_PATH } from '@/buyback/cart';
+import { openRsiCart } from '@/buyback/cart';
 import { useDemoContext } from '@/demo/use-demo';
 import { i18n } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
@@ -51,7 +51,7 @@ const result = ref<CartResult>();
 const error = ref<string>();
 
 function openCart() {
-  if (!window.open(RSI_CART_PATH, '_blank')) location.assign(RSI_CART_PATH);
+  openRsiCart();
 }
 
 /** Reads the cart first: other items in it change the volume discount tier. */

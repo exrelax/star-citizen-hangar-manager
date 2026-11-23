@@ -1,3 +1,4 @@
+import { rememberCartOpened } from '@/hangar/smart-update/purchase';
 import { postRsiJson } from '@/shared/rsi-api';
 import type { BuybackUpgrade } from './buyback';
 import { fetchBuybackPage, type FetchBuybackPage } from './sync-buyback';
@@ -10,6 +11,15 @@ import { fetchBuybackPage, type FetchBuybackPage } from './sync-buyback';
 
 /** RSI's cart, opened after a pledge was added. */
 export const RSI_CART_PATH = '/store/pledge/cart';
+
+/**
+ * Opens RSI's cart in a new tab, or in this one if the popup blocker refused it. Remembered, so
+ * the Hangar Manager checks for the purchase when its tab is shown again (#328).
+ */
+export function openRsiCart(): void {
+  void rememberCartOpened();
+  if (!window.open(RSI_CART_PATH, '_blank')) location.assign(RSI_CART_PATH);
+}
 
 /** RSI refused a request, with RSI's reason (or the pledge was not found). */
 export class CartError extends Error {

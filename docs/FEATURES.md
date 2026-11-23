@@ -114,8 +114,12 @@ Each check works in three steps:
   interval – also when RSI reloads the page after it. Every tab with the Hangar Manager open
   shows the change within seconds. Only your confirming click counts (the button in the step
   with your password); opening a dialog, going a step back or cancelling it starts nothing. The
-  extension only watches your clicks: it never clicks or sends anything on RSI's pages. A buy
-  back is checked out in RSI's store and found by the next regular check.
+  extension only watches your clicks: it never clicks or sends anything on RSI's pages.
+- **After a purchase**: once RSI's store shows the order confirmation, the next check runs at once.
+  RSI often lists a bought pledge a little later than it confirms the order, so the checks then
+  run every 30 seconds for up to 5 minutes, until the hangar or the buy back changed; then the set
+  interval applies again. If the confirmation wasn't seen, the tab that opened the cart (e.g. "To
+  Cart" in the buy back) checks once when you come back to it.
 
 ### Never in your way
 

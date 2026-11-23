@@ -5,6 +5,7 @@ import { hangarMeta } from './hangar-storage';
 import { maybeRunSmartUpdate, setCheckingElsewhere, syncState } from './sync-state';
 import { announceCheck } from './smart-update/broadcast';
 import { runSmartUpdate } from './smart-update/run';
+import { purchaseWindowStart, rememberPurchase } from './smart-update/purchase';
 
 // Everything that would talk to RSI.
 vi.mock('./smart-update/run', () => ({ runSmartUpdate: vi.fn(async () => null) }));
@@ -89,6 +90,38 @@ describe('maybeRunSmartUpdate', () => {
     expect(checkingDuringRun).toBe(true);
     expect(syncState.checking).toBe(false);
     expect(vi.mocked(announceCheck).mock.calls).toEqual([[true], [false]]);
+  });
+});
+
+describe('maybeRunSmartUpdate after a purchase (#328)', () => {
+  const changed = { status: 'updated', added: 1, removed: 0, changed: 0, at: 0 } as const;
+  const nothing = { status: 'unchanged', added: 0, removed: 0, changed: 0, at: 0 } as const;
+
+  it('checks at once after the confirmation, within the set interval', async () => {
+    await checkedMinutesAgo(1);
+    await rememberPurchase('A');
+    await maybeRunSmartUpdate();
+    expect(runSmartUpdate).toHaveBeenCalledTimes(1);
+  });
+
+  it('checks again after the short interval until the hangar changed', async () => {
+    await rememberPurchase('A', Date.now() - 2 * minute);
+    await checkedMinutesAgo(1);
+    vi.mocked(runSmartUpdate).mockResolvedValueOnce(nothing);
+    await maybeRunSmartUpdate();
+    expect(runSmartUpdate).toHaveBeenCalledTimes(1);
+    expect(await purchaseWindowStart()).toBeDefined();
+
+    await checkedMinutesAgo(1);
+    vi.mocked(runSmartUpdate).mockResolvedValueOnce(changed);
+    await maybeRunSmartUpdate();
+    expect(runSmartUpdate).toHaveBeenCalledTimes(2);
+    expect(await purchaseWindowStart()).toBeUndefined();
+
+    // The set interval again.
+    await checkedMinutesAgo(1);
+    await maybeRunSmartUpdate();
+    expect(runSmartUpdate).toHaveBeenCalledTimes(2);
   });
 });
 

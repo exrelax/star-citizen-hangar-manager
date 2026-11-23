@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RSI_CART_PATH } from '@/buyback/cart';
+import { openRsiCart } from '@/buyback/cart';
 import { useDemoContext } from '@/demo/use-demo';
 import BulkExchangeOverlay from '@/hangar/components/BulkExchangeOverlay.vue';
 import { formatTimeLeft } from '@/hangar/melt-marks';
@@ -112,7 +112,7 @@ const cta = computed(() => body.value.actions.find((action) => action.role === '
 const total = computed(() => props.view.ownCount + props.view.fillerCount);
 
 function openCart() {
-  if (!window.open(RSI_CART_PATH, '_blank')) location.assign(RSI_CART_PATH);
+  openRsiCart();
 }
 
 const busy = ref(false);

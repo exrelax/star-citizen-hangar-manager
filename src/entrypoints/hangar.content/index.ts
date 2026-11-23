@@ -21,6 +21,7 @@ import { isTimerActive, startSmartUpdateTimer } from '@/hangar/smart-update/sche
 import { listenForChecksElsewhere } from '@/hangar/smart-update/broadcast';
 import { resetBackoff, watchInput } from '@/hangar/smart-update/backoff';
 import { takeOwnAction, watchOwnActions } from '@/hangar/smart-update/own-actions';
+import { takeCartOpened } from '@/hangar/smart-update/purchase';
 import { maybeRunSmartUpdate, setCheckingElsewhere } from '@/hangar/sync-state';
 import { migrateStorage } from '@/storage/migrate';
 import { isPlainLeftClick } from '@/shared/dom';
@@ -62,7 +63,10 @@ export default defineContentScript({
     // it, whatever the interval; also when RSI reloaded the page after it.
     const checkOwnAction = () =>
       void resetBackoff().then(() => maybeRunSmartUpdate({ force: true }));
-    if (await takeOwnAction()) checkOwnAction();
+    // The Hangar Manager opened RSI's cart and a page of the account loads again (the cart opened
+    // in this tab when the popup was blocked): a check for a purchase whose confirmation wasn't
+    // seen (#328).
+    if ((await takeOwnAction()) || (await takeCartOpened())) checkOwnAction();
     watchOwnActions(ctx.signal, checkOwnAction);
     // Someone uses the tab: back to the set interval (#125).
     watchInput(ctx.signal);
@@ -161,11 +165,13 @@ export default defineContentScript({
     // Back/forward and manual hash edits.
     ctx.addEventListener(window, 'popstate', render);
     ctx.addEventListener(window, 'hashchange', render);
-    ctx.addEventListener(document, 'visibilitychange', () => {
-      if (document.visibilityState === 'visible' && managerVisible) {
-        void maybeRunSmartUpdate();
-        announceSeen();
-      }
+    ctx.addEventListener(document, 'visibilitychange', async () => {
+      if (document.visibilityState !== 'visible') return;
+      // Back from RSI's cart that the Hangar Manager opened in another tab: a check for a purchase
+      // whose confirmation wasn't seen (#328). A confirmed one is checked for anyway.
+      if (await takeCartOpened()) checkOwnAction();
+      else if (managerVisible) void maybeRunSmartUpdate();
+      if (managerVisible) announceSeen();
     });
     // While it stays open and visible: a check whenever the interval has passed.
     const timerActive = () =>
