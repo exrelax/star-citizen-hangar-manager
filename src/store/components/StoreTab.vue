@@ -336,13 +336,12 @@ const displayClasses = computed(() => ({
   font-variant-numeric: tabular-nums;
 }
 
-/* The heading of the warbond CCUs with when they were read on its right; both wrap when narrow. */
+/*
+ * The heading of the warbond CCUs stays a block of the full width, so its line and its space below
+ * stay as they were; when they were read sits on its right, above the line.
+ */
 .shm-store-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 4px 16px;
+  position: relative;
 }
 
 /* In the look of the count rows of the lists (modern.css has the Modern Hangar one). */
@@ -350,7 +349,10 @@ const displayClasses = computed(() => ({
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-left: auto;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 6px;
   color: var(--shm-text-muted);
   font-size: calc(12px * var(--shm-font-scale));
   font-variant-numeric: tabular-nums;
