@@ -191,6 +191,8 @@ export interface DemoContext {
   tokenRenewal?: TokenRenewal | null;
   /** The store credit shown instead of the account's. */
   storeCredit: StoreCredit;
+  /** The demo's hangar and buy back, for the exports of the demo (#233). */
+  lists: { hangar: readonly PledgeView[]; buyback: readonly BuybackView[] };
   /**
    * The expected price increases of the generated demo (#194, #255) instead of the website's, for
    * what works them out from the storage: the CCUs to secure (#253, #254).
@@ -458,6 +460,7 @@ export function useDemo(
       fakeId,
       realOrder,
       upgradeLog,
+      lists: { hangar: demoPledges.value, buyback: demoBuybackPledges.value },
       tokens: settings().buybackTokens,
       tokenRenewal: demoTokenRenewal(
         settings().tokenRenewal,

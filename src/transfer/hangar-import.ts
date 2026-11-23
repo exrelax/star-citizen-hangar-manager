@@ -27,7 +27,7 @@ import { loadHangarData, type HangarData } from './hangar-export';
  * - the gift flags of melted pledges are merged by pledge id, a flag of this browser wins.
  */
 
-export type HangarImportRefusal = 'partial' | 'redacted' | 'otherAccount' | 'empty';
+export type HangarImportRefusal = 'partial' | 'demo' | 'redacted' | 'otherAccount' | 'empty';
 
 /** What the import writes, by storage. */
 export interface HangarImport {
@@ -61,6 +61,7 @@ export function hangarImportOf(
   here: HangarData,
 ): { ok: true; writes: HangarImport } | { ok: false; refusal: HangarImportRefusal } {
   if (file.partial) return { ok: false, refusal: 'partial' };
+  if (file.demo) return { ok: false, refusal: 'demo' };
   if (file.redacted?.length) return { ok: false, refusal: 'redacted' };
   const value = <T>(id: keyof HangarImport) => file.storages[id]?.value as T | undefined;
   const fileIds = idsOf({

@@ -2397,7 +2397,8 @@
       "partial": "Diese Datei enthält nur die in My Hangar angezeigten Pledges, nicht den ganzen Hangar.",
       "redacted": "In dieser Datei fehlen Nummern oder Beträge, deshalb lässt sich der Hangar damit nicht wiederherstellen.",
       "otherAccount": "Diese Datei gehört zu einem anderen Konto. Es wurde nichts geändert.",
-      "empty": "Nichts in dieser Datei ist neuer als das, was hier gespeichert ist."
+      "empty": "Nichts in dieser Datei ist neuer als das, was hier gespeichert ist.",
+      "demo": "Diese Datei stammt aus dem Demo-Modus und enthält keinen echten Hangar."
     },
     "settings": "Einstellungen und deine Daten",
     "exportSettings": "Einstellungen und deine Daten exportieren",
@@ -2448,6 +2449,9 @@
       "nothing": "Nichts ändert sich"
     },
     "notExported": "Nicht exportiert: was von RSI oder der Projekt-Website neu gelesen wird ($1).",
-    "demoDisabled": "Nicht im Demo-Modus: Die Dateien würden die Daten deines Kontos enthalten."
+    "demoRestore": "Nicht im Demo-Modus: Das würde den gespeicherten Hangar deines Kontos ändern.",
+    "notInDemo": "Davon hat das Demo keine eigene Kopie, es bleibt wie es ist: $1.",
+    "syncedNoteDemo": "Im Demo-Modus landet das in den eigenen Daten des Demos in diesem Browser, gemessen, als würde es synchronisiert. Deine echten Daten bleiben unverändert.",
+    "importedDemo": "In die eigenen Daten des Demos importiert. Deine echten Daten bleiben unverändert."
   }
 }
