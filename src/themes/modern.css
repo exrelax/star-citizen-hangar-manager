@@ -1227,6 +1227,9 @@ html .shm-theme-modern .shm-order-header {
 }
 
 html .shm-theme-modern .shm-overlay-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 28px;
   height: 28px;
   padding: 0;

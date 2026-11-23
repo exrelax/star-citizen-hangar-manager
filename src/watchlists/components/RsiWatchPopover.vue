@@ -211,6 +211,11 @@ onUnmounted(() => {
   text-transform: none;
 }
 
+/* RSI's small corners (#632), as the buttons on its pages; over the theme's larger ones. */
+html .shm-rsi-popover-theme .shm-overlay-dialog.shm-rsi-popover {
+  border-radius: 4px;
+}
+
 .shm-rsi-popover .shm-overlay-header {
   gap: 12px;
   margin-bottom: 0;

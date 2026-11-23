@@ -222,6 +222,11 @@ html .shm-theme-modern .shm-watchlist-chip {
   min-height: 32px;
 }
 
+/* "Add to watchlist" is a button like "Create": the menu's text-only padding doesn't fit it. */
+.shm-watchlist-picker .shm-select-menu-button.shm-button {
+  padding: 4px 10px;
+}
+
 .shm-watchlist-picker .is-error {
   width: 100%;
   margin: 0;
