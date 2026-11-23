@@ -636,6 +636,25 @@
       "nearItems": "Ton stockage synchronisé contient presque autant d’éléments qu’il le peut. Supprime les watchlists dont tu n’as plus besoin.",
       "nearKeyWatchlists": "Une watchlist approche sa limite de $1 par liste.",
       "nearKeyMeltMarks": "Les marques à fondre approchent leur limite de $1."
+    },
+    "groups": {
+      "account": "Ton compte RSI",
+      "store": "Pledge Store et vaisseaux de RSI",
+      "website": "Site du projet",
+      "browser": "Créé dans ce navigateur"
+    },
+    "group": {
+      "count": {
+        "one": "$1 jeu de données",
+        "other": "$1 jeux de données"
+      },
+      "oldestCheck": "La plus ancienne dernière vérification de ce groupe : $1",
+      "refresh": "Relire tout « $1 », l’un après l’autre",
+      "delete": "Tout supprimer de « $1 »",
+      "deleteConfirm": "Tout supprimer de « $1 » : $2 ?\n\n$3",
+      "deleteReadAgain": "La prochaine actualisation le relit, ou il est relu tout seul dès que le Hangar Manager est ouvert. Ton hangar sur le site de RSI reste tel quel.",
+      "deleteNever": "Rien ne peut être restauré : rien de cela ne peut être relu.",
+      "deleteSynced": "Cela disparaît sur tous les appareils avec ce profil de navigateur et ne peut pas être restauré."
     }
   },
   "status": {

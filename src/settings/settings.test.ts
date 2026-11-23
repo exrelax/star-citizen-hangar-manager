@@ -42,6 +42,7 @@ describe('withDefaults', () => {
       sidebarHidden: ['selection'],
       sidebarOrder: ['notifications', 'summary', 'selection', 'paintConsultant', 'ccuConsultant'],
       sidebarCollapsed: [],
+      storageGroupsOpen: [],
       hidePledgeIds: true,
       demoMode: true,
       hideRefund: true,

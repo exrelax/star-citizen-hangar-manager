@@ -636,6 +636,25 @@
       "nearItems": "Your synced storage holds almost as many items as it can. Delete watchlists you no longer need.",
       "nearKeyWatchlists": "A watchlist is close to the limit of $1 per list.",
       "nearKeyMeltMarks": "The marks to melt are close to their limit of $1."
+    },
+    "groups": {
+      "account": "Your RSI account",
+      "store": "RSI's Pledge Store and ships",
+      "website": "Project website",
+      "browser": "Made in this browser"
+    },
+    "group": {
+      "count": {
+        "one": "$1 data set",
+        "other": "$1 data sets"
+      },
+      "oldestCheck": "The oldest last check of this group: $1",
+      "refresh": "Read everything of “$1” again, one after the other",
+      "delete": "Delete everything of “$1”",
+      "deleteConfirm": "Delete everything of “$1”: $2?\n\n$3",
+      "deleteReadAgain": "It is read again by the next refresh, or on its own as soon as the Hangar Manager is open. Your hangar on RSI's website stays as it is.",
+      "deleteNever": "It can't be restored: nothing of it can be read again.",
+      "deleteSynced": "It goes on every device with this browser profile and can't be restored."
     }
   },
   "status": {

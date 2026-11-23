@@ -13,6 +13,7 @@ import {
 import { shipStatusItem, shipStatusMeta, type ShipStatusSnapshot } from '@/ships/ship-status';
 import { shipFactsItem, shipFactsMeta, type ShipFactsSnapshot } from '@/ships/sync-ship-facts';
 import type { MetaItem } from './meta';
+import type { StorageGroupId } from './storage-group-ids';
 import {
   storeCreditItem,
   storeCreditMeta,
@@ -120,6 +121,11 @@ export interface StorageDefinition {
    * storage across devices (never removed by a reset of this browser's copy), or the settings.
    */
   kind: 'data' | 'synced' | 'settings';
+  /**
+   * Its group in the settings' "Stored data" (#624, `storage-groups.ts`): by where its data comes
+   * from. Every storage but the settings has one.
+   */
+  group?: StorageGroupId;
   /** Number of entries of a stored value, shown in the settings. */
   count?: (value: never) => number;
   /**
@@ -138,6 +144,7 @@ export interface StorageDefinition {
 export const STORAGES: readonly StorageDefinition[] = [
   {
     id: 'hangar',
+    group: 'account',
     meta: hangarMeta,
     item: hangarSnapshot,
     content: 'Pledges of "My Gear" with their items, ship links and images',
@@ -151,6 +158,7 @@ export const STORAGES: readonly StorageDefinition[] = [
   },
   {
     id: 'buyback',
+    group: 'account',
     meta: buybackMeta,
     item: buybackSnapshot,
     content: 'Melted pledges with their items and the buy back tokens',
@@ -164,6 +172,7 @@ export const STORAGES: readonly StorageDefinition[] = [
   },
   {
     id: 'orders',
+    group: 'account',
     meta: ordersMeta,
     item: ordersSnapshot,
     content: 'Order history: the order of every pledge and the newest pledge log entries',
@@ -176,6 +185,7 @@ export const STORAGES: readonly StorageDefinition[] = [
   },
   {
     id: 'ships',
+    group: 'store',
     meta: shipsMeta,
     item: shipsItem,
     content: 'All ships: id, name, standard price, image, Pledge Store link',
@@ -189,6 +199,7 @@ export const STORAGES: readonly StorageDefinition[] = [
   },
   {
     id: 'shipsBuyable',
+    group: 'store',
     meta: buyableShipsMeta,
     item: buyableShipsItem,
     content: 'Ships currently on sale: their SKUs and prices',
@@ -200,6 +211,7 @@ export const STORAGES: readonly StorageDefinition[] = [
   },
   {
     id: 'shipsWarbonds',
+    group: 'store',
     meta: warbondsMeta,
     item: warbondsItem,
     content: 'Ships currently offered as warbond edition, with their price',
@@ -213,6 +225,7 @@ export const STORAGES: readonly StorageDefinition[] = [
   },
   {
     id: 'warbondHistory',
+    group: 'browser',
     item: warbondHistoryItem,
     content: 'Warbond offers seen so far: ship, price, standard price, first and last seen, events',
     source: 'Every read of the ship upgrade tool of RSI, since the Hangar Manager was installed',
@@ -223,6 +236,7 @@ export const STORAGES: readonly StorageDefinition[] = [
   },
   {
     id: 'warbondHistorySite',
+    group: 'website',
     meta: siteWarbondHistoryMeta,
     item: siteWarbondHistoryItem,
     content: 'Earlier warbond offers: ship, price, standard price, first and last seen, events',
@@ -234,6 +248,7 @@ export const STORAGES: readonly StorageDefinition[] = [
   },
   {
     id: 'shipStatus',
+    group: 'store',
     meta: shipStatusMeta,
     item: shipStatusItem,
     content: 'The ships still in concept (not flight ready yet), by id',
@@ -245,6 +260,7 @@ export const STORAGES: readonly StorageDefinition[] = [
   },
   {
     id: 'shipFacts',
+    group: 'website',
     meta: shipFactsMeta,
     item: shipFactsItem,
     content: 'Every ship: production status, always available, standard price, with their history',
@@ -256,6 +272,7 @@ export const STORAGES: readonly StorageDefinition[] = [
   },
   {
     id: 'storeItems',
+    group: 'store',
     meta: storeItemsMeta,
     item: storeItemsItem,
     content: 'Items of the Pledge Store: name, category, price, image, link, warbond, in stock',
@@ -267,6 +284,7 @@ export const STORAGES: readonly StorageDefinition[] = [
   },
   {
     id: 'events',
+    group: 'website',
     meta: eventsMeta,
     item: eventsItem,
     content: 'Events of Star Citizen: name, dates, description, icon',
@@ -278,6 +296,7 @@ export const STORAGES: readonly StorageDefinition[] = [
   },
   {
     id: 'priceIncreases',
+    group: 'website',
     meta: priceIncreasesMeta,
     item: priceIncreasesItem,
     content: 'Expected price increases: ship id and names, dates, related items, note',
@@ -289,6 +308,7 @@ export const STORAGES: readonly StorageDefinition[] = [
   },
   {
     id: 'shipRemovals',
+    group: 'website',
     meta: shipRemovalsMeta,
     item: shipRemovalsItem,
     content: 'Ship removals: ship id and name, date, source, event',
@@ -300,6 +320,7 @@ export const STORAGES: readonly StorageDefinition[] = [
   },
   {
     id: 'buybackTokenRenewals',
+    group: 'website',
     meta: tokenRenewalsMeta,
     item: tokenRenewalsItem,
     content: 'Buy back token renewals: dates, whether confirmed, note, source',
@@ -311,6 +332,7 @@ export const STORAGES: readonly StorageDefinition[] = [
   },
   {
     id: 'storeCredit',
+    group: 'account',
     meta: storeCreditMeta,
     item: storeCreditItem,
     content: "The account's store credit",
@@ -322,6 +344,7 @@ export const STORAGES: readonly StorageDefinition[] = [
   },
   {
     id: 'paintPlan',
+    group: 'browser',
     item: rebuyPlanItem,
     content: "The Paint Discount Planner's plan whose paints were put into the cart",
     source: 'The Paint Discount Planner ("Put the paints into the cart")',
@@ -333,6 +356,7 @@ export const STORAGES: readonly StorageDefinition[] = [
   },
   {
     id: 'paintHistory',
+    group: 'browser',
     item: completedPlansItem,
     content: "The Paint Discount Planner's completed plans",
     source: 'The Paint Discount Planner (a running plan that ended)',
@@ -343,6 +367,7 @@ export const STORAGES: readonly StorageDefinition[] = [
   },
   {
     id: 'watchlists',
+    group: 'synced',
     item: watchlistsItem,
     content: 'Watchlists: name, description, date, reminder and the items on each (#465)',
     source: 'The watchlists the user made, in the synced storage (one key per list)',
@@ -353,6 +378,7 @@ export const STORAGES: readonly StorageDefinition[] = [
   },
   {
     id: 'meltMarks',
+    group: 'synced',
     item: meltMarksItem,
     content: 'Marks to melt: the pledge id and when it was marked (#144)',
     source: 'The marks the user set in My Hangar, in the synced storage',

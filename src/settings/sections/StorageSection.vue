@@ -11,6 +11,16 @@ import { formatRelativeTime } from '@/shared/lib/relative-time';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { EMPTY_META } from '@/storage/meta';
 import { LOCAL_COPY, SYNCED, type StorageDefinition, type StorageId } from '@/storage/registry';
+import {
+  canReadAgain,
+  deleteKindOf,
+  groupSums,
+  refreshOrder,
+  STORAGE_GROUPS,
+  storagesOf,
+  type StorageGroupId,
+} from '@/storage/storage-groups';
+import { useSettings } from '@/settings/use-settings';
 import { nearLimits, type SyncedId, type SyncedUsage } from '@/storage/synced-usage';
 import { useSyncedUsage } from '@/storage/use-synced-usage';
 import { clearWatchlists, SYNC_QUOTA } from '@/watchlists/watchlists-storage';
@@ -21,8 +31,9 @@ import { useDemoContext } from '@/demo/use-demo';
 
 /*
  * What the extension keeps in this browser, one row per storage (see `storage/registry.ts`):
- * entries, size, last full sync and last check – and, for each on its own, a refresh and a reset.
- * Below it, what the user keeps in the synced storage (#560), with its use against the limits.
+ * entries, size, last full sync and last check – and, for each on its own, a refresh and a reset –,
+ * and what the user keeps in the synced storage (#560), with its use against the limits. The rows
+ * in groups by where their data comes from (#624), each with its sums, collapsed by default.
  */
 
 const rows = LOCAL_COPY.map((definition) => ({
@@ -65,8 +76,8 @@ const amounts = rows.map(({ definition, value, meta }) =>
     const stored = value.value;
     if (stored === null || stored === undefined) return undefined;
     return {
-      count: numbers.value.format(definition.count?.(stored as never) ?? 0),
-      size: formatSize(bytes(stored) + bytes(meta.value)),
+      entries: definition.count?.(stored as never) ?? 0,
+      bytes: bytes(stored) + bytes(meta.value),
     };
   }),
 );
@@ -101,11 +112,14 @@ const view = computed(() =>
     const id = definition.id;
     const demoCount = demo.value?.storage.counts[id];
     if (demoCount !== undefined) {
+      const demoBytes = demoCount * (DEMO_BYTES[id] ?? 200);
       return {
         definition,
         empty: demoCount === 0,
+        entries: demoCount,
+        bytes: demoBytes,
         count: numbers.value.format(demoCount),
-        size: formatSize(demoCount * (DEMO_BYTES[id] ?? 200)),
+        size: formatSize(demoBytes),
         syncedAt: now.value - (DEMO_SYNCED_AGO[id] ?? 180) * 60_000,
         checkedAt: now.value - 4 * 60_000,
         failed: false,
@@ -116,8 +130,10 @@ const view = computed(() =>
     return {
       definition,
       empty: !amount,
-      count: amount?.count ?? '–',
-      size: amount?.size ?? '–',
+      entries: amount?.entries,
+      bytes: amount?.bytes,
+      count: amount ? numbers.value.format(amount.entries) : '–',
+      size: amount ? formatSize(amount.bytes) : '–',
       syncedAt: metadata.syncedAt,
       checkedAt: metadata.checkedAt,
       failed: metadata.lastOutcome?.status === 'failed',
@@ -193,6 +209,8 @@ const syncedView = computed(() =>
     return {
       id,
       empty: !row?.entries,
+      entries: row?.entries,
+      bytes: row?.bytes,
       count: row ? numbers.value.format(row.entries) : '–',
       size: row?.bytes ? formatSyncedSize(row.bytes) : '–',
     };
@@ -241,11 +259,114 @@ async function deleteSynced(id: StorageId) {
     i18n.t(`storage.${id}.missing`),
   ]);
   if (!confirm(message)) return;
+  await removeSynced(id);
+  syncedDone.value = id;
+}
+async function removeSynced(id: StorageId) {
   const isDemo = !!demo.value;
   if (id === 'watchlists') await clearWatchlists(isDemo);
   else await (isDemo ? demoMeltMarksItem : meltMarksItem).removeValue();
-  syncedDone.value = id;
 }
+
+/*
+ * The groups (#624): each with its rows, the sum of their entries and sizes and the oldest last
+ * check; open as remembered in the display settings.
+ */
+const { settings, update } = useSettings();
+const isOpen = (group: StorageGroupId) => settings.value.storageGroupsOpen.includes(group);
+function toggleGroup(group: StorageGroupId) {
+  const open = settings.value.storageGroupsOpen;
+  void update({
+    storageGroupsOpen: open.includes(group)
+      ? open.filter((other) => other !== group)
+      : STORAGE_GROUPS.filter((other) => other === group || open.includes(other)),
+  });
+}
+
+const groups = computed(() =>
+  STORAGE_GROUPS.map((id) => {
+    const ids = storagesOf(id).map((storage) => storage.id);
+    const local = view.value.filter((row) => ids.includes(row.definition.id));
+    const synced = syncedView.value.filter((row) => ids.includes(row.id));
+    const sums = groupSums([
+      ...local.map((row) => ({
+        id: row.definition.id,
+        entries: row.entries,
+        bytes: row.bytes,
+        checkedAt: row.checkedAt,
+      })),
+      ...synced.map((row) => ({ id: row.id, entries: row.entries, bytes: row.bytes })),
+    ]);
+    return {
+      id,
+      ids,
+      local,
+      synced,
+      sums,
+      size: sums.bytes ? (id === 'synced' ? formatSyncedSize : formatSize)(sums.bytes) : '–',
+      readable: canReadAgain(id),
+    };
+  }),
+);
+const groupName = (group: StorageGroupId) =>
+  group === 'synced' ? i18n.t('storage.synced.title') : i18n.t(`storage.groups.${group}`);
+
+/*
+ * In the demo mode a group refreshes and deletes only what isn't the account's: the public data,
+ * and the demo's own synced data – never what can't be read again from this browser.
+ */
+const demoSafe = (id: StorageId) =>
+  !masked(id) &&
+  (!demo.value ||
+    SYNCED.some((storage) => storage.id === id) ||
+    storagesOf('browser').every((storage) => storage.id !== id));
+const refreshable = (group: StorageGroupId) =>
+  refreshOrder(
+    storagesOf(group)
+      .filter((storage) => storage.readAgain !== 'never' && demoSafe(storage.id))
+      .map((storage) => storage.id),
+  );
+const deletable = (group: StorageGroupId) =>
+  storagesOf(group).filter((storage) => demoSafe(storage.id));
+
+/** The group read again right now, one storage after the other with the progress of each. */
+const refreshingGroup = ref<StorageGroupId>();
+async function refreshGroup(group: StorageGroupId) {
+  refreshingGroup.value = group;
+  try {
+    for (const id of refreshable(group)) await startStorageSync(id);
+  } finally {
+    refreshingGroup.value = undefined;
+  }
+}
+
+/** Deletes every storage of the group, after a question that names them and what it means. */
+async function deleteGroup(group: StorageGroupId) {
+  const storages = deletable(group);
+  if (!storages.length) return;
+  const names = new Intl.ListFormat(locale.value, { type: 'conjunction' }).format(
+    storages.map((storage) => name(storage.id)),
+  );
+  const consequence = i18n.t(
+    (
+      {
+        synced: 'storage.group.deleteSynced',
+        readAgain: 'storage.group.deleteReadAgain',
+        never: 'storage.group.deleteNever',
+      } as const
+    )[deleteKindOf(group)],
+  );
+  if (!confirm(i18n.t('storage.group.deleteConfirm', [groupName(group), names, consequence]))) {
+    return;
+  }
+  for (const storage of storages) {
+    if (storage.kind === 'synced') await removeSynced(storage.id);
+    else await clearStorage(storage);
+  }
+  groupDone.value = group;
+}
+/** The group deleted last, shown below the table until the next delete. */
+const groupDone = ref<StorageGroupId>();
 </script>
 
 <template>
@@ -265,154 +386,234 @@ async function deleteSynced(id: StorageId) {
             </th>
           </tr>
         </thead>
-        <tbody>
-          <tr v-for="row in view" :key="row.definition.id">
-            <th scope="row">
-              <span class="shm-storage-name">{{ name(row.definition.id) }}</span>
-              <span class="shm-storage-content">{{
-                i18n.t(`storage.${row.definition.id}.content`)
-              }}</span>
-              <!-- The two times below the name when the panel is too narrow for their columns. -->
-              <span class="shm-storage-times">
+        <!-- A group (#624): its sums in one row, its storages' rows below it when open. -->
+        <tbody
+          v-for="group in groups"
+          :key="group.id"
+          class="shm-storage-group"
+          :class="{ 'is-open': isOpen(group.id) }"
+        >
+          <tr class="shm-storage-group-row">
+            <th scope="rowgroup">
+              <button
+                type="button"
+                class="shm-storage-disclosure"
+                :aria-expanded="isOpen(group.id)"
+                @click="toggleGroup(group.id)"
+              >
+                <SvgIcon name="chevron-right" class="shm-storage-chevron" />
+                <span class="shm-storage-name">{{ groupName(group.id) }}</span>
+              </button>
+              <span class="shm-storage-content">
+                {{ i18n.n('storage.group.count', group.sums.storages, [group.sums.storages]) }}
                 <span
-                  >{{ i18n.t('storage.colSynced') }}:
-                  <span class="shm-storage-time">{{ when(row.syncedAt) }}</span></span
+                  v-if="group.id === 'synced' && syncedQuota?.warnings.length"
+                  v-tooltip="syncedQuota.warnings.join(' ')"
+                  class="shm-storage-group-warning"
+                  :aria-label="syncedQuota.warnings.join(' ')"
                 >
-                <span :class="{ 'is-failed': row.failed }"
+                  <SvgIcon name="triangle-exclamation" />
+                </span>
+              </span>
+              <span v-if="group.sums.oldestCheck" class="shm-storage-times">
+                <span
                   >{{ i18n.t('storage.colChecked') }}:
-                  <span class="shm-storage-time">{{ when(row.checkedAt) }}</span></span
+                  <span class="shm-storage-time">{{ when(group.sums.oldestCheck) }}</span></span
                 >
               </span>
             </th>
-            <td class="is-number">{{ row.count }}</td>
-            <td class="is-number">{{ row.size }}</td>
-            <td class="is-time">
-              <span v-tooltip="exactly(row.syncedAt)">{{ when(row.syncedAt) }}</span>
+            <td class="is-number">
+              {{ group.sums.empty ? '–' : numbers.format(group.sums.entries) }}
             </td>
-            <td class="is-time" :class="{ 'is-failed': row.failed }">
+            <td class="is-number">{{ group.size }}</td>
+            <td class="is-time"></td>
+            <td class="is-time">
               <span
-                v-tooltip="row.failed ? i18n.t('storage.checkFailed') : exactly(row.checkedAt)"
-                >{{ when(row.checkedAt) }}</span
+                v-if="group.sums.oldestCheck"
+                v-tooltip="
+                  i18n.t('storage.group.oldestCheck', [exactly(group.sums.oldestCheck) ?? ''])
+                "
+                >{{ when(group.sums.oldestCheck) }}</span
               >
             </td>
             <td class="is-action">
               <span class="shm-storage-actions">
-                <!-- Not for what can't be read from RSI, e.g. the consultant's plan. -->
                 <button
-                  v-if="row.definition.readAgain !== 'never'"
+                  v-if="group.readable"
                   v-tooltip="
-                    masked(row.definition.id)
-                      ? i18n.t('storage.demoDisabled')
-                      : i18n.t(
-                          fromWebsite(row.definition.id)
-                            ? 'storage.refreshOneWebsite'
-                            : 'storage.refreshOne',
-                          [name(row.definition.id)],
-                        )
+                    refreshable(group.id).length
+                      ? i18n.t('storage.group.refresh', [groupName(group.id)])
+                      : i18n.t('storage.demoDisabled')
                   "
                   type="button"
                   class="shm-button is-icon"
                   :disabled="
-                    syncState.running || upgradeToolState.loading || masked(row.definition.id)
+                    syncState.running || upgradeToolState.loading || !refreshable(group.id).length
                   "
-                  :aria-busy="isReading(row.definition.id)"
-                  @click="startStorageSync(row.definition.id)"
+                  :aria-busy="refreshingGroup === group.id"
+                  @click="refreshGroup(group.id)"
                 >
-                  <RefreshIcon :spinning="isReading(row.definition.id)" />
+                  <RefreshIcon :spinning="refreshingGroup === group.id" />
                 </button>
-                <!-- Not during a refresh: it would store the data again right after. -->
                 <button
                   v-tooltip="
-                    masked(row.definition.id)
-                      ? i18n.t('storage.demoDisabled')
-                      : i18n.t('storage.resetOne', [name(row.definition.id)])
+                    deletable(group.id).length
+                      ? i18n.t('storage.group.delete', [groupName(group.id)])
+                      : i18n.t('storage.demoDisabled')
                   "
                   type="button"
                   class="shm-button is-danger is-icon"
-                  :disabled="row.empty || syncState.running || masked(row.definition.id)"
-                  @click="reset(row.definition)"
+                  :disabled="group.sums.empty || syncState.running || !deletable(group.id).length"
+                  @click="deleteGroup(group.id)"
                 >
                   <SvgIcon name="trash" />
                 </button>
               </span>
             </td>
           </tr>
+          <template v-if="isOpen(group.id)">
+            <tr v-for="row in group.local" :key="row.definition.id" class="shm-storage-row">
+              <th scope="row">
+                <span class="shm-storage-name">{{ name(row.definition.id) }}</span>
+                <span class="shm-storage-content">{{
+                  i18n.t(`storage.${row.definition.id}.content`)
+                }}</span>
+                <!-- The two times below the name when the panel is too narrow for their columns. -->
+                <span class="shm-storage-times">
+                  <span
+                    >{{ i18n.t('storage.colSynced') }}:
+                    <span class="shm-storage-time">{{ when(row.syncedAt) }}</span></span
+                  >
+                  <span :class="{ 'is-failed': row.failed }"
+                    >{{ i18n.t('storage.colChecked') }}:
+                    <span class="shm-storage-time">{{ when(row.checkedAt) }}</span></span
+                  >
+                </span>
+              </th>
+              <td class="is-number">{{ row.count }}</td>
+              <td class="is-number">{{ row.size }}</td>
+              <td class="is-time">
+                <span v-tooltip="exactly(row.syncedAt)">{{ when(row.syncedAt) }}</span>
+              </td>
+              <td class="is-time" :class="{ 'is-failed': row.failed }">
+                <span
+                  v-tooltip="row.failed ? i18n.t('storage.checkFailed') : exactly(row.checkedAt)"
+                  >{{ when(row.checkedAt) }}</span
+                >
+              </td>
+              <td class="is-action">
+                <span class="shm-storage-actions">
+                  <!-- Not for what can't be read from RSI, e.g. the consultant's plan. -->
+                  <button
+                    v-if="row.definition.readAgain !== 'never'"
+                    v-tooltip="
+                      masked(row.definition.id)
+                        ? i18n.t('storage.demoDisabled')
+                        : i18n.t(
+                            fromWebsite(row.definition.id)
+                              ? 'storage.refreshOneWebsite'
+                              : 'storage.refreshOne',
+                            [name(row.definition.id)],
+                          )
+                    "
+                    type="button"
+                    class="shm-button is-icon"
+                    :disabled="
+                      syncState.running || upgradeToolState.loading || masked(row.definition.id)
+                    "
+                    :aria-busy="isReading(row.definition.id)"
+                    @click="startStorageSync(row.definition.id)"
+                  >
+                    <RefreshIcon :spinning="isReading(row.definition.id)" />
+                  </button>
+                  <!-- Not during a refresh: it would store the data again right after. -->
+                  <button
+                    v-tooltip="
+                      masked(row.definition.id)
+                        ? i18n.t('storage.demoDisabled')
+                        : i18n.t('storage.resetOne', [name(row.definition.id)])
+                    "
+                    type="button"
+                    class="shm-button is-danger is-icon"
+                    :disabled="row.empty || syncState.running || masked(row.definition.id)"
+                    @click="reset(row.definition)"
+                  >
+                    <SvgIcon name="trash" />
+                  </button>
+                </span>
+              </td>
+            </tr>
+            <!-- What follows the browser profile (#560): no refresh, no times. -->
+            <tr v-for="row in group.synced" :key="row.id" class="shm-storage-row">
+              <th scope="row">
+                <span class="shm-storage-name">{{ name(row.id) }}</span>
+                <span class="shm-storage-content">{{ i18n.t(`storage.${row.id}.content`) }}</span>
+              </th>
+              <td class="is-number">{{ row.count }}</td>
+              <td class="is-number">{{ row.size }}</td>
+              <td class="is-time">–</td>
+              <td class="is-time">–</td>
+              <td class="is-action">
+                <span class="shm-storage-actions">
+                  <button
+                    v-tooltip="i18n.t('storage.synced.deleteOne', [name(row.id)])"
+                    type="button"
+                    class="shm-button is-danger is-icon"
+                    :disabled="row.empty"
+                    @click="deleteSynced(row.id)"
+                  >
+                    <SvgIcon name="trash" />
+                  </button>
+                </span>
+              </td>
+            </tr>
+            <!-- Its use against the limits of the synced storage, like the storage of a device. -->
+            <tr v-if="group.id === 'synced' && syncedQuota" class="shm-storage-row">
+              <td colspan="6" class="shm-storage-quota-cell">
+                <div class="shm-storage-quota">
+                  <span
+                    class="shm-storage-meter"
+                    :class="{ 'is-near': syncedQuota.near }"
+                    role="meter"
+                    :aria-label="i18n.t('storage.synced.meterLabel')"
+                    aria-valuemin="0"
+                    :aria-valuemax="SYNC_QUOTA.total"
+                    :aria-valuenow="syncedQuota.bytes"
+                    :aria-valuetext="syncedQuota.used"
+                  >
+                    <span
+                      class="shm-storage-meter-fill"
+                      :style="{ transform: `scaleX(${syncedQuota.fraction})` }"
+                    ></span>
+                  </span>
+                  <span class="shm-storage-quota-text">
+                    <span>{{ syncedQuota.used }}</span>
+                    <span>{{ syncedQuota.items }}</span>
+                  </span>
+                  <p
+                    v-for="warning in syncedQuota.warnings"
+                    :key="warning"
+                    class="shm-storage-warning"
+                  >
+                    <SvgIcon name="triangle-exclamation" />
+                    <span>{{ warning }}</span>
+                  </p>
+                  <p class="shm-storage-quota-note">{{ i18n.t('storage.synced.footer') }}</p>
+                </div>
+              </td>
+            </tr>
+          </template>
         </tbody>
       </table>
     </div>
     <template #after>
-      <p v-if="resetDone" class="shm-settings-group-foot is-done" role="status">
+      <p v-if="groupDone" class="shm-settings-group-foot is-done" role="status">
+        {{ i18n.t('storage.resetDone', [groupName(groupDone)]) }}
+      </p>
+      <p v-else-if="resetDone" class="shm-settings-group-foot is-done" role="status">
         {{ i18n.t('storage.resetDone', [name(resetDone)]) }}
       </p>
-    </template>
-  </SettingsGroup>
-  <!-- What follows the browser profile (#560): no refresh, never reset with the local copy. -->
-  <SettingsGroup :title="i18n.t('storage.synced.title')" :footer="i18n.t('storage.synced.footer')">
-    <div class="shm-storage-scroll">
-      <table class="shm-storage-table">
-        <thead>
-          <tr>
-            <th scope="col">{{ i18n.t('storage.colData') }}</th>
-            <th scope="col" class="is-number">{{ i18n.t('storage.colEntries') }}</th>
-            <th scope="col" class="is-number">{{ i18n.t('storage.colSize') }}</th>
-            <th scope="col">
-              <span class="shm-visually-hidden">{{ i18n.t('storage.colReset') }}</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="row in syncedView" :key="row.id">
-            <th scope="row">
-              <span class="shm-storage-name">{{ name(row.id) }}</span>
-              <span class="shm-storage-content">{{ i18n.t(`storage.${row.id}.content`) }}</span>
-            </th>
-            <td class="is-number">{{ row.count }}</td>
-            <td class="is-number">{{ row.size }}</td>
-            <td class="is-action">
-              <span class="shm-storage-actions">
-                <button
-                  v-tooltip="i18n.t('storage.synced.deleteOne', [name(row.id)])"
-                  type="button"
-                  class="shm-button is-danger is-icon"
-                  :disabled="row.empty"
-                  @click="deleteSynced(row.id)"
-                >
-                  <SvgIcon name="trash" />
-                </button>
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <!-- Its use against the limits of the synced storage, like the storage of a device. -->
-    <div v-if="syncedQuota" class="shm-storage-quota">
-      <span
-        class="shm-storage-meter"
-        :class="{ 'is-near': syncedQuota.near }"
-        role="meter"
-        :aria-label="i18n.t('storage.synced.meterLabel')"
-        aria-valuemin="0"
-        :aria-valuemax="SYNC_QUOTA.total"
-        :aria-valuenow="syncedQuota.bytes"
-        :aria-valuetext="syncedQuota.used"
-      >
-        <span
-          class="shm-storage-meter-fill"
-          :style="{ transform: `scaleX(${syncedQuota.fraction})` }"
-        ></span>
-      </span>
-      <span class="shm-storage-quota-text">
-        <span>{{ syncedQuota.used }}</span>
-        <span>{{ syncedQuota.items }}</span>
-      </span>
-      <p v-for="warning in syncedQuota.warnings" :key="warning" class="shm-storage-warning">
-        <SvgIcon name="triangle-exclamation" />
-        <span>{{ warning }}</span>
-      </p>
-    </div>
-    <template #after>
-      <p v-if="syncedDone" class="shm-settings-group-foot is-done" role="status">
+      <p v-else-if="syncedDone" class="shm-settings-group-foot is-done" role="status">
         {{ i18n.t('storage.synced.deleted', [name(syncedDone)]) }}
       </p>
     </template>
@@ -454,8 +655,86 @@ async function deleteSynced(id: StorageId) {
   border-bottom: 1px solid rgb(var(--shm-accent-rgb) / 0.2);
 }
 
-.shm-storage-table tbody tr + tr > * {
+.shm-storage-table tbody tr + tr > *,
+.shm-storage-table tbody + tbody > tr:first-child > * {
   border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.1);
+}
+
+/* A group's row (#624): its name as a disclosure, the rows of its storages indented below it. */
+.shm-storage-disclosure {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.shm-storage-disclosure:focus-visible {
+  outline: 2px solid var(--shm-accent);
+  outline-offset: 2px;
+}
+
+.shm-storage-group-row .shm-storage-name {
+  font-weight: 600;
+}
+
+.shm-storage-chevron {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  color: var(--shm-text-muted);
+  transition: transform 0.15s;
+}
+
+.shm-storage-disclosure[aria-expanded='true'] .shm-storage-chevron {
+  transform: rotate(90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shm-storage-chevron {
+    transition: none;
+  }
+}
+
+.shm-storage-group-row .shm-storage-content,
+.shm-storage-group-row .shm-storage-times {
+  padding-left: 16px;
+}
+
+.shm-storage-table .shm-storage-row > :first-child {
+  padding-left: 32px;
+}
+
+.shm-storage-group.is-open .shm-storage-row > * {
+  background: rgb(var(--shm-accent-rgb) / 0.03);
+}
+
+.shm-storage-group-warning {
+  display: inline-flex;
+  margin-left: 4px;
+  color: var(--shm-warning);
+  vertical-align: -1px;
+}
+
+.shm-storage-group-warning .shm-icon {
+  width: 11px;
+  height: 11px;
+}
+
+.shm-storage-table .shm-storage-quota-cell {
+  padding: 0;
+  white-space: normal;
+}
+
+.shm-storage-quota-note {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: calc(11px * var(--shm-font-scale));
 }
 
 .shm-storage-table tbody th {
@@ -529,11 +808,10 @@ async function deleteSynced(id: StorageId) {
   flex-wrap: wrap;
   align-items: center;
   gap: 6px 12px;
-  padding: 10px 12px 12px 16px;
+  padding: 10px 12px 12px 32px;
   color: var(--shm-text-muted);
   font-size: calc(12px * var(--shm-font-scale));
   font-variant-numeric: tabular-nums;
-  border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.1);
 }
 
 .shm-storage-meter {
