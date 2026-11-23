@@ -50,6 +50,21 @@ The storages with `transfer: 'hangar'` in the registry:
 Values are in USD where they are numbers (`valueUsd`, `price`); texts as RSI shows them
 (`value`, `amount`) may be in another currency.
 
+## CSV (#227)
+
+The hangar export also comes as CSV for spreadsheets, made from the same file (the same pledges,
+ids and amounts left out the same way): UTF-8 with a BOM, comma separated, lines ended by CRLF,
+quoted where needed. A text starting with `=`, `+`, `-`, `@`, a tab or a carriage return gets a
+leading `'`, so no spreadsheet runs it as a formula.
+
+- **Hangar**: one row per pledge – `ID`, `Name`, `Items` (the item titles, separated by `; `),
+  `Insurance` (`LTI` or `<n> months`, the best one), `Value (USD)`, `Giftable`, `Meltable`,
+  `Upgraded` (`yes` or `no`), `Bought on` (`YYYY-MM-DD`), `Order`, `Paid` (as RSI shows it).
+- **Buy back**, a file of its own: `ID`, `Name`, `Items`, `Melted on`, `Buy back price (USD)`.
+
+The store credits are in the JSON only: a line above the table would break the header row that
+spreadsheets sort and filter by.
+
 ## Settings and your data (`kind: "settings"`)
 
 The storages with `transfer: 'settings'` and `transfer: 'yourData'` in the registry. `parts` says
