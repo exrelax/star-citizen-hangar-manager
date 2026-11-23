@@ -247,8 +247,11 @@ const filterHint = (filter: PledgeFilter) => {
     @filter-states="showFilterStates"
     @update:grouped="setGrouped"
   >
-    <template v-if="!embedded && canSelect" #select>
+    <!-- In a watchlist the watchlist's own "Select all" of this part (#620). -->
+    <template v-if="embedded ? $slots.select : canSelect" #select>
+      <slot v-if="embedded" name="select" />
       <SelectAll
+        v-else
         :state="selectState"
         :selected="selectedShown"
         :total="shownIds.length"

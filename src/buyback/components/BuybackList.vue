@@ -168,6 +168,10 @@ const filterHint = (filter: BuybackFilter) => {
         )
     "
   >
+    <!-- In a watchlist the watchlist's own "Select all" of this part (#620). -->
+    <template v-if="embedded && $slots.select" #select>
+      <slot name="select" />
+    </template>
     <template #row="{ entry, autoExpand }">
       <BuybackRow :pledge="entry" :auto-expand="autoExpand" :link-mode="settings.buybackLinkMode" />
     </template>

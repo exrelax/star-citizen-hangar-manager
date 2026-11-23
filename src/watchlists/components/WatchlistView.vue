@@ -148,27 +148,51 @@ provide(WATCHLIST_ROW, {
   select: { has: isSelected, set: setSelected },
 });
 
-/** What its lists show with their search and filters, for "Select all". */
+/*
+ * "Select all" of each part (My Hangar, Buy Back, Pledge Store): what its list and its plain rows
+ * show with the search and filters. In the line of its list right before the order, or at the
+ * right above its plain rows (the Pledge Store has no order).
+ */
 const shownHangar = ref<number[]>([]);
 const shownBuyback = ref<number[]>([]);
-const shownRefs = computed<WatchItemRef[]>(() => [
-  ...shownHangar.value
-    .filter((id) => hangarIds.value.has(id))
-    .map((pledgeId) => ({ kind: 'hangar' as const, pledgeId })),
-  ...shownBuyback.value
-    .filter((id) => buybackIds.value.has(id))
-    .map((pledgeId) => ({ kind: 'buyback' as const, pledgeId })),
-  ...shownSources.value.flatMap((source) => plainOf(source).map((entry) => entry.item)),
-]);
-const selectedShown = computed(() => shownRefs.value.filter(isSelected).length);
-const selectState = computed(() =>
-  selectedShown.value && selectedShown.value === shownRefs.value.length
-    ? 'true'
-    : selectedShown.value
-      ? 'mixed'
-      : 'false',
+const shownRefs = computed<Record<WatchSource, WatchItemRef[]>>(() => {
+  const plain = (source: WatchSource) => plainOf(source).map((entry) => entry.item);
+  return {
+    hangar: [
+      ...shownHangar.value
+        .filter((id) => hangarIds.value.has(id))
+        .map((pledgeId) => ({ kind: 'hangar' as const, pledgeId })),
+      ...plain('hangar'),
+    ],
+    buyback: [
+      ...shownBuyback.value
+        .filter((id) => buybackIds.value.has(id))
+        .map((pledgeId) => ({ kind: 'buyback' as const, pledgeId })),
+      ...plain('buyback'),
+    ],
+    store: plain('store'),
+  };
+});
+const selectOf = computed(
+  () =>
+    Object.fromEntries(
+      WATCH_SOURCES.map((source) => {
+        const shown = shownRefs.value[source];
+        const selected = shown.filter(isSelected).length;
+        const state =
+          selected && selected === shown.length ? 'true' : selected ? 'mixed' : ('false' as const);
+        return [source, { shown, selected, state: state as 'false' | 'mixed' | 'true' }];
+      }),
+    ) as Record<
+      WatchSource,
+      { shown: WatchItemRef[]; selected: number; state: 'false' | 'mixed' | 'true' }
+    >,
 );
-const selectAll = () => setSelected(shownRefs.value, selectState.value !== 'true');
+const selectAll = (source: WatchSource) =>
+  setSelected(selectOf.value[source].shown, selectOf.value[source].state !== 'true');
+/** Its list shows the part's "Select all" in its own line; without one it goes above the rows. */
+const hasList = (source: WatchSource) =>
+  source !== 'store' && !!sections.value[source]?.pledges.length;
 
 /** Every selected item of this watchlist, also one its search hides now. */
 const selectedItems = computed(() => props.list.items.filter(isSelected));
@@ -316,14 +340,8 @@ async function askDelete() {
       </span>
     </div>
 
-    <!-- "Select all" of what it shows, and removing the selected items from it (#620). -->
-    <div v-if="list.items.length" class="shm-watchlist-select">
-      <SelectAll
-        :state="selectState"
-        :selected="selectedShown"
-        :total="shownRefs.length"
-        @toggle="selectAll"
-      />
+    <!-- Removing the selected items of all its parts from it (#620). -->
+    <div v-if="selectedItems.length" class="shm-watchlist-select">
       <button
         v-if="selectedItems.length"
         type="button"
@@ -387,7 +405,16 @@ async function askDelete() {
         :active="false"
         :embedded="embedded"
         @visible="shownHangar = $event"
-      />
+      >
+        <template #select>
+          <SelectAll
+            :state="selectOf.hangar.state"
+            :selected="selectOf.hangar.selected"
+            :total="selectOf.hangar.shown.length"
+            @toggle="selectAll('hangar')"
+          />
+        </template>
+      </PledgeList>
       <BuybackList
         v-if="source === 'buyback' && sections.buyback!.pledges.length"
         :pledges="sections.buyback!.pledges"
@@ -395,7 +422,25 @@ async function askDelete() {
         :active="false"
         :embedded="embedded"
         @visible="shownBuyback = $event"
-      />
+      >
+        <template #select>
+          <SelectAll
+            :state="selectOf.buyback.state"
+            :selected="selectOf.buyback.selected"
+            :total="selectOf.buyback.shown.length"
+            @toggle="selectAll('buyback')"
+          />
+        </template>
+      </BuybackList>
+      <!-- Without a list (the Pledge Store, pledges all gone): at the right above the rows. -->
+      <div v-if="!hasList(source) && plainOf(source).length" class="shm-watchlist-plain-head">
+        <SelectAll
+          :state="selectOf[source].state"
+          :selected="selectOf[source].selected"
+          :total="selectOf[source].shown.length"
+          @toggle="selectAll(source)"
+        />
+      </div>
       <div
         v-if="plainOf(source).length"
         class="shm-rows shm-watchlist-plain"
@@ -580,11 +625,16 @@ async function askDelete() {
 /* "Select all" and the removal of the selected items, above the lists (#620). */
 .shm-watchlist-select {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px 16px;
-  min-height: 32px;
+  justify-content: flex-end;
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+/* The "Select all" of a part without a list of its own, at the right like next to an order. */
+.shm-watchlist-plain-head {
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px 0;
+  color: var(--shm-text-muted);
   font-size: calc(12px * var(--shm-font-scale));
 }
 
