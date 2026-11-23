@@ -14,7 +14,7 @@ const NOW = Date.parse('2026-11-10T12:00:00Z');
  * cases (#425): 15 CCUs on the bundled catalog, and the three ships that cover the cases `covered`
  * and `partial` (#575).
  */
-const CCU_CASES = 15;
+const CCU_CASES = 17;
 const CCU_CASE_SHIPS = 3;
 /**
  * And Melt and Rebuy's cases (#532): five paints, ten standalone ships (one of them upgraded), two

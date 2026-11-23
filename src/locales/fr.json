@@ -1815,31 +1815,7 @@
       "always": "Rien de ces vaisseaux de base n’est dans ton hangar ou ton rachat, mais RSI les vend toujours. Source : $1, liste du $2.",
       "alwaysUndated": "Rien de ces vaisseaux de base n’est dans ton hangar ou ton rachat, mais RSI les vend toujours. Source : $1."
     },
-    "col": {
-      "ship": "Vaisseau de base",
-      "ccus": "CCU depuis lui",
-      "cover": "Couverture du vaisseau de base",
-      "found": "Trouvé",
-      "leaves": "Retrait",
-      "ways": "Accès",
-      "store": "Pledge Store"
-    },
     "unknownShip": "Vaisseau de base inconnu",
-    "notAlways": "Pas toujours disponible",
-    "price": "Prix standard $1",
-    "cover": {
-      "buyback": "Dans ton rachat",
-      "always": "Toujours disponible",
-      "alwaysSub": "Dans le Pledge Store dès que tu en as besoin",
-      "missing": "Rien trouvé",
-      "missingSub": "Ni lui ni un CCU vers lui dans ton hangar ou ton rachat"
-    },
-    "openBuyback": "L’ouvre dans Buy Back",
-    "moreMatches": {
-      "one": "+ $1 autre",
-      "other": "+ $1 autres"
-    },
-    "fewerMatches": "Afficher moins",
     "pledgeStore": "Pledge Store",
     "pledgeStoreHint": "Ouvre $1 dans le Pledge Store",
     "empty": {
@@ -1852,8 +1828,6 @@
     "soon": {
       "title": "Bientôt sans vaisseau de base",
       "hint": "Ces vaisseaux de base quittent le Pledge Store – même ceux toujours disponibles jusqu’ici. Chaque vaisseau ou CCU vers l’un d’eux dans votre hangar ou votre buy back donne le vaisseau à un CCU depuis lui, et il y en a moins que de CCU. Procurez-vous ceux qui manquent avant la date : ensuite, ces CCU n’ont plus de vaisseau de base.",
-      "until": "Dans le Pledge Store jusqu’au $1",
-      "ways": "$1 dans votre hangar · $2 dans votre buy back",
       "short": {
         "one": "Il en manque $1",
         "other": "Il en manque $1"
@@ -1896,15 +1870,6 @@
       "always": "Toujours en vente",
       "atRisk": "Remise menacée"
     },
-    "showCcus": {
-      "one": "Afficher le CCU",
-      "other": "Afficher les $1 CCU"
-    },
-    "hideCcus": "Masquer les CCU",
-    "openHangar": "Ouvre le CCU dans My Hangar",
-    "openGroup": "Ouvre ces CCU dans My Hangar",
-    "groupHint": "Affiche les CCU identiques d’un vaisseau de base en une seule entrée avec leur nombre. Mémorisé pour le CCU Consultant.",
-    "ccuKinds": "$1 différents",
     "boxOpen": "Ouvrir le CCU Consultant",
     "boxMissingHint": "Les CCU dont ni le hangar ni le buy back ne donne le vaisseau de base, et dont le vaisseau de base n’est probablement pas toujours disponible.",
     "boxTooFew": "Trop peu d’accès",
@@ -1934,6 +1899,67 @@
       "showCcus": "Affiche les CCU depuis $1 dans My Hangar",
       "buybackHint": "Ouvre les vaisseaux et CCU vers $1 dans Buy Back",
       "list": "Vaisseaux de base"
+    },
+    "deep": {
+      "tab": "Trop peu d’accès",
+      "hint": "Chaînes suivies : un CCU vers le vaisseau de base ne compte que si son propre vaisseau de base a aussi un accès. Chaque CCU a besoin de son propre accès.",
+      "found": "Trouvé par la vue détaillée",
+      "foundHint": "La vue simple compte ce vaisseau de base comme couvert par les CCU vers lui dans votre hangar. Mais leurs propres vaisseaux de base n’ont plus d’accès pour eux, donc ils ne comptent pas.",
+      "ofWays": {
+        "one": "sur $1 accès",
+        "other": "sur $1 accès"
+      },
+      "barLabel": {
+        "one": "$1 sur $2 CCU depuis $3 a un accès, il en manque $4.",
+        "other": "$1 sur $2 CCU depuis $3 ont un accès, il en manque $4."
+      },
+      "routes": "Accès à $1",
+      "viaBuyback": "$1 seulement par le rachat",
+      "blocked": "ne comptent pas : $1 a lui-même trop peu d’accès",
+      "inHangar": {
+        "one": "$1 dans votre hangar",
+        "other": "$1 dans votre hangar"
+      },
+      "inBuyback": {
+        "one": "$1 dans votre buy back",
+        "other": "$1 dans votre buy back"
+      },
+      "secureNow": "Sécuriser maintenant",
+      "secureCcus": {
+        "one": "$1 CCU",
+        "other": "$1 CCU"
+      },
+      "secureShips": {
+        "one": "sur $1 vaisseau de base en vente actuellement",
+        "other": "sur $1 vaisseaux de base en vente actuellement"
+      },
+      "credit": "Payé avec le store credit",
+      "creditYours": "Payé avec le store credit · le vôtre : $1",
+      "fromAlways": "Depuis le vaisseau toujours disponible juste moins cher",
+      "fromAlwaysNote": {
+        "one": "Sûr : vous pouvez obtenir le vaisseau de départ à tout moment. $1 vaisseau de base",
+        "other": "Sûr : vous pouvez obtenir le vaisseau de départ à tout moment. $1 vaisseaux de base"
+      },
+      "fromCheapest": "Depuis le vaisseau juste moins cher",
+      "fromCheapestNote": "Le moins cher – mais le vaisseau de départ peut lui-même avoir besoin d’un accès",
+      "secureTitle": {
+        "one": "Sécuriser $1 CCU maintenant",
+        "other": "Sécuriser $1 CCU maintenant"
+      },
+      "notOnSaleTitle": "Pas en vente actuellement – guettez la prochaine vente",
+      "alwaysTitle": "Toujours disponible – rien à sécuriser maintenant",
+      "nothingTitle": "Chaque CCU depuis lui a un accès",
+      "each": "$1 chacun",
+      "eachCheapest": "$1 chacun · aussi le moins cher",
+      "noAlways": "Aucun vaisseau toujours disponible moins cher",
+      "noCheaper": "Aucun vaisseau moins cher connu",
+      "legend": {
+        "ship": "Vaisseau dans votre hangar",
+        "chain": "Chaîne dans votre hangar",
+        "buyback": "Rachat",
+        "short": "Manquant",
+        "always": "Toujours disponible"
+      }
     }
   },
   "cartPaints": {

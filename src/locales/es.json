@@ -1815,31 +1815,7 @@
       "always": "No hay nada de estas naves base en tu hangar o recompra, pero RSI siempre las vende. Fuente: $1, lista del $2.",
       "alwaysUndated": "No hay nada de estas naves base en tu hangar o recompra, pero RSI siempre las vende. Fuente: $1."
     },
-    "col": {
-      "ship": "Nave base",
-      "ccus": "CCU desde ella",
-      "cover": "Cobertura de la nave base",
-      "found": "Encontrado",
-      "leaves": "Retirada",
-      "ways": "Accesos",
-      "store": "Pledge Store"
-    },
     "unknownShip": "Nave base desconocida",
-    "notAlways": "No siempre disponible",
-    "price": "Precio estándar $1",
-    "cover": {
-      "buyback": "En tu recompra",
-      "always": "Siempre disponible",
-      "alwaysSub": "En la Pledge Store cuando la necesites",
-      "missing": "No se encontró nada",
-      "missingSub": "Ni ella ni un CCU hacia ella en tu hangar o recompra"
-    },
-    "openBuyback": "Lo abre en Buy Back",
-    "moreMatches": {
-      "one": "+ $1 más",
-      "other": "+ $1 más"
-    },
-    "fewerMatches": "Mostrar menos",
     "pledgeStore": "Pledge Store",
     "pledgeStoreHint": "Abre $1 en la Pledge Store",
     "empty": {
@@ -1852,8 +1828,6 @@
     "soon": {
       "title": "Pronto sin nave base",
       "hint": "Estas naves base dejan la Pledge Store – también las que hasta ahora siempre estaban disponibles. Cada nave o CCU hacia una de ellas en tu hangar o buy back da la nave a un CCU desde ella, y hay menos que CCU. Consigue los que faltan antes de la fecha: después, esos CCU no tienen nave base.",
-      "until": "En la Pledge Store hasta el $1",
-      "ways": "$1 en tu hangar · $2 en tu buy back",
       "short": {
         "one": "Falta $1",
         "other": "Faltan $1"
@@ -1896,15 +1870,6 @@
       "always": "Siempre a la venta",
       "atRisk": "Descuento en riesgo"
     },
-    "showCcus": {
-      "one": "Mostrar el CCU",
-      "other": "Mostrar los $1 CCU"
-    },
-    "hideCcus": "Ocultar los CCU",
-    "openHangar": "Abre el CCU en My Hangar",
-    "openGroup": "Abre estos CCU en My Hangar",
-    "groupHint": "Muestra los CCU iguales de una nave base como una sola entrada con su cantidad. Se recuerda para el CCU Consultant.",
-    "ccuKinds": "$1 distintos",
     "boxOpen": "Abrir el CCU Consultant",
     "boxMissingHint": "CCU cuya nave base no da ni tu hangar ni tu buy back, y que probablemente no siempre está disponible.",
     "boxTooFew": "Muy pocos accesos",
@@ -1934,6 +1899,67 @@
       "showCcus": "Muestra los CCU desde $1 en My Hangar",
       "buybackHint": "Abre las naves y CCU hacia $1 en Buy Back",
       "list": "Naves base"
+    },
+    "deep": {
+      "tab": "Muy pocos accesos",
+      "hint": "Cadenas seguidas: un CCU hacia la nave base solo cuenta si su propia nave base también tiene un acceso. Cada CCU necesita su propio acceso.",
+      "found": "Encontrado por la vista detallada",
+      "foundHint": "La vista sencilla cuenta esta nave base como cubierta por los CCU hacia ella en tu hangar. Pero sus propias naves base no tienen acceso libre para ellos, así que no cuentan.",
+      "ofWays": {
+        "one": "de $1 acceso",
+        "other": "de $1 accesos"
+      },
+      "barLabel": {
+        "one": "$1 de $2 CCU desde $3 tiene un acceso, faltan $4.",
+        "other": "$1 de $2 CCU desde $3 tienen un acceso, faltan $4."
+      },
+      "routes": "Accesos a $1",
+      "viaBuyback": "$1 solo por recompra",
+      "blocked": "no cuentan: $1 tiene muy pocos accesos",
+      "inHangar": {
+        "one": "$1 en tu hangar",
+        "other": "$1 en tu hangar"
+      },
+      "inBuyback": {
+        "one": "$1 en tu buy back",
+        "other": "$1 en tu buy back"
+      },
+      "secureNow": "Asegurar ahora",
+      "secureCcus": {
+        "one": "$1 CCU",
+        "other": "$1 CCU"
+      },
+      "secureShips": {
+        "one": "en $1 nave base a la venta ahora",
+        "other": "en $1 naves base a la venta ahora"
+      },
+      "credit": "Pagado con store credit",
+      "creditYours": "Pagado con store credit · el tuyo: $1",
+      "fromAlways": "Desde la siguiente nave más barata siempre disponible",
+      "fromAlwaysNote": {
+        "one": "Seguro: puedes conseguir la nave inicial en cualquier momento. $1 nave base",
+        "other": "Seguro: puedes conseguir la nave inicial en cualquier momento. $1 naves base"
+      },
+      "fromCheapest": "Desde la siguiente nave más barata",
+      "fromCheapestNote": "Lo más barato – pero la nave inicial puede necesitar su propio acceso",
+      "secureTitle": {
+        "one": "Asegurar $1 CCU ahora",
+        "other": "Asegurar $1 CCU ahora"
+      },
+      "notOnSaleTitle": "No está a la venta ahora – atento a la próxima venta",
+      "alwaysTitle": "Siempre disponible – nada que asegurar ahora",
+      "nothingTitle": "Cada CCU desde ella tiene un acceso",
+      "each": "$1 cada uno",
+      "eachCheapest": "$1 cada uno · también lo más barato",
+      "noAlways": "Ninguna nave más barata siempre disponible",
+      "noCheaper": "No se conoce ninguna nave más barata",
+      "legend": {
+        "ship": "Nave en tu hangar",
+        "chain": "Cadena en tu hangar",
+        "buyback": "Recompra",
+        "short": "Faltan",
+        "always": "Siempre disponible"
+      }
     }
   },
   "cartPaints": {

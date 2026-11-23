@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { alwaysAvailableList, withoutLeaving } from '@/ccu-consultant/always-available';
 import { baseShipList, standingOf } from '@/ccu-consultant/base-ship-list';
+import { chainCoverage } from '@/ccu-consultant/chain-coverage';
 import { ccuCoverage, type CcuCoverage } from '@/ccu-consultant/coverage';
 import { groupCoverage } from '@/ccu-consultant/group-coverage';
 import { missingCounts } from '@/ccu-consultant/use-base-ship-list';
@@ -52,9 +53,14 @@ function consultant(key: string, demo: Partial<DemoSettings> = {}) {
       leaving: bases.leaving?.id,
       covered: bases.buyback?.id,
       stay: [
-        ...[bases.always, bases.unavailable, bases.covered, bases.partial].flatMap((ship) =>
-          ship ? [ship.id] : [],
-        ),
+        ...[
+          bases.always,
+          bases.unavailable,
+          bases.covered,
+          bases.partial,
+          bases.chainStart,
+          bases.chainLink,
+        ].flatMap((ship) => (ship ? [ship.id] : [])),
         ...[missingBaseOf(account.pledges)].filter((id) => id !== undefined),
       ],
     },
@@ -68,7 +74,8 @@ function consultant(key: string, demo: Partial<DemoSettings> = {}) {
   const always = withoutLeaving(alwaysAvailableList(DEFAULT_SETTINGS, facts), leaving);
   const coverage = ccuCoverage({ ships: catalog.ships, hangar: pledges, buyback });
   const list = baseShipList(coverage.values(), always, catalog.ships, leaving);
-  return { ...result, bases, coverage, always, list };
+  const chains = chainCoverage(coverage.values(), always);
+  return { ...result, bases, coverage, always, list, chains };
 }
 
 /** The buy back's CCU groups of a demo (#575): covered and total of the group from a base ship. */
@@ -94,7 +101,7 @@ function groupCoverages(key: string) {
 }
 
 describe.each(['any demo key', 'another key', 'k3'])('the CCU Consultant in the demo %s', (key) => {
-  const { pledges, buyback, bases, coverage, always, list, account } = consultant(key);
+  const { pledges, buyback, bases, coverage, always, list, chains, account } = consultant(key);
   const byId = new Map(pledges.map((pledge) => [pledge.id, pledge]));
   const covers = [...coverage.values()];
   const viewsOf = (ids: readonly number[]) => ids.map((id) => byId.get(id)!);
@@ -103,6 +110,8 @@ describe.each(['any demo key', 'another key', 'k3'])('the CCU Consultant in the 
     expect(Object.keys(bases).sort()).toEqual([
       'always',
       'buyback',
+      'chainLink',
+      'chainStart',
       'covered',
       'leaving',
       'partial',
@@ -208,6 +217,18 @@ describe.each(['any demo key', 'another key', 'k3'])('the CCU Consultant in the 
     expect(buybackCoverage(missingBaseOf(account.pledges))).toEqual([0, 2]);
   });
 
+  it('has a chain only the deep view finds short of a way (#563)', () => {
+    const link = chains.ships.get(`id:${bases.chainLink!.id}`)!;
+    // The simple view counts the CCU to it as its way: in the hangar, not short.
+    expect(list.tooFew.some((row) => row.shipId === bases.chainLink!.id)).toBe(false);
+    expect([link.short, link.deepOnly]).toEqual([1, true]);
+    expect(link.blocked).toEqual([{ from: `id:${bases.chainStart!.id}`, count: 1 }]);
+    // Nothing gives its start: short as well.
+    const start = chains.ships.get(`id:${bases.chainStart!.id}`)!;
+    expect(start.short).toBe(start.ccus.length);
+    expect(chains.tooFew.length).toBeGreaterThan(2);
+  });
+
   it('has CCUs whose base ship rises in price, confirmed and expected (#455)', () => {
     // Within the period of the settings: the tab shows them.
     const rising = pledges
@@ -223,8 +244,10 @@ describe.each(['any demo key', 'another key', 'k3'])('the CCU Consultant in the 
 describe('the demo settings of the CCU Consultant (#425)', () => {
   it('give every CCU a base ship with "CCUs without base ship coverage" off (#115)', () => {
     expect(missingCounts(consultant('any demo key').list).total).toBeGreaterThan(0);
-    const { list } = consultant('any demo key', { ccuCoverageGaps: false });
+    const { list, chains } = consultant('any demo key', { ccuCoverageGaps: false });
     expect(missingCounts(list)).toEqual({ missing: 0, soon: 0, tooFew: 0, total: 0 });
+    // Also by the deep view's chain rule (#563).
+    expect(chains.tooFewCount).toBe(0);
   });
 
   it('leave no discount at risk with "CCUs with their discount at risk" off', () => {

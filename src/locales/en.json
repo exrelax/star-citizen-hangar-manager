@@ -1815,31 +1815,7 @@
       "always": "Nothing of these base ships is in your hangar or buy back, but RSI always sells them. Source: $1, list of $2.",
       "alwaysUndated": "Nothing of these base ships is in your hangar or buy back, but RSI always sells them. Source: $1."
     },
-    "col": {
-      "ship": "Base ship",
-      "ccus": "CCUs from it",
-      "cover": "Base ship coverage",
-      "found": "Found",
-      "leaves": "Removal",
-      "ways": "Ways to it",
-      "store": "Pledge Store"
-    },
     "unknownShip": "Unknown base ship",
-    "notAlways": "Not always available",
-    "price": "Standard price $1",
-    "cover": {
-      "buyback": "In your buy back",
-      "always": "Always available",
-      "alwaysSub": "In the Pledge Store whenever you need it",
-      "missing": "Nothing found",
-      "missingSub": "Neither it nor a CCU to it in your hangar or buy back"
-    },
-    "openBuyback": "Opens it in Buy Back",
-    "moreMatches": {
-      "one": "+ $1 more",
-      "other": "+ $1 more"
-    },
-    "fewerMatches": "Show fewer",
     "pledgeStore": "Pledge Store",
     "pledgeStoreHint": "Opens $1 in the Pledge Store",
     "empty": {
@@ -1852,8 +1828,6 @@
     "soon": {
       "title": "Soon without base ship",
       "hint": "These base ships leave the Pledge Store – also those always available until now. Each ship or CCU to one of them in your hangar or buy back gives the ship to one CCU from it, and there are fewer of them than CCUs. Get the missing ones before the date: afterwards those CCUs have no base ship.",
-      "until": "In the Pledge Store until $1",
-      "ways": "$1 in your hangar · $2 in your buy back",
       "short": {
         "one": "$1 too few",
         "other": "$1 too few"
@@ -1896,15 +1870,6 @@
       "always": "Always available",
       "atRisk": "Discount at risk"
     },
-    "showCcus": {
-      "one": "Show the CCU",
-      "other": "Show the $1 CCUs"
-    },
-    "hideCcus": "Hide the CCUs",
-    "openHangar": "Opens the CCU in My Hangar",
-    "openGroup": "Opens these CCUs in My Hangar",
-    "groupHint": "Shows the same CCUs of a base ship as one entry with their count. Remembered for the CCU Consultant.",
-    "ccuKinds": "$1 different",
     "boxOpen": "Open the CCU Consultant",
     "boxMissingHint": "CCUs neither the hangar nor the buy back gives the base ship to, and whose base ship is probably not always available.",
     "boxTooFew": "Too few ways",
@@ -1934,6 +1899,67 @@
       "showCcus": "Shows the CCUs from $1 in My Hangar",
       "buybackHint": "Opens the ships and CCUs to $1 in Buy Back",
       "list": "Base ships"
+    },
+    "deep": {
+      "tab": "Too few ways",
+      "hint": "Chains followed: a CCU to the base ship only counts if its own base ship has a way too. Every CCU needs its own way.",
+      "found": "Found by the deep view",
+      "foundHint": "The simple view counts this base ship as covered by the CCUs to it in your hangar. But their own base ships have no way left for them, so they don’t count.",
+      "ofWays": {
+        "one": "of $1 way",
+        "other": "of $1 ways"
+      },
+      "barLabel": {
+        "one": "$1 of $2 CCU from $3 has a way to it, $4 too few.",
+        "other": "$1 of $2 CCUs from $3 have a way to it, $4 too few."
+      },
+      "routes": "Ways to $1",
+      "viaBuyback": "$1 only via buy back",
+      "blocked": "don’t count: $1 itself has too few ways",
+      "inHangar": {
+        "one": "$1 in your hangar",
+        "other": "$1 in your hangar"
+      },
+      "inBuyback": {
+        "one": "$1 in your buy back",
+        "other": "$1 in your buy back"
+      },
+      "secureNow": "Secure now",
+      "secureCcus": {
+        "one": "$1 CCU",
+        "other": "$1 CCUs"
+      },
+      "secureShips": {
+        "one": "on $1 base ship that is on sale now",
+        "other": "on $1 base ships that are on sale now"
+      },
+      "credit": "Paid with store credit",
+      "creditYours": "Paid with store credit · yours: $1",
+      "fromAlways": "From the next cheaper always available ship",
+      "fromAlwaysNote": {
+        "one": "Safe: you can get the start ship any time. $1 base ship",
+        "other": "Safe: you can get the start ship any time. $1 base ships"
+      },
+      "fromCheapest": "From the next cheaper ship",
+      "fromCheapestNote": "Cheapest – but the start ship may need a way itself",
+      "secureTitle": {
+        "one": "Secure $1 CCU now",
+        "other": "Secure $1 CCUs now"
+      },
+      "notOnSaleTitle": "Not on sale now – watch for the next sale",
+      "alwaysTitle": "Always available – no need to secure it now",
+      "nothingTitle": "Every CCU from it has a way",
+      "each": "$1 each",
+      "eachCheapest": "$1 each · also the cheapest",
+      "noAlways": "No cheaper always available ship",
+      "noCheaper": "No cheaper ship known",
+      "legend": {
+        "ship": "Ship in your hangar",
+        "chain": "Chain in your hangar",
+        "buyback": "Buy back",
+        "short": "Too few",
+        "always": "Always available"
+      }
     }
   },
   "cartPaints": {

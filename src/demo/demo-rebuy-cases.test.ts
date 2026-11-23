@@ -68,9 +68,14 @@ function demo(
       leaving: bases.leaving?.id,
       covered: bases.buyback?.id,
       stay: [
-        ...[bases.always, bases.unavailable, bases.covered, bases.partial].flatMap((ship) =>
-          ship ? [ship.id] : [],
-        ),
+        ...[
+          bases.always,
+          bases.unavailable,
+          bases.covered,
+          bases.partial,
+          bases.chainStart,
+          bases.chainLink,
+        ].flatMap((ship) => (ship ? [ship.id] : [])),
         ...[missingBaseOf(account.pledges)].filter((id) => id !== undefined),
       ],
     },

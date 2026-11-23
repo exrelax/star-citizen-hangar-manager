@@ -213,14 +213,27 @@ It must always be able to show, in both themes:
   today, its countdown, "Ship upgrade" disabled with its tooltip, and empty; the tab "Discount at
   risk" (#455) with confirmed and expected price increases, the advice (giftable trade-off, not
   enough store credit), the "Keep the discount" dialog, and empty (demo setting "CCUs with their
-  discount at risk"); a base ship without a Pledge Store link; the grouped view (#456) on and
-  off in each section, with a group's dialog. Its layout (#563): the shared header with the
-  coverage bar, the group tabs, the group's heading with its count, "Show N CCUs in My Hangar"
-  and the toggle "Simple | Deep view" in both views, remembered; the simple view's base ship
+  discount at risk"); a base ship without a Pledge Store link; the grouped view (#456) of a base
+  ship's CCUs opened in My Hangar, with a group's dialog. Its layout (#563): the shared header
+  with the coverage bar, the group tabs, the group's heading with its count, "Show N CCUs in My
+  Hangar" and the toggle "Simple | Deep view" in both views, remembered; the simple view's base ship
   cards in each group (with and without image and price, on sale and not, always available, the
   ways to it as thumbnails with "+N", too few ways, a leaving ship with its countdown) and each
   action (Buy Back opening the demo's buy back pledges, "Ship upgrade" disabled with its tooltip,
-  "Show in Pledge Store", Pledge Store), a card opening its CCUs in My Hangar; narrow.
+  "Show in Pledge Store", Pledge Store), a card opening its CCUs in My Hangar; narrow. The deep
+  view: the tab "Too few ways" with its count by the chain rule, "Secure now" with the demo's
+  store credit (#179) and the totals from the next cheaper always available and the next cheaper
+  ship; a row per base ship with image and price, on sale and not, its bar (ship and chain in the
+  hangar, buy back, too few) and the legend, the chains as chips (from an always available ship
+  with its star, starting in the buy back, cut with "+N"), those that don't count, "N in your
+  hangar", "N in your buy back" opening the Buy Back; a base ship only the chain rule finds
+  ("Found by the deep view", demo cases `chainStart` and `chainLink`, its start not on sale); the
+  secure panel with both start ships, one that is also the cheapest, none always available, "Ship
+  upgrade" disabled with its tooltip, "Not on sale now" with the prices each and the Pledge
+  Store; a leaving ship with its countdown and "Show in Pledge Store"; the rows of "Only via buy
+  back" and "Always available"; narrow (the panel below the row) and with "Hide melt value"; with
+  the demo setting "CCUs without base ship coverage" off no base ship short of a way in either
+  view.
 - List Shortcuts (#431): each shortcut opened in My Hangar with its bar, title, icon, count and
   ×: "Ready to melt" (the demo's marks ready to melt, never the one still waiting), "Paints to
   optimize" from the sidebar box and the new plan's "Show these paints" (#430), "Melt and rebuy"

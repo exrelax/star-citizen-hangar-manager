@@ -22,6 +22,14 @@ describe('the List Shortcuts of the CCU Consultant (#563)', () => {
     expect(listShortcuts.value.hangar!.title()).toBe('CCU Consultant: Discount at risk');
   });
 
+  it('names the deep view’s first group "Too few ways"', () => {
+    openListShortcut(ccuGroupShortcut('missing', [1], true));
+    expect(listShortcuts.value.hangar!.id).toBe('ccuConsultant:tooFew');
+    expect(listShortcuts.value.hangar!.title()).toBe('CCU Consultant: Too few ways');
+    openListShortcut(ccuGroupShortcut('buyback', [1], true));
+    expect(listShortcuts.value.hangar!.id).toBe('ccuConsultant:buyback');
+  });
+
   it('opens the CCUs from a base ship and the buy back’s ways to it', () => {
     openListShortcut(ccuBaseShipShortcut('id:2', 'Cutlass Red', [10]));
     expect(listShortcuts.value.hangar!.title()).toBe('CCUs from Cutlass Red');

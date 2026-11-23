@@ -24,11 +24,12 @@ import {
   type CcuStanding,
 } from '../base-ship-list';
 import { ccuGroupShortcut, type ConsultantGroup } from '../consultant-shortcuts';
+import { deepCcuIds, deepShips } from '../deep-view';
 import { discountAtRisk } from '../discount-at-risk';
 import { groupCcuIds } from '../ship-cards';
-import { missingCounts, useBaseShipList } from '../use-base-ship-list';
+import { missingCounts, useBaseShipList, useChainCoverage } from '../use-base-ship-list';
 import CcuAtRisk from './CcuAtRisk.vue';
-import CcuBaseShipTables from './CcuBaseShipTables.vue';
+import CcuDeepView from './CcuDeepView.vue';
 import CcuShipCards from './CcuShipCards.vue';
 
 /*
@@ -39,10 +40,13 @@ import CcuShipCards from './CcuShipCards.vue';
  * with "Discount at risk" (#455) last. Below them the chosen group's heading with its count and
  * hint, "Show N CCUs in My Hangar" (a List Shortcut, #428) and the toggle "Simple | Deep view",
  * remembered in the settings. The views show the group's base ships:
- * - Simple (`CcuShipCards`): a card per base ship;
- * - Deep (`CcuBaseShipTables` for now): the tables of the base ships with their CCUs opened below.
- * "Discount at risk" looks the same in both (`CcuAtRisk`). In "Without base ship" the base ships
- * soon without one and with too few ways to them (#454) follow the group's own.
+ * - Simple (`CcuShipCards`): a card per base ship; in "Without base ship" the base ships soon
+ *   without one and with too few ways to them (#454) follow the group's own;
+ * - Deep (`CcuDeepView`): a row per base ship with the chains followed (`chain-coverage.ts`) and
+ *   what securing the missing CCUs costs now. Its first group is "Too few ways": every base ship
+ *   with fewer ways than CCUs from it by the chain rule – also those without any, those leaving the
+ *   Pledge Store, and those only the chain rule finds.
+ * "Discount at risk" looks the same in both (`CcuAtRisk`).
  */
 
 const props = defineProps<{
@@ -55,6 +59,7 @@ const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
 
 const alwaysAvailable = useProvidedAlwaysAvailable();
 const list = useBaseShipList();
+const chains = useChainCoverage();
 
 const consider = computed(() => props.settings.ccuConsultant.considerAlwaysAvailable);
 const setConsider = (value: boolean) =>
@@ -100,8 +105,13 @@ const chosen = ref<BaseShipGroup>();
  * The CCUs of each group's tab. "Without base ship" also counts the CCUs that will be short of a
  * way to a leaving base ship (#454) though covered today; those without any way are among its own.
  */
-const tabCount = (id: BaseShipGroup) =>
-  id === 'missing' ? missingCounts(list.value).total : list.value.counts[id];
+const tabCount = (id: BaseShipGroup) => {
+  if (id !== 'missing') return list.value.counts[id];
+  // The deep view's: the CCUs short of a way by the chain rule (#563).
+  return view.value === 'deep' ? chains.value.tooFewCount : missingCounts(list.value).total;
+};
+/** The deep view's "Too few ways" instead of "Without base ship". */
+const deepMissing = (id: ConsultantGroup) => view.value === 'deep' && id === 'missing';
 /** The group shown: the one chosen, else the first one with CCUs (those without base ship first). */
 const group = computed(
   (): BaseShipGroup =>
@@ -125,7 +135,7 @@ const countOf = (id: ConsultantGroup) => (id === 'atRisk' ? atRisk.value.count :
 const tabItems = computed(() =>
   [...groups.value, 'atRisk' as const].map((id) => ({
     id,
-    label: i18n.t(`ccuConsultant.tab.${id}`),
+    label: deepMissing(id) ? i18n.t('ccuConsultant.deep.tab') : i18n.t(`ccuConsultant.tab.${id}`),
     count: format(countOf(id)),
   })),
 );
@@ -138,7 +148,9 @@ function selectTab(id: ConsultantGroup) {
 const heading = computed(() =>
   selected.value === 'atRisk'
     ? i18n.t('ccuConsultant.atRisk.title')
-    : i18n.t(`ccuConsultant.standing.${selected.value}`),
+    : deepMissing(selected.value)
+      ? i18n.t('ccuConsultant.tooFew.title')
+      : i18n.t(`ccuConsultant.standing.${selected.value}`),
 );
 const hint = computed(() => {
   if (selected.value === 'atRisk') {
@@ -146,6 +158,7 @@ const hint = computed(() => {
       format(props.settings.priceIncreaseDays),
     ]);
   }
+  if (deepMissing(group.value)) return i18n.t('ccuConsultant.deep.hint');
   if (group.value === 'missing') {
     return i18n.t(consider.value ? 'ccuConsultant.hint.missing' : 'ccuConsultant.hint.missingAll');
   }
@@ -167,23 +180,32 @@ const groupIds = computed(() =>
           ),
         ),
       ]
-    : groupCcuIds(list.value, group.value),
+    : view.value === 'deep'
+      ? deepCcuIds(deepShips(chains.value, list.value, group.value))
+      : groupCcuIds(list.value, group.value),
 );
-const showInHangar = () => openListShortcut(ccuGroupShortcut(selected.value, groupIds.value));
+/** Whether the chosen group has no base ship to show. */
+// "Without base ship" in the simple view also holds the sections "soon" and "too few" (#454).
+const groupEmpty = computed(() => {
+  if (deepMissing(group.value)) return !chains.value.tooFew.length;
+  if (list.value.groups[group.value].length) return false;
+  return group.value !== 'missing' || (!list.value.soon.length && !list.value.tooFew.length);
+});
+const showInHangar = () =>
+  openListShortcut(ccuGroupShortcut(selected.value, groupIds.value, view.value === 'deep'));
 
 const storedBuyable = useStored(buyableShipsItem);
 const storedWarbonds = useStored(warbondsItem);
 /** The ship's standard SKU, not a warbond one, as in the Pledge Store tab. */
-const skuOf = (row: BaseShipRow) =>
-  row.shipId !== undefined
-    ? standardSku(
-        {
-          buyable: current(storedBuyable.value ?? null)?.skus ?? [],
-          warbonds: current(storedWarbonds.value ?? null)?.warbonds ?? [],
-        },
-        row.shipId,
-      )?.skuId
-    : undefined;
+const skuOfShip = (shipId: number) =>
+  standardSku(
+    {
+      buyable: current(storedBuyable.value ?? null)?.skus ?? [],
+      warbonds: current(storedWarbonds.value ?? null)?.warbonds ?? [],
+    },
+    shipId,
+  )?.skuId;
+const skuOf = (row: BaseShipRow) => (row.shipId !== undefined ? skuOfShip(row.shipId) : undefined);
 </script>
 
 <template>
@@ -295,14 +317,7 @@ const skuOf = (row: BaseShipRow) =>
             :clock="clock"
           />
           <template v-else>
-            <div
-              v-if="
-                !list.groups[group].length &&
-                (group !== 'missing' || (!list.soon.length && !list.tooFew.length))
-              "
-              class="shm-ccu-consultant-empty"
-              :class="`is-${group}`"
-            >
+            <div v-if="groupEmpty" class="shm-ccu-consultant-empty" :class="`is-${group}`">
               <template v-if="group === 'missing'">
                 <SvgIcon name="circle-check" />
                 <span>
@@ -325,15 +340,14 @@ const skuOf = (row: BaseShipRow) =>
               :group="group"
               :sku-of="skuOf"
             />
-            <!-- The deep view: for now the tables of the base ships (#563 replaces them). -->
-            <CcuBaseShipTables
+            <CcuDeepView
               v-else
               :settings="settings"
               :list="list"
+              :chains="chains"
               :group="group"
-              :pledges="pledges"
-              :sku-of="skuOf"
-              @update="emit('update', $event)"
+              :sku-of="skuOfShip"
+              :store-credit="storeCredit"
             />
           </template>
         </div>
