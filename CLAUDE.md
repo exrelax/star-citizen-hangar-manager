@@ -178,7 +178,8 @@ It must always be able to show, in both themes:
   The expected end of a current warbond CCU (#569, demo cases in #571): weeks ahead, the last
   day, none, its tooltip, and the real offers with "Show real Pledge Store data". The countdown
   of target ships in RSI's ship upgrade dialog (#570, demo cases in #572): to the event's end,
-  to a later expected end of a warbond offer, none on always available and base ships, none
+  to a later expected end of a warbond offer and to an earlier one (#632), none on always
+  available and base ships, none
   without a running event, its tooltip.
   The base ship coverage of a CCU group (#574, demo cases in #575): covered fully, "2 of 5
   covered", base always available, not covered; collapsed and opened in the expanded group and
