@@ -11,10 +11,15 @@ import RsiWatchButton from '@/watchlists/components/RsiWatchButton.vue';
 import {
   chosenUpgrade,
   isPaintPage,
+  paintOfCard,
   paintOfPage,
   PAINT_ANCHOR,
+  SKU_CARD,
+  SKU_CARD_ACTIONS,
+  SKU_CARD_LINK,
   UPGRADE_CART,
   UPGRADE_MODAL,
+  type RsiWatchPlace,
 } from '@/watchlists/rsi-pages';
 import { followWatchlists, type NewWatchItem } from '@/watchlists/use-watchlists';
 import { createApp, ref, type App } from 'vue';
@@ -22,8 +27,9 @@ import './style.css';
 
 /*
  * Buttons on RSI's own pages that put a Pledge Store item on watchlists (#471): on a paint's page
- * below its buying block, and in RSI's ship upgrade dialog next to its "Add To Cart" once a base and
- * a target ship are chosen (see `rsi-pages.ts`). RSI's store is a single-page app, so the page is
+ * below its buying block, on the card of a paint in the store's lists left of its cart button
+ * (#632), and in RSI's ship upgrade dialog next to its "Add To Cart" once a base and a target ship
+ * are chosen (see `rsi-pages.ts`). RSI's store is a single-page app, so the page is
  * watched and the buttons follow it. When the markup lacks what they need there is no button, and
  * the error log tells it once per page (`WATCHLIST-RSI-PAGE-FAIL`).
  */
@@ -67,12 +73,17 @@ export default defineContentScript({
       mounted?.host.remove();
       return undefined;
     };
-    const mount = (place: (host: HTMLElement) => void, item: NewWatchItem, title: string) => {
+    const mount = (
+      where: RsiWatchPlace,
+      place: (host: HTMLElement) => void,
+      item: NewWatchItem,
+      title: string,
+    ) => {
       followLists();
       const host = document.createElement('span');
-      host.className = 'shm-rsi-watch-host';
+      host.className = `shm-rsi-watch-host is-${where}`;
       place(host);
-      const app = createApp(RsiWatchButton, { item, title });
+      const app = createApp(RsiWatchButton, { item, title, place: where });
       app.mount(host);
       return { host, app };
     };
@@ -116,7 +127,12 @@ export default defineContentScript({
         value: paint.discountedPrice ?? paint.price,
       };
       paintButton = {
-        ...mount((host) => anchor.after(host), item, i18n.t('watchlists.putOn', [paint.name])),
+        ...mount(
+          'page',
+          (host) => anchor.after(host),
+          item,
+          i18n.t('watchlists.putOn', [paint.name]),
+        ),
         key,
       };
     };
@@ -146,14 +162,60 @@ export default defineContentScript({
         ...(from && to && to.msrp > from.msrp && { value: to.msrp - from.msrp }),
       };
       ccuButton = {
-        ...mount((host) => cart.prepend(host), item, i18n.t('watchlists.putOn', [name])),
+        ...mount('dialog', (host) => cart.prepend(host), item, i18n.t('watchlists.putOn', [name])),
         key,
       };
+    };
+
+    // The cards of the store's lists (#632): RSI renders them anew as the list is filtered, sorted
+    // or scrolled, so each card is checked on every change and a button follows its card's paint.
+    const cardButtons = new Map<Element, Mounted>();
+    const placeCards = () => {
+      for (const [card, mounted] of cardButtons) {
+        if (!card.isConnected || !mounted.host.isConnected) {
+          unmount(mounted);
+          cardButtons.delete(card);
+        }
+      }
+      if (!items.length) return;
+      for (const card of document.querySelectorAll(SKU_CARD)) {
+        const href = card.querySelector(SKU_CARD_LINK)?.getAttribute('href') ?? '';
+        const paint = paintOfCard(href, items);
+        const present = cardButtons.get(card);
+        if (!paint) {
+          if (present) {
+            cardButtons.delete(card);
+            unmount(present);
+          }
+          continue;
+        }
+        const key = `${paint.id}`;
+        if (present?.key === key) continue;
+        if (present) unmount(present);
+        const actions = card.querySelector(SKU_CARD_ACTIONS);
+        if (!actions) {
+          cardButtons.delete(card);
+          mismatch(`card:${location.pathname}`, `No cart button on a card of ${location.pathname}`);
+          continue;
+        }
+        const item: NewWatchItem = {
+          kind: 'storePaint',
+          skuId: paint.id,
+          name: paint.name,
+          value: paint.discountedPrice ?? paint.price,
+        };
+        const title = i18n.t('watchlists.putOn', [paint.name]);
+        cardButtons.set(card, {
+          ...mount('card', (host) => actions.prepend(host), item, title),
+          key,
+        });
+      }
     };
 
     const place = () => {
       placePaint();
       placeCcu();
+      placeCards();
     };
     const observer = new MutationObserver(place);
     observer.observe(document.body, { childList: true, subtree: true });
@@ -163,6 +225,8 @@ export default defineContentScript({
       observer.disconnect();
       paintButton = unmount(paintButton);
       ccuButton = unmount(ccuButton);
+      for (const mounted of cardButtons.values()) unmount(mounted);
+      cardButtons.clear();
     });
   },
 });

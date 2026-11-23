@@ -29,6 +29,7 @@ export const ICON_NAMES = {
     'circle-check',
     'circle-info',
     'circle-xmark',
+    'clipboard-check',
     'clipboard-list',
     'clock-rotate-left',
     'code',

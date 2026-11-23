@@ -275,7 +275,10 @@ It must always be able to show, in both themes:
   notifications allowed and not; the filler paints' watchlist of the Paint Discount Planner;
   the tab "Watchlists" second to last, before the Settings tab (icon only, #513); the selection
   of My Hangar put on a demo watchlist and on a new one from the "Selected" box (#549), also when
-  all are on it already.
+  all are on it already;
+  the "Put on a watchlist" buttons on RSI's pages (#632) in RSI's look: on a paint's page, on the
+  paint cards of the store's lists (icon only, opening the dialog without leaving the list) and in
+  the ship upgrade dialog, each off and on a demo watchlist.
 - Select all (#620): in My Hangar with and without filters and with a List Shortcut, some and all
   selected; on a demo watchlist with hangar, buy back and store items all selected, the hangar
   ones in "Selected", "Remove from this list" with its question, done and cancelled.
@@ -315,6 +318,10 @@ It must always be able to show, in both themes:
 - Stored data in groups (#624): every group collapsed and expanded with the demo's sizes and
   counts, a group refreshed, the delete question of a group that can be read again and of one that
   can't, shown and cancelled.
+- Export & Import (#1, demo cases in #233): every export of demo data only; the import into the
+  demo's own data; the merge (#634) with its preview of added, changed and kept entries of the
+  watchlists, marks to melt, paint plan, completed paint plans and warbond history, merge and
+  replace, the paint plan to keep, and the synced storage's limit reached.
 - Settings without real account data (#132); the error log (#340, #341, #342) with made-up entries
   of several codes: a narrowed page as main entry (►) with its sub-errors (↳), a repeated error
   (×3), URLs, a stack trace, an outline and pledge names from the Pledge Store; clearing off.

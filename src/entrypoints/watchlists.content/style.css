@@ -1,13 +1,22 @@
-/* The buttons on RSI's pages (#471): below a paint's buying block, left of the dialog's cart. */
-.shm-rsi-watch-host {
+/*
+ * The buttons on RSI's pages (#471, #632): below a paint's buying block, aligned with its "Add to
+ * cart" on the right.
+ */
+.shm-rsi-watch-host.is-page {
   display: flex;
   justify-content: flex-end;
-  margin: 10px 0 20px;
+  margin: 12px 0 24px;
 }
 
 /* In RSI's ship upgrade dialog: in the line of its "Add To Cart", left of it. */
-.AddToCart-cta-wrapper > .shm-rsi-watch-host {
+.AddToCart-cta-wrapper > .shm-rsi-watch-host.is-dialog {
   display: inline-flex;
-  margin: 0 12px 0 0;
+  margin: 0 16px 0 0;
   vertical-align: middle;
+}
+
+/* On a card of the store's lists: left of RSI's cart button, in the gap of its actions. */
+.c-skuCard__actions > .shm-rsi-watch-host.is-card {
+  display: inline-flex;
+  flex: none;
 }

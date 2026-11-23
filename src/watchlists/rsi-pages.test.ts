@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from 'vitest';
 import type { StoreItem } from '@/store/items/store-items';
-import { chosenUpgrade, isPaintPage, paintOfPage, storePath } from './rsi-pages';
+import { chosenUpgrade, isPaintPage, paintOfCard, paintOfPage, storePath } from './rsi-pages';
 
 const paint = (id: number, name: string, link?: string): StoreItem => ({
   id,
@@ -21,6 +21,26 @@ describe('RSI’s pages with store items (#471)', () => {
     expect(isPaintPage('/en/pledge/Paint/Marauder-Bloodlet-Paint')).toBe(true);
     expect(isPaintPage('/pledge/Paints/X')).toBe(true);
     expect(isPaintPage('/en/pledge/Standalone-Ships/Hy-n-Warbond')).toBe(false);
+  });
+
+  it('finds the paint of a card of the store’s lists by its link only (#632)', () => {
+    const items = [
+      paint(
+        1,
+        'Polaris - 2955 Best in Show Paint',
+        '/pledge/Paint/Polaris-2955-Best-In-Show-Paint',
+      ),
+      { ...paint(2, 'Avenger Titan', '/pledge/Standalone-Ships/Avenger-Titan'), category: 'Ships' },
+    ];
+    expect(paintOfCard('/pledge/Paint/Polaris-2955-Best-In-Show-Paint', items)?.id).toBe(1);
+    expect(
+      paintOfCard(
+        'https://robertsspaceindustries.com/en/pledge/Paint/Polaris-2955-Best-In-Show-Paint?x=1',
+        items,
+      )?.id,
+    ).toBe(1);
+    expect(paintOfCard('/pledge/Standalone-Ships/Avenger-Titan', items)).toBeUndefined();
+    expect(paintOfCard('/pledge/Paint/Unknown-Paint', items)).toBeUndefined();
   });
 
   it('finds the paint by its link, else by the page title', () => {

@@ -12,7 +12,13 @@ import type { StoreItem } from '@/store/items/store-items';
  *   side (`.ShipSelector.from`, `.ShipSelector.to`) then holds one `.ShipItem`, whose
  *   `data-store-action-label` names RSI's ship id ("Select P-52 Merlin (id: 92) as from ship"),
  *   and `.AddToCart` holds the price and, in `.AddToCart-cta-wrapper`, RSI's "Add To Cart".
+ * - The store's lists, e.g. "/en/store/pledge/browse/paints" (#632): each item is a card
+ *   `.c-skuCard` whose link `.c-skuCard__anchor` is the path of the item's page, with RSI's cart
+ *   button in `.c-skuCard__actions`. A card of a paint is a store item by that path.
  */
+
+/** Where a button sits: a paint's page, a card of the store's lists, the ship upgrade dialog. */
+export type RsiWatchPlace = 'page' | 'card' | 'dialog';
 
 /** A path without RSI's locale prefix, in lower case: "/pledge/paint/marauder-bloodlet-paint". */
 export const storePath = (path: string): string =>
@@ -39,7 +45,20 @@ export function paintOfPage(
   return name ? paints.find((item) => item.name.trim().toLowerCase() === name) : undefined;
 }
 
+/** The paint of a card of the store's lists, by the path its link goes to. */
+export function paintOfCard(href: string, items: readonly StoreItem[]): StoreItem | undefined {
+  const path = href.replace(/^https?:\/\/[^/]+/i, '').replace(/[?#].*$/, '');
+  if (!isPaintPage(path)) return undefined;
+  const here = storePath(path);
+  return items.find(
+    (item) => item.category === 'Paints' && item.link && storePath(item.link) === here,
+  );
+}
+
 export const PAINT_ANCHOR = '.m-storeAction__wrapper';
+export const SKU_CARD = '.c-skuCard';
+export const SKU_CARD_LINK = '.c-skuCard__anchor';
+export const SKU_CARD_ACTIONS = '.c-skuCard__actions';
 export const UPGRADE_MODAL = '.ShipUpgradeModal';
 export const UPGRADE_CART = '.AddToCart .AddToCart-cta-wrapper';
 const SIDES = { from: '.ShipSelector.from', to: '.ShipSelector.to' } as const;
