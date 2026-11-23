@@ -48,7 +48,12 @@
     "warbondCollisions": "CCU incompatibles con el warbond $1",
     "warbondCollisionsEmpty": "Ya ninguno de tus CCU se solapa con el rango de precios del warbond $1.",
     "warbondCollisionsShow": "Mostrar en My Hangar",
-    "paintsToOptimize": "Pinturas para optimizar"
+    "paintsToOptimize": "Pinturas para optimizar",
+    "ccuGroup": "CCU Consultant: $1",
+    "ccuBaseShip": "CCU desde $1",
+    "ccuEmpty": "Ninguno de estos CCU sigue en tu hangar.",
+    "ccuBuyback": "Naves y CCU hacia $1",
+    "ccuBuybackEmpty": "Ninguno sigue en tu recompra."
   },
   "sort": {
     "label": "Orden",
@@ -1903,7 +1908,33 @@
     "boxOpen": "Abrir el CCU Consultant",
     "boxMissingHint": "CCU cuya nave base no da ni tu hangar ni tu buy back, y que probablemente no siempre está disponible.",
     "boxTooFew": "Muy pocos accesos",
-    "boxTooFewHint": "CCU cuya nave base no siempre está disponible, con menos naves y CCU hacia ella que CCU desde ella."
+    "boxTooFewHint": "CCU cuya nave base no siempre está disponible, con menos naves y CCU hacia ella que CCU desde ella.",
+    "view": {
+      "label": "Vista",
+      "simple": "Sencilla",
+      "deep": "Vista detallada"
+    },
+    "showInHangar": {
+      "one": "Mostrar el CCU en My Hangar",
+      "other": "Mostrar $1 CCU en My Hangar"
+    },
+    "showInHangarHint": "Abre My Hangar solo con estos CCU.",
+    "card": {
+      "fromIt": {
+        "one": "CCU desde ella",
+        "other": "CCU desde ella"
+      },
+      "onSale": "A la venta ahora",
+      "always": "Siempre en la Pledge Store",
+      "ways": {
+        "one": "$1 acceso",
+        "other": "$1 accesos"
+      },
+      "nothing": "Nada en el hangar ni en la recompra",
+      "showCcus": "Muestra los CCU desde $1 en My Hangar",
+      "buybackHint": "Abre las naves y CCU hacia $1 en Buy Back",
+      "list": "Naves base"
+    }
   },
   "cartPaints": {
     "title": "Descuento por volumen en pinturas",

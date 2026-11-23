@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { browserLocale, i18n, LOCALES, type Locale } from '@/i18n';
 import FontSizeSlider from '../FontSizeSlider.vue';
-import SegmentedControl from '../SegmentedControl.vue';
+import SegmentedControl from '@/shared/components/SegmentedControl.vue';
 import SettingCheck from '../SettingCheck.vue';
 import SettingRow from '../SettingRow.vue';
 import SettingsGroup from '../SettingsGroup.vue';

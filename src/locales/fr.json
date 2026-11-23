@@ -48,7 +48,12 @@
     "warbondCollisions": "CCU incompatibles avec le warbond $1",
     "warbondCollisionsEmpty": "Plus aucun de tes CCU ne chevauche la fourchette de prix du warbond $1.",
     "warbondCollisionsShow": "Afficher dans My Hangar",
-    "paintsToOptimize": "Peintures à optimiser"
+    "paintsToOptimize": "Peintures à optimiser",
+    "ccuGroup": "CCU Consultant : $1",
+    "ccuBaseShip": "CCU depuis $1",
+    "ccuEmpty": "Aucun de ces CCU n’est plus dans ton hangar.",
+    "ccuBuyback": "Vaisseaux et CCU vers $1",
+    "ccuBuybackEmpty": "Aucun d’eux n’est plus dans ton rachat."
   },
   "sort": {
     "label": "Tri",
@@ -1903,7 +1908,33 @@
     "boxOpen": "Ouvrir le CCU Consultant",
     "boxMissingHint": "Les CCU dont ni le hangar ni le buy back ne donne le vaisseau de base, et dont le vaisseau de base n’est probablement pas toujours disponible.",
     "boxTooFew": "Trop peu d’accès",
-    "boxTooFewHint": "Les CCU dont le vaisseau de base n’est pas toujours disponible, avec moins de vaisseaux et de CCU vers lui que de CCU depuis lui."
+    "boxTooFewHint": "Les CCU dont le vaisseau de base n’est pas toujours disponible, avec moins de vaisseaux et de CCU vers lui que de CCU depuis lui.",
+    "view": {
+      "label": "Affichage",
+      "simple": "Simple",
+      "deep": "Vue détaillée"
+    },
+    "showInHangar": {
+      "one": "Afficher le CCU dans My Hangar",
+      "other": "Afficher $1 CCU dans My Hangar"
+    },
+    "showInHangarHint": "Ouvre My Hangar avec seulement ces CCU.",
+    "card": {
+      "fromIt": {
+        "one": "CCU depuis lui",
+        "other": "CCU depuis lui"
+      },
+      "onSale": "En vente actuellement",
+      "always": "Toujours dans le Pledge Store",
+      "ways": {
+        "one": "$1 accès",
+        "other": "$1 accès"
+      },
+      "nothing": "Rien dans le hangar ni le rachat",
+      "showCcus": "Affiche les CCU depuis $1 dans My Hangar",
+      "buybackHint": "Ouvre les vaisseaux et CCU vers $1 dans Buy Back",
+      "list": "Vaisseaux de base"
+    }
   },
   "cartPaints": {
     "title": "Remise de volume sur les peintures",

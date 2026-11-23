@@ -222,6 +222,8 @@ describe('base ships with too few ways (#454)', () => {
     ]);
     expect(list.tooFewCount).toBe(2);
     expect(list.soon).toEqual([]);
+    // The ways to it, for the cards of the simple view (#563).
+    expect(list.tooFew[0]!.matches.map((m) => m.id)).toEqual([80]);
     // Where their cover puts them, as before.
     expect(list.groups.buyback.map((row) => row.name)).toEqual(['Cutlass Red']);
   });

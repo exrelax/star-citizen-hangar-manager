@@ -1,0 +1,492 @@
+/*
+ * The CCU Consultant (#113) and its views (#563). Not scoped: the header, the views and "Discount at
+ * risk" are components of their own that share these classes. "Modern Hangar" at the end.
+ */
+
+.shm-ccu-consultant {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* The consultant in a box of its own, like the running plan of the Paint Discount Consultant. */
+.shm-ccu-consultant-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 0 0;
+  overflow: hidden;
+  background: rgb(var(--shm-surface-rgb) / 0.8);
+  border: 1px solid rgb(var(--shm-accent-rgb) / 0.25);
+  border-radius: var(--shm-radius-cell);
+}
+
+/* Everything but the tables keeps the box's inner margin; the tables' rows reach its edges. */
+.shm-ccu-consultant-box > :not(.shm-ccu-consultant-panel),
+.shm-ccu-consultant-panel > :not(.shm-ccu-consultant-view),
+.shm-ccu-consultant-view > :not(.shm-ccu-consultant-table) {
+  margin-right: 16px;
+  margin-left: 16px;
+}
+
+/* RSI's "#billing .content ul { margin: 0 }" outweighs the rule above for a list, e.g. the cards. */
+.shm-ccu-consultant-view > ul:not(.shm-ccu-consultant-table) {
+  margin-right: 16px !important;
+  margin-left: 16px !important;
+}
+
+.shm-ccu-consultant-panel {
+  padding-bottom: 16px;
+}
+
+.shm-ccu-consultant-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px 14px;
+}
+
+.shm-ccu-consultant-icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  color: var(--shm-accent);
+  background: rgb(var(--shm-accent-rgb) / 0.16);
+}
+
+.shm-ccu-consultant-head-text {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.shm-ccu-consultant-question {
+  margin: 0;
+  color: var(--shm-text-strong);
+  font-size: calc(15px * var(--shm-font-scale));
+  font-weight: 600;
+}
+
+.shm-ccu-consultant-intro {
+  margin: 2px 0 0;
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+.shm-ccu-consultant-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+  cursor: pointer;
+}
+
+.shm-ccu-consultant-coverage {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shm-ccu-consultant-bar {
+  display: flex;
+  gap: 2px;
+  height: 10px;
+  overflow: hidden;
+  background: rgb(var(--shm-accent-rgb) / 0.08);
+}
+
+.shm-ccu-consultant-bar > span {
+  flex-basis: 0;
+  min-width: 3px;
+}
+
+.shm-ccu-consultant-bar .is-hangar,
+.shm-ccu-consultant-swatch.is-hangar {
+  background: var(--shm-success);
+}
+
+.shm-ccu-consultant-bar .is-always,
+.shm-ccu-consultant-swatch.is-always {
+  background: var(--shm-accent);
+}
+
+.shm-ccu-consultant-bar .is-buyback,
+.shm-ccu-consultant-swatch.is-buyback {
+  background: var(--shm-warning);
+}
+
+.shm-ccu-consultant-bar .is-missing,
+.shm-ccu-consultant-swatch.is-missing {
+  background: var(--shm-danger);
+}
+
+.shm-ccu-consultant-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0;
+  padding: 0;
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+  font-variant-numeric: tabular-nums;
+  list-style: none;
+}
+
+.shm-ccu-consultant-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.shm-ccu-consultant-legend strong {
+  color: var(--shm-text-strong);
+  font-weight: 600;
+}
+
+.shm-ccu-consultant-swatch {
+  width: 8px;
+  height: 8px;
+}
+
+.shm-ccu-consultant-hint {
+  margin: 4px 0 8px;
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+.shm-ccu-consultant-empty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  color: var(--shm-text-muted);
+  background: rgb(var(--shm-accent-rgb) / 0.06);
+}
+
+.shm-ccu-consultant-empty.is-missing {
+  color: var(--shm-text);
+  background: rgb(var(--shm-success-rgb) / 0.08);
+}
+
+.shm-ccu-consultant-empty.is-missing .shm-icon {
+  flex: none;
+  color: var(--shm-success);
+}
+
+.shm-ccu-consultant-empty strong {
+  display: block;
+  color: var(--shm-text-strong);
+}
+
+/* Wide tables scroll in their box instead of the page. */
+.shm-ccu-consultant-table {
+  overflow-x: auto;
+}
+
+.shm-ccu-consultant-ship {
+  display: block;
+  color: var(--shm-text-strong);
+}
+
+.shm-ccu-consultant-meta {
+  display: block;
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+.shm-ccu-consultant-cover {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.shm-ccu-consultant-cover.is-buyback {
+  color: var(--shm-warning);
+}
+
+.shm-ccu-consultant-cover.is-always {
+  color: var(--shm-accent);
+}
+
+.shm-ccu-consultant-cover.is-missing {
+  color: var(--shm-danger);
+}
+
+.shm-ccu-consultant-matches {
+  margin: 2px 0 0;
+  padding: 0;
+  font-size: calc(12px * var(--shm-font-scale));
+  list-style: none;
+}
+
+.shm-ccu-consultant-matches a {
+  color: var(--shm-text);
+  text-decoration: none;
+}
+
+.shm-ccu-consultant-matches a:hover,
+.shm-ccu-consultant-matches a:focus-visible {
+  color: var(--shm-accent);
+  text-decoration: underline;
+}
+
+.shm-ccu-consultant-matches .shm-pledge-id {
+  margin-left: 6px;
+  color: var(--shm-text-muted);
+}
+
+.shm-ccu-consultant-more {
+  margin: 2px 0 0;
+  padding: 0;
+  color: var(--shm-accent);
+  font: inherit;
+  font-size: calc(12px * var(--shm-font-scale));
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.shm-ccu-consultant-more:hover,
+.shm-ccu-consultant-more:focus-visible {
+  text-decoration: underline;
+  outline: none;
+}
+
+.shm-ccu-consultant-store {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  color: var(--shm-accent);
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+/*
+ * The chosen group's heading with its count and hint; on its right "Show N CCUs in My Hangar" and
+ * the toggle of the views (#563). Below each other once narrow.
+ */
+.shm-ccu-consultant-panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.shm-ccu-consultant-heading {
+  flex: 1 1 280px;
+  min-width: 0;
+}
+
+.shm-ccu-consultant-heading .shm-ccu-consultant-hint {
+  margin: 2px 0 0;
+}
+
+/* "Classic RSI": small accent capitals, as the headings of the Paint Discount Consultant. */
+.shm-ccu-consultant-group-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--shm-accent);
+  font-size: calc(12px * var(--shm-font-scale));
+  font-weight: normal;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.shm-ccu-consultant-group-count {
+  padding: 0 7px;
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 18px;
+  letter-spacing: 0;
+  background: rgb(var(--shm-accent-rgb) / 0.12);
+  border-radius: var(--shm-radius-pill);
+}
+
+.shm-ccu-consultant-group-count.is-missing {
+  color: var(--shm-danger);
+  background: color-mix(in srgb, var(--shm-danger) 18%, transparent);
+}
+
+.shm-ccu-consultant-group-count.is-buyback,
+.shm-ccu-consultant-group-count.is-atRisk {
+  color: var(--shm-warning);
+  background: color-mix(in srgb, var(--shm-warning) 18%, transparent);
+}
+
+.shm-ccu-consultant-group-count.is-always {
+  color: var(--shm-accent);
+}
+
+.shm-ccu-consultant-panel-actions {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
+
+.shm-ccu-consultant-views {
+  font-size: calc(12px * var(--shm-font-scale));
+}
+
+/* The toggle of the grouped view (#456) above the tables, on the right. */
+.shm-ccu-consultant-view-bar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.shm-ccu-consultant-group-toggle {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+  color: var(--shm-text-muted);
+  font: inherit;
+  font-size: calc(12px * var(--shm-font-scale));
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.shm-ccu-consultant-group-toggle:hover,
+.shm-ccu-consultant-group-toggle:focus-visible {
+  color: var(--shm-text-strong);
+  outline: none;
+}
+
+.shm-ccu-consultant-group-toggle[aria-pressed='true'] {
+  color: var(--shm-accent);
+}
+
+.shm-ccu-consultant-ccus-toggle {
+  display: block;
+}
+
+/* The CCUs of an opened base ship (#456): below its row, indented like the coverage section. */
+.shm-ccu-consultant-ccus-row td {
+  padding-top: 0;
+  padding-bottom: 12px;
+  padding-left: 28px !important;
+}
+
+/* "Discount at risk" (#455): the CCU's two ships next to its name, the advice's buttons in a row. */
+.shm-ccu-consultant-atrisk-ccu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.shm-ccu-consultant-advice {
+  display: block;
+  color: var(--shm-text);
+  font-size: calc(13px * var(--shm-font-scale));
+}
+
+.shm-ccu-consultant-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 14px;
+  margin-top: 4px;
+}
+
+.shm-ccu-consultant-actions .shm-ccu-consultant-more {
+  margin: 0;
+}
+
+/* "Soon without base ship" (#454): set apart from the table above. */
+.shm-ccu-consultant-cover.is-short {
+  white-space: nowrap;
+}
+
+.shm-ccu-consultant-ways {
+  display: block;
+  color: var(--shm-text-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.shm-ccu-consultant-soon-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 20px;
+  margin-bottom: 0;
+  color: var(--shm-text-strong);
+  font-size: calc(14px * var(--shm-font-scale));
+  font-weight: 600;
+}
+
+.shm-ccu-consultant-soon-count {
+  color: var(--shm-text-muted);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+.shm-ccu-consultant-leaves {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+
+.shm-ccu-consultant-removal-link {
+  margin-top: 4px;
+}
+
+/* The group tabs follow the legend closely, as one block of the box. */
+.shm-ccu-consultant-box .shm-ccu-consultant-groups {
+  margin-top: 4px;
+}
+
+/* The table's outer cells keep the box's inner margin. */
+.shm-ccu-consultant-table th:first-child,
+.shm-ccu-consultant-table td:first-child {
+  padding-left: 16px;
+}
+
+.shm-ccu-consultant-table th:last-child,
+.shm-ccu-consultant-table td:last-child {
+  padding-right: 16px;
+}
+
+html .shm-theme-modern .shm-ccu-consultant-box {
+  background: var(--shm-surface-elevated);
+  border-color: transparent;
+  box-shadow: inset 0 0 0 1px var(--shm-fill);
+}
+
+html .shm-theme-modern .shm-ccu-consultant-icon {
+  border-radius: var(--shm-radius-control);
+}
+
+html .shm-theme-modern .shm-ccu-consultant-bar {
+  border-radius: 5px;
+}
+
+html .shm-theme-modern .shm-ccu-consultant-swatch {
+  border-radius: 2px;
+}
+
+html .shm-theme-modern .shm-ccu-consultant-empty {
+  border-radius: var(--shm-radius-small);
+}
+
+/* "Modern Hangar": the group's heading in sentence case, as its other headings. */
+html .shm-theme-modern .shm-ccu-consultant-group-title {
+  color: var(--shm-text-strong);
+  font-size: calc(15px * var(--shm-font-scale));
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+}

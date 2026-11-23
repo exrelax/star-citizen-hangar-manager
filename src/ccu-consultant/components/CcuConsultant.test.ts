@@ -1,12 +1,13 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it } from 'vitest';
 import { createApp, h, shallowRef, type App } from 'vue';
-import { DEFAULT_SETTINGS, type Settings } from '@/settings/settings';
+import { DEFAULT_SETTINGS, type CcuConsultantView, type Settings } from '@/settings/settings';
 import { REMOVAL_CCUS, removalCcusState } from '@/ship-removals/use-removal-ccus';
 import type { ShipRemoval } from '@/ship-removals/ship-removals';
 import { ALWAYS_AVAILABLE, withoutLeaving, type AlwaysAvailableList } from '../always-available';
 import { CCU_COVERAGE, COVERAGE_SOURCES, type CcuCoverage } from '../coverage';
 import CcuConsultant from './CcuConsultant.vue';
+import { listShortcuts } from '@/hangar/list-shortcut';
 
 let app: App | undefined;
 afterEach(() => app?.unmount());
@@ -31,11 +32,12 @@ function render(
   coverages: CcuCoverage[],
   consider = true,
   obtainable: ReadonlyMap<number, ShipRemoval> = new Map(),
+  view: CcuConsultantView = 'deep',
 ) {
   const updates: Partial<Settings>[] = [];
   const settings: Settings = {
     ...DEFAULT_SETTINGS,
-    ccuConsultant: { ...DEFAULT_SETTINGS.ccuConsultant, considerAlwaysAvailable: consider },
+    ccuConsultant: { ...DEFAULT_SETTINGS.ccuConsultant, considerAlwaysAvailable: consider, view },
   };
   const root = document.createElement('div');
   document.body.append(root);
@@ -53,7 +55,15 @@ function render(
     shallowRef({
       hangar: new Map(),
       buyback: new Map(),
-      ships: [{ id: 2, name: 'Cutlass Red', msrp: 135, link: '/pledge/ships/cutlass-red' }],
+      ships: [
+        {
+          id: 2,
+          name: 'Cutlass Red',
+          msrp: 135,
+          link: '/pledge/ships/cutlass-red',
+          image: 'https://img/cutlass.jpg',
+        },
+      ],
     }),
   );
   app.mount(root);
@@ -151,7 +161,13 @@ describe('CcuConsultant (#113)', () => {
     input.checked = false;
     input.dispatchEvent(new Event('change'));
     expect(updates).toEqual([
-      { ccuConsultant: { ...DEFAULT_SETTINGS.ccuConsultant, considerAlwaysAvailable: false } },
+      {
+        ccuConsultant: {
+          ...DEFAULT_SETTINGS.ccuConsultant,
+          considerAlwaysAvailable: false,
+          view: 'deep',
+        },
+      },
     ]);
   });
 
@@ -315,10 +331,144 @@ describe('the grouped view of the CCU Consultant (#456)', () => {
   it('has its toggle above the tables, switched like the settings', () => {
     const { root, updates } = render([coverage(10, 2, 'Cutlass Red')]);
     const toggle = root.querySelector<HTMLButtonElement>(
-      '.shm-ccu-consultant-panel-head .shm-ccu-consultant-group-toggle',
+      '.shm-ccu-consultant-view-bar .shm-ccu-consultant-group-toggle',
     )!;
     expect(toggle.getAttribute('aria-pressed')).toBe('true');
     toggle.click();
     expect(updates.at(-1)?.grouped?.consultant).toBe(false);
+  });
+});
+
+describe('the views of the CCU Consultant (#563)', () => {
+  afterEach(() => {
+    listShortcuts.value = { hangar: null, buyback: null };
+    location.hash = '';
+  });
+  const ccus = [
+    coverage(10, 2, 'Cutlass Red'),
+    coverage(11, 2, 'Cutlass Red'),
+    coverage(12, 3, 'Razor', true),
+    coverage(13, 1, 'Arrow'),
+  ];
+  /** The parts of the line of ways, each once, without the thumbnails' numbers. */
+  const waysText = (ways: Element | null) => {
+    if (!ways) return undefined;
+    const parts = [...ways.children].filter((part) => !part.matches('.shm-ccu-card-thumbs'));
+    return parts.length
+      ? parts.map((part) => part.textContent!.trim()).join(' ')
+      : ways.textContent!.trim();
+  };
+  const cards = (root: HTMLElement) =>
+    [...root.querySelectorAll('.shm-ccu-card')].map((card) => ({
+      name: card.querySelector('.shm-ccu-card-name')?.textContent?.trim(),
+      count: card.querySelector('.shm-ccu-card-count')?.textContent?.replace(/\s+/g, ' ').trim(),
+      price: card.querySelector('.shm-ccu-card-price')?.textContent?.trim(),
+      sale: card.querySelector('.shm-ccu-card-sale')?.textContent?.trim(),
+      ways: waysText(card.querySelector('.shm-ccu-card-ways')),
+      action: card.querySelector('.shm-ccu-card-action')?.textContent?.trim(),
+    }));
+
+  it('shows the base ships as cards in the simple view, with the shared header', () => {
+    const { root } = render(ccus, true, new Map(), 'simple');
+    expect(root.querySelector('table')).toBeNull();
+    expect(root.querySelector('.shm-ccu-consultant-group-title')?.textContent).toMatch(
+      /^\s*Without base ship\s+2\s*$/,
+    );
+    expect(cards(root)).toEqual([
+      {
+        name: 'Cutlass Red',
+        count: '2 CCUs from it',
+        price: '$135',
+        sale: 'Not on sale now',
+        ways: 'Nothing in hangar or buy back',
+        action: 'Pledge Store',
+      },
+    ]);
+    expect(root.querySelector<HTMLImageElement>('.shm-ccu-card-image img')?.src).toBe(
+      'https://img/cutlass.jpg',
+    );
+  });
+
+  it('shows what the buy back has of a base ship and opens it in Buy Back', async () => {
+    const { root } = render(ccus, true, new Map(), 'simple');
+    root.querySelectorAll<HTMLElement>('.shm-tab')[1]!.click();
+    await Promise.resolve();
+    expect(cards(root)).toEqual([
+      {
+        name: 'Razor',
+        count: '1 CCU from it',
+        price: undefined,
+        sale: 'Not on sale now',
+        ways: '1 way to it',
+        action: 'Buy Back',
+      },
+    ]);
+    root.querySelector<HTMLButtonElement>('.shm-ccu-card-action button')!.click();
+    expect(listShortcuts.value.buyback?.id).toBe('ccuConsultant:to:id:3');
+    expect(listShortcuts.value.buyback?.matches({ id: 512 } as never)).toBe(true);
+    expect(listShortcuts.value.buyback?.title()).toBe('Ships and CCUs to Razor');
+  });
+
+  it('opens the CCUs of a card and of the whole group in My Hangar', () => {
+    const { root } = render(ccus, true, new Map(), 'simple');
+    root.querySelector<HTMLButtonElement>('.shm-ccu-card-main')!.click();
+    expect(listShortcuts.value.hangar?.title()).toBe('CCUs from Cutlass Red');
+    expect([10, 11, 12].map((id) => listShortcuts.value.hangar?.matches({ id } as never))).toEqual([
+      true,
+      true,
+      false,
+    ]);
+
+    const show = root.querySelector<HTMLButtonElement>('.shm-ccu-consultant-show')!;
+    expect(show.textContent?.trim()).toBe('Show 2 CCUs in My Hangar');
+    show.click();
+    expect(listShortcuts.value.hangar?.id).toBe('ccuConsultant:missing');
+    expect(listShortcuts.value.hangar?.title()).toBe('CCU Consultant: Without base ship');
+  });
+
+  it('has the toggle in both views and remembers the choice in the settings', () => {
+    for (const view of ['simple', 'deep'] as const) {
+      const { root, updates } = render(ccus, true, new Map(), view);
+      const options = [...root.querySelectorAll<HTMLInputElement>('.shm-segment input')];
+      expect(options.map((option) => option.checked)).toEqual([view === 'simple', view === 'deep']);
+      const other = options[view === 'simple' ? 1 : 0]!;
+      other.checked = true;
+      other.dispatchEvent(new Event('change'));
+      expect(updates.at(-1)?.ccuConsultant?.view).toBe(view === 'simple' ? 'deep' : 'simple');
+      app?.unmount();
+      app = undefined;
+    }
+  });
+
+  it('lists the base ships with too few ways below, with the ways and the shortage', () => {
+    const viaBuyback = (id: number) => ({
+      ...coverage(id, 2, 'Cutlass Red'),
+      buyback: {
+        ships: [],
+        ccus: [
+          {
+            source: 'buyback' as const,
+            kind: 'ccu' as const,
+            id: 700,
+            title: 'Upgrade - Cutlass Red to Hull B',
+          },
+        ],
+      },
+      covered: true,
+    });
+    const { root } = render(
+      [viaBuyback(20), viaBuyback(21), viaBuyback(22)],
+      true,
+      new Map(),
+      'simple',
+    );
+    expect(root.querySelector('.shm-ccu-consultant-soon-title')?.textContent).toMatch(
+      /Too few ways to the base ship\s+2/,
+    );
+    // The thumbnail of a CCU to it shows the ship it starts from.
+    expect(cards(root).at(-1)?.ways).toBe('1 way to it 2 too few');
+    expect(root.querySelector<HTMLImageElement>('.shm-ccu-card-thumbs img')?.src).toBe(
+      'https://img/cutlass.jpg',
+    );
   });
 });

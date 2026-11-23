@@ -214,7 +214,13 @@ It must always be able to show, in both themes:
   risk" (#455) with confirmed and expected price increases, the advice (giftable trade-off, not
   enough store credit), the "Keep the discount" dialog, and empty (demo setting "CCUs with their
   discount at risk"); a base ship without a Pledge Store link; the grouped view (#456) on and
-  off in each section, with a group's dialog.
+  off in each section, with a group's dialog. Its layout (#563): the shared header with the
+  coverage bar, the group tabs, the group's heading with its count, "Show N CCUs in My Hangar"
+  and the toggle "Simple | Deep view" in both views, remembered; the simple view's base ship
+  cards in each group (with and without image and price, on sale and not, always available, the
+  ways to it as thumbnails with "+N", too few ways, a leaving ship with its countdown) and each
+  action (Buy Back opening the demo's buy back pledges, "Ship upgrade" disabled with its tooltip,
+  "Show in Pledge Store", Pledge Store), a card opening its CCUs in My Hangar; narrow.
 - List Shortcuts (#431): each shortcut opened in My Hangar with its bar, title, icon, count and
   ×: "Ready to melt" (the demo's marks ready to melt, never the one still waiting), "Paints to
   optimize" from the sidebar box and the new plan's "Show these paints" (#430), "Melt and rebuy"
@@ -223,7 +229,7 @@ It must always be able to show, in both themes:
   melt" with the demo setting "Marks to melt in a new demo hangar" off and "Reset demo" (or its
   pledges unmarked), "Paints to optimize" with "A new plan" off, "Melt and rebuy" with
   "Rebuyable pledges" off; the former view filters "Melt now" and "Paint rebuy" on the new
-  mechanism (#428). No shortcut opens the Buy Back yet.
+  mechanism (#428). The CCU Consultant's "Buy Back" of a card (#563) opens the Buy Back.
 - Grouped View (#450): the toggle on and off in My Hangar and Buy Back; groups of CCUs, ships,
   packages and gear next to single items; differing extras (some with gear, some with BIS paint,
   different insurance, some upgraded); all, some and none giftable and meltable; sums with a
