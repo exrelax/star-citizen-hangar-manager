@@ -26,7 +26,7 @@ const group: ItemGroup<Item> = {
   extras: [],
 };
 
-function render(open: { id: number; at: number } | null = null) {
+function render(open: { id: number; at: number } | null = null, withHead = false) {
   const root = document.createElement('div');
   document.body.append(root);
   app = createApp({
@@ -34,7 +34,10 @@ function render(open: { id: number; at: number } | null = null) {
       h(
         GroupRow<Item>,
         { group, badges: [], open },
-        { item: ({ entry }: { entry: Item }) => h('div', { class: 'item' }, String(entry.id)) },
+        {
+          item: ({ entry }: { entry: Item }) => h('div', { class: 'item' }, String(entry.id)),
+          ...(withHead ? { head: () => h('p', { class: 'head' }, 'Base ship') } : {}),
+        },
       ),
   });
   app.mount(root);
@@ -56,6 +59,19 @@ describe('GroupRow (#488)', () => {
     chevron.click();
     await nextTick();
     expect(inList(root)).toBe(0);
+  });
+
+  it('shows what the whole group has inside its own box while expanded (#615)', async () => {
+    const root = render(null, true);
+    expect(root.querySelector('.head')).toBeNull();
+    root.querySelector<HTMLElement>('.shm-row-summary')!.click();
+    await nextTick();
+    expect(root.querySelector('.shm-group-row .shm-group-head .head')).not.toBeNull();
+    expect(root.querySelector('.shm-group-items .head')).toBeNull();
+    expect(inList(root)).toBe(2);
+    root.querySelector<HTMLElement>('.shm-row-summary')!.click();
+    await nextTick();
+    expect(root.querySelector('.head')).toBeNull();
   });
 
   it('opens its dialog with its own button, not expanding it', async () => {

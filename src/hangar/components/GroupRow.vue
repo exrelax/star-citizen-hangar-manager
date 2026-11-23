@@ -43,8 +43,8 @@ const props = defineProps<{
 defineSlots<{
   item(props: { entry: T; autoExpand: boolean }): unknown;
   /**
-   * What the whole group has, above its items when expanded and in its dialog's header, e.g. the
-   * base ship of a CCU group (#574).
+   * What the whole group has, inside its box when expanded (#615) and in its dialog's header, e.g.
+   * the base ship of a CCU group (#574).
    */
   head?(): unknown;
 }>();
@@ -183,9 +183,12 @@ const countLabel = computed(() => i18n.n('group.items', props.group.count, [prop
           <SvgIcon name="chevron-right" />
         </button>
       </div>
+      <!-- What the whole group has (#574), inside its own box like a row's details (#615). -->
+      <div v-if="expanded && $slots.head" class="shm-details shm-group-head">
+        <div class="shm-group-head-main"><slot name="head" /></div>
+      </div>
     </div>
     <div v-if="expanded" class="shm-group-items">
-      <div v-if="$slots.head" class="shm-group-head"><slot name="head" /></div>
       <template v-for="entry in group.items" :key="entry.id">
         <slot name="item" :entry="entry" :auto-expand="false" />
       </template>
@@ -250,12 +253,17 @@ const countLabel = computed(() => i18n.n('group.items', props.group.count, [prop
   border-left: 2px solid rgb(var(--shm-accent-rgb) / 0.3);
 }
 
-/* What the whole group has (#574), above its items: a part of its own, laid out like a row's details. */
+/*
+ * What the whole group has (#574), inside the group's box below its title (#615): laid out like a
+ * row's details, under the name and in their smaller font, so it reads as a detail of the group.
+ */
 .shm-group-head {
-  padding: 6px 12px 8px;
-  background: rgb(var(--shm-accent-rgb) / 0.04);
-  border: 1px solid rgb(var(--shm-accent-rgb) / 0.12);
-  border-radius: var(--shm-radius-control);
+  padding-top: 0;
+}
+
+.shm-group-head-main {
+  grid-column: 2;
+  min-width: 0;
 }
 
 .shm-group-head .shm-upgrade-log {
