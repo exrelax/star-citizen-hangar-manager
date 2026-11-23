@@ -824,6 +824,13 @@
       "discountDesc": "Highest discount first",
       "discountAsc": "Lowest discount first"
     },
+    "warbondSorts": {
+      "endAsc": "Ending soonest first",
+      "endDesc": "Ending latest first",
+      "valueAsc": "Lowest ship value first",
+      "valueDesc": "Highest ship value first",
+      "discountDesc": "Highest discount first"
+    },
     "openWarbondShort": "Warbond",
     "openStandardShort": "Standard"
   },

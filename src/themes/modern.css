@@ -466,6 +466,11 @@ html .shm-theme-modern .shm-count {
   font-size: calc(13px * var(--shm-font-scale));
 }
 
+/* The sort of the warbond CCUs (#628), a second count row right below the first one. */
+html .shm-theme-modern .shm-count.shm-store-sort {
+  margin-top: 0;
+}
+
 /* ---- Rows: cards, or rounded cells of a grouped list in the compact view ---- */
 
 /* Each row as a card of its own, with a gap between them (setting "Compact view" off). */

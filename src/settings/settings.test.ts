@@ -63,6 +63,7 @@ describe('withDefaults', () => {
       sort: { hangar: 'valueDesc', buyback: 'newest' },
       grouped: DEFAULT_SETTINGS.grouped,
       warbondHistory: { sort: 'newest', period: 'event', eventId: 'iae-2956' },
+      warbondSort: 'endAsc',
       ownedCcuSort: { column: 'percent', direction: 'asc' },
       paintConsultant: {
         useStoreCredit: false,
@@ -150,6 +151,14 @@ describe("the order of the warbond CCUs' own CCUs (#395)", () => {
       withDefaults({ ownedCcuSort: { column: 'value', direction: 'up' } as never }).ownedCcuSort,
     ).toBeNull();
     expect(withDefaults({}).ownedCcuSort).toBeNull();
+  });
+});
+
+describe('the order of the current warbond CCUs (#628)', () => {
+  it('keeps a known sorting and falls back to the expected end first', () => {
+    expect(withDefaults({ warbondSort: 'discountDesc' }).warbondSort).toBe('discountDesc');
+    expect(withDefaults({ warbondSort: 'nope' as never }).warbondSort).toBe('endAsc');
+    expect(withDefaults({}).warbondSort).toBe('endAsc');
   });
 });
 

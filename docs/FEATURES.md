@@ -34,7 +34,8 @@ announcements.
 - A Paint Discount Planner: more store credit from your paints with RSI's volume discount,
   as a plan you start and follow step by step
 - The current warbond CCUs of the pledge store, with the cheapest ships to start from and your own
-  CCUs in the same price range, and a history of the warbond offers seen so far
+  CCUs in the same price range, sorted by when they are expected to end, ship value or discount,
+  and a history of the warbond offers seen so far
 - Expected price increases: a reminder on buy back items that get more expensive, advice for CCUs
   that lose or gain upgrade value, and the CCUs to secure before a ship's price rises
 - Event notices like the Intergalactic Aerospace Expo, with countdowns

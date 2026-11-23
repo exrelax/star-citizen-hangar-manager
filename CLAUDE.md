@@ -116,6 +116,8 @@ It must always be able to show, in both themes:
 - The upgrade buttons of the Pledge Store tab (#392): a ship to secure and a leaving ship, each with
   and without a warbond CCU ("Ship upgrade" alone, "Warbond upgrade" left of it), the "Warbond
   upgrade" of a current warbond offer, all disabled in the demo with their tooltip.
+- The sort of the current warbond CCUs (#628): demo offers with and without an expected end, each
+  sorting with more than two offers, and no menu with two or fewer.
 - The warbond history (#4): an offer seen since a date with and without a running event, earlier
   offers at another price, with and without an event, and an offer never seen before.
 - The Warbond CCU History (#297): at least 10 expired offers, 3 in the event period, 6 within 90

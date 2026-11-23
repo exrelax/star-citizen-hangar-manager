@@ -14,6 +14,13 @@ import {
 } from '@/ships/sync-upgrade-tool';
 import { useStoreData } from '../use-store-data';
 import { buildWarbondOffers } from '../warbond';
+import {
+  sortWarbondOffers,
+  WARBOND_SORT_MIN,
+  WARBOND_SORTS,
+  type WarbondSort,
+} from '../warbond-sort';
+import SelectMenu from '@/shared/components/SelectMenu.vue';
 import { useCcusToSecure } from '@/price-increases/use-ccus-to-secure';
 import { confirmationNote } from '@/price-increases/price-increase-label';
 import SecureRow from '@/price-increases/components/SecureRow.vue';
@@ -89,9 +96,22 @@ onUnmounted(stopTimer);
 const storeData = computed(() =>
   realInDemo.value ? data.value : (demoContext.value?.storeData ?? data.value),
 );
-const offers = computed(() =>
+const builtOffers = computed(() =>
   storeData.value ? buildWarbondOffers(storeData.value, props.pledges, props.buyback) : [],
 );
+
+/**
+ * The order of the offers (#628): chosen once there are more than two, the expected end first by
+ * default; with fewer the default order.
+ */
+const sortable = computed(() => builtOffers.value.length > WARBOND_SORT_MIN);
+const sortOptions = computed(() =>
+  WARBOND_SORTS.map((value) => ({ value, label: i18n.t(`store.warbondSorts.${value}`) })),
+);
+const offers = computed(() =>
+  sortWarbondOffers(builtOffers.value, sortable.value ? props.settings.warbondSort : 'endAsc'),
+);
+const setSort = (warbondSort: WarbondSort) => update({ warbondSort });
 
 /**
  * The ships CIG takes out of the Pledge Store (#288): public data; the demo has its own (#292),
@@ -186,8 +206,12 @@ const displayClasses = computed(() => ({
         </button>
       </div>
       <template v-if="storeData">
-        <p class="shm-count">
-          <span>{{ i18n.n('store.count', offers.length) }}</span>
+        <!--
+          When they were read on the right; with the sort (#628) the count moves down to the left of
+          the sort, as in My Hangar's lists.
+        -->
+        <p class="shm-count" :class="{ 'is-updated-only': sortable }">
+          <span v-if="!sortable">{{ i18n.n('store.count', offers.length) }}</span>
           <span class="shm-store-updated">
             <span v-if="upgradeToolState.loading">{{ i18n.t('store.updating') }}</span>
             <span v-else-if="updated">{{ updated }}</span>
@@ -204,6 +228,16 @@ const displayClasses = computed(() => ({
             </button>
           </span>
         </p>
+        <div v-if="sortable" class="shm-count shm-store-sort">
+          <span>{{ i18n.n('store.count', offers.length) }}</span>
+          <SelectMenu
+            :options="sortOptions"
+            :model-value="settings.warbondSort"
+            :label="i18n.t('sort.label')"
+            icon="arrow-down-short-wide"
+            @update:model-value="setSort"
+          />
+        </div>
         <!-- The container of the manager's lists: their gaps and compact view (row.css, modern.css). -->
         <div v-if="offers.length" class="shm-rows">
           <WarbondRow
@@ -288,6 +322,20 @@ const displayClasses = computed(() => ({
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+
+/* Only when they were read, on the right: the count is in the row of the sort below. */
+.shm-count.is-updated-only {
+  justify-content: flex-end;
+}
+
+/*
+ * The count on the left and the sort of the warbond CCUs on the right (#628): a count row like the
+ * one of My Hangar's list (its font and color in both themes), close below the row above it.
+ */
+.shm-store-sort {
+  align-items: center;
+  margin-top: -4px;
 }
 
 /* Icon only, in the accent color; it spins while the offers are read. */
