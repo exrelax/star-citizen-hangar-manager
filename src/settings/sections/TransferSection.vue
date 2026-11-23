@@ -38,6 +38,8 @@ import {
 import { entriesOf } from '@/transfer/settings-import';
 import { SETTINGS_PARTS, storagesOfPart, type SettingsPart } from '@/transfer/settings-export';
 import { storagesToTransfer } from '@/storage/registry';
+import { useDemoContext } from '@/demo/use-demo';
+import { currentDemoValues, notImportedInDemo, writeDemoImport } from '@/transfer/demo-transfer';
 import { computed, ref, shallowRef } from 'vue';
 import type { Settings } from '../settings';
 import SettingCheck from '../SettingCheck.vue';
@@ -57,9 +59,13 @@ const name = (id: StorageId) => i18n.t(`storage.${id}.name`);
 const names = (ids: readonly StorageId[]) =>
   new Intl.ListFormat(locale.value, { type: 'conjunction' }).format(ids.map(name));
 
-/** The demo mode never exports or imports the account's data (#233). */
+/*
+ * The demo mode (#233) never exports or imports the account's data: its exports hold the demo's
+ * data only, its imports go into the demo's own data, and the hangar can't be restored.
+ */
+const demoContext = useDemoContext();
 const demo = computed(() => props.settings.demoMode);
-const demoHint = computed(() => (demo.value ? i18n.t('transfer.demoDisabled') : undefined));
+const restoreHint = computed(() => (demo.value ? i18n.t('transfer.demoRestore') : undefined));
 
 // ---- The hangar ----
 
@@ -73,11 +79,12 @@ const format = ref<HangarFormat>('json');
 const hangarMessage = ref<string>();
 
 async function saveHangar() {
-  if (demo.value) return;
-  const { unmatched } = await exportHangar(format.value, {
-    hideIds: hideIds.value,
-    hideAmounts: hideAmounts.value,
-  });
+  if (demo.value && !demoContext.value) return;
+  const { unmatched } = await exportHangar(
+    format.value,
+    { hideIds: hideIds.value, hideAmounts: hideAmounts.value },
+    demo.value ? demoContext.value : null,
+  );
   hangarMessage.value = unmatched.length
     ? i18n.t('transfer.unmatched', [unmatched.join(', ')])
     : i18n.t('transfer.exported');
@@ -110,8 +117,8 @@ const partIds = (part: SettingsPart) => storagesOfPart(part).map((storage) => st
 const settingsMessage = ref<string>();
 
 async function saveSettings() {
-  if (demo.value || !parts.value.length) return;
-  await exportSettings(parts.value);
+  if (!parts.value.length) return;
+  await exportSettings(parts.value, demo.value);
   settingsMessage.value = i18n.t('transfer.exported');
 }
 
@@ -121,6 +128,8 @@ interface Pending {
   here: Values;
   invalid: StorageId[];
   ignored: string[];
+  /** In the demo: what it has no copy of, left out. */
+  notInDemo: StorageId[];
 }
 const pending = shallowRef<Pending>();
 const modes = ref<Partial<Record<Mergeable, ImportMode>>>({});
@@ -130,13 +139,17 @@ const settingsInput = ref<HTMLInputElement>();
 async function readSettings(event: Event) {
   const chosen = (event.target as HTMLInputElement).files?.[0];
   (event.target as HTMLInputElement).value = '';
-  if (!chosen || demo.value) return;
+  if (!chosen) return;
   const read = readExportFile(await readChosenFile(chosen), 'settings');
   if (!read.ok) {
     settingsMessage.value = i18n.t(`transfer.errors.${read.error}`);
     return;
   }
-  const { values, invalid } = settingsImportOf(read.file);
+  const { values: all, invalid } = settingsImportOf(read.file);
+  const notInDemo = demo.value ? notImportedInDemo(Object.keys(all) as StorageId[]) : [];
+  const values = Object.fromEntries(
+    Object.entries(all).filter(([id]) => !notInDemo.includes(id as StorageId)),
+  ) as Values;
   const ids = Object.keys(values) as StorageId[];
   if (!ids.length) {
     settingsMessage.value = i18n.t('transfer.refusals.empty');
@@ -147,9 +160,10 @@ async function readSettings(event: Event) {
   settingsMessage.value = undefined;
   pending.value = {
     fileValues: values,
-    here: await currentValues(ids),
+    here: demo.value ? await currentDemoValues(ids) : await currentValues(ids),
     invalid,
     ignored: read.ignored,
+    notInDemo,
   };
 }
 
@@ -190,7 +204,7 @@ const countsText = (counts: MergeCounts) =>
     .map((key) => i18n.n(`transfer.counts.${key}`, counts[key]))
     .join(' · ') || i18n.t('transfer.counts.nothing');
 
-const usage = useSyncedUsage(computed(() => false));
+const usage = useSyncedUsage(demo);
 const kb = (bytes: number) =>
   new Intl.NumberFormat(locale.value, {
     style: 'unit',
@@ -210,11 +224,14 @@ function quotaText(where: ImportLimit) {
 
 async function confirmImport() {
   const value = pending.value;
-  if (!value || demo.value) return;
+  if (!value) return;
   try {
-    await writeSettingsImport(
-      valuesToWrite(value.fileValues, value.here, modes.value, keepPlan.value),
-    );
+    const values = valuesToWrite(value.fileValues, value.here, modes.value, keepPlan.value);
+    if (demo.value) {
+      await writeDemoImport(values, demoContext.value?.storage.syncedNearLimit ?? false);
+    } else {
+      await writeSettingsImport(values);
+    }
   } catch (error) {
     settingsMessage.value =
       error instanceof ImportQuotaError ? quotaText(error.where) : i18n.t('transfer.failed');
@@ -222,7 +239,7 @@ async function confirmImport() {
   }
   pending.value = undefined;
   imported.value = true;
-  settingsMessage.value = i18n.t('transfer.imported');
+  settingsMessage.value = i18n.t(demo.value ? 'transfer.importedDemo' : 'transfer.imported');
 }
 
 const notExported = computed(() =>
@@ -243,13 +260,7 @@ const notExported = computed(() =>
     >
       <span class="shm-transfer-actions">
         <SelectMenu v-model="format" :options="formatOptions" :label="i18n.t('transfer.format')" />
-        <button
-          v-tooltip="demoHint"
-          type="button"
-          class="shm-button"
-          :disabled="demo"
-          @click="saveHangar"
-        >
+        <button type="button" class="shm-button" @click="saveHangar">
           <SvgIcon name="file-export" />
           {{ i18n.t('transfer.export') }}
         </button>
@@ -276,7 +287,7 @@ const notExported = computed(() =>
       :hint="i18n.t('transfer.restoreHangarHint')"
     >
       <button
-        v-tooltip="demoHint"
+        v-tooltip="restoreHint"
         type="button"
         class="shm-button"
         :disabled="demo"
@@ -297,13 +308,7 @@ const notExported = computed(() =>
 
   <SettingsGroup :title="i18n.t('transfer.settings')" :footer="settingsMessage">
     <SettingRow :label="i18n.t('transfer.exportSettings')" :hint="i18n.t('transfer.syncedHint')">
-      <button
-        v-tooltip="demoHint"
-        type="button"
-        class="shm-button"
-        :disabled="demo || !parts.length"
-        @click="saveSettings"
-      >
+      <button type="button" class="shm-button" :disabled="!parts.length" @click="saveSettings">
         <SvgIcon name="file-export" />
         {{ i18n.t('transfer.export') }}
       </button>
@@ -322,13 +327,7 @@ const notExported = computed(() =>
       :label="i18n.t('transfer.importSettings')"
       :hint="i18n.t('transfer.importSettingsHint')"
     >
-      <button
-        v-tooltip="demoHint"
-        type="button"
-        class="shm-button"
-        :disabled="demo"
-        @click="settingsInput?.click()"
-      >
+      <button type="button" class="shm-button" @click="settingsInput?.click()">
         <SvgIcon name="file-import" />
         {{ i18n.t('transfer.chooseFile') }}
       </button>
@@ -341,7 +340,9 @@ const notExported = computed(() =>
       />
       <template v-if="pending" #below>
         <div class="shm-transfer-preview" role="region" :aria-label="i18n.t('transfer.preview')">
-          <p class="shm-hint">{{ i18n.t('transfer.syncedNote') }}</p>
+          <p class="shm-hint">
+            {{ i18n.t(demo ? 'transfer.syncedNoteDemo' : 'transfer.syncedNote') }}
+          </p>
           <ul class="shm-transfer-rows">
             <li v-for="row in preview" :key="row.id" class="shm-transfer-row">
               <span class="shm-transfer-name">{{ name(row.id) }}</span>
@@ -369,6 +370,9 @@ const notExported = computed(() =>
           </SettingRow>
           <p v-if="pending.invalid.length" class="shm-hint">
             {{ i18n.t('transfer.invalid', [names(pending.invalid)]) }}
+          </p>
+          <p v-if="pending.notInDemo.length" class="shm-hint">
+            {{ i18n.t('transfer.notInDemo', [names(pending.notInDemo)]) }}
           </p>
           <p v-if="pending.ignored.length" class="shm-hint">
             {{ i18n.t('transfer.ignored', [pending.ignored.join(', ')]) }}

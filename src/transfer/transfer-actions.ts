@@ -1,4 +1,6 @@
+import type { DemoContext } from '@/demo/use-demo';
 import { shipsItem } from '@/ships/ships-storage';
+import { demoHangarData, loadDemoSettingsData } from './demo-transfer';
 import { exportFileName, saveFile, saveJson, type ExportFile } from './export-file';
 import { buybackCsv, hangarCsv } from './hangar-csv';
 import { buildHangarExport, loadHangarData, type HangarExportOptions } from './hangar-export';
@@ -51,15 +53,39 @@ export async function saveHangarFile(
   }
 }
 
-/** Exports the stored hangar (or the pledges given) in a format. */
-export async function exportHangar(format: HangarFormat, options: HangarExportOptions = {}) {
+/**
+ * Exports the stored hangar (or the pledges given) in a format; in the demo mode the demo's
+ * (#233), whose ids are made up, so the pledges given are its lists' own ids.
+ */
+export async function exportHangar(
+  format: HangarFormat,
+  options: HangarExportOptions = {},
+  demo?: DemoContext | null,
+) {
+  if (demo) {
+    const { pledgeIds, ...rest } = options;
+    const hangar = demo.lists.hangar.filter((pledge) => !pledgeIds || pledgeIds.has(pledge.id));
+    const data = demoHangarData(
+      { hangar, buyback: pledgeIds ? [] : demo.lists.buyback },
+      demo.storeCredit,
+    );
+    const file = buildHangarExport(
+      pledgeIds ? { ...data, buyback: null, storeCredit: null } : data,
+      rest,
+    );
+    return saveHangarFile({ ...file, demo: true, ...(pledgeIds && { partial: true }) }, format);
+  }
   const file = buildHangarExport(await loadHangarData(), options);
   return saveHangarFile(file, format);
 }
 
-/** Exports the settings and your data. */
-export async function exportSettings(parts: readonly SettingsPart[] = SETTINGS_PARTS) {
-  const file = buildSettingsExport(await loadSettingsData(parts), parts);
+/** Exports the settings and your data; in the demo mode the demo's own (#233). */
+export async function exportSettings(
+  parts: readonly SettingsPart[] = SETTINGS_PARTS,
+  demo = false,
+) {
+  const values = demo ? await loadDemoSettingsData(parts) : await loadSettingsData(parts);
+  const file = { ...buildSettingsExport(values, parts), ...(demo && { demo: true }) };
   saveJson(exportFileName(parts.length === 1 ? parts[0]! : 'settings', 'json'), file);
 }
 

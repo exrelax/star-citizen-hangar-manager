@@ -326,7 +326,9 @@ It must always be able to show, in both themes:
 - Export & Import (#1, demo cases in #233): every export of demo data only; the import into the
   demo's own data; the merge (#634) with its preview of added, changed and kept entries of the
   watchlists, marks to melt, paint plan, completed paint plans and warbond history, merge and
-  replace, the paint plan to keep, and the synced storage's limit reached.
+  replace, the paint plan to keep, and the synced storage's limit reached (demo setting "Synced
+  storage almost full"); what the demo has no copy of named and left out; "Restore the hangar"
+  disabled with its tooltip; My Hangar's export of the demo's pledges shown.
 - Settings without real account data (#132); the error log (#340, #341, #342) with made-up entries
   of several codes: a narrowed page as main entry (►) with its sub-errors (↳), a repeated error
   (×3), URLs, a stack trace, an outline and pledge names from the Pledge Store; clearing off.
