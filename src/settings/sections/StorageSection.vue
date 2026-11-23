@@ -171,8 +171,8 @@ async function reset(definition: StorageDefinition) {
             <th scope="col">{{ i18n.t('storage.colData') }}</th>
             <th scope="col" class="is-number">{{ i18n.t('storage.colEntries') }}</th>
             <th scope="col" class="is-number">{{ i18n.t('storage.colSize') }}</th>
-            <th scope="col">{{ i18n.t('storage.colSynced') }}</th>
-            <th scope="col">{{ i18n.t('storage.colChecked') }}</th>
+            <th scope="col" class="is-time">{{ i18n.t('storage.colSynced') }}</th>
+            <th scope="col" class="is-time">{{ i18n.t('storage.colChecked') }}</th>
             <th scope="col">
               <span class="shm-visually-hidden">{{ i18n.t('storage.colReset') }}</span>
             </th>
@@ -185,13 +185,24 @@ async function reset(definition: StorageDefinition) {
               <span class="shm-storage-content">{{
                 i18n.t(`storage.${row.definition.id}.content`)
               }}</span>
+              <!-- The two times below the name when the panel is too narrow for their columns. -->
+              <span class="shm-storage-times">
+                <span
+                  >{{ i18n.t('storage.colSynced') }}:
+                  <span class="shm-storage-time">{{ when(row.syncedAt) }}</span></span
+                >
+                <span :class="{ 'is-failed': row.failed }"
+                  >{{ i18n.t('storage.colChecked') }}:
+                  <span class="shm-storage-time">{{ when(row.checkedAt) }}</span></span
+                >
+              </span>
             </th>
             <td class="is-number">{{ row.count }}</td>
             <td class="is-number">{{ row.size }}</td>
-            <td>
+            <td class="is-time">
               <span v-tooltip="exactly(row.syncedAt)">{{ when(row.syncedAt) }}</span>
             </td>
-            <td :class="{ 'is-failed': row.failed }">
+            <td class="is-time" :class="{ 'is-failed': row.failed }">
               <span
                 v-tooltip="row.failed ? i18n.t('storage.checkFailed') : exactly(row.checkedAt)"
                 >{{ when(row.checkedAt) }}</span
@@ -252,8 +263,14 @@ async function reset(definition: StorageDefinition) {
 </template>
 
 <style scoped>
+/*
+ * The table follows its texts (#371): column heads wrap, numbers, sizes and times stay on one line.
+ * In a narrow panel (a small window, long German or French heads) the two times move below the
+ * name, so the table fits without scrolling sideways; it only scrolls if even that doesn't fit.
+ */
 .shm-storage-scroll {
   overflow-x: auto;
+  container-type: inline-size;
 }
 
 .shm-storage-table {
@@ -274,6 +291,8 @@ async function reset(definition: StorageDefinition) {
 .shm-storage-table thead th {
   color: var(--shm-text-muted);
   font-weight: 400;
+  vertical-align: bottom;
+  white-space: normal;
   border-bottom: 1px solid rgb(var(--shm-accent-rgb) / 0.2);
 }
 
@@ -318,6 +337,32 @@ async function reset(definition: StorageDefinition) {
   display: block;
   color: var(--shm-text-muted);
   font-size: calc(11px * var(--shm-font-scale));
+}
+
+.shm-storage-times {
+  display: none;
+  margin-top: 4px;
+  color: var(--shm-text-muted);
+  font-size: calc(11px * var(--shm-font-scale));
+}
+
+.shm-storage-times > span {
+  display: block;
+}
+
+/* "il y a 4 jours", "cette minute-ci": a time stays on one line, like in its column. */
+.shm-storage-time {
+  white-space: nowrap;
+}
+
+@container (width < 540px) {
+  .shm-storage-table .is-time {
+    display: none;
+  }
+
+  .shm-storage-times {
+    display: block;
+  }
 }
 
 .shm-button.is-icon {
