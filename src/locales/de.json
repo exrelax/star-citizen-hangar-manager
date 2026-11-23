@@ -472,7 +472,9 @@
         "unreadable": "RSI ist nicht lesbar"
       },
       "browserNotifications": "Browser-Benachrichtigungen erlaubt",
-      "browserNotificationsHint": "Was der Dialog einer Watchlist über ihre Erinnerung im Browser sagt. Die Demo zeigt nie eine echte Browser-Benachrichtigung."
+      "browserNotificationsHint": "Was der Dialog einer Watchlist über ihre Erinnerung im Browser sagt. Die Demo zeigt nie eine echte Browser-Benachrichtigung.",
+      "syncedNearLimit": "Synchronisierter Speicher fast voll",
+      "syncedNearLimitHint": "Die gespeicherten Daten zeigen die Watchlists und Markierungen der Demo mit fast vollem synchronisiertem Speicher und seiner Warnung."
     },
     "on": "An",
     "errorLog": "Fehlerprotokoll",
@@ -605,12 +607,31 @@
       "content": "Deine Watchlists mit ihren Einträgen, auf allen Geräten synchronisiert",
       "missing": "Deine Watchlists sind dann auf allen Geräten weg."
     },
+    "meltMarks": {
+      "name": "Markierungen zum Einschmelzen",
+      "content": "Pledges, die du zum Einschmelzen markiert hast, auf allen Geräten synchronisiert",
+      "missing": "Deine Markierungen zum Einschmelzen sind dann auf allen Geräten weg."
+    },
     "settings": {
       "name": "Einstellungen",
       "content": "Sprache, Theme, Anzeige- und Datenschutzoptionen, Filter, Sortierung",
       "missing": "Alle Einstellungen gehen auf ihre Standardwerte zurück."
     },
-    "demoDisabled": "Nicht im Demo-Modus: Diese Zahlen sind die des Demos, deine Daten bleiben unverändert."
+    "demoDisabled": "Nicht im Demo-Modus: Diese Zahlen sind die des Demos, deine Daten bleiben unverändert.",
+    "synced": {
+      "title": "Mit deinem Browserprofil synchronisiert",
+      "footer": "Folgt deinem Browserprofil auf deine anderen Geräte. Nichts davon lässt sich wieder von RSI lesen, und das Zurücksetzen der Daten in diesem Browser behält es.",
+      "deleteOne": "„$1“ auf allen Geräten löschen",
+      "deleteConfirm": "„$1“ auf allen Geräten mit diesem Browserprofil löschen?\n\n$2\n\nDas lässt sich nicht rückgängig machen.",
+      "deleted": "„$1“ auf allen Geräten gelöscht.",
+      "usage": "$1 von $2 belegt",
+      "items": "$1 von $2 Elementen",
+      "meterLabel": "Belegter synchronisierter Speicher",
+      "nearTotal": "Dein synchronisierter Speicher ist fast voll. Lösche Watchlists oder Markierungen, die du nicht mehr brauchst, sonst passen neue nicht mehr hinein.",
+      "nearItems": "Dein synchronisierter Speicher hat fast so viele Elemente, wie er fassen kann. Lösche Watchlists, die du nicht mehr brauchst.",
+      "nearKeyWatchlists": "Eine Watchlist ist nah an ihrer Grenze von $1 pro Liste.",
+      "nearKeyMeltMarks": "Die Markierungen zum Einschmelzen sind nah an ihrer Grenze von $1."
+    }
   },
   "status": {
     "refreshing": "Wird aktualisiert …",

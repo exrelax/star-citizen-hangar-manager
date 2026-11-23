@@ -64,7 +64,9 @@ sees or stores your RSI login.
   leaves your browser.
 - **Pledges marked to melt**: their pledge IDs and when they were marked, kept in the browser's
   sync storage until the pledge is gone from your hangar, so they follow your browser profile to
-  your other devices – by your browser's own sync, like the settings.
+  your other devices – by your browser's own sync, like the settings. Settings → Stored data lists
+  them and your watchlists under "Synced with your browser profile", with their size and how much
+  of the sync storage they use.
 - **Notifications** of the sidebar: their text, the pledge they are about and when they
   happened – also the changes in the Pledge Store (public offers and prices) – kept in the local
   storage, with which ones were shown as browser notifications; removed ones go after 30 days.
@@ -152,10 +154,11 @@ visiting it doesn't contact GitHub's API.
 ## Deleting your data
 
 - **Settings → Stored data**: the delete icon of a row removes that data set only, e.g. only the
-  buy back or only the order history.
+  buy back or only the order history. In "Synced with your browser profile" it removes your
+  watchlists or your marks to melt on every device with your browser profile, after a question.
 - **Settings → Stored data → Reset → "Delete all local data"** removes everything the extension
   stored in this browser: hangar, buy back, orders, ship data, Pledge Store items and the state of
-  the smart updates.
+  the smart updates. Your watchlists and marks to melt stay.
 - **Settings → Stored data → Reset → "Reset settings"** removes your stored settings (on all
   synced devices).
 - **Removing the extension** removes all of its data from the browser.

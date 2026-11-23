@@ -10,7 +10,11 @@ import { clearStorage } from '@/shared/local-cache';
 import { formatRelativeTime } from '@/shared/lib/relative-time';
 import { vTooltip } from '@/shared/tooltip/tooltip';
 import { EMPTY_META } from '@/storage/meta';
-import { LOCAL_COPY, type StorageDefinition, type StorageId } from '@/storage/registry';
+import { LOCAL_COPY, SYNCED, type StorageDefinition, type StorageId } from '@/storage/registry';
+import { nearLimits, type SyncedId, type SyncedUsage } from '@/storage/synced-usage';
+import { useSyncedUsage } from '@/storage/use-synced-usage';
+import { clearWatchlists, SYNC_QUOTA } from '@/watchlists/watchlists-storage';
+import { demoMeltMarksItem, meltMarksItem } from '@/hangar/melt-marks';
 import { useStored } from '@/storage/use-stored';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useDemoContext } from '@/demo/use-demo';
@@ -18,6 +22,7 @@ import { useDemoContext } from '@/demo/use-demo';
 /*
  * What the extension keeps in this browser, one row per storage (see `storage/registry.ts`):
  * entries, size, last full sync and last check – and, for each on its own, a refresh and a reset.
+ * Below it, what the user keeps in the synced storage (#560), with its use against the limits.
  */
 
 const rows = LOCAL_COPY.map((definition) => ({
@@ -159,6 +164,88 @@ async function reset(definition: StorageDefinition) {
   await clearStorage(definition);
   resetDone.value = definition.id;
 }
+
+/*
+ * The synced storage (#560): the watchlists and the marks to melt follow the browser profile, so
+ * they are neither read again nor reset with the local copy. In the demo mode the demo's own
+ * (never the account's), with a made-up use near the limit by the demo settings.
+ */
+const syncedUsage = useSyncedUsage(computed(() => !!demo.value));
+const syncedShown = computed<SyncedUsage | undefined>(() => {
+  const usage = syncedUsage.value;
+  if (!usage || !demo.value?.storage.syncedNearLimit) return usage;
+  return { ...usage, bytes: Math.max(usage.bytes, Math.round(SYNC_QUOTA.total * 0.92)) };
+});
+
+/** The browsers count the synced storage in KiB ("100 KB", "8 KB"), so it is shown that way. */
+function formatSyncedSize(size: number) {
+  const value = size / 1024;
+  return new Intl.NumberFormat(locale.value, {
+    style: 'unit',
+    unit: 'kilobyte',
+    maximumFractionDigits: value < 10 ? 1 : 0,
+  }).format(value);
+}
+
+const syncedView = computed(() =>
+  SYNCED.map(({ id }) => {
+    const row = syncedShown.value?.rows[id as SyncedId];
+    return {
+      id,
+      empty: !row?.entries,
+      count: row ? numbers.value.format(row.entries) : '–',
+      size: row?.bytes ? formatSyncedSize(row.bytes) : '–',
+    };
+  }),
+);
+
+const syncedQuota = computed(() => {
+  const usage = syncedShown.value;
+  if (!usage) return undefined;
+  const near = nearLimits(usage);
+  const warnings = [
+    ...(near.total ? [i18n.t('storage.synced.nearTotal')] : []),
+    ...(near.keys ? [i18n.t('storage.synced.nearItems')] : []),
+    ...near.perKey.map((id) =>
+      i18n.t(
+        id === 'watchlists'
+          ? 'storage.synced.nearKeyWatchlists'
+          : 'storage.synced.nearKeyMeltMarks',
+        [formatSyncedSize(SYNC_QUOTA.perItem)],
+      ),
+    ),
+  ];
+  return {
+    bytes: usage.bytes,
+    fraction: Math.min(1, usage.bytes / SYNC_QUOTA.total),
+    near: near.total,
+    used: i18n.t('storage.synced.usage', [
+      formatSyncedSize(usage.bytes),
+      formatSyncedSize(SYNC_QUOTA.total),
+    ]),
+    items: i18n.t('storage.synced.items', [
+      numbers.value.format(usage.keys),
+      numbers.value.format(SYNC_QUOTA.maxItems),
+    ]),
+    warnings,
+  };
+});
+
+/** The synced storage deleted last, shown below its table. */
+const syncedDone = ref<StorageId>();
+
+/** Deletes it on every device of the profile, after a question; the demo's own in the demo. */
+async function deleteSynced(id: StorageId) {
+  const message = i18n.t('storage.synced.deleteConfirm', [
+    name(id),
+    i18n.t(`storage.${id}.missing`),
+  ]);
+  if (!confirm(message)) return;
+  const isDemo = !!demo.value;
+  if (id === 'watchlists') await clearWatchlists(isDemo);
+  else await (isDemo ? demoMeltMarksItem : meltMarksItem).removeValue();
+  syncedDone.value = id;
+}
 </script>
 
 <template>
@@ -256,6 +343,77 @@ async function reset(definition: StorageDefinition) {
     <template #after>
       <p v-if="resetDone" class="shm-settings-group-foot is-done" role="status">
         {{ i18n.t('storage.resetDone', [name(resetDone)]) }}
+      </p>
+    </template>
+  </SettingsGroup>
+  <!-- What follows the browser profile (#560): no refresh, never reset with the local copy. -->
+  <SettingsGroup :title="i18n.t('storage.synced.title')" :footer="i18n.t('storage.synced.footer')">
+    <div class="shm-storage-scroll">
+      <table class="shm-storage-table">
+        <thead>
+          <tr>
+            <th scope="col">{{ i18n.t('storage.colData') }}</th>
+            <th scope="col" class="is-number">{{ i18n.t('storage.colEntries') }}</th>
+            <th scope="col" class="is-number">{{ i18n.t('storage.colSize') }}</th>
+            <th scope="col">
+              <span class="shm-visually-hidden">{{ i18n.t('storage.colReset') }}</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="row in syncedView" :key="row.id">
+            <th scope="row">
+              <span class="shm-storage-name">{{ name(row.id) }}</span>
+              <span class="shm-storage-content">{{ i18n.t(`storage.${row.id}.content`) }}</span>
+            </th>
+            <td class="is-number">{{ row.count }}</td>
+            <td class="is-number">{{ row.size }}</td>
+            <td class="is-action">
+              <span class="shm-storage-actions">
+                <button
+                  v-tooltip="i18n.t('storage.synced.deleteOne', [name(row.id)])"
+                  type="button"
+                  class="shm-button is-danger is-icon"
+                  :disabled="row.empty"
+                  @click="deleteSynced(row.id)"
+                >
+                  <SvgIcon name="trash" />
+                </button>
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- Its use against the limits of the synced storage, like the storage of a device. -->
+    <div v-if="syncedQuota" class="shm-storage-quota">
+      <span
+        class="shm-storage-meter"
+        :class="{ 'is-near': syncedQuota.near }"
+        role="meter"
+        :aria-label="i18n.t('storage.synced.meterLabel')"
+        aria-valuemin="0"
+        :aria-valuemax="SYNC_QUOTA.total"
+        :aria-valuenow="syncedQuota.bytes"
+        :aria-valuetext="syncedQuota.used"
+      >
+        <span
+          class="shm-storage-meter-fill"
+          :style="{ transform: `scaleX(${syncedQuota.fraction})` }"
+        ></span>
+      </span>
+      <span class="shm-storage-quota-text">
+        <span>{{ syncedQuota.used }}</span>
+        <span>{{ syncedQuota.items }}</span>
+      </span>
+      <p v-for="warning in syncedQuota.warnings" :key="warning" class="shm-storage-warning">
+        <SvgIcon name="triangle-exclamation" />
+        <span>{{ warning }}</span>
+      </p>
+    </div>
+    <template #after>
+      <p v-if="syncedDone" class="shm-settings-group-foot is-done" role="status">
+        {{ i18n.t('storage.synced.deleted', [name(syncedDone)]) }}
       </p>
     </template>
   </SettingsGroup>
@@ -363,6 +521,69 @@ async function reset(definition: StorageDefinition) {
   .shm-storage-times {
     display: block;
   }
+}
+
+/* The use of the synced storage (#560): a bar like a device's storage, its numbers beside it. */
+.shm-storage-quota {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  padding: 10px 12px 12px 16px;
+  color: var(--shm-text-muted);
+  font-size: calc(12px * var(--shm-font-scale));
+  font-variant-numeric: tabular-nums;
+  border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.1);
+}
+
+.shm-storage-meter {
+  position: relative;
+  flex: 1 1 160px;
+  height: 6px;
+  overflow: hidden;
+  background: rgb(var(--shm-accent-rgb) / 0.15);
+}
+
+/* Square in "Classic RSI", rounded in "Modern Hangar" like the planner's countdown bar. */
+html .shm-theme-modern .shm-storage-meter {
+  border-radius: 3px;
+}
+
+.shm-storage-meter-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--shm-accent);
+  transform-origin: left;
+}
+
+.shm-storage-meter.is-near .shm-storage-meter-fill {
+  background: var(--shm-warning);
+}
+
+.shm-storage-quota-text {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0 12px;
+}
+
+.shm-storage-quota-text > span {
+  white-space: nowrap;
+}
+
+.shm-storage-warning {
+  display: flex;
+  flex-basis: 100%;
+  align-items: baseline;
+  gap: 6px;
+  margin: 0;
+  color: var(--shm-warning);
+}
+
+.shm-storage-warning .shm-icon {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  transform: translateY(1px);
 }
 
 .shm-button.is-icon {

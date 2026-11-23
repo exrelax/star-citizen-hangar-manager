@@ -472,7 +472,9 @@
         "unreadable": "No se puede leer RSI"
       },
       "browserNotifications": "Notificaciones del navegador permitidas",
-      "browserNotificationsHint": "Lo que el diálogo de una watchlist dice de su recordatorio en el navegador. La demo nunca muestra una notificación real del navegador."
+      "browserNotificationsHint": "Lo que el diálogo de una watchlist dice de su recordatorio en el navegador. La demo nunca muestra una notificación real del navegador.",
+      "syncedNearLimit": "Almacenamiento sincronizado casi lleno",
+      "syncedNearLimitHint": "Los datos guardados muestran las watchlists y marcas de la demo con el almacenamiento sincronizado casi lleno, y su aviso."
     },
     "on": "Activado",
     "errorLog": "Registro de errores",
@@ -605,12 +607,31 @@
       "content": "Tus watchlists con sus elementos, sincronizadas en tus dispositivos",
       "missing": "Tus watchlists desaparecen entonces en todos tus dispositivos."
     },
+    "meltMarks": {
+      "name": "Marcas para fundir",
+      "content": "Los pledges que marcaste para fundir, sincronizados en tus dispositivos",
+      "missing": "Tus marcas para fundir desaparecen entonces en todos tus dispositivos."
+    },
     "settings": {
       "name": "Ajustes",
       "content": "Idioma, tema, opciones de visualización y privacidad, filtros, orden",
       "missing": "Todos los ajustes vuelven a sus valores predeterminados."
     },
-    "demoDisabled": "No en el modo demo: estas cifras son las de la demo, tus datos no cambian."
+    "demoDisabled": "No en el modo demo: estas cifras son las de la demo, tus datos no cambian.",
+    "synced": {
+      "title": "Sincronizado con tu perfil del navegador",
+      "footer": "Sigue a tu perfil del navegador en tus otros dispositivos. Nada de ello se puede volver a leer de RSI, y restablecer los datos de este navegador lo conserva.",
+      "deleteOne": "Borrar «$1» en todos los dispositivos",
+      "deleteConfirm": "¿Borrar «$1» en todos los dispositivos con este perfil del navegador?\n\n$2\n\nNo se puede deshacer.",
+      "deleted": "«$1» borrado en todos los dispositivos.",
+      "usage": "$1 de $2 usados",
+      "items": "$1 de $2 elementos",
+      "meterLabel": "Almacenamiento sincronizado usado",
+      "nearTotal": "Tu almacenamiento sincronizado está casi lleno. Borra las watchlists o marcas que ya no necesites, o las nuevas no cabrán.",
+      "nearItems": "Tu almacenamiento sincronizado tiene casi tantos elementos como admite. Borra las watchlists que ya no necesites.",
+      "nearKeyWatchlists": "Una watchlist está cerca de su límite de $1 por lista.",
+      "nearKeyMeltMarks": "Las marcas para fundir están cerca de su límite de $1."
+    }
   },
   "status": {
     "refreshing": "Actualizando …",

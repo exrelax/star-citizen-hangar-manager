@@ -472,7 +472,9 @@
         "unreadable": "RSI illisible"
       },
       "browserNotifications": "Notifications du navigateur autorisées",
-      "browserNotificationsHint": "Ce que la fenêtre d’une watchlist dit de son rappel dans le navigateur. La démo n’affiche jamais de vraie notification du navigateur."
+      "browserNotificationsHint": "Ce que la fenêtre d’une watchlist dit de son rappel dans le navigateur. La démo n’affiche jamais de vraie notification du navigateur.",
+      "syncedNearLimit": "Stockage synchronisé presque plein",
+      "syncedNearLimitHint": "Les données enregistrées montrent les watchlists et les marques de la démo avec le stockage synchronisé presque plein, et son avertissement."
     },
     "on": "Activé",
     "errorLog": "Journal des erreurs",
@@ -605,12 +607,31 @@
       "content": "Tes watchlists avec leurs éléments, synchronisées sur tes appareils",
       "missing": "Tes watchlists disparaissent alors sur tous tes appareils."
     },
+    "meltMarks": {
+      "name": "Marques à fondre",
+      "content": "Les pledges que tu as marqués à fondre, synchronisés sur tes appareils",
+      "missing": "Tes marques à fondre disparaissent alors sur tous tes appareils."
+    },
     "settings": {
       "name": "Paramètres",
       "content": "Langue, thème, options d’affichage et de confidentialité, filtres, tri",
       "missing": "Tous les paramètres reviennent à leurs valeurs par défaut."
     },
-    "demoDisabled": "Pas en mode démo : ces chiffres sont ceux de la démo, vos données restent inchangées."
+    "demoDisabled": "Pas en mode démo : ces chiffres sont ceux de la démo, vos données restent inchangées.",
+    "synced": {
+      "title": "Synchronisé avec ton profil de navigateur",
+      "footer": "Suit ton profil de navigateur sur tes autres appareils. Rien ne peut en être relu depuis RSI, et la réinitialisation des données de ce navigateur le conserve.",
+      "deleteOne": "Supprimer « $1 » sur tous les appareils",
+      "deleteConfirm": "Supprimer « $1 » sur tous les appareils avec ce profil de navigateur ?\n\n$2\n\nC’est irréversible.",
+      "deleted": "« $1 » supprimé sur tous les appareils.",
+      "usage": "$1 sur $2 utilisés",
+      "items": "$1 éléments sur $2",
+      "meterLabel": "Stockage synchronisé utilisé",
+      "nearTotal": "Ton stockage synchronisé est presque plein. Supprime les watchlists ou les marques dont tu n’as plus besoin, sinon les nouvelles n’y entreront plus.",
+      "nearItems": "Ton stockage synchronisé contient presque autant d’éléments qu’il le peut. Supprime les watchlists dont tu n’as plus besoin.",
+      "nearKeyWatchlists": "Une watchlist approche sa limite de $1 par liste.",
+      "nearKeyMeltMarks": "Les marques à fondre approchent leur limite de $1."
+    }
   },
   "status": {
     "refreshing": "Actualisation …",

@@ -472,7 +472,9 @@
         "unreadable": "RSI can't be read"
       },
       "browserNotifications": "Browser notifications allowed",
-      "browserNotificationsHint": "What a watchlist’s dialog says of its reminder in the browser. The demo never shows a real browser notification."
+      "browserNotificationsHint": "What a watchlist’s dialog says of its reminder in the browser. The demo never shows a real browser notification.",
+      "syncedNearLimit": "Synced storage almost full",
+      "syncedNearLimitHint": "The stored data shows the demo’s watchlists and marks with the synced storage almost full, and its warning."
     },
     "on": "On",
     "errorLog": "Error log",
@@ -605,12 +607,31 @@
       "content": "Your watchlists with their items, synced across your devices",
       "missing": "Your watchlists are gone on every device."
     },
+    "meltMarks": {
+      "name": "Marks to melt",
+      "content": "Pledges you marked to melt, synced across your devices",
+      "missing": "Your marks to melt are gone on every device."
+    },
     "settings": {
       "name": "Settings",
       "content": "Language, theme, display and privacy options, filters, sorting",
       "missing": "All settings go back to their defaults."
     },
-    "demoDisabled": "Not in the demo mode: these numbers are the demo’s, your data stays as it is."
+    "demoDisabled": "Not in the demo mode: these numbers are the demo’s, your data stays as it is.",
+    "synced": {
+      "title": "Synced with your browser profile",
+      "footer": "Follows your browser profile to your other devices. Nothing of it can be read again from RSI, and resetting the data in this browser keeps it.",
+      "deleteOne": "Delete “$1” on every device",
+      "deleteConfirm": "Delete “$1” on every device with this browser profile?\n\n$2\n\nThis can't be undone.",
+      "deleted": "“$1” deleted on every device.",
+      "usage": "$1 of $2 used",
+      "items": "$1 of $2 items",
+      "meterLabel": "Synced storage used",
+      "nearTotal": "Your synced storage is almost full. Delete watchlists or marks you no longer need, or new ones won't fit.",
+      "nearItems": "Your synced storage holds almost as many items as it can. Delete watchlists you no longer need.",
+      "nearKeyWatchlists": "A watchlist is close to the limit of $1 per list.",
+      "nearKeyMeltMarks": "The marks to melt are close to their limit of $1."
+    }
   },
   "status": {
     "refreshing": "Refreshing …",
