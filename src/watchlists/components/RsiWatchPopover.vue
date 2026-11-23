@@ -28,6 +28,8 @@ const props = defineProps<{
   anchor: HTMLElement;
   /** Where it prefers to open; it flips when there is no room. */
   side: PopoverSide;
+  /** In the slate of RSI's ship upgrade dialog, the color of its button there. */
+  slate?: boolean;
 }>();
 const emit = defineEmits<{ close: [] }>();
 
@@ -167,7 +169,7 @@ onUnmounted(() => {
       <section
         ref="box"
         class="shm-overlay-dialog shm-rsi-popover"
-        :class="`is-${placed}`"
+        :class="[`is-${placed}`, { 'is-slate': slate }]"
         :style="{ left: `${position.left}px`, top: `${position.top}px` }"
         role="dialog"
         :aria-labelledby="`${id}-title`"
@@ -214,6 +216,40 @@ onUnmounted(() => {
 /* RSI's small corners (#632), as the buttons on its pages; over the theme's larger ones. */
 html .shm-rsi-popover-theme .shm-overlay-dialog.shm-rsi-popover {
   border-radius: 4px;
+}
+
+/*
+ * In RSI's ship upgrade dialog: the slate of its button there, so the window reads as part of the
+ * dialog's bar. The theme's colors are set anew for it, in both themes and appearances: white text,
+ * white fills and lines, and a lighter blue that keeps its contrast on the slate.
+ */
+.shm-overlay-dialog.shm-rsi-popover.is-slate {
+  --shm-surface-elevated: #3d454c;
+  --shm-surface-rgb: 47 54 60;
+  --shm-text: #fff;
+  --shm-text-strong: #fff;
+  --shm-text-on-accent: #0b1a26;
+  --shm-text-secondary: rgb(255 255 255 / 0.74);
+  --shm-text-muted: rgb(255 255 255 / 0.7);
+  --shm-text-faint: rgb(255 255 255 / 0.42);
+  --shm-accent: #7cc4fa;
+  --shm-accent-rgb: 124 196 250;
+  --shm-fill: rgb(255 255 255 / 0.1);
+  --shm-fill-strong: rgb(255 255 255 / 0.18);
+  --shm-separator: rgb(255 255 255 / 0.14);
+  --shm-outline: rgb(255 255 255 / 0.2);
+  --shm-hover: rgb(255 255 255 / 0.06);
+  --shm-tag: rgb(255 255 255 / 0.1);
+  --shm-tag-text: rgb(255 255 255 / 0.85);
+
+  color: var(--shm-text-secondary);
+  background: var(--shm-surface-elevated);
+}
+
+/* Opened upwards from the bottom of the window, its menu opens upwards too, inside the window. */
+.shm-rsi-popover.is-above .shm-select-menu-list {
+  top: auto;
+  bottom: calc(100% + 6px);
 }
 
 .shm-rsi-popover .shm-overlay-header {

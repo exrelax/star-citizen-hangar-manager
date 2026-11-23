@@ -59,6 +59,7 @@ const toggle = () => (open.value ? popover.value?.close() : (open.value = true))
       :item="item"
       :anchor="button"
       :side="side"
+      :slate="place === 'dialog'"
       @close="open = false"
     />
   </span>
