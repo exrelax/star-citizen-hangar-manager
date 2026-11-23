@@ -108,6 +108,19 @@ a list, the completed paint plans of the synced storage and of this browser toge
 compact per-key format of the synced storage, so a file doesn't depend on how the synced storage
 splits the data. Nothing of the account is in this file.
 
+## Import of settings and your data (#230)
+
+- A file is read only if `format` is ours, `schemaVersion` isn't newer and `kind` fits; storages
+  this version doesn't know are ignored and named.
+- Each storage goes through the same checks as a stored value of an earlier version (the
+  settings' defaults, the plan's versions, the codecs of the synced storage); one that can't be
+  read is named and left out.
+- The settings and their decisions are replaced; your data is replaced or merged (#634).
+- Everything for the synced storage is measured together against its limits (100 KB in all,
+  8 KB per key, 512 keys) before anything is written; completed paint plans give way and stay in
+  this browser. A write that fails puts everything back.
+- The permission for browser notifications belongs to the browser and isn't in the file.
+
 ## Versions
 
 A storage's `version` is the format of its value (`HANGAR_SNAPSHOT_VERSION` and the like; `1` for

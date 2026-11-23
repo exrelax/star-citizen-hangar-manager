@@ -314,6 +314,21 @@ export async function clearWatchlists(demo = false): Promise<void> {
   await storage.removeItems([indexKey(demo), ...ids.map((id) => listKey(id, demo))]);
 }
 
+/**
+ * The keys of the synced storage (without the area) that hold these lists in this order: the
+ * index and a key per list, for an import that writes them at once (#230).
+ */
+export function watchlistEntries(lists: readonly Watchlist[]): Record<string, unknown> {
+  if (!lists.length) return {};
+  return {
+    [INDEX]: { v: VERSION, ids: lists.map((list) => list.id) },
+    ...Object.fromEntries(lists.map((list) => [`${LIST}${list.id}`, encodeWatchlist(list)])),
+  };
+}
+
+/** Whether a key of the synced storage (without the area) holds the watchlists. */
+export const isWatchlistKey = (key: string) => key === INDEX || key.startsWith(LIST);
+
 /** Calls `callback` with every watchlist whenever one changes, also on another device. */
 export function watchWatchlists(callback: (lists: Watchlist[]) => void, demo = false): () => void {
   const { area, prefix } = areaOf(demo);
