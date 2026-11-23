@@ -3,7 +3,7 @@
 // components breaks the build and the tests by the order they are compiled in.
 import '@/shared/overlay.css';
 import '@/hangar/components/row.css';
-import { RSI_CART_PATH } from '@/buyback/cart';
+import { openRsiCart } from '@/buyback/cart';
 import { useDemoContext } from '@/demo/use-demo';
 import { formatUsd } from '@/hangar/discount-format';
 import { i18n, locale } from '@/i18n';
@@ -66,7 +66,7 @@ async function add() {
   state.value = 'done';
 }
 function openCart() {
-  if (!window.open(RSI_CART_PATH, '_blank')) location.assign(RSI_CART_PATH);
+  openRsiCart();
 }
 
 const dialog = useTemplateRef<HTMLElement>('dialog');

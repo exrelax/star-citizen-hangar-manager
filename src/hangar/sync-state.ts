@@ -23,6 +23,11 @@ import { prepareHangarSync } from './sync';
 import { SyncProgressTracker, type SyncProgress } from './sync-progress';
 import { currentIntervalMinutes, recordCheckResult } from './smart-update/backoff';
 import { isCheckDue, withSmartUpdateLock } from './smart-update/schedule';
+import {
+  endPurchaseWindow,
+  isPurchaseCheckDue,
+  purchaseWindowStart,
+} from './smart-update/purchase';
 import { announceCheck } from './smart-update/broadcast';
 import { SMART_UPDATE } from '@/config';
 import { logError, reasonOf } from '@/errors/error-log';
@@ -298,21 +303,36 @@ async function runSmartUpdateIfDue(force: boolean): Promise<void> {
   const { checkedAt } = await hangarMeta.getValue();
   // The set interval, longer while checks find nothing and nobody uses the tabs (#125).
   const intervalMinutes = await currentIntervalMinutes(settings.smartUpdateMinutes);
-  if (!force && !isCheckDue({ checkedAt, intervalMinutes, now: Date.now() })) return;
+  const now = Date.now();
+  // Right after a purchase, at a short interval until RSI lists it (#328).
+  const purchaseAt = await purchaseWindowStart(now);
+  const due =
+    isCheckDue({ checkedAt, intervalMinutes, now }) ||
+    (purchaseAt !== undefined && isPurchaseCheckDue({ checkedAt, purchaseAt, now }));
+  if (!force && !due) return;
 
   // Shown as "Checking …", here and in the other tabs.
   state.checking = true;
   announceCheck(true);
   try {
-    await recordCheckResult(await runChecks(settings.spotCheckPages));
+    const { found, pledgesChanged } = await runChecks(settings.spotCheckPages);
+    await recordCheckResult(found);
+    // Only a changed hangar or buy back shows the purchase: the order history and the pledge log
+    // may have it before "My Gear" lists it.
+    if (pledgesChanged) await endPurchaseWindow();
   } finally {
     state.checking = false;
     announceCheck(false);
   }
 }
 
-/** Runs the checks; whether they found anything (a new log entry or a changed pledge). */
-async function runChecks(spotCheckPages: number): Promise<boolean> {
+/**
+ * Runs the checks; whether they found anything (a new log entry or a changed pledge) and whether
+ * the hangar or the buy back changed.
+ */
+async function runChecks(
+  spotCheckPages: number,
+): Promise<{ found: boolean; pledgesChanged: boolean }> {
   // The store credit: one small request, it changes with exchanges and store credit purchases.
   await refreshStoreCredit();
 
@@ -340,7 +360,8 @@ async function runChecks(spotCheckPages: number): Promise<boolean> {
   const hangar = await runLogged('Smart update', hangarMeta, () =>
     runSmartUpdate({ spotCheckPages, hintIds }),
   );
-  return logIds.length > 0 || hasChanges(buyback) || hasChanges(hangar);
+  const pledgesChanged = hasChanges(buyback) || hasChanges(hangar);
+  return { found: logIds.length > 0 || pledgesChanged, pledgesChanged };
 }
 
 const hasChanges = (outcome: CheckOutcome | null | undefined) =>

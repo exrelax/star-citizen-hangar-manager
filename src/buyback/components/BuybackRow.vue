@@ -16,7 +16,7 @@ import { i18n, locale } from '@/i18n';
 import type { BuybackLinkMode } from '@/settings/settings';
 import { computed, inject, ref, watch } from 'vue';
 import type { BuybackView } from '../buyback-view';
-import { addBuybackToCart, CartError, RSI_CART_PATH } from '../cart';
+import { addBuybackToCart, CartError, openRsiCart } from '../cart';
 import { loadBuybackDetails } from '../sync-buyback';
 import { giftableHint } from '../giftable-hint';
 import { GIFTING_FAQ_URL } from '@/config';
@@ -134,7 +134,7 @@ async function addToCart() {
   try {
     await addBuybackToCart(props.pledge);
     // Still within the click's user activation for the popup blocker; if blocked, open it here.
-    if (!window.open(RSI_CART_PATH, '_blank')) location.assign(RSI_CART_PATH);
+    openRsiCart();
   } catch (error) {
     console.error('[star-citizen-hangar-manager] Adding to cart failed', error);
     void logError(

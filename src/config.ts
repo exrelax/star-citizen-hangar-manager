@@ -220,6 +220,14 @@ export const SMART_UPDATE = {
    */
   ownAction: { checkAfterMs: 4 * 1000, maxAgeMs: 2 * 60 * 1000 },
   /**
+   * After a purchase (#328, see `smart-update/purchase.ts`): RSI lists the bought pledge a little
+   * later than it confirms the order. From the confirmation page on, a check runs at once and then
+   * every `intervalMs`, until one finds a change in the hangar or the buy back, for at most
+   * `windowMs`; then the set interval applies again. A cart the Hangar Manager opened is checked
+   * for once when its tab is shown again, if that's at most `cartMaxAgeMs` later.
+   */
+  afterPurchase: { intervalMs: 30 * 1000, windowMs: 5 * 60 * 1000, cartMaxAgeMs: 60 * 60 * 1000 },
+  /**
    * The adaptive interval (#125, see `smart-update/backoff.ts`): it doubles after each check that
    * found nothing, up to `maxFactor` times the set one, until a change or input in a tab. Input
    * is noted at most once per `inputThrottleMs`.

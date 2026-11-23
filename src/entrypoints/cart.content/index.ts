@@ -1,3 +1,4 @@
+import { orderOfConfirmationPath, rememberPurchase } from '@/hangar/smart-update/purchase';
 import { followLanguageSetting } from '@/settings/language';
 import { migrateStorage } from '@/storage/migrate';
 import CartPaintDiscount from '@/store/components/CartPaintDiscount.vue';
@@ -7,6 +8,9 @@ import { createApp, type App } from 'vue';
  * The paint discount note on RSI's cart page (#458), see `CartPaintDiscount.vue`. RSI's store is a
  * single-page app: the cart can open without a page load, and its content comes after the page,
  * so the note waits for the cart's steps and follows the address.
+ *
+ * Its order confirmation page tells the Hangar Manager of a purchase (#328, see
+ * `smart-update/purchase.ts`), also when the store reached it without a page load.
  */
 
 /** RSI's cart, optionally with a locale prefix: "/en/store/pledge/cart". */
@@ -47,8 +51,17 @@ export default defineContentScript({
     };
     const observer = new MutationObserver(place);
     observer.observe(document.body, { childList: true, subtree: true });
-    ctx.addEventListener(window, 'wxt:locationchange', place);
+    /** A purchase was confirmed: the Hangar Manager checks for it at a short interval. */
+    const notePurchase = () => {
+      const order = orderOfConfirmationPath(location.pathname);
+      if (order) void rememberPurchase(order);
+    };
+    ctx.addEventListener(window, 'wxt:locationchange', () => {
+      place();
+      notePurchase();
+    });
     place();
+    notePurchase();
     ctx.onInvalidated(() => {
       observer.disconnect();
       unmount();
