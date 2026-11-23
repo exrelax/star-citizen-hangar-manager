@@ -78,11 +78,14 @@ sees or stores your RSI login.
   time), kept in the local storage. Whether you removed the sidebar's hint about them is kept in
   the sync storage. The notifications themselves are made in the extension and
   shown by your browser and system; their content is not sent anywhere.
-- **The Paint Discount Planner's plan**, once its paints were put into the cart: when, the
-  discount tier, the own paints (pledge IDs, titles, melt values) and the filler paints, kept in
-  the local storage (Settings → Stored data → "Paint plan"). Once the order that bought them is
-  found, its ID and time and the pledge IDs of the filler paints are kept with it; the filler
-  paints are marked to melt like your own marks.
+- **The Paint Discount Planner's plan**, once it started: when, the discount tier, the own paints
+  (pledge IDs, titles, melt values) and the filler paints, kept in the browser's sync storage like
+  the pledges marked to melt, so you can finish it on another device (Settings → Stored data →
+  "Paint plan"). Once the order that bought them is found, its ID and time and the pledge IDs of
+  the filler paints are kept with it; the filler paints are marked to melt like your own marks.
+  **Completed plans** (paints melted and bought, store credit before and after) are kept there too,
+  the last 10; older ones, and any that don't fit into the sync storage, stay in the local
+  storage of this browser.
 - The **search term** is put into the page's address (`?search=…`) so searches can be bookmarked;
   it is part of your browser history like any other address.
 
@@ -155,10 +158,11 @@ visiting it doesn't contact GitHub's API.
 
 - **Settings → Stored data**: the delete icon of a row removes that data set only, e.g. only the
   buy back or only the order history. In "Synced with your browser profile" it removes your
-  watchlists or your marks to melt on every device with your browser profile, after a question.
+  paint plans, watchlists or marks to melt on every device with your browser profile, after a
+  question.
 - **Settings → Stored data → Reset → "Delete all local data"** removes everything the extension
   stored in this browser: hangar, buy back, orders, ship data, Pledge Store items and the state of
-  the smart updates. Your watchlists and marks to melt stay.
+  the smart updates. Your paint plans, watchlists and marks to melt stay.
 - **Settings → Stored data → Reset → "Reset settings"** removes your stored settings (on all
   synced devices).
 - **Removing the extension** removes all of its data from the browser.

@@ -36,8 +36,9 @@ describe('the groups of the stored data', () => {
         'warbondHistorySite',
       ].sort(),
     );
-    expect(ids('browser').sort()).toEqual(['paintHistory', 'paintPlan', 'warbondHistory'].sort());
-    expect(ids('synced')).toEqual(['watchlists', 'meltMarks']);
+    expect(ids('browser')).toEqual(['warbondHistory']);
+    // The paint plans in the synced storage since #635.
+    expect(ids('synced')).toEqual(['paintPlan', 'paintHistory', 'watchlists', 'meltMarks']);
   });
 
   it('can be read again from RSI or the website, but not what was made here or synced', () => {

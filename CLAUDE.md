@@ -318,7 +318,8 @@ It must always be able to show, in both themes:
   that can't, shown and cancelled, never deleting the account's data.
 - The synced data in the settings' stored data (#560): the demo's own watchlists and marks to
   melt with entries, empty and near a limit of the synced storage; the delete question shown and
-  cancelled.
+  cancelled. The demo's paint plans there too (#635), measured as they would be synced: a running
+  plan and completed plans, and none.
 - Stored data in groups (#624): every group collapsed and expanded with the demo's sizes and
   counts, a group refreshed, the delete question of a group that can be read again and of one that
   can't, shown and cancelled.

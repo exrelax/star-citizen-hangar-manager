@@ -2,16 +2,17 @@ import { storePaintsOf, type PaintPledge, type PaintTier } from './calculation';
 import type { StoreItem } from '../items/store-items';
 import type { PlanWay, StoredRebuyPlan } from './rebuy-plan-storage';
 import { planResultOf } from './running-plan';
+import { COMPLETED_PLANS_VERSION, syncedCompletedItem } from './synced-plans';
+
+export { COMPLETED_PLANS_VERSION };
 
 /*
  * The plans of the Paint Discount Consultant that ended on their own (#245): once nothing is left
  * of a running plan, it is kept here – what was melted and bought, the tier reached, the store
  * credit and the melt value before and after – and the running plan goes. A discarded plan isn't
- * kept. Newest first, the last `COMPLETED_PLANS_KEPT` only; in this browser only, like the plan.
+ * kept. Newest first, the last `COMPLETED_PLANS_KEPT` only; in the synced storage like the plan
+ * (#635, `synced-plans.ts`), the last `SYNCED_COMPLETED_KEPT` there, older ones in this browser.
  */
-
-/** Format version of the stored completed plans; others are ignored. */
-export const COMPLETED_PLANS_VERSION = 1;
 
 /** Completed plans kept: enough for the list, without growing for ever. */
 export const COMPLETED_PLANS_KEPT = 20;
@@ -55,10 +56,8 @@ export interface CompletedPlansSnapshot {
   plans: CompletedPaintPlan[];
 }
 
-export const completedPlansItem = storage.defineItem<CompletedPlansSnapshot | null>(
-  'local:consultant.history',
-  { fallback: null },
-);
+/** The account's completed plans, in the synced storage (#635). */
+export const completedPlansItem = syncedCompletedItem;
 
 /** The completed plans of the demo mode (#131): the demo never reads or writes the account's. */
 export const demoCompletedPlansItem = storage.defineItem<CompletedPlansSnapshot | null>(

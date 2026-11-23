@@ -6,8 +6,13 @@ import { LOCAL_COPY, SYNCED } from './registry';
 /* The synced storage in the settings' stored data (#560). */
 
 describe('the storages kept in the synced storage', () => {
-  it('are the watchlists and the marks to melt, apart from the local copy', () => {
-    expect(SYNCED.map((storage) => storage.id)).toEqual(['watchlists', 'meltMarks']);
+  it('are the paint plans, the watchlists and the marks to melt, apart from the local copy', () => {
+    expect(SYNCED.map((storage) => storage.id)).toEqual([
+      'paintPlan',
+      'paintHistory',
+      'watchlists',
+      'meltMarks',
+    ]);
     expect(SYNCED.every((storage) => storage.readAgain === 'never')).toBe(true);
     expect(LOCAL_COPY.some((storage) => storage.kind === 'synced')).toBe(false);
   });
@@ -16,6 +21,9 @@ describe('the storages kept in the synced storage', () => {
     expect(syncedIdOf('watchlists')).toBe('watchlists');
     expect(syncedIdOf('watchlist.abc')).toBe('watchlists');
     expect(syncedIdOf('hangar.meltMarks')).toBe('meltMarks');
+    expect(syncedIdOf('consultant.plan')).toBe('paintPlan');
+    expect(syncedIdOf('consultant.done')).toBe('paintHistory');
+    expect(syncedIdOf('consultant.done.lb3k9b')).toBe('paintHistory');
     expect(syncedIdOf('settings')).toBeUndefined();
   });
 });

@@ -7,6 +7,7 @@ import { computed } from 'vue';
 import type { MissingCredit, PaintRebuyPlan } from './calculation';
 import { cartLinesOf } from './cart';
 import { rebuyPlanItemOf, storedPlanOf, type PlanWay } from './rebuy-plan-storage';
+import { keepStartedPlan } from './start-plan';
 import { openPaintConsultant } from './consultant-tabs';
 import { usePaintConsultant } from './use-paint-consultant';
 import { cartCardsOf, waysOf, type PaintWay, type WayKind, type WayStep } from './ways';
@@ -382,10 +383,11 @@ export function usePaintWays(props: PaintWaysProps) {
    */
   async function startPlan(plan: PaintRebuyPlan | undefined, way: PlanWay) {
     if (!plan) return;
-    await rebuyPlanItemOf(!!demo.value).setValue(
+    const kept = await keepStartedPlan(
+      rebuyPlanItemOf(!!demo.value),
       storedPlanOf(plan, Date.now(), way, accountCredit.value),
     );
-    openPaintConsultant('running');
+    if (kept) openPaintConsultant('running');
   }
 
   // ---- The store credit along the way ----

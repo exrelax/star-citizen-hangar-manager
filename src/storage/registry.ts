@@ -344,24 +344,26 @@ export const STORAGES: readonly StorageDefinition[] = [
   },
   {
     id: 'paintPlan',
-    group: 'browser',
+    group: 'synced',
     item: rebuyPlanItem,
     content: "The Paint Discount Planner's plan whose paints were put into the cart",
-    source: 'The Paint Discount Planner ("Put the paints into the cart")',
+    source: 'The Paint Discount Planner ("Start plan"), in the synced storage (one key)',
     usedBy: ['Paint Discount Planner (filler paints to melt again)'],
-    kind: 'data',
+    // In the synced storage (#635): it follows the browser profile, a reset keeps it.
+    kind: 'synced',
     count: (value: AnyStoredRebuyPlan | null) =>
       value ? value.own.length + value.fillers.reduce((sum, f) => sum + f.quantity, 0) : 0,
     readAgain: 'never',
   },
   {
     id: 'paintHistory',
-    group: 'browser',
+    group: 'synced',
     item: completedPlansItem,
     content: "The Paint Discount Planner's completed plans",
-    source: 'The Paint Discount Planner (a running plan that ended)',
+    source:
+      'The Paint Discount Planner (a running plan that ended), in the synced storage (one key per plan, the last 10; older ones in this browser)',
     usedBy: ['Paint Discount Planner (completed plans)'],
-    kind: 'data',
+    kind: 'synced',
     count: (value: CompletedPlansSnapshot | null) => value?.plans.length ?? 0,
     readAgain: 'never',
   },

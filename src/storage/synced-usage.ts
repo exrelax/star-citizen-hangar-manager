@@ -1,13 +1,15 @@
+import { isCompletedKey, isPlanKey } from '@/store/paint-consultant/synced-plans';
 import { bytesOf, SYNC_QUOTA } from '@/watchlists/watchlists-storage';
 
 /*
- * What the user keeps in the browser's synced storage (#560): the watchlists (#465) and the marks
- * to melt (#144), measured as the browsers count them (key and JSON value, `bytesOf`), against the
- * limits of the synced storage (`SYNC_QUOTA`: 100 KB in all, 8 KB per key, 512 keys).
+ * What the user keeps in the browser's synced storage (#560): the watchlists (#465), the marks to
+ * melt (#144) and the plans of the Paint Discount Planner (#635), measured as the browsers count
+ * them (key and JSON value, `bytesOf`), against the limits of the synced storage (`SYNC_QUOTA`:
+ * 100 KB in all, 8 KB per key, 512 keys).
  */
 
 /** The storages kept in the synced storage, as listed in the settings' "Stored data". */
-export const SYNCED_IDS = ['watchlists', 'meltMarks'] as const;
+export const SYNCED_IDS = ['paintPlan', 'paintHistory', 'watchlists', 'meltMarks'] as const;
 export type SyncedId = (typeof SYNCED_IDS)[number];
 
 /** A limit counts as near from this share of it on. */
@@ -17,11 +19,13 @@ export const NEAR_LIMIT_SHARE = 0.8;
 export function syncedIdOf(key: string): SyncedId | undefined {
   if (key === 'watchlists' || key.startsWith('watchlist.')) return 'watchlists';
   if (key === 'hangar.meltMarks') return 'meltMarks';
+  if (isPlanKey(key)) return 'paintPlan';
+  if (isCompletedKey(key)) return 'paintHistory';
   return undefined;
 }
 
 export interface SyncedRowUsage {
-  /** Its entries: watchlists, marks. */
+  /** Its entries: watchlists, marks, plans. */
   entries: number;
   bytes: number;
   /** Its largest key, against the limit per key. */
@@ -37,8 +41,8 @@ export interface SyncedUsage {
 
 const entriesOf = (id: SyncedId, key: string, value: unknown): number => {
   if (id === 'meltMarks') return value && typeof value === 'object' ? Object.keys(value).length : 0;
-  // A watchlist per key; the index of their order isn't one.
-  return key === 'watchlists' ? 0 : 1;
+  // A watchlist or a completed plan per key; the index of their order isn't one.
+  return key === 'watchlists' || key === 'consultant.done' ? 0 : 1;
 };
 
 /** Measures everything stored in the synced storage (by key without the area). */
