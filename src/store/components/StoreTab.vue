@@ -225,7 +225,7 @@ const displayClasses = computed(() => ({
           </span>
         </p>
         <!-- Above the list on the right, below the count and when they were read (#628). -->
-        <div v-if="sortable" class="shm-store-sort">
+        <div v-if="sortable" class="shm-count shm-store-sort">
           <SelectMenu
             :options="sortOptions"
             :model-value="settings.warbondSort"
@@ -320,11 +320,13 @@ const displayClasses = computed(() => ({
   gap: 6px;
 }
 
-/* The sort of the warbond CCUs on the right, as in the manager's lists. */
+/*
+ * The sort of the warbond CCUs on the right: a count row like the one of My Hangar's list (its font
+ * and color in both themes), close below the row above it.
+ */
 .shm-store-sort {
-  display: flex;
   justify-content: flex-end;
-  margin: -4px 0 10px;
+  margin-top: -4px;
 }
 
 /* Icon only, in the accent color; it spins while the offers are read. */
