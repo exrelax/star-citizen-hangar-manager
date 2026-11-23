@@ -962,7 +962,7 @@ heading instead:
 
 The settings tab (#117) lists its categories on the left, in four groups – General (Appearance,
 Privacy, Demo mode, RSI website), Lists (My Hangar and Buy Back, Filters, Sidebar), Automation (Notifications,
-Paint Discount Planner, Smart updates) and More (Experimental, Stored data, Error log, About) – and shows
+Paint Discount Planner, Smart updates) and More (Experimental, Stored data, Export & Import, Error log, About) – and shows
 one category at a time on the right, as grouped rows like the system settings: a switch for each
 on/off setting, a segmented control for the theme, selects and number fields for the rest. A
 narrow window shows the categories as a row above. Settings that depend on a switch sit below it
@@ -1112,6 +1112,25 @@ order of the list:
       RSI's website, and the lists offer the initial load again. Not possible during a refresh.
     - **Reset settings**: all settings back to their defaults (on all synced devices); the stored
       hangar stays.
+- **Export & Import** (#1): files made in this browser only, nothing sent anywhere
+  ([format](EXPORT-FORMAT.md)).
+  - **Export the hangar**: the hangar, buy back, orders, store credit and the gift flags of
+    melted pledges, as JSON (the Hangar Manager's own format), as CSV for spreadsheets (the buy
+    back as a file of its own) or in HangarXPLOR's format, which FleetYards imports (JSON or CSV,
+    one entry per ship; ships FleetYards may not find are named after the export). The ids and
+    the amounts can be left out, by default as the "Privacy" section hides them. My Hangar has the
+    same export for the pledges shown (search, filters, a List Shortcut).
+  - **Restore the hangar** from a JSON export of the same account, e.g. in a new browser, to skip
+    the first full load; data here that is newer stays, and the smart updates bring it up to
+    date.
+  - **Export settings and your data**: the settings with their decisions (notifications checked
+    off, notes closed) and your own data – watchlists, marks to melt, the paint plan and its
+    completed plans, the warbond offers this browser saw – either part or both.
+  - **Import settings and your data**: a preview of what changes; the settings are replaced, your
+    data merged with what is here (by default) or replaced, per storage, and the paint plan to
+    keep chosen when both have one. It goes into the storage synced with the browser profile and
+    reaches every device; it is measured against the synced storage's limits first, and nothing
+    is written if it wouldn't fit.
 - **Error log**: the last 500 errors the Hangar Manager handled, newest first, in a read-only
   field – a page it couldn't read, an entry it left out, and what it did instead. Each has a code
   (listed in [ERROR_CODES.md](ERROR_CODES.md)); an error repeated in a row counts as one (`×3`),

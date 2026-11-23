@@ -2361,5 +2361,93 @@
       "other": "$1 ships in this pack"
     },
     "tiles": "Ships of this pack"
+  },
+  "transfer": {
+    "title": "Export & Import",
+    "intro": "Back up your hangar, your settings and what you made, restore them or take your hangar to other tools. The files are made in this browser only and nothing is sent anywhere. They hold your account’s data, so keep them safe.",
+    "hangar": "Hangar",
+    "exportHangar": "Export the hangar",
+    "holds": "Holds: $1.",
+    "format": "Format",
+    "formats": {
+      "json": "JSON (Hangar Manager)",
+      "csv": "CSV for spreadsheets",
+      "hangarXplorJson": "HangarXPLOR JSON (FleetYards)",
+      "hangarXplorCsv": "HangarXPLOR CSV"
+    },
+    "export": "Export",
+    "exportShown": "Export the pledges shown",
+    "exported": "The file is in your downloads.",
+    "unmatched": "The file is in your downloads. FleetYards may not find these ships: $1.",
+    "hideIds": "Leave out the pledge and order ids",
+    "hideIdsHint": "Pledges are numbered instead; orders and gift flags are left out. Such a file can’t restore the hangar.",
+    "hideAmounts": "Leave out the amounts",
+    "hideAmountsHint": "No values, prices, orders or Store Credits. Such a file can’t restore the hangar.",
+    "restoreHangar": "Restore the hangar",
+    "restoreHangarHint": "From a JSON export of this account, e.g. in a new browser, to skip the first full load. Data here that is newer stays.",
+    "chooseFile": "Choose file…",
+    "restored": "Restored: $1. The smart updates bring it up to date.",
+    "errors": {
+      "json": "This file isn’t JSON.",
+      "format": "This isn’t a file of the Hangar Manager.",
+      "schema": "This file is from a newer version of the Hangar Manager. Update it first.",
+      "kind": "This is a file of the other export."
+    },
+    "refusals": {
+      "partial": "This file holds only the pledges shown in My Hangar, not the whole hangar.",
+      "redacted": "This file leaves out ids or amounts, so it can’t restore the hangar.",
+      "otherAccount": "This file is of another account. Nothing was changed.",
+      "empty": "Nothing in this file is newer than what is here."
+    },
+    "settings": "Settings and your data",
+    "exportSettings": "Export settings and your data",
+    "syncedHint": "Most of it is synced with your browser profile anyway: the file is for a backup, another browser or a profile without sync.",
+    "parts": {
+      "settings": "Settings",
+      "yourData": "Your data"
+    },
+    "importSettings": "Import settings and your data",
+    "importSettingsHint": "The settings are replaced. Your data is merged with what is here, or replaced.",
+    "preview": "What the import changes",
+    "syncedNote": "This goes into the storage synced with your browser profile and reaches all your devices.",
+    "merge": "Merge",
+    "replace": "Replace",
+    "replaced": "Replaced",
+    "keepHere": "Keep this one",
+    "keepFile": "Take the file’s",
+    "planToKeep": "Paint plan to keep",
+    "planToKeepHint": "Only one plan can run. Both have one, so choose which to keep.",
+    "invalid": "Can’t be read and stays as it is: $1.",
+    "ignored": "Not known to this version and left out: $1.",
+    "cancel": "Cancel",
+    "import": "Import",
+    "imported": "Imported. It reaches your other devices with your browser profile.",
+    "failed": "The import failed. Everything is as it was.",
+    "quota": {
+      "perItem": "“$1” wouldn’t fit: the synced storage allows $2 per item. Nothing was changed.",
+      "total": "This wouldn’t fit into the synced storage. Delete watchlists or marks you no longer need, then try again. Nothing was changed.",
+      "items": "This would be more items than the synced storage holds. Delete watchlists you no longer need, then try again. Nothing was changed."
+    },
+    "counts": {
+      "added": {
+        "one": "$1 added",
+        "other": "$1 added"
+      },
+      "changed": {
+        "one": "$1 changed",
+        "other": "$1 changed"
+      },
+      "kept": {
+        "one": "$1 kept",
+        "other": "$1 kept"
+      },
+      "leftOut": {
+        "one": "$1 left out",
+        "other": "$1 left out"
+      },
+      "nothing": "Nothing changes"
+    },
+    "notExported": "Not exported: what is read again from RSI or the project website ($1).",
+    "demoDisabled": "Not in the demo mode: the files would hold your account’s data."
   }
 }

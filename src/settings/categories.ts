@@ -21,6 +21,7 @@ export const SETTINGS_CATEGORIES = [
   'smartUpdates',
   'experimental',
   'storage',
+  'transfer',
   'errorLog',
   'about',
   'development',
@@ -46,6 +47,7 @@ export const CATEGORY_INFO: Record<SettingsCategory, CategoryInfo> = {
   smartUpdates: { title: 'settings.smartUpdates', icon: 'rotate' },
   experimental: { title: 'settings.experimental', icon: 'flask' },
   storage: { title: 'storage.title', icon: 'database' },
+  transfer: { title: 'transfer.title', icon: 'file-export' },
   errorLog: { title: 'settings.errorLog', icon: 'bug' },
   about: { title: 'settings.about', icon: 'circle-info' },
   development: { title: 'settings.development', icon: 'code' },
@@ -64,7 +66,7 @@ export const CATEGORY_GROUPS: { title: MessageKey; categories: SettingsCategory[
   },
   {
     title: 'settings.categoryGroups.more',
-    categories: ['experimental', 'storage', 'errorLog', 'about', 'development'],
+    categories: ['experimental', 'storage', 'transfer', 'errorLog', 'about', 'development'],
   },
 ];
 

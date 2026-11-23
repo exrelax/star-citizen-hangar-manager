@@ -35,6 +35,8 @@ export const ICON_NAMES = {
     'code',
     'database',
     'eye-slash',
+    'file-export',
+    'file-import',
     'fill-drip',
     'filter-circle-xmark',
     'filter',

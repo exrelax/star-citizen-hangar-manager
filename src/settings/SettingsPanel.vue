@@ -28,6 +28,7 @@ import RsiPagesSection from './sections/RsiPagesSection.vue';
 import SidebarSection from './sections/SidebarSection.vue';
 import SmartUpdateSection from './sections/SmartUpdateSection.vue';
 import StorageSection from './sections/StorageSection.vue';
+import TransferSection from './sections/TransferSection.vue';
 import type { Settings } from './settings';
 
 /*
@@ -55,6 +56,7 @@ const SECTIONS: Record<SettingsCategory, Component> = {
   smartUpdates: SmartUpdateSection,
   experimental: ExperimentalSection,
   storage: StorageSection,
+  transfer: TransferSection,
   errorLog: ErrorLogSection,
   about: AboutSection,
   development: DevelopmentSection,

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import HangarExportMenu from '@/transfer/components/HangarExportMenu.vue';
 import { i18n, locale, type MessageKey } from '@/i18n';
 import { today } from '@/orders/refund';
 import { useProvidedCoverageSources } from '@/ccu-consultant/coverage';
@@ -247,6 +248,10 @@ const filterHint = (filter: PledgeFilter) => {
     @filter-states="showFilterStates"
     @update:grouped="setGrouped"
   >
+    <!-- My Hangar's export of the pledges shown (#232). -->
+    <template v-if="!embedded" #side>
+      <HangarExportMenu :pledge-ids="shownIds" :settings="settings" />
+    </template>
     <!-- In a watchlist the watchlist's own "Select all" of this part (#620). -->
     <template v-if="embedded ? $slots.select : canSelect" #select>
       <slot v-if="embedded" name="select" />
