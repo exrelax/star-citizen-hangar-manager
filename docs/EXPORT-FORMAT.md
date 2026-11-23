@@ -65,6 +65,23 @@ leading `'`, so no spreadsheet runs it as a formula.
 The store credits are in the JSON only: a line above the table would break the header row that
 spreadsheets sort and filter by.
 
+## HangarXPLOR / FleetYards (#228)
+
+For other tools the hangar export also comes in the format of
+[HangarXPLOR](https://github.com/dolkensp/HangarXPLOR)'s `shiplist.json` and `shiplist.csv`, which
+[FleetYards](https://fleetyards.net) imports: one entry per ship, not per pledge, with
+`ship_code`, `ship_name`, `manufacturer_code`, `manufacturer_name`, `name`, `lti`, `warbond`,
+`entity_type` (`ship`), `pledge_id`, `pledge_name`, `pledge_date` (`November 3, 2026`) and
+`pledge_cost` (`$45.00 USD`). The CSV has HangarXPLOR's columns `Manufacturer`, `Ship`, `Lti`,
+`Warbond`, `ID`, `Pledge`, `Cost`, `Date`.
+
+- `name` and `ship_name`: the ship's name without its manufacturer in front; FleetYards finds the
+  ship by it.
+- `ship_code`: built like HangarXPLOR builds it, the manufacturer code and the name joined by `_`
+  (`RSI_Aurora_Mk_I_ES`); no list of HangarXPLOR or FleetYards is taken over.
+- Ships whose name isn't one of the ships RSI's upgrade tool lists are named after the export, as
+  FleetYards may not find them. Modules and paints aren't written: they can't be told reliably.
+
 ## Settings and your data (`kind: "settings"`)
 
 The storages with `transfer: 'settings'` and `transfer: 'yourData'` in the registry. `parts` says
