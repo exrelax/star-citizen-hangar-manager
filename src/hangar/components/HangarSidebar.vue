@@ -1301,9 +1301,10 @@ async function move(box: Box, step: -1 | 1) {
                 {{ i18n.t('bulkExchange.overLimitLink') }}
               </button>
             </template>
-            <!-- Off: points to the experimental setting, so the feature can be found (#159). -->
+            <!-- Off: points to the experimental setting, so the feature can be found (#159). Its
+                 own condition: the note on the limit (#622) stands between it and the button. -->
             <button
-              v-else
+              v-if="!settings.bulkMelting"
               v-tooltip="i18n.t('bulkExchange.disabledHint')"
               type="button"
               class="shm-button shm-sidebar-button is-full"
