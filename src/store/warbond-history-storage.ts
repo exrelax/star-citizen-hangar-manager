@@ -10,8 +10,14 @@ export const warbondHistoryItem = storage.defineItem<WarbondHistorySnapshot | nu
   { fallback: null },
 );
 
-/** Format version of the stored offers of the website; others are ignored and read again. */
-export const SITE_WARBOND_HISTORY_VERSION = 1;
+/**
+ * Format version of the stored offers of the website; others are ignored and read again. Version 1
+ * (1.1.1) lacks the offers' expected end (#568): still shown, and read again at once (#479).
+ */
+export const SITE_WARBOND_HISTORY_VERSION = 2;
+
+/** Earlier versions of the stored offers that are still read until the next read replaces them. */
+export const SITE_WARBOND_HISTORY_EARLIER_VERSIONS: readonly number[] = [1];
 
 export interface SiteWarbondHistorySnapshot {
   version: number;
@@ -27,7 +33,12 @@ export const siteWarbondHistoryItem = storage.defineItem<SiteWarbondHistorySnaps
 /** The stored offers of the website, if of the current format; else none. */
 export const storedSiteWarbondHistory = (
   snapshot: SiteWarbondHistorySnapshot | null,
-): WarbondSighting[] => (snapshot?.version === SITE_WARBOND_HISTORY_VERSION ? snapshot.offers : []);
+): WarbondSighting[] =>
+  snapshot &&
+  (snapshot.version === SITE_WARBOND_HISTORY_VERSION ||
+    SITE_WARBOND_HISTORY_EARLIER_VERSIONS.includes(snapshot.version))
+    ? snapshot.offers
+    : [];
 
 /** Last read, check and fingerprint of the website's offers (see `storage/meta.ts`). */
 export const siteWarbondHistoryMeta = defineMeta('local:store.warbondHistorySite');
