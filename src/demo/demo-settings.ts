@@ -100,6 +100,11 @@ export interface DemoSettings {
    * of its reminder (#469). The demo never shows a real browser notification.
    */
   browserNotifications: boolean;
+  /**
+   * The synced storage almost full in the settings' stored data (#560): the demo's own watchlists
+   * and marks with a made-up use near its limit, and the warning.
+   */
+  syncedNearLimit: boolean;
 }
 
 /** The range of each kind's number and of the list sizes. */
@@ -138,6 +143,7 @@ export const DEFAULT_DEMO_SETTINGS: DemoSettings = {
   ccuDiscountAtRisk: true,
   rebuyable: true,
   browserNotifications: true,
+  syncedNearLimit: false,
 };
 
 const wholeIn =
@@ -223,5 +229,6 @@ export function demoSettingsOf(stored: Partial<DemoSettings> | null | undefined)
       isBoolean,
       defaults.browserNotifications,
     ),
+    syncedNearLimit: valid(stored?.syncedNearLimit, isBoolean, defaults.syncedNearLimit),
   };
 }

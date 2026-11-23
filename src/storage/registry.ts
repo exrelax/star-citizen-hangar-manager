@@ -55,6 +55,7 @@ import {
   type TokenRenewalsSnapshot,
 } from '@/buyback-tokens/token-renewals-storage';
 import { watchlistsItem } from '@/watchlists/watchlists-storage';
+import { meltMarksItem, type MeltMarks } from '@/hangar/melt-marks';
 import type { Watchlist } from '@/watchlists/watchlists';
 import type { BuybackSnapshot } from '@/buyback/buyback';
 import type { HangarSnapshot } from '@/hangar/pledge';
@@ -99,6 +100,7 @@ export type StorageId =
   | 'paintPlan'
   | 'paintHistory'
   | 'watchlists'
+  | 'meltMarks'
   | 'settings';
 
 export interface StorageDefinition {
@@ -350,6 +352,16 @@ export const STORAGES: readonly StorageDefinition[] = [
     readAgain: 'never',
   },
   {
+    id: 'meltMarks',
+    item: meltMarksItem,
+    content: 'Marks to melt: the pledge id and when it was marked (#144)',
+    source: 'The marks the user set in My Hangar, in the synced storage',
+    usedBy: ['My Hangar (melt marks)', 'sidebar notifications', 'Paint Discount Planner'],
+    kind: 'synced',
+    count: (value: MeltMarks | null) => Object.keys(value ?? {}).length,
+    readAgain: 'never',
+  },
+  {
     id: 'settings',
     item: settingsItem,
     content: 'Settings: language, theme, display and privacy options, filters, sorting',
@@ -361,6 +373,10 @@ export const STORAGES: readonly StorageDefinition[] = [
 
 /**
  * The local copy: hangar, buy back, orders, ships, … – not the settings and not what the user keeps
- * in the synced storage (the watchlists), which a reset of this browser must never remove.
+ * in the synced storage (the watchlists, the marks to melt), which a reset of this browser must
+ * never remove.
  */
 export const LOCAL_COPY = STORAGES.filter((storage) => storage.kind === 'data');
+
+/** What the user keeps in the synced storage (#560): shown apart, never reset with the local copy. */
+export const SYNCED = STORAGES.filter((storage) => storage.kind === 'synced');

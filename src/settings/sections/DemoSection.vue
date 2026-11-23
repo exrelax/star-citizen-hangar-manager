@@ -294,6 +294,18 @@ async function reset() {
     </SettingCheck>
   </SettingsGroup>
 
+  <!-- The synced storage of the stored data almost full, with its warning (#560). -->
+  <SettingsGroup :disabled="off">
+    <SettingCheck
+      :checked="settings.demo.syncedNearLimit"
+      :disabled="off"
+      :hint="i18n.t('settings.demo.syncedNearLimitHint')"
+      @change="(on) => set({ syncedNearLimit: on })"
+    >
+      {{ i18n.t('settings.demo.syncedNearLimit') }}
+    </SettingCheck>
+  </SettingsGroup>
+
   <!-- The buy back tokens at the top right, also none (#433). -->
   <SettingsGroup :disabled="off">
     <SettingRow

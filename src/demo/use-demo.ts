@@ -159,7 +159,12 @@ export interface DemoContext {
    * What the settings show of the stored data in the demo (#132): the demo's numbers of the
    * account's storages instead of the real ones, and its hangar's page count.
    */
-  storage: { counts: Partial<Record<StorageId, number>>; hangarPages: number };
+  storage: {
+    counts: Partial<Record<StorageId, number>>;
+    hangarPages: number;
+    /** The synced storage shown almost full (#560), from the demo settings. */
+    syncedNearLimit: boolean;
+  };
   /** The warbond CCUs and their history in the Pledge Store tab (#130, #297), with either source. */
   storeData: StoreData;
   /**
@@ -486,6 +491,7 @@ export function useDemo(
           ...(account && { priceIncreases: account.priceIncreases.length }),
         },
         hangarPages: Math.max(1, Math.ceil(demoPledges.value.length / HANGAR_PAGE_SIZE)),
+        syncedNearLimit: settings().syncedNearLimit,
       },
       // Set in the demo settings (#179).
       // A stage of the running plan the setting can't show has a credit of its own (#303).
