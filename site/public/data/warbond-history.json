@@ -187,6 +187,67 @@
           "name": "RSI Constellation Centaurus MK V Release - Patch 4.10.2"
         }
       ]
+    },
+    {
+      "ship": { "id": 217, "name": "RSI Perseus" },
+      "skuId": 19872,
+      "price": 720,
+      "msrp": 800,
+      "firstSeen": "2026-11-22T16:00:00Z",
+      "lastSeen": "2026-11-23T16:20:00Z",
+      "events": [
+        { "id": "perseus-iae-2956-best-in-show", "name": "RSI Perseus - IAE 2956 Best in Show" }
+      ],
+      "expectedEnd": "2026-11-27T20:00:00Z"
+    },
+    {
+      "ship": { "id": 275, "name": "Drake Ironclad Assault" },
+      "skuId": 19875,
+      "price": 600,
+      "msrp": 650,
+      "firstSeen": "2026-11-22T16:00:00Z",
+      "lastSeen": "2026-11-23T16:20:00Z",
+      "events": [
+        {
+          "id": "ironclad-assault-iae-2956-best-in-show",
+          "name": "Drake Ironclad Assault - IAE 2956 Best in Show"
+        }
+      ],
+      "expectedEnd": "2026-11-27T20:00:00Z"
+    },
+    {
+      "ship": { "id": 178, "name": "Drake Corsair" },
+      "skuId": 19874,
+      "price": 230,
+      "msrp": 250,
+      "firstSeen": "2026-11-22T16:00:00Z",
+      "lastSeen": "2026-11-23T16:20:00Z",
+      "events": [
+        { "id": "corsair-iae-2956-best-in-show", "name": "Drake Corsair - IAE 2956 Best in Show" }
+      ],
+      "expectedEnd": "2026-11-27T20:00:00Z"
+    },
+    {
+      "ship": { "id": 315, "name": "Origin M80" },
+      "skuId": 19873,
+      "price": 280,
+      "msrp": 300,
+      "firstSeen": "2026-11-22T16:00:00Z",
+      "lastSeen": "2026-11-23T16:20:00Z",
+      "events": [
+        { "id": "m80-iae-2956-best-in-show", "name": "Origin M80 - IAE 2956 Best in Show" }
+      ],
+      "expectedEnd": "2026-11-27T20:00:00Z"
+    },
+    {
+      "ship": { "id": 154, "name": "Tumbril Nova" },
+      "skuId": 18774,
+      "price": 110,
+      "msrp": 120,
+      "firstSeen": "2026-11-23T16:00:00Z",
+      "lastSeen": "2026-11-23T16:20:00Z",
+      "events": [{ "id": "nova-iae-2956-finale", "name": "Tumbril Nova - IAE 2956 Finale" }],
+      "expectedEnd": "2026-11-24T16:00:00Z"
     }
   ]
 }
