@@ -635,7 +635,9 @@
       "nearTotal": "Tu almacenamiento sincronizado está casi lleno. Borra las watchlists o marcas que ya no necesites, o las nuevas no cabrán.",
       "nearItems": "Tu almacenamiento sincronizado tiene casi tantos elementos como admite. Borra las watchlists que ya no necesites.",
       "nearKeyWatchlists": "Una watchlist está cerca de su límite de $1 por lista.",
-      "nearKeyMeltMarks": "Las marcas para fundir están cerca de su límite de $1."
+      "nearKeyMeltMarks": "Las marcas para fundir están cerca de su límite de $1.",
+      "nearKeyPaintPlan": "El plan de pinturas está cerca de su límite de $1.",
+      "nearKeyPaintHistory": "Un plan de pinturas completado está cerca del límite de $1 por plan."
     },
     "groups": {
       "account": "Tu cuenta de RSI",
@@ -846,6 +848,10 @@
     "days": "$1 d"
   },
   "consultant": {
+    "planQuota": {
+      "plan": "Este plan es demasiado grande para el almacenamiento sincronizado del navegador. Planifica menos pinturas a la vez.",
+      "total": "El almacenamiento sincronizado del navegador está lleno. Elimina las watchlists o marcas para fundir que ya no necesites y vuelve a iniciar el plan."
+    },
     "title": "Paint Discount Planner",
     "boxTitle": "Descuento de pinturas",
     "intro": "RSI aplica en el carrito un descuento por volumen en pinturas: del 15 % con 2 pinturas al 35 % con 10. Funde tus pinturas compradas con menos descuento, vuelve a comprarlas junto con pinturas de relleno baratas al descuento mayor y funde de nuevo las de relleno tras 24 horas. Al final tienes más crédito de tienda – pagado solo con crédito de tienda, sin dinero nuevo.",

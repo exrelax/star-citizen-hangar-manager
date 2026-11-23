@@ -25,6 +25,11 @@ import { nearLimits, type SyncedId, type SyncedUsage } from '@/storage/synced-us
 import { useSyncedUsage } from '@/storage/use-synced-usage';
 import { clearWatchlists, SYNC_QUOTA } from '@/watchlists/watchlists-storage';
 import { demoMeltMarksItem, meltMarksItem } from '@/hangar/melt-marks';
+import {
+  completedPlansItem,
+  demoCompletedPlansItem,
+} from '@/store/paint-consultant/completed-plans';
+import { rebuyPlanItemOf } from '@/store/paint-consultant/rebuy-plan-storage';
 import { useStored } from '@/storage/use-stored';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useDemoContext } from '@/demo/use-demo';
@@ -217,6 +222,14 @@ const syncedView = computed(() =>
   }),
 );
 
+/** What a key of each synced storage near its limit says. */
+const NEAR_KEY = {
+  watchlists: 'storage.synced.nearKeyWatchlists',
+  meltMarks: 'storage.synced.nearKeyMeltMarks',
+  paintPlan: 'storage.synced.nearKeyPaintPlan',
+  paintHistory: 'storage.synced.nearKeyPaintHistory',
+} as const satisfies Record<SyncedId, string>;
+
 const syncedQuota = computed(() => {
   const usage = syncedShown.value;
   if (!usage) return undefined;
@@ -224,14 +237,7 @@ const syncedQuota = computed(() => {
   const warnings = [
     ...(near.total ? [i18n.t('storage.synced.nearTotal')] : []),
     ...(near.keys ? [i18n.t('storage.synced.nearItems')] : []),
-    ...near.perKey.map((id) =>
-      i18n.t(
-        id === 'watchlists'
-          ? 'storage.synced.nearKeyWatchlists'
-          : 'storage.synced.nearKeyMeltMarks',
-        [formatSyncedSize(SYNC_QUOTA.perItem)],
-      ),
-    ),
+    ...near.perKey.map((id) => i18n.t(NEAR_KEY[id], [formatSyncedSize(SYNC_QUOTA.perItem)])),
   ];
   return {
     bytes: usage.bytes,
@@ -265,7 +271,10 @@ async function deleteSynced(id: StorageId) {
 async function removeSynced(id: StorageId) {
   const isDemo = !!demo.value;
   if (id === 'watchlists') await clearWatchlists(isDemo);
-  else await (isDemo ? demoMeltMarksItem : meltMarksItem).removeValue();
+  else if (id === 'paintPlan') await rebuyPlanItemOf(isDemo).setValue(null);
+  else if (id === 'paintHistory') {
+    await (isDemo ? demoCompletedPlansItem : completedPlansItem).removeValue();
+  } else await (isDemo ? demoMeltMarksItem : meltMarksItem).removeValue();
 }
 
 /*

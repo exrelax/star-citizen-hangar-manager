@@ -2,6 +2,7 @@ import { storeNameOf } from '../items/item-prices';
 import type { StoreItem } from '../items/store-items';
 import { dayOf, type PaintPledge, type PaintRebuyPlan, type PaintTier } from './calculation';
 import type { CartLine } from './cart';
+import { syncedPlanItem } from './synced-plans';
 
 /*
  * The plan of the Paint Discount Consultant whose paints were put into the cart (#103), kept on
@@ -9,7 +10,8 @@ import type { CartLine } from './cart';
  * were probably bought with them, which way was chosen, and the facts that can't be worked out
  * later – the store credit at the start, the store prices, when paints were melted and for how
  * much, the purchase. #105 compares it with the hangar later, to tell when the filler paints can
- * be melted. Kept in this browser only; one plan at a time.
+ * be melted. One plan at a time, in the synced storage, so it follows the browser profile to other
+ * devices (#635, `synced-plans.ts`).
  */
 
 /** Format version of the stored plan; version 1 is upgraded on read (`currentPlanOf`). */
@@ -110,10 +112,14 @@ export interface StoredRebuyPlanV1 {
 /** What may be stored under the plan's key. */
 export type AnyStoredRebuyPlan = StoredRebuyPlan | StoredRebuyPlanV1;
 
-export const rebuyPlanItem = storage.defineItem<AnyStoredRebuyPlan | null>(
-  'local:consultant.plan',
-  { fallback: null },
-);
+/** The account's running plan, in the synced storage (#635). */
+export const rebuyPlanItem = syncedPlanItem;
+
+/** What reads and writes a kept plan: the account's or the demo's. */
+export interface PlanItem {
+  getValue(): Promise<AnyStoredRebuyPlan | null>;
+  setValue(value: AnyStoredRebuyPlan | null): Promise<void>;
+}
 
 /**
  * The kept plan of the demo mode (#131), apart from the real one: the demo never reads or writes
@@ -125,7 +131,8 @@ export const demoRebuyPlanItem = storage.defineItem<AnyStoredRebuyPlan | null>(
 );
 
 /** The kept plan's storage: the demo's in the demo mode, the account's otherwise. */
-export const rebuyPlanItemOf = (demo: boolean) => (demo ? demoRebuyPlanItem : rebuyPlanItem);
+export const rebuyPlanItemOf = (demo: boolean): PlanItem =>
+  demo ? demoRebuyPlanItem : rebuyPlanItem;
 
 /**
  * What the demo's running plan sees instead of RSI's cart and the store credit (#245): the demo
@@ -244,7 +251,7 @@ export function currentPlanOf(
  * read right before writing: several tabs may record facts of the same plan.
  */
 export async function updatePlan(
-  item: typeof rebuyPlanItem,
+  item: PlanItem,
   change: (plan: StoredRebuyPlan) => StoredRebuyPlan | null,
   context: Parameters<typeof currentPlanOf>[1] = undefined,
 ): Promise<StoredRebuyPlan | null | undefined> {

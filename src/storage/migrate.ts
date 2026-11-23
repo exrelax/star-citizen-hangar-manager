@@ -1,4 +1,5 @@
 import { EMPTY_META, type CheckOutcome, type StorageMeta } from './meta';
+import { migratePaintPlans } from '@/store/paint-consultant/synced-plans';
 import { STORAGES } from './registry';
 
 /*
@@ -29,6 +30,12 @@ export function migrateStorage(): Promise<void> {
 }
 
 export async function runMigration(): Promise<void> {
+  await migrateKeys();
+  // The paint plans kept in this browser move to the synced storage (#635).
+  await migratePaintPlans();
+}
+
+async function migrateKeys(): Promise<void> {
   for (const definition of STORAGES) {
     const { item, meta, legacyKeys = [], obsoleteKeys = [], legacyCheckKeys = [] } = definition;
     const key = item.key as `local:${string}`;

@@ -635,7 +635,9 @@
       "nearTotal": "Ton stockage synchronisé est presque plein. Supprime les watchlists ou les marques dont tu n’as plus besoin, sinon les nouvelles n’y entreront plus.",
       "nearItems": "Ton stockage synchronisé contient presque autant d’éléments qu’il le peut. Supprime les watchlists dont tu n’as plus besoin.",
       "nearKeyWatchlists": "Une watchlist approche sa limite de $1 par liste.",
-      "nearKeyMeltMarks": "Les marques à fondre approchent leur limite de $1."
+      "nearKeyMeltMarks": "Les marques à fondre approchent leur limite de $1.",
+      "nearKeyPaintPlan": "Le plan de peintures approche sa limite de $1.",
+      "nearKeyPaintHistory": "Un plan de peintures terminé approche la limite de $1 par plan."
     },
     "groups": {
       "account": "Ton compte RSI",
@@ -846,6 +848,10 @@
     "days": "$1 j"
   },
   "consultant": {
+    "planQuota": {
+      "plan": "Ce plan est trop grand pour le stockage synchronisé du navigateur. Prévoyez moins de peintures à la fois.",
+      "total": "Le stockage synchronisé du navigateur est plein. Supprimez les watchlists ou les marques à fondre dont vous n’avez plus besoin, puis relancez le plan."
+    },
     "title": "Paint Discount Planner",
     "boxTitle": "Remise sur les peintures",
     "intro": "RSI accorde dans le panier une remise sur volume pour les peintures : 15 % dès 2 peintures jusqu’à 35 % dès 10. Fondez vos peintures achetées avec moins de remise, rachetez-les avec des peintures de remplissage bon marché à la remise plus élevée, et refondez les peintures de remplissage après 24 heures. Vous finissez avec plus de crédit boutique – payé uniquement en crédit boutique, sans argent neuf.",

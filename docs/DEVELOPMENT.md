@@ -512,12 +512,16 @@ never sees a mix of old and new data.
   fingerprint to compare with on the next check (the newest pledge log entry for the orders, a
   hash of the answer for the data of the upgrade tool and the Pledge Store items). A check that
   finds nothing new writes only these few bytes.
-- **Synced storage**: what the user keeps across devices – the marks to melt and the watchlists
-  ([`src/watchlists/watchlists-storage.ts`](../src/watchlists/watchlists-storage.ts), #465) – lives
-  in `storage.sync`, which allows only 8 KB per key, 100 KB in all and 512 keys. Each watchlist is
-  a key of its own, stored compactly, and a write that wouldn't fit fails before anything is
-  written, with the limit it reached. A reset of this browser's copy never removes them (registry
-  kind `synced`).
+- **Synced storage**: what the user keeps across devices – the marks to melt, the watchlists
+  ([`src/watchlists/watchlists-storage.ts`](../src/watchlists/watchlists-storage.ts), #465) and the
+  Paint Discount Planner's running and completed plans
+  ([`src/store/paint-consultant/synced-plans.ts`](../src/store/paint-consultant/synced-plans.ts),
+  #635) – lives in `storage.sync`, which allows only 8 KB per key, 100 KB in all and 512 keys. Each
+  watchlist and each completed plan is a key of its own, stored compactly, and a write that
+  wouldn't fit fails before anything is written, with the limit it reached; for the running plan
+  the oldest completed plans give way first, and completed plans that don't fit (or are older
+  than the last 10) stay in `local:consultant.history`. A reset of this browser's copy never
+  removes them (registry kind `synced`).
 - **Migration** ([`src/storage/migrate.ts`](../src/storage/migrate.ts)): moves data of earlier
   keys to the current ones before anything reads them (content script start and after an update).
 - **Reading in the UI**: `useStored(item)` ([`src/storage/use-stored.ts`](../src/storage/use-stored.ts))

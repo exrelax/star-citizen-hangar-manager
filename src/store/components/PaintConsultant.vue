@@ -29,6 +29,7 @@ import {
   type ConsultantTab,
 } from '../paint-consultant/consultant-tabs';
 import { rebuyPlanItemOf, storedPlanOf } from '../paint-consultant/rebuy-plan-storage';
+import { keepStartedPlan } from '../paint-consultant/start-plan';
 
 /*
  * The Paint Discount Consultant (#95) in the tab "Consultants" (#453): which own paints to melt and buy
@@ -177,10 +178,11 @@ const demo = useDemoContext();
  */
 async function startPlan() {
   if (!plan.value) return;
-  await rebuyPlanItemOf(!!demo.value).setValue(
+  const kept = await keepStartedPlan(
+    rebuyPlanItemOf(!!demo.value),
     storedPlanOf(plan.value, Date.now(), 'melt', accountCredit.value),
   );
-  openPaintConsultant('running');
+  if (kept) openPaintConsultant('running');
 }
 
 /** Pairs that look bought again without a kept plan (`reboughtDetection: 'guess'`). */

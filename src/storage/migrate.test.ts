@@ -65,6 +65,50 @@ describe('runMigration with metadata of a check only', () => {
   });
 });
 
+describe('runMigration of the paint plans (#635)', () => {
+  it('moves the plan and the completed plans of this browser to the synced storage', async () => {
+    const plan = {
+      version: 2,
+      way: 'buy',
+      at: 1_763_661_600_000,
+      tier: { paints: 2, percent: 15 },
+      own: [],
+      fillers: [{ skuId: 1, name: 'Filler', quantity: 2, price: 5 }],
+      cartCost: 8.5,
+    };
+    const done = {
+      way: 'buy',
+      startedAt: 1_763_000_000_000,
+      completedAt: 1_763_100_000_000,
+      tier: { paints: 2, percent: 15 },
+      ownCount: 0,
+      fillerCount: 2,
+      melted: [],
+      bought: [],
+      freed: 0,
+      paid: 8.5,
+      result: 0,
+      meltBefore: 0,
+      meltAfter: 0,
+    };
+    await storage.setItem('local:consultant.plan', plan);
+    await storage.setItem('local:consultant.history', { version: 1, plans: [done] });
+
+    await runMigration();
+
+    const synced = await fakeBrowser.storage.sync.get(null);
+    expect(Object.keys(synced).sort()).toEqual(
+      [
+        'consultant.done',
+        `consultant.done.${(1_763_000_000_000).toString(36)}b`,
+        'consultant.plan',
+      ].sort(),
+    );
+    expect(await storage.getItem('local:consultant.plan')).toBeNull();
+    expect(await storage.getItem('local:consultant.history')).toBeNull();
+  });
+});
+
 describe('STORAGES', () => {
   it('lists every key once, old ones and metadata included', () => {
     const keys = STORAGES.flatMap((entry) => [

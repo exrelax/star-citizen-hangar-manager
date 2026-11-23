@@ -635,7 +635,9 @@
       "nearTotal": "Your synced storage is almost full. Delete watchlists or marks you no longer need, or new ones won't fit.",
       "nearItems": "Your synced storage holds almost as many items as it can. Delete watchlists you no longer need.",
       "nearKeyWatchlists": "A watchlist is close to the limit of $1 per list.",
-      "nearKeyMeltMarks": "The marks to melt are close to their limit of $1."
+      "nearKeyMeltMarks": "The marks to melt are close to their limit of $1.",
+      "nearKeyPaintPlan": "The paint plan is close to its limit of $1.",
+      "nearKeyPaintHistory": "A completed paint plan is close to the limit of $1 per plan."
     },
     "groups": {
       "account": "Your RSI account",
@@ -846,6 +848,10 @@
     "days": "$1 d"
   },
   "consultant": {
+    "planQuota": {
+      "plan": "This plan is too big for the browser's synced storage. Plan fewer paints at once.",
+      "total": "The browser's synced storage is full. Delete watchlists or marks to melt you no longer need, then start the plan again."
+    },
     "title": "Paint Discount Planner",
     "boxTitle": "Paint Discount",
     "intro": "RSI gives a volume discount on paints in the cart: 15 % from 2 paints up to 35 % from 10. Melt your paints that were bought with less, buy them again together with cheap filler paints at the higher discount, and melt the fillers again after 24 hours. You end up with more store credit – paid with store credit only, no new money.",

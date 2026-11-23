@@ -635,7 +635,9 @@
       "nearTotal": "Dein synchronisierter Speicher ist fast voll. Lösche Watchlists oder Markierungen, die du nicht mehr brauchst, sonst passen neue nicht mehr hinein.",
       "nearItems": "Dein synchronisierter Speicher hat fast so viele Elemente, wie er fassen kann. Lösche Watchlists, die du nicht mehr brauchst.",
       "nearKeyWatchlists": "Eine Watchlist ist nah an ihrer Grenze von $1 pro Liste.",
-      "nearKeyMeltMarks": "Die Markierungen zum Einschmelzen sind nah an ihrer Grenze von $1."
+      "nearKeyMeltMarks": "Die Markierungen zum Einschmelzen sind nah an ihrer Grenze von $1.",
+      "nearKeyPaintPlan": "Der Paint-Plan ist nah an seiner Grenze von $1.",
+      "nearKeyPaintHistory": "Ein abgeschlossener Paint-Plan ist nah an der Grenze von $1 pro Plan."
     },
     "groups": {
       "account": "Dein RSI Konto",
@@ -846,6 +848,10 @@
     "days": "$1 T"
   },
   "consultant": {
+    "planQuota": {
+      "plan": "Dieser Plan ist zu groß für den synchronisierten Speicher des Browsers. Plane weniger Paints auf einmal.",
+      "total": "Der synchronisierte Speicher des Browsers ist voll. Lösche Watchlists oder Markierungen zum Einschmelzen, die du nicht mehr brauchst, und starte den Plan dann erneut."
+    },
     "title": "Paint Discount Planner",
     "boxTitle": "Paint-Rabatt",
     "intro": "RSI gewährt im Warenkorb einen Mengenrabatt auf Paints: 15 % ab 2 Paints bis 35 % ab 10. Schmilz deine Paints ein, die mit weniger Rabatt gekauft wurden, kauf sie zusammen mit günstigen Füll-Paints zum höheren Rabatt zurück und schmilz die Füll-Paints nach 24 Stunden wieder ein. Am Ende hast du mehr Store Credits – nur mit Store Credits bezahlt, ohne neues Geld.",

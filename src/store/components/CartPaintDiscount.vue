@@ -15,6 +15,7 @@ import {
 } from '../paint-consultant/cart-discount';
 import { addLinesToCart, cartCheckOf, readCart, type CartLine } from '../paint-consultant/cart';
 import { currentPlanOf, rebuyPlanItem, storedPlanOf } from '../paint-consultant/rebuy-plan-storage';
+import { keepStartedPlan, planStartError } from '../paint-consultant/start-plan';
 import PaintConfirm from './PaintConfirm.vue';
 import { demoCart } from '@/demo/demo-cart';
 import { vTooltip } from '@/shared/tooltip/tooltip';
@@ -109,6 +110,7 @@ const fillerText = computed(() =>
 const busy = ref(false);
 const asking = ref(false);
 const outcome = ref<'added' | 'partly' | 'none'>();
+const planError = ref<string>();
 const runningPlan = computed(() => !!currentPlanOf(storedPlan.value));
 
 async function addFillers({ replace = false } = {}) {
@@ -129,7 +131,8 @@ async function addFillers({ replace = false } = {}) {
     outcome.value = added.failed.length ? (added.added.length ? 'partly' : 'none') : 'added';
     if (added.added.length) {
       // The plan of the consultant: the fillers are marked to melt once bought (#105).
-      await rebuyPlanItem.setValue(
+      const kept = await keepStartedPlan(
+        rebuyPlanItem,
         storedPlanOf(
           {
             tier: option.tier,
@@ -146,6 +149,8 @@ async function addFillers({ replace = false } = {}) {
           credit.value,
         ),
       );
+      // A plan that doesn't fit into the synced storage (#635) says why; the cart stays.
+      planError.value = kept ? undefined : planStartError.value?.message;
       emit('added');
     }
   } finally {
@@ -269,6 +274,7 @@ onUnmounted(() => {
     <p v-if="outcome" class="shm-cart-paints-note" role="status">
       {{ i18n.t(`cartPaints.outcome.${outcome}`) }}
     </p>
+    <p v-if="planError" class="shm-cart-paints-note is-error" role="alert">{{ planError }}</p>
     <p v-if="failed" class="shm-cart-paints-note" role="status">
       {{ i18n.t('cartPaints.readFailed') }}
     </p>
@@ -384,6 +390,11 @@ onUnmounted(() => {
   display: block;
   color: var(--shm-text-muted);
   font-size: calc(12px * var(--shm-font-scale, 1));
+}
+
+/* A plan that didn't fit into the synced storage (#635). */
+.shm-cart-paints-host .shm-cart-paints-note.is-error {
+  color: var(--shm-danger);
 }
 
 .shm-cart-paints-host .shm-cart-paints .shm-button {
