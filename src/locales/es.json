@@ -636,6 +636,25 @@
       "nearItems": "Tu almacenamiento sincronizado tiene casi tantos elementos como admite. Borra las watchlists que ya no necesites.",
       "nearKeyWatchlists": "Una watchlist está cerca de su límite de $1 por lista.",
       "nearKeyMeltMarks": "Las marcas para fundir están cerca de su límite de $1."
+    },
+    "groups": {
+      "account": "Tu cuenta de RSI",
+      "store": "Pledge Store y naves de RSI",
+      "website": "Web del proyecto",
+      "browser": "Creado en este navegador"
+    },
+    "group": {
+      "count": {
+        "one": "$1 conjunto de datos",
+        "other": "$1 conjuntos de datos"
+      },
+      "oldestCheck": "La última comprobación más antigua de este grupo: $1",
+      "refresh": "Volver a leer todo «$1», uno tras otro",
+      "delete": "Borrar todo «$1»",
+      "deleteConfirm": "¿Borrar todo «$1»: $2?\n\n$3",
+      "deleteReadAgain": "La próxima actualización lo vuelve a leer, o se lee solo en cuanto el Hangar Manager esté abierto. Tu hangar en la web de RSI no cambia.",
+      "deleteNever": "No se puede restaurar: nada de ello se puede volver a leer.",
+      "deleteSynced": "Desaparece en todos los dispositivos con este perfil del navegador y no se puede restaurar."
     }
   },
   "status": {

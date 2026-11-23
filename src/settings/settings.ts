@@ -3,6 +3,7 @@ import { OWNED_CCU_COLUMNS, type OwnedCcuSort } from '@/store/owned-ccu-sort';
 import { DEFAULT_DEMO_SETTINGS, demoSettingsOf, type DemoSettings } from '@/demo/demo-settings';
 import { notificationKindsOf, type NotificationKind } from '@/notifications/kinds';
 import { BUYBACK_FILTER_CATEGORIES, type BuybackFilter } from '@/buyback/buyback-view';
+import { isStorageGroup, type StorageGroupId } from '@/storage/storage-group-ids';
 import {
   BULK_MELTING_MAX,
   FILTERS,
@@ -122,6 +123,8 @@ export interface Settings {
   sidebarOrder: SidebarBox[];
   /** Boxes of the sidebar collapsed to their title. */
   sidebarCollapsed: SidebarBox[];
+  /** The groups of the settings' "Stored data" shown open (#624); all collapsed by default. */
+  storageGroupsOpen: StorageGroupId[];
   /** Hides the pledge ids (also those of applied CCUs). */
   hidePledgeIds: boolean;
   /** Shows a selection of the pledges with made-up ids instead of all (see `src/demo`). */
@@ -234,6 +237,7 @@ export const DEFAULT_SETTINGS: Settings = {
   sidebarHidden: [],
   sidebarOrder: [...SIDEBAR_BOXES],
   sidebarCollapsed: [],
+  storageGroupsOpen: [],
   hidePledgeIds: false,
   demoMode: false,
   hideRefund: false,
@@ -338,6 +342,9 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
     sidebarHidden: sidebarBoxesOf(stored?.sidebarHidden),
     sidebarOrder: normalizeSidebarOrder(stored?.sidebarOrder),
     sidebarCollapsed: sidebarBoxesOf(stored?.sidebarCollapsed),
+    storageGroupsOpen: Array.isArray(stored?.storageGroupsOpen)
+      ? [...new Set(stored.storageGroupsOpen.filter(isStorageGroup))]
+      : [],
     hidePledgeIds: pick('hidePledgeIds', isBoolean),
     demoMode: pick('demoMode', isBoolean),
     hideRefund: pick('hideRefund', isBoolean),
