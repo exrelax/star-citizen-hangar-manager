@@ -116,24 +116,31 @@ async function create() {
 </template>
 
 <style>
+/* Its label and the line next to it ("On no watchlist yet.", the chips) on one baseline (#632). */
 .shm-watchlist-picker {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: baseline;
   gap: 8px 10px;
   margin-top: 10px;
   padding-top: 10px;
   border-top: 1px solid rgb(var(--shm-accent-rgb) / 0.15);
 }
 
+.shm-watchlist-picker > .shm-hint {
+  margin: 0;
+}
+
 .shm-watchlist-picker-label {
   display: inline-flex;
-  align-items: center;
+  align-items: baseline;
   gap: 6px;
   color: var(--shm-text);
 }
 
+/* Centered on the text, out of the baseline: the label's baseline is its text's. */
 .shm-watchlist-picker-label .shm-icon {
+  align-self: center;
   color: var(--shm-accent);
 }
 
