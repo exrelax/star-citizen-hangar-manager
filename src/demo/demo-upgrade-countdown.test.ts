@@ -40,6 +40,17 @@ describe('the made-up warbond ends', () => {
     const ids = Array.from({ length: 25 }, (_, index) => 100 + index);
     const limited = () => false;
     const { offers } = demoCountdownSources(NOW, true, ids, limited);
-    expect(offers.map((offer) => offer.shipId)).toEqual([100, 110, 120]);
+    expect(offers.map((offer) => offer.shipId)).toEqual([100, 105, 110, 115, 120]);
+  });
+
+  it('end before the event on every tenth from the sixth on (#632)', () => {
+    const ids = Array.from({ length: 6 }, (_, index) => 100 + index);
+    const limited = () => false;
+    const sources = demoCountdownSources(NOW, true, ids, limited);
+    const endOf = createTargetEnd({ ...sources, availability: limited });
+    const event = endOf({ id: 101 }, NOW)!;
+    const earlier = endOf({ id: 105 }, NOW)!;
+    expect(earlier.source).toBe('warbond');
+    expect(earlier.at).toBe(event.at - DAY);
   });
 });

@@ -48,6 +48,8 @@
 }
 
 .shm-overlay-close {
+  /* Never squeezed by a long heading next to it: the theme's round button keeps its circle. */
+  flex: none;
   padding: 0 6px;
   color: var(--shm-text-muted);
   font-size: calc(24px * var(--shm-font-scale));

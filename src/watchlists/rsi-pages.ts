@@ -1,4 +1,8 @@
+import { splitInsurance, STANDALONE } from '@/melt-rebuy/rebuyable';
+import type { Ship } from '@/ships/ships';
 import type { StoreItem } from '@/store/items/store-items';
+import type { createShipLookup } from '@/store/warbond';
+import type { WatchInsurance } from './watchlists';
 
 /*
  * Where RSI's own pages offer a Pledge Store item to put on a watchlist (#471), read from their
@@ -12,7 +16,15 @@ import type { StoreItem } from '@/store/items/store-items';
  *   side (`.ShipSelector.from`, `.ShipSelector.to`) then holds one `.ShipItem`, whose
  *   `data-store-action-label` names RSI's ship id ("Select P-52 Merlin (id: 92) as from ship"),
  *   and `.AddToCart` holds the price and, in `.AddToCart-cta-wrapper`, RSI's "Add To Cart".
+ * - The store's lists, e.g. "/en/store/pledge/browse/paints" (#632): each item is a card
+ *   `.c-skuCard` whose link `.c-skuCard__anchor` is the path of the item's page, with RSI's cart
+ *   button in `.c-skuCard__actions`. A card of a paint is a store item by that path; a card of a
+ *   standalone ship ("/en/store/pledge/browse/extras/standalone-ships") is the upgrade tool's ship
+ *   its store item names, with the insurance it names ("Avenger Titan - 10 Year").
  */
+
+/** Where a button sits: a paint's page, a card of the store's lists, the ship upgrade dialog. */
+export type RsiWatchPlace = 'page' | 'card' | 'dialog';
 
 /** A path without RSI's locale prefix, in lower case: "/pledge/paint/marauder-bloodlet-paint". */
 export const storePath = (path: string): string =>
@@ -39,7 +51,54 @@ export function paintOfPage(
   return name ? paints.find((item) => item.name.trim().toLowerCase() === name) : undefined;
 }
 
+/** A link's path without host, query and hash. */
+const pathOf = (href: string) => href.replace(/^https?:\/\/[^/]+/i, '').replace(/[?#].*$/, '');
+
+/** The store item a link of the store's lists goes to. */
+const itemOfLink = (href: string, items: readonly StoreItem[]) => {
+  const here = storePath(pathOf(href));
+  return items.find((item) => item.link && storePath(item.link) === here);
+};
+
+/** The paint of a card of the store's lists, by the path its link goes to. */
+export function paintOfCard(href: string, items: readonly StoreItem[]): StoreItem | undefined {
+  if (!isPaintPage(pathOf(href))) return undefined;
+  const item = itemOfLink(href, items);
+  return item?.category === 'Paints' ? item : undefined;
+}
+
+export interface CardShip {
+  /** The store item of the card, e.g. "Avenger Titan - 10 Year". */
+  item: StoreItem;
+  /** The upgrade tool's ship it is. */
+  ship: Ship;
+  /** The insurance its name tells, if any. */
+  insurance?: WatchInsurance;
+}
+
+/**
+ * The standalone ship of a card of the store's lists (#632): its store item by the link, the ship
+ * by the name without the insurance or edition after " - " ("Perseus - Best in Show 2956
+ * Edition"). `lookup` from `createShipLookup`, built once for the ships.
+ */
+export function shipOfCard(
+  href: string,
+  items: readonly StoreItem[],
+  lookup: ReturnType<typeof createShipLookup>,
+): CardShip | undefined {
+  const item = itemOfLink(href, items);
+  if (!item || !STANDALONE.test(item.category)) return undefined;
+  const { base, insurance } = splitInsurance(item.name);
+  const ship = lookup.shipOf(base) ?? lookup.shipOf(base.replace(/\s+[-–]\s+[^-–]+$/, ''));
+  if (!ship) return undefined;
+  const watched = insurance && (insurance.lifetime ? 'lti' : insurance.months);
+  return { item, ship, ...(watched && { insurance: watched }) };
+}
+
 export const PAINT_ANCHOR = '.m-storeAction__wrapper';
+export const SKU_CARD = '.c-skuCard';
+export const SKU_CARD_LINK = '.c-skuCard__anchor';
+export const SKU_CARD_ACTIONS = '.c-skuCard__actions';
 export const UPGRADE_MODAL = '.ShipUpgradeModal';
 export const UPGRADE_CART = '.AddToCart .AddToCart-cta-wrapper';
 const SIDES = { from: '.ShipSelector.from', to: '.ShipSelector.to' } as const;

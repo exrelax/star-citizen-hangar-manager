@@ -1,7 +1,15 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from 'vitest';
 import type { StoreItem } from '@/store/items/store-items';
-import { chosenUpgrade, isPaintPage, paintOfPage, storePath } from './rsi-pages';
+import { createShipLookup } from '@/store/warbond';
+import {
+  chosenUpgrade,
+  isPaintPage,
+  paintOfCard,
+  paintOfPage,
+  shipOfCard,
+  storePath,
+} from './rsi-pages';
 
 const paint = (id: number, name: string, link?: string): StoreItem => ({
   id,
@@ -21,6 +29,68 @@ describe('RSI’s pages with store items (#471)', () => {
     expect(isPaintPage('/en/pledge/Paint/Marauder-Bloodlet-Paint')).toBe(true);
     expect(isPaintPage('/pledge/Paints/X')).toBe(true);
     expect(isPaintPage('/en/pledge/Standalone-Ships/Hy-n-Warbond')).toBe(false);
+  });
+
+  it('finds the paint of a card of the store’s lists by its link only (#632)', () => {
+    const items = [
+      paint(
+        1,
+        'Polaris - 2955 Best in Show Paint',
+        '/pledge/Paint/Polaris-2955-Best-In-Show-Paint',
+      ),
+      { ...paint(2, 'Avenger Titan', '/pledge/Standalone-Ships/Avenger-Titan'), category: 'Ships' },
+    ];
+    expect(paintOfCard('/pledge/Paint/Polaris-2955-Best-In-Show-Paint', items)?.id).toBe(1);
+    expect(
+      paintOfCard(
+        'https://robertsspaceindustries.com/en/pledge/Paint/Polaris-2955-Best-In-Show-Paint?x=1',
+        items,
+      )?.id,
+    ).toBe(1);
+    expect(paintOfCard('/pledge/Standalone-Ships/Avenger-Titan', items)).toBeUndefined();
+    expect(paintOfCard('/pledge/Paint/Unknown-Paint', items)).toBeUndefined();
+  });
+
+  it('finds the standalone ship of a card with the insurance its name tells (#632)', () => {
+    const ship = (id: number, name: string, msrp: number) => ({ id, name, msrp });
+    const lookup = createShipLookup([
+      ship(1, 'Avenger Titan', 70),
+      ship(2, 'Perseus', 800),
+      ship(3, 'Kraken', 1650),
+    ]);
+    const standalone = (id: number, name: string, link: string, isWarbond = false) => ({
+      ...paint(id, name, link),
+      category: 'Standalone Ships',
+      isWarbond,
+    });
+    const items = [
+      standalone(10, 'Avenger Titan - 10 Year', '/pledge/Standalone-Ships/Avenger-Titan-10-Year'),
+      standalone(
+        11,
+        'Perseus - Best in Show 2956 Edition',
+        '/pledge/Standalone-Ships/Perseus-Best-In-Show-2956-Edition',
+      ),
+      standalone(12, 'Kraken', '/pledge/Standalone-Ships/Kraken-Warbond', true),
+      standalone(13, 'Unknown Ship', '/pledge/Standalone-Ships/Unknown-Ship'),
+      paint(14, 'Kraken - Paint', '/pledge/Paint/Kraken-Paint'),
+    ];
+    const of = (href: string) => {
+      const found = shipOfCard(href, items, lookup);
+      return found && { item: found.item.id, ship: found.ship.id, insurance: found.insurance };
+    };
+    expect(of('/pledge/Standalone-Ships/Avenger-Titan-10-Year')).toEqual({
+      item: 10,
+      ship: 1,
+      insurance: 120,
+    });
+    expect(of('/pledge/Standalone-Ships/Perseus-Best-In-Show-2956-Edition')).toEqual({
+      item: 11,
+      ship: 2,
+      insurance: undefined,
+    });
+    expect(of('/en/pledge/Standalone-Ships/Kraken-Warbond')?.ship).toBe(3);
+    expect(of('/pledge/Standalone-Ships/Unknown-Ship')).toBeUndefined();
+    expect(of('/pledge/Paint/Kraken-Paint')).toBeUndefined();
   });
 
   it('finds the paint by its link, else by the page title', () => {
