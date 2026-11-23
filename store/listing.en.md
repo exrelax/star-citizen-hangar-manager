@@ -54,7 +54,7 @@ THE PLEDGE STORE AT A GLANCE
 • A history of the warbond offers seen so far, with their events
 • Event notices like the Intergalactic Aerospace Expo, with countdowns
 • Expected price increases: a reminder on buy back items that get more expensive, advice for CCUs that lose or gain upgrade value, and the CCUs to secure before a ship's price rises
-• Paint Discount Consultant: more store credit from your paints with RSI's volume discount, as a plan you start and follow step by step
+• Paint Discount Planner: more store credit from your paints with RSI's volume discount, as a plan you start and follow step by step
 • Notifications in the sidebar about Pledge Store changes, events, price increases and pledges ready to melt
 
 AN ADDITION, NOT A REPLACEMENT

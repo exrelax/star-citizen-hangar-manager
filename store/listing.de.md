@@ -54,7 +54,7 @@ DER PLEDGE STORE AUF EINEN BLICK
 • Eine Historie der bisher gesehenen Warbond-Angebote, mit ihren Events
 • Event-Hinweise wie zur Intergalactic Aerospace Expo, mit Countdowns
 • Erwartete Preiserhöhungen: eine Erinnerung an Buy-Back-Artikel, die teurer werden, Rat zu CCUs, die Upgrade-Wert verlieren oder gewinnen, und die CCUs, die du dir vor der Preiserhöhung eines Schiffs sichern kannst
-• Paint-Rabatt-Berater: mehr Store Credits aus deinen Paints mit RSIs Mengenrabatt, als Plan, den du startest und Schritt für Schritt verfolgst
+• Paint Discount Planner: mehr Store Credits aus deinen Paints mit RSIs Mengenrabatt, als Plan, den du startest und Schritt für Schritt verfolgst
 • Benachrichtigungen in der Sidebar zu Änderungen im Pledge Store, Events, Preiserhöhungen und Pledges, die eingeschmolzen werden können
 
 EINE ERGÄNZUNG, KEIN ERSATZ

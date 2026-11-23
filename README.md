@@ -55,7 +55,7 @@ unpacked** and select the folder.
   CCUs in their price range, and a history of the warbond offers seen so far
 - Expected price increases: a reminder on buy back items that get more expensive, advice for CCUs
   that lose or gain upgrade value, and the CCUs to secure before a ship's price rises
-- A Paint Discount Consultant: more store credit from your paints with RSI's volume discount, as a
+- A Paint Discount Planner: more store credit from your paints with RSI's volume discount, as a
   plan you start and follow step by step
 - Event notices like the Intergalactic Aerospace Expo, and notifications in the sidebar – from
   the browser only if you turn them on

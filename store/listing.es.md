@@ -54,7 +54,7 @@ EL PLEDGE STORE DE UN VISTAZO
 • Un historial de las ofertas warbond vistas hasta ahora, con sus eventos
 • Avisos de eventos como la Intergalactic Aerospace Expo, con cuentas atrás
 • Subidas de precio previstas: un recordatorio en los artículos de la recompra que se encarecen, consejos para los CCU que pierden o ganan valor, y los CCU que conviene asegurar antes de que suba el precio de una nave
-• Asesor de descuentos de pinturas: más crédito de tienda con tus pinturas gracias al descuento por volumen de RSI, como un plan que inicias y sigues paso a paso
+• Paint Discount Planner: más crédito de tienda con tus pinturas gracias al descuento por volumen de RSI, como un plan que inicias y sigues paso a paso
 • Notificaciones en la barra lateral sobre cambios en el Pledge Store, eventos, subidas de precio y pledges listos para fundir
 
 UN AÑADIDO, NO UN SUSTITUTO

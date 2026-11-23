@@ -31,7 +31,7 @@ announcements.
 - The full CCU history of upgraded ships, with the discount of every step
 - Orders of your purchases with invoices, refund countdown and a prefilled refund request
 - Buy back pledges straight into the RSI cart
-- A Paint Discount Consultant: more store credit from your paints with RSI's volume discount,
+- A Paint Discount Planner: more store credit from your paints with RSI's volume discount,
   as a plan you start and follow step by step
 - The current warbond CCUs of the pledge store, with the cheapest ships to start from and your own
   CCUs in the same price range, and a history of the warbond offers seen so far
@@ -174,7 +174,7 @@ Your settings (language, display options, …) are saved in the browser's sync s
 follow you to your other devices if you use a browser account (Google account in Chrome, Firefox
 account in Firefox). That is your browser's own sync; the extension has no server for it. Besides
 them, only pledge IDs sync: of the pledges [marked to melt](#mark-to-melt-later) and of the paints
-whose consultant notification you dismissed. Your hangar data itself is never synced.
+whose planner notification you dismissed. Your hangar data itself is never synced.
 
 ### It acts only when you click
 
@@ -216,10 +216,10 @@ Sharing your hangar in a screenshot, a stream or a video? The settings categorie
   phases, one upcoming without – and the sidebar shows sample notifications of its own instead of
   the real ones, among them those of these events and of the Pledge Store's changes (new and gone
   warbond CCUs, changed items, #131); checking them off in the demo changes nothing real. The
-  Paint Discount Consultant has a kept plan of its own (#131), never the account's: a paint bought
+  Paint Discount Planner has a kept plan of its own (#131), never the account's: a paint bought
   again with its old pledge left to melt, paints melted first and left to buy again, and its
   filler paints marked to melt – one waiting, one ready. Exchange, Gift and bulk melting (also
-  the consultant's) open their dialogs in the demo too, with the made-up ids; only the button that
+  the planner's) open their dialogs in the demo too, with the made-up ids; only the button that
   would send them is disabled. The
   settings show no account data meanwhile (#132): "Stored data" shows the demo's numbers of the
   account's data (My Hangar, buy back, orders, store credit, paint plan, events, price increases)
@@ -373,7 +373,7 @@ on its own.
       "Reset filters" – and the list shows all on its own once none is left. **Select** selects
       them, so the "Selected" box offers to melt them all at once with bulk melting on. It stays
       while there are any and can't be checked off.
-    - When the [Paint Discount Consultant](#paint-discount-consultant) finds paints to buy again
+    - When the [Paint Discount Planner](#paint-discount-planner) finds paints to buy again
       with more discount: how many (not with "Hide melt value"). Its **×** dismisses it for exactly
       these paints, kept in the sync storage so it stays dismissed on your other browsers too; it
       comes back with the count of all of them as soon as another paint can be bought again, or
@@ -381,7 +381,7 @@ on its own.
     - When buy back pledges are [expected to cost more](#buy-back) within the period of the
       settings (14 days by default): how many, with **Show**, which opens the buy back with the
       filter "Price increase expected" on. Its **×** dismisses it for exactly these pledges (synced,
-      like the consultant's); it comes back with the count of all of them as soon as another pledge
+      like the planner's); it comes back with the count of all of them as soon as another pledge
       enters the period. Pledges whose price increase is over don't count any more. Once a pledge
       has less than 2 days left, a browser notification tells it too – one for all pledges crossing
       that limit at the same time, each pledge once; a click opens the filtered buy back.
@@ -400,7 +400,7 @@ on its own.
       was shown in). An **event** like the Intergalactic Aerospace Expo,
       once its notice starts (see [Pledge Store](#pledge-store-current-warbond-ccus)), with **Show
       in Pledge Store** – in the sidebar only.
-    - When filler paints of the [Paint Discount Consultant](#paint-discount-consultant) are among
+    - When filler paints of the [Paint Discount Planner](#paint-discount-planner) are among
       them: how many, with **Melt the filler paints**, which melts exactly them at once (bulk
       melting on; otherwise it leads to the setting).
     - Below them, the marked pledges still waiting, with the time left.
@@ -414,7 +414,7 @@ on its own.
     off, one that leads to it.
   - **Paint Discount** (only while there is a paint to buy again): how many paints can be bought
     again with a higher volume discount and the store credit it frees, with a link to the
-    [consultant](#paint-discount-consultant) and a filter button: **Show these paints** lists
+    [planner](#paint-discount-planner) and a filter button: **Show these paints** lists
     only them in "My Hangar" (its icon then shows the filter is on); **Show all pledges** or
     "Reset filters" shows all again, and so does the list once none is left.
 - The sidebar stays on every tab of the manager (Buy Back, Pledge Store, Settings) and keeps
@@ -777,12 +777,12 @@ sale any more once Intergalactic Aerospace Expo 2956 ends on November 27, 2026."
 sale come from RSI's upgrade tool, which ships are always available from the ship facts of the
 project website; without them there is no note.
 
-## Paint Discount Consultant
+## Paint Discount Planner
 
 RSI gives a volume discount on paints in the cart: 15 % from 2 paints, 20 % from 3, 25 % from 5,
-30 % from 7 and 35 % from 10. The tab **Consultants** shows how to turn it into store credit with
-the paints you already own, next to the CCU Consultant (#453): each consultant shows only while it
-has something to offer – the Paint Discount Consultant while paints can be bought again for less,
+30 % from 7 and 35 % from 10. The tab **Tools** shows how to turn it into store credit with
+the paints you already own, next to the CCU Check (#453): each tool shows only while it
+has something to offer – the Paint Discount Planner while paints can be bought again for less,
 a plan runs or there are completed plans –, with a sub tab and its count for each; a single one shows its name as the
 heading instead:
 
@@ -805,11 +805,11 @@ heading instead:
 - **Honest about the result**: the melt value of the own paints drops by the store credit freed –
   the account's total value stays the same. Paints bought again with store credit are no longer
   giftable.
-- **Giftable paints are left out** by default, as they would lose that status; the consultant says
-  how many. Turned off (in the consultant or the settings), they are included and marked
+- **Giftable paints are left out** by default, as they would lose that status; the planner says
+  how many. Turned off (in the planner or the settings), they are included and marked
   "Giftable".
 - **Order**: fill the cart and check it first, melt only after that.
-- **Tabs** (#244): the consultant shows the **Running plan**, a **New plan** and the **Completed
+- **Tabs** (#244): the planner shows the **Running plan**, a **New plan** and the **Completed
   plans** in tabs, each only while it has something to show. With a single one there are no tabs,
   only its heading; without any, it says why no plan is possible. A plan that starts running is
   shown first.
@@ -890,7 +890,7 @@ heading instead:
   button, which keeps the tier and fillers really put into the cart. Afterwards the hangar is read again, as after every bulk melting. With bulk
   melting off, **Bulk melting disabled** opens the settings at that setting instead.
 - **Bought again**: once the paints were bought, the hangar holds each own paint twice – the old
-  pledge without the discount and the new copy with it. The consultant pairs each copy with one
+  pledge without the discount and the new copy with it. The planner pairs each copy with one
   old pledge of the same paint (the oldest one with less discount; the copy is younger). By
   default a pair counts only when the old pledge was in a plan that was started
   and the copy was bought that day or later; the setting "Paints bought again" can also show other
@@ -901,7 +901,7 @@ heading instead:
   are not planned again; other paints can form a new plan next to them. In My Hangar the old
   pledges carry "Melt – bought again at 35%", and the sidebar box counts them.
 - **In My Hangar**: the paints it would buy again carry a tag "Rebuy 0% → 35%" (their discount now
-  and then; its tooltip says the store credit freed), which opens the consultant. The filter
+  and then; its tooltip says the store credit freed), which opens the planner. The filter
   button of the sidebar box **Paint Discount** shows just them.
 - Only pledges with exactly one paint that can be melted, and single paints of the Pledge Store;
   paint packs come later. Hidden while "Hide melt value" is on.
@@ -951,7 +951,7 @@ heading instead:
 
 The settings tab (#117) lists its categories on the left, in four groups – General (Appearance,
 Privacy, Demo mode, RSI website), Lists (My Hangar and Buy Back, Filters, Sidebar), Automation (Notifications,
-Paint Discount Consultant, Smart updates) and More (Experimental, Stored data, Error log, About) – and shows
+Paint Discount Planner, Smart updates) and More (Experimental, Stored data, Error log, About) – and shows
 one category at a time on the right, as grouped rows like the system settings: a switch for each
 on/off setting, a segmented control for the theme, selects and number fields for the rest. A
 narrow window shows the categories as a row above. Settings that depend on a switch sit below it
@@ -979,7 +979,7 @@ order of the list:
   many the buy back has, which states show (refund countdown, protected game access, upgraded
   ships, a pledge bought a few hours ago, marks to melt in a new demo hangar) and how many pledges
   can't be gifted or melted, and the **store credit of the demo** (#179), shown in the account
-  figures and used by the Paint Discount Consultant, with a quick choice for each of its cases on
+  figures and used by the Paint Discount Planner, with a quick choice for each of its cases on
   this demo hangar – same tier, lower tier, not possible, no store credit (a case the hangar can't
   show is disabled). **New demo hangar** makes another random one; **Reset demo** puts
   these settings back and clears the demo's marks. Changes apply at once.
@@ -1003,7 +1003,7 @@ order of the list:
 - **Sidebar**:
   - **Show the sidebar** (on by default) – see [Selection and summary](#selection-and-summary).
   - **Boxes** (all on by default, only while the sidebar is shown): notifications, summary,
-    selected and Paint Discount Consultant. Without the "Selected" box, the rows have no select
+    selected and Paint Discount Planner. Without the "Selected" box, the rows have no select
     control.
   - **Reset order** (only while the boxes aren't in their default order): puts the boxes back
     into their default order; which boxes are shown and which are collapsed stays as it is.
@@ -1019,7 +1019,7 @@ order of the list:
     marked to melt can be melted – one notification for all that are due, each pledge once, by the
     pledges of this browser's stored hangar, and only for pledges that were still waiting for RSI's
     24 hours when marked (a mark on a pledge that can be melted already shows "Melt now" at once and
-    needs no notification) – and when the Paint Discount Consultant's filler
+    needs no notification) – and when the Paint Discount Planner's filler
     paints can be melted (a notification of their own). A click opens the Hangar Manager – in
     an RSI tab already open (My Hangar focused, else another RSI tab), or a new one. In Chrome the
     notification about marked pledges has the sidebar's buttons too: **Show** lists only the
@@ -1034,7 +1034,7 @@ order of the list:
     [Pledge Store](#pledge-store-current-warbond-ccus)).
   - **Kinds of notifications** (#197), each on by default and turned off on its own:
     - **Marked pledges can be melted** (below "Browser notifications", only while they are on): the
-      browser notifications about marked pledges and the consultant's filler paints; the sidebar
+      browser notifications about marked pledges and the planner's filler paints; the sidebar
       tells it anyway.
     - **Pledge Store**: **Warbond CCUs changed** (in the sidebar, new ones also in the browser),
       **Pledge Store items changed** and **Events** (both in the sidebar only), **Ships leaving the
@@ -1045,19 +1045,19 @@ order of the list:
   - **Show checked-off notifications again** (#213): brings back the sidebar notifications checked
     off or dismissed with their ×, as far as they still matter – an event while it is shown, new
     warbond CCUs while one is still offered, changed Pledge Store items while one of the new or
-    repriced ones still has that price, the Paint Discount Consultant's while paints can still be
+    repriced ones still has that price, the Paint Discount Planner's while paints can still be
     bought again (on all browsers, as the dismissed paints are synced), the expected price
     increases' while buy back pledges are in their period, the ship removals' while their date is
     ahead, and the hint on browser
     notifications while they are off. Kinds turned off stay hidden; notifications from before this
     version (without what they were about) don't come back. It says how many came back.
-- **Paint Discount Consultant** (it always buys with store credit, never with new money):
+- **Paint Discount Planner** (it always buys with store credit, never with new money):
   - **Include my store credit** (on by default): the cart may also be paid with the current store
     credit; off, only with the melt value of the own paints.
   - **Use filler paints** (on by default): cheap extra paints reach a higher volume discount and
     are melted again after RSI's 24-hour cooldown; off, only the own paints count.
   - **Leave out giftable paints** (on by default): bought again with store credit, they would no
-    longer be giftable. Also right in the consultant.
+    longer be giftable. Also right in the planner.
   - **Paints bought again**: only those of a started plan (default, safe), or also guessed
     from discount and age – shown as a guess to check, without acting on it.
   - **Layout** of a new plan: choose a way and see only that one (default), both ways ("Buy

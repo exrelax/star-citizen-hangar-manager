@@ -24,7 +24,7 @@ import {
 import { currentPlanOf, demoRebuyPlanItem, rebuyPlanItem } from './rebuy-plan-storage';
 
 /*
- * The Paint Discount Consultant's result for the whole manager, worked out once (in App.vue) from
+ * The Paint Discount Planner's result for the whole manager, worked out once (in App.vue) from
  * the hangar's pledges (in the demo mode the demo selection), the Pledge Store items, the store
  * credit and the settings: shown in the Pledge Store tab (`PaintConsultant.vue`), and as marks and
  * a filter in My Hangar (`paintRebuys`).
@@ -205,7 +205,7 @@ export function providePaintConsultant({
 /** The result provided by `providePaintConsultant`. */
 export function usePaintConsultant(): PaintConsultantState {
   const state = maybePaintConsultant();
-  if (!state) throw new Error('The Paint Discount Consultant is not provided');
+  if (!state) throw new Error('The Paint Discount Planner is not provided');
   return state;
 }
 
