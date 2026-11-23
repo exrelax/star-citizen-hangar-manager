@@ -206,8 +206,12 @@ const displayClasses = computed(() => ({
         </button>
       </div>
       <template v-if="storeData">
-        <p class="shm-count">
-          <span>{{ i18n.n('store.count', offers.length) }}</span>
+        <!--
+          When they were read on the right; with the sort (#628) the count moves down to the left of
+          the sort, as in My Hangar's lists.
+        -->
+        <p class="shm-count" :class="{ 'is-updated-only': sortable }">
+          <span v-if="!sortable">{{ i18n.n('store.count', offers.length) }}</span>
           <span class="shm-store-updated">
             <span v-if="upgradeToolState.loading">{{ i18n.t('store.updating') }}</span>
             <span v-else-if="updated">{{ updated }}</span>
@@ -224,8 +228,8 @@ const displayClasses = computed(() => ({
             </button>
           </span>
         </p>
-        <!-- Above the list on the right, below the count and when they were read (#628). -->
         <div v-if="sortable" class="shm-count shm-store-sort">
+          <span>{{ i18n.n('store.count', offers.length) }}</span>
           <SelectMenu
             :options="sortOptions"
             :model-value="settings.warbondSort"
@@ -320,12 +324,17 @@ const displayClasses = computed(() => ({
   gap: 6px;
 }
 
+/* Only when they were read, on the right: the count is in the row of the sort below. */
+.shm-count.is-updated-only {
+  justify-content: flex-end;
+}
+
 /*
- * The sort of the warbond CCUs on the right: a count row like the one of My Hangar's list (its font
- * and color in both themes), close below the row above it.
+ * The count on the left and the sort of the warbond CCUs on the right (#628): a count row like the
+ * one of My Hangar's list (its font and color in both themes), close below the row above it.
  */
 .shm-store-sort {
-  justify-content: flex-end;
+  align-items: center;
   margin-top: -4px;
 }
 
