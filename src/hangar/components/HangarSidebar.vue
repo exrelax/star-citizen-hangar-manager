@@ -15,7 +15,12 @@ import SidebarBox from './SidebarBox.vue';
 import { missingCounts, useBaseShipList } from '@/ccu-consultant/use-base-ship-list';
 import { openConsultant } from '@/consultants/consultants';
 import { openTabAt } from '../open-tab-at';
-import { BROWSER_NOTIFICATIONS_SETTING_ID, BULK_MELTING_SETTING_ID } from '@/settings/anchors';
+import { isOverBulkLimit } from '../bulk-melting-limit';
+import {
+  BROWSER_NOTIFICATIONS_SETTING_ID,
+  BULK_MELTING_MAX_SETTING_ID,
+  BULK_MELTING_SETTING_ID,
+} from '@/settings/anchors';
 import {
   browserNotificationsHintDismissedItem,
   browserNotificationsItem,
@@ -151,6 +156,21 @@ const bulkExchanging = ref(false);
 /** Bulk melting is off: the settings tab, at its setting. */
 const openBulkMeltingSetting = () =>
   openTabAt('settings', BULK_MELTING_SETTING_ID, { highlight: true });
+/*
+ * More selected than bulk melting may melt at once (#622): its button can't be used, and says to
+ * select fewer or raise the limit, at its setting.
+ */
+const overBulkLimit = computed(() =>
+  isOverBulkLimit(meltable.value.length, props.settings.bulkMeltingMax),
+);
+const bulkLimitText = computed(() =>
+  i18n.t('bulkExchange.overLimit', [number.value.format(props.settings.bulkMeltingMax)]),
+);
+const openBulkMeltingMaxSetting = () =>
+  openTabAt('settings', BULK_MELTING_MAX_SETTING_ID, { highlight: true });
+function startBulkExchange() {
+  if (!overBulkLimit.value) bulkExchanging.value = true;
+}
 const chosen = computed(() => (selected.value.length ? summarize(selected.value) : undefined));
 
 // The demo mode: its pledge ids are made up, so nothing links to RSI or melts.
@@ -1255,16 +1275,32 @@ async function move(box: Box, step: -1 | 1) {
           </p>
           <div v-if="meltable.length" class="shm-sidebar-actions">
             <!-- Opens the dialog in the demo too; there its melt button is disabled. -->
+            <!-- Over the limit (#622) it stays focusable, so its tooltip tells why. -->
             <button
               v-if="settings.bulkMelting"
-              v-tooltip="i18n.t('bulkExchange.buttonHint')"
+              v-tooltip="overBulkLimit ? bulkLimitText : i18n.t('bulkExchange.buttonHint')"
               type="button"
               class="shm-button is-danger shm-sidebar-button is-full"
-              @click="bulkExchanging = true"
+              :class="{ 'is-disabled': overBulkLimit }"
+              :aria-disabled="overBulkLimit || undefined"
+              @click="startBulkExchange"
             >
               <SvgIcon name="triangle-exclamation" />
               {{ i18n.t('bulkExchange.button', [meltable.length]) }}
             </button>
+            <template v-if="settings.bulkMelting && overBulkLimit">
+              <p class="shm-sidebar-note is-warning shm-bulk-limit" role="status">
+                {{ bulkLimitText }}
+              </p>
+              <button
+                type="button"
+                class="shm-button shm-sidebar-button is-full"
+                @click="openBulkMeltingMaxSetting"
+              >
+                <SvgIcon name="gear" />
+                {{ i18n.t('bulkExchange.overLimitLink') }}
+              </button>
+            </template>
             <!-- Off: points to the experimental setting, so the feature can be found (#159). -->
             <button
               v-else
@@ -1313,6 +1349,7 @@ async function move(box: Box, step: -1 | 1) {
             :pledges="meltable"
             :hangar="pledges"
             :skipped="selected.length - meltable.length"
+            limited
             @close="bulkExchanging = false"
           />
         </template>
@@ -1637,6 +1674,17 @@ async function move(box: Box, step: -1 | 1) {
   margin: 8px 0 0;
   color: var(--shm-text-muted);
   font-size: calc(11px * var(--shm-font-scale));
+}
+
+/* Why the bulk melting button above it can't be used (#622), across the actions' row. */
+.shm-sidebar-note.shm-bulk-limit {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.shm-sidebar-button.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /*

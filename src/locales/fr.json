@@ -219,6 +219,9 @@
     "bulkMeltingHint": "Fond tous les pledges sélectionnés de « My Hangar » à la fois, depuis l’encadré de sélection de la barre latérale, avec le mot de passe saisi une seule fois. S’arrête au premier pledge refusé par RSI. Plusieurs fontes à la suite en un clic pourraient être considérées comme une macro selon les Conditions d’utilisation de RSI, et une fonte est irréversible.",
     "bulkMeltingConfirm": "Activer « Fondre plusieurs pledges à la fois » ? Un clic fond alors plusieurs pledges à la suite. RSI pourrait considérer cela comme une macro selon ses Conditions d’utilisation, et une fonte est irréversible.",
     "bulkMeltingTurnOn": "Activer",
+    "bulkMeltingMax": "Pledges au plus par fusion multiple",
+    "bulkMeltingMaxHint": "De $1 à $2. Le site de RSI ne peut pas fondre plusieurs pledges à la fois, chaque pledge est donc fondu avec sa propre requête. Pour rester prudent – fondre beaucoup de pledges prend plus de temps, beaucoup de pledges pourraient être fondus par erreur, et cela peut aller à l’encontre des Terms of Service de RSI – garde ce nombre bas, ou augmente-le seulement pour une seule fusion et remets-le ensuite.",
+    "pledges": "pledges",
     "bulkMeltingCancel": "Annuler",
     "hideMeltValue": "Masquer la valeur de fusion",
     "hideMeltValueHint": "Masque tous les montants en $ : valeurs des pledges, remises, coûts des améliorations appliquées, montants des commandes et valeurs dans les fenêtres d’échange et de cadeau.",
@@ -1345,7 +1348,9 @@
       "other": "Modifié"
     },
     "unchecked": "Les pledges n’ont pas pu être relus chez RSI ($1). Rien n’a été fondu.",
-    "demoHint": "La démo ne fait qu’afficher la vérification et la fonte : rien n’est lu chez RSI ni fondu. Le résultat de la vérification se choisit dans les paramètres de la démo."
+    "demoHint": "La démo ne fait qu’afficher la vérification et la fonte : rien n’est lu chez RSI ni fondu. Le résultat de la vérification se choisit dans les paramètres de la démo.",
+    "overLimit": "La fusion multiple est limitée à $1 pledges. Sélectionne-en moins, ou augmente la limite dans les paramètres, sous Expérimental.",
+    "overLimitLink": "Augmenter la limite"
   },
   "meltMark": {
     "mark": "Marquer pour fondre",

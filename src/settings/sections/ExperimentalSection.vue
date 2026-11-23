@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import SvgIcon from '@/icons/SvgIcon.vue';
 import { i18n } from '@/i18n';
-import { BULK_MELTING_SETTING_ID } from '../anchors';
+import { BULK_MELTING_MAX } from '@/config';
+import { BULK_MELTING_MAX_SETTING_ID, BULK_MELTING_SETTING_ID } from '../anchors';
 import SettingCheck from '../SettingCheck.vue';
+import SettingRow from '../SettingRow.vue';
 import SettingsGroup from '../SettingsGroup.vue';
-import type { Settings } from '../settings';
+import { isBulkMeltingMax, type Settings } from '../settings';
 import { nextTick, ref, useTemplateRef } from 'vue';
 
 /*
@@ -12,7 +14,7 @@ import { nextTick, ref, useTemplateRef } from 'vue';
  * them is at the user's own risk.
  */
 
-defineProps<{ settings: Settings }>();
+const props = defineProps<{ settings: Settings }>();
 const emit = defineEmits<{ update: [patch: Partial<Settings>] }>();
 
 /*
@@ -38,6 +40,14 @@ async function changeBulkMelting(on: boolean) {
 function turnOnBulkMelting() {
   askingBulk.value = false;
   emit('update', { bulkMelting: true });
+}
+
+/** The limit of bulk melting (#622): whole numbers in range; anything else snaps back. */
+function changeBulkMeltingMax(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const value = Number(input.value);
+  if (isBulkMeltingMax(value)) emit('update', { bulkMeltingMax: value });
+  else input.value = String(props.settings.bulkMeltingMax);
 }
 </script>
 
@@ -68,6 +78,32 @@ function turnOnBulkMelting() {
         </button>
       </div>
     </div>
+    <!-- How many pledges at most (#622), while it is on; linked from the "Selected" box. -->
+    <SettingRow
+      v-if="settings.bulkMelting"
+      :id="BULK_MELTING_MAX_SETTING_ID"
+      class="shm-setting-anchor"
+      :label="i18n.t('settings.bulkMeltingMax')"
+      for="shm-bulk-melting-max"
+      hint-id="shm-bulk-melting-max-hint"
+      :hint="i18n.t('settings.bulkMeltingMaxHint', [BULK_MELTING_MAX.min, BULK_MELTING_MAX.max])"
+    >
+      <span class="shm-number-field">
+        <input
+          id="shm-bulk-melting-max"
+          class="shm-input shm-number"
+          type="number"
+          inputmode="numeric"
+          :min="BULK_MELTING_MAX.min"
+          :max="BULK_MELTING_MAX.max"
+          step="1"
+          :value="settings.bulkMeltingMax"
+          aria-describedby="shm-bulk-melting-max-hint"
+          @change="changeBulkMeltingMax"
+        />
+        {{ i18n.t('settings.pledges') }}
+      </span>
+    </SettingRow>
     <SettingCheck
       :checked="settings.translateRsiTexts"
       :hint="i18n.t('settings.translateRsiTextsHint')"

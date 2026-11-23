@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { PAINT_CONSULTANT } from '@/config';
 import type { StoreItem } from '../items/store-items';
 import {
   findRebought,
@@ -209,6 +210,8 @@ describe('planPaintRebuy', () => {
       ['Arrow - Tan and Green Paint', 5],
       ['ROC - Harvester Paint', 4],
     ]);
+    // The most a plan ever buys, so its bulk melting never melts more than 9 at once (#622).
+    expect(plan!.fillers.reduce((sum, f) => sum + f.quantity, 0)).toBe(PAINT_CONSULTANT.maxFillers);
     // $27 of fillers cost $17.55; with the own paint, (5 + 27) × 0.65.
     expect(plan!.cartCost).toBe(20.8);
     expect(plan!.storeCreditNeeded).toBe(15.8);

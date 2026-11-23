@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_SETTINGS, withDefaults } from './settings';
+import { bulkMeltingMaxOf, DEFAULT_SETTINGS, isBulkMeltingMax, withDefaults } from './settings';
 
 describe('withDefaults', () => {
   it('returns the defaults when nothing is stored', () => {
@@ -35,6 +35,7 @@ describe('withDefaults', () => {
       cartPaintDiscount: true,
       meltRebuy: true,
       bulkMelting: true,
+      bulkMeltingMax: 10,
       hideSupersededInsurances: true,
       summaryTypes: false,
       sidebar: false,
@@ -170,5 +171,33 @@ describe('the counts on the base ships of RSI’s ship upgrade dialog (#506)', (
     expect(withDefaults({ upgradeDialogBaseCounts: 'no' as never }).upgradeDialogBaseCounts).toBe(
       true,
     );
+  });
+});
+
+describe('the limit of bulk melting (#622)', () => {
+  it('is 10 by default, also for settings stored without it', () => {
+    expect(DEFAULT_SETTINGS.bulkMeltingMax).toBe(10);
+    expect(withDefaults({ bulkMelting: true }).bulkMeltingMax).toBe(10);
+  });
+
+  it('keeps a stored number from 2 to 99', () => {
+    expect(withDefaults({ bulkMeltingMax: 2 }).bulkMeltingMax).toBe(2);
+    expect(withDefaults({ bulkMeltingMax: 99 }).bulkMeltingMax).toBe(99);
+  });
+
+  it('falls back to the nearest limit out of its range, to the default without a number', () => {
+    expect(bulkMeltingMaxOf(1)).toBe(2);
+    expect(bulkMeltingMaxOf(0)).toBe(2);
+    expect(bulkMeltingMaxOf(250)).toBe(99);
+    expect(bulkMeltingMaxOf(12.6)).toBe(13);
+    expect(bulkMeltingMaxOf('12')).toBe(10);
+    expect(bulkMeltingMaxOf(Number.NaN)).toBe(10);
+  });
+
+  it('takes whole numbers in its range from the field', () => {
+    expect(isBulkMeltingMax(2)).toBe(true);
+    expect(isBulkMeltingMax(1)).toBe(false);
+    expect(isBulkMeltingMax(100)).toBe(false);
+    expect(isBulkMeltingMax(5.5)).toBe(false);
   });
 });

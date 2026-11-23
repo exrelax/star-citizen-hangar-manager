@@ -1,4 +1,4 @@
-import { MELT_COOLDOWN_MS } from '@/config';
+import { MELT_COOLDOWN_MS, PAINT_CONSULTANT } from '@/config';
 import { meltableAt } from '@/hangar/melt-marks';
 import type { StoreItem } from '../items/store-items';
 import {
@@ -733,7 +733,10 @@ export function runningPlanSteps(input: RunningPlanInput): RunningPlanView {
           ...(present.length ? [row(waiting ? 'wait' : 'melt', present)] : []),
         ];
       });
-    const meltable = left.filter((filler) => filler.pledge!.isMeltable);
+    // At most `maxFillers` at once (#622): a plan never buys more, so this only guards the limit.
+    const meltable = left
+      .filter((filler) => filler.pledge!.isMeltable)
+      .slice(0, PAINT_CONSULTANT.maxFillers);
     const action: RunAction = {
       kind: 'melt',
       role: 'cta',
