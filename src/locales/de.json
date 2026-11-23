@@ -219,6 +219,9 @@
     "bulkMeltingHint": "Schmilzt alle ausgewählten Pledges von „My Hangar“ auf einmal ein, über die Auswahl-Box der Sidebar, mit einmal eingegebenem Passwort. Stoppt beim ersten Pledge, das RSI ablehnt. Mehrere Einschmelzvorgänge nacheinander mit einem Klick könnte RSI nach seinen Nutzungsbedingungen als Makro werten, und Einschmelzen lässt sich nicht rückgängig machen.",
     "bulkMeltingConfirm": "„Mehrere Pledges auf einmal einschmelzen“ einschalten? Ein Klick schmilzt dann mehrere Pledges nacheinander ein. RSI könnte das nach seinen Nutzungsbedingungen als Makro werten, und Einschmelzen lässt sich nicht rückgängig machen.",
     "bulkMeltingTurnOn": "Einschalten",
+    "bulkMeltingMax": "Höchstens so viele Pledges auf einmal",
+    "bulkMeltingMaxHint": "Von $1 bis $2. Die RSI-Website kann nicht mehrere Pledges auf einmal einschmelzen, deshalb wird jedes Pledge mit einer eigenen Anfrage eingeschmolzen. Zur Sicherheit – viele Pledges einzuschmelzen dauert länger, viele Pledges könnten versehentlich eingeschmolzen werden, und es kann gegen RSIs Terms of Service verstoßen – halte diese Zahl niedrig, oder erhöhe sie nur für ein einzelnes Einschmelzen und setze sie danach zurück.",
+    "pledges": "Pledges",
     "bulkMeltingCancel": "Abbrechen",
     "hideMeltValue": "Schmelzwert ausblenden",
     "hideMeltValueHint": "Blendet alle $$-Beträge aus: Pledge-Werte, Rabatte, die Kosten angewendeter Upgrades, die Beträge der Bestellungen und die Werte in den Dialogen zum Eintauschen und Verschenken.",
@@ -1345,7 +1348,9 @@
       "other": "Geändert"
     },
     "unchecked": "Die Pledges konnten nicht erneut bei RSI gelesen werden ($1). Es wurde nichts eingeschmolzen.",
-    "demoHint": "Die Demo zeigt Prüfung und Einschmelzen nur: Nichts wird bei RSI gelesen oder eingeschmolzen. Wie die Prüfung ausgeht, legen die Demo-Einstellungen fest."
+    "demoHint": "Die Demo zeigt Prüfung und Einschmelzen nur: Nichts wird bei RSI gelesen oder eingeschmolzen. Wie die Prüfung ausgeht, legen die Demo-Einstellungen fest.",
+    "overLimit": "Mehrfach-Einschmelzen ist auf $1 Pledges begrenzt. Wähle weniger aus, oder erhöhe die Grenze in den Einstellungen unter Experimentell.",
+    "overLimitLink": "Grenze erhöhen"
   },
   "meltMark": {
     "mark": "Zum Einschmelzen merken",

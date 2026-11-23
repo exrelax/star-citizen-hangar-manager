@@ -549,6 +549,12 @@ acknowledgements, an extra one for the experimental feature and your password, e
 The pledges are exchanged one after the other, a second apart; the first one RSI refuses (e.g. a
 wrong password) stops the rest, and the dialog says what was exchanged and what wasn't. Pledges
 that can't be melted are left out; in the demo mode the button is disabled.
+It melts at most a set number of pledges at once – **Most pledges per bulk melting**, 10 by
+default, 2 to 99, below the setting. With more selected the button can't be used and says to
+select fewer or raise the limit, with a button to the setting; the dialog checks the limit again
+right before melting. Keep it low, or raise it only for a single melting: RSI's website melts each
+pledge with a request of its own. The Paint Discount Planner's filler paints keep their own
+number, at most 9.
 With it off, the "Selected" box shows **Bulk melting disabled** instead (with meltable pledges
 selected): a click opens the settings at the setting and marks it for a moment.
 

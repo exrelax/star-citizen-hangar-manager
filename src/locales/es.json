@@ -219,6 +219,9 @@
     "bulkMeltingHint": "Funde todos los pledges seleccionados de «My Hangar» a la vez, desde la caja de selección de la barra lateral, introduciendo la contraseña una sola vez. Se detiene en el primer pledge que RSI rechace. Varias fundiciones seguidas con un clic podrían contar como macro según los Términos de servicio de RSI, y fundir no se puede deshacer.",
     "bulkMeltingConfirm": "¿Activar «Fundir varios pledges a la vez»? Un clic funde entonces varios pledges seguidos. RSI podría considerarlo una macro según sus Términos de servicio, y fundir no se puede deshacer.",
     "bulkMeltingTurnOn": "Activar",
+    "bulkMeltingMax": "Pledges como máximo por fusión múltiple",
+    "bulkMeltingMaxHint": "De $1 a $2. La web de RSI no puede fundir varios pledges a la vez, así que cada pledge se funde con una petición propia. Para ir sobre seguro – fundir muchos pledges tarda más, se podrían fundir muchos pledges por error y puede ir en contra de los Terms of Service de RSI –, mantén este número bajo, o súbelo solo para una fusión y vuelve a bajarlo después.",
+    "pledges": "pledges",
     "bulkMeltingCancel": "Cancelar",
     "hideMeltValue": "Ocultar el valor de fusión",
     "hideMeltValueHint": "Oculta todos los importes en $$: valores de los pledges, descuentos, costes de las mejoras aplicadas, importes de los pedidos y valores en los diálogos de canje y regalo.",
@@ -1345,7 +1348,9 @@
       "other": "Cambiado"
     },
     "unchecked": "No se pudieron volver a leer los pledges en RSI ($1). No se fundió nada.",
-    "demoHint": "La demo solo muestra la comprobación y la fundición: no se lee nada de RSI ni se funde nada. El resultado de la comprobación se elige en los ajustes de la demo."
+    "demoHint": "La demo solo muestra la comprobación y la fundición: no se lee nada de RSI ni se funde nada. El resultado de la comprobación se elige en los ajustes de la demo.",
+    "overLimit": "La fusión múltiple está limitada a $1 pledges. Selecciona menos, o sube el límite en los ajustes, en Experimental.",
+    "overLimitLink": "Subir el límite"
   },
   "meltMark": {
     "mark": "Marcar para fundir",

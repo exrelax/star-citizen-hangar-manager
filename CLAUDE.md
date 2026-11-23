@@ -258,6 +258,9 @@ It must always be able to show, in both themes:
   cancelled; the check right before bulk melting (#415), in the bulk melting dialog and for the
   filler paints: checking, all pledges match, a pledge changed, gone or no longer meltable, and RSI
   not readable, chosen in the demo settings, never reading or melting anything.
+- The limit of bulk melting (#622): the setting under "Experimental" with its note at 2, 10 and
+  higher; the button with fewer, as many and more selected pledges than the limit, disabled with
+  its tooltip and the link to the setting; never melting anything.
 - The buy back tokens at the top right: 0 tokens and a count above 0 (#433); their tooltip (#434)
   with the next renewal date and its source link – the real one of the website, one announced by
   CIG, an estimated one with its note (demo setting "Next renewal of the buy back tokens") – and
@@ -304,6 +307,9 @@ It must always be able to show, in both themes:
 - The synced data in the settings' stored data (#560): the demo's own watchlists and marks to
   melt with entries, empty and near a limit of the synced storage; the delete question shown and
   cancelled.
+- Stored data in groups (#624): every group collapsed and expanded with the demo's sizes and
+  counts, a group refreshed, the delete question of a group that can be read again and of one that
+  can't, shown and cancelled.
 - Settings without real account data (#132); the error log (#340, #341, #342) with made-up entries
   of several codes: a narrowed page as main entry (►) with its sub-errors (↳), a repeated error
   (×3), URLs, a stack trace, an outline and pledge names from the Pledge Store; clearing off.

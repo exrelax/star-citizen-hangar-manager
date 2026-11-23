@@ -16,6 +16,7 @@ import {
   type ExchangeWarning,
 } from '../exchange';
 import { pledgeKind } from '../pledge-kind';
+import { isOverBulkLimit } from '../bulk-melting-limit';
 import { useDemoContext } from '@/demo/use-demo';
 import { demoMeltRun } from '@/demo/demo-melt-check';
 import type { PledgeView } from '../pledge-view';
@@ -50,6 +51,12 @@ const props = defineProps<{
    * checked before its paints are melted (#104).
    */
   extraConsent?: string;
+  /**
+   * Bulk melting from the "Selected" box (#622): at most the setting's number of pledges, checked
+   * again right before melting, also when the setting changes while the dialog is open. The
+   * consultant's filler paints keep their own number.
+   */
+  limited?: boolean;
 }>();
 const emit = defineEmits<{
   close: [];
@@ -73,6 +80,13 @@ const rsi = useRsiText();
 const dialog = useTemplateRef<HTMLElement>('dialog');
 
 const hideValue = computed(() => settings.value.hideMeltValue);
+/** More pledges than bulk melting may melt at once now (#622). */
+const overLimit = computed(
+  () => !!props.limited && isOverBulkLimit(list.length, settings.value.bulkMeltingMax),
+);
+const overLimitText = computed(() =>
+  i18n.t('bulkExchange.overLimit', [settings.value.bulkMeltingMax]),
+);
 const money = (amount: number) => (hideValue.value ? HIDDEN : formatUsd(amount, locale.value));
 /** The id as the row shows it: in the demo its made-up one. */
 const pledgeId = (pledge: PledgeView) =>
@@ -194,6 +208,7 @@ const ready = computed(
     (!hasDanger.value || consentWarnings.value) &&
     // The demo sends nothing, so it needs no password.
     (password.value !== '' || !!demo.value) &&
+    !overLimit.value &&
     !submitting.value,
 );
 
@@ -209,6 +224,11 @@ const run = () =>
     : { verify, delayMs: BULK_EXCHANGE_DELAY_MS };
 
 async function submit() {
+  // Right before melting: the limit may have changed while the dialog was open (#622).
+  if (overLimit.value) {
+    error.value = overLimitText.value;
+    return;
+  }
   if (!ready.value) {
     error.value = i18n.t('exchange.missing');
     return;
@@ -489,7 +509,10 @@ onUnmounted(() => {
             />
           </label>
 
-          <p v-if="error" class="shm-action-error" role="alert">{{ error }}</p>
+          <p v-if="overLimit && !submitting" class="shm-action-error" role="alert">
+            {{ overLimitText }}
+          </p>
+          <p v-else-if="error" class="shm-action-error" role="alert">{{ error }}</p>
 
           <div class="shm-action-buttons">
             <button type="button" class="shm-button" :disabled="submitting" @click="close">

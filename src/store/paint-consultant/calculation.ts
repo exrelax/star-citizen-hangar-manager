@@ -295,6 +295,8 @@ function cartAt(
   // The cheapest paints fill the cart up to the tier, each up to `maxPerItem` times.
   let needed = Math.max(0, tier.paints - own.length);
   if (needed && !useFillers) return undefined;
+  // Never more fillers than its bulk melting may melt at once (#622).
+  if (needed > PAINT_CONSULTANT.maxFillers) return undefined;
   const fillers: FillerPaint[] = [];
   const cheapest = [...storePaints].sort(
     (a, b) => a.price - b.price || a.name.localeCompare(b.name),

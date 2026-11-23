@@ -3,7 +3,14 @@ import { OWNED_CCU_COLUMNS, type OwnedCcuSort } from '@/store/owned-ccu-sort';
 import { DEFAULT_DEMO_SETTINGS, demoSettingsOf, type DemoSettings } from '@/demo/demo-settings';
 import { notificationKindsOf, type NotificationKind } from '@/notifications/kinds';
 import { BUYBACK_FILTER_CATEGORIES, type BuybackFilter } from '@/buyback/buyback-view';
-import { FILTERS, FONT_SIZE_SCALES, PLEDGE_STORE, PRICE_INCREASES, SMART_UPDATE } from '@/config';
+import {
+  BULK_MELTING_MAX,
+  FILTERS,
+  FONT_SIZE_SCALES,
+  PLEDGE_STORE,
+  PRICE_INCREASES,
+  SMART_UPDATE,
+} from '@/config';
 import {
   normalizeFilterGroups,
   PLEDGE_FILTER_CATEGORIES,
@@ -101,6 +108,8 @@ export interface Settings {
    * sidebar's selection box (see `hangar/components/BulkExchangeOverlay.vue`).
    */
   bulkMelting: boolean;
+  /** The most pledges bulk melting melts at once in My Hangar (#622), `BULK_MELTING_MAX`. */
+  bulkMeltingMax: number;
   /** Lists only the best insurance in the items of upgraded ships, the one that counts. */
   hideSupersededInsurances: boolean;
   /** The sidebar's summaries also count the pledges per type (ships, CCUs, …). */
@@ -218,6 +227,7 @@ export const DEFAULT_SETTINGS: Settings = {
   cartPaintDiscount: true,
   meltRebuy: true,
   bulkMelting: false,
+  bulkMeltingMax: BULK_MELTING_MAX.default,
   hideSupersededInsurances: true,
   summaryTypes: false,
   sidebar: true,
@@ -278,6 +288,13 @@ export const isWholeNumberIn =
 export const isRefreshMinutes = isWholeNumberIn(PLEDGE_STORE.refreshMinutes);
 /** Whole minutes in the range of the smart update interval. */
 export const isSmartUpdateMinutes = isWholeNumberIn(SMART_UPDATE.checkMinutes);
+/** The limit of bulk melting in its range (#622). */
+export const isBulkMeltingMax = isWholeNumberIn(BULK_MELTING_MAX);
+/** A stored limit of bulk melting: out of its range the nearest end of it, else the default. */
+export function bulkMeltingMaxOf(value: unknown): number {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return BULK_MELTING_MAX.default;
+  return Math.min(BULK_MELTING_MAX.max, Math.max(BULK_MELTING_MAX.min, Math.round(value)));
+}
 /** A number of spot check pages in its range. */
 export const isSpotCheckPages = isWholeNumberIn(SMART_UPDATE.spotCheckPages);
 /** Whole days in the range of the period of expected price increases. */
@@ -314,6 +331,7 @@ export function withDefaults(stored: Partial<Settings> | null | undefined): Sett
     cartPaintDiscount: pick('cartPaintDiscount', isBoolean),
     meltRebuy: pick('meltRebuy', isBoolean),
     bulkMelting: pick('bulkMelting', isBoolean),
+    bulkMeltingMax: bulkMeltingMaxOf(stored?.bulkMeltingMax),
     hideSupersededInsurances: pick('hideSupersededInsurances', isBoolean),
     summaryTypes: pick('summaryTypes', isBoolean),
     sidebar: pick('sidebar', isBoolean),

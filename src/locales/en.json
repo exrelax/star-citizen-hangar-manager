@@ -219,6 +219,9 @@
     "bulkMeltingHint": "Exchanges all selected pledges of “My Hangar” at once, from the selection box of the sidebar, with your password entered once. Stops at the first pledge RSI refuses. Several exchanges in a row with one click may count as a macro under RSI's Terms of Service, and melting can't be undone.",
     "bulkMeltingConfirm": "Turn on bulk melting? It exchanges several pledges in a row with one click. RSI may count this as a macro under its Terms of Service, and melting can't be undone.",
     "bulkMeltingTurnOn": "Turn on",
+    "bulkMeltingMax": "Most pledges per bulk melting",
+    "bulkMeltingMaxHint": "From $1 to $2. RSI's website can't melt several pledges at once, so each pledge is melted with a request of its own. To stay safe – melting many pledges takes longer, many pledges could be melted by mistake, and it may go against RSI's Terms of Service – keep this number low, or raise it only for a single melting and set it back afterwards.",
+    "pledges": "pledges",
     "bulkMeltingCancel": "Cancel",
     "hideMeltValue": "Hide melt value",
     "hideMeltValueHint": "Hides all $$ amounts: pledge values, discounts, the costs of applied upgrades, the amounts of the orders and the values in the exchange and gift dialogs.",
@@ -1345,7 +1348,9 @@
       "other": "Changed"
     },
     "unchecked": "The pledges couldn't be read from RSI again ($1). Nothing was exchanged.",
-    "demoHint": "The demo only shows the check and the exchange: nothing is read from RSI or exchanged. How the check turns out is set in the demo settings."
+    "demoHint": "The demo only shows the check and the exchange: nothing is read from RSI or exchanged. How the check turns out is set in the demo settings.",
+    "overLimit": "Bulk melting is limited to $1 pledges. Select fewer, or raise the limit in the settings under Experimental.",
+    "overLimitLink": "Raise the limit"
   },
   "meltMark": {
     "mark": "Mark to melt",

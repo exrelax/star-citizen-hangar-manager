@@ -380,8 +380,12 @@ export const PAINT_DISCOUNT_TIERS = {
 /**
  * The Paint Discount Consultant (see `src/store/paint-consultant`): RSI's cart takes this many of
  * the same item; a kept plan is checked against the orders for this many days (#105).
+ *
+ * `maxFillers` (#622): a plan buys at most 9 filler paints – 10 paints in the cart already reach
+ * the best discount, and a plan has at least one own paint –, so its bulk melting of the fillers
+ * never melts more than 9 at once (the limit of bulk melting in the settings doesn't apply there).
  */
-export const PAINT_CONSULTANT = { maxPerItem: 5, fillerCheckDays: 7 } as const;
+export const PAINT_CONSULTANT = { maxPerItem: 5, fillerCheckDays: 7, maxFillers: 9 } as const;
 
 /** The "Pledge Store" tab: current warbond CCUs from RSI's ship upgrade tool (see `src/store`). */
 export const PLEDGE_STORE = {
@@ -496,6 +500,13 @@ export const EXCHANGE_ATTENTION_DELAY_MS = 5_000;
  * this pause between two of RSI's requests, so they don't come in a burst.
  */
 export const BULK_EXCHANGE_DELAY_MS = 1_000;
+
+/**
+ * The most pledges bulk melting melts at once in My Hangar (#622), a setting: 1 would be no bulk
+ * melting. The Paint Discount Planner's filler paints keep their own number (at most
+ * `PAINT_CONSULTANT.maxFillers`).
+ */
+export const BULK_MELTING_MAX = { default: 10, min: 2, max: 99 } as const;
 
 /**
  * RSI lets a pledge be melted only this long after it was bought, with store credit or money
