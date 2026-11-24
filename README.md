@@ -33,7 +33,7 @@ Planned:
 Until the Opera listing is live, you can install the extension in Opera (and Edge) from a file of
 the [latest release on GitHub](https://github.com/exrelax/star-citizen-hangar-manager/releases/latest).
 Installed this way, it doesn't update itself: download
-`star-citizen-hangar-manager-1.1.1-chrome.zip` and unzip it into a folder. Open
+`star-citizen-hangar-manager-1.2.0-chrome.zip` and unzip it into a folder. Open
 `opera://extensions` (or `edge://extensions`), switch on **Developer mode**, click **Load
 unpacked** and select the folder.
 
@@ -45,20 +45,30 @@ unpacked** and select the folder.
 - **Private by design:** no account, no tracking, no server of its own – your hangar, buy back and
   orders are stored only in your browser
 - Filters that include or exclude: ships, CCUs, paints, game access, rewards, LTI, warbond,
-  giftable, meltable, valuable – and sorting by date, value or discount
+  giftable, meltable, valuable – refined right in their pill, and sorting by date, value or
+  discount
+- A grouped view of equal pledges, and list shortcuts like "Ready to melt" and "Melt and rebuy"
 - Melt values, discounts compared to the original price and the full CCU history of upgraded ships
 - Orders with invoices, refund countdown and a prefilled refund request
 - Buy back pledges with their buy back price and "probably giftable" hints, straight into the RSI
   cart
 - Select pledges and see their summary, and mark pledges to melt later
+- A CCU Check: which CCUs have a base ship to start from, the CCU chains that are short of a way,
+  and the CCUs that will soon lose their base ship or their discount
+- Watchlists of pledges, buy back items and Pledge Store items, with reminders and "Put on a
+  watchlist" buttons on RSI's own store pages
+- Melt and Rebuy: the pledges you can melt now and buy again later at the same price
 - The current warbond CCUs of the Pledge Store, with the cheapest ships to start from and your own
   CCUs in their price range, and a history of the warbond offers seen so far
+- All ships by value in one table, and the ships leaving the Pledge Store with a countdown
 - Expected price increases: a reminder on buy back items that get more expensive, advice for CCUs
   that lose or gain upgrade value, and the CCUs to secure before a ship's price rises
 - A Paint Discount Planner: more store credit from your paints with RSI's volume discount, as a
   plan you start and follow step by step
 - Event notices like the Intergalactic Aerospace Expo, and notifications in the sidebar – from
   the browser only if you turn them on
+- Export & Import of your hangar (JSON, CSV, HangarXPLOR for FleetYards) and of your settings
+  and own data
 - Hide IDs, name, address and values for screenshots and streams, or show an anonymized selection
   in the demo mode
 - Two themes ("Modern Hangar" and "Classic RSI") and four languages (English, German, French,
