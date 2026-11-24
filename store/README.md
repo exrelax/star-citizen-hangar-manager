@@ -24,6 +24,12 @@ description as plain text, so they use no Markdown.
 | [03-pledge-store-ccu.png](screenshots/03-pledge-store-ccu.png)                   | 1280×800 |                                             |
 | [04-paint-discount-consultant.png](screenshots/04-paint-discount-consultant.png) | 1280×800 |                                             |
 | [05-ccu-base-ship-overview.png](screenshots/05-ccu-base-ship-overview.png)       | 1280×800 |                                             |
+| [06-ccu-check.png](screenshots/06-ccu-check.png)                                 | 1280×800 | New in 1.2.0; the Chrome Web Store takes    |
+| [07-ccu-check-deep-view.png](screenshots/07-ccu-check-deep-view.png)             | 1280×800 | at most 5 screenshots, so choose there      |
+| [08-all-ships.png](screenshots/08-all-ships.png)                                 | 1280×800 |                                             |
+| [09-watchlists.png](screenshots/09-watchlists.png)                               | 1280×800 |                                             |
+| [10-ship-removals.png](screenshots/10-ship-removals.png)                         | 1280×800 |                                             |
+| [11-grouped-view.png](screenshots/11-grouped-view.png)                           | 1280×800 |                                             |
 | [small-tile-440x280.png](small-tile-440x280.png)                                 | 440×280  | Chrome, Edge: small promotional tile        |
 | [marquee-1400x560.png](marquee-1400x560.png)                                     | 1400×560 | Chrome, Edge: marquee / large tile (opt.)   |
 | [screenshots-opera/](screenshots-opera)                                          | 612×408  | Opera: the same screenshots, smaller        |
