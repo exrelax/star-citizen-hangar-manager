@@ -11,6 +11,7 @@ import { localized } from '@/events/events';
 import { EVENTS_VERSION, eventsItem } from '@/events/events-storage';
 import { formatUsd } from '@/hangar/discount-format';
 import { setMeltMarks } from '@/hangar/melt-marks';
+import { meltMarksQuotaText } from '@/hangar/melt-marks-quota';
 import { useMarkedPledges } from '@/hangar/use-melt-marks';
 import { i18n, locale } from '@/i18n';
 import SvgIcon from '@/icons/SvgIcon.vue';
@@ -139,8 +140,15 @@ async function finish(list: Watchlist, added: number, raised: number) {
   ];
   if (markToo.value && unmarked.value.length) {
     const ids = unmarked.value;
-    await setMeltMarks(ids, true, !!demo.value);
-    parts.push(i18n.n('meltMark.selectionMarked', ids.length, [ids.length]));
+    try {
+      await setMeltMarks(ids, true, !!demo.value);
+      parts.push(i18n.n('meltMark.selectionMarked', ids.length, [ids.length]));
+    } catch (error) {
+      // They don't fit into the synced storage (#658): the watchlist is kept, nothing marked.
+      const text = meltMarksQuotaText(error);
+      if (!text) throw error;
+      parts.push(text);
+    }
   }
   if (current.skipped) {
     parts.push(i18n.n('watchlists.rebuy.skipped', current.skipped, [current.skipped]));

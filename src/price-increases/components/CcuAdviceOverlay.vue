@@ -4,6 +4,7 @@ import { formatUsd } from '@/hangar/discount-format';
 import type { BuybackView } from '@/buyback/buyback-view';
 import type { PledgeView } from '@/hangar/pledge-view';
 import { setMeltMarks } from '@/hangar/melt-marks';
+import { meltMarksQuotaText } from '@/hangar/melt-marks-quota';
 import { useMarkedPledges } from '@/hangar/use-melt-marks';
 import { useShipFacts } from '@/ships/use-ship-facts';
 import { i18n, locale } from '@/i18n';
@@ -13,7 +14,7 @@ import { vTooltip } from '@/shared/tooltip/tooltip';
 import { current, shipsItem } from '@/ships/ships-storage';
 import { useStored } from '@/storage/use-stored';
 import { fontScaleStyle, themeClasses } from '@/themes/theme';
-import { computed, onMounted, onUnmounted, reactive, useTemplateRef } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref, useTemplateRef } from 'vue';
 import { adviceEvents, type AdviceEvent, type AdviceRow } from '../advice-events';
 import type { CcuAdviceGroup } from '../ccu-advice';
 import { confirmationNote, formatExpectedTime } from '../price-increase-label';
@@ -170,8 +171,16 @@ const recommendedIds = computed(() =>
 const allMarked = computed(
   () => recommendedIds.value.length > 0 && recommendedIds.value.every((id) => marked.value.has(id)),
 );
-function toggleMarks() {
-  void setMeltMarks(recommendedIds.value, !allMarked.value, !!demo.value);
+/** Why the CCUs couldn't be marked: they don't fit into the synced storage (#658). */
+const markProblem = ref<string>();
+async function toggleMarks() {
+  markProblem.value = undefined;
+  try {
+    await setMeltMarks(recommendedIds.value, !allMarked.value, !!demo.value);
+  } catch (error) {
+    markProblem.value = meltMarksQuotaText(error);
+    if (!markProblem.value) throw error;
+  }
 }
 
 onMounted(() => {
@@ -604,7 +613,11 @@ function onKeydown(event: KeyboardEvent) {
         </section>
 
         <footer class="shm-kd-footer">
-          <span class="shm-kd-footer-note">
+          <span v-if="markProblem" class="shm-kd-footer-note" role="alert">
+            <SvgIcon name="triangle-exclamation" />
+            {{ markProblem }}
+          </span>
+          <span v-else class="shm-kd-footer-note">
             <SvgIcon name="circle-info" />
             {{ i18n.t('ccuAdvice.footer') }}
             <template v-if="footerNote">{{ i18n.t(footerNote) }}</template>

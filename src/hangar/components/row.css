@@ -463,7 +463,9 @@ html .shm-theme-rsi .shm-badge {
   cursor: help;
 }
 
-.shm-base-missing-note {
+/* Also a change that couldn't be stored, e.g. a mark to melt (#658). */
+.shm-base-missing-note,
+.shm-error-note {
   display: flex;
   gap: 8px;
   align-items: baseline;
@@ -472,7 +474,8 @@ html .shm-theme-rsi .shm-badge {
   border: 1px solid color-mix(in srgb, var(--shm-danger) 30%, transparent);
 }
 
-.shm-base-missing-note > .shm-icon {
+.shm-base-missing-note > .shm-icon,
+.shm-error-note > .shm-icon {
   flex: none;
   color: var(--shm-danger);
 }
@@ -486,7 +489,8 @@ html .shm-theme-rsi .shm-badge {
   margin-left: 2px;
 }
 
-.shm-theme-modern .shm-base-missing-note {
+.shm-theme-modern .shm-base-missing-note,
+.shm-theme-modern .shm-error-note {
   border-radius: var(--shm-radius-group);
 }
 

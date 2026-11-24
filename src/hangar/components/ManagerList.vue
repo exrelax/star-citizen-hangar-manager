@@ -261,6 +261,16 @@ const resetFilters = () => {
   clearRequested();
 };
 
+// Hidden, the filters no longer narrow down the list (a watchlist's search and filters, #658).
+watch(
+  () => props.hideControls,
+  (hidden) => {
+    if (!hidden) return;
+    filterStates.value = new Map();
+    refinementStates.value = new Map();
+  },
+);
+
 // By its time only: a new title (e.g. another language) keeps search and filters.
 watch(
   () => props.filterRequest?.at,

@@ -85,15 +85,76 @@ export function marksInHangar(
   return kept.length === Object.keys(marks).length ? marks : Object.fromEntries(kept);
 }
 
-/** Marks or unmarks the pledge, in the demo's own marks while it is on. */
+// ---- The limits of the synced storage (#658) ----
+
+/** The browsers' limit of one key in the synced storage, in bytes. */
+const PER_ITEM = 8192;
+const MARKS_KEY = 'hangar.meltMarks';
+const encoder = new TextEncoder();
+const bytesOf = (marks: MeltMarks) =>
+  encoder.encode(MARKS_KEY).length + encoder.encode(JSON.stringify(marks)).length;
+
+/**
+ * Marks that don't fit into the synced storage; nothing was written. `room`: how many more marks
+ * fit into its key, `undefined` when the storage as a whole is full.
+ */
+export class MeltMarksQuotaError extends Error {
+  constructor(readonly room?: number) {
+    super("The marks to melt don't fit into the synced storage");
+    this.name = 'MeltMarksQuotaError';
+  }
+}
+
+/** How many more marks fit into the key, from the size of a mark of these ids. */
+export function marksRoom(marks: MeltMarks, ids: readonly number[], now: number): number {
+  const free = PER_ITEM - bytesOf(marks);
+  const sample = `"${ids[0] ?? 100000000}":${now},`.length;
+  return Math.max(0, Math.floor(free / sample));
+}
+
+/** The browser's own quota error, e.g. when the watchlists fill the synced storage. */
+const isQuotaError = (error: unknown) =>
+  error instanceof Error && /quota|MAX_ITEMS|MAX_WRITE/i.test(error.message);
+
+/** Stores the marks, or throws `MeltMarksQuotaError` with nothing written if they don't fit. */
+async function writeMarks(
+  marks: MeltMarks,
+  before: MeltMarks,
+  added: readonly number[],
+  demo: boolean,
+): Promise<void> {
+  if (demo) return demoMeltMarksItem.setValue(marks);
+  if (added.length && bytesOf(marks) > PER_ITEM) {
+    throw new MeltMarksQuotaError(marksRoom(before, added, Date.now()));
+  }
+  try {
+    await meltMarksItem.setValue(marks);
+  } catch (error) {
+    if (isQuotaError(error)) throw new MeltMarksQuotaError();
+    throw error;
+  }
+}
+
+/**
+ * Marks or unmarks the pledge, in the demo's own marks while it is on. Throws
+ * `MeltMarksQuotaError` if the mark doesn't fit into the synced storage.
+ */
 export async function toggleMeltMark(pledgeId: number, demo = false): Promise<void> {
   const item = demo ? demoMeltMarksItem : meltMarksItem;
-  await item.setValue(toggledMarks(await item.getValue(), pledgeId, Date.now()));
+  const before = await item.getValue();
+  const marks = toggledMarks(before, pledgeId, Date.now());
+  await writeMarks(
+    marks,
+    before,
+    pledgeId in marks && !(pledgeId in before) ? [pledgeId] : [],
+    demo,
+  );
 }
 
 /**
  * Marks all the pledges, or unmarks them (the CCUs of the price increase advice, #274); a mark
- * already set keeps its time. In the demo's own marks while it is on.
+ * already set keeps its time. In the demo's own marks while it is on. Throws
+ * `MeltMarksQuotaError` with nothing marked if they don't fit into the synced storage.
  */
 export async function setMeltMarks(
   pledgeIds: readonly number[],
@@ -101,13 +162,18 @@ export async function setMeltMarks(
   demo = false,
 ): Promise<void> {
   const item = demo ? demoMeltMarksItem : meltMarksItem;
-  const marks = { ...(await item.getValue()) };
+  const before = await item.getValue();
+  const marks = { ...before };
   const now = Date.now();
+  const added: number[] = [];
   for (const id of pledgeIds) {
     if (!marked) delete marks[id];
-    else marks[id] ??= now;
+    else if (marks[id] === undefined) {
+      marks[id] = now;
+      added.push(id);
+    }
   }
-  await item.setValue(marks);
+  await writeMarks(marks, before, added, demo);
 }
 
 /** Drops the marks of pledges that are gone from the stored hangar (melted, gifted, …). */

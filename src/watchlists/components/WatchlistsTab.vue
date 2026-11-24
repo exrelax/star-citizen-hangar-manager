@@ -151,20 +151,24 @@ async function remove(list: Watchlist) {
   openId.value = undefined;
 }
 
+/** Writes a change of an item; a failed write is said (#658). */
+function storeChange(list: Watchlist, next: Watchlist) {
+  if (next === list) return;
+  error.value = undefined;
+  store(next).catch((cause: unknown) => (error.value = saveErrorOf(cause)));
+}
+
 function setCount(list: Watchlist, key: string, count: number) {
-  const next = setItemCount(list, key, count, Date.now());
-  if (next !== list) void store(next);
+  storeChange(list, setItemCount(list, key, count, Date.now()));
 }
 
 /** The selected items off this watchlist in one write (#620); a failed write keeps them all. */
 function removeEntries(list: Watchlist, keys: string[]) {
-  const next = removeItems(list, keys, Date.now());
-  if (next !== list) void store(next);
+  storeChange(list, removeItems(list, keys, Date.now()));
 }
 
 function removeEntry(list: Watchlist, key: string) {
-  const next = removeItem(list, key, Date.now());
-  if (next !== list) void store(next);
+  storeChange(list, removeItem(list, key, Date.now()));
 }
 </script>
 
@@ -179,6 +183,7 @@ function removeEntry(list: Watchlist, key: string) {
       :settings="settings"
       :lists="pledgeLists"
       :active="active"
+      :error="dialog ? undefined : error"
       @back="openId = undefined"
       @edit="openDialog(open)"
       @delete="remove(open)"

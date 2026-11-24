@@ -6,14 +6,14 @@ import SvgIcon from '@/icons/SvgIcon.vue';
 import { useSettings } from '@/settings/use-settings';
 import { useStored } from '@/storage/use-stored';
 import { fontScaleStyle, themeClasses } from '@/themes/theme';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { STORE_ITEMS_VERSION, storeItemsItem } from '../items/store-items-storage';
 import {
   cartPaintDiscount,
-  fillerLinesOf,
+  fillerLinesToAdd,
   type CartTierOption,
 } from '../paint-consultant/cart-discount';
-import { addLinesToCart, cartCheckOf, readCart, type CartLine } from '../paint-consultant/cart';
+import { addLinesToCart, readCart, type CartLine } from '../paint-consultant/cart';
 import { currentPlanOf, rebuyPlanItem, storedPlanOf } from '../paint-consultant/rebuy-plan-storage';
 import { keepStartedPlan, planStartError } from '../paint-consultant/start-plan';
 import PaintConfirm from './PaintConfirm.vue';
@@ -37,7 +37,7 @@ const emit = defineEmits<{
   added: [];
 }>();
 
-const { settings } = useSettings();
+const { settings, loaded } = useSettings();
 const storeItems = useStored(storeItemsItem);
 const storedCredit = useStored(storeCreditItem);
 const storedPlan = useStored(rebuyPlanItem);
@@ -57,8 +57,8 @@ const credit = computed(() => {
 const cart = ref<CartLine[]>();
 const failed = ref(false);
 async function refreshCart() {
-  // The demo never reads the real cart.
-  if (demo.value) return;
+  // The demo never reads the real cart: not before the settings tell whether it is on (#658).
+  if (!loaded.value || demo.value) return;
   try {
     cart.value = await readCart();
     failed.value = false;
@@ -67,6 +67,8 @@ async function refreshCart() {
   }
 }
 defineExpose({ refreshCart });
+// Read once the settings are loaded, and again when the demo is turned off.
+watch([loaded, demo], () => void refreshCart());
 
 /** The cart the note is about: RSI's, in the demo its own. */
 const shownCart = computed(() =>
@@ -123,13 +125,16 @@ async function addFillers({ replace = false } = {}) {
   asking.value = false;
   busy.value = true;
   try {
-    // The cart again first: only what is still missing goes in.
+    // The cart again first: the fillers go in on top of the cart the note was worked out from,
+    // also those of SKUs in it already, less what was put in since (#658).
+    const noted = cart.value ?? [];
     const before = await readCart();
-    const missing = cartCheckOf(fillerLinesOf(option), before).missing;
+    const missing = fillerLinesToAdd(option, noted, before);
     const added = await addLinesToCart(missing);
     await refreshCart();
     outcome.value = added.failed.length ? (added.added.length ? 'partly' : 'none') : 'added';
-    if (added.added.length) {
+    // Also when all of them were in the cart already: the plan marks them to melt once bought.
+    if (added.added.length || !added.failed.length) {
       // The plan of the consultant: the fillers are marked to melt once bought (#105).
       const kept = await keepStartedPlan(
         rebuyPlanItem,

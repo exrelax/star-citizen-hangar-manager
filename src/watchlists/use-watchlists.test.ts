@@ -8,10 +8,12 @@ import {
   createWatchlistWithItems,
   followWatchlists,
   removeFromWatchlist,
+  storeWatchlist,
   watchlists,
   watchlistsByItem,
   watchlistsLoaded,
 } from './use-watchlists';
+import { itemKey } from './watchlists';
 import { loadWatchlists } from './watchlists-storage';
 
 const flush = async () => {
@@ -79,5 +81,30 @@ describe('the selection of My Hangar on a watchlist (#549)', () => {
     const list = await createWatchlistWithItems('Melt', [nomad, ccu]);
     expect(list.items.map((item) => item.kind === 'hangar' && item.pledgeId)).toEqual([7, 8]);
     expect(await loadWatchlists()).toMatchObject([{ name: 'Melt' }]);
+  });
+});
+
+describe('quick changes of a watchlist (#658)', () => {
+  it('builds each change on the one before and stores them in order', async () => {
+    const list = await createWatchlistWith('IAE', nomad);
+    // Two quick changes: the second starts before the first is stored.
+    const first = removeFromWatchlist(list.id, 'h:7');
+    const second = addToWatchlist(list.id, paint);
+    await Promise.all([first, second]);
+    await flush();
+    expect(watchlists.value[0]?.items.map(itemKey)).toEqual(['b:9']);
+    expect((await loadWatchlists())[0]?.items.map(itemKey)).toEqual(['b:9']);
+  });
+
+  it('puts the watchlist back when it can’t be stored', async () => {
+    const list = await createWatchlistWith('IAE', nomad);
+    const set = fakeBrowser.storage.sync.set;
+    fakeBrowser.storage.sync.set = () => Promise.reject(new Error('Sync is switched off'));
+    try {
+      await expect(storeWatchlist({ ...list, name: 'Other' })).rejects.toThrow();
+    } finally {
+      fakeBrowser.storage.sync.set = set;
+    }
+    expect(watchlists.value.map((other) => other.name)).toEqual(['IAE']);
   });
 });

@@ -1439,6 +1439,11 @@
       "one": "$1 left as it was: not meltable or marked already.",
       "other": "$1 left as they were: not meltable or marked already."
     },
+    "quotaFull": "Not marked: the synced storage is full. Delete watchlists or marks you no longer need.",
+    "quotaRoom": {
+      "one": "Not marked: only $1 more mark fits into the synced storage. Mark fewer pledges, or unmark some first.",
+      "other": "Not marked: only $1 more marks fit into the synced storage. Mark fewer pledges, or unmark some first."
+    },
     "selectionUnmarked": {
       "one": "Mark removed from $1 pledge.",
       "other": "Marks removed from $1 pledges."

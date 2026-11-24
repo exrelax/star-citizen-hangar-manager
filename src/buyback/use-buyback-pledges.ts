@@ -38,6 +38,8 @@ export function useBuybackPledges() {
   const pledges = shallowRef<BuybackView[]>([]);
   const loaded = ref(false);
   const syncedAt = ref<string>();
+  /** When the list was last changed, also by a smart update (#658); else the last refresh. */
+  const updatedAt = ref<string>();
   /** Buy back tokens left, as of the last sync or smart update; unset if unknown. */
   const tokens = ref<number>();
   /** Pledges the last full sync had to skip (#339); 0 when all were read. */
@@ -102,6 +104,7 @@ export function useBuybackPledges() {
         )
       : [];
     syncedAt.value = current?.syncedAt;
+    updatedAt.value = current?.updatedAt ?? current?.syncedAt;
     tokens.value = current?.tokens;
     unread.value = current?.unread ?? 0;
   };
@@ -158,5 +161,5 @@ export function useBuybackPledges() {
     unwatchPriceIncreases();
   });
 
-  return { pledges, loaded, syncedAt, tokens, unread };
+  return { pledges, loaded, syncedAt, updatedAt, tokens, unread };
 }

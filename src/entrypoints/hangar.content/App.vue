@@ -309,16 +309,16 @@ watch(
 );
 
 /**
- * When My Hangar and the Buy Back were last read, so a watchlist tells a pledge gone from one not
- * read yet (#467). The demo's lists are always complete.
+ * When My Hangar and the Buy Back were last read, also by a smart update (#658), so a watchlist
+ * tells a pledge gone from one not read yet (#467). The demo's lists are always complete.
  */
 const watchlistReadAt = computed(() => {
-  const readAt = (syncedAt?: string) => {
+  const readAt = (readOn?: string) => {
     if (demo.value) return Date.now();
-    const time = syncedAt ? Date.parse(syncedAt) : Number.NaN;
+    const time = readOn ? Date.parse(readOn) : Number.NaN;
     return Number.isNaN(time) ? undefined : time;
   };
-  return { hangar: readAt(syncedAt.value), buyback: readAt(buyback.syncedAt.value) };
+  return { hangar: readAt(hangar.updatedAt.value), buyback: readAt(buyback.updatedAt.value) };
 });
 
 /** The status line of the list shown (in the settings the hangar's): its last refresh and check. */

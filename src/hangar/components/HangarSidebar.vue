@@ -46,6 +46,7 @@ import { isListShortcutOpen, toggleListShortcut } from '../list-shortcut';
 import { MELT_READY_SHORTCUT, PAINT_REBUY_SHORTCUT } from '../hangar-shortcuts';
 import { MELT_REBUY_SHORTCUT_ID, meltRebuyShortcut } from '@/melt-rebuy/rebuy-shortcut';
 import { formatTimeLeft, selectionMarks, setMeltMarks } from '../melt-marks';
+import { meltMarksQuotaText } from '../melt-marks-quota';
 import { myGearHref } from '../route';
 import { useNow } from '@/shared/use-now';
 import { vMarkWrapped } from '@/shared/mark-wrapped';
@@ -211,7 +212,14 @@ async function markSelection() {
   const plan = selectionMark.value;
   if (!plan) return;
   if (plan.toMark.length) {
-    await setMeltMarks(plan.toMark, true, !!demo.value);
+    try {
+      await setMeltMarks(plan.toMark, true, !!demo.value);
+    } catch (error) {
+      // They don't fit into the synced storage (#658): nothing was marked.
+      selectionMarkDone.value = meltMarksQuotaText(error);
+      if (selectionMarkDone.value) return;
+      throw error;
+    }
     const done = i18n.n('meltMark.selectionMarked', plan.toMark.length, [plan.toMark.length]);
     selectionMarkDone.value = plan.skipped
       ? `${done} ${i18n.n('meltMark.selectionSkipped', plan.skipped, [plan.skipped])}`

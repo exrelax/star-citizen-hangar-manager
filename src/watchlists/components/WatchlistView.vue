@@ -47,6 +47,8 @@ const props = defineProps<{
   lists: PledgeLists;
   /** The tab is shown. */
   active: boolean;
+  /** Why the last change couldn't be stored (#658). */
+  error?: string;
 }>();
 const emit = defineEmits<{
   back: [];
@@ -294,6 +296,11 @@ async function askDelete() {
         </button>
       </div>
     </header>
+
+    <p v-if="error" class="shm-hint shm-error-note" role="alert">
+      <SvgIcon name="triangle-exclamation" />
+      <span>{{ error }}</span>
+    </p>
 
     <div v-if="asking" class="shm-watchlist-confirm" role="alert">
       <p>

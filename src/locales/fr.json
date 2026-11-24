@@ -1439,6 +1439,11 @@
       "one": "$1 laissé tel quel : pas fondable ou déjà marqué.",
       "other": "$1 laissés tels quels : pas fondables ou déjà marqués."
     },
+    "quotaFull": "Pas marqué : le stockage synchronisé est plein. Supprime les watchlists ou les marques dont tu n’as plus besoin.",
+    "quotaRoom": {
+      "one": "Pas marqué : seule $1 marque de plus tient dans le stockage synchronisé. Marque moins de pledges, ou retire d’abord des marques.",
+      "other": "Pas marqué : seules $1 marques de plus tiennent dans le stockage synchronisé. Marque moins de pledges, ou retire d’abord des marques."
+    },
     "selectionUnmarked": {
       "one": "Marque retirée de $1 pledge.",
       "other": "Marques retirées de $1 pledges."

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { StoreItem } from '../items/store-items';
-import { cartPaintDiscount, fillerLinesOf } from './cart-discount';
+import { cartPaintDiscount, fillerLinesOf, fillerLinesToAdd } from './cart-discount';
 
 const item = (
   id: number,
@@ -94,6 +94,36 @@ describe('the paint discount of RSI’s cart (#458)', () => {
       ),
     ).toBeUndefined();
     expect(cartPaintDiscount([{ skuId: 9, qty: 1 }], store)).toBeUndefined();
+  });
+});
+
+describe('the fillers the cart note adds (#658)', () => {
+  const cart = [1, 2, 3, 4].map((skuId) => ({ skuId, qty: 1 }));
+  const option = () => cartPaintDiscount(cart, store, 1000)!.best!;
+
+  it('adds the fillers on top of the paints in the cart, also of SKUs in it already', () => {
+    expect(fillerLinesOf(option())).toEqual([
+      { skuId: 2, name: 'Avenger - Skullcrusher Paint', qty: 4 },
+      { skuId: 3, name: 'Nova - Tundra Paint', qty: 2 },
+    ]);
+    expect(fillerLinesToAdd(option(), cart, cart)).toEqual([
+      { skuId: 2, name: 'Avenger - Skullcrusher Paint', qty: 4 },
+      { skuId: 3, name: 'Nova - Tundra Paint', qty: 2 },
+    ]);
+  });
+
+  it('leaves out what was put into the cart since the note read it', () => {
+    const now = [
+      { skuId: 1, qty: 1 },
+      { skuId: 2, qty: 3 },
+      { skuId: 3, qty: 3 },
+      { skuId: 4, qty: 1 },
+    ];
+    expect(fillerLinesToAdd(option(), cart, now)).toEqual([
+      { skuId: 2, name: 'Avenger - Skullcrusher Paint', qty: 2 },
+    ]);
+    // Removed paints don't add more fillers.
+    expect(fillerLinesToAdd(option(), cart, [{ skuId: 1, qty: 1 }])).toHaveLength(2);
   });
 });
 

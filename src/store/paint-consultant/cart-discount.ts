@@ -116,3 +116,22 @@ export const fillerLinesOf = (option: CartTierOption): PaintCartLine[] =>
     name: filler.paint.name,
     qty: filler.quantity,
   }));
+
+/**
+ * The fillers of an option still to put into the cart (#658). The option counts on top of the
+ * cart it was worked out from (`noted`), also fillers of SKUs that cart holds already, so they all
+ * go in – less what was put into the cart of their SKU since (`now`, read right before adding).
+ */
+export function fillerLinesToAdd(
+  option: CartTierOption,
+  noted: readonly CartLine[],
+  now: readonly CartLine[],
+): PaintCartLine[] {
+  const qtyOf = (cart: readonly CartLine[], skuId: number) =>
+    cart.reduce((sum, line) => (line.skuId === skuId ? sum + line.qty : sum), 0);
+  return fillerLinesOf(option).flatMap((line) => {
+    const since = Math.max(0, qtyOf(now, line.skuId) - qtyOf(noted, line.skuId));
+    const qty = line.qty - since;
+    return qty > 0 ? [{ ...line, qty }] : [];
+  });
+}

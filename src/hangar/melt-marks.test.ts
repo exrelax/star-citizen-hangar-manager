@@ -7,9 +7,11 @@ import {
   marksInHangar,
   meltableAt,
   meltMarksItem,
+  MeltMarksQuotaError,
   selectionMarks,
   setMeltMarks,
   toggledMarks,
+  toggleMeltMark,
 } from './melt-marks';
 
 /** The later of the UTC and the local reading of a time without a time zone. */
@@ -93,6 +95,51 @@ describe('setMeltMarks (#274)', () => {
     await setMeltMarks([5], true, true);
     expect(Object.keys(await demoMeltMarksItem.getValue())).toEqual(['5']);
     expect(await meltMarksItem.getValue()).toEqual({});
+  });
+});
+
+describe('the limit of the synced storage (#658)', () => {
+  beforeEach(() => fakeBrowser.reset());
+  const ids = (from: number, count: number) =>
+    Array.from({ length: count }, (_, index) => 100_000_000 + from + index);
+
+  it('marks nothing and says how many more fit when a selection is too large', async () => {
+    await setMeltMarks(ids(0, 200), true);
+    const error = await setMeltMarks(ids(200, 400), true).catch((caught: unknown) => caught);
+    expect(error).toBeInstanceOf(MeltMarksQuotaError);
+    const { room } = error as MeltMarksQuotaError;
+    expect(room).toBeGreaterThan(50);
+    expect(room).toBeLessThan(200);
+    expect(Object.keys(await meltMarksItem.getValue())).toHaveLength(200);
+    // As many as it says do fit.
+    await setMeltMarks(ids(200, room!), true);
+    expect(Object.keys(await meltMarksItem.getValue())).toHaveLength(200 + room!);
+  });
+
+  it('unmarks also when the marks are full', async () => {
+    const full = Object.fromEntries(ids(0, 400).map((id) => [id, 1_764_000_000_000]));
+    await meltMarksItem.setValue(full);
+    await expect(toggleMeltMark(100_000_999)).rejects.toBeInstanceOf(MeltMarksQuotaError);
+    await toggleMeltMark(100_000_000);
+    await setMeltMarks(ids(1, 10), false);
+    expect(Object.keys(await meltMarksItem.getValue())).toHaveLength(389);
+  });
+
+  it('turns the browser’s quota error into one of its own', async () => {
+    const setItem = fakeBrowser.storage.sync.set;
+    fakeBrowser.storage.sync.set = () => Promise.reject(new Error('QUOTA_BYTES quota exceeded'));
+    try {
+      const error = await setMeltMarks([1], true).catch((caught: unknown) => caught);
+      expect(error).toBeInstanceOf(MeltMarksQuotaError);
+      expect((error as MeltMarksQuotaError).room).toBeUndefined();
+    } finally {
+      fakeBrowser.storage.sync.set = setItem;
+    }
+  });
+
+  it('keeps no limit for the demo’s own marks', async () => {
+    await setMeltMarks(ids(0, 600), true, true);
+    expect(Object.keys(await demoMeltMarksItem.getValue())).toHaveLength(600);
   });
 });
 

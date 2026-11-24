@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
+import { errorLogItem } from '@/errors/error-log';
 import { hangarMeta } from '@/hangar/hangar-storage';
 import { createShipFactsLookup } from '@/ships/ship-facts';
 import {
@@ -199,5 +200,22 @@ describe('STORAGES', () => {
       ...(entry.legacyCheckKeys ?? []),
     ]);
     expect(new Set(keys).size).toBe(keys.length);
+  });
+
+  it('starts anyway when moving them fails, keeping them here (#658)', async () => {
+    const plan = { version: 2, way: 'buy', at: 1, tier: { paints: 2, percent: 15 }, own: [] };
+    await storage.setItem('local:consultant.plan', plan);
+    const get = fakeBrowser.storage.sync.get;
+    fakeBrowser.storage.sync.get = () => Promise.reject(new Error('Sync is switched off'));
+    try {
+      await expect(runMigration()).resolves.toBeUndefined();
+    } finally {
+      fakeBrowser.storage.sync.get = get;
+    }
+    expect(await storage.getItem('local:consultant.plan')).toEqual(plan);
+    await vi.waitFor(async () => {
+      const log = await errorLogItem.getValue();
+      expect(log?.entries.map((entry) => entry.code)).toEqual(['PAINT-PLAN-MOVE-FAIL']);
+    });
   });
 });

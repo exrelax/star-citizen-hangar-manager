@@ -139,6 +139,56 @@ describe('findPlanPurchase', () => {
     ).toBeUndefined();
   });
 
+  it('finds the order of a plan without own paints by all of its fillers (#458, #658)', () => {
+    const fillersOnly = { ...plan, own: [] };
+    const purchase = findPlanPurchase({
+      plan: fillersOnly,
+      pledges,
+      orders: ordersOf(),
+      storeItems,
+      now: NOW,
+    });
+    expect(purchase).toMatchObject({
+      orderId: 'ORDER1',
+      pledgeIds: [202, 203, 204],
+      ownPledgeIds: [],
+    });
+  });
+
+  it('needs every filler of a plan without own paints in the order', () => {
+    const fillersOnly = { ...plan, own: [] };
+    const oneMissing = pledges.filter((pledge) => pledge.id !== 203);
+    expect(
+      findPlanPurchase({
+        plan: fillersOnly,
+        pledges: oneMissing,
+        orders: ordersOf(),
+        storeItems,
+        now: NOW,
+      }),
+    ).toBeUndefined();
+    // Nor an order from before the plan, nor one paid with money.
+    const before = pledges.map((pledge) => ({ ...pledge, createdAt: '2026-11-08' }));
+    expect(
+      findPlanPurchase({
+        plan: fillersOnly,
+        pledges: before,
+        orders: ordersOf('$0.00 USD', '2026-11-08T23:00'),
+        storeItems,
+        now: NOW,
+      }),
+    ).toBeUndefined();
+    expect(
+      findPlanPurchase({
+        plan: fillersOnly,
+        pledges,
+        orders: ordersOf('$8.93 USD'),
+        storeItems,
+        now: NOW,
+      }),
+    ).toBeUndefined();
+  });
+
   it('takes no more fillers of a paint than the plan bought', () => {
     const one = { ...plan, fillers: [{ ...plan.fillers[0]!, quantity: 1 }] };
     const purchase = findPlanPurchase({
