@@ -248,6 +248,15 @@
       "lastSeen": "2026-11-23T16:20:00Z",
       "events": [{ "id": "nova-iae-2956-finale", "name": "Tumbril Nova - IAE 2956 Finale" }],
       "expectedEnd": "2026-11-24T16:00:00Z"
+    },
+    {
+      "ship": { "id": 299, "name": "Anvil Asgard" },
+      "skuId": 19876,
+      "price": 315,
+      "msrp": 350,
+      "firstSeen": "2026-11-24T16:00:00Z",
+      "lastSeen": "2026-11-24T16:20:00Z",
+      "expectedEnd": "2026-11-25T16:00:00Z"
     }
   ]
 }
