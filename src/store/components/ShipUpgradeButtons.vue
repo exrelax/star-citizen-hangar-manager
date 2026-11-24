@@ -31,6 +31,8 @@ const props = defineProps<{
   warbondSkuId?: number;
   /** Short labels for a table (#385): "Warbond" and, next to it, "Standard". */
   short?: boolean;
+  /** Only the icon, the label as its name, e.g. in a line of the CCU Check's secure panel (#651). */
+  iconOnly?: boolean;
 }>();
 
 const demo = useDemoContext();
@@ -89,25 +91,27 @@ const buttons = computed(() => {
         v-tooltip="i18n.t('store.upgradeDemo')"
         type="button"
         class="shm-button"
-        :class="`shm-upgrade-${button.key}`"
+        :class="[`shm-upgrade-${button.key}`, { 'is-icon': iconOnly }]"
+        :aria-label="iconOnly ? button.label : undefined"
         disabled
       >
         <SvgIcon :name="button.icon" />
-        {{ button.label }}
+        <template v-if="!iconOnly">{{ button.label }}</template>
       </button>
       <a
         v-else
         v-tooltip="button.hint"
         href="#"
         class="shm-button js-open-ship-upgrades"
-        :class="`shm-upgrade-${button.key}`"
+        :class="[`shm-upgrade-${button.key}`, { 'is-icon': iconOnly }]"
+        :aria-label="iconOnly ? `${button.label}: ${shipName ?? ''}` : undefined"
         data-apiurl="/pledge-store/api/upgrade/v2"
         :data-toshipid="shipId"
         :data-toskuid="button.skuId"
         @click.prevent="notifyShipUpgradeOpened"
       >
         <SvgIcon :name="button.icon" />
-        {{ button.label }}
+        <template v-if="!iconOnly">{{ button.label }}</template>
       </a>
     </template>
   </span>

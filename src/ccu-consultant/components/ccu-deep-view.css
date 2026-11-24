@@ -420,6 +420,36 @@
   background: var(--shm-accent);
 }
 
+.shm-ccu-deep-dot.is-buyback {
+  background: var(--shm-warning);
+}
+
+/* What makes the buy back's CCUs count (#651): below the options, apart from them. */
+.shm-ccu-deep-secure-title.is-links {
+  margin-top: 4px;
+}
+
+.shm-ccu-deep-options li .shm-ccu-deep-link-note {
+  display: block;
+}
+
+.shm-ccu-deep-links-hint {
+  color: var(--shm-text-muted);
+  font-weight: 500;
+}
+
+/* The total and an icon-only "Ship upgrade" of a link, side by side. */
+.shm-ccu-deep-link-end {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.shm-ccu-deep-link-end .shm-button.is-icon {
+  min-width: 0;
+  padding: 4px 7px;
+}
+
 .shm-ccu-deep-actions {
   display: flex;
   flex-wrap: wrap;
@@ -538,4 +568,20 @@ html .shm-theme-modern .shm-ccu-deep-swatch {
 html .shm-theme-modern .shm-ccu-deep-chip {
   background: var(--shm-fill);
   border-radius: var(--shm-radius-item);
+}
+
+/* CCUs without a discount (#651): only a note, never short. */
+.shm-ccu-deep-others {
+  color: var(--shm-text-muted);
+}
+
+.shm-ccu-deep-others-note {
+  margin: 0;
+  color: var(--shm-text-muted);
+  font-size: calc(11px * var(--shm-font-scale));
+}
+
+/* The hangar's CCUs to a link that carry no way (#651): a line of their own below the note. */
+.shm-ccu-deep-routes .shm-ccu-deep-note.is-idle {
+  flex-basis: 100%;
 }

@@ -60,6 +60,9 @@ function consultant(key: string, demo: Partial<DemoSettings> = {}) {
           bases.partial,
           bases.chainStart,
           bases.chainLink,
+          bases.buybackBase,
+          bases.linkOnSale,
+          bases.linkOffSale,
         ].flatMap((ship) => (ship ? [ship.id] : [])),
         ...[missingBaseOf(account.pledges)].filter((id) => id !== undefined),
       ],
@@ -74,7 +77,11 @@ function consultant(key: string, demo: Partial<DemoSettings> = {}) {
   const always = withoutLeaving(alwaysAvailableList(DEFAULT_SETTINGS, facts), leaving);
   const coverage = ccuCoverage({ ships: catalog.ships, hangar: pledges, buyback });
   const list = baseShipList(coverage.values(), always, catalog.ships, leaving);
-  const chains = chainCoverage(coverage.values(), always);
+  const buybackCoverage = ccuCoverage(
+    { ships: catalog.ships, hangar: pledges, buyback },
+    'buyback',
+  );
+  const chains = chainCoverage(coverage.values(), always, buybackCoverage);
   return { ...result, bases, coverage, always, list, chains };
 }
 
@@ -110,10 +117,13 @@ describe.each(['any demo key', 'another key', 'k3'])('the CCU Consultant in the 
     expect(Object.keys(bases).sort()).toEqual([
       'always',
       'buyback',
+      'buybackBase',
       'chainLink',
       'chainStart',
       'covered',
       'leaving',
+      'linkOffSale',
+      'linkOnSale',
       'partial',
       'unavailable',
     ]);
@@ -227,6 +237,23 @@ describe.each(['any demo key', 'another key', 'k3'])('the CCU Consultant in the 
     const start = chains.ships.get(`id:${bases.chainStart!.id}`)!;
     expect(start.short).toBe(start.ccus.length);
     expect(chains.tooFew.length).toBeGreaterThan(2);
+  });
+
+  it('has CCUs in the buy back from links short of ways (#651)', () => {
+    const base = chains.ships.get(`id:${bases.buybackBase!.id}`)!;
+    // Four CCUs from it, the four of the buy back to it its ways in the simple view.
+    expect([base.ccus.length, base.simpleWays]).toEqual([4, 4]);
+    // One ship of each link in the hangar: one of the two CCUs from each counts.
+    expect([base.ways.buyback, base.short, base.deepOnly]).toEqual([2, 2, true]);
+    expect(base.blockedBuyback).toEqual(
+      [bases.linkOnSale!, bases.linkOffSale!]
+        .map((link) => ({ from: `id:${link.id}`, count: 1, total: 2 }))
+        .sort((a, b) => (a.from < b.from ? -1 : 1)),
+    );
+    expect(base.routes.every((route) => route.buyback && route.root === 'ship')).toBe(true);
+    // The links have no rows of their own.
+    expect(chains.ships.has(`id:${bases.linkOnSale!.id}`)).toBe(false);
+    expect(chains.nodes.get(`id:${bases.linkOffSale!.id}`)?.name).toBe(bases.linkOffSale!.name);
   });
 
   it('has CCUs whose base ship rises in price, confirmed and expected (#455)', () => {

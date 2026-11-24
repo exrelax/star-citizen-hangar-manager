@@ -2002,9 +2002,23 @@
     },
     "deep": {
       "tab": "Too few ways",
-      "hint": "Chains followed: a CCU to the base ship only counts if its own base ship has a way too. Every CCU needs its own way.",
+      "hint": "Chains followed: every CCU with a discount needs a way to its base ship – a ship, or a chain of CCUs from your hangar, your buy back or an always available ship. CCUs without a discount only link chains.",
+      "idleHangar": {
+        "one": "$1 CCU $2 → $3 in your hangar carries no way: $4",
+        "other": "$1 CCUs $2 → $3 in your hangar carry no way: $4"
+      },
+      "takenBy": "$1 taken by other CCUs from it – $2",
+      "noWay": "$1 has no way itself",
+      "othersRow": {
+        "one": "$1 without a discount, not counted",
+        "other": "$1 without a discount, not counted"
+      },
+      "othersGroup": {
+        "one": "$1 CCU without a discount isn’t counted: it only links chains",
+        "other": "$1 CCUs without a discount aren’t counted: they only link chains"
+      },
       "found": "Found by the deep view",
-      "foundHint": "The simple view counts this base ship as covered by the CCUs to it in your hangar. But their own base ships have no way left for them, so they don’t count.",
+      "foundHint": "The simple view counts this base ship as covered by the CCUs to it in your hangar or buy back. But their own base ships have no way left for them, so they don’t count.",
       "ofWays": {
         "one": "of $1 way",
         "other": "of $1 ways"
@@ -2016,6 +2030,25 @@
       "routes": "Ways to $1",
       "viaBuyback": "$1 only via buy back",
       "blocked": "don’t count: $1 itself has too few ways",
+      "viaBuybackCcu": "through CCUs in your buy back",
+      "blockedBuyback": {
+        "one": "of $1 in your buy back doesn’t count: $2 itself has too few ways",
+        "other": "of $1 in your buy back don’t count: $2 itself has too few ways"
+      },
+      "blockedBuybackUsed": {
+        "one": "of $1 in your buy back doesn’t count: $2 taken by other CCUs from it – $3",
+        "other": "of $1 in your buy back don’t count: $2 taken by other CCUs from it – $3"
+      },
+      "waysOf": { "one": "the only way to $2 is", "other": "all $1 ways to $2 are" },
+      "usedHangar": "$1 in your hangar",
+      "usedBuyback": "$1 → $2 in your buy back",
+      "linksTitle": "Or make your buy back count",
+      "linksHint": "one of these is enough",
+      "linkNote": {
+        "one": "Makes $1 CCU from $2 in your buy back count",
+        "other": "Makes $1 CCUs from $2 in your buy back count"
+      },
+      "linkOffSale": "$1 isn’t on sale now",
       "inHangar": {
         "one": "$1 in your hangar",
         "other": "$1 in your hangar"

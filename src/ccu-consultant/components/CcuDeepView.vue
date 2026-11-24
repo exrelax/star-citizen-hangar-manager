@@ -16,10 +16,17 @@ import { openShipRemoval } from '@/store/open-current-warbonds';
 import { computed } from 'vue';
 import { useProvidedAlwaysAvailable } from '../always-available';
 import type { BaseShipGroup, BaseShipList } from '../base-ship-list';
-import type { ChainCoverage, ChainRoute, ChainShip } from '../chain-coverage';
+import type {
+  BlockedBuyback,
+  ChainCoverage,
+  ChainRoute,
+  ChainShip,
+  ChainUse,
+} from '../chain-coverage';
 import { ccuBaseShipShortcut, ccuBuybackShortcut } from '../consultant-shortcuts';
 import { useProvidedCoverageSources } from '../coverage';
 import {
+  deepOthers,
   deepRows,
   deepShips,
   secureSummary,
@@ -32,9 +39,10 @@ import {
  * The deep view of the CCU Consultant (#563, `deep-view.ts`): a row per base ship of the chosen
  * group with the chains followed (`chain-coverage.ts`) – its image and price, whether RSI sells it
  * now, a bar of one segment per CCU from it (ship or chain in the hangar, buy back, too few), the
- * chains that lead to it and those that don't count, and on the right what securing the missing
- * CCUs costs now with "Ship upgrade". In "Too few ways" the totals of the base ships on sale come
- * first ("Secure now"); a legend of the bar ends the list. A row opens its CCUs in My Hangar, its
+ * chains that lead to it and those that don't count (also CCUs in the buy back whose base ship has
+ * too few ways, #651), and on the right what securing the missing CCUs costs now with "Ship
+ * upgrade", and what makes those of the buy back count. In "Too few ways" the totals of the base
+ * ships on sale come first ("Secure now"); a legend of the bar ends the list. A row opens its CCUs in My Hangar, its
  * buy back count the buy back's pledges (List Shortcuts), as the simple view's cards do.
  */
 
@@ -64,14 +72,16 @@ const rows = computed(() =>
     skuOf: props.skuOf,
     ...(alwaysAvailable.value && { isAlways: alwaysAvailable.value.has }),
     leaving: removals.value.obtainable,
+    nodes: props.chains.nodes,
   }),
 );
 const summary = computed(() => (props.group === 'missing' ? secureSummary(rows.value) : undefined));
+const others = computed(() => deepOthers(props.chains, props.list, props.group));
 
 const nameOf = (ship: Pick<ChainShip, 'name'>) => ship.name ?? i18n.t('ccuConsultant.unknownShip');
 /** A ship of a chain by its key: its name, image and whether it is always available. */
 const nodeOf = (key: string) => {
-  const ship = props.chains.ships.get(key);
+  const ship = props.chains.nodes.get(key);
   const info = ship?.shipId !== undefined ? shipsById.value.get(ship.shipId) : undefined;
   return {
     key,
@@ -80,6 +90,57 @@ const nodeOf = (key: string) => {
     always: ship?.always === true,
   };
 };
+/**
+ * Why CCUs in the buy back don't count (#651): their base ship has no way, or all its ways serve
+ * other CCUs from it – those in the hangar and the buy back's to other ships, named.
+ */
+const blockedBuybackNote = (blocked: BlockedBuyback) => {
+  const name = nodeOf(blocked.from).name;
+  const use = props.chains.nodes.get(blocked.from)?.use;
+  if (!use?.ways) {
+    return i18n.n('ccuConsultant.deep.blockedBuyback', blocked.count, [
+      format(blocked.total),
+      name,
+    ]);
+  }
+  return i18n.n('ccuConsultant.deep.blockedBuybackUsed', blocked.count, [
+    format(blocked.total),
+    i18n.n('ccuConsultant.deep.waysOf', use.ways, [format(use.ways), name]),
+    usedText(use),
+  ]);
+};
+/** Where the ways to a ship go: its CCUs in the hangar, the buy back's by target. */
+const usedText = (use: ChainUse) =>
+  new Intl.ListFormat(locale.value, { type: 'conjunction' }).format([
+    ...(use.hangar ? [i18n.t('ccuConsultant.deep.usedHangar', [format(use.hangar)])] : []),
+    ...use.buyback.map((entry) =>
+      i18n.t('ccuConsultant.deep.usedBuyback', [format(entry.count), nodeOf(entry.to).name]),
+    ),
+  ]);
+/**
+ * The hangar's CCUs to the link of blocked CCUs that carry no way: why their base ship gives the
+ * link none – it has no way, or all its ways are taken.
+ */
+const idleNotes = (blocked: BlockedBuyback) =>
+  (props.chains.nodes.get(blocked.from)?.use?.idle ?? []).map((idle) => {
+    const from = nodeOf(idle.from).name;
+    const use = props.chains.nodes.get(idle.from)?.use;
+    const why = use?.ways
+      ? i18n.t('ccuConsultant.deep.takenBy', [
+          i18n.n('ccuConsultant.deep.waysOf', use.ways, [format(use.ways), from]),
+          usedText(use),
+        ])
+      : i18n.t('ccuConsultant.deep.noWay', [from]);
+    return {
+      key: idle.from,
+      text: i18n.n('ccuConsultant.deep.idleHangar', idle.count, [
+        format(idle.count),
+        from,
+        nodeOf(blocked.from).name,
+        why,
+      ]),
+    };
+  });
 /** The ships of a chain shown: the start, the one before the base ship and those between as "…". */
 const PATH_SHOWN = 3;
 const pathOf = (route: ChainRoute) => {
@@ -153,7 +214,7 @@ const limitedOf = (row: DeepRow) =>
   row.removal ? limitedSaleNote([row.removal], removals.value.limited, locale.value) : undefined;
 
 const showCcus = (ship: ChainShip) =>
-  openListShortcut(ccuBaseShipShortcut(ship.key, nameOf(ship), ship.ccus));
+  openListShortcut(ccuBaseShipShortcut(ship.key, nameOf(ship), [...ship.ccus, ...ship.others]));
 const showBuyback = (ship: ChainShip) =>
   openListShortcut(
     ccuBuybackShortcut(
@@ -305,18 +366,28 @@ const showBuyback = (ship: ChainShip) =>
                 </strong>
               </template>
             </template>
+            <span v-if="row.ship.others.length" class="shm-ccu-deep-others">
+              ·
+              {{
+                i18n.n('ccuConsultant.deep.othersRow', row.ship.others.length, [
+                  format(row.ship.others.length),
+                ])
+              }}
+            </span>
           </span>
 
           <!-- Where the ways come from: the chains of the hangar's CCUs, and those that don't count. -->
           <ul
-            v-if="row.ship.routes.length || row.ship.blocked.length"
+            v-if="
+              row.ship.routes.length || row.ship.blocked.length || row.ship.blockedBuyback.length
+            "
             class="shm-ccu-deep-routes"
             :aria-label="i18n.t('ccuConsultant.deep.routes', [nameOf(row.ship)])"
           >
             <li
               v-for="route in row.ship.routes"
-              :key="`${route.root}:${route.path.join('>')}`"
-              :class="{ 'is-buyback': route.root === 'buyback' }"
+              :key="`${route.root}:${route.buyback ? 'b' : ''}:${route.path.join('>')}`"
+              :class="{ 'is-buyback': route.root === 'buyback' || route.buyback }"
             >
               <template v-for="(node, index) in pathOf(route).nodes" :key="node.key">
                 <span
@@ -353,6 +424,9 @@ const showBuyback = (ship: ChainShip) =>
               <span v-if="route.root === 'buyback'" class="shm-ccu-deep-note">
                 {{ i18n.t('ccuConsultant.deep.viaBuyback', [nodeOf(route.path[0] ?? '').name]) }}
               </span>
+              <span v-else-if="route.buyback" class="shm-ccu-deep-note">
+                {{ i18n.t('ccuConsultant.deep.viaBuybackCcu') }}
+              </span>
             </li>
             <li
               v-for="blocked in row.ship.blocked"
@@ -372,6 +446,33 @@ const showBuyback = (ship: ChainShip) =>
               <strong class="shm-ccu-deep-times">×{{ format(blocked.count) }}</strong>
               <span class="shm-ccu-deep-note">
                 {{ i18n.t('ccuConsultant.deep.blocked', [nodeOf(blocked.from).name]) }}
+              </span>
+            </li>
+            <li
+              v-for="blocked in row.ship.blockedBuyback"
+              :key="`blocked-buyback:${blocked.from}`"
+              class="is-blocked is-buyback"
+            >
+              <span class="shm-ccu-deep-chip">
+                <img
+                  v-if="nodeOf(blocked.from).image"
+                  :src="nodeOf(blocked.from).image"
+                  alt=""
+                  loading="lazy"
+                />
+                {{ nodeOf(blocked.from).name }}
+              </span>
+              <span class="shm-ccu-deep-arrow" aria-hidden="true">→</span>
+              <strong class="shm-ccu-deep-times">×{{ format(blocked.count) }}</strong>
+              <span class="shm-ccu-deep-note">
+                {{ blockedBuybackNote(blocked) }}
+              </span>
+              <span
+                v-for="idle in idleNotes(blocked)"
+                :key="idle.key"
+                class="shm-ccu-deep-note is-idle"
+              >
+                {{ idle.text }}
               </span>
             </li>
           </ul>
@@ -440,6 +541,56 @@ const showBuyback = (ship: ChainShip) =>
               {{ i18n.t('ccuConsultant.deep.noCheaper') }}
             </li>
           </ul>
+          <!-- CCUs to a link of the buy back's CCUs make that many of them count (#651). -->
+          <template v-if="row.links.length">
+            <span class="shm-ccu-deep-secure-title is-links">
+              {{ i18n.t('ccuConsultant.deep.linksTitle') }}
+              <span v-if="row.links.length > 1" class="shm-ccu-deep-links-hint">
+                · {{ i18n.t('ccuConsultant.deep.linksHint') }}
+              </span>
+            </span>
+            <ul class="shm-ccu-deep-options">
+              <li v-for="link in row.links" :key="link.key">
+                <span class="shm-ccu-deep-dot is-buyback"></span>
+                <span class="shm-ccu-deep-option">
+                  <template v-if="link.option">
+                    {{ link.option.from.name }}
+                    <SvgIcon
+                      v-if="link.option.always"
+                      v-tooltip="i18n.t('ccuConsultant.deep.legend.always')"
+                      name="star"
+                      class="shm-ccu-deep-star"
+                    />
+                    →
+                  </template>
+                  {{ nodeOf(link.key).name }}
+                  <span v-if="link.option" class="shm-ccu-deep-each">
+                    · {{ eachText(link.option.each, false) }}</span
+                  >
+                  <span class="shm-ccu-deep-each shm-ccu-deep-link-note">{{
+                    link.onSale
+                      ? i18n.n('ccuConsultant.deep.linkNote', link.need, [
+                          format(link.need),
+                          nodeOf(link.key).name,
+                        ])
+                      : i18n.t('ccuConsultant.deep.linkOffSale', [nodeOf(link.key).name])
+                  }}</span>
+                </span>
+                <span class="shm-ccu-deep-link-end">
+                  <strong v-if="link.option && link.onSale">{{
+                    usd(link.option.each * link.need)
+                  }}</strong>
+                  <ShipUpgradeButtons
+                    v-if="link.skuId !== undefined"
+                    :ship-id="link.shipId"
+                    :ship-name="nodeOf(link.key).name"
+                    :sku-id="link.skuId"
+                    icon-only
+                  />
+                </span>
+              </li>
+            </ul>
+          </template>
           <span class="shm-ccu-deep-actions">
             <ShipUpgradeButtons
               v-if="row.skuId !== undefined && !row.ship.always && row.need"
@@ -472,6 +623,10 @@ const showBuyback = (ship: ChainShip) =>
         </div>
       </li>
     </ol>
+
+    <p v-if="others" class="shm-ccu-deep-others-note">
+      {{ i18n.n('ccuConsultant.deep.othersGroup', others, [format(others)]) }}
+    </p>
 
     <ul v-if="rows.length" class="shm-ccu-deep-legend">
       <li v-for="kind in legend" :key="kind">

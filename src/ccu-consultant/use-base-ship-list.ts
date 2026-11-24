@@ -3,7 +3,11 @@ import { computed, type ComputedRef } from 'vue';
 import { useProvidedAlwaysAvailable } from './always-available';
 import { baseShipList, type BaseShipList } from './base-ship-list';
 import { chainCoverage, type ChainCoverage } from './chain-coverage';
-import { useProvidedCcuCoverage, useProvidedCoverageSources } from './coverage';
+import {
+  useProvidedBuybackCcuCoverage,
+  useProvidedCcuCoverage,
+  useProvidedCoverageSources,
+} from './coverage';
 
 /*
  * The CCU Consultant's list of base ships (#113) from what the manager view provides: the coverage
@@ -25,11 +29,14 @@ export function useBaseShipList(): ComputedRef<BaseShipList> {
   );
 }
 
-/** The deep view's ways to each base ship, with the chains followed (#563). */
+/** The deep view's ways to each base ship, the chains followed (#563), the buy back's too (#651). */
 export function useChainCoverage(): ComputedRef<ChainCoverage> {
   const coverages = useProvidedCcuCoverage();
+  const buyback = useProvidedBuybackCcuCoverage();
   const alwaysAvailable = useProvidedAlwaysAvailable();
-  return computed(() => chainCoverage(coverages.value.values(), alwaysAvailable.value));
+  return computed(() =>
+    chainCoverage(coverages.value.values(), alwaysAvailable.value, buyback.value),
+  );
 }
 
 /**

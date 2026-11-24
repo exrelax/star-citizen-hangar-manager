@@ -2002,9 +2002,23 @@
     },
     "deep": {
       "tab": "Zu wenige Wege",
-      "hint": "Ketten verfolgt: Ein CCU zum Basisschiff zählt nur, wenn sein eigenes Basisschiff auch einen Weg hat. Jedes CCU braucht seinen eigenen Weg.",
+      "hint": "Ketten verfolgt: Jedes CCU mit Rabatt braucht einen Weg zu seinem Basisschiff – ein Schiff oder eine Kette von CCUs aus deinem Hangar, deinem Buy Back oder ab einem immer kaufbaren Schiff. CCUs ohne Rabatt verbinden nur Ketten.",
+      "idleHangar": {
+        "one": "$1 CCU $2 → $3 in deinem Hangar trägt keinen Weg: $4",
+        "other": "$1 CCUs $2 → $3 in deinem Hangar tragen keinen Weg: $4"
+      },
+      "takenBy": "$1 schon von anderen CCUs belegt, die dort starten – $2",
+      "noWay": "$1 hat selbst keinen Weg",
+      "othersRow": {
+        "one": "$1 ohne Rabatt, zählt nicht",
+        "other": "$1 ohne Rabatt, zählen nicht"
+      },
+      "othersGroup": {
+        "one": "$1 CCU ohne Rabatt zählt nicht: es verbindet nur Ketten",
+        "other": "$1 CCUs ohne Rabatt zählen nicht: sie verbinden nur Ketten"
+      },
       "found": "Von der Detailansicht gefunden",
-      "foundHint": "Die einfache Ansicht zählt dieses Basisschiff als abgedeckt, durch die CCUs dorthin in deinem Hangar. Deren eigene Basisschiffe haben aber keinen Weg mehr für sie übrig, darum zählen sie nicht.",
+      "foundHint": "Die einfache Ansicht zählt dieses Basisschiff als abgedeckt, durch die CCUs dorthin in deinem Hangar oder Buy Back. Deren eigene Basisschiffe haben aber keinen Weg mehr für sie übrig, darum zählen sie nicht.",
       "ofWays": {
         "one": "von $1 Weg",
         "other": "von $1 Wegen"
@@ -2016,6 +2030,25 @@
       "routes": "Wege zu $1",
       "viaBuyback": "$1 nur über Buy Back",
       "blocked": "zählen nicht: $1 hat selbst zu wenige Wege",
+      "viaBuybackCcu": "über CCUs in deinem Buy Back",
+      "blockedBuyback": {
+        "one": "von $1 in deinem Buy Back zählt nicht: $2 hat selbst zu wenige Wege",
+        "other": "von $1 in deinem Buy Back zählen nicht: $2 hat selbst zu wenige Wege"
+      },
+      "blockedBuybackUsed": {
+        "one": "von $1 in deinem Buy Back zählt nicht: $2 schon von anderen CCUs belegt, die dort starten – $3",
+        "other": "von $1 in deinem Buy Back zählen nicht: $2 schon von anderen CCUs belegt, die dort starten – $3"
+      },
+      "waysOf": { "one": "der einzige Weg zu $2 ist", "other": "alle $1 Wege zu $2 sind" },
+      "usedHangar": "$1 in deinem Hangar",
+      "usedBuyback": "$1 → $2 in deinem Buy Back",
+      "linksTitle": "Oder dein Buy Back nutzbar machen",
+      "linksHint": "eines davon reicht",
+      "linkNote": {
+        "one": "Macht $1 CCU von $2 in deinem Buy Back nutzbar",
+        "other": "Macht $1 CCUs von $2 in deinem Buy Back nutzbar"
+      },
+      "linkOffSale": "$1 ist gerade nicht im Verkauf",
       "inHangar": {
         "one": "$1 in deinem Hangar",
         "other": "$1 in deinem Hangar"

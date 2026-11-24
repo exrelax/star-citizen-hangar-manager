@@ -11,11 +11,11 @@ const TODAY = '2026-11-10';
 const NOW = Date.parse('2026-11-10T12:00:00Z');
 /**
  * The composition with the pledges of the Grouped View's groups (#450) and the CCU Consultant's
- * cases (#425): 15 CCUs on the bundled catalog, and the three ships that cover the cases `covered`
- * and `partial` (#575).
+ * cases (#425): 21 CCUs on the bundled catalog, the three ships that cover the cases `covered`
+ * and `partial` (#575) and the two links of the buy back's CCUs (#651).
  */
-const CCU_CASES = 17;
-const CCU_CASE_SHIPS = 3;
+const CCU_CASES = 21;
+const CCU_CASE_SHIPS = 5;
 /**
  * And Melt and Rebuy's cases (#532): five paints, ten standalone ships (one of them upgraded), two
  * CCUs and a game package.
