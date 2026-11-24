@@ -339,7 +339,8 @@ const status = computed(() => {
 });
 
 // The tab is part of the URL (`#hangar-manager`, `#hangar-manager-bb`, `#hangar-manager-store`,
-// `#hangar-manager-consultants`, `#hangar-manager-settings`), so it can be linked to and survives a reload.
+// `#hangar-manager-tools`, `#hangar-manager-settings`, …), so it can be linked to and survives a
+// reload. An earlier version's hash opens its tab and gives way to the current one (#653).
 const activeTab = ref<ManagerTab>(tabFromHash(location.hash) ?? 'hangar');
 /** Tabs opened so far: the big lists are built on first use and then kept. */
 const opened = reactive(new Set<ManagerTab>([activeTab.value]));
@@ -357,9 +358,10 @@ function showTab(tab: ManagerTab) {
 // `hashchange`, e.g. back from a pledge opened in "Buy Back" to "Consultants" (#113).
 const followHash = () => {
   const tab = tabFromHash(location.hash);
-  if (tab && tab !== activeTab.value) showTab(tab);
+  if (tab && (tab !== activeTab.value || location.hash !== hashOfTab(tab))) showTab(tab);
 };
 onMounted(() => {
+  followHash();
   addEventListener('hashchange', followHash);
   addEventListener('popstate', followHash);
 });
