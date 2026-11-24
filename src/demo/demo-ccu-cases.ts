@@ -42,6 +42,12 @@ import type { DemoRandom } from './random';
  *   known, else the `unavailable` case's ship) to another ship, and a CCU from that one on: the
  *   simple view counts the second covered by the first, the deep view (#563) follows the chain and
  *   finds both short of a way – "Found by the deep view" and a base ship not on sale.
+ * - `buybackBase`, `linkOnSale` and `linkOffSale` (#651): four CCUs from `buybackBase`, and in the
+ *   buy back two CCUs to it from each link, a ship the hangar has once, one RSI sells now and one
+ *   it doesn't (if known). RSI doesn't sell `buybackBase` now (if known), so its secure panel
+ *   offers the links. The simple view counts the four CCUs covered by the buy back's; the
+ *   deep view follows them to their links and counts one of each: two short, "Found by the deep
+ *   view", and the links in the secure panel on sale and not.
  *
  * The hangar, the buy back and the upgraded pledges leave these base ships out; the buy back gets
  * its pledges for them from `buybackCases`, also CCU groups of its own (#575): from the `covered`,
@@ -57,7 +63,10 @@ export type DemoCcuCase =
   | 'covered'
   | 'partial'
   | 'chainStart'
-  | 'chainLink';
+  | 'chainLink'
+  | 'buybackBase'
+  | 'linkOnSale'
+  | 'linkOffSale';
 
 /** The base ship of each case. */
 export type DemoCcuBases = Partial<Record<DemoCcuCase, Ship>>;
@@ -128,6 +137,20 @@ export function demoCcuBases(
     unavailable;
   const chainLink =
     chainStart && pick('chainLink', (ship) => limited(ship) && ship.msrp >= chainStart.msrp + 20);
+  // The links of the buy back's CCUs (#651), one on sale and one not (if known), and the base ship
+  // they lead to, at least $20 pricier than both.
+  const linkOnSale = pick('linkOnSale', (ship) => limited(ship) && ship.msrp + 40 <= top);
+  const linkOffSale =
+    linkOnSale && pick('linkOffSale', (ship) => limited(ship) && ship.msrp + 40 <= top, !buyable);
+  const buybackBase =
+    linkOnSale &&
+    linkOffSale &&
+    pick(
+      'buybackBase',
+      (ship) => limited(ship) && ship.msrp >= Math.max(linkOnSale.msrp, linkOffSale.msrp) + 20,
+      // Not on sale (if known): its secure panel offers the links only then.
+      !buyable,
+    );
   return {
     ...(always && { always }),
     ...(buyback && { buyback }),
@@ -136,6 +159,7 @@ export function demoCcuBases(
     ...(covered && { covered }),
     ...(partial && { partial }),
     ...(chainStart && chainLink && { chainStart, chainLink }),
+    ...(linkOnSale && linkOffSale && buybackBase && { linkOnSale, linkOffSale, buybackBase }),
   };
 }
 
@@ -147,9 +171,14 @@ export const reservedShips = (bases: DemoCcuBases): number[] =>
 export function ccuCaseBasesOf(pledges: readonly DemoPledge[], catalog: DemoCatalog): DemoCcuBases {
   const bases: DemoCcuBases = {};
   for (const pledge of pledges) {
+    if (!pledge.demoCcuCase) continue;
+    // A CCU by its base ship; a ship of a case (the links of #651 have no CCU from them) by name.
     const id = pledge.upgrade?.matchItems[0]?.id;
-    const ship = catalog.ships.find((entry) => entry.id === id);
-    if (pledge.demoCcuCase && ship) bases[pledge.demoCcuCase] ??= ship;
+    const name = pledge.upgrade ? undefined : pledge.items.find((item) => item.kind === 'Ship');
+    const ship = catalog.ships.find((entry) =>
+      id !== undefined ? entry.id === id : entry.name === name?.title,
+    );
+    if (ship) bases[pledge.demoCcuCase] ??= ship;
   }
   return bases;
 }
@@ -164,11 +193,12 @@ export function hangarCases(
   random: DemoRandom,
 ): DemoPledge[] {
   const sorted = sortedTargets(catalog);
-  const ccus = (role: DemoCcuCase, count: 1 | 2 | 3 | 5): DemoPledge[] => {
+  /** `discount`: bought that much below today's price difference. */
+  const ccus = (role: DemoCcuCase, count: 1 | 2 | 3 | 4 | 5, discount = 0): DemoPledge[] => {
     const base = bases[role];
     const to = base && sorted.find((ship) => ship.msrp >= base.msrp + 20);
     if (!base || !to) return [];
-    const price = Math.max(5, to.msrp - base.msrp);
+    const price = Math.max(5, to.msrp - base.msrp - discount);
     const extra = { demoCcuCase: role };
     const standard = ccuPledge(base, to, price, false, extra);
     if (count === 1) return [standard];
@@ -186,6 +216,9 @@ export function hangarCases(
     ...ccus('partial', 5),
     ...ships('partial', 2, bases),
     ...chain(bases, sorted),
+    ...(bases.linkOnSale && bases.linkOffSale ? ccus('buybackBase', 4, DISCOUNT) : []),
+    ...ships('linkOnSale', 1, bases),
+    ...ships('linkOffSale', 1, bases),
   ];
 }
 
@@ -197,13 +230,20 @@ function chain(bases: DemoCcuBases, sorted: readonly Ship[]): DemoPledge[] {
   const { chainStart, chainLink } = bases;
   const to = chainLink && sorted.find((ship) => ship.msrp >= chainLink.msrp + 20);
   if (!chainStart || !chainLink || !to) return [];
+  // Bought before a price increase, below today's price difference: the deep view needs a way for
+  // both (#651).
   return [
-    ccuPledge(chainStart, chainLink, chainLink.msrp - chainStart.msrp, false, {
+    ccuPledge(chainStart, chainLink, chainLink.msrp - chainStart.msrp - DISCOUNT, false, {
       demoCcuCase: 'chainStart',
     }),
-    ccuPledge(chainLink, to, to.msrp - chainLink.msrp, false, { demoCcuCase: 'chainLink' }),
+    ccuPledge(chainLink, to, to.msrp - chainLink.msrp - DISCOUNT, false, {
+      demoCcuCase: 'chainLink',
+    }),
   ];
 }
+
+/** What the CCUs of the deep view's cases were bought for below today's price difference. */
+const DISCOUNT = 10;
 
 /** `count` standalone ships of a case's base ship, as the hangar's ships that cover its CCUs. */
 function ships(role: DemoCcuCase, count: number, bases: DemoCcuBases): DemoPledge[] {
@@ -228,7 +268,7 @@ function ships(role: DemoCcuCase, count: number, bases: DemoCcuBases): DemoPledg
  * RSI can't sell again, and the `covered` base ship as a ship. Its CCU groups (#575): two CCUs from
  * the `covered` base ship (covered fully), three from the `partial` one ("2 of 3 covered"), two
  * from the `always` one ("Base always available") and two from `missing` (none). None of them to
- * another base ship of the cases.
+ * another base ship of the cases, but two CCUs from each link to `buybackBase` (#651).
  */
 export function buybackCases(
   bases: DemoCcuBases,
@@ -265,6 +305,12 @@ export function buybackCases(
   if (unavailable) {
     const from = sorted.find((ship) => ship.msrp >= unavailable.msrp && free(ship));
     if (from) pledges.push(buybackCcu(from, unavailable));
+  }
+  const { buybackBase, linkOnSale, linkOffSale } = bases;
+  if (buybackBase && linkOnSale && linkOffSale) {
+    for (const link of [linkOnSale, linkOffSale]) {
+      pledges.push(buybackCcu(link, buybackBase), buybackCcu(link, buybackBase));
+    }
   }
   return pledges;
 }

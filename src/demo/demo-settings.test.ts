@@ -60,7 +60,7 @@ describe('the demo settings in the generated demo', () => {
     expect(pledges.filter((pledge) => pledge.isPaint && pledge.valueUsd > 0)).toHaveLength(0);
     expect(buyback.length).toBeGreaterThanOrEqual(20);
     // Besides the CCU Consultant's cases with their CCU groups (#425, #575).
-    expect(buyback.length).toBeLessThan(40);
+    expect(buyback.length).toBeLessThan(44);
     const total = Object.values(buybackComposition(100)).reduce((sum, value) => sum + value, 0);
     expect(total).toBeGreaterThanOrEqual(95);
   });

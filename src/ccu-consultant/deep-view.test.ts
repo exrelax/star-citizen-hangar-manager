@@ -24,6 +24,7 @@ const isAlways = (id: number) => id === 1 || id === 3;
 
 const chainShip = (overrides: Partial<ChainShip> & Pick<ChainShip, 'key'>): ChainShip => ({
   ccus: [],
+  others: [],
   always: false,
   ways: { ship: 0, chain: 0, buyback: 0 },
   total: 0,
@@ -32,6 +33,7 @@ const chainShip = (overrides: Partial<ChainShip> & Pick<ChainShip, 'key'>): Chai
   deepOnly: false,
   routes: [],
   blocked: [],
+  blockedBuyback: [],
   buyback: [],
   hangarShips: [],
   ...overrides,
@@ -102,6 +104,7 @@ describe('the deep view of the CCU Consultant (#563)', () => {
     ];
     const chains: ChainCoverage = {
       ships: new Map(tooFew.map((ship) => [ship.key, ship])),
+      nodes: new Map(),
       tooFew,
       tooFewCount: 5,
     };
@@ -141,7 +144,12 @@ describe('the deep view of the CCU Consultant (#563)', () => {
       total: 5,
     });
     const list = { groups: { buyback: [{ key: 'id:4' }] } } as unknown as BaseShipList;
-    const chains = { ships: new Map([[ship.key, ship]]), tooFew: [], tooFewCount: 0 };
+    const chains = {
+      ships: new Map([[ship.key, ship]]),
+      nodes: new Map(),
+      tooFew: [],
+      tooFewCount: 0,
+    };
     const [row] = deepRows(deepShips(chains, list, 'buyback'), 'buyback', {
       ships,
       skuOf: () => undefined,
@@ -150,5 +158,54 @@ describe('the deep view of the CCU Consultant (#563)', () => {
     expect(row!.need).toBe(2);
     expect(row!.options.considered).toBe(false);
     expect(secureSummary([row!])).toEqual({ ccus: 0, ships: 0 });
+  });
+
+  it('offers CCUs to a link of the buy back’s CCUs short of ways (#651)', () => {
+    const ship = chainShip({
+      key: 'id:4',
+      shipId: 4,
+      ccus: [1, 2, 3, 4, 5, 6],
+      ways: { ship: 0, chain: 1, buyback: 2 },
+      total: 3,
+      short: 3,
+      blockedBuyback: [
+        { from: 'id:2', count: 5, total: 7 },
+        { from: 'id:5', count: 1, total: 1 },
+        { from: 'id:3', count: 2, total: 2 },
+      ],
+    });
+    const nodes = new Map([
+      ['id:2', { key: 'id:2', name: 'Arrow', shipId: 2, always: false }],
+      ['id:5', { key: 'id:5', name: 'C1 Spirit', shipId: 5, always: false }],
+      // An always available link is never short: nothing to offer.
+      ['id:3', { key: 'id:3', name: 'Avenger', shipId: 3, always: true }],
+    ]);
+    const chains = { ships: new Map([[ship.key, ship]]), nodes, tooFew: [ship], tooFewCount: 3 };
+    const [row] = deepRows(deepShips(chains, {} as BaseShipList, 'missing'), 'missing', {
+      ships,
+      skuOf: (id) => (id === 2 ? 102 : undefined),
+      isAlways,
+      leaving: new Map(),
+      nodes,
+    });
+    expect(
+      row!.links.map((link) => [link.name, link.onSale, link.need, link.option?.from.name]),
+    ).toEqual([
+      // No more than the base ship is short of; from the next cheaper always available ship.
+      ['Arrow', true, 3, 'Aurora'],
+      ['C1 Spirit', false, 1, 'Avenger'],
+    ]);
+    expect(row!.links[0]!.option?.each).toBe(50);
+    // The base ship's own options are unchanged.
+    expect(row!.need).toBe(3);
+    // While RSI sells the base ship, a CCU to it is cheaper: no links then.
+    const [onSale] = deepRows(deepShips(chains, {} as BaseShipList, 'missing'), 'missing', {
+      ships,
+      skuOf: (id) => (id === 2 || id === 4 ? 100 + id : undefined),
+      isAlways,
+      leaving: new Map(),
+      nodes,
+    });
+    expect(onSale!.links).toEqual([]);
   });
 });

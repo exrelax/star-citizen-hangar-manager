@@ -8,8 +8,9 @@ import type { ChainCoverage, ChainShip, WayKind } from './chain-coverage';
  * (`chain-coverage.ts`) as a bar of one segment per CCU from it, and what securing the missing
  * CCUs costs now – a CCU from the next cheaper always available ship (safe: that ship can be had
  * any time) and from the next cheaper ship (cheapest, but that ship may need a way itself), at the
- * difference of the standard prices of RSI's upgrade tool. Above the rows of "Too few ways" the
- * totals of the base ships on sale now.
+ * difference of the standard prices of RSI's upgrade tool, and CCUs to a link of the buy back's
+ * CCUs to it that make them count (#651). Above the rows of "Too few ways" the totals of the base
+ * ships on sale now.
  */
 
 /** A part of a row's bar: a kind of way, the CCUs an always available ship serves, or too few. */
@@ -38,6 +39,24 @@ export interface SecureOptions {
   considered: boolean;
 }
 
+/**
+ * A link the buy back's CCUs to the base ship start from, short of ways (#651): CCUs to it secured
+ * now make that many of them count. Only while RSI doesn't sell the base ship itself.
+ */
+export interface DeepLink {
+  /** As `ChainNode.key`. */
+  key: string;
+  name?: string;
+  shipId?: number;
+  info?: Ship;
+  onSale: boolean;
+  skuId?: number;
+  /** How many CCUs to it make the buy back's CCUs count. */
+  need: number;
+  /** The way to secure them: from the next cheaper always available ship, else the next cheaper. */
+  option?: SecureOption;
+}
+
 export interface DeepRow {
   ship: ChainShip;
   /** The upgrade tool's ship, for its price, image and page. */
@@ -51,6 +70,8 @@ export interface DeepRow {
   /** How many CCUs to secure now: those short of ways, in "Only via buy back" those it gives. */
   need: number;
   options: SecureOptions;
+  /** The links of the buy back's CCUs to it short of ways (#651). */
+  links: DeepLink[];
 }
 
 export interface DeepSources {
@@ -61,6 +82,8 @@ export interface DeepSources {
   isAlways?: (shipId: number) => boolean;
   /** The ships leaving the Pledge Store that can still be had now (#454). */
   leaving: ReadonlyMap<number, ShipRemoval>;
+  /** The ships of the chains, also the links of the buy back's CCUs (#651). */
+  nodes?: ChainCoverage['nodes'];
 }
 
 /** The parts of a ship's bar: its ways up to its CCUs, then always available or too few. */
@@ -112,14 +135,27 @@ export function secureOptions(
   };
 }
 
-/** The base ships of a group in the deep view, in its order. */
+/** The base ships of a group in the deep view, in its order: those with a CCU with a discount. */
 export function deepShips(
   chains: ChainCoverage,
   list: BaseShipList,
   group: BaseShipGroup,
 ): ChainShip[] {
   if (group === 'missing') return chains.tooFew;
-  return list.groups[group].flatMap((row) => chains.ships.get(row.key) ?? []);
+  return groupShips(chains, list, group).filter((ship) => ship.ccus.length);
+}
+
+const groupShips = (chains: ChainCoverage, list: BaseShipList, group: BaseShipGroup) =>
+  list.groups[group].flatMap((row) => chains.ships.get(row.key) ?? []);
+
+/** The CCUs without a discount of a group (#651): not counted, only links of the chains. */
+export function deepOthers(
+  chains: ChainCoverage,
+  list: BaseShipList,
+  group: BaseShipGroup,
+): number {
+  const ships = group === 'missing' ? chains.tooFew : groupShips(chains, list, group);
+  return ships.reduce((sum, ship) => sum + ship.others.length, 0);
 }
 
 /** The rows of a group: in "Too few ways" those on sale first. */
@@ -134,6 +170,27 @@ export function deepRows(
     const skuId = ship.shipId !== undefined ? sources.skuOf(ship.shipId) : undefined;
     const removal = ship.shipId !== undefined ? sources.leaving.get(ship.shipId) : undefined;
     const own = Math.min(ship.ccus.length, ship.ways.ship + ship.ways.chain);
+    const links = ship.blockedBuyback.flatMap((blocked): DeepLink[] => {
+      const node = sources.nodes?.get(blocked.from);
+      if (!node || node.always) return [];
+      const linkInfo = node.shipId !== undefined ? byId.get(node.shipId) : undefined;
+      const linkSku = node.shipId !== undefined ? sources.skuOf(node.shipId) : undefined;
+      const options = secureOptions(linkInfo, sources.ships, sources.isAlways);
+      const option = options.always ?? options.cheapest;
+      return [
+        {
+          key: node.key,
+          ...(node.name !== undefined && { name: node.name }),
+          ...(node.shipId !== undefined && { shipId: node.shipId }),
+          ...(linkInfo && { info: linkInfo }),
+          onSale: linkSku !== undefined,
+          ...(linkSku !== undefined && { skuId: linkSku }),
+          // No more than the base ship is short of.
+          need: Math.min(blocked.count, ship.short),
+          ...(option && { option }),
+        },
+      ];
+    });
     return {
       ship,
       ...(info && { info }),
@@ -143,6 +200,9 @@ export function deepRows(
       segments: segmentsOf(ship),
       need: ship.always ? 0 : group === 'buyback' ? ship.ccus.length - own : ship.short,
       options: secureOptions(info, sources.ships, sources.isAlways),
+      // While RSI sells the base ship, a CCU to it costs less than one to a link and the buy back's
+      // CCU from there: the links only while it doesn't.
+      links: ship.always || skuId !== undefined ? [] : links.filter((link) => link.need > 0),
     };
   });
   if (group !== 'missing') return rows;

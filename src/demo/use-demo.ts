@@ -439,6 +439,9 @@ export function useDemo(
             ccuBases.partial,
             ccuBases.chainStart,
             ccuBases.chainLink,
+            ccuBases.buybackBase,
+            ccuBases.linkOnSale,
+            ccuBases.linkOffSale,
           ].flatMap((ship) => (ship ? [ship.id] : [])),
           ...(account ? [missingBaseOf(account.account.pledges)] : []).filter(
             (id) => id !== undefined,

@@ -2002,9 +2002,23 @@
     },
     "deep": {
       "tab": "Muy pocos accesos",
-      "hint": "Cadenas seguidas: un CCU hacia la nave base solo cuenta si su propia nave base también tiene un acceso. Cada CCU necesita su propio acceso.",
+      "hint": "Cadenas seguidas: cada CCU con descuento necesita un acceso a su nave base – una nave o una cadena de CCU de tu hangar, tu recompra o desde una nave siempre disponible. Los CCU sin descuento solo enlazan cadenas.",
+      "idleHangar": {
+        "one": "$1 CCU $2 → $3 en tu hangar no lleva ningún acceso: $4",
+        "other": "$1 CCU $2 → $3 en tu hangar no llevan ningún acceso: $4"
+      },
+      "takenBy": "$1 en uso por otros CCU desde ella – $2",
+      "noWay": "$1 no tiene ningún acceso",
+      "othersRow": {
+        "one": "$1 sin descuento, no cuenta",
+        "other": "$1 sin descuento, no cuentan"
+      },
+      "othersGroup": {
+        "one": "$1 CCU sin descuento no cuenta: solo enlaza cadenas",
+        "other": "$1 CCU sin descuento no cuentan: solo enlazan cadenas"
+      },
       "found": "Encontrado por la vista detallada",
-      "foundHint": "La vista sencilla cuenta esta nave base como cubierta por los CCU hacia ella en tu hangar. Pero sus propias naves base no tienen acceso libre para ellos, así que no cuentan.",
+      "foundHint": "La vista sencilla cuenta esta nave base como cubierta por los CCU hacia ella en tu hangar o tu recompra. Pero sus propias naves base no tienen acceso libre para ellos, así que no cuentan.",
       "ofWays": {
         "one": "de $1 acceso",
         "other": "de $1 accesos"
@@ -2016,6 +2030,25 @@
       "routes": "Accesos a $1",
       "viaBuyback": "$1 solo por recompra",
       "blocked": "no cuentan: $1 tiene muy pocos accesos",
+      "viaBuybackCcu": "por CCU de tu recompra",
+      "blockedBuyback": {
+        "one": "de $1 en tu recompra no cuenta: $2 tiene muy pocos accesos",
+        "other": "de $1 en tu recompra no cuentan: $2 tiene muy pocos accesos"
+      },
+      "blockedBuybackUsed": {
+        "one": "de $1 en tu recompra no cuenta: $2 en uso por otros CCU desde ella – $3",
+        "other": "de $1 en tu recompra no cuentan: $2 en uso por otros CCU desde ella – $3"
+      },
+      "waysOf": { "one": "el único acceso a $2 está", "other": "los $1 accesos a $2 están" },
+      "usedHangar": "$1 en tu hangar",
+      "usedBuyback": "$1 → $2 en tu recompra",
+      "linksTitle": "O aprovecha tu recompra",
+      "linksHint": "basta con una de ellas",
+      "linkNote": {
+        "one": "Hace que cuente $1 CCU desde $2 de tu recompra",
+        "other": "Hace que cuenten $1 CCU desde $2 de tu recompra"
+      },
+      "linkOffSale": "$1 no está a la venta ahora",
       "inHangar": {
         "one": "$1 en tu hangar",
         "other": "$1 en tu hangar"

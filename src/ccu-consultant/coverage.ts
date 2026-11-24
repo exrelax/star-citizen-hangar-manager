@@ -48,13 +48,18 @@ export interface CcuCoverage {
   hangar: { ships: CoverageMatch[]; ccus: CoverageMatch[] };
   buyback: { ships: CoverageMatch[]; ccus: CoverageMatch[] };
   covered: boolean;
+  /**
+   * The CCU has a discount (#651: "Discount" of My Hangar, worth less than today's price
+   * difference); unknown without prices. Only these need a way in the deep view.
+   */
+  discount?: boolean;
 }
 
 export interface CoverageInput {
   /** The upgrade tool's ships, for their ids and RSI's other names; may be empty. */
   ships: readonly Ship[];
   hangar: readonly (Pick<PledgeView, 'id' | 'title' | 'isCcu' | 'upgrade' | 'items'> &
-    Partial<Pick<PledgeView, 'displayId' | 'page'>>)[];
+    Partial<Pick<PledgeView, 'displayId' | 'page' | 'discount'>>)[];
   buyback: readonly (Pick<
     BuybackView,
     'id' | 'title' | 'isCcu' | 'upgrade' | 'unavailable' | 'ships'
@@ -104,14 +109,16 @@ export function ccuCoverage(
     ...('position' in pledge && pledge.position !== undefined && { position: pledge.position }),
   });
 
-  const bases: { id: number; key?: string; name?: string; shipId?: number }[] = [];
-  const base = (id: number, from: string | undefined, fromShipId?: number) => {
+  const bases: { id: number; key?: string; name?: string; shipId?: number; discount?: boolean }[] =
+    [];
+  const base = (id: number, from: string | undefined, fromShipId?: number, discount?: boolean) => {
     const shipId = fromShipId ?? (from ? lookup.shipOf(from)?.id : undefined);
     bases.push({
       id,
       key: keyOf(from, fromShipId),
       ...(from && { name: from }),
       ...(shipId !== undefined && { shipId }),
+      ...(discount !== undefined && { discount }),
     });
   };
   for (const pledge of input.hangar) {
@@ -119,7 +126,7 @@ export function ccuCoverage(
       const names = ccuShips(pledge.title);
       const from = pledge.upgrade?.matchItems[0]?.name ?? names?.from;
       const to = pledge.upgrade?.targetItems[0]?.name ?? names?.to;
-      base(pledge.id, from);
+      base(pledge.id, from, undefined, pledge.discount && pledge.discount.amount > 0);
       add(keyOf(to), matchOf('hangar', 'ccu', pledge));
       continue;
     }
@@ -168,6 +175,7 @@ export function ccuCoverage(
       hangar: { ships: pick('hangar', 'ship'), ccus: pick('hangar', 'ccu') },
       buyback: { ships: pick('buyback', 'ship'), ccus: pick('buyback', 'ccu') },
       covered: found.length > 0,
+      ...(base.discount !== undefined && { discount: base.discount }),
     });
   }
   return result;

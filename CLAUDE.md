@@ -230,8 +230,12 @@ It must always be able to show, in both themes:
   hangar, buy back, too few) and the legend, the chains as chips (from an always available ship
   with its star, starting in the buy back, cut with "+N"), those that don't count, "N in your
   hangar", "N in your buy back" opening the Buy Back; a base ship only the chain rule finds
-  ("Found by the deep view", demo cases `chainStart` and `chainLink`, its start not on sale); the
-  secure panel with both start ships, one that is also the cheapest, none always available, "Ship
+  ("Found by the deep view", demo cases `chainStart` and `chainLink`, its start not on sale); CCUs
+  in the buy back followed to their base ship (#651, demo cases `buybackBase`, `linkOnSale`,
+  `linkOffSale`): those that don't count ("1 of 2 in your buy back") with where the link's ways go,
+  the chain through them as a chip, "Found by the deep view", and "Or make your buy back count"
+  with a link on sale and one not; only CCUs with a discount counted, those without as a note in
+  the row and below the list; the secure panel with both start ships, one that is also the cheapest, none always available, "Ship
   upgrade" disabled with its tooltip, "Not on sale now" with the prices each and the Pledge
   Store; a leaving ship with its countdown and "Show in Pledge Store"; the rows of "Only via buy
   back" and "Always available"; narrow (the panel below the row) and with "Hide melt value"; with

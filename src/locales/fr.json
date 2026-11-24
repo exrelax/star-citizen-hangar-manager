@@ -2002,9 +2002,23 @@
     },
     "deep": {
       "tab": "Trop peu d’accès",
-      "hint": "Chaînes suivies : un CCU vers le vaisseau de base ne compte que si son propre vaisseau de base a aussi un accès. Chaque CCU a besoin de son propre accès.",
+      "hint": "Chaînes suivies : chaque CCU avec une remise a besoin d’un accès à son vaisseau de base – un vaisseau ou une chaîne de CCU de votre hangar, de votre rachat ou depuis un vaisseau toujours disponible. Les CCU sans remise ne font que relier des chaînes.",
+      "idleHangar": {
+        "one": "$1 CCU $2 → $3 dans votre hangar ne porte aucun accès : $4",
+        "other": "$1 CCU $2 → $3 dans votre hangar ne portent aucun accès : $4"
+      },
+      "takenBy": "$1 pris par d’autres CCU depuis ce vaisseau – $2",
+      "noWay": "$1 n’a lui-même aucun accès",
+      "othersRow": {
+        "one": "$1 sans remise, ne compte pas",
+        "other": "$1 sans remise, ne comptent pas"
+      },
+      "othersGroup": {
+        "one": "$1 CCU sans remise ne compte pas : il ne fait que relier des chaînes",
+        "other": "$1 CCU sans remise ne comptent pas : ils ne font que relier des chaînes"
+      },
       "found": "Trouvé par la vue détaillée",
-      "foundHint": "La vue simple compte ce vaisseau de base comme couvert par les CCU vers lui dans votre hangar. Mais leurs propres vaisseaux de base n’ont plus d’accès pour eux, donc ils ne comptent pas.",
+      "foundHint": "La vue simple compte ce vaisseau de base comme couvert par les CCU vers lui dans votre hangar ou votre rachat. Mais leurs propres vaisseaux de base n’ont plus d’accès pour eux, donc ils ne comptent pas.",
       "ofWays": {
         "one": "sur $1 accès",
         "other": "sur $1 accès"
@@ -2016,6 +2030,25 @@
       "routes": "Accès à $1",
       "viaBuyback": "$1 seulement par le rachat",
       "blocked": "ne comptent pas : $1 a lui-même trop peu d’accès",
+      "viaBuybackCcu": "par des CCU de votre rachat",
+      "blockedBuyback": {
+        "one": "sur $1 dans votre rachat ne compte pas : $2 a lui-même trop peu d’accès",
+        "other": "sur $1 dans votre rachat ne comptent pas : $2 a lui-même trop peu d’accès"
+      },
+      "blockedBuybackUsed": {
+        "one": "sur $1 dans votre rachat ne compte pas : $2 pris par d’autres CCU depuis ce vaisseau – $3",
+        "other": "sur $1 dans votre rachat ne comptent pas : $2 pris par d’autres CCU depuis ce vaisseau – $3"
+      },
+      "waysOf": { "one": "le seul accès à $2 est", "other": "les $1 accès à $2 sont" },
+      "usedHangar": "$1 dans votre hangar",
+      "usedBuyback": "$1 → $2 dans votre rachat",
+      "linksTitle": "Ou rendre votre rachat utile",
+      "linksHint": "une seule suffit",
+      "linkNote": {
+        "one": "Rend utile $1 CCU depuis $2 de votre rachat",
+        "other": "Rend utiles $1 CCU depuis $2 de votre rachat"
+      },
+      "linkOffSale": "$1 n’est pas en vente actuellement",
       "inHangar": {
         "one": "$1 dans votre hangar",
         "other": "$1 dans votre hangar"
