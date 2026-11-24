@@ -139,4 +139,62 @@ describe('withSiteSightings', () => {
     // Without an expected end the history stays as it is.
     expect(withSiteSightings(history, site)).toBe(history);
   });
+
+  it('finds the offer until its expected end, for a sighting after its last seen (#664)', () => {
+    const end = Date.parse('2026-10-10T16:00:00Z');
+    const ending = parseSiteWarbondHistory({
+      schemaVersion: 1,
+      offers: [
+        {
+          ...offer,
+          skuId: 7,
+          expectedEnd: '2026-10-10T16:00:00Z',
+          events: [{ id: 'iae', name: 'IAE' }],
+        },
+      ],
+    })!;
+    // First seen by this browser after the website's last seen, or again after a gap.
+    const late = Date.parse('2026-09-25T16:00:00Z');
+    const lastReadAt = Date.parse('2026-09-28T16:00:00Z');
+    const history = {
+      version: WARBOND_HISTORY_VERSION,
+      lastReadAt,
+      sightings: [
+        own({ firstSeen: Date.parse('2026-09-11T16:00:00Z'), lastSeen: late - 3_600_000 }),
+        own({ firstSeen: late, lastSeen: lastReadAt }),
+      ],
+    };
+    const merged = withSiteSightings(history, ending)!;
+    // Both are the website's offer: it isn't added again as an expired one.
+    expect(merged.sightings).toHaveLength(2);
+    expect(merged.sightings.map((s) => s.expectedEnd)).toEqual([end, end]);
+    expect(merged.sightings[1]!.firstSeen).toBe(late);
+    const current = offerHistory(merged, { shipId: 178, skuId: 7, price: 225 });
+    expect(current.expectedEnd).toBe(end);
+    expect(current.events.map((event) => event.id)).toEqual(['iae']);
+    // This browser's own events come first.
+    const seen = {
+      ...history,
+      sightings: [
+        own({
+          firstSeen: late,
+          lastSeen: lastReadAt,
+          events: [{ id: 'own', name: { en: 'Own' } }],
+        }),
+      ],
+    };
+    expect(withSiteSightings(seen, ending)!.sightings[0]!.events!.map((e) => e.id)).toEqual([
+      'own',
+    ]);
+    // After the expected end, another SKU or without an expected end: another offer.
+    const after = { ...history, sightings: [own({ firstSeen: end + 1, lastSeen: end + 2 })] };
+    expect(withSiteSightings(after, ending)!.sightings).toHaveLength(2);
+    const otherSku = {
+      ...history,
+      sightings: [own({ skuId: 8, firstSeen: late, lastSeen: lastReadAt })],
+    };
+    expect(withSiteSightings(otherSku, ending)!.sightings).toHaveLength(2);
+    const plain = { ...history, sightings: [own({ firstSeen: late, lastSeen: lastReadAt })] };
+    expect(withSiteSightings(plain, site)!.sightings).toHaveLength(2);
+  });
 });

@@ -96,9 +96,12 @@ export function parseSiteWarbondHistory(json: unknown): WarbondSighting[] | unde
 
 /**
  * The history of this browser with the website's offers added, oldest first. A website offer of
- * the same ship and price as a sighting of this browser, at overlapping times, is the same offer:
- * this browser's sighting is kept, with the website's expected end (#569). The website's offers are
- * all expired, even without a history of this browser (`lastReadAt` 0).
+ * the same ship and price (and SKU, where both name one) as a sighting of this browser, at
+ * overlapping times, is the same offer. The website's offer counts until its expected end, not
+ * only until it was last seen there: a browser that saw the offer first later, or again after a
+ * gap, still finds it (#664). Its expected end comes first (#569), and its events where this
+ * browser saw none; the sighting keeps its own times. The website's other offers are all expired,
+ * even without a history of this browser (`lastReadAt` 0).
  */
 export function withSiteSightings(
   history: WarbondHistorySnapshot | undefined,
@@ -108,19 +111,27 @@ export function withSiteSightings(
   const same = (sighting: WarbondSighting, offer: WarbondSighting) =>
     sighting.shipId === offer.shipId &&
     sighting.price === offer.price &&
-    sighting.firstSeen <= offer.lastSeen &&
+    (!sighting.skuId || !offer.skuId || sighting.skuId === offer.skuId) &&
+    sighting.firstSeen <= Math.max(offer.lastSeen, offer.expectedEnd ?? 0) &&
     offer.firstSeen <= sighting.lastSeen;
-  let ended = false;
+  let changed = false;
   const own = (history?.sightings ?? []).map((sighting) => {
-    const expectedEnd = site.find(
-      (offer) => offer.expectedEnd && same(sighting, offer),
-    )?.expectedEnd;
-    if (expectedEnd === undefined || sighting.expectedEnd === expectedEnd) return sighting;
-    ended = true;
-    return { ...sighting, expectedEnd };
+    const offers = site.filter((offer) => same(sighting, offer));
+    const expectedEnd = offers.findLast((offer) => offer.expectedEnd)?.expectedEnd;
+    const events = sighting.events?.length
+      ? undefined
+      : offers.findLast((offer) => offer.events?.length)?.events;
+    const newEnd = expectedEnd !== undefined && sighting.expectedEnd !== expectedEnd;
+    if (!newEnd && !events) return sighting;
+    changed = true;
+    return {
+      ...sighting,
+      ...(newEnd && { expectedEnd }),
+      ...(events && { events }),
+    };
   });
   const added = site.filter((offer) => !own.some((sighting) => same(sighting, offer)));
-  if (!added.length && !ended) return history;
+  if (!added.length && !changed) return history;
   return {
     version: WARBOND_HISTORY_VERSION,
     lastReadAt: history?.lastReadAt ?? 0,
