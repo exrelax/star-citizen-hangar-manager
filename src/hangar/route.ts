@@ -75,13 +75,19 @@ const TAB_HASHES: Record<ManagerTab, string> = {
   hangar: MANAGER_HASH,
   buyback: `${MANAGER_HASH}-bb`,
   store: `${MANAGER_HASH}-store`,
-  consultants: `${MANAGER_HASH}-consultants`,
+  // "Tools" (#453, #653), once "Consultants".
+  consultants: `${MANAGER_HASH}-tools`,
   watchlists: `${MANAGER_HASH}-watchlists`,
   settings: `${MANAGER_HASH}-settings`,
 };
 
+/** Hashes of earlier versions, still opening their tab for old links and bookmarks (#653). */
+const LEGACY_TAB_HASHES: Readonly<Record<string, ManagerTab>> = {
+  [`${MANAGER_HASH}-consultants`]: 'consultants',
+};
+
 export function tabFromHash(hash: string): ManagerTab | undefined {
-  return MANAGER_TABS.find((tab) => TAB_HASHES[tab] === hash);
+  return MANAGER_TABS.find((tab) => TAB_HASHES[tab] === hash) ?? LEGACY_TAB_HASHES[hash];
 }
 
 export function hashOfTab(tab: ManagerTab): string {
