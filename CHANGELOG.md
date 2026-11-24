@@ -1,5 +1,74 @@
 # Changelog
 
+## [1.2.0] – 2026-11-24
+
+Tools for planning a hangar: a CCU Check that tells which CCUs have a base ship to start from,
+watchlists, ships leaving the Pledge Store, a grouped view and Export & Import. All features in
+detail:
+[docs/FEATURES.md](https://github.com/exrelax/star-citizen-hangar-manager/blob/main/docs/FEATURES.md).
+
+### CCU Check
+
+- A new tab **Tools** with the **CCU Check** and the Paint Discount Planner
+- The **base ship coverage** of every CCU: covered by a ship or CCU in your hangar, only via your
+  buy back, by a ship the store always sells, or not at all; on the CCU rows in My Hangar, as
+  labels ("Base ship missing", "Base always available") and as a box in the sidebar
+- A **simple view** with a card per base ship and the ways to it, and a **deep view** that follows
+  whole CCU chains: how many ways your discounted CCUs need, which are missing, and what to buy
+  to secure them, also through CCUs in your buy back
+- **CCUs soon without base ship** when a ship leaves the store, and **CCUs losing their
+  discount** before a price increase
+- Counts of your ships and CCUs and the "Always available" label in **RSI's ship upgrade
+  dialog**, with a countdown on target ships that are on sale for a short time only
+
+### Pledge Store
+
+- **All ships by value**: a table of every ship with its price, warbond price, price increases,
+  ships leaving the store and your CCUs from and to it; sorting, search and filters that include or
+  exclude
+- **Ship Removals**: ships leaving the Pledge Store, with a countdown, the CCUs from and to them
+  and a warning on CCUs in My Hangar that would lose their base ship
+- The **expected end** of current warbond CCUs and their sorting, an "x from <ship>" badge, and
+  a sortable "Your CCUs between" table with the discount in USD and percent
+- **Ship upgrade** and **Warbond upgrade** buttons that open RSI's ship upgrade dialog with both
+  ships chosen
+
+### Watchlists
+
+- **Watchlists** of pledges, buy back items and Pledge Store items, with a reminder date and
+  notifications when a watched store item changes
+- "Put on a watchlist" buttons on RSI's own store pages and in its ship upgrade dialog
+- **Fill the cart** from a watchlist, and put the selection of My Hangar on a watchlist
+
+### My Hangar and Buy Back
+
+- A **grouped view**: equal pledges in one row with their sums, labels and a dialog
+- **Filters you refine in their pill**: ships by kind, CCUs by base ship coverage and contents,
+  paints by the ships you own
+- **List shortcuts** like "Ready to melt", "Paints to optimize" and "Melt and rebuy"
+- **Melt and Rebuy**: pledges you can melt and buy again at the same price, with a watchlist to
+  rebuy them
+- Ship packs at a glance, **select all**, mark the selection to melt, melt marks of a group
+- Buy back tokens also at 0, with the date of their next renewal
+- A paint discount note in **RSI's cart**
+
+### Settings and safety
+
+- **Export & Import** of your hangar (JSON, CSV, HangarXPLOR and FleetYards) and of your settings
+  and own data, with a preview that merges an import with what you have
+- **Paint plans and watchlists in the synced storage**, so they follow you to every browser of
+  your profile; the stored data in groups, with the synced data and its limits
+- **Account Safety**: a note on RSI's Terms of Service, a question before turning on bulk
+  melting, a check of the pledges right before bulk melting, and a limit of how many pledges are
+  melted at once
+- The Settings tab as an icon; the tab Tools opens at `#hangar-manager-tools`
+
+### Fixed
+
+- The buy back is updated after an order in another tab
+- Layout fixes in both themes: chevrons in an expanded group, the "Ship upgrade" button behind an
+  overlay, a badge over a note in Classic RSI, tables and long texts in every language
+
 ## [1.1.1] – 2026-11-15
 
 Reading the buy back no longer stops at a pledge RSI can't show, and a new error log tells what
