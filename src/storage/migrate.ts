@@ -1,3 +1,4 @@
+import { logError, reasonOf } from '@/errors/error-log';
 import { EMPTY_META, type CheckOutcome, type StorageMeta } from './meta';
 import { migratePaintPlans } from '@/store/paint-consultant/synced-plans';
 import { STORAGES } from './registry';
@@ -31,8 +32,13 @@ export function migrateStorage(): Promise<void> {
 
 export async function runMigration(): Promise<void> {
   await migrateKeys();
-  // The paint plans kept in this browser move to the synced storage (#635).
-  await migratePaintPlans();
+  // The paint plans kept in this browser move to the synced storage (#635). If that fails, they
+  // stay here, where they are still shown, and the manager starts anyway (#658).
+  try {
+    await migratePaintPlans();
+  } catch (error) {
+    void logError('PAINT-PLAN-MOVE-FAIL', `${reasonOf(error)}; kept in this browser`);
+  }
 }
 
 async function migrateKeys(): Promise<void> {

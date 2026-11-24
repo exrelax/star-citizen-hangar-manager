@@ -37,6 +37,7 @@ import WatchlistPicker from '@/watchlists/components/WatchlistPicker.vue';
 import { itemKey } from '@/watchlists/watchlists';
 import { selection } from '../selection';
 import { formatTimeLeft, toggleMeltMark } from '../melt-marks';
+import { meltMarksQuotaText } from '../melt-marks-quota';
 import { useMarkedPledges } from '../use-melt-marks';
 import { useNow } from '@/shared/use-now';
 import { useProvidedRemovalCcus } from '@/ship-removals/use-removal-ccus';
@@ -219,6 +220,17 @@ const kind = computed(() => kindIcon({ ...props.pledge, isReward: !!props.pledge
 /** Marked to melt (#97): when it can be melted, counted down in the badge. */
 const marked = useMarkedPledges();
 const mark = computed(() => marked.value.get(props.pledge.id));
+/** Why the pledge couldn't be marked: the marks don't fit into the synced storage (#658). */
+const markProblem = ref<string>();
+async function toggleMark() {
+  markProblem.value = undefined;
+  try {
+    await toggleMeltMark(props.pledge.id, !!demo.value);
+  } catch (error) {
+    markProblem.value = meltMarksQuotaText(error);
+    if (!markProblem.value) throw error;
+  }
+}
 const now = useNow();
 const meltMark = computed(() => {
   const value = mark.value;
@@ -492,7 +504,7 @@ const toggle = () => {
           type="button"
           class="shm-button shm-origin-button shm-melt-mark-button"
           :aria-pressed="!!mark"
-          @click="toggleMeltMark(pledge.id, !!demo)"
+          @click="toggleMark"
         >
           <SvgIcon name="recycle" />
           {{ i18n.t(mark ? 'meltMark.unmark' : 'meltMark.mark') }}
@@ -556,6 +568,11 @@ const toggle = () => {
         >
           <SvgIcon name="triangle-exclamation" />
           <span>{{ removal.details }}</span>
+        </p>
+        <!-- The mark didn't fit into the synced storage (#658). -->
+        <p v-if="markProblem" class="shm-hint shm-error-note" role="alert">
+          <SvgIcon name="triangle-exclamation" />
+          <span>{{ markProblem }}</span>
         </p>
         <!-- No base ship for this CCU (#114): a hint, with the ship in the Pledge Store. -->
         <div v-if="baseMissing" class="shm-hint shm-base-missing-note">

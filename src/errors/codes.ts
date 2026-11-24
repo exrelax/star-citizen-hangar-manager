@@ -144,6 +144,10 @@ export const ERROR_CODES = {
     failed: "RSI's cart couldn't be read for the running plan",
     instead: 'Showed the plan without the cart check; it can be read again',
   },
+  'PAINT-PLAN-MOVE-FAIL': {
+    failed: "The paint plans of an earlier version couldn't be moved to the synced storage",
+    instead: 'Kept them in this browser, where they are still shown; tried again on the next start',
+  },
   // Watchlists.
   'WATCHLIST-CART-FAIL': {
     failed: "A watchlist's Pledge Store items couldn't all be put into RSI's cart",

@@ -12,6 +12,7 @@ import { isKindOn } from '@/notifications/kinds';
 import { formatExpectedTime } from '@/price-increases/price-increase-label';
 import { resolveLanguage } from '@/settings/language';
 import { settingsItem, withDefaults } from '@/settings/settings';
+import { endOf } from '@/site-data/site-data';
 import { removalNoteKey } from './removal-notes';
 import { removalsByDate, type RemovalDate, type ShipRemoval } from './ship-removals';
 import { shipRemovalsItem, storedShipRemovals } from './ship-removals-storage';
@@ -91,8 +92,15 @@ export async function checkShipRemovals(now = Date.now()): Promise<void> {
   const kept = [...new Set([...notified, ...due.map(keyOf)])].filter((key) => ahead.has(key));
   if (JSON.stringify(kept) !== JSON.stringify(notified)) await notifiedItem.setValue(kept);
 
-  if (next === undefined || !shown) await browser.alarms.clear(SHIP_REMOVALS_ALARM);
-  else await browser.alarms.create(SHIP_REMOVALS_ALARM, { when: next });
+  // Next look: when the next date crosses the limit, or when a date shown now is over, so its
+  // notification goes then (#155, #658).
+  const ends = showing.flatMap((key) => {
+    const date = ahead.get(key);
+    return date ? [endOf(date.removedAt)] : [];
+  });
+  const wake = [...(shown && next !== undefined ? [next] : []), ...ends];
+  if (!wake.length) await browser.alarms.clear(SHIP_REMOVALS_ALARM);
+  else await browser.alarms.create(SHIP_REMOVALS_ALARM, { when: Math.min(...wake) });
 }
 
 /** The text of a date's notification: its ships and the date. */

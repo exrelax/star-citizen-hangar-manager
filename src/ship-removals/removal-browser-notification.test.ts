@@ -103,6 +103,17 @@ describe('checkShipRemovals', () => {
     expect(clear).toHaveBeenCalledWith(expect.stringMatching(/^shm-ship-removals:/));
   });
 
+  it('looks again when the date shown is over, also with no date after it (#658)', async () => {
+    stubNotifications();
+    await store([HORNET]);
+    await checkShipRemovals(DEC_10 - DAY);
+    const alarm = await browser.alarms.get(SHIP_REMOVALS_ALARM);
+    expect(alarm?.scheduledTime).toBeGreaterThan(DEC_10 - DAY);
+    expect(alarm?.scheduledTime).toBeLessThanOrEqual(DEC_10 + DAY);
+    await checkShipRemovals(DEC_10 + 2 * DAY);
+    expect(await browser.alarms.get(SHIP_REMOVALS_ALARM)).toBeUndefined();
+  });
+
   it('shows nothing with the kind off or in the demo, but counts the dates as told', async () => {
     const { create } = stubNotifications();
     await store([ANDROMEDA]);

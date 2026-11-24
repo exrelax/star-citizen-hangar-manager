@@ -29,6 +29,8 @@ export function useHangarPledges() {
   const loaded = ref(false);
   /** ISO timestamp of the last full sync. */
   const syncedAt = ref<string>();
+  /** When the list was last changed, also by a smart update (#658); else the last refresh. */
+  const updatedAt = ref<string>();
 
   // Ships (their prices) and orders are stored separately and arrive on their own schedule.
   let snapshot: HangarSnapshot | null = null;
@@ -59,6 +61,7 @@ export function useHangarPledges() {
         })
       : [];
     syncedAt.value = current?.syncedAt;
+    updatedAt.value = current?.updatedAt ?? current?.syncedAt;
     loaded.value = true;
   };
 
@@ -102,5 +105,5 @@ export function useHangarPledges() {
     unwatchPriceIncreases();
   });
 
-  return { pledges, loaded, syncedAt };
+  return { pledges, loaded, syncedAt, updatedAt };
 }

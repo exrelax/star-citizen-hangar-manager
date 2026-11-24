@@ -226,7 +226,11 @@ async function confirmImport() {
   const value = pending.value;
   if (!value) return;
   try {
-    const values = valuesToWrite(value.fileValues, value.here, modes.value, keepPlan.value);
+    // Merged with what is here now, not when the file was read: a watchlist or mark changed
+    // meanwhile (another tab, another device) isn't lost.
+    const ids = Object.keys(value.fileValues) as StorageId[];
+    const here = demo.value ? await currentDemoValues(ids) : await currentValues(ids);
+    const values = valuesToWrite(value.fileValues, here, modes.value, keepPlan.value);
     if (demo.value) {
       await writeDemoImport(values, demoContext.value?.storage.syncedNearLimit ?? false);
     } else {

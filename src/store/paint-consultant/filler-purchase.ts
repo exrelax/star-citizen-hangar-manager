@@ -56,7 +56,8 @@ export function paintSkuOf(
 /**
  * The order that bought the plan's paints: with the pledges of the new copies of its own paints
  * and of the fillers it created. None while there is no such order. A plan with filler paints
- * needs at least one of them in the order (as before #245); one without needs a new copy.
+ * needs at least one of them in the order (as before #245); one without needs a new copy. A plan
+ * without own paints (started from RSI's cart, #458) needs all of its fillers in one order (#658).
  */
 export function findPlanPurchase(input: {
   plan: StoredRebuyPlan;
@@ -101,12 +102,20 @@ export function findPlanPurchase(input: {
     // Paid with store credit: an order paid with money isn't the plan's.
     const order = orders.orders[orderId];
     if (!order || isPaidWithMoney(order)) return [];
-    if (!paints.some((paint) => ownSkus.has(paint.skuId))) return [];
+    // A plan with own paints needs one of them in the order; one of fillers only (started from
+    // RSI's cart, #458) has none, so it needs all of its fillers instead (#658).
+    if (plan.own.length && !paints.some((paint) => ownSkus.has(paint.skuId))) return [];
     // An own paint can be a filler too (another copy of it): the copies first, then the fillers.
     const ownPledgeIds = [...ownCounts].flatMap(([skuId, count]) => take(paints, skuId, count));
     const rest = paints.filter((paint) => !ownPledgeIds.includes(paint.pledgeId));
-    const pledgeIds = plan.fillers.flatMap((filler) => take(rest, filler.skuId, filler.quantity));
-    if (plan.fillers.length ? !pledgeIds.length : !ownPledgeIds.length) return [];
+    const fillerIds = plan.fillers.map((filler) => take(rest, filler.skuId, filler.quantity));
+    const pledgeIds = fillerIds.flat();
+    if (!plan.own.length) {
+      const all = plan.fillers.every(
+        (filler, index) => fillerIds[index]!.length >= filler.quantity,
+      );
+      if (!plan.fillers.length || !all) return [];
+    } else if (plan.fillers.length ? !pledgeIds.length : !ownPledgeIds.length) return [];
     const ids = new Set([...ownPledgeIds, ...pledgeIds]);
     const skus = Object.fromEntries(
       paints

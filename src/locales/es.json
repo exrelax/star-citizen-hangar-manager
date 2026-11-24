@@ -1439,6 +1439,11 @@
       "one": "$1 se quedó igual: no se puede fundir o ya estaba marcado.",
       "other": "$1 se quedaron igual: no se pueden fundir o ya estaban marcados."
     },
+    "quotaFull": "Sin marcar: el almacenamiento sincronizado está lleno. Borra las watchlists o marcas que ya no necesites.",
+    "quotaRoom": {
+      "one": "Sin marcar: solo cabe $1 marca más en el almacenamiento sincronizado. Marca menos pledges o quita marcas primero.",
+      "other": "Sin marcar: solo caben $1 marcas más en el almacenamiento sincronizado. Marca menos pledges o quita marcas primero."
+    },
     "selectionUnmarked": {
       "one": "Marca quitada de $1 pledge.",
       "other": "Marcas quitadas de $1 pledges."

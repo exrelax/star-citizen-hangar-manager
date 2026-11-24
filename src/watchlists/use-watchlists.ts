@@ -72,14 +72,34 @@ export function followWatchlists(demo: Ref<boolean>): () => void {
   };
 }
 
-/** Writes the watchlist; its new state shows at once, the storage's change confirms it. */
+/** The lists with the watchlist put in, or `previous` of it put back (undefined: taken out). */
+const withList = (all: Watchlist[], id: string, list: Watchlist | undefined): Watchlist[] => {
+  const index = all.findIndex((other) => other.id === id);
+  if (!list) return all.filter((other) => other.id !== id);
+  return index < 0 ? [...all, list] : all.map((other, at) => (at === index ? list : other));
+};
+
+/** The writes one after another, so a quick second change never lands before the first (#658). */
+let writes: Promise<unknown> = Promise.resolve();
+
+/**
+ * Writes the watchlist; its new state shows at once, so a quick next change builds on it, and the
+ * storage's change confirms it. A failed write puts the watchlist back as it was and throws.
+ */
 export async function storeWatchlist(list: Watchlist): Promise<void> {
-  await saveWatchlist(list, demoMode);
-  const index = lists.value.findIndex((other) => other.id === list.id);
-  lists.value =
-    index < 0
-      ? [...lists.value, list]
-      : lists.value.map((other, at) => (at === index ? list : other));
+  const previous = lists.value.find((other) => other.id === list.id);
+  lists.value = withList(lists.value, list.id, list);
+  const write = writes.then(() => saveWatchlist(list, demoMode));
+  writes = write.catch(() => undefined);
+  try {
+    await write;
+  } catch (error) {
+    // Only if nothing changed it since: a later change carries on from this state.
+    if (lists.value.find((other) => other.id === list.id) === list) {
+      lists.value = withList(lists.value, list.id, previous);
+    }
+    throw error;
+  }
 }
 
 /** Removes the watchlist with its items. */

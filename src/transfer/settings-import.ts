@@ -1,12 +1,15 @@
 import { STORAGES, type StorageId } from '@/storage/registry';
 import { syncedIdOf } from '@/storage/synced-usage';
 import {
+  COMPLETED_PLANS_VERSION,
   encodePlan,
   isCompletedKey,
   isPlanKey,
+  loadCompleted,
   saveCompleted,
   savePlan,
 } from '@/store/paint-consultant/synced-plans';
+import type { Settings } from '@/settings/settings';
 import type { AnyStoredRebuyPlan } from '@/store/paint-consultant/rebuy-plan-storage';
 import type { CompletedPlansSnapshot } from '@/store/paint-consultant/completed-plans';
 import {
@@ -27,7 +30,8 @@ import { SETTINGS_PARTS, storagesOfPart, type SettingsPart } from './settings-ex
  * and it must fit its limits: everything to write is measured together first, and what wouldn't
  * fit is named before anything is written. A write that fails puts back what was there before.
  * The browser notifications' permission belongs to the browser and isn't in the file: an import
- * leaves it as it is.
+ * leaves it as it is. Bulk melting isn't turned on by an import either: it keeps this browser's
+ * choice, so it is only turned on with its question (#331); its limit is imported.
  */
 
 type Stored = Record<string, unknown>;
@@ -42,6 +46,12 @@ const isSingleSynced = (id: StorageId) =>
   id !== 'paintPlan' &&
   id !== 'paintHistory';
 const syncedKeyOf = (id: StorageId) => definition(id).item.key.slice('sync:'.length);
+
+/** The imported settings with this browser's choice of bulk melting (`stored`: its settings). */
+const withBulkMeltingOf = (value: unknown, stored: unknown) => ({
+  ...(value as Partial<Settings>),
+  bulkMelting: (stored as Partial<Settings> | null | undefined)?.bulkMelting === true,
+});
 
 export interface SettingsImport {
   /** The parts chosen that the file holds. */
@@ -106,17 +116,21 @@ export class ImportQuotaError extends Error {
  * The synced storage after the import (`stored`: everything there now, by key without the area)
  * – the keys written at once, those removed –, or where it doesn't fit. The running plan is
  * measured as it is written (`encodePlan`); completed plans give way for it and stay in this
- * browser, so they never keep an import out.
+ * browser, so they never keep an import out. `gaveWay`: the keys of the completed plans that must
+ * leave the synced storage before the writes (all of them, if everything together doesn't fit);
+ * they are kept in this browser and the newest that fit are synced again afterwards.
  */
 export function syncedImport(
   stored: Readonly<Stored>,
   values: Values,
-): { writes: Stored; removed: string[] } | ImportLimit {
+): { writes: Stored; removed: string[]; gaveWay: string[] } | ImportLimit {
   const after: Stored = { ...stored };
   const writes: Stored = {};
   const removed: string[] = [];
   for (const id of Object.keys(values) as StorageId[]) {
-    if (isSingleSynced(id)) writes[syncedKeyOf(id)] = values[id];
+    if (!isSingleSynced(id)) continue;
+    writes[syncedKeyOf(id)] =
+      id === 'settings' ? withBulkMeltingOf(values[id], stored.settings) : values[id];
   }
   if ('watchlists' in values) {
     const entries = watchlistEntries(values.watchlists as Watchlist[]);
@@ -157,7 +171,14 @@ export function syncedImport(
   const total = entries.reduce((sum, [key, value]) => sum + bytesOf(key, value), 0);
   if (total > SYNC_QUOTA.total) return { limit: 'total' };
   if (entries.length > SYNC_QUOTA.maxItems) return { limit: 'items' };
-  return { writes, removed };
+
+  // The completed plans still there while the import is written: if they don't fit next to it,
+  // they make room first.
+  const completed = Object.keys(after).filter(isCompletedKey);
+  const withCompleted = completed.reduce((sum, key) => sum + bytesOf(key, after[key]), total);
+  const fits =
+    withCompleted <= SYNC_QUOTA.total && entries.length + completed.length <= SYNC_QUOTA.maxItems;
+  return { writes, removed, gaveWay: fits ? [] : completed };
 }
 
 /** The local keys an import may change, to put them back if a write fails. */
@@ -170,7 +191,10 @@ const LOCAL_KEYS = [
 
 /**
  * Writes the import, after measuring it against the synced storage's limits (`ImportQuotaError`:
- * nothing written). If a write fails, everything goes back to how it was, and the error is thrown.
+ * nothing written). Completed paint plans that must give way are first kept in this browser
+ * (`local:consultant.history`, as `saveCompleted` keeps those that don't fit) and leave the synced
+ * storage; the newest that fit are synced again at the end. If a write fails, everything goes
+ * back to how it was, and the error is thrown.
  */
 export async function writeSettingsImport(values: Values): Promise<void> {
   const sync = browser.storage.sync;
@@ -179,8 +203,17 @@ export async function writeSettingsImport(values: Values): Promise<void> {
   if (!('writes' in placed)) throw new ImportQuotaError(placed);
   const localBefore = await storage.getItems([...LOCAL_KEYS]);
   try {
-    if (Object.keys(placed.writes).length) await sync.set(placed.writes);
+    if (placed.gaveWay.length) {
+      // Kept in this browser before they leave the synced storage: never lost.
+      const plans = await loadCompleted();
+      await storage.setItem('local:consultant.history', {
+        version: COMPLETED_PLANS_VERSION,
+        plans,
+      } satisfies CompletedPlansSnapshot);
+      await sync.remove(placed.gaveWay);
+    }
     if (placed.removed.length) await sync.remove(placed.removed);
+    if (Object.keys(placed.writes).length) await sync.set(placed.writes);
     for (const id of Object.keys(values) as StorageId[]) {
       const key = definition(id).item.key;
       if (key.startsWith('local:') && id !== 'paintPlan' && id !== 'paintHistory') {
@@ -189,6 +222,8 @@ export async function writeSettingsImport(values: Values): Promise<void> {
     }
     if ('paintHistory' in values) {
       await saveCompleted((values.paintHistory as CompletedPlansSnapshot).plans);
+    } else if (placed.gaveWay.length) {
+      await saveCompleted(await loadCompleted());
     }
     if ('paintPlan' in values) await savePlan(values.paintPlan as AnyStoredRebuyPlan | null);
   } catch (error) {

@@ -129,8 +129,10 @@ splits the data. Nothing of the account is in this file.
 - Each storage goes through the same checks as a stored value of an earlier version (the
   settings' defaults, the plan's versions, the codecs of the synced storage); one that can't be
   read is named and left out.
-- The settings and their decisions are replaced; your data is merged (default) or replaced, per
-  storage (#634):
+- The settings and their decisions are replaced, except bulk melting: it keeps this browser's
+  choice and is only turned on with its question (#331); its limit (`bulkMeltingMax`) is
+  imported. Your data is merged (default) or replaced, per storage (#634), with this browser's
+  data as it is when the import is confirmed:
   - **Watchlists** by id: a list only in the file is added; one in both keeps the newer name,
     description, date and reminder (`changedAt`) and the union of the items (the higher count).
   - **Marks to melt**: the union by pledge id, the earlier mark.
@@ -141,7 +143,9 @@ splits the data. Nothing of the account is in this file.
     become one (earliest first seen, latest last seen, their events and expected end).
 - Everything for the synced storage is measured together against its limits (100 KB in all,
   8 KB per key, 512 keys) before anything is written; completed paint plans give way and stay in
-  this browser. A write that fails puts everything back.
+  this browser: if they don't fit next to the import, they are kept in this browser and leave the
+  synced storage before anything else is written, and the newest that fit are synced again
+  afterwards. A write that fails puts everything back.
 - The permission for browser notifications belongs to the browser and isn't in the file.
 
 ## Versions

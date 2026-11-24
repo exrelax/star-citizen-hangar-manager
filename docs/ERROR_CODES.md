@@ -92,10 +92,11 @@ or order IDs (they read `<id>`), no name and no address.
 
 ## Paint Discount Planner
 
-| Code                   | What didn't work                                     | What the Hangar Manager did                                  | What you can do                            |
-| ---------------------- | ---------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------ |
-| `PAINT-CART-FAIL`      | The planner's paints couldn't be put into RSI's cart | Left the cart as it was and said why                         | Check the reason shown and try again.      |
-| `PAINT-CART-READ-FAIL` | RSI's cart couldn't be read for the running plan     | Showed the plan without the cart check; it can be read again | Read the cart again from the running plan. |
+| Code                   | What didn't work                                                              | What the Hangar Manager did                                                          | What you can do                                             |
+| ---------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
+| `PAINT-CART-FAIL`      | The planner's paints couldn't be put into RSI's cart                          | Left the cart as it was and said why                                                 | Check the reason shown and try again.                       |
+| `PAINT-CART-READ-FAIL` | RSI's cart couldn't be read for the running plan                              | Showed the plan without the cart check; it can be read again                         | Read the cart again from the running plan.                  |
+| `PAINT-PLAN-MOVE-FAIL` | The paint plans of an earlier version couldn't be moved to the synced storage | Kept them in this browser, where they are still shown; tried again on the next start | Nothing; if it stays, copy the error log into a bug report. |
 
 ## Watchlists
 

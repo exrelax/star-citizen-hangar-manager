@@ -536,15 +536,16 @@ const groupDone = ref<StorageGroupId>();
                     <RefreshIcon :spinning="isReading(row.definition.id)" />
                   </button>
                   <!-- Not during a refresh: it would store the data again right after. -->
+                  <!-- In the demo, like a group, never what can't be read again (#658). -->
                   <button
                     v-tooltip="
-                      masked(row.definition.id)
-                        ? i18n.t('storage.demoDisabled')
-                        : i18n.t('storage.resetOne', [name(row.definition.id)])
+                      demoSafe(row.definition.id)
+                        ? i18n.t('storage.resetOne', [name(row.definition.id)])
+                        : i18n.t('storage.demoDisabled')
                     "
                     type="button"
                     class="shm-button is-danger is-icon"
-                    :disabled="row.empty || syncState.running || masked(row.definition.id)"
+                    :disabled="row.empty || syncState.running || !demoSafe(row.definition.id)"
                     @click="reset(row.definition)"
                   >
                     <SvgIcon name="trash" />
