@@ -25,25 +25,48 @@ announcements.
   and streams
 - Your whole hangar and buy back on one page, instead of RSI's 10 pledges per page
 - Instant search and filters that include or exclude (ships, CCUs, paints, LTI, warbond, giftable,
-  meltable, valuable, discount, rewards, …), sorting by date, value or discount
+  meltable, valuable, discount, rewards, …), refined right in their pill (solo ships or packs, CCUs
+  without base ship, paints for ships you own), sorting by date, value or discount
+- A grouped view: equal pledges in one row with their count and sums
+- List shortcuts like "Ready to melt", "Paints to optimize" and "Melt and rebuy"
 - Discounts compared to the original price: ships and CCUs, paints, gear, packs and more
 - The best insurance of every pledge as a tag (LTI, 10 years, …)
 - The full CCU history of upgraded ships, with the discount of every step
 - Orders of your purchases with invoices, refund countdown and a prefilled refund request
-- Buy back pledges straight into the RSI cart
+- Buy back pledges straight into the RSI cart, and the buy back tokens with the date of their
+  next renewal
+- A CCU Check in the tab "Tools": which CCUs have a base ship to start from – in your hangar, only
+  via your buy back, by a ship the store always sells, or not at all –, a deep view that follows
+  whole CCU chains and what to buy to secure them, CCUs soon without base ship and CCUs whose
+  discount is at risk; counts of your ships and CCUs right in RSI's ship upgrade dialog
 - A Paint Discount Planner: more store credit from your paints with RSI's volume discount,
-  as a plan you start and follow step by step
+  as a plan you start and follow step by step, and a note in RSI's cart when its paints miss the
+  best tier
+- Melt and Rebuy: the pledges you can melt now and buy again later at the same price, with a
+  watchlist to rebuy them
+- Watchlists of pledges, buy back items and Pledge Store items, with a reminder date, notifications
+  when a store item changes and "Put on a watchlist" buttons on RSI's own store pages
 - The current warbond CCUs of the pledge store, with the cheapest ships to start from and your own
   CCUs in the same price range, sorted by when they are expected to end, ship value or discount,
   and a history of the warbond offers seen so far
+- All ships by value in one table, with prices, warbond prices, price increases and your CCUs from
+  and to each ship
 - Expected price increases: a reminder on buy back items that get more expensive, advice for CCUs
   that lose or gain upgrade value, and the CCUs to secure before a ship's price rises
+- Ships leaving the Pledge Store, with a countdown and a warning on the CCUs that would lose their
+  base ship
 - Event notices like the Intergalactic Aerospace Expo, with countdowns
 - Notifications in the sidebar and, if you turn them on, from the browser – each kind on its own
 - Links from CCU Game (ccugame.app) straight to the pledge in the Hangar Manager
 - An addition to RSI's website: "My Gear" and "Buy Back Pledges" stay untouched and usable
-- Transparent storage: the settings list everything that is stored, with size and the time of the
-  last read and check, and read again or delete each part on its own
+- Transparent storage: the settings list everything that is stored, in groups by where it comes
+  from, with size and the time of the last read and check, and read again or delete each part on
+  its own
+- Watchlists, marks to melt and paint plans follow your browser profile to your other devices
+- Export & Import: the hangar as JSON, CSV or in HangarXPLOR's format for FleetYards, and your
+  settings and own data as a backup, merged on import
+- Account Safety: a note on RSI's Terms of Service, a question before bulk melting is turned on,
+  a check of the pledges right before they are melted and a limit of how many melt at once
 - A demo mode with anonymized data for screenshots
 - English, German, French and Spanish
 
@@ -173,13 +196,18 @@ Your hangar is nobody else's business. The extension is built so that your data 
   evening (at most every 15 minutes) – public files, the same for
   everyone; the requests carry nothing but your IP address, like any request.
 
-### Only your settings sync – through your browser
+### Only your settings and what you made sync – through your browser
 
 Your settings (language, display options, …) are saved in the browser's sync storage, so they
 follow you to your other devices if you use a browser account (Google account in Chrome, Firefox
 account in Firefox). That is your browser's own sync; the extension has no server for it. Besides
-them, only pledge IDs sync: of the pledges [marked to melt](#mark-to-melt-later) and of the paints
-whose planner notification you dismissed. Your hangar data itself is never synced.
+them, only what you made yourself syncs: the [watchlists](#watchlists), the pledge IDs of the
+pledges [marked to melt](#mark-to-melt-later) and of the paints whose planner notification you
+dismissed, and the running and completed plans of the
+[Paint Discount Planner](#paint-discount-planner) (#635, the last 10 completed ones), so a plan
+started on one device can be finished on another. Every write is measured against the sync
+storage's limits first; one that wouldn't fit changes nothing and says so. Your hangar data itself
+is never synced.
 
 ### It acts only when you click
 
@@ -265,11 +293,22 @@ Sharing your hangar in a screenshot, a stream or a video? The settings categorie
 
 A new **Hangar Manager** entry at the top of the RSI account navigation opens the manager.
 Switching between the manager and the original RSI pages is instant – no page reload. The manager
-has three tabs, each with its own link to bookmark or share:
+has six tabs, each with its own link to bookmark or share:
 
-- **My Hangar** – all pledges of your hangar
-- **Buy Back** – all pledges you melted and can buy back
-- **Settings**
+- **My Hangar** (`#hangar-manager`) – all pledges of your hangar
+- **Buy Back** (`#hangar-manager-bb`) – all pledges you melted and can buy back
+- **Pledge Store** (`#hangar-manager-store`) – warbond CCUs, events, price increases and ships
+  leaving the store (see [Pledge Store](#pledge-store-current-warbond-ccus))
+- **Tools** (`#hangar-manager-tools`, #653; the former `#hangar-manager-consultants` still opens
+  it) – the [CCU Check](#ccu-check) and the [Paint Discount Planner](#paint-discount-planner)
+- **Watchlists** (`#hangar-manager-watchlists`) – see [Watchlists](#watchlists)
+- **Settings** (`#hangar-manager-settings`) – only its icon, with the tooltip "Hangar Manager
+  Settings" (#513)
+
+Once a label would be cut at a narrow width, every tab shows only its icon, with its label as
+tooltip; the labels come back when the window is wider again. Above the tabs, on every tab, the
+buttons **All ships** (see [All ships by value](#all-ships-by-value)) and **Ship upgrade** (see
+[Links to RSI and other sites](#links-to-rsi-and-other-sites)).
 
 At the top right, above the refresh button, every tab shows the account's figures, each with an
 icon and a tooltip that names and explains it:
@@ -295,7 +334,12 @@ icon and a tooltip that names and explains it:
   A full refresh reads the prices of pledges with several items stored before prices were shown.
 
 - **Buy back tokens**: how many pledges can still be bought back with store credit, as RSI shows
-  it above its buy back list, read with every refresh and smart update.
+  it above its buy back list, read with every refresh and smart update – also 0 when none are left
+  (#433). Its tooltip names the next date RSI renews them (#434), with a link to its source: CIG
+  announces the dates once a year on Spectrum (in 2026 the first Monday of each quarter). A date not announced yet is estimated from the earlier schedule
+  and says so. The dates come from the project website (`data/buyback-tokens.json`); without a
+  known date the tooltip leaves it out. The tooltip opens on hover and with Tab, and its link can
+  be focused.
 
 ### An addition, not a replacement
 
@@ -305,7 +349,13 @@ functions (gift, melt, apply upgrades, buy back, …): one click on their entry 
 navigation, and you are back on RSI's original page. The extension doesn't overwrite or change
 any area of the RSI website: it adds its own navigation entry, shows the manager in the content
 area only while you have it open, and highlights a pledge on RSI's lists when you opened it via
-"Show in My Gear" or "Show in Buy Back".
+"Show in My Gear" or "Show in Buy Back". The few additions to RSI's own pages are added from
+outside, in RSI's look, and never change how RSI's pages work: labels and counts in RSI's
+[ship upgrade dialog](#ccus-in-rsis-ship-upgrade-dialog), the
+[paint discount note](#paint-discount-note-in-rsis-cart) in the cart (both can be turned off
+under "RSI website" in the settings) and the "Put on a watchlist" buttons of the
+[watchlists](#watchlists). When RSI changes its markup, they don't show, and the error log notes
+it.
 
 ### Compact, expandable rows
 
@@ -316,7 +366,11 @@ on its own.
 
 - **Upgraded ships show what they are now**: after a CCU, the row shows the current ship with its
   image, and the original pledge name below it ("Originally: …").
-- **CCUs show their target ship** as image.
+- **CCUs show their target ship** as image. Opened, a CCU has the section **Base ship** with its
+  [base ship coverage](#ccu-check).
+- **Ship packs at a glance** (#515): a pledge with several ships shows their images fanned out and
+  the number of ships ("4 ships in this pack"); a long title is shortened, with the full one as
+  tooltip. Opened, it shows a tile per ship. In My Hangar and the Buy Back.
 - **Games Library**: the details of every pledge with the game (game packages, and packages like
   "VIP High Admiral" that contain it) link to RSI's Games Library, which lists the protected pledge
   of each game – below the applied upgrades and above the external links.
@@ -364,18 +418,27 @@ on its own.
   rising ship. Without the new price it only warns that a discount may be lost, and tells when
   the target ship isn't flight ready yet (from RSI's Ship Matrix, the most current source; for ships it has no value for, from the project website's ship facts, #265), so its price will probably rise
   too. A suggestion only: nothing is melted or bought from there.
+- **Base ship missing** and **Base always available** on CCUs, from the [CCU Check](#ccu-check).
+- **Base ship leaves the store**: a warning triangle on CCUs whose base ship leaves the Pledge
+  Store (see [Ship Removals](#ship-removals)).
+- **Rebuyable** on pledges you can melt and buy again later without loss (see
+  [Melt and Rebuy](#melt-and-rebuy)).
 
 ---
 
 ## Selection and summary
 
 - **Select pledges** in "My Hangar" with the round control in the top right corner of each row.
+  **Select all** above the list (#620) selects every pledge that search, filters and a
+  [List Shortcut](#list-shortcuts) leave visible, and clears them again; pledges selected before
+  and hidden now stay selected. In the [grouped view](#grouped-view) a group counts with all its
+  pledges.
 - **Sidebar** below RSI's page navigation on the left, a column of boxes:
   - **Notifications** (only while there is one):
     - When pledges [marked to melt](#mark-to-melt-later) can be melted now: how many, with two
-      buttons. **Show** lists only them in "My Hangar" (without a filter button there); while it
-      is on, it turns into **Show all** with a crossed-out filter icon and shows all again, like
-      "Reset filters" – and the list shows all on its own once none is left. **Select** selects
+      buttons. **Show** opens the [List Shortcut](#list-shortcuts) "Ready to melt" in "My Hangar";
+      while it is on, it turns into **Show all** with a crossed-out filter icon and shows all
+      again, like the × of the shortcut or "Reset filters". **Select** selects
       them, so the "Selected" box offers to melt them all at once with bulk melting on. It stays
       while there are any and can't be checked off.
     - When the [Paint Discount Planner](#paint-discount-planner) finds paints to buy again
@@ -405,6 +468,11 @@ on its own.
       was shown in). An **event** like the Intergalactic Aerospace Expo,
       once its notice starts (see [Pledge Store](#pledge-store-current-warbond-ccus)), with **Show
       in Pledge Store** – in the sidebar only.
+    - Reminders of [watchlists](#watchlists) at their date, with **Show watchlist**, and changes
+      of the Pledge Store items on watchlists with these notifications on (a new price, no longer
+      or again on sale). Each goes with its ×; a new date or the next change brings it back.
+    - Ships leaving the Pledge Store (see [Ship Removals](#ship-removals)) and CCUs that lose
+      upgrade value with a price increase (the Price Increase Advisor).
     - When filler paints of the [Paint Discount Planner](#paint-discount-planner) are among
       them: how many, with **Melt the filler paints**, which melts exactly them at once (bulk
       melting on; otherwise it leads to the setting).
@@ -416,12 +484,23 @@ on its own.
   - **Selected** (with a selection): number, value and discounts of the selected pledges, how many
     of them search or filters hide, and a button that clears the selection. Below them, a button
     across the box for [bulk melting](#exchange-melt-with-a-safety-net) – or, with that setting
-    off, one that leads to it.
+    off, one that leads to it. Further actions for the selection:
+    - **Mark to melt** (#551) marks every selected pledge that can be melted and isn't marked yet
+      (see [Mark to melt later](#mark-to-melt-later)) and says how many it marked and how many it
+      left as they were (not meltable or marked already). When all of them are marked already,
+      **Remove marks to melt** removes their marks.
+    - **Add to a watchlist** (#549) puts the selected pledges on one of your
+      [watchlists](#watchlists) or on a new one; those on it already stay there once.
+    - With [Melt and Rebuy](#melt-and-rebuy) on, the box also tells the store credit the
+      rebuyable pledges among them free.
+  - **CCU Check** (while the hangar has CCUs): how many CCUs have no base ship, will soon have
+    none, or have too few ways to it, with a button to the [CCU Check](#ccu-check).
   - **Paint Discount** (only while there is a paint to buy again): how many paints can be bought
     again with a higher volume discount and the store credit it frees, with a link to the
     [planner](#paint-discount-planner) and a filter button: **Show these paints** lists
     only them in "My Hangar" (its icon then shows the filter is on); **Show all pledges** or
-    "Reset filters" shows all again, and so does the list once none is left.
+    "Reset filters" shows all again, and so does the list once none is left. It opens the
+    [List Shortcut](#list-shortcuts) "Paints to optimize".
 - The sidebar stays on every tab of the manager (Buy Back, Pledge Store, Settings) and keeps
   showing the hangar's figures.
 - **Reorder the boxes** by dragging their title: the dragged box follows the pointer, the places
@@ -454,6 +533,23 @@ on its own.
 - **Include or exclude**: each click on a filter cycles through off → only pledges with it →
   only pledges without it ("−Rewards" hides all rewards). All active filters combine with "and";
   one click on "Reset filters" turns them all off.
+- **Refine a filter in its pill** (#419): while some filters are included, their pill gets a
+  chevron that opens a short list of choices; the pill then names the choice ("Paints · Owned
+  ships"). Excluding the filter or turning it off goes back to "all". The choices, each with its
+  count:
+  - **Ships** by kind (#514): all ships, **solo ships** (only the ship with its insurance and
+    hangar items), **ships with extras** (gear, paints, a starter package with game access) and
+    **ship packs** (two or more ships).
+  - **CCUs** by base ship (#461), from the [CCU Check](#ccu-check): all CCUs, **without base
+    ship**, **base always available** and **base limited** (not always available) – the last two
+    only with "Consider always available ships" on. And by contents (#566): **solo CCUs** (also
+    with an insurance) and **CCUs with extras** (a paint, gear). My Hangar shows both parts in
+    the sections "Base ship" and "Contents", the Buy Back only the contents.
+  - **Paints** by the ships you own (#336): all paints, **for owned ships** and **for ships not
+    owned**. A ship counts as owned as a standalone ship, in a package or as the target of an
+    applied upgrade in your hangar; a paint for several ships counts once one of them is owned,
+    and a model code finds its variants (a C8 paint fits the C8R). The Buy Back goes by the ships
+    of your hangar too. Rewards that hold a paint count as paints (#581).
 - **Live counts**: each filter shows how many pledges it would leave in combination with the
   other active filters – a filter showing 0 would empty the list.
 - **Sorting** at the top right of the list: newest or oldest first, highest or lowest value first,
@@ -468,6 +564,53 @@ on its own.
   increase tag for Price increase expected and the insurance for LTI. Excluded filters highlight
   nothing. Which filter highlights what is one list in `config.ts` (`FILTER_HIGHLIGHTS`).
 - Thousands of pledges stay fast: rows are drawn while scrolling, in small steps between frames.
+
+## Grouped view
+
+**Group** above the list (#445) shows equal items as one row with their count, e.g. all CCUs from
+the same ship to the same ship – in My Hangar, the Buy Back, the [CCU Check](#ccu-check) (on there by default)
+and the [watchlists](#watchlists), each remembered on its own.
+
+- **What forms a group**: CCUs by base and target ship; ships and packages by their ships and the
+  pledge's name; gear, paints and the rest by name and kind. Upgraded pledges group by what they
+  are now. Extras don't split a group, the row names them instead: "some with gear", "some with
+  BIS paint", "different insurance", "some upgraded". A group of one is a single row.
+- **The group row**: the count, the name, the image and the ships as in a single row, and the
+  sums of the value (in the Buy Back the buy back price) and the discount. A sum that misses a
+  value sums the known ones and says how many are missing ("$120 + 2 unknown"). No pledge IDs or dates.
+- **Labels taken from the items** (#487): "Gift", "Melt" and the others when all items have them,
+  "Some gift", "Some melt", "Some base ship missing" and so on when only some do (the tooltip
+  says how many), crossed out when none does. A refund countdown shows the shortest of its items,
+  with how many can still be refunded. Marks to melt (#552) show as one label with the earliest
+  and latest time ("Melt in 3 hr – 21 hr", "Melt now – 21 hr", or "Melt now" when all are ready)
+  and a small count of the marked items; its tooltip says it in words ("4 of 12 marked to melt,
+  the first ready in 3 hr").
+- **Expand or open** (#488): a click expands the group in the list with its items as normal rows;
+  a button opens it in a dialog with the sums and labels on top and every item below, with its
+  pledge ID, details and buttons (exchange, gift, ship upgrade, …). An expanded CCU group shows the
+  section **Base ship** for the whole group ("2 of 5 covered", #574).
+- **Selection**: a group selects all its items at once; items selected in the dialog are selected
+  in the list. A jump to a single pledge (e.g. from the CCU Check or a notification) opens its
+  group with the pledge highlighted.
+- Search, filters, List Shortcuts and sorting work as without groups.
+
+## List Shortcuts
+
+A List Shortcut (#427) opens My Hangar or the Buy Back with a named list: a bar above it shows
+its title, icon and count, and its × (or "Reset filters") leaves it. Search, filters and sorting
+work within it, and it stays while you switch tabs. When nothing is left in it, it says so. The
+shortcuts:
+
+- **Ready to melt**: the pledges [marked to melt](#mark-to-melt-later) that RSI lets you melt now,
+  from the sidebar's notification.
+- **Paints to optimize**: the paints the [Paint Discount Planner](#paint-discount-planner) would
+  buy again, from the sidebar box and the new plan's "Show these paints" (#430).
+- **Melt and rebuy**: the pledges you can melt now and buy again later without loss (see
+  [Melt and Rebuy](#melt-and-rebuy)), with the store credit they free.
+- **CCUs incompatible with a warbond CCU** (#429): "Show in My Hangar" of a warbond CCU's "Your
+  CCUs between" lists your CCUs that overlap its price range.
+- **CCU Check**: "Show N CCUs in My Hangar" of a group or base ship, and a base ship's "Buy Back",
+  which opens its ships and CCUs in the Buy Back.
 
 ---
 
@@ -559,6 +702,28 @@ number, at most 9.
 With it off, the "Selected" box shows **Bulk melting disabled** instead (with meltable pledges
 selected): a click opens the settings at the setting and marks it for a moment.
 
+**Checked right before melting** (#415): after "Melt" and your password, and before the first
+request, the pledges of the dialog are read from RSI again – only the list pages that hold them.
+Each has to be there with the same ID, name, value and items, and still be meltable; otherwise
+nothing is melted, and the dialog names each pledge that changed or is gone, and what changed
+(e.g. an upgrade applied in "My Gear" or in another tab meanwhile). The stored hangar is updated
+with what was read. If RSI can't be read (signed out, network error), nothing is melted and the
+dialog says why. The filler paints of the Paint Discount Planner are checked the same way.
+
+## Account Safety
+
+CIG's Terms of Service forbid bots, and it isn't clear whether the smart updates could count as
+one. The Hangar Manager sends as few requests to RSI as it can, never buys anything on its own
+and gives no advantage over other players. Account Safety (#329) adds:
+
+- **A note on the Terms of Service** (#330), with a link to them, in the settings under "About",
+  below the version.
+- **A question before bulk melting is turned on** (#331): it exchanges several pledges in a row
+  with one click, RSI may count this as a macro under its Terms of Service, and melting can't be
+  undone. Only **Turn on** turns it on; an imported settings file never does.
+- **A check of the pledges right before bulk melting** (#415) and **a limit of how many pledges
+  melt at once** (#622), both described above.
+
 ## Mark to melt later
 
 RSI lets a pledge be melted only 24 hours after it was bought (with store credit or money). **Mark
@@ -569,7 +734,46 @@ day counts, and as RSI doesn't say which time zone it uses, the later reading co
 may turn a little late, never too early. The mark goes once the pledge is gone from the hangar.
 The marks are kept in the browser's sync storage, so they follow your browser profile to your
 other devices; in the demo mode the marks are the demo's own. Once marked pledges can be melted, the sidebar's
-**Notifications** box says how many, with **Show** to list just them.
+**Notifications** box says how many, with **Show** to list just them. The sidebar's "Selected" box
+marks or unmarks all selected pledges at once (see [Selection and summary](#selection-and-summary)),
+and a group of the [grouped view](#grouped-view) shows the times of its marked items.
+
+## Melt and Rebuy
+
+Melt and Rebuy (#527) finds the pledges you can melt now and buy again later in the Pledge Store
+with store credit, without losing anything – e.g. to free store credit for an event and get the
+same items back afterwards. A pledge counts as **Rebuyable** (#528) when all of this holds:
+
+- it can be melted now: RSI offers the exchange, it was bought at least 24 hours ago, it is no
+  protected game access and no reward, and no refund period still runs (melting ends it);
+- it isn't giftable: bought again with store credit, it never could be again;
+- it is a single paint, a standalone ship with its insurance only (not upgraded) or an unapplied
+  CCU – no package, pack, gear or extra items;
+- the Pledge Store sells exactly this item now (a CCU: RSI's upgrade tool, target pricier than
+  base), with the same insurance or a better one, for the pledge's value or less – a discounted
+  pledge (warbond, sale) would cost more;
+- it stays available: no price increase (confirmed or expected) and no removal ahead for the ship,
+  the CCU's base or target, and the ship is always available, not only on sale during an event.
+
+Data the extension doesn't have yet (a store price, the ship facts) counts as not rebuyable, with
+the reason "not known". Nothing extra is read from RSI for it.
+
+- **The label** "Rebuyable" in the row, with a tooltip of the store credit melting frees and what
+  rebuying costs now. Opened, a pledge that isn't rebuyable says why, with every reason at once
+  (e.g. "Giftable", "Upgraded", "Not on sale now"). A paint bought at a volume
+  discount (#593) says how many paints it needs in one cart to come back at its price. A group
+  of the grouped view shows "Some rebuyable".
+- **The List Shortcut** "Melt and rebuy" (#530), from the button in the sidebar's "Summary" box:
+  only the rebuyable pledges, with the store credit they free. Its bar offers **Put on a
+  watchlist to rebuy** (#531).
+- **A watchlist to rebuy them**: the dialog puts them on an existing watchlist or a new one
+  ("Rebuy after …"), as the Pledge Store items they are rebought as, each with its count, and can
+  also mark them to melt – melting itself stays with RSI's dialog or bulk melting. The watchlist
+  shows the total now against your store credit, each item's price when added, and items that
+  can't be bought at that price any more. **Add to cart** fills RSI's cart from it (see
+  [Watchlists](#watchlists)).
+- **Show rebuyable pledges** under "My Hangar and Buy Back" in the settings (on by default) turns
+  the label, the shortcut and the reasons off.
 
 ## Gift
 
@@ -637,6 +841,47 @@ plus:
 
 ---
 
+## Watchlists
+
+The tab **Watchlists** (#464) collects items of My Hangar, the Buy Back and the Pledge Store under
+a name of your choice, e.g. "Melt after the IAE" or "CCUs to buy when back in stock".
+
+- **A watchlist** has a name, an optional description and an optional date (e.g. the end of an
+  event) with a reminder. It shows its items with their search, filters and grouped view (hidden
+  until you show them), and items no longer in My Hangar or the Buy Back say so ("No longer in My
+  Hangar", "Now in the Buy Back").
+- **Pledges and buy back items**: a notepad icon in the row of an item on a watchlist names its
+  watchlists; opened, the item shows them, and it goes on another one or a new one from there. The sidebar's "Selected" box
+  puts the whole selection on a watchlist (#549).
+- **Pledge Store items** (#470): CCUs from the Pledge Store tab (the warbond CCUs and the table of
+  all ships), standalone ships with their insurance and paints, each with a count – e.g. to buy a
+  CCU three times once it is on sale. The watchlist shows each one's current price, whether it can
+  be bought now, its price when added and the total now.
+- **On RSI's own pages** (#471, #632): a **Put on a watchlist** button in RSI's look on a paint's
+  page, on the cards of paints and standalone ships in the store's lists (icon only) and left of
+  "Add To Cart" in RSI's ship upgrade dialog. A small window grows out of the button with the
+  item's watchlists, adding to one and a new one; ×, Escape or a click elsewhere close it.
+- **Reminders** (#469): at the date, a sidebar notification and, if allowed, a browser
+  notification open the watchlist. Where the reminder is set, it says whether browser
+  notifications are allowed in this browser, with a button to allow them.
+- **Pledge Store changes** (#472): on a watchlist with these notifications on, a new price, an
+  item no longer on sale or on sale again shows in the sidebar and, if allowed, in the browser.
+  Both kinds can be turned off in the settings ("Watchlist reminders", "Pledge Store changes on
+  watchlists").
+- **Add to cart** (#529): puts the paints and standalone ships of a watchlist with their counts
+  into RSI's cart, after showing what is still on sale, the total and your store credit. Items
+  already in the cart stay; CCUs go through RSI's ship upgrade dialog. It says what went in and
+  what RSI refused, with a link to the cart. Nothing is bought: you check the cart and pay there.
+- **Select all** (#620) and a checkbox on every item: hangar items join the "Selected" box of My
+  Hangar, and **Remove from this list** removes the selected items from this watchlist only,
+  after a question when several go.
+- **The Paint Discount Planner's filler paints** (#473) get a watchlist of their own once they
+  are bought, with a reminder 24 hours after the order, when RSI lets you melt them.
+- Watchlists are kept in the browser's sync storage and follow your browser profile to your other
+  devices; a watchlist that wouldn't fit says so and changes nothing.
+
+---
+
 ## Pledge Store: current warbond CCUs
 
 **Events** come first while there are any: Star Citizen events like the Intergalactic Aerospace
@@ -670,20 +915,6 @@ That is about 34 reads of the upgrade tool and 65 requests for the items per hou
 and 156 with the former 5-minute interval of the items. The refresh button and the initial load
 always read both; the count line says when the offers were updated.
 
-**All ships** (#385, #452), a button above the Hangar Manager left of "Ship upgrade", opens a table of every ship of
-RSI's upgrade tool, the cheapest first, with a line at every $100. Each ship shows its value and
-current warbond price (with what it saves), whether it is always available or not sold any more
-(both from the project website's ship facts, the Star Citizen Wiki; ships no longer sold are
-faded), how many standalone ships of it and CCUs to and from it your hangar and your buy back
-have (tinted green and orange while they have any), and in the Pledge Store "Warbond" and
-"Standard" or "Ship upgrade" for RSI's dialog, else "Not on sale now". Above it, a search finds
-ships by name and manufacturer, the filters "Always available", "On sale", "Warbond" and "In my
-hangar or buy back" narrow it, and the value range is chosen on a slider below a histogram of
-the ships per $50. A click on a column head sorts by it, a second click reverses the order (#406).
-Counts of 0 show as a faint dot, lists not read yet say so. The head stays in view while the table
-scrolls, also sideways on narrow windows; dollar amounts follow the setting that hides them. In
-the demo mode the counts are the demo's and the upgrade buttons are disabled.
-
 Below the events, the warbond CCUs have two views, chosen with tabs: **Current Discount CCUs** –
 the warbond CCUs RSI sells now and the CCUs to secure before a price increase – and the **Warbond
 CCU History** with the offers that are over (both below). A notification about new warbond CCUs
@@ -691,6 +922,13 @@ opens the current ones. For each warbond ship:
 
 - **Prices**: the warbond price, the standard price (struck through) and the discount in dollars
   and percent, with the ship's image.
+- **Expected end** (#569): when the warbond history knows when an offer is expected to go, a
+  countdown says so ("Expected gone in 21 d", on the last day hours, minutes and seconds), with a
+  tooltip that gives the date and time and says that it is expected, not confirmed. Offers without
+  an expected end show none, and the countdown goes once its time has passed.
+- **Sorting** (#628): with more than two offers, a menu next to the heading sorts them – ending
+  soonest (the default) or latest first, lowest or highest ship value first, or highest discount
+  first. Sorted by the end, offers without an expected end follow, the cheapest ship first.
 - **In hangar**: tags with your hangar's CCUs straight to the ship ("2 to Liberator"), from the ship
   to another one ("2 from Liberator", #399; the buy back's don't count) and the other CCUs in its
   price range that can't be chained with it ("13 incompatible"); each only when there is one.
@@ -748,6 +986,28 @@ buy back price (its source in a tooltip; without a known price last), the base s
 whether it is always available and the count – CCUs RSI can't sell again are left out. Bought back
 before the increase, they keep their price and gain the upgrade value.
 
+### All ships by value
+
+**All ships** (#385, #452), a button above the Hangar Manager left of "Ship upgrade", opens a table of every ship of
+RSI's upgrade tool, the cheapest first, with a line at every $100. Each ship shows its value and
+current warbond price (with what it saves), whether it is always available or not sold any more
+(both from the project website's ship facts, the Star Citizen Wiki; ships no longer sold are
+faded), how many standalone ships of it and CCUs to and from it your hangar and your buy back
+have (tinted green and orange while they have any), and in the Pledge Store "Warbond" and
+"Standard" or "Ship upgrade" for RSI's dialog, else "Not on sale now". Above it, a search finds
+ships by name and manufacturer, the filters "Always available", "On sale", "Warbond", "Price
+increase", "Leaving" and "In my hangar or buy back" narrow it, and the value range is chosen on a
+slider below a histogram of the ships per $50. Like the filters of My Hangar, each filter
+includes or excludes ("not Warbond", #413). A ship whose price rises shows the increase with its
+countdown, and the new price if it is known; confirmed by CIG and only expected ones each say so.
+A ship leaving the Pledge Store shows its date and countdown (#410). A click on a column head
+sorts by it, a second click reverses the order (#406).
+Counts of 0 show as a faint dot, lists not read yet say so. The head stays in view while the table
+scrolls, also sideways on narrow windows; dollar amounts follow the setting that hides them. In
+the demo mode the counts are the demo's and the upgrade buttons are disabled.
+
+### Ship Removals
+
 Below them, whichever view is shown, the **ships leaving the Pledge Store** (#288, part of Ship
 Removals #285): ships CIG takes out of the store for good, e.g. the Constellation Mk IV when its
 retirement window ends. They come from the project website's list and are grouped by date ("Jan
@@ -787,6 +1047,78 @@ isn't one of the always available ships."), during an event also when it ends ("
 sale any more once Intergalactic Aerospace Expo 2956 ends on November 27, 2026."). The ships on
 sale come from RSI's upgrade tool, which ships are always available from the ship facts of the
 project website; without them there is no note.
+
+## CCU Check
+
+A CCU only works on a pledge with its base ship – in your hangar, or reached with a CCU to it. The
+**CCU Check** (#106) in the tab **Tools** asks "Can you apply every CCU?" and answers it for every
+CCU of your hangar.
+
+- **Base ship coverage** (#108): each CCU is covered by your hangar (a ship, a package, an
+  upgraded pledge or a hangar CCU to the base ship, which chains), else **only via buy back** (a
+  ship or a CCU RSI can sell again), else by a base ship that is **always available** in the
+  Pledge Store (the project website's ship facts, from the Star Citizen Wiki), else it is
+  **without base ship**. Each ship or CCU to a base ship gives it to one CCU from it, so a base
+  ship can be short of ways although some exist.
+- **On the CCU rows in My Hangar**: the section **Base ship** of an opened CCU (#111) shows how it
+  is covered, with a card per ship or CCU that covers it (#426: base and target ship, value or buy
+  back price, discount or surcharge, giftable or not), each opened in My Hangar or the Buy Back
+  and back again (#436). CCUs without coverage get the label **Base ship missing** and a note with
+  a link to the base ship in the Pledge Store (#114); CCUs whose base ship RSI always sells get
+  **Base always available** (#112).
+- **The tab** (#113, #563): a bar of how many CCUs are covered in your hangar, by always available
+  ships, only via buy back and not at all, and the groups as sub tabs with their counts: **No base
+  ship**, **Buy back only**, **Always available** and **Discount at risk**. Each group has a
+  heading, its count and a short hint; **Show N CCUs in My Hangar** opens them as a
+  [List Shortcut](#list-shortcuts). The [grouped view](#grouped-view) is on here by default.
+- **Simple view**: a card per base ship with its image and price, whether it is on sale now or
+  always available, the ways to it in your hangar and buy back as small images ("+3" for more)
+  and the CCUs from it. Its buttons open the CCUs in My Hangar, the ships and CCUs to it in the Buy
+  Back, RSI's ship upgrade dialog ("Ship upgrade"), or the ship in the Pledge Store.
+- **Deep view**: follows whole chains. Every CCU with a discount needs a way to its base ship – a
+  ship, or a chain of CCUs from your hangar, your buy back or an always available ship; CCUs
+  without a discount only link chains and aren't counted. The tab **Too few ways** lists the
+  base ships with fewer ways than CCUs, each with a bar (ship and chain in your hangar, buy back,
+  too few), the chains as chips and why a way doesn't count ("taken by other CCUs from it", "has
+  no way itself"). It also finds base ships the simple view counts as covered whose ways have no
+  way themselves ("Found by the deep view"), follows CCUs in your buy back to their base ship
+  (#651), and names a link that would make them count ("Or make your buy back count"). **Secure
+  now** shows what securing the missing ways costs with store credit – from the next cheaper always
+  available ship (safe) or from the next cheaper ship (cheapest) – against your store credit, or
+  "Not on sale now" for a ship RSI doesn't sell at the moment. The views are a toggle, **Simple |
+  Deep view**, and the choice is remembered.
+- **Soon without base ship** (#454): CCUs covered today only because RSI still sells their base
+  ship, which leaves the Pledge Store (see [Ship Removals](#ship-removals)): per base ship the
+  date and countdown, how many ways are missing, "Ship upgrade" and a link to the ship.
+- **Discount at risk** (#455): CCUs whose base ship gets more expensive within the period of the
+  settings lose upgrade value, and with it their discount. Each shows the price increase, confirmed
+  by CIG or only expected, the discount today and after, and the way to keep it from the Price
+  Increase Advisor: "Keep the discount" with the giftable trade-off and a note when the store
+  credit isn't enough, and the CCUs to secure in the Pledge Store tab.
+- **In the sidebar** (#115): a box with how many CCUs have no base ship, will soon have none or
+  have too few ways, with a button to the CCU Check.
+- **Settings** (under "CCU Check"): **Consider always available ships** (on by default). Off,
+  every CCU without its base ship in your hangar or buy back counts as missing, and the label
+  "Base always available" goes. Below it, the source of the list with its date and license.
+
+### CCUs in RSI's ship upgrade dialog
+
+RSI's own ship upgrade dialog – on "My Gear", in the Pledge Store and from the Hangar Manager –
+gets labels from the Hangar Manager, added from outside, in the dialog's look:
+
+- **Counts on the base ships** (#506): how often your hangar has the ship and how many CCUs to it
+  are in your hangar and your buy back (only those RSI can sell again), e.g. "2 owned · CCUs 1 + 7",
+  with a tooltip. Each ship or CCU to it gives the ship to one CCU from it, so you see while
+  choosing which pledge to upgrade whether a ship is scarce as a base. Without a stored buy back
+  that part is left out.
+- **Always available** (#401) on base and target ships the ship facts list as always available.
+- **A countdown on target ships** (#570) that aren't always available while an event runs:
+  "Expected gone in …", to the event's end, or to the expected end of its warbond offer when that
+  is known. Its tooltip gives the date and its source and says that it is expected.
+- In the demo mode the counts are the demo's own, and "My ships" of the dialog is disabled, as it
+  lists the ships of your real account (#586).
+
+Each can be turned off under "RSI website" in the settings.
 
 ## Paint Discount Planner
 
@@ -852,8 +1184,9 @@ heading instead:
   Nothing is bought: you check the final price and every paint there and pay with store credit.
   The cart is read first: if it already holds items, which would change the tier, it says so and
   offers to open the cart, add anyway or cancel. A paint RSI refuses (e.g. no longer available)
-  is listed with RSI's reason, and the cart isn't opened on its own then. The plan is kept in this
-  browser (Settings → Stored data → "Paint plan"), so the filler paints can be found again later.
+  is listed with RSI's reason, and the cart isn't opened on its own then. The plan is kept in the
+  browser's sync storage (Settings → Stored data → "Synced with your browser profile"), so the
+  filler paints can be found again later, also on another device.
   Disabled in the demo mode.
 - **Two ways**: buying first and melting after (recommended, safer, but the store credit of the
   own paints isn't free for the cart yet), or melting first and buying after.
@@ -917,6 +1250,19 @@ heading instead:
 - Only pledges with exactly one paint that can be melted, and single paints of the Pledge Store;
   paint packs come later. Hidden while "Hide melt value" is on.
 
+### Paint discount note in RSI's cart
+
+While RSI's cart holds paints that don't get the best volume discount (#458), a note in the cart
+shows the tiers – how many paints each needs and where the cart stands – and the filler paints
+that reach a better one: the cheapest paints, at most 5 of one (RSI's limit), e.g. 5 of the
+cheapest and 3 of the next. It says what that saves and what it costs of your store credit, or
+how much store credit is missing; without a known store credit it asks to open the Hangar Manager
+once. **Add filler paints for the best discount** puts them into the cart with the Paint Discount
+Planner's requests; the planner keeps them and marks them to melt once you bought them. Nothing
+is checked out. In the demo mode the button is disabled, as it would change your real cart. The
+note can be turned off under "RSI website" in the settings ("Show the paint discount in RSI's
+cart").
+
 ---
 
 ## Links to RSI and other sites
@@ -934,6 +1280,23 @@ heading instead:
   RSI. It opens the pledge directly in the Hangar Manager – found by its pledge ID and opened –
   for hangar items in "My Hangar", for buy back items in "Buy Back" (placed right before CCU
   Game's "Add to cart on RSI").
+
+---
+
+## Export & Import
+
+Export & Import (#1), in the settings and in My Hangar, makes files in this browser only and sends
+nothing anywhere:
+
+- **The hangar** as JSON (the Hangar Manager's own format, which can also restore the hangar in a
+  new browser and skip the first full load), as CSV for spreadsheets, or in HangarXPLOR's format,
+  which FleetYards imports. IDs and amounts can be left out. My Hangar exports just the pledges
+  shown.
+- **Your settings and your data** – watchlists, marks to melt, the paint plans and the warbond
+  offers this browser saw – as a backup or for another browser. An import shows what it adds,
+  changes and keeps, and merges with what is here or replaces it.
+
+The details are under [Settings](#settings) and in the [format](EXPORT-FORMAT.md).
 
 ---
 
@@ -962,7 +1325,7 @@ heading instead:
 
 The settings tab (#117) lists its categories on the left, in four groups – General (Appearance,
 Privacy, Demo mode, RSI website), Lists (My Hangar and Buy Back, Filters, Sidebar), Automation (Notifications,
-Paint Discount Planner, Smart updates) and More (Experimental, Stored data, Export & Import, Error log, About) – and shows
+CCU Check, Paint Discount Planner, Smart updates) and More (Experimental, Stored data, Export & Import, Error log, About) – and shows
 one category at a time on the right, as grouped rows like the system settings: a switch for each
 on/off setting, a segmented control for the theme, selects and number fields for the rest. A
 narrow window shows the categories as a row above. Settings that depend on a switch sit below it
@@ -999,7 +1362,12 @@ order of the list:
   left ("From") and on the right ("To") – that the ship facts list as always available in the Pledge Store ("Always available", with its
   source as tooltip) – on "My Gear", in the Pledge Store and from the Hangar Manager. Ships are
   matched by RSI's ship id, else by name; without the ship facts, or when RSI changed the dialog,
-  no label shows (and the error log notes `PARSE-UPGRADE-DIALOG`).
+  no label shows (and the error log notes `PARSE-UPGRADE-DIALOG`). While an event runs, target
+  ships that aren't always available count down to when they are expected to go (#570). **Show
+  CCUs and owned ships on the base ships of RSI's ship upgrade dialog** (#506, on by default):
+  the counts of [CCUs in RSI's ship upgrade dialog](#ccus-in-rsis-ship-upgrade-dialog). **Show the
+  paint discount in RSI's cart** (#458, on by default): the
+  [paint discount note](#paint-discount-note-in-rsis-cart).
 - **My Hangar and Buy Back** (formerly "General" and "Show links for ships"):
   - **Show only the best insurance of upgraded ships** (on by default): after upgrades a pledge
     lists the insurance of every step; only the one that counts (LTI, otherwise the most months)
@@ -1008,13 +1376,15 @@ order of the list:
   - **"Show in Buy Back" opens**: only the pledge, or the list page with the pledge highlighted.
   - **Price increases within … days** (14 by default, 1 to 90): the period of the buy back filter
     "Price increase expected", My Hangar's filter "Price change ahead" and the notification.
+  - **Show rebuyable pledges** (on by default): the label, the List Shortcut and the reasons of
+    [Melt and Rebuy](#melt-and-rebuy).
 - **Filters**: order and selection of the filter buttons, separately for My Hangar and Buy Back
   and for types and features – drag a filter (or use its arrows) to move it within its group,
   uncheck it to hide its button.
 - **Sidebar**:
   - **Show the sidebar** (on by default) – see [Selection and summary](#selection-and-summary).
   - **Boxes** (all on by default, only while the sidebar is shown): notifications, summary,
-    selected and Paint Discount Planner. Without the "Selected" box, the rows have no select
+    selected, CCU Check and Paint Discount Planner. Without the "Selected" box, the rows have no select
     control.
   - **Reset order** (only while the boxes aren't in their default order): puts the boxes back
     into their default order; which boxes are shown and which are collapsed stays as it is.
@@ -1051,7 +1421,9 @@ order of the list:
       **Pledge Store items changed** and **Events** (both in the sidebar only), **Ships leaving the
       Pledge Store** (#290: in the sidebar, and a week before the date in the browser, #291).
     - **Buy Back**: **Expected price increases** (in the sidebar, and in the browser once less than
-      2 days are left). Turned off, a kind adds no notification, and its open ones go – in the
+      2 days are left).
+    - **Watchlists**: **Watchlist reminders** and **Pledge Store changes on watchlists** (both in
+      the sidebar and, if allowed, in the browser; see [Watchlists](#watchlists)). Turned off, a kind adds no notification, and its open ones go – in the
       sidebar and in the browser.
   - **Show checked-off notifications again** (#213): brings back the sidebar notifications checked
     off or dismissed with their ×, as far as they still matter – an event while it is shown, new
@@ -1062,6 +1434,8 @@ order of the list:
     ahead, and the hint on browser
     notifications while they are off. Kinds turned off stay hidden; notifications from before this
     version (without what they were about) don't come back. It says how many came back.
+- **CCU Check**: **Consider always available ships** and the source of their list – see
+  [CCU Check](#ccu-check).
 - **Paint Discount Planner** (it always buys with store credit, never with new money):
   - **Include my store credit** (on by default): the cart may also be paid with the current store
     credit; off, only with the melt value of the own paints.
@@ -1096,7 +1470,8 @@ order of the list:
 - **Experimental** (all off by default), with a clear warning: these features may not work as
   intended, and using them is at your own risk – the developer accepts no liability.
   - **Bulk melting**: exchange all selected pledges at once – see
-    [Exchange (melt) with a safety net](#exchange-melt-with-a-safety-net).
+    [Exchange (melt) with a safety net](#exchange-melt-with-a-safety-net). Turning it on asks
+    first (see [Account Safety](#account-safety)). Below it, **Most pledges per bulk melting**.
   - **Translate RSI's texts in the exchange and gift dialogs**: RSI's changes to its texts reach
     the translations only later.
 - **Stored data**: a table of everything the extension keeps in this browser – My Hangar, Buy
@@ -1107,6 +1482,16 @@ order of the list:
   confirmation
   says what is missing until it is read again (by the next refresh, or on its own for the small
   data of the upgrade tool). Not possible during a refresh.
+  - **In groups** (#624), by where the data comes from: **Your RSI account**, **RSI's Pledge Store
+    and ships**, **Project website** and **Made in this browser**. Collapsed, a group shows the
+    number of its data sets, their entries and size, and its oldest last check; expanded, its
+    rows. A group that can be read again has a refresh of its own, which reads its parts one after
+    the other; deleting a group asks first and names what goes, and for data made in this browser
+    says that it can't be restored. The open groups are remembered.
+  - **Synced with your browser profile** (#560): the watchlists, the marks to melt and the paint
+    plans with their entries and size, and how much of the sync storage's limits they use, with a
+    warning near a limit. Nothing of it can be read again, and resetting the data in this browser
+    keeps it; deleting a row asks first, as it goes on every device with this browser profile.
   - **Reset**, below the table, each after a confirmation:
     - **Delete all local data**: removes the whole copy listed in the table; nothing changes on
       RSI's website, and the lists offer the initial load again. Not possible during a refresh.
@@ -1126,8 +1511,10 @@ order of the list:
   - **Export settings and your data**: the settings with their decisions (notifications checked
     off, notes closed) and your own data – watchlists, marks to melt, the paint plan and its
     completed plans, the warbond offers this browser saw – either part or both.
-  - **Import settings and your data**: a preview of what changes; the settings are replaced, your
-    data merged with what is here (by default) or replaced, per storage, and the paint plan to
+  - **Import settings and your data**: a preview of what changes, with the added, changed and
+    kept entries of each storage (#634); the settings are replaced – except bulk melting, which an
+    import never turns on –, your data merged with what is
+    here (by default) or replaced, per storage, and the paint plan to
     keep chosen when both have one. It goes into the storage synced with the browser profile and
     reaches every device; it is measured against the synced storage's limits first, and nothing
     is written if it wouldn't fit.
