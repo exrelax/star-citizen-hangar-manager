@@ -720,7 +720,7 @@ and gives no advantage over other players. Account Safety (#329) adds:
   below the version.
 - **A question before bulk melting is turned on** (#331): it exchanges several pledges in a row
   with one click, RSI may count this as a macro under its Terms of Service, and melting can't be
-  undone. Only **Turn on** turns it on.
+  undone. Only **Turn on** turns it on; an imported settings file never does.
 - **A check of the pledges right before bulk melting** (#415) and **a limit of how many pledges
   melt at once** (#622), both described above.
 
@@ -1512,7 +1512,8 @@ order of the list:
     off, notes closed) and your own data – watchlists, marks to melt, the paint plan and its
     completed plans, the warbond offers this browser saw – either part or both.
   - **Import settings and your data**: a preview of what changes, with the added, changed and
-    kept entries of each storage (#634); the settings are replaced, your data merged with what is
+    kept entries of each storage (#634); the settings are replaced – except bulk melting, which an
+    import never turns on –, your data merged with what is
     here (by default) or replaced, per storage, and the paint plan to
     keep chosen when both have one. It goes into the storage synced with the browser profile and
     reaches every device; it is measured against the synced storage's limits first, and nothing

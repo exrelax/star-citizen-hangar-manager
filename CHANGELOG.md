@@ -55,7 +55,8 @@ detail:
 ### Settings and safety
 
 - **Export & Import** of your hangar (JSON, CSV, HangarXPLOR and FleetYards) and of your settings
-  and own data, with a preview that merges an import with what you have
+  and own data, with a preview that merges an import with what you have; an import never turns
+  bulk melting on
 - **Paint plans and watchlists in the synced storage**, so they follow you to every browser of
   your profile; the stored data in groups, with the synced data and its limits
 - **Account Safety**: a note on RSI's Terms of Service, a question before turning on bulk
@@ -66,6 +67,8 @@ detail:
 ### Fixed
 
 - The buy back is updated after an order in another tab
+- Marking pledges to melt says when the synced storage has no room for more marks, instead of
+  marking nothing without a word
 - Layout fixes in both themes: chevrons in an expanded group, the "Ship upgrade" button behind an
   overlay, a badge over a note in Classic RSI, tables and long texts in every language
 
