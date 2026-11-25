@@ -241,6 +241,10 @@ It must always be able to show, in both themes:
   back" and "Always available"; narrow (the panel below the row) and with "Hide melt value"; with
   the demo setting "CCUs without base ship coverage" off no base ship short of a way in either
   view.
+- The diagram of the CCU Check's chains (#667): a base ship short of ways, two ships sharing the
+  ways of one link ship, chains through the buy back, a buy back CCU RSI can't sell again, always
+  available sources; the focus view of each, a "what if" that moves ways from one ship to another,
+  the advice edges; narrow.
 - List Shortcuts (#431): each shortcut opened in My Hangar with its bar, title, icon, count and
   ×: "Ready to melt" (the demo's marks ready to melt, never the one still waiting), "Paints to
   optimize" from the sidebar box and the new plan's "Show these paints" (#430), "Melt and rebuy"
